@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -49,6 +49,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value.item = menu
 		end
 
+	get_menu: POINTER is
+		obsolete "Use `menu' instead."
+			-- Access member `menu'
+		require
+			exists: exists
+		do
+			Result := get_menu_external (item)
+		ensure
+			result_correct: Result = get_menu_external (item)
+		end
+
 	menu: POINTER is
 			-- Access member `menu'
 		require
@@ -67,6 +78,17 @@ feature {ANY} -- Member Access
 			set_menu_external (item, a_value)
 		ensure
 			a_value_set: a_value = menu
+		end
+
+	get_reserved: INTEGER is
+		obsolete "Use `reserved' instead."
+			-- Access member `reserved'
+		require
+			exists: exists
+		do
+			Result := get_reserved_external (item)
+		ensure
+			result_correct: Result = get_reserved_external (item)
 		end
 
 	reserved: INTEGER is

@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_controlrect: POINTER is
+		obsolete "Use `controlrect' instead."
+			-- Access member `controlRect'
+		require
+			exists: exists
+		do
+			Result := get_controlrect_external (item)
+		ensure
+			result_correct: Result = get_controlrect_external (item)
+		end
 
 	controlrect: POINTER is
 			-- Access member `controlRect'
@@ -43,6 +54,17 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_controlrect_external (item, a_value)
+		end
+
+	get_controlvalue: INTEGER is
+		obsolete "Use `controlvalue' instead."
+			-- Access member `controlValue'
+		require
+			exists: exists
+		do
+			Result := get_controlvalue_external (item)
+		ensure
+			result_correct: Result = get_controlvalue_external (item)
 		end
 
 	controlvalue: INTEGER is
@@ -65,6 +87,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = controlvalue
 		end
 
+	get_controlvisible: INTEGER is
+		obsolete "Use `controlvisible' instead."
+			-- Access member `controlVisible'
+		require
+			exists: exists
+		do
+			Result := get_controlvisible_external (item)
+		ensure
+			result_correct: Result = get_controlvisible_external (item)
+		end
+
 	controlvisible: INTEGER is
 			-- Access member `controlVisible'
 		require
@@ -83,6 +116,17 @@ feature {ANY} -- Member Access
 			set_controlvisible_external (item, a_value)
 		ensure
 			a_value_set: a_value = controlvisible
+		end
+
+	get_fill: INTEGER is
+		obsolete "Use `fill' instead."
+			-- Access member `fill'
+		require
+			exists: exists
+		do
+			Result := get_fill_external (item)
+		ensure
+			result_correct: Result = get_fill_external (item)
 		end
 
 	fill: INTEGER is
@@ -105,6 +149,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = fill
 		end
 
+	get_controlmaximum: INTEGER is
+		obsolete "Use `controlmaximum' instead."
+			-- Access member `controlMaximum'
+		require
+			exists: exists
+		do
+			Result := get_controlmaximum_external (item)
+		ensure
+			result_correct: Result = get_controlmaximum_external (item)
+		end
+
 	controlmaximum: INTEGER is
 			-- Access member `controlMaximum'
 		require
@@ -123,6 +178,17 @@ feature {ANY} -- Member Access
 			set_controlmaximum_external (item, a_value)
 		ensure
 			a_value_set: a_value = controlmaximum
+		end
+
+	get_controlminimum: INTEGER is
+		obsolete "Use `controlminimum' instead."
+			-- Access member `controlMinimum'
+		require
+			exists: exists
+		do
+			Result := get_controlminimum_external (item)
+		ensure
+			result_correct: Result = get_controlminimum_external (item)
 		end
 
 	controlminimum: INTEGER is
@@ -145,6 +211,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = controlminimum
 		end
 
+	get_controldefprocid: INTEGER is
+		obsolete "Use `controldefprocid' instead."
+			-- Access member `controlDefProcID'
+		require
+			exists: exists
+		do
+			Result := get_controldefprocid_external (item)
+		ensure
+			result_correct: Result = get_controldefprocid_external (item)
+		end
+
 	controldefprocid: INTEGER is
 			-- Access member `controlDefProcID'
 		require
@@ -165,6 +242,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = controldefprocid
 		end
 
+	get_controlreference: INTEGER is
+		obsolete "Use `controlreference' instead."
+			-- Access member `controlReference'
+		require
+			exists: exists
+		do
+			Result := get_controlreference_external (item)
+		ensure
+			result_correct: Result = get_controlreference_external (item)
+		end
+
 	controlreference: INTEGER is
 			-- Access member `controlReference'
 		require
@@ -183,6 +271,17 @@ feature {ANY} -- Member Access
 			set_controlreference_external (item, a_value)
 		ensure
 			a_value_set: a_value = controlreference
+		end
+
+	get_controltitle: POINTER is
+		obsolete "Use `controltitle' instead."
+			-- Access member `controlTitle'
+		require
+			exists: exists
+		do
+			Result := get_controltitle_external (item)
+		ensure
+			result_correct: Result = get_controltitle_external (item)
 		end
 
 	controltitle: POINTER is

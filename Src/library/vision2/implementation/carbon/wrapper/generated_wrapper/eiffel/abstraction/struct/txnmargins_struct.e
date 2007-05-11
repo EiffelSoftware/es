@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_topmargin: INTEGER is
+		obsolete "Use `topmargin' instead."
+			-- Access member `topMargin'
+		require
+			exists: exists
+		do
+			Result := get_topmargin_external (item)
+		ensure
+			result_correct: Result = get_topmargin_external (item)
+		end
 
 	topmargin: INTEGER is
 			-- Access member `topMargin'
@@ -45,6 +56,17 @@ feature {ANY} -- Member Access
 			set_topmargin_external (item, a_value)
 		ensure
 			a_value_set: a_value = topmargin
+		end
+
+	get_leftmargin: INTEGER is
+		obsolete "Use `leftmargin' instead."
+			-- Access member `leftMargin'
+		require
+			exists: exists
+		do
+			Result := get_leftmargin_external (item)
+		ensure
+			result_correct: Result = get_leftmargin_external (item)
 		end
 
 	leftmargin: INTEGER is
@@ -67,6 +89,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = leftmargin
 		end
 
+	get_bottommargin: INTEGER is
+		obsolete "Use `bottommargin' instead."
+			-- Access member `bottomMargin'
+		require
+			exists: exists
+		do
+			Result := get_bottommargin_external (item)
+		ensure
+			result_correct: Result = get_bottommargin_external (item)
+		end
+
 	bottommargin: INTEGER is
 			-- Access member `bottomMargin'
 		require
@@ -85,6 +118,17 @@ feature {ANY} -- Member Access
 			set_bottommargin_external (item, a_value)
 		ensure
 			a_value_set: a_value = bottommargin
+		end
+
+	get_rightmargin: INTEGER is
+		obsolete "Use `rightmargin' instead."
+			-- Access member `rightMargin'
+		require
+			exists: exists
+		do
+			Result := get_rightmargin_external (item)
+		ensure
+			result_correct: Result = get_rightmargin_external (item)
 		end
 
 	rightmargin: INTEGER is

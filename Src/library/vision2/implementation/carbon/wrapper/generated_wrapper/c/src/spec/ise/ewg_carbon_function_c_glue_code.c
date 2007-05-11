@@ -27050,6 +27050,306 @@ void* ewg_get_function_address_NavDialogSetFilterTypeIdentifiers (void)
 	return (void*) NavDialogSetFilterTypeIdentifiers;
 }
 
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'Fix2SmallFract'
+// For ise
+SmallFract  ewg_function_Fix2SmallFract (Fixed ewg_f)
+{
+	return Fix2SmallFract ((Fixed)ewg_f);
+}
+
+// Return address of function 'Fix2SmallFract'
+void* ewg_get_function_address_Fix2SmallFract (void)
+{
+	return (void*) Fix2SmallFract;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'SmallFract2Fix'
+// For ise
+Fixed  ewg_function_SmallFract2Fix (SmallFract ewg_s)
+{
+	return SmallFract2Fix ((SmallFract)ewg_s);
+}
+
+// Return address of function 'SmallFract2Fix'
+void* ewg_get_function_address_SmallFract2Fix (void)
+{
+	return (void*) SmallFract2Fix;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'CMY2RGB'
+// For ise
+void  ewg_function_CMY2RGB (CMYColor const *ewg_cColor, RGBColor *ewg_rColor)
+{
+	CMY2RGB ((CMYColor const*)ewg_cColor, (RGBColor*)ewg_rColor);
+}
+
+// Return address of function 'CMY2RGB'
+void* ewg_get_function_address_CMY2RGB (void)
+{
+	return (void*) CMY2RGB;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RGB2CMY'
+// For ise
+void  ewg_function_RGB2CMY (RGBColor const *ewg_rColor, CMYColor *ewg_cColor)
+{
+	RGB2CMY ((RGBColor const*)ewg_rColor, (CMYColor*)ewg_cColor);
+}
+
+// Return address of function 'RGB2CMY'
+void* ewg_get_function_address_RGB2CMY (void)
+{
+	return (void*) RGB2CMY;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HSL2RGB'
+// For ise
+void  ewg_function_HSL2RGB (HSLColor const *ewg_hColor, RGBColor *ewg_rColor)
+{
+	HSL2RGB ((HSLColor const*)ewg_hColor, (RGBColor*)ewg_rColor);
+}
+
+// Return address of function 'HSL2RGB'
+void* ewg_get_function_address_HSL2RGB (void)
+{
+	return (void*) HSL2RGB;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RGB2HSL'
+// For ise
+void  ewg_function_RGB2HSL (RGBColor const *ewg_rColor, HSLColor *ewg_hColor)
+{
+	RGB2HSL ((RGBColor const*)ewg_rColor, (HSLColor*)ewg_hColor);
+}
+
+// Return address of function 'RGB2HSL'
+void* ewg_get_function_address_RGB2HSL (void)
+{
+	return (void*) RGB2HSL;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'HSV2RGB'
+// For ise
+void  ewg_function_HSV2RGB (HSVColor const *ewg_hColor, RGBColor *ewg_rColor)
+{
+	HSV2RGB ((HSVColor const*)ewg_hColor, (RGBColor*)ewg_rColor);
+}
+
+// Return address of function 'HSV2RGB'
+void* ewg_get_function_address_HSV2RGB (void)
+{
+	return (void*) HSV2RGB;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'RGB2HSV'
+// For ise
+void  ewg_function_RGB2HSV (RGBColor const *ewg_rColor, HSVColor *ewg_hColor)
+{
+	RGB2HSV ((RGBColor const*)ewg_rColor, (HSVColor*)ewg_hColor);
+}
+
+// Return address of function 'RGB2HSV'
+void* ewg_get_function_address_RGB2HSV (void)
+{
+	return (void*) RGB2HSV;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'GetColor'
+// For ise
+Boolean  ewg_function_GetColor (Point *ewg_where, ConstStr255Param ewg_prompt, RGBColor const *ewg_inColor, RGBColor *ewg_outColor)
+{
+	return GetColor (*(Point*)ewg_where, (ConstStr255Param)ewg_prompt, (RGBColor const*)ewg_inColor, (RGBColor*)ewg_outColor);
+}
+
+// Return address of function 'GetColor'
+void* ewg_get_function_address_GetColor (void)
+{
+	return (void*) GetColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'PickColor'
+// For ise
+OSErr  ewg_function_PickColor (ColorPickerInfo *ewg_theColorInfo)
+{
+	return PickColor ((ColorPickerInfo*)ewg_theColorInfo);
+}
+
+// Return address of function 'PickColor'
+void* ewg_get_function_address_PickColor (void)
+{
+	return (void*) PickColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NPickColor'
+// For ise
+OSErr  ewg_function_NPickColor (NColorPickerInfo *ewg_theColorInfo)
+{
+	return NPickColor ((NColorPickerInfo*)ewg_theColorInfo);
+}
+
+// Return address of function 'NPickColor'
+void* ewg_get_function_address_NPickColor (void)
+{
+	return (void*) NPickColor;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewColorChangedUPP'
+// For ise
+ColorChangedUPP  ewg_function_NewColorChangedUPP (ColorChangedProcPtr ewg_userRoutine)
+{
+	return NewColorChangedUPP ((ColorChangedProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewColorChangedUPP'
+void* ewg_get_function_address_NewColorChangedUPP (void)
+{
+	return (void*) NewColorChangedUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewNColorChangedUPP'
+// For ise
+NColorChangedUPP  ewg_function_NewNColorChangedUPP (NColorChangedProcPtr ewg_userRoutine)
+{
+	return NewNColorChangedUPP ((NColorChangedProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewNColorChangedUPP'
+void* ewg_get_function_address_NewNColorChangedUPP (void)
+{
+	return (void*) NewNColorChangedUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'NewUserEventUPP'
+// For ise
+UserEventUPP  ewg_function_NewUserEventUPP (UserEventProcPtr ewg_userRoutine)
+{
+	return NewUserEventUPP ((UserEventProcPtr)ewg_userRoutine);
+}
+
+// Return address of function 'NewUserEventUPP'
+void* ewg_get_function_address_NewUserEventUPP (void)
+{
+	return (void*) NewUserEventUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeColorChangedUPP'
+// For ise
+void  ewg_function_DisposeColorChangedUPP (ColorChangedUPP ewg_userUPP)
+{
+	DisposeColorChangedUPP ((ColorChangedUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeColorChangedUPP'
+void* ewg_get_function_address_DisposeColorChangedUPP (void)
+{
+	return (void*) DisposeColorChangedUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeNColorChangedUPP'
+// For ise
+void  ewg_function_DisposeNColorChangedUPP (NColorChangedUPP ewg_userUPP)
+{
+	DisposeNColorChangedUPP ((NColorChangedUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeNColorChangedUPP'
+void* ewg_get_function_address_DisposeNColorChangedUPP (void)
+{
+	return (void*) DisposeNColorChangedUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'DisposeUserEventUPP'
+// For ise
+void  ewg_function_DisposeUserEventUPP (UserEventUPP ewg_userUPP)
+{
+	DisposeUserEventUPP ((UserEventUPP)ewg_userUPP);
+}
+
+// Return address of function 'DisposeUserEventUPP'
+void* ewg_get_function_address_DisposeUserEventUPP (void)
+{
+	return (void*) DisposeUserEventUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeColorChangedUPP'
+// For ise
+void  ewg_function_InvokeColorChangedUPP (long ewg_userData, PMColor *ewg_newColor, ColorChangedUPP ewg_userUPP)
+{
+	InvokeColorChangedUPP ((long)ewg_userData, (PMColor*)ewg_newColor, (ColorChangedUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeColorChangedUPP'
+void* ewg_get_function_address_InvokeColorChangedUPP (void)
+{
+	return (void*) InvokeColorChangedUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeNColorChangedUPP'
+// For ise
+void  ewg_function_InvokeNColorChangedUPP (long ewg_userData, NPMColor *ewg_newColor, NColorChangedUPP ewg_userUPP)
+{
+	InvokeNColorChangedUPP ((long)ewg_userData, (NPMColor*)ewg_newColor, (NColorChangedUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeNColorChangedUPP'
+void* ewg_get_function_address_InvokeNColorChangedUPP (void)
+{
+	return (void*) InvokeNColorChangedUPP;
+}
+
+#include <Carbon/Carbon.h>
+
+// Wraps call to function 'InvokeUserEventUPP'
+// For ise
+Boolean  ewg_function_InvokeUserEventUPP (EventRecord *ewg_event, UserEventUPP ewg_userUPP)
+{
+	return InvokeUserEventUPP ((EventRecord*)ewg_event, (UserEventUPP)ewg_userUPP);
+}
+
+// Return address of function 'InvokeUserEventUPP'
+void* ewg_get_function_address_InvokeUserEventUPP (void)
+{
+	return (void*) InvokeUserEventUPP;
+}
+
 #include <ewg_carbon_callback_c_glue_code.h>
 
 // Wraps call to function 'get_cgdata_provider_release_data_callback_stub'
@@ -29658,6 +29958,141 @@ Boolean  ewg_function_call_nav_object_filter_proc_ptr (void *ewg_a_function, AED
 void* ewg_get_function_address_call_nav_object_filter_proc_ptr (void)
 {
 	return (void*) call_nav_object_filter_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_color_changed_proc_ptr_stub'
+// For ise
+void * ewg_function_get_color_changed_proc_ptr_stub (void)
+{
+	return get_color_changed_proc_ptr_stub ();
+}
+
+// Return address of function 'get_color_changed_proc_ptr_stub'
+void* ewg_get_function_address_get_color_changed_proc_ptr_stub (void)
+{
+	return (void*) get_color_changed_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_color_changed_proc_ptr_entry'
+// For ise
+void  ewg_function_set_color_changed_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_color_changed_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_color_changed_proc_ptr_entry'
+void* ewg_get_function_address_set_color_changed_proc_ptr_entry (void)
+{
+	return (void*) set_color_changed_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_color_changed_proc_ptr'
+// For ise
+void  ewg_function_call_color_changed_proc_ptr (void *ewg_a_function, long ewg_userData, PMColor *ewg_newColor)
+{
+	call_color_changed_proc_ptr ((void*)ewg_a_function, (long)ewg_userData, (PMColor*)ewg_newColor);
+}
+
+// Return address of function 'call_color_changed_proc_ptr'
+void* ewg_get_function_address_call_color_changed_proc_ptr (void)
+{
+	return (void*) call_color_changed_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_ncolor_changed_proc_ptr_stub'
+// For ise
+void * ewg_function_get_ncolor_changed_proc_ptr_stub (void)
+{
+	return get_ncolor_changed_proc_ptr_stub ();
+}
+
+// Return address of function 'get_ncolor_changed_proc_ptr_stub'
+void* ewg_get_function_address_get_ncolor_changed_proc_ptr_stub (void)
+{
+	return (void*) get_ncolor_changed_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_ncolor_changed_proc_ptr_entry'
+// For ise
+void  ewg_function_set_ncolor_changed_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_ncolor_changed_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_ncolor_changed_proc_ptr_entry'
+void* ewg_get_function_address_set_ncolor_changed_proc_ptr_entry (void)
+{
+	return (void*) set_ncolor_changed_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_ncolor_changed_proc_ptr'
+// For ise
+void  ewg_function_call_ncolor_changed_proc_ptr (void *ewg_a_function, long ewg_userData, NPMColor *ewg_newColor)
+{
+	call_ncolor_changed_proc_ptr ((void*)ewg_a_function, (long)ewg_userData, (NPMColor*)ewg_newColor);
+}
+
+// Return address of function 'call_ncolor_changed_proc_ptr'
+void* ewg_get_function_address_call_ncolor_changed_proc_ptr (void)
+{
+	return (void*) call_ncolor_changed_proc_ptr;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'get_user_event_proc_ptr_stub'
+// For ise
+void * ewg_function_get_user_event_proc_ptr_stub (void)
+{
+	return get_user_event_proc_ptr_stub ();
+}
+
+// Return address of function 'get_user_event_proc_ptr_stub'
+void* ewg_get_function_address_get_user_event_proc_ptr_stub (void)
+{
+	return (void*) get_user_event_proc_ptr_stub;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'set_user_event_proc_ptr_entry'
+// For ise
+void  ewg_function_set_user_event_proc_ptr_entry (void *ewg_a_class, void *ewg_a_feature)
+{
+	set_user_event_proc_ptr_entry ((void*)ewg_a_class, (void*)ewg_a_feature);
+}
+
+// Return address of function 'set_user_event_proc_ptr_entry'
+void* ewg_get_function_address_set_user_event_proc_ptr_entry (void)
+{
+	return (void*) set_user_event_proc_ptr_entry;
+}
+
+#include <ewg_carbon_callback_c_glue_code.h>
+
+// Wraps call to function 'call_user_event_proc_ptr'
+// For ise
+Boolean  ewg_function_call_user_event_proc_ptr (void *ewg_a_function, EventRecord *ewg_event)
+{
+	return call_user_event_proc_ptr ((void*)ewg_a_function, (EventRecord*)ewg_event);
+}
+
+// Return address of function 'call_user_event_proc_ptr'
+void* ewg_get_function_address_call_user_event_proc_ptr (void)
+{
+	return (void*) call_user_event_proc_ptr;
 }
 
 #include <ewg_carbon_callback_c_glue_code.h>

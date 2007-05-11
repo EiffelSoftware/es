@@ -46,6 +46,78 @@ feature
 			call_cgpath_applier_function_external (a_function, info, element)
 		end
 
+	get_aecoerce_desc_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_aecoerce_desc_proc_ptr_stub_external
+		end
+
+	set_aecoerce_desc_proc_ptr_entry (a_class: AECOERCE_DESC_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_aecoerce_desc_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_aecoerce_desc_proc_ptr (a_function: POINTER; fromdesc: POINTER; totype: INTEGER; handlerrefcon: INTEGER; todesc: POINTER): INTEGER is
+		local
+		do
+			Result := call_aecoerce_desc_proc_ptr_external (a_function, fromdesc, totype, handlerrefcon, todesc)
+		end
+
+	get_aecoerce_ptr_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_aecoerce_ptr_proc_ptr_stub_external
+		end
+
+	set_aecoerce_ptr_proc_ptr_entry (a_class: AECOERCE_PTR_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_aecoerce_ptr_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_aecoerce_ptr_proc_ptr (a_function: POINTER; typecode: INTEGER; dataptr: POINTER; datasize: INTEGER; totype: INTEGER; handlerrefcon: INTEGER; a_result: POINTER): INTEGER is
+		local
+		do
+			Result := call_aecoerce_ptr_proc_ptr_external (a_function, typecode, dataptr, datasize, totype, handlerrefcon, a_result)
+		end
+
+	get_aedispose_external_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_aedispose_external_proc_ptr_stub_external
+		end
+
+	set_aedispose_external_proc_ptr_entry (a_class: AEDISPOSE_EXTERNAL_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_aedispose_external_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_aedispose_external_proc_ptr (a_function: POINTER; dataptr: POINTER; datalength: INTEGER; refcon: INTEGER) is
+		local
+		do
+			call_aedispose_external_proc_ptr_external (a_function, dataptr, datalength, refcon)
+		end
+
+	get_aeevent_handler_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_aeevent_handler_proc_ptr_stub_external
+		end
+
+	set_aeevent_handler_proc_ptr_entry (a_class: AEEVENT_HANDLER_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_aeevent_handler_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_aeevent_handler_proc_ptr (a_function: POINTER; theappleevent: POINTER; reply: POINTER; handlerrefcon: INTEGER): INTEGER is
+		local
+		do
+			Result := call_aeevent_handler_proc_ptr_external (a_function, theappleevent, reply, handlerrefcon)
+		end
+
 	get_aeremote_process_resolver_callback_stub: POINTER is
 		local
 		do
@@ -930,6 +1002,114 @@ feature
 		local
 		do
 			Result := call_edit_unicode_post_update_proc_ptr_external (a_function, unitext, unitextlength, istartoffset, iendoffset, refcon)
+		end
+
+	get_nav_event_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_nav_event_proc_ptr_stub_external
+		end
+
+	set_nav_event_proc_ptr_entry (a_class: NAV_EVENT_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_nav_event_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_nav_event_proc_ptr (a_function: POINTER; callbackselector: INTEGER; callbackparms: POINTER; callbackud: POINTER) is
+		local
+		do
+			call_nav_event_proc_ptr_external (a_function, callbackselector, callbackparms, callbackud)
+		end
+
+	get_nav_preview_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_nav_preview_proc_ptr_stub_external
+		end
+
+	set_nav_preview_proc_ptr_entry (a_class: NAV_PREVIEW_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_nav_preview_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_nav_preview_proc_ptr (a_function: POINTER; callbackparms: POINTER; callbackud: POINTER): INTEGER is
+		local
+		do
+			Result := call_nav_preview_proc_ptr_external (a_function, callbackparms, callbackud)
+		end
+
+	get_nav_object_filter_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_nav_object_filter_proc_ptr_stub_external
+		end
+
+	set_nav_object_filter_proc_ptr_entry (a_class: NAV_OBJECT_FILTER_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_nav_object_filter_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_nav_object_filter_proc_ptr (a_function: POINTER; theitem: POINTER; info: POINTER; callbackud: POINTER; filtermode: INTEGER): INTEGER is
+		local
+		do
+			Result := call_nav_object_filter_proc_ptr_external (a_function, theitem, info, callbackud, filtermode)
+		end
+
+	get_color_changed_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_color_changed_proc_ptr_stub_external
+		end
+
+	set_color_changed_proc_ptr_entry (a_class: COLOR_CHANGED_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_color_changed_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_color_changed_proc_ptr (a_function: POINTER; userdata: INTEGER; newcolor: POINTER) is
+		local
+		do
+			call_color_changed_proc_ptr_external (a_function, userdata, newcolor)
+		end
+
+	get_ncolor_changed_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_ncolor_changed_proc_ptr_stub_external
+		end
+
+	set_ncolor_changed_proc_ptr_entry (a_class: NCOLOR_CHANGED_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_ncolor_changed_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_ncolor_changed_proc_ptr (a_function: POINTER; userdata: INTEGER; newcolor: POINTER) is
+		local
+		do
+			call_ncolor_changed_proc_ptr_external (a_function, userdata, newcolor)
+		end
+
+	get_user_event_proc_ptr_stub: POINTER is
+		local
+		do
+			Result := get_user_event_proc_ptr_stub_external
+		end
+
+	set_user_event_proc_ptr_entry (a_class: USER_EVENT_PROC_PTR_DISPATCHER; a_feature: POINTER) is
+		local
+		do
+			set_user_event_proc_ptr_entry_external (a_class, a_feature)
+		end
+
+	call_user_event_proc_ptr (a_function: POINTER; event: POINTER): INTEGER is
+		local
+		do
+			Result := call_user_event_proc_ptr_external (a_function, event)
 		end
 
 	get_cfcomparator_function_stub: POINTER is

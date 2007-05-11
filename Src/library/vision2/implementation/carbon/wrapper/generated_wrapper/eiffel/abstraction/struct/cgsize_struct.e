@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_width: REAL is
+		obsolete "Use `width' instead."
+			-- Access member `width'
+		require
+			exists: exists
+		do
+			Result := get_width_external (item)
+		ensure
+			result_correct: Result = get_width_external (item)
+		end
 
 	width: REAL is
 			-- Access member `width'
@@ -45,6 +56,17 @@ feature {ANY} -- Member Access
 			set_width_external (item, a_value)
 		ensure
 			a_value_set: a_value = width
+		end
+
+	get_height: REAL is
+		obsolete "Use `height' instead."
+			-- Access member `height'
+		require
+			exists: exists
+		do
+			Result := get_height_external (item)
+		ensure
+			result_correct: Result = get_height_external (item)
 		end
 
 	height: REAL is

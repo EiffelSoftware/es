@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_firstitem: INTEGER is
+		obsolete "Use `firstitem' instead."
+			-- Access member `firstItem'
+		require
+			exists: exists
+		do
+			Result := get_firstitem_external (item)
+		ensure
+			result_correct: Result = get_firstitem_external (item)
+		end
 
 	firstitem: INTEGER is
 			-- Access member `firstItem'
@@ -45,6 +56,17 @@ feature {ANY} -- Member Access
 			set_firstitem_external (item, a_value)
 		ensure
 			a_value_set: a_value = firstitem
+		end
+
+	get_lastitem: INTEGER is
+		obsolete "Use `lastitem' instead."
+			-- Access member `lastItem'
+		require
+			exists: exists
+		do
+			Result := get_lastitem_external (item)
+		ensure
+			result_correct: Result = get_lastitem_external (item)
 		end
 
 	lastitem: INTEGER is
@@ -89,6 +111,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value.item = trackingdata
 		end
 
+	get_trackingdata: POINTER is
+		obsolete "Use `trackingdata' instead."
+			-- Access member `trackingData'
+		require
+			exists: exists
+		do
+			Result := get_trackingdata_external (item)
+		ensure
+			result_correct: Result = get_trackingdata_external (item)
+		end
+
 	trackingdata: POINTER is
 			-- Access member `trackingData'
 		require
@@ -107,6 +140,17 @@ feature {ANY} -- Member Access
 			set_trackingdata_external (item, a_value)
 		ensure
 			a_value_set: a_value = trackingdata
+		end
+
+	get_context: POINTER is
+		obsolete "Use `context' instead."
+			-- Access member `context'
+		require
+			exists: exists
+		do
+			Result := get_context_external (item)
+		ensure
+			result_correct: Result = get_context_external (item)
 		end
 
 	context: POINTER is

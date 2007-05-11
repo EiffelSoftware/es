@@ -3,14 +3,14 @@
 class EVENTS_FUNCTIONS_EXTERNAL
 
 feature
-	frozen get_mouse_external (mouseloc: POINTER) is
+	get_mouse_external (mouseloc: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (Point*)"
 		alias
 			"ewg_function_macro_GetMouse"
 		end
 
-	frozen get_mouse_address_external: POINTER is
+	get_mouse_address_external: POINTER is
 			-- Address of C function `GetMouse'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -18,14 +18,14 @@ feature
 			"(void*) GetMouse"
 		end
 
-	frozen button_external: INTEGER is
+	button_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :Boolean"
 		alias
 			"ewg_function_macro_Button"
 		end
 
-	frozen button_address_external: POINTER is
+	button_address_external: POINTER is
 			-- Address of C function `Button'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -33,14 +33,14 @@ feature
 			"(void*) Button"
 		end
 
-	frozen still_down_external: INTEGER is
+	still_down_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :Boolean"
 		alias
 			"ewg_function_macro_StillDown"
 		end
 
-	frozen still_down_address_external: POINTER is
+	still_down_address_external: POINTER is
 			-- Address of C function `StillDown'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -48,14 +48,14 @@ feature
 			"(void*) StillDown"
 		end
 
-	frozen wait_mouse_up_external: INTEGER is
+	wait_mouse_up_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :Boolean"
 		alias
 			"ewg_function_macro_WaitMouseUp"
 		end
 
-	frozen wait_mouse_up_address_external: POINTER is
+	wait_mouse_up_address_external: POINTER is
 			-- Address of C function `WaitMouseUp'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -63,14 +63,14 @@ feature
 			"(void*) WaitMouseUp"
 		end
 
-	frozen key_translate_external (transdata: POINTER; keycode: INTEGER; state: POINTER): INTEGER is
+	key_translate_external (transdata: POINTER; keycode: INTEGER; state: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void const*, UInt16, UInt32*):UInt32"
 		alias
 			"ewg_function_macro_KeyTranslate"
 		end
 
-	frozen key_translate_address_external: POINTER is
+	key_translate_address_external: POINTER is
 			-- Address of C function `KeyTranslate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -78,14 +78,14 @@ feature
 			"(void*) KeyTranslate"
 		end
 
-	frozen get_caret_time_external: INTEGER is
+	get_caret_time_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :UInt32"
 		alias
 			"ewg_function_macro_GetCaretTime"
 		end
 
-	frozen get_caret_time_address_external: POINTER is
+	get_caret_time_address_external: POINTER is
 			-- Address of C function `GetCaretTime'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -93,14 +93,14 @@ feature
 			"(void*) GetCaretTime"
 		end
 
-	frozen get_keys_external (thekeys: POINTER) is
+	get_keys_external (thekeys: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*)"
 		alias
 			"ewg_function_macro_GetKeys"
 		end
 
-	frozen get_keys_address_external: POINTER is
+	get_keys_address_external: POINTER is
 			-- Address of C function `GetKeys'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -108,14 +108,14 @@ feature
 			"(void*) GetKeys"
 		end
 
-	frozen get_dbl_time_external: INTEGER is
+	get_dbl_time_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :UInt32"
 		alias
 			"ewg_function_macro_GetDblTime"
 		end
 
-	frozen get_dbl_time_address_external: POINTER is
+	get_dbl_time_address_external: POINTER is
 			-- Address of C function `GetDblTime'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -123,14 +123,14 @@ feature
 			"(void*) GetDblTime"
 		end
 
-	frozen set_event_mask_external (value: INTEGER) is
+	set_event_mask_external (value: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (EventMask)"
 		alias
 			"ewg_function_macro_SetEventMask"
 		end
 
-	frozen set_event_mask_address_external: POINTER is
+	set_event_mask_address_external: POINTER is
 			-- Address of C function `SetEventMask'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -138,14 +138,14 @@ feature
 			"(void*) SetEventMask"
 		end
 
-	frozen get_next_event_external (eventmask: INTEGER; theevent: POINTER): INTEGER is
+	get_next_event_external (eventmask: INTEGER; theevent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (EventMask, EventRecord*):Boolean"
 		alias
 			"ewg_function_macro_GetNextEvent"
 		end
 
-	frozen get_next_event_address_external: POINTER is
+	get_next_event_address_external: POINTER is
 			-- Address of C function `GetNextEvent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -153,14 +153,14 @@ feature
 			"(void*) GetNextEvent"
 		end
 
-	frozen wait_next_event_external (eventmask: INTEGER; theevent: POINTER; sleep: INTEGER; mousergn: POINTER): INTEGER is
+	wait_next_event_external (eventmask: INTEGER; theevent: POINTER; sleep: INTEGER; mousergn: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (EventMask, EventRecord*, UInt32, RgnHandle):Boolean"
 		alias
 			"ewg_function_macro_WaitNextEvent"
 		end
 
-	frozen wait_next_event_address_external: POINTER is
+	wait_next_event_address_external: POINTER is
 			-- Address of C function `WaitNextEvent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -168,14 +168,14 @@ feature
 			"(void*) WaitNextEvent"
 		end
 
-	frozen event_avail_external (eventmask: INTEGER; theevent: POINTER): INTEGER is
+	event_avail_external (eventmask: INTEGER; theevent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (EventMask, EventRecord*):Boolean"
 		alias
 			"ewg_function_macro_EventAvail"
 		end
 
-	frozen event_avail_address_external: POINTER is
+	event_avail_address_external: POINTER is
 			-- Address of C function `EventAvail'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -183,14 +183,14 @@ feature
 			"(void*) EventAvail"
 		end
 
-	frozen post_event_external (eventnum: INTEGER; eventmsg: INTEGER): INTEGER is
+	post_event_external (eventnum: INTEGER; eventmsg: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (EventKind, UInt32):OSErr"
 		alias
 			"ewg_function_macro_PostEvent"
 		end
 
-	frozen post_event_address_external: POINTER is
+	post_event_address_external: POINTER is
 			-- Address of C function `PostEvent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -198,14 +198,14 @@ feature
 			"(void*) PostEvent"
 		end
 
-	frozen flush_events_external (whichmask: INTEGER; stopmask: INTEGER) is
+	flush_events_external (whichmask: INTEGER; stopmask: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (EventMask, EventMask)"
 		alias
 			"ewg_function_macro_FlushEvents"
 		end
 
-	frozen flush_events_address_external: POINTER is
+	flush_events_address_external: POINTER is
 			-- Address of C function `FlushEvents'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -213,14 +213,14 @@ feature
 			"(void*) FlushEvents"
 		end
 
-	frozen get_global_mouse_external (globalmouse: POINTER) is
+	get_global_mouse_external (globalmouse: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (Point*)"
 		alias
 			"ewg_function_macro_GetGlobalMouse"
 		end
 
-	frozen get_global_mouse_address_external: POINTER is
+	get_global_mouse_address_external: POINTER is
 			-- Address of C function `GetGlobalMouse'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -228,14 +228,14 @@ feature
 			"(void*) GetGlobalMouse"
 		end
 
-	frozen get_current_key_modifiers_external: INTEGER is
+	get_current_key_modifiers_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :UInt32"
 		alias
 			"ewg_function_macro_GetCurrentKeyModifiers"
 		end
 
-	frozen get_current_key_modifiers_address_external: POINTER is
+	get_current_key_modifiers_address_external: POINTER is
 			-- Address of C function `GetCurrentKeyModifiers'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -243,14 +243,14 @@ feature
 			"(void*) GetCurrentKeyModifiers"
 		end
 
-	frozen check_event_queue_for_user_cancel_external: INTEGER is
+	check_event_queue_for_user_cancel_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :Boolean"
 		alias
 			"ewg_function_macro_CheckEventQueueForUserCancel"
 		end
 
-	frozen check_event_queue_for_user_cancel_address_external: POINTER is
+	check_event_queue_for_user_cancel_address_external: POINTER is
 			-- Address of C function `CheckEventQueueForUserCancel'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -258,14 +258,14 @@ feature
 			"(void*) CheckEventQueueForUserCancel"
 		end
 
-	frozen key_script_external (code: INTEGER) is
+	key_script_external (code: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (short)"
 		alias
 			"ewg_function_macro_KeyScript"
 		end
 
-	frozen key_script_address_external: POINTER is
+	key_script_address_external: POINTER is
 			-- Address of C function `KeyScript'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -273,14 +273,14 @@ feature
 			"(void*) KeyScript"
 		end
 
-	frozen is_cmd_char_external (event: POINTER; test: INTEGER): INTEGER is
+	is_cmd_char_external (event: POINTER; test: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (EventRecord const*, short):Boolean"
 		alias
 			"ewg_function_macro_IsCmdChar"
 		end
 
-	frozen is_cmd_char_address_external: POINTER is
+	is_cmd_char_address_external: POINTER is
 			-- Address of C function `IsCmdChar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -288,14 +288,14 @@ feature
 			"(void*) IsCmdChar"
 		end
 
-	frozen lmget_key_thresh_external: INTEGER is
+	lmget_key_thresh_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :SInt16"
 		alias
 			"ewg_function_macro_LMGetKeyThresh"
 		end
 
-	frozen lmget_key_thresh_address_external: POINTER is
+	lmget_key_thresh_address_external: POINTER is
 			-- Address of C function `LMGetKeyThresh'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -303,14 +303,14 @@ feature
 			"(void*) LMGetKeyThresh"
 		end
 
-	frozen lmset_key_thresh_external (value: INTEGER) is
+	lmset_key_thresh_external (value: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (SInt16)"
 		alias
 			"ewg_function_macro_LMSetKeyThresh"
 		end
 
-	frozen lmset_key_thresh_address_external: POINTER is
+	lmset_key_thresh_address_external: POINTER is
 			-- Address of C function `LMSetKeyThresh'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -318,14 +318,14 @@ feature
 			"(void*) LMSetKeyThresh"
 		end
 
-	frozen lmget_key_rep_thresh_external: INTEGER is
+	lmget_key_rep_thresh_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :SInt16"
 		alias
 			"ewg_function_macro_LMGetKeyRepThresh"
 		end
 
-	frozen lmget_key_rep_thresh_address_external: POINTER is
+	lmget_key_rep_thresh_address_external: POINTER is
 			-- Address of C function `LMGetKeyRepThresh'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -333,14 +333,14 @@ feature
 			"(void*) LMGetKeyRepThresh"
 		end
 
-	frozen lmset_key_rep_thresh_external (value: INTEGER) is
+	lmset_key_rep_thresh_external (value: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (SInt16)"
 		alias
 			"ewg_function_macro_LMSetKeyRepThresh"
 		end
 
-	frozen lmset_key_rep_thresh_address_external: POINTER is
+	lmset_key_rep_thresh_address_external: POINTER is
 			-- Address of C function `LMSetKeyRepThresh'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -348,14 +348,14 @@ feature
 			"(void*) LMSetKeyRepThresh"
 		end
 
-	frozen lmget_kbd_last_external: INTEGER is
+	lmget_kbd_last_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :UInt8"
 		alias
 			"ewg_function_macro_LMGetKbdLast"
 		end
 
-	frozen lmget_kbd_last_address_external: POINTER is
+	lmget_kbd_last_address_external: POINTER is
 			-- Address of C function `LMGetKbdLast'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -363,14 +363,14 @@ feature
 			"(void*) LMGetKbdLast"
 		end
 
-	frozen lmset_kbd_last_external (value: INTEGER) is
+	lmset_kbd_last_external (value: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (UInt8)"
 		alias
 			"ewg_function_macro_LMSetKbdLast"
 		end
 
-	frozen lmset_kbd_last_address_external: POINTER is
+	lmset_kbd_last_address_external: POINTER is
 			-- Address of C function `LMSetKbdLast'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -378,14 +378,14 @@ feature
 			"(void*) LMSetKbdLast"
 		end
 
-	frozen lmget_kbd_type_external: INTEGER is
+	lmget_kbd_type_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :UInt8"
 		alias
 			"ewg_function_macro_LMGetKbdType"
 		end
 
-	frozen lmget_kbd_type_address_external: POINTER is
+	lmget_kbd_type_address_external: POINTER is
 			-- Address of C function `LMGetKbdType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -393,14 +393,14 @@ feature
 			"(void*) LMGetKbdType"
 		end
 
-	frozen lmset_kbd_type_external (value: INTEGER) is
+	lmset_kbd_type_external (value: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (UInt8)"
 		alias
 			"ewg_function_macro_LMSetKbdType"
 		end
 
-	frozen lmset_kbd_type_address_external: POINTER is
+	lmset_kbd_type_address_external: POINTER is
 			-- Address of C function `LMSetKbdType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

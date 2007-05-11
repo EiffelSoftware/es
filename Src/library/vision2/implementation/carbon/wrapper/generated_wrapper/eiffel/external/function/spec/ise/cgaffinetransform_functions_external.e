@@ -3,14 +3,14 @@
 class CGAFFINETRANSFORM_FUNCTIONS_EXTERNAL
 
 feature
-	frozen cgaffine_transform_make_external (a: REAL; b: REAL; c: REAL; d: REAL; tx: REAL; ty: REAL): POINTER is
+	cgaffine_transform_make_external (a: REAL; b: REAL; c: REAL; d: REAL; tx: REAL; ty: REAL): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (float, float, float, float, float, float):CGAffineTransform*"
 		alias
-			"ewg_function_CGAffineTransformMake"
+			"ewg_function_CGAffineTransformMake()"
 		end
 
-	frozen cgaffine_transform_make_address_external: POINTER is
+	cgaffine_transform_make_address_external: POINTER is
 			-- Address of C function `CGAffineTransformMake'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -18,14 +18,14 @@ feature
 			"(void*) CGAffineTransformMake"
 		end
 
-	frozen cgaffine_transform_make_translation_external (tx: REAL; ty: REAL): POINTER is
+	cgaffine_transform_make_translation_external (tx: REAL; ty: REAL): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (float, float):CGAffineTransform*"
 		alias
-			"ewg_function_CGAffineTransformMakeTranslation"
+			"ewg_function_CGAffineTransformMakeTranslation()"
 		end
 
-	frozen cgaffine_transform_make_translation_address_external: POINTER is
+	cgaffine_transform_make_translation_address_external: POINTER is
 			-- Address of C function `CGAffineTransformMakeTranslation'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -33,14 +33,14 @@ feature
 			"(void*) CGAffineTransformMakeTranslation"
 		end
 
-	frozen cgaffine_transform_make_scale_external (sx: REAL; sy: REAL): POINTER is
+	cgaffine_transform_make_scale_external (sx: REAL; sy: REAL): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (float, float):CGAffineTransform*"
 		alias
-			"ewg_function_CGAffineTransformMakeScale"
+			"ewg_function_CGAffineTransformMakeScale()"
 		end
 
-	frozen cgaffine_transform_make_scale_address_external: POINTER is
+	cgaffine_transform_make_scale_address_external: POINTER is
 			-- Address of C function `CGAffineTransformMakeScale'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -48,14 +48,14 @@ feature
 			"(void*) CGAffineTransformMakeScale"
 		end
 
-	frozen cgaffine_transform_make_rotation_external (angle: REAL): POINTER is
+	cgaffine_transform_make_rotation_external (angle: REAL): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (float):CGAffineTransform*"
 		alias
-			"ewg_function_CGAffineTransformMakeRotation"
+			"ewg_function_CGAffineTransformMakeRotation()"
 		end
 
-	frozen cgaffine_transform_make_rotation_address_external: POINTER is
+	cgaffine_transform_make_rotation_address_external: POINTER is
 			-- Address of C function `CGAffineTransformMakeRotation'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -63,14 +63,14 @@ feature
 			"(void*) CGAffineTransformMakeRotation"
 		end
 
-	frozen cgaffine_transform_is_identity_external (t: POINTER): INTEGER is
+	cgaffine_transform_is_identity_external (t: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGAffineTransform*):_Bool"
 		alias
 			"ewg_function_macro_CGAffineTransformIsIdentity"
 		end
 
-	frozen cgaffine_transform_is_identity_address_external: POINTER is
+	cgaffine_transform_is_identity_address_external: POINTER is
 			-- Address of C function `CGAffineTransformIsIdentity'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -78,14 +78,14 @@ feature
 			"(void*) CGAffineTransformIsIdentity"
 		end
 
-	frozen cgaffine_transform_translate_external (t: POINTER; tx: REAL; ty: REAL): POINTER is
+	cgaffine_transform_translate_external (t: POINTER; tx: REAL; ty: REAL): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGAffineTransform*, float, float):CGAffineTransform*"
 		alias
-			"ewg_function_CGAffineTransformTranslate"
+			"ewg_function_CGAffineTransformTranslate()"
 		end
 
-	frozen cgaffine_transform_translate_address_external: POINTER is
+	cgaffine_transform_translate_address_external: POINTER is
 			-- Address of C function `CGAffineTransformTranslate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -93,14 +93,14 @@ feature
 			"(void*) CGAffineTransformTranslate"
 		end
 
-	frozen cgaffine_transform_scale_external (t: POINTER; sx: REAL; sy: REAL): POINTER is
+	cgaffine_transform_scale_external (t: POINTER; sx: REAL; sy: REAL): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGAffineTransform*, float, float):CGAffineTransform*"
 		alias
-			"ewg_function_CGAffineTransformScale"
+			"ewg_function_CGAffineTransformScale()"
 		end
 
-	frozen cgaffine_transform_scale_address_external: POINTER is
+	cgaffine_transform_scale_address_external: POINTER is
 			-- Address of C function `CGAffineTransformScale'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -108,14 +108,14 @@ feature
 			"(void*) CGAffineTransformScale"
 		end
 
-	frozen cgaffine_transform_rotate_external (t: POINTER; angle: REAL): POINTER is
+	cgaffine_transform_rotate_external (t: POINTER; angle: REAL): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGAffineTransform*, float):CGAffineTransform*"
 		alias
-			"ewg_function_CGAffineTransformRotate"
+			"ewg_function_CGAffineTransformRotate()"
 		end
 
-	frozen cgaffine_transform_rotate_address_external: POINTER is
+	cgaffine_transform_rotate_address_external: POINTER is
 			-- Address of C function `CGAffineTransformRotate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -123,14 +123,14 @@ feature
 			"(void*) CGAffineTransformRotate"
 		end
 
-	frozen cgaffine_transform_invert_external (t: POINTER): POINTER is
+	cgaffine_transform_invert_external (t: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGAffineTransform*):CGAffineTransform*"
 		alias
-			"ewg_function_CGAffineTransformInvert"
+			"ewg_function_CGAffineTransformInvert()"
 		end
 
-	frozen cgaffine_transform_invert_address_external: POINTER is
+	cgaffine_transform_invert_address_external: POINTER is
 			-- Address of C function `CGAffineTransformInvert'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -138,14 +138,14 @@ feature
 			"(void*) CGAffineTransformInvert"
 		end
 
-	frozen cgaffine_transform_concat_external (t1: POINTER; t2: POINTER): POINTER is
+	cgaffine_transform_concat_external (t1: POINTER; t2: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGAffineTransform*, CGAffineTransform*):CGAffineTransform*"
 		alias
-			"ewg_function_CGAffineTransformConcat"
+			"ewg_function_CGAffineTransformConcat()"
 		end
 
-	frozen cgaffine_transform_concat_address_external: POINTER is
+	cgaffine_transform_concat_address_external: POINTER is
 			-- Address of C function `CGAffineTransformConcat'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -153,14 +153,14 @@ feature
 			"(void*) CGAffineTransformConcat"
 		end
 
-	frozen cgaffine_transform_equal_to_transform_external (t1: POINTER; t2: POINTER): INTEGER is
+	cgaffine_transform_equal_to_transform_external (t1: POINTER; t2: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGAffineTransform*, CGAffineTransform*):_Bool"
 		alias
 			"ewg_function_macro_CGAffineTransformEqualToTransform"
 		end
 
-	frozen cgaffine_transform_equal_to_transform_address_external: POINTER is
+	cgaffine_transform_equal_to_transform_address_external: POINTER is
 			-- Address of C function `CGAffineTransformEqualToTransform'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -168,14 +168,14 @@ feature
 			"(void*) CGAffineTransformEqualToTransform"
 		end
 
-	frozen cgpoint_apply_affine_transform_external (point: POINTER; t: POINTER): POINTER is
+	cgpoint_apply_affine_transform_external (point: POINTER; t: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGPoint*, CGAffineTransform*):CGPoint*"
 		alias
-			"ewg_function_CGPointApplyAffineTransform"
+			"ewg_function_CGPointApplyAffineTransform()"
 		end
 
-	frozen cgpoint_apply_affine_transform_address_external: POINTER is
+	cgpoint_apply_affine_transform_address_external: POINTER is
 			-- Address of C function `CGPointApplyAffineTransform'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -183,14 +183,14 @@ feature
 			"(void*) CGPointApplyAffineTransform"
 		end
 
-	frozen cgsize_apply_affine_transform_external (size: POINTER; t: POINTER): POINTER is
+	cgsize_apply_affine_transform_external (size: POINTER; t: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGSize*, CGAffineTransform*):CGSize*"
 		alias
-			"ewg_function_CGSizeApplyAffineTransform"
+			"ewg_function_CGSizeApplyAffineTransform()"
 		end
 
-	frozen cgsize_apply_affine_transform_address_external: POINTER is
+	cgsize_apply_affine_transform_address_external: POINTER is
 			-- Address of C function `CGSizeApplyAffineTransform'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -198,14 +198,14 @@ feature
 			"(void*) CGSizeApplyAffineTransform"
 		end
 
-	frozen cgrect_apply_affine_transform_external (rect: POINTER; t: POINTER): POINTER is
+	cgrect_apply_affine_transform_external (rect: POINTER; t: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*, CGAffineTransform*):CGRect*"
 		alias
-			"ewg_function_CGRectApplyAffineTransform"
+			"ewg_function_CGRectApplyAffineTransform()"
 		end
 
-	frozen cgrect_apply_affine_transform_address_external: POINTER is
+	cgrect_apply_affine_transform_address_external: POINTER is
 			-- Address of C function `CGRectApplyAffineTransform'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

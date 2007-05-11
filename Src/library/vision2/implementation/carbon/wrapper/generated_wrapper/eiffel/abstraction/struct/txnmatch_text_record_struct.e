@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_itextptr: POINTER is
+		obsolete "Use `itextptr' instead."
+			-- Access member `iTextPtr'
+		require
+			exists: exists
+		do
+			Result := get_itextptr_external (item)
+		ensure
+			result_correct: Result = get_itextptr_external (item)
+		end
 
 	itextptr: POINTER is
 			-- Access member `iTextPtr'
@@ -47,6 +58,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = itextptr
 		end
 
+	get_itexttomatchlength: INTEGER is
+		obsolete "Use `itexttomatchlength' instead."
+			-- Access member `iTextToMatchLength'
+		require
+			exists: exists
+		do
+			Result := get_itexttomatchlength_external (item)
+		ensure
+			result_correct: Result = get_itexttomatchlength_external (item)
+		end
+
 	itexttomatchlength: INTEGER is
 			-- Access member `iTextToMatchLength'
 		require
@@ -65,6 +87,17 @@ feature {ANY} -- Member Access
 			set_itexttomatchlength_external (item, a_value)
 		ensure
 			a_value_set: a_value = itexttomatchlength
+		end
+
+	get_itextencoding: INTEGER is
+		obsolete "Use `itextencoding' instead."
+			-- Access member `iTextEncoding'
+		require
+			exists: exists
+		do
+			Result := get_itextencoding_external (item)
+		ensure
+			result_correct: Result = get_itextencoding_external (item)
 		end
 
 	itextencoding: INTEGER is

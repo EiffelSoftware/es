@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_ctseed: INTEGER is
+		obsolete "Use `ctseed' instead."
+			-- Access member `ctSeed'
+		require
+			exists: exists
+		do
+			Result := get_ctseed_external (item)
+		ensure
+			result_correct: Result = get_ctseed_external (item)
+		end
 
 	ctseed: INTEGER is
 			-- Access member `ctSeed'
@@ -45,6 +56,17 @@ feature {ANY} -- Member Access
 			set_ctseed_external (item, a_value)
 		ensure
 			a_value_set: a_value = ctseed
+		end
+
+	get_ctflags: INTEGER is
+		obsolete "Use `ctflags' instead."
+			-- Access member `ctFlags'
+		require
+			exists: exists
+		do
+			Result := get_ctflags_external (item)
+		ensure
+			result_correct: Result = get_ctflags_external (item)
 		end
 
 	ctflags: INTEGER is
@@ -67,6 +89,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = ctflags
 		end
 
+	get_ctsize: INTEGER is
+		obsolete "Use `ctsize' instead."
+			-- Access member `ctSize'
+		require
+			exists: exists
+		do
+			Result := get_ctsize_external (item)
+		ensure
+			result_correct: Result = get_ctsize_external (item)
+		end
+
 	ctsize: INTEGER is
 			-- Access member `ctSize'
 		require
@@ -85,6 +118,17 @@ feature {ANY} -- Member Access
 			set_ctsize_external (item, a_value)
 		ensure
 			a_value_set: a_value = ctsize
+		end
+
+	get_cttable: POINTER is
+		obsolete "Use `cttable' instead."
+			-- Access member `ctTable'
+		require
+			exists: exists
+		do
+			Result := get_cttable_external (item)
+		ensure
+			result_correct: Result = get_cttable_external (item)
 		end
 
 	cttable: POINTER is

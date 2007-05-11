@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_variationcount: INTEGER is
+		obsolete "Use `variationcount' instead."
+			-- Access member `variationCount'
+		require
+			exists: exists
+		do
+			Result := get_variationcount_external (item)
+		ensure
+			result_correct: Result = get_variationcount_external (item)
+		end
 
 	variationcount: INTEGER is
 			-- Access member `variationCount'
@@ -47,6 +58,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = variationcount
 		end
 
+	get_variationaxis: POINTER is
+		obsolete "Use `variationaxis' instead."
+			-- Access member `variationAxis'
+		require
+			exists: exists
+		do
+			Result := get_variationaxis_external (item)
+		ensure
+			result_correct: Result = get_variationaxis_external (item)
+		end
+
 	variationaxis: POINTER is
 			-- Access member `variationAxis'
 		require
@@ -65,6 +87,17 @@ feature {ANY} -- Member Access
 			set_variationaxis_external (item, a_value)
 		ensure
 			a_value_set: a_value = variationaxis
+		end
+
+	get_variationvalues: POINTER is
+		obsolete "Use `variationvalues' instead."
+			-- Access member `variationValues'
+		require
+			exists: exists
+		do
+			Result := get_variationvalues_external (item)
+		ensure
+			result_correct: Result = get_variationvalues_external (item)
 		end
 
 	variationvalues: POINTER is

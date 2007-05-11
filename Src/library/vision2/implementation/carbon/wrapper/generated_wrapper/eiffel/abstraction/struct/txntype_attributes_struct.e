@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_tag: INTEGER is
+		obsolete "Use `tag' instead."
+			-- Access member `tag'
+		require
+			exists: exists
+		do
+			Result := get_tag_external (item)
+		ensure
+			result_correct: Result = get_tag_external (item)
+		end
 
 	tag: INTEGER is
 			-- Access member `tag'
@@ -47,6 +58,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = tag
 		end
 
+	get_size: INTEGER is
+		obsolete "Use `size' instead."
+			-- Access member `size'
+		require
+			exists: exists
+		do
+			Result := get_size_external (item)
+		ensure
+			result_correct: Result = get_size_external (item)
+		end
+
 	size: INTEGER is
 			-- Access member `size'
 		require
@@ -65,6 +87,17 @@ feature {ANY} -- Member Access
 			set_size_external (item, a_value)
 		ensure
 			a_value_set: a_value = size
+		end
+
+	get_data: POINTER is
+		obsolete "Use `data' instead."
+			-- Access member `data'
+		require
+			exists: exists
+		do
+			Result := get_data_external (item)
+		ensure
+			result_correct: Result = get_data_external (item)
 		end
 
 	data: POINTER is

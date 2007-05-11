@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_version: INTEGER is
+		obsolete "Use `version' instead."
+			-- Access member `version'
+		require
+			exists: exists
+		do
+			Result := get_version_external (item)
+		ensure
+			result_correct: Result = get_version_external (item)
+		end
 
 	version: INTEGER is
 			-- Access member `version'

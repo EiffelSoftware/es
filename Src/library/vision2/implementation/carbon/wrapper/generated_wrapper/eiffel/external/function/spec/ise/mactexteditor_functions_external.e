@@ -3,14 +3,14 @@
 class MACTEXTEDITOR_FUNCTIONS_EXTERNAL
 
 feature
-	frozen new_txnfind_upp_external (userroutine: POINTER): POINTER is
+	new_txnfind_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNFindProcPtr):TXNFindUPP"
 		alias
 			"ewg_function_macro_NewTXNFindUPP"
 		end
 
-	frozen new_txnfind_upp_address_external: POINTER is
+	new_txnfind_upp_address_external: POINTER is
 			-- Address of C function `NewTXNFindUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -18,14 +18,14 @@ feature
 			"(void*) NewTXNFindUPP"
 		end
 
-	frozen new_txnaction_name_mapper_upp_external (userroutine: POINTER): POINTER is
+	new_txnaction_name_mapper_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNActionNameMapperProcPtr):TXNActionNameMapperUPP"
 		alias
 			"ewg_function_macro_NewTXNActionNameMapperUPP"
 		end
 
-	frozen new_txnaction_name_mapper_upp_address_external: POINTER is
+	new_txnaction_name_mapper_upp_address_external: POINTER is
 			-- Address of C function `NewTXNActionNameMapperUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -33,14 +33,14 @@ feature
 			"(void*) NewTXNActionNameMapperUPP"
 		end
 
-	frozen new_txncontextual_menu_setup_upp_external (userroutine: POINTER): POINTER is
+	new_txncontextual_menu_setup_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNContextualMenuSetupProcPtr):TXNContextualMenuSetupUPP"
 		alias
 			"ewg_function_macro_NewTXNContextualMenuSetupUPP"
 		end
 
-	frozen new_txncontextual_menu_setup_upp_address_external: POINTER is
+	new_txncontextual_menu_setup_upp_address_external: POINTER is
 			-- Address of C function `NewTXNContextualMenuSetupUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -48,14 +48,14 @@ feature
 			"(void*) NewTXNContextualMenuSetupUPP"
 		end
 
-	frozen new_txnscroll_info_upp_external (userroutine: POINTER): POINTER is
+	new_txnscroll_info_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNScrollInfoProcPtr):TXNScrollInfoUPP"
 		alias
 			"ewg_function_macro_NewTXNScrollInfoUPP"
 		end
 
-	frozen new_txnscroll_info_upp_address_external: POINTER is
+	new_txnscroll_info_upp_address_external: POINTER is
 			-- Address of C function `NewTXNScrollInfoUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -63,14 +63,14 @@ feature
 			"(void*) NewTXNScrollInfoUPP"
 		end
 
-	frozen dispose_txnfind_upp_external (userupp: POINTER) is
+	dispose_txnfind_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNFindUPP)"
 		alias
 			"ewg_function_macro_DisposeTXNFindUPP"
 		end
 
-	frozen dispose_txnfind_upp_address_external: POINTER is
+	dispose_txnfind_upp_address_external: POINTER is
 			-- Address of C function `DisposeTXNFindUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -78,14 +78,14 @@ feature
 			"(void*) DisposeTXNFindUPP"
 		end
 
-	frozen dispose_txnaction_name_mapper_upp_external (userupp: POINTER) is
+	dispose_txnaction_name_mapper_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNActionNameMapperUPP)"
 		alias
 			"ewg_function_macro_DisposeTXNActionNameMapperUPP"
 		end
 
-	frozen dispose_txnaction_name_mapper_upp_address_external: POINTER is
+	dispose_txnaction_name_mapper_upp_address_external: POINTER is
 			-- Address of C function `DisposeTXNActionNameMapperUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -93,14 +93,14 @@ feature
 			"(void*) DisposeTXNActionNameMapperUPP"
 		end
 
-	frozen dispose_txncontextual_menu_setup_upp_external (userupp: POINTER) is
+	dispose_txncontextual_menu_setup_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNContextualMenuSetupUPP)"
 		alias
 			"ewg_function_macro_DisposeTXNContextualMenuSetupUPP"
 		end
 
-	frozen dispose_txncontextual_menu_setup_upp_address_external: POINTER is
+	dispose_txncontextual_menu_setup_upp_address_external: POINTER is
 			-- Address of C function `DisposeTXNContextualMenuSetupUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -108,14 +108,14 @@ feature
 			"(void*) DisposeTXNContextualMenuSetupUPP"
 		end
 
-	frozen dispose_txnscroll_info_upp_external (userupp: POINTER) is
+	dispose_txnscroll_info_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNScrollInfoUPP)"
 		alias
 			"ewg_function_macro_DisposeTXNScrollInfoUPP"
 		end
 
-	frozen dispose_txnscroll_info_upp_address_external: POINTER is
+	dispose_txnscroll_info_upp_address_external: POINTER is
 			-- Address of C function `DisposeTXNScrollInfoUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -123,14 +123,14 @@ feature
 			"(void*) DisposeTXNScrollInfoUPP"
 		end
 
-	frozen invoke_txnfind_upp_external (matchdata: POINTER; idatatype: INTEGER; imatchoptions: INTEGER; isearchtextptr: POINTER; encoding: INTEGER; absstartoffset: INTEGER; searchtextlength: INTEGER; ostartmatch: POINTER; oendmatch: POINTER; ofound: POINTER; refcon: INTEGER; userupp: POINTER): INTEGER is
+	invoke_txnfind_upp_external (matchdata: POINTER; idatatype: INTEGER; imatchoptions: INTEGER; isearchtextptr: POINTER; encoding: INTEGER; absstartoffset: INTEGER; searchtextlength: INTEGER; ostartmatch: POINTER; oendmatch: POINTER; ofound: POINTER; refcon: INTEGER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNMatchTextRecord const*, TXNDataType, TXNMatchOptions, void const*, TextEncoding, TXNOffset, ByteCount, TXNOffset*, TXNOffset*, Boolean*, UInt32, TXNFindUPP):OSStatus"
 		alias
 			"ewg_function_macro_InvokeTXNFindUPP"
 		end
 
-	frozen invoke_txnfind_upp_address_external: POINTER is
+	invoke_txnfind_upp_address_external: POINTER is
 			-- Address of C function `InvokeTXNFindUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -138,14 +138,14 @@ feature
 			"(void*) InvokeTXNFindUPP"
 		end
 
-	frozen invoke_txnaction_name_mapper_upp_external (actionname: POINTER; commandid: INTEGER; inuserdata: POINTER; userupp: POINTER): POINTER is
+	invoke_txnaction_name_mapper_upp_external (actionname: POINTER; commandid: INTEGER; inuserdata: POINTER; userupp: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, UInt32, void*, TXNActionNameMapperUPP):CFStringRef"
 		alias
 			"ewg_function_macro_InvokeTXNActionNameMapperUPP"
 		end
 
-	frozen invoke_txnaction_name_mapper_upp_address_external: POINTER is
+	invoke_txnaction_name_mapper_upp_address_external: POINTER is
 			-- Address of C function `InvokeTXNActionNameMapperUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -153,14 +153,14 @@ feature
 			"(void*) InvokeTXNActionNameMapperUPP"
 		end
 
-	frozen invoke_txncontextual_menu_setup_upp_external (icontextualmenu: POINTER; object: POINTER; inuserdata: POINTER; userupp: POINTER) is
+	invoke_txncontextual_menu_setup_upp_external (icontextualmenu: POINTER; object: POINTER; inuserdata: POINTER; userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, TXNObject, void*, TXNContextualMenuSetupUPP)"
 		alias
 			"ewg_function_macro_InvokeTXNContextualMenuSetupUPP"
 		end
 
-	frozen invoke_txncontextual_menu_setup_upp_address_external: POINTER is
+	invoke_txncontextual_menu_setup_upp_address_external: POINTER is
 			-- Address of C function `InvokeTXNContextualMenuSetupUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -168,14 +168,14 @@ feature
 			"(void*) InvokeTXNContextualMenuSetupUPP"
 		end
 
-	frozen invoke_txnscroll_info_upp_external (ivalue: INTEGER; imaximumvalue: INTEGER; iscrollbarorientation: INTEGER; irefcon: INTEGER; userupp: POINTER) is
+	invoke_txnscroll_info_upp_external (ivalue: INTEGER; imaximumvalue: INTEGER; iscrollbarorientation: INTEGER; irefcon: INTEGER; userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (SInt32, SInt32, TXNScrollBarOrientation, SInt32, TXNScrollInfoUPP)"
 		alias
 			"ewg_function_macro_InvokeTXNScrollInfoUPP"
 		end
 
-	frozen invoke_txnscroll_info_upp_address_external: POINTER is
+	invoke_txnscroll_info_upp_address_external: POINTER is
 			-- Address of C function `InvokeTXNScrollInfoUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -183,14 +183,14 @@ feature
 			"(void*) InvokeTXNScrollInfoUPP"
 		end
 
-	frozen txncreate_object_external (iframerect: POINTER; iframeoptions: INTEGER; otxnobject: POINTER): INTEGER is
+	txncreate_object_external (iframerect: POINTER; iframeoptions: INTEGER; otxnobject: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIRect const*, TXNFrameOptions, TXNObject*):OSStatus"
 		alias
 			"ewg_function_macro_TXNCreateObject"
 		end
 
-	frozen txncreate_object_address_external: POINTER is
+	txncreate_object_address_external: POINTER is
 			-- Address of C function `TXNCreateObject'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -198,14 +198,14 @@ feature
 			"(void*) TXNCreateObject"
 		end
 
-	frozen txndelete_object_external (itxnobject: POINTER) is
+	txndelete_object_external (itxnobject: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject)"
 		alias
 			"ewg_function_macro_TXNDeleteObject"
 		end
 
-	frozen txndelete_object_address_external: POINTER is
+	txndelete_object_address_external: POINTER is
 			-- Address of C function `TXNDeleteObject'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -213,14 +213,14 @@ feature
 			"(void*) TXNDeleteObject"
 		end
 
-	frozen txninit_textension_external (idefaultfonts: POINTER; icountdefaultfonts: INTEGER; iusageflags: INTEGER): INTEGER is
+	txninit_textension_external (idefaultfonts: POINTER; icountdefaultfonts: INTEGER; iusageflags: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, ItemCount, TXNInitOptions):OSStatus"
 		alias
 			"ewg_function_macro_TXNInitTextension"
 		end
 
-	frozen txninit_textension_address_external: POINTER is
+	txninit_textension_address_external: POINTER is
 			-- Address of C function `TXNInitTextension'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -228,14 +228,14 @@ feature
 			"(void*) TXNInitTextension"
 		end
 
-	frozen txnversion_information_external (ofeatureflags: POINTER): INTEGER is
+	txnversion_information_external (ofeatureflags: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNFeatureBits*):TXNVersionValue"
 		alias
 			"ewg_function_macro_TXNVersionInformation"
 		end
 
-	frozen txnversion_information_address_external: POINTER is
+	txnversion_information_address_external: POINTER is
 			-- Address of C function `TXNVersionInformation'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -243,14 +243,14 @@ feature
 			"(void*) TXNVersionInformation"
 		end
 
-	frozen txnattach_object_to_window_ref_external (itxnobject: POINTER; iwindowref: POINTER): INTEGER is
+	txnattach_object_to_window_ref_external (itxnobject: POINTER; iwindowref: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, WindowRef):OSStatus"
 		alias
 			"ewg_function_macro_TXNAttachObjectToWindowRef"
 		end
 
-	frozen txnattach_object_to_window_ref_address_external: POINTER is
+	txnattach_object_to_window_ref_address_external: POINTER is
 			-- Address of C function `TXNAttachObjectToWindowRef'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -258,14 +258,14 @@ feature
 			"(void*) TXNAttachObjectToWindowRef"
 		end
 
-	frozen txnget_window_ref_external (itxnobject: POINTER): POINTER is
+	txnget_window_ref_external (itxnobject: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject):WindowRef"
 		alias
 			"ewg_function_macro_TXNGetWindowRef"
 		end
 
-	frozen txnget_window_ref_address_external: POINTER is
+	txnget_window_ref_address_external: POINTER is
 			-- Address of C function `TXNGetWindowRef'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -273,14 +273,14 @@ feature
 			"(void*) TXNGetWindowRef"
 		end
 
-	frozen txnkey_down_external (itxnobject: POINTER; ievent: POINTER) is
+	txnkey_down_external (itxnobject: POINTER; ievent: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, EventRecord const*)"
 		alias
 			"ewg_function_macro_TXNKeyDown"
 		end
 
-	frozen txnkey_down_address_external: POINTER is
+	txnkey_down_address_external: POINTER is
 			-- Address of C function `TXNKeyDown'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -288,14 +288,14 @@ feature
 			"(void*) TXNKeyDown"
 		end
 
-	frozen txnadjust_cursor_external (itxnobject: POINTER; iocursorrgn: POINTER) is
+	txnadjust_cursor_external (itxnobject: POINTER; iocursorrgn: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, RgnHandle)"
 		alias
 			"ewg_function_macro_TXNAdjustCursor"
 		end
 
-	frozen txnadjust_cursor_address_external: POINTER is
+	txnadjust_cursor_address_external: POINTER is
 			-- Address of C function `TXNAdjustCursor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -303,14 +303,14 @@ feature
 			"(void*) TXNAdjustCursor"
 		end
 
-	frozen txnclick_external (itxnobject: POINTER; ievent: POINTER) is
+	txnclick_external (itxnobject: POINTER; ievent: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, EventRecord const*)"
 		alias
 			"ewg_function_macro_TXNClick"
 		end
 
-	frozen txnclick_address_external: POINTER is
+	txnclick_address_external: POINTER is
 			-- Address of C function `TXNClick'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -318,14 +318,14 @@ feature
 			"(void*) TXNClick"
 		end
 
-	frozen txnselect_all_external (itxnobject: POINTER) is
+	txnselect_all_external (itxnobject: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject)"
 		alias
 			"ewg_function_macro_TXNSelectAll"
 		end
 
-	frozen txnselect_all_address_external: POINTER is
+	txnselect_all_address_external: POINTER is
 			-- Address of C function `TXNSelectAll'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -333,14 +333,14 @@ feature
 			"(void*) TXNSelectAll"
 		end
 
-	frozen txnfocus_external (itxnobject: POINTER; ibecomingfocused: INTEGER) is
+	txnfocus_external (itxnobject: POINTER; ibecomingfocused: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, Boolean)"
 		alias
 			"ewg_function_macro_TXNFocus"
 		end
 
-	frozen txnfocus_address_external: POINTER is
+	txnfocus_address_external: POINTER is
 			-- Address of C function `TXNFocus'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -348,14 +348,14 @@ feature
 			"(void*) TXNFocus"
 		end
 
-	frozen txnupdate_external (itxnobject: POINTER) is
+	txnupdate_external (itxnobject: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject)"
 		alias
 			"ewg_function_macro_TXNUpdate"
 		end
 
-	frozen txnupdate_address_external: POINTER is
+	txnupdate_address_external: POINTER is
 			-- Address of C function `TXNUpdate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -363,14 +363,14 @@ feature
 			"(void*) TXNUpdate"
 		end
 
-	frozen txndraw_object_external (itxnobject: POINTER; icliprect: POINTER; idrawitems: INTEGER): INTEGER is
+	txndraw_object_external (itxnobject: POINTER; icliprect: POINTER; idrawitems: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, HIRect const*, TXNDrawItems):OSStatus"
 		alias
 			"ewg_function_macro_TXNDrawObject"
 		end
 
-	frozen txndraw_object_address_external: POINTER is
+	txndraw_object_address_external: POINTER is
 			-- Address of C function `TXNDrawObject'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -378,14 +378,14 @@ feature
 			"(void*) TXNDrawObject"
 		end
 
-	frozen txnforce_update_external (itxnobject: POINTER) is
+	txnforce_update_external (itxnobject: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject)"
 		alias
 			"ewg_function_macro_TXNForceUpdate"
 		end
 
-	frozen txnforce_update_address_external: POINTER is
+	txnforce_update_address_external: POINTER is
 			-- Address of C function `TXNForceUpdate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -393,14 +393,14 @@ feature
 			"(void*) TXNForceUpdate"
 		end
 
-	frozen txnget_sleep_ticks_external (itxnobject: POINTER): INTEGER is
+	txnget_sleep_ticks_external (itxnobject: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject):UInt32"
 		alias
 			"ewg_function_macro_TXNGetSleepTicks"
 		end
 
-	frozen txnget_sleep_ticks_address_external: POINTER is
+	txnget_sleep_ticks_address_external: POINTER is
 			-- Address of C function `TXNGetSleepTicks'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -408,14 +408,14 @@ feature
 			"(void*) TXNGetSleepTicks"
 		end
 
-	frozen txnidle_external (itxnobject: POINTER) is
+	txnidle_external (itxnobject: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject)"
 		alias
 			"ewg_function_macro_TXNIdle"
 		end
 
-	frozen txnidle_address_external: POINTER is
+	txnidle_address_external: POINTER is
 			-- Address of C function `TXNIdle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -423,14 +423,14 @@ feature
 			"(void*) TXNIdle"
 		end
 
-	frozen txngrow_window_external (itxnobject: POINTER; ievent: POINTER) is
+	txngrow_window_external (itxnobject: POINTER; ievent: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, EventRecord const*)"
 		alias
 			"ewg_function_macro_TXNGrowWindow"
 		end
 
-	frozen txngrow_window_address_external: POINTER is
+	txngrow_window_address_external: POINTER is
 			-- Address of C function `TXNGrowWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -438,14 +438,14 @@ feature
 			"(void*) TXNGrowWindow"
 		end
 
-	frozen txnzoom_window_external (itxnobject: POINTER; ipart: INTEGER) is
+	txnzoom_window_external (itxnobject: POINTER; ipart: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, SInt16)"
 		alias
 			"ewg_function_macro_TXNZoomWindow"
 		end
 
-	frozen txnzoom_window_address_external: POINTER is
+	txnzoom_window_address_external: POINTER is
 			-- Address of C function `TXNZoomWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -453,14 +453,14 @@ feature
 			"(void*) TXNZoomWindow"
 		end
 
-	frozen txnbegin_action_group_external (itxnobject: POINTER; iactiongroupname: POINTER): INTEGER is
+	txnbegin_action_group_external (itxnobject: POINTER; iactiongroupname: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, CFStringRef):OSStatus"
 		alias
 			"ewg_function_macro_TXNBeginActionGroup"
 		end
 
-	frozen txnbegin_action_group_address_external: POINTER is
+	txnbegin_action_group_address_external: POINTER is
 			-- Address of C function `TXNBeginActionGroup'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -468,14 +468,14 @@ feature
 			"(void*) TXNBeginActionGroup"
 		end
 
-	frozen txnend_action_group_external (itxnobject: POINTER): INTEGER is
+	txnend_action_group_external (itxnobject: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject):OSStatus"
 		alias
 			"ewg_function_macro_TXNEndActionGroup"
 		end
 
-	frozen txnend_action_group_address_external: POINTER is
+	txnend_action_group_address_external: POINTER is
 			-- Address of C function `TXNEndActionGroup'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -483,14 +483,14 @@ feature
 			"(void*) TXNEndActionGroup"
 		end
 
-	frozen txncan_undo_action_external (itxnobject: POINTER; oactionname: POINTER): INTEGER is
+	txncan_undo_action_external (itxnobject: POINTER; oactionname: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, CFStringRef*):Boolean"
 		alias
 			"ewg_function_macro_TXNCanUndoAction"
 		end
 
-	frozen txncan_undo_action_address_external: POINTER is
+	txncan_undo_action_address_external: POINTER is
 			-- Address of C function `TXNCanUndoAction'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -498,14 +498,14 @@ feature
 			"(void*) TXNCanUndoAction"
 		end
 
-	frozen txncan_redo_action_external (itxnobject: POINTER; oactionname: POINTER): INTEGER is
+	txncan_redo_action_external (itxnobject: POINTER; oactionname: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, CFStringRef*):Boolean"
 		alias
 			"ewg_function_macro_TXNCanRedoAction"
 		end
 
-	frozen txncan_redo_action_address_external: POINTER is
+	txncan_redo_action_address_external: POINTER is
 			-- Address of C function `TXNCanRedoAction'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -513,14 +513,14 @@ feature
 			"(void*) TXNCanRedoAction"
 		end
 
-	frozen txnset_action_name_mapper_external (itxnobject: POINTER; istringforkeyproc: POINTER; iuserdata: POINTER): INTEGER is
+	txnset_action_name_mapper_external (itxnobject: POINTER; istringforkeyproc: POINTER; iuserdata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNActionNameMapperUPP, void const*):OSStatus"
 		alias
 			"ewg_function_macro_TXNSetActionNameMapper"
 		end
 
-	frozen txnset_action_name_mapper_address_external: POINTER is
+	txnset_action_name_mapper_address_external: POINTER is
 			-- Address of C function `TXNSetActionNameMapper'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -528,14 +528,14 @@ feature
 			"(void*) TXNSetActionNameMapper"
 		end
 
-	frozen txnundo_external (itxnobject: POINTER) is
+	txnundo_external (itxnobject: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject)"
 		alias
 			"ewg_function_macro_TXNUndo"
 		end
 
-	frozen txnundo_address_external: POINTER is
+	txnundo_address_external: POINTER is
 			-- Address of C function `TXNUndo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -543,14 +543,14 @@ feature
 			"(void*) TXNUndo"
 		end
 
-	frozen txnredo_external (itxnobject: POINTER) is
+	txnredo_external (itxnobject: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject)"
 		alias
 			"ewg_function_macro_TXNRedo"
 		end
 
-	frozen txnredo_address_external: POINTER is
+	txnredo_address_external: POINTER is
 			-- Address of C function `TXNRedo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -558,14 +558,14 @@ feature
 			"(void*) TXNRedo"
 		end
 
-	frozen txnclear_undo_external (itxnobject: POINTER): INTEGER is
+	txnclear_undo_external (itxnobject: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject):OSStatus"
 		alias
 			"ewg_function_macro_TXNClearUndo"
 		end
 
-	frozen txnclear_undo_address_external: POINTER is
+	txnclear_undo_address_external: POINTER is
 			-- Address of C function `TXNClearUndo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -573,14 +573,14 @@ feature
 			"(void*) TXNClearUndo"
 		end
 
-	frozen txncut_external (itxnobject: POINTER): INTEGER is
+	txncut_external (itxnobject: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject):OSStatus"
 		alias
 			"ewg_function_macro_TXNCut"
 		end
 
-	frozen txncut_address_external: POINTER is
+	txncut_address_external: POINTER is
 			-- Address of C function `TXNCut'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -588,14 +588,14 @@ feature
 			"(void*) TXNCut"
 		end
 
-	frozen txncopy_external (itxnobject: POINTER): INTEGER is
+	txncopy_external (itxnobject: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject):OSStatus"
 		alias
 			"ewg_function_macro_TXNCopy"
 		end
 
-	frozen txncopy_address_external: POINTER is
+	txncopy_address_external: POINTER is
 			-- Address of C function `TXNCopy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -603,14 +603,14 @@ feature
 			"(void*) TXNCopy"
 		end
 
-	frozen txnpaste_external (itxnobject: POINTER): INTEGER is
+	txnpaste_external (itxnobject: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject):OSStatus"
 		alias
 			"ewg_function_macro_TXNPaste"
 		end
 
-	frozen txnpaste_address_external: POINTER is
+	txnpaste_address_external: POINTER is
 			-- Address of C function `TXNPaste'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -618,14 +618,14 @@ feature
 			"(void*) TXNPaste"
 		end
 
-	frozen txnclear_external (itxnobject: POINTER): INTEGER is
+	txnclear_external (itxnobject: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject):OSStatus"
 		alias
 			"ewg_function_macro_TXNClear"
 		end
 
-	frozen txnclear_address_external: POINTER is
+	txnclear_address_external: POINTER is
 			-- Address of C function `TXNClear'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -633,14 +633,14 @@ feature
 			"(void*) TXNClear"
 		end
 
-	frozen txnis_scrap_pastable_external: INTEGER is
+	txnis_scrap_pastable_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :Boolean"
 		alias
 			"ewg_function_macro_TXNIsScrapPastable"
 		end
 
-	frozen txnis_scrap_pastable_address_external: POINTER is
+	txnis_scrap_pastable_address_external: POINTER is
 			-- Address of C function `TXNIsScrapPastable'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -648,14 +648,14 @@ feature
 			"(void*) TXNIsScrapPastable"
 		end
 
-	frozen txnget_selection_external (itxnobject: POINTER; ostartoffset: POINTER; oendoffset: POINTER) is
+	txnget_selection_external (itxnobject: POINTER; ostartoffset: POINTER; oendoffset: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNOffset*, TXNOffset*)"
 		alias
 			"ewg_function_macro_TXNGetSelection"
 		end
 
-	frozen txnget_selection_address_external: POINTER is
+	txnget_selection_address_external: POINTER is
 			-- Address of C function `TXNGetSelection'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -663,14 +663,14 @@ feature
 			"(void*) TXNGetSelection"
 		end
 
-	frozen txnshow_selection_external (itxnobject: POINTER; ishowend: INTEGER) is
+	txnshow_selection_external (itxnobject: POINTER; ishowend: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, Boolean)"
 		alias
 			"ewg_function_macro_TXNShowSelection"
 		end
 
-	frozen txnshow_selection_address_external: POINTER is
+	txnshow_selection_address_external: POINTER is
 			-- Address of C function `TXNShowSelection'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -678,14 +678,14 @@ feature
 			"(void*) TXNShowSelection"
 		end
 
-	frozen txnis_selection_empty_external (itxnobject: POINTER): INTEGER is
+	txnis_selection_empty_external (itxnobject: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject):Boolean"
 		alias
 			"ewg_function_macro_TXNIsSelectionEmpty"
 		end
 
-	frozen txnis_selection_empty_address_external: POINTER is
+	txnis_selection_empty_address_external: POINTER is
 			-- Address of C function `TXNIsSelectionEmpty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -693,14 +693,14 @@ feature
 			"(void*) TXNIsSelectionEmpty"
 		end
 
-	frozen txnset_selection_external (itxnobject: POINTER; istartoffset: INTEGER; iendoffset: INTEGER): INTEGER is
+	txnset_selection_external (itxnobject: POINTER; istartoffset: INTEGER; iendoffset: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNOffset, TXNOffset):OSStatus"
 		alias
 			"ewg_function_macro_TXNSetSelection"
 		end
 
-	frozen txnset_selection_address_external: POINTER is
+	txnset_selection_address_external: POINTER is
 			-- Address of C function `TXNSetSelection'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -708,14 +708,14 @@ feature
 			"(void*) TXNSetSelection"
 		end
 
-	frozen txnget_continuous_type_attributes_external (itxnobject: POINTER; ocontinuousflags: POINTER; icount: INTEGER; iotypeattributes: POINTER): INTEGER is
+	txnget_continuous_type_attributes_external (itxnobject: POINTER; ocontinuousflags: POINTER; icount: INTEGER; iotypeattributes: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNContinuousFlags*, ItemCount, void*):OSStatus"
 		alias
 			"ewg_function_macro_TXNGetContinuousTypeAttributes"
 		end
 
-	frozen txnget_continuous_type_attributes_address_external: POINTER is
+	txnget_continuous_type_attributes_address_external: POINTER is
 			-- Address of C function `TXNGetContinuousTypeAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -723,14 +723,14 @@ feature
 			"(void*) TXNGetContinuousTypeAttributes"
 		end
 
-	frozen txnset_type_attributes_external (itxnobject: POINTER; iattrcount: INTEGER; iattributes: POINTER; istartoffset: INTEGER; iendoffset: INTEGER): INTEGER is
+	txnset_type_attributes_external (itxnobject: POINTER; iattrcount: INTEGER; iattributes: POINTER; istartoffset: INTEGER; iendoffset: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, ItemCount, void*, TXNOffset, TXNOffset):OSStatus"
 		alias
 			"ewg_function_macro_TXNSetTypeAttributes"
 		end
 
-	frozen txnset_type_attributes_address_external: POINTER is
+	txnset_type_attributes_address_external: POINTER is
 			-- Address of C function `TXNSetTypeAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -738,14 +738,14 @@ feature
 			"(void*) TXNSetTypeAttributes"
 		end
 
-	frozen txnset_txnobject_controls_external (itxnobject: POINTER; iclearall: INTEGER; icontrolcount: INTEGER; icontroltags: POINTER; icontroldata: POINTER): INTEGER is
+	txnset_txnobject_controls_external (itxnobject: POINTER; iclearall: INTEGER; icontrolcount: INTEGER; icontroltags: POINTER; icontroldata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, Boolean, ItemCount, void*, void*):OSStatus"
 		alias
 			"ewg_function_macro_TXNSetTXNObjectControls"
 		end
 
-	frozen txnset_txnobject_controls_address_external: POINTER is
+	txnset_txnobject_controls_address_external: POINTER is
 			-- Address of C function `TXNSetTXNObjectControls'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -753,14 +753,14 @@ feature
 			"(void*) TXNSetTXNObjectControls"
 		end
 
-	frozen txnget_txnobject_controls_external (itxnobject: POINTER; icontrolcount: INTEGER; icontroltags: POINTER; ocontroldata: POINTER): INTEGER is
+	txnget_txnobject_controls_external (itxnobject: POINTER; icontrolcount: INTEGER; icontroltags: POINTER; ocontroldata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, ItemCount, void*, void*):OSStatus"
 		alias
 			"ewg_function_macro_TXNGetTXNObjectControls"
 		end
 
-	frozen txnget_txnobject_controls_address_external: POINTER is
+	txnget_txnobject_controls_address_external: POINTER is
 			-- Address of C function `TXNGetTXNObjectControls'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -768,14 +768,14 @@ feature
 			"(void*) TXNGetTXNObjectControls"
 		end
 
-	frozen txnset_background_external (itxnobject: POINTER; ibackgroundinfo: POINTER): INTEGER is
+	txnset_background_external (itxnobject: POINTER; ibackgroundinfo: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNBackground const*):OSStatus"
 		alias
 			"ewg_function_macro_TXNSetBackground"
 		end
 
-	frozen txnset_background_address_external: POINTER is
+	txnset_background_address_external: POINTER is
 			-- Address of C function `TXNSetBackground'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -783,14 +783,14 @@ feature
 			"(void*) TXNSetBackground"
 		end
 
-	frozen txnecho_mode_external (itxnobject: POINTER; iechocharacter: INTEGER; iencoding: INTEGER; ion: INTEGER): INTEGER is
+	txnecho_mode_external (itxnobject: POINTER; iechocharacter: INTEGER; iencoding: INTEGER; ion: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, UniChar, TextEncoding, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_TXNEchoMode"
 		end
 
-	frozen txnecho_mode_address_external: POINTER is
+	txnecho_mode_address_external: POINTER is
 			-- Address of C function `TXNEchoMode'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -798,14 +798,14 @@ feature
 			"(void*) TXNEchoMode"
 		end
 
-	frozen txncount_runs_in_range_external (itxnobject: POINTER; istartoffset: INTEGER; iendoffset: INTEGER; oruncount: POINTER): INTEGER is
+	txncount_runs_in_range_external (itxnobject: POINTER; istartoffset: INTEGER; iendoffset: INTEGER; oruncount: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNOffset, TXNOffset, ItemCount*):OSStatus"
 		alias
 			"ewg_function_macro_TXNCountRunsInRange"
 		end
 
-	frozen txncount_runs_in_range_address_external: POINTER is
+	txncount_runs_in_range_address_external: POINTER is
 			-- Address of C function `TXNCountRunsInRange'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -813,14 +813,14 @@ feature
 			"(void*) TXNCountRunsInRange"
 		end
 
-	frozen txnget_indexed_run_info_from_range_external (itxnobject: POINTER; iindex: INTEGER; istartoffset: INTEGER; iendoffset: INTEGER; orunstartoffset: POINTER; orunendoffset: POINTER; orundatatype: POINTER; itypeattributecount: INTEGER; iotypeattributes: POINTER): INTEGER is
+	txnget_indexed_run_info_from_range_external (itxnobject: POINTER; iindex: INTEGER; istartoffset: INTEGER; iendoffset: INTEGER; orunstartoffset: POINTER; orunendoffset: POINTER; orundatatype: POINTER; itypeattributecount: INTEGER; iotypeattributes: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, ItemCount, TXNOffset, TXNOffset, TXNOffset*, TXNOffset*, TXNDataType*, ItemCount, TXNTypeAttributes*):OSStatus"
 		alias
 			"ewg_function_macro_TXNGetIndexedRunInfoFromRange"
 		end
 
-	frozen txnget_indexed_run_info_from_range_address_external: POINTER is
+	txnget_indexed_run_info_from_range_address_external: POINTER is
 			-- Address of C function `TXNGetIndexedRunInfoFromRange'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -828,14 +828,14 @@ feature
 			"(void*) TXNGetIndexedRunInfoFromRange"
 		end
 
-	frozen txndata_size_external (itxnobject: POINTER): INTEGER is
+	txndata_size_external (itxnobject: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject):ByteCount"
 		alias
 			"ewg_function_macro_TXNDataSize"
 		end
 
-	frozen txndata_size_address_external: POINTER is
+	txndata_size_address_external: POINTER is
 			-- Address of C function `TXNDataSize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -843,14 +843,14 @@ feature
 			"(void*) TXNDataSize"
 		end
 
-	frozen txnwrite_range_to_cfurl_external (itxnobject: POINTER; istartoffset: INTEGER; iendoffset: INTEGER; idataoptions: POINTER; idocumentattributes: POINTER; ifileurl: POINTER): INTEGER is
+	txnwrite_range_to_cfurl_external (itxnobject: POINTER; istartoffset: INTEGER; iendoffset: INTEGER; idataoptions: POINTER; idocumentattributes: POINTER; ifileurl: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNOffset, TXNOffset, CFDictionaryRef, CFDictionaryRef, CFURLRef):OSStatus"
 		alias
 			"ewg_function_macro_TXNWriteRangeToCFURL"
 		end
 
-	frozen txnwrite_range_to_cfurl_address_external: POINTER is
+	txnwrite_range_to_cfurl_address_external: POINTER is
 			-- Address of C function `TXNWriteRangeToCFURL'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -858,14 +858,14 @@ feature
 			"(void*) TXNWriteRangeToCFURL"
 		end
 
-	frozen txnread_from_cfurl_external (itxnobject: POINTER; istartoffset: INTEGER; iendoffset: INTEGER; idataoptions: POINTER; ifileurl: POINTER; odocumentattributes: POINTER): INTEGER is
+	txnread_from_cfurl_external (itxnobject: POINTER; istartoffset: INTEGER; iendoffset: INTEGER; idataoptions: POINTER; ifileurl: POINTER; odocumentattributes: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNOffset, TXNOffset, CFDictionaryRef, CFURLRef, CFDictionaryRef*):OSStatus"
 		alias
 			"ewg_function_macro_TXNReadFromCFURL"
 		end
 
-	frozen txnread_from_cfurl_address_external: POINTER is
+	txnread_from_cfurl_address_external: POINTER is
 			-- Address of C function `TXNReadFromCFURL'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -873,14 +873,14 @@ feature
 			"(void*) TXNReadFromCFURL"
 		end
 
-	frozen txncopy_type_identifiers_for_range_external (itxnobject: POINTER; istartoffset: INTEGER; iendoffset: INTEGER; otypeidentifiersforrange: POINTER): INTEGER is
+	txncopy_type_identifiers_for_range_external (itxnobject: POINTER; istartoffset: INTEGER; iendoffset: INTEGER; otypeidentifiersforrange: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNOffset, TXNOffset, CFArrayRef*):OSStatus"
 		alias
 			"ewg_function_macro_TXNCopyTypeIdentifiersForRange"
 		end
 
-	frozen txncopy_type_identifiers_for_range_address_external: POINTER is
+	txncopy_type_identifiers_for_range_address_external: POINTER is
 			-- Address of C function `TXNCopyTypeIdentifiersForRange'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -888,14 +888,14 @@ feature
 			"(void*) TXNCopyTypeIdentifiersForRange"
 		end
 
-	frozen txnget_data_external (itxnobject: POINTER; istartoffset: INTEGER; iendoffset: INTEGER; odatahandle: POINTER): INTEGER is
+	txnget_data_external (itxnobject: POINTER; istartoffset: INTEGER; iendoffset: INTEGER; odatahandle: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNOffset, TXNOffset, Handle*):OSStatus"
 		alias
 			"ewg_function_macro_TXNGetData"
 		end
 
-	frozen txnget_data_address_external: POINTER is
+	txnget_data_address_external: POINTER is
 			-- Address of C function `TXNGetData'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -903,14 +903,14 @@ feature
 			"(void*) TXNGetData"
 		end
 
-	frozen txnget_data_encoded_external (itxnobject: POINTER; istartoffset: INTEGER; iendoffset: INTEGER; odatahandle: POINTER; iencoding: INTEGER): INTEGER is
+	txnget_data_encoded_external (itxnobject: POINTER; istartoffset: INTEGER; iendoffset: INTEGER; odatahandle: POINTER; iencoding: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNOffset, TXNOffset, Handle*, TXNDataType):OSStatus"
 		alias
 			"ewg_function_macro_TXNGetDataEncoded"
 		end
 
-	frozen txnget_data_encoded_address_external: POINTER is
+	txnget_data_encoded_address_external: POINTER is
 			-- Address of C function `TXNGetDataEncoded'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -918,14 +918,14 @@ feature
 			"(void*) TXNGetDataEncoded"
 		end
 
-	frozen txnset_data_external (itxnobject: POINTER; idatatype: INTEGER; idataptr: POINTER; idatasize: INTEGER; istartoffset: INTEGER; iendoffset: INTEGER): INTEGER is
+	txnset_data_external (itxnobject: POINTER; idatatype: INTEGER; idataptr: POINTER; idatasize: INTEGER; istartoffset: INTEGER; iendoffset: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNDataType, void const*, ByteCount, TXNOffset, TXNOffset):OSStatus"
 		alias
 			"ewg_function_macro_TXNSetData"
 		end
 
-	frozen txnset_data_address_external: POINTER is
+	txnset_data_address_external: POINTER is
 			-- Address of C function `TXNSetData'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -933,14 +933,14 @@ feature
 			"(void*) TXNSetData"
 		end
 
-	frozen txnflatten_object_to_cfdata_ref_external (itxnobject: POINTER; itxndatatype: INTEGER; odataref: POINTER): INTEGER is
+	txnflatten_object_to_cfdata_ref_external (itxnobject: POINTER; itxndatatype: INTEGER; odataref: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNDataType, CFDataRef*):OSStatus"
 		alias
 			"ewg_function_macro_TXNFlattenObjectToCFDataRef"
 		end
 
-	frozen txnflatten_object_to_cfdata_ref_address_external: POINTER is
+	txnflatten_object_to_cfdata_ref_address_external: POINTER is
 			-- Address of C function `TXNFlattenObjectToCFDataRef'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -948,14 +948,14 @@ feature
 			"(void*) TXNFlattenObjectToCFDataRef"
 		end
 
-	frozen txnrevert_external (itxnobject: POINTER): INTEGER is
+	txnrevert_external (itxnobject: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject):OSStatus"
 		alias
 			"ewg_function_macro_TXNRevert"
 		end
 
-	frozen txnrevert_address_external: POINTER is
+	txnrevert_address_external: POINTER is
 			-- Address of C function `TXNRevert'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -963,14 +963,14 @@ feature
 			"(void*) TXNRevert"
 		end
 
-	frozen txnpage_setup_external (itxnobject: POINTER): INTEGER is
+	txnpage_setup_external (itxnobject: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject):OSStatus"
 		alias
 			"ewg_function_macro_TXNPageSetup"
 		end
 
-	frozen txnpage_setup_address_external: POINTER is
+	txnpage_setup_address_external: POINTER is
 			-- Address of C function `TXNPageSetup'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -978,14 +978,14 @@ feature
 			"(void*) TXNPageSetup"
 		end
 
-	frozen txnprint_external (itxnobject: POINTER): INTEGER is
+	txnprint_external (itxnobject: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject):OSStatus"
 		alias
 			"ewg_function_macro_TXNPrint"
 		end
 
-	frozen txnprint_address_external: POINTER is
+	txnprint_address_external: POINTER is
 			-- Address of C function `TXNPrint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -993,14 +993,14 @@ feature
 			"(void*) TXNPrint"
 		end
 
-	frozen txnfind_external (itxnobject: POINTER; imatchtextdataptr: POINTER; idatatype: INTEGER; imatchoptions: INTEGER; istartsearchoffset: INTEGER; iendsearchoffset: INTEGER; ifindproc: POINTER; irefcon: INTEGER; ostartmatchoffset: POINTER; oendmatchoffset: POINTER): INTEGER is
+	txnfind_external (itxnobject: POINTER; imatchtextdataptr: POINTER; idatatype: INTEGER; imatchoptions: INTEGER; istartsearchoffset: INTEGER; iendsearchoffset: INTEGER; ifindproc: POINTER; irefcon: INTEGER; ostartmatchoffset: POINTER; oendmatchoffset: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNMatchTextRecord const*, TXNDataType, TXNMatchOptions, TXNOffset, TXNOffset, TXNFindUPP, SInt32, TXNOffset*, TXNOffset*):OSStatus"
 		alias
 			"ewg_function_macro_TXNFind"
 		end
 
-	frozen txnfind_address_external: POINTER is
+	txnfind_address_external: POINTER is
 			-- Address of C function `TXNFind'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1008,14 +1008,14 @@ feature
 			"(void*) TXNFind"
 		end
 
-	frozen txnset_font_defaults_external (itxnobject: POINTER; icount: INTEGER; ifontdefaults: POINTER): INTEGER is
+	txnset_font_defaults_external (itxnobject: POINTER; icount: INTEGER; ifontdefaults: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, ItemCount, void*):OSStatus"
 		alias
 			"ewg_function_macro_TXNSetFontDefaults"
 		end
 
-	frozen txnset_font_defaults_address_external: POINTER is
+	txnset_font_defaults_address_external: POINTER is
 			-- Address of C function `TXNSetFontDefaults'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1023,14 +1023,14 @@ feature
 			"(void*) TXNSetFontDefaults"
 		end
 
-	frozen txnget_font_defaults_external (itxnobject: POINTER; iocount: POINTER; ofontdefaults: POINTER): INTEGER is
+	txnget_font_defaults_external (itxnobject: POINTER; iocount: POINTER; ofontdefaults: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, ItemCount*, void*):OSStatus"
 		alias
 			"ewg_function_macro_TXNGetFontDefaults"
 		end
 
-	frozen txnget_font_defaults_address_external: POINTER is
+	txnget_font_defaults_address_external: POINTER is
 			-- Address of C function `TXNGetFontDefaults'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1038,14 +1038,14 @@ feature
 			"(void*) TXNGetFontDefaults"
 		end
 
-	frozen txnnew_font_menu_object_external (ifontmenuhandle: POINTER; imenuid: INTEGER; istarthiermenuid: INTEGER; otxnfontmenuobject: POINTER): INTEGER is
+	txnnew_font_menu_object_external (ifontmenuhandle: POINTER; imenuid: INTEGER; istarthiermenuid: INTEGER; otxnfontmenuobject: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, SInt16, SInt16, TXNFontMenuObject*):OSStatus"
 		alias
 			"ewg_function_macro_TXNNewFontMenuObject"
 		end
 
-	frozen txnnew_font_menu_object_address_external: POINTER is
+	txnnew_font_menu_object_address_external: POINTER is
 			-- Address of C function `TXNNewFontMenuObject'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1053,14 +1053,14 @@ feature
 			"(void*) TXNNewFontMenuObject"
 		end
 
-	frozen txnget_font_menu_handle_external (itxnfontmenuobject: POINTER; ofontmenuhandle: POINTER): INTEGER is
+	txnget_font_menu_handle_external (itxnfontmenuobject: POINTER; ofontmenuhandle: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNFontMenuObject, MenuRef*):OSStatus"
 		alias
 			"ewg_function_macro_TXNGetFontMenuHandle"
 		end
 
-	frozen txnget_font_menu_handle_address_external: POINTER is
+	txnget_font_menu_handle_address_external: POINTER is
 			-- Address of C function `TXNGetFontMenuHandle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1068,14 +1068,14 @@ feature
 			"(void*) TXNGetFontMenuHandle"
 		end
 
-	frozen txndispose_font_menu_object_external (itxnfontmenuobject: POINTER): INTEGER is
+	txndispose_font_menu_object_external (itxnfontmenuobject: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNFontMenuObject):OSStatus"
 		alias
 			"ewg_function_macro_TXNDisposeFontMenuObject"
 		end
 
-	frozen txndispose_font_menu_object_address_external: POINTER is
+	txndispose_font_menu_object_address_external: POINTER is
 			-- Address of C function `TXNDisposeFontMenuObject'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1083,14 +1083,14 @@ feature
 			"(void*) TXNDisposeFontMenuObject"
 		end
 
-	frozen txndo_font_menu_selection_external (itxnobject: POINTER; itxnfontmenuobject: POINTER; imenuid: INTEGER; imenuitem: INTEGER): INTEGER is
+	txndo_font_menu_selection_external (itxnobject: POINTER; itxnfontmenuobject: POINTER; imenuid: INTEGER; imenuitem: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNFontMenuObject, SInt16, SInt16):OSStatus"
 		alias
 			"ewg_function_macro_TXNDoFontMenuSelection"
 		end
 
-	frozen txndo_font_menu_selection_address_external: POINTER is
+	txndo_font_menu_selection_address_external: POINTER is
 			-- Address of C function `TXNDoFontMenuSelection'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1098,14 +1098,14 @@ feature
 			"(void*) TXNDoFontMenuSelection"
 		end
 
-	frozen txnprepare_font_menu_external (itxnobject: POINTER; itxnfontmenuobject: POINTER): INTEGER is
+	txnprepare_font_menu_external (itxnobject: POINTER; itxnfontmenuobject: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNFontMenuObject):OSStatus"
 		alias
 			"ewg_function_macro_TXNPrepareFontMenu"
 		end
 
-	frozen txnprepare_font_menu_address_external: POINTER is
+	txnprepare_font_menu_address_external: POINTER is
 			-- Address of C function `TXNPrepareFontMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1113,14 +1113,14 @@ feature
 			"(void*) TXNPrepareFontMenu"
 		end
 
-	frozen txndraw_unicode_text_box_external (itext: POINTER; ilen: INTEGER; iobox: POINTER; istyle: POINTER; ioptions: POINTER): INTEGER is
+	txndraw_unicode_text_box_external (itext: POINTER; ilen: INTEGER; iobox: POINTER; istyle: POINTER; ioptions: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, UniCharCount, Rect*, ATSUStyle, TXNTextBoxOptionsData const*):OSStatus"
 		alias
 			"ewg_function_macro_TXNDrawUnicodeTextBox"
 		end
 
-	frozen txndraw_unicode_text_box_address_external: POINTER is
+	txndraw_unicode_text_box_address_external: POINTER is
 			-- Address of C function `TXNDrawUnicodeTextBox'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1128,14 +1128,14 @@ feature
 			"(void*) TXNDrawUnicodeTextBox"
 		end
 
-	frozen txndraw_cfstring_text_box_external (itext: POINTER; iobox: POINTER; istyle: POINTER; ioptions: POINTER): INTEGER is
+	txndraw_cfstring_text_box_external (itext: POINTER; iobox: POINTER; istyle: POINTER; ioptions: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CFStringRef, Rect*, ATSUStyle, TXNTextBoxOptionsData const*):OSStatus"
 		alias
 			"ewg_function_macro_TXNDrawCFStringTextBox"
 		end
 
-	frozen txndraw_cfstring_text_box_address_external: POINTER is
+	txndraw_cfstring_text_box_address_external: POINTER is
 			-- Address of C function `TXNDrawCFStringTextBox'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1143,14 +1143,14 @@ feature
 			"(void*) TXNDrawCFStringTextBox"
 		end
 
-	frozen txnget_line_count_external (itxnobject: POINTER; olinetotal: POINTER): INTEGER is
+	txnget_line_count_external (itxnobject: POINTER; olinetotal: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, ItemCount*):OSStatus"
 		alias
 			"ewg_function_macro_TXNGetLineCount"
 		end
 
-	frozen txnget_line_count_address_external: POINTER is
+	txnget_line_count_address_external: POINTER is
 			-- Address of C function `TXNGetLineCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1158,14 +1158,14 @@ feature
 			"(void*) TXNGetLineCount"
 		end
 
-	frozen txnget_line_metrics_external (itxnobject: POINTER; ilinenumber: INTEGER; olinewidth: POINTER; olineheight: POINTER): INTEGER is
+	txnget_line_metrics_external (itxnobject: POINTER; ilinenumber: INTEGER; olinewidth: POINTER; olineheight: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, UInt32, Fixed*, Fixed*):OSStatus"
 		alias
 			"ewg_function_macro_TXNGetLineMetrics"
 		end
 
-	frozen txnget_line_metrics_address_external: POINTER is
+	txnget_line_metrics_address_external: POINTER is
 			-- Address of C function `TXNGetLineMetrics'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1173,14 +1173,14 @@ feature
 			"(void*) TXNGetLineMetrics"
 		end
 
-	frozen txnget_change_count_external (itxnobject: POINTER): INTEGER is
+	txnget_change_count_external (itxnobject: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject):ItemCount"
 		alias
 			"ewg_function_macro_TXNGetChangeCount"
 		end
 
-	frozen txnget_change_count_address_external: POINTER is
+	txnget_change_count_address_external: POINTER is
 			-- Address of C function `TXNGetChangeCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1188,14 +1188,14 @@ feature
 			"(void*) TXNGetChangeCount"
 		end
 
-	frozen txnget_count_for_action_type_external (itxnobject: POINTER; iactiontypename: POINTER; ocount: POINTER): INTEGER is
+	txnget_count_for_action_type_external (itxnobject: POINTER; iactiontypename: POINTER; ocount: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, CFStringRef, ItemCount*):OSStatus"
 		alias
 			"ewg_function_macro_TXNGetCountForActionType"
 		end
 
-	frozen txnget_count_for_action_type_address_external: POINTER is
+	txnget_count_for_action_type_address_external: POINTER is
 			-- Address of C function `TXNGetCountForActionType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1203,14 +1203,14 @@ feature
 			"(void*) TXNGetCountForActionType"
 		end
 
-	frozen txnclear_count_for_action_type_external (itxnobject: POINTER; iactiontypename: POINTER): INTEGER is
+	txnclear_count_for_action_type_external (itxnobject: POINTER; iactiontypename: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, CFStringRef):OSStatus"
 		alias
 			"ewg_function_macro_TXNClearCountForActionType"
 		end
 
-	frozen txnclear_count_for_action_type_address_external: POINTER is
+	txnclear_count_for_action_type_address_external: POINTER is
 			-- Address of C function `TXNClearCountForActionType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1218,14 +1218,14 @@ feature
 			"(void*) TXNClearCountForActionType"
 		end
 
-	frozen txnset_hirect_bounds_external (itxnobject: POINTER; iviewrect: POINTER; idestinationrect: POINTER; iupdate: INTEGER) is
+	txnset_hirect_bounds_external (itxnobject: POINTER; iviewrect: POINTER; idestinationrect: POINTER; iupdate: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, HIRect const*, HIRect const*, Boolean)"
 		alias
 			"ewg_function_macro_TXNSetHIRectBounds"
 		end
 
-	frozen txnset_hirect_bounds_address_external: POINTER is
+	txnset_hirect_bounds_address_external: POINTER is
 			-- Address of C function `TXNSetHIRectBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1233,14 +1233,14 @@ feature
 			"(void*) TXNSetHIRectBounds"
 		end
 
-	frozen txnget_hirect_external (itxnobject: POINTER; itxnrectkey: INTEGER; orectangle: POINTER): INTEGER is
+	txnget_hirect_external (itxnobject: POINTER; itxnrectkey: INTEGER; orectangle: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNRectKey, HIRect*):OSStatus"
 		alias
 			"ewg_function_macro_TXNGetHIRect"
 		end
 
-	frozen txnget_hirect_address_external: POINTER is
+	txnget_hirect_address_external: POINTER is
 			-- Address of C function `TXNGetHIRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1248,14 +1248,14 @@ feature
 			"(void*) TXNGetHIRect"
 		end
 
-	frozen txnresize_frame_external (itxnobject: POINTER; iwidth: INTEGER; iheight: INTEGER; itxnframeid: INTEGER) is
+	txnresize_frame_external (itxnobject: POINTER; iwidth: INTEGER; iheight: INTEGER; itxnframeid: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, UInt32, UInt32, TXNFrameID)"
 		alias
 			"ewg_function_macro_TXNResizeFrame"
 		end
 
-	frozen txnresize_frame_address_external: POINTER is
+	txnresize_frame_address_external: POINTER is
 			-- Address of C function `TXNResizeFrame'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1263,14 +1263,14 @@ feature
 			"(void*) TXNResizeFrame"
 		end
 
-	frozen txnset_frame_bounds_external (itxnobject: POINTER; itop: INTEGER; ileft: INTEGER; ibottom: INTEGER; iright: INTEGER; itxnframeid: INTEGER) is
+	txnset_frame_bounds_external (itxnobject: POINTER; itop: INTEGER; ileft: INTEGER; ibottom: INTEGER; iright: INTEGER; itxnframeid: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, SInt32, SInt32, SInt32, SInt32, TXNFrameID)"
 		alias
 			"ewg_function_macro_TXNSetFrameBounds"
 		end
 
-	frozen txnset_frame_bounds_address_external: POINTER is
+	txnset_frame_bounds_address_external: POINTER is
 			-- Address of C function `TXNSetFrameBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1278,14 +1278,14 @@ feature
 			"(void*) TXNSetFrameBounds"
 		end
 
-	frozen txnget_view_rect_external (itxnobject: POINTER; oviewrect: POINTER) is
+	txnget_view_rect_external (itxnobject: POINTER; oviewrect: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, Rect*)"
 		alias
 			"ewg_function_macro_TXNGetViewRect"
 		end
 
-	frozen txnget_view_rect_address_external: POINTER is
+	txnget_view_rect_address_external: POINTER is
 			-- Address of C function `TXNGetViewRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1293,14 +1293,14 @@ feature
 			"(void*) TXNGetViewRect"
 		end
 
-	frozen txnrecalc_text_layout_external (itxnobject: POINTER) is
+	txnrecalc_text_layout_external (itxnobject: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject)"
 		alias
 			"ewg_function_macro_TXNRecalcTextLayout"
 		end
 
-	frozen txnrecalc_text_layout_address_external: POINTER is
+	txnrecalc_text_layout_address_external: POINTER is
 			-- Address of C function `TXNRecalcTextLayout'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1308,14 +1308,14 @@ feature
 			"(void*) TXNRecalcTextLayout"
 		end
 
-	frozen txnscroll_external (itxnobject: POINTER; iverticalscrollunit: INTEGER; ihorizontalscrollunit: INTEGER; ioverticaldelta: POINTER; iohorizontaldelta: POINTER): INTEGER is
+	txnscroll_external (itxnobject: POINTER; iverticalscrollunit: INTEGER; ihorizontalscrollunit: INTEGER; ioverticaldelta: POINTER; iohorizontaldelta: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNScrollUnit, TXNScrollUnit, SInt32*, SInt32*):OSStatus"
 		alias
 			"ewg_function_macro_TXNScroll"
 		end
 
-	frozen txnscroll_address_external: POINTER is
+	txnscroll_address_external: POINTER is
 			-- Address of C function `TXNScroll'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1323,14 +1323,14 @@ feature
 			"(void*) TXNScroll"
 		end
 
-	frozen txnregister_scroll_info_proc_external (itxnobject: POINTER; itxnscrollinfoupp: POINTER; irefcon: INTEGER) is
+	txnregister_scroll_info_proc_external (itxnobject: POINTER; itxnscrollinfoupp: POINTER; irefcon: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNScrollInfoUPP, SInt32)"
 		alias
 			"ewg_function_macro_TXNRegisterScrollInfoProc"
 		end
 
-	frozen txnregister_scroll_info_proc_address_external: POINTER is
+	txnregister_scroll_info_proc_address_external: POINTER is
 			-- Address of C function `TXNRegisterScrollInfoProc'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1338,14 +1338,14 @@ feature
 			"(void*) TXNRegisterScrollInfoProc"
 		end
 
-	frozen txnset_scrollbar_state_external (itxnobject: POINTER; iactivestate: INTEGER): INTEGER is
+	txnset_scrollbar_state_external (itxnobject: POINTER; iactivestate: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNScrollBarState):OSStatus"
 		alias
 			"ewg_function_macro_TXNSetScrollbarState"
 		end
 
-	frozen txnset_scrollbar_state_address_external: POINTER is
+	txnset_scrollbar_state_address_external: POINTER is
 			-- Address of C function `TXNSetScrollbarState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1353,14 +1353,14 @@ feature
 			"(void*) TXNSetScrollbarState"
 		end
 
-	frozen txnhipoint_to_offset_external (itxnobject: POINTER; ihipoint: POINTER; ooffset: POINTER): INTEGER is
+	txnhipoint_to_offset_external (itxnobject: POINTER; ihipoint: POINTER; ooffset: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, HIPoint const*, TXNOffset*):OSStatus"
 		alias
 			"ewg_function_macro_TXNHIPointToOffset"
 		end
 
-	frozen txnhipoint_to_offset_address_external: POINTER is
+	txnhipoint_to_offset_address_external: POINTER is
 			-- Address of C function `TXNHIPointToOffset'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1368,14 +1368,14 @@ feature
 			"(void*) TXNHIPointToOffset"
 		end
 
-	frozen txnoffset_to_hipoint_external (itxnobject: POINTER; ioffset: INTEGER; ohipoint: POINTER): INTEGER is
+	txnoffset_to_hipoint_external (itxnobject: POINTER; ioffset: INTEGER; ohipoint: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNOffset, HIPoint*):OSStatus"
 		alias
 			"ewg_function_macro_TXNOffsetToHIPoint"
 		end
 
-	frozen txnoffset_to_hipoint_address_external: POINTER is
+	txnoffset_to_hipoint_address_external: POINTER is
 			-- Address of C function `TXNOffsetToHIPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1383,14 +1383,14 @@ feature
 			"(void*) TXNOffsetToHIPoint"
 		end
 
-	frozen txndrag_tracker_external (itxnobject: POINTER; itxnframeid: INTEGER; imessage: INTEGER; iwindow: POINTER; idragreference: POINTER; idifferentobjectsamewindow: INTEGER): INTEGER is
+	txndrag_tracker_external (itxnobject: POINTER; itxnframeid: INTEGER; imessage: INTEGER; iwindow: POINTER; idragreference: POINTER; idifferentobjectsamewindow: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNFrameID, DragTrackingMessage, WindowRef, DragReference, Boolean):OSErr"
 		alias
 			"ewg_function_macro_TXNDragTracker"
 		end
 
-	frozen txndrag_tracker_address_external: POINTER is
+	txndrag_tracker_address_external: POINTER is
 			-- Address of C function `TXNDragTracker'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1398,14 +1398,14 @@ feature
 			"(void*) TXNDragTracker"
 		end
 
-	frozen txndrag_receiver_external (itxnobject: POINTER; itxnframeid: INTEGER; iwindow: POINTER; idragreference: POINTER; idifferentobjectsamewindow: INTEGER): INTEGER is
+	txndrag_receiver_external (itxnobject: POINTER; itxnframeid: INTEGER; iwindow: POINTER; idragreference: POINTER; idifferentobjectsamewindow: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNFrameID, WindowRef, DragReference, Boolean):OSErr"
 		alias
 			"ewg_function_macro_TXNDragReceiver"
 		end
 
-	frozen txndrag_receiver_address_external: POINTER is
+	txndrag_receiver_address_external: POINTER is
 			-- Address of C function `TXNDragReceiver'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1413,14 +1413,14 @@ feature
 			"(void*) TXNDragReceiver"
 		end
 
-	frozen txnset_command_event_support_external (itxnobject: POINTER; ioptions: INTEGER): INTEGER is
+	txnset_command_event_support_external (itxnobject: POINTER; ioptions: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNCommandEventSupportOptions):OSStatus"
 		alias
 			"ewg_function_macro_TXNSetCommandEventSupport"
 		end
 
-	frozen txnset_command_event_support_address_external: POINTER is
+	txnset_command_event_support_address_external: POINTER is
 			-- Address of C function `TXNSetCommandEventSupport'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1428,14 +1428,14 @@ feature
 			"(void*) TXNSetCommandEventSupport"
 		end
 
-	frozen txnget_command_event_support_external (itxnobject: POINTER; ooptions: POINTER): INTEGER is
+	txnget_command_event_support_external (itxnobject: POINTER; ooptions: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNCommandEventSupportOptions*):OSStatus"
 		alias
 			"ewg_function_macro_TXNGetCommandEventSupport"
 		end
 
-	frozen txnget_command_event_support_address_external: POINTER is
+	txnget_command_event_support_address_external: POINTER is
 			-- Address of C function `TXNGetCommandEventSupport'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1443,14 +1443,14 @@ feature
 			"(void*) TXNGetCommandEventSupport"
 		end
 
-	frozen txnset_spell_check_as_you_type_external (itxnobject: POINTER; iactivate: INTEGER): INTEGER is
+	txnset_spell_check_as_you_type_external (itxnobject: POINTER; iactivate: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_TXNSetSpellCheckAsYouType"
 		end
 
-	frozen txnset_spell_check_as_you_type_address_external: POINTER is
+	txnset_spell_check_as_you_type_address_external: POINTER is
 			-- Address of C function `TXNSetSpellCheckAsYouType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1458,14 +1458,14 @@ feature
 			"(void*) TXNSetSpellCheckAsYouType"
 		end
 
-	frozen txnget_spell_check_as_you_type_external (itxnobject: POINTER): INTEGER is
+	txnget_spell_check_as_you_type_external (itxnobject: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject):Boolean"
 		alias
 			"ewg_function_macro_TXNGetSpellCheckAsYouType"
 		end
 
-	frozen txnget_spell_check_as_you_type_address_external: POINTER is
+	txnget_spell_check_as_you_type_address_external: POINTER is
 			-- Address of C function `TXNGetSpellCheckAsYouType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1473,14 +1473,14 @@ feature
 			"(void*) TXNGetSpellCheckAsYouType"
 		end
 
-	frozen txnset_event_target_external (itxnobject: POINTER; ieventtarget: POINTER): INTEGER is
+	txnset_event_target_external (itxnobject: POINTER; ieventtarget: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, HIObjectRef):OSStatus"
 		alias
 			"ewg_function_macro_TXNSetEventTarget"
 		end
 
-	frozen txnset_event_target_address_external: POINTER is
+	txnset_event_target_address_external: POINTER is
 			-- Address of C function `TXNSetEventTarget'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1488,14 +1488,14 @@ feature
 			"(void*) TXNSetEventTarget"
 		end
 
-	frozen txnget_event_target_external (itxnobject: POINTER; oeventtarget: POINTER): INTEGER is
+	txnget_event_target_external (itxnobject: POINTER; oeventtarget: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, HIObjectRef*):OSStatus"
 		alias
 			"ewg_function_macro_TXNGetEventTarget"
 		end
 
-	frozen txnget_event_target_address_external: POINTER is
+	txnget_event_target_address_external: POINTER is
 			-- Address of C function `TXNGetEventTarget'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1503,14 +1503,14 @@ feature
 			"(void*) TXNGetEventTarget"
 		end
 
-	frozen txnset_contextual_menu_setup_external (itxnobject: POINTER; imenusetupproc: POINTER; iuserdata: POINTER): INTEGER is
+	txnset_contextual_menu_setup_external (itxnobject: POINTER; imenusetupproc: POINTER; iuserdata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNContextualMenuSetupUPP, void const*):OSStatus"
 		alias
 			"ewg_function_macro_TXNSetContextualMenuSetup"
 		end
 
-	frozen txnset_contextual_menu_setup_address_external: POINTER is
+	txnset_contextual_menu_setup_address_external: POINTER is
 			-- Address of C function `TXNSetContextualMenuSetup'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1518,14 +1518,14 @@ feature
 			"(void*) TXNSetContextualMenuSetup"
 		end
 
-	frozen txnget_accessibility_hiobject_external (itxnobject: POINTER; ohiobjectref: POINTER): INTEGER is
+	txnget_accessibility_hiobject_external (itxnobject: POINTER; ohiobjectref: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, HIObjectRef*):OSStatus"
 		alias
 			"ewg_function_macro_TXNGetAccessibilityHIObject"
 		end
 
-	frozen txnget_accessibility_hiobject_address_external: POINTER is
+	txnget_accessibility_hiobject_address_external: POINTER is
 			-- Address of C function `TXNGetAccessibilityHIObject'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1533,14 +1533,14 @@ feature
 			"(void*) TXNGetAccessibilityHIObject"
 		end
 
-	frozen hitext_view_create_external (inboundsrect: POINTER; inoptions: INTEGER; intxnframeoptions: INTEGER; outtextview: POINTER): INTEGER is
+	hitext_view_create_external (inboundsrect: POINTER; inoptions: INTEGER; intxnframeoptions: INTEGER; outtextview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIRect const*, OptionBits, TXNFrameOptions, HIViewRef*):OSStatus"
 		alias
 			"ewg_function_macro_HITextViewCreate"
 		end
 
-	frozen hitext_view_create_address_external: POINTER is
+	hitext_view_create_address_external: POINTER is
 			-- Address of C function `HITextViewCreate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1548,14 +1548,14 @@ feature
 			"(void*) HITextViewCreate"
 		end
 
-	frozen hitext_view_get_txnobject_external (intextview: POINTER): POINTER is
+	hitext_view_get_txnobject_external (intextview: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):TXNObject"
 		alias
 			"ewg_function_macro_HITextViewGetTXNObject"
 		end
 
-	frozen hitext_view_get_txnobject_address_external: POINTER is
+	hitext_view_get_txnobject_address_external: POINTER is
 			-- Address of C function `HITextViewGetTXNObject'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1563,14 +1563,14 @@ feature
 			"(void*) HITextViewGetTXNObject"
 		end
 
-	frozen hitext_view_set_background_color_external (intextview: POINTER; incolor: POINTER): INTEGER is
+	hitext_view_set_background_color_external (intextview: POINTER; incolor: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, CGColorRef):OSStatus"
 		alias
 			"ewg_function_macro_HITextViewSetBackgroundColor"
 		end
 
-	frozen hitext_view_set_background_color_address_external: POINTER is
+	hitext_view_set_background_color_address_external: POINTER is
 			-- Address of C function `HITextViewSetBackgroundColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1578,14 +1578,14 @@ feature
 			"(void*) HITextViewSetBackgroundColor"
 		end
 
-	frozen hitext_view_copy_background_color_external (intextview: POINTER; outcolor: POINTER): INTEGER is
+	hitext_view_copy_background_color_external (intextview: POINTER; outcolor: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, CGColorRef*):OSStatus"
 		alias
 			"ewg_function_macro_HITextViewCopyBackgroundColor"
 		end
 
-	frozen hitext_view_copy_background_color_address_external: POINTER is
+	hitext_view_copy_background_color_address_external: POINTER is
 			-- Address of C function `HITextViewCopyBackgroundColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1593,14 +1593,14 @@ feature
 			"(void*) HITextViewCopyBackgroundColor"
 		end
 
-	frozen new_txnaction_key_mapper_upp_external (userroutine: POINTER): POINTER is
+	new_txnaction_key_mapper_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNActionKeyMapperProcPtr):TXNActionKeyMapperUPP"
 		alias
 			"ewg_function_macro_NewTXNActionKeyMapperUPP"
 		end
 
-	frozen new_txnaction_key_mapper_upp_address_external: POINTER is
+	new_txnaction_key_mapper_upp_address_external: POINTER is
 			-- Address of C function `NewTXNActionKeyMapperUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1608,14 +1608,14 @@ feature
 			"(void*) NewTXNActionKeyMapperUPP"
 		end
 
-	frozen dispose_txnaction_key_mapper_upp_external (userupp: POINTER) is
+	dispose_txnaction_key_mapper_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNActionKeyMapperUPP)"
 		alias
 			"ewg_function_macro_DisposeTXNActionKeyMapperUPP"
 		end
 
-	frozen dispose_txnaction_key_mapper_upp_address_external: POINTER is
+	dispose_txnaction_key_mapper_upp_address_external: POINTER is
 			-- Address of C function `DisposeTXNActionKeyMapperUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1623,14 +1623,14 @@ feature
 			"(void*) DisposeTXNActionKeyMapperUPP"
 		end
 
-	frozen invoke_txnaction_key_mapper_upp_external (actionkey: INTEGER; commandid: INTEGER; userupp: POINTER): POINTER is
+	invoke_txnaction_key_mapper_upp_external (actionkey: INTEGER; commandid: INTEGER; userupp: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNActionKey, UInt32, TXNActionKeyMapperUPP):CFStringRef"
 		alias
 			"ewg_function_macro_InvokeTXNActionKeyMapperUPP"
 		end
 
-	frozen invoke_txnaction_key_mapper_upp_address_external: POINTER is
+	invoke_txnaction_key_mapper_upp_address_external: POINTER is
 			-- Address of C function `InvokeTXNActionKeyMapperUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1638,14 +1638,14 @@ feature
 			"(void*) InvokeTXNActionKeyMapperUPP"
 		end
 
-	frozen txnset_view_rect_external (itxnobject: POINTER; iviewrect: POINTER) is
+	txnset_view_rect_external (itxnobject: POINTER; iviewrect: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, Rect const*)"
 		alias
 			"ewg_function_macro_TXNSetViewRect"
 		end
 
-	frozen txnset_view_rect_address_external: POINTER is
+	txnset_view_rect_address_external: POINTER is
 			-- Address of C function `TXNSetViewRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1653,14 +1653,14 @@ feature
 			"(void*) TXNSetViewRect"
 		end
 
-	frozen txnnew_object_external (ifilespec: POINTER; iwindow: POINTER; iframe: POINTER; iframeoptions: INTEGER; iframetype: INTEGER; ifiletype: INTEGER; ipermanentencoding: INTEGER; otxnobject: POINTER; otxnframeid: POINTER; irefcon: POINTER): INTEGER is
+	txnnew_object_external (ifilespec: POINTER; iwindow: POINTER; iframe: POINTER; iframeoptions: INTEGER; iframetype: INTEGER; ifiletype: INTEGER; ipermanentencoding: INTEGER; otxnobject: POINTER; otxnframeid: POINTER; irefcon: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (FSSpec const*, WindowRef, Rect const*, TXNFrameOptions, TXNFrameType, TXNFileType, TXNPermanentTextEncodingType, TXNObject*, TXNFrameID*, TXNObjectRefcon):OSStatus"
 		alias
 			"ewg_function_macro_TXNNewObject"
 		end
 
-	frozen txnnew_object_address_external: POINTER is
+	txnnew_object_address_external: POINTER is
 			-- Address of C function `TXNNewObject'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1668,14 +1668,14 @@ feature
 			"(void*) TXNNewObject"
 		end
 
-	frozen txnterminate_textension_external is
+	txnterminate_textension_external is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] "
 		alias
 			"ewg_function_macro_TXNTerminateTextension"
 		end
 
-	frozen txnterminate_textension_address_external: POINTER is
+	txnterminate_textension_address_external: POINTER is
 			-- Address of C function `TXNTerminateTextension'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1683,14 +1683,14 @@ feature
 			"(void*) TXNTerminateTextension"
 		end
 
-	frozen txnset_data_from_file_external (itxnobject: POINTER; ifilerefnum: INTEGER; ifiletype: INTEGER; ifilelength: INTEGER; istartoffset: INTEGER; iendoffset: INTEGER): INTEGER is
+	txnset_data_from_file_external (itxnobject: POINTER; ifilerefnum: INTEGER; ifiletype: INTEGER; ifilelength: INTEGER; istartoffset: INTEGER; iendoffset: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, SInt16, OSType, ByteCount, TXNOffset, TXNOffset):OSStatus"
 		alias
 			"ewg_function_macro_TXNSetDataFromFile"
 		end
 
-	frozen txnset_data_from_file_address_external: POINTER is
+	txnset_data_from_file_address_external: POINTER is
 			-- Address of C function `TXNSetDataFromFile'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1698,14 +1698,14 @@ feature
 			"(void*) TXNSetDataFromFile"
 		end
 
-	frozen txnconvert_to_public_scrap_external: INTEGER is
+	txnconvert_to_public_scrap_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :OSStatus"
 		alias
 			"ewg_function_macro_TXNConvertToPublicScrap"
 		end
 
-	frozen txnconvert_to_public_scrap_address_external: POINTER is
+	txnconvert_to_public_scrap_address_external: POINTER is
 			-- Address of C function `TXNConvertToPublicScrap'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1713,14 +1713,14 @@ feature
 			"(void*) TXNConvertToPublicScrap"
 		end
 
-	frozen txnconvert_from_public_scrap_external: INTEGER is
+	txnconvert_from_public_scrap_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :OSStatus"
 		alias
 			"ewg_function_macro_TXNConvertFromPublicScrap"
 		end
 
-	frozen txnconvert_from_public_scrap_address_external: POINTER is
+	txnconvert_from_public_scrap_address_external: POINTER is
 			-- Address of C function `TXNConvertFromPublicScrap'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1728,14 +1728,14 @@ feature
 			"(void*) TXNConvertFromPublicScrap"
 		end
 
-	frozen txndraw_external (itxnobject: POINTER; idrawport: POINTER) is
+	txndraw_external (itxnobject: POINTER; idrawport: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, GWorldPtr)"
 		alias
 			"ewg_function_macro_TXNDraw"
 		end
 
-	frozen txndraw_address_external: POINTER is
+	txndraw_address_external: POINTER is
 			-- Address of C function `TXNDraw'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1743,14 +1743,14 @@ feature
 			"(void*) TXNDraw"
 		end
 
-	frozen txnattach_object_to_window_external (itxnobject: POINTER; iwindow: POINTER; iisactualwindow: INTEGER): INTEGER is
+	txnattach_object_to_window_external (itxnobject: POINTER; iwindow: POINTER; iisactualwindow: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, GWorldPtr, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_TXNAttachObjectToWindow"
 		end
 
-	frozen txnattach_object_to_window_address_external: POINTER is
+	txnattach_object_to_window_address_external: POINTER is
 			-- Address of C function `TXNAttachObjectToWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1758,14 +1758,14 @@ feature
 			"(void*) TXNAttachObjectToWindow"
 		end
 
-	frozen txnis_object_attached_to_window_external (itxnobject: POINTER): INTEGER is
+	txnis_object_attached_to_window_external (itxnobject: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject):Boolean"
 		alias
 			"ewg_function_macro_TXNIsObjectAttachedToWindow"
 		end
 
-	frozen txnis_object_attached_to_window_address_external: POINTER is
+	txnis_object_attached_to_window_address_external: POINTER is
 			-- Address of C function `TXNIsObjectAttachedToWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1773,14 +1773,14 @@ feature
 			"(void*) TXNIsObjectAttachedToWindow"
 		end
 
-	frozen txnis_object_attached_to_specific_window_external (itxnobject: POINTER; iwindow: POINTER; oattached: POINTER): INTEGER is
+	txnis_object_attached_to_specific_window_external (itxnobject: POINTER; iwindow: POINTER; oattached: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, WindowRef, Boolean*):OSStatus"
 		alias
 			"ewg_function_macro_TXNIsObjectAttachedToSpecificWindow"
 		end
 
-	frozen txnis_object_attached_to_specific_window_address_external: POINTER is
+	txnis_object_attached_to_specific_window_address_external: POINTER is
 			-- Address of C function `TXNIsObjectAttachedToSpecificWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1788,14 +1788,14 @@ feature
 			"(void*) TXNIsObjectAttachedToSpecificWindow"
 		end
 
-	frozen txnset_rect_bounds_external (itxnobject: POINTER; iviewrect: POINTER; idestinationrect: POINTER; iupdate: INTEGER) is
+	txnset_rect_bounds_external (itxnobject: POINTER; iviewrect: POINTER; idestinationrect: POINTER; iupdate: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, Rect const*, TXNLongRect const*, Boolean)"
 		alias
 			"ewg_function_macro_TXNSetRectBounds"
 		end
 
-	frozen txnset_rect_bounds_address_external: POINTER is
+	txnset_rect_bounds_address_external: POINTER is
 			-- Address of C function `TXNSetRectBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1803,14 +1803,14 @@ feature
 			"(void*) TXNSetRectBounds"
 		end
 
-	frozen txnget_rect_bounds_external (itxnobject: POINTER; oviewrect: POINTER; odestinationrect: POINTER; otextrect: POINTER): INTEGER is
+	txnget_rect_bounds_external (itxnobject: POINTER; oviewrect: POINTER; odestinationrect: POINTER; otextrect: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, Rect*, TXNLongRect*, TXNLongRect*):OSStatus"
 		alias
 			"ewg_function_macro_TXNGetRectBounds"
 		end
 
-	frozen txnget_rect_bounds_address_external: POINTER is
+	txnget_rect_bounds_address_external: POINTER is
 			-- Address of C function `TXNGetRectBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1818,14 +1818,14 @@ feature
 			"(void*) TXNGetRectBounds"
 		end
 
-	frozen txnactivate_external (itxnobject: POINTER; itxnframeid: INTEGER; iactivestate: INTEGER): INTEGER is
+	txnactivate_external (itxnobject: POINTER; itxnframeid: INTEGER; iactivestate: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNFrameID, TXNScrollBarState):OSStatus"
 		alias
 			"ewg_function_macro_TXNActivate"
 		end
 
-	frozen txnactivate_address_external: POINTER is
+	txnactivate_address_external: POINTER is
 			-- Address of C function `TXNActivate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1833,14 +1833,14 @@ feature
 			"(void*) TXNActivate"
 		end
 
-	frozen txnpoint_to_offset_external (itxnobject: POINTER; ipoint: POINTER; ooffset: POINTER): INTEGER is
+	txnpoint_to_offset_external (itxnobject: POINTER; ipoint: POINTER; ooffset: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, Point*, TXNOffset*):OSStatus"
 		alias
 			"ewg_function_macro_TXNPointToOffset"
 		end
 
-	frozen txnpoint_to_offset_address_external: POINTER is
+	txnpoint_to_offset_address_external: POINTER is
 			-- Address of C function `TXNPointToOffset'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1848,14 +1848,14 @@ feature
 			"(void*) TXNPointToOffset"
 		end
 
-	frozen txnoffset_to_point_external (itxnobject: POINTER; ioffset: INTEGER; opoint: POINTER): INTEGER is
+	txnoffset_to_point_external (itxnobject: POINTER; ioffset: INTEGER; opoint: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNOffset, Point*):OSStatus"
 		alias
 			"ewg_function_macro_TXNOffsetToPoint"
 		end
 
-	frozen txnoffset_to_point_address_external: POINTER is
+	txnoffset_to_point_address_external: POINTER is
 			-- Address of C function `TXNOffsetToPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1863,14 +1863,14 @@ feature
 			"(void*) TXNOffsetToPoint"
 		end
 
-	frozen txncan_undo_external (itxnobject: POINTER; otxnactionkey: POINTER): INTEGER is
+	txncan_undo_external (itxnobject: POINTER; otxnactionkey: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNActionKey*):Boolean"
 		alias
 			"ewg_function_macro_TXNCanUndo"
 		end
 
-	frozen txncan_undo_address_external: POINTER is
+	txncan_undo_address_external: POINTER is
 			-- Address of C function `TXNCanUndo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1878,14 +1878,14 @@ feature
 			"(void*) TXNCanUndo"
 		end
 
-	frozen txncan_redo_external (itxnobject: POINTER; otxnactionkey: POINTER): INTEGER is
+	txncan_redo_external (itxnobject: POINTER; otxnactionkey: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNActionKey*):Boolean"
 		alias
 			"ewg_function_macro_TXNCanRedo"
 		end
 
-	frozen txncan_redo_address_external: POINTER is
+	txncan_redo_address_external: POINTER is
 			-- Address of C function `TXNCanRedo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1893,14 +1893,14 @@ feature
 			"(void*) TXNCanRedo"
 		end
 
-	frozen txnget_action_change_count_external (itxnobject: POINTER; ioptions: INTEGER; ocount: POINTER): INTEGER is
+	txnget_action_change_count_external (itxnobject: POINTER; ioptions: INTEGER; ocount: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNCountOptions, ItemCount*):OSStatus"
 		alias
 			"ewg_function_macro_TXNGetActionChangeCount"
 		end
 
-	frozen txnget_action_change_count_address_external: POINTER is
+	txnget_action_change_count_address_external: POINTER is
 			-- Address of C function `TXNGetActionChangeCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1908,14 +1908,14 @@ feature
 			"(void*) TXNGetActionChangeCount"
 		end
 
-	frozen txnclear_action_change_count_external (itxnobject: POINTER; ioptions: INTEGER): INTEGER is
+	txnclear_action_change_count_external (itxnobject: POINTER; ioptions: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNCountOptions):OSStatus"
 		alias
 			"ewg_function_macro_TXNClearActionChangeCount"
 		end
 
-	frozen txnclear_action_change_count_address_external: POINTER is
+	txnclear_action_change_count_address_external: POINTER is
 			-- Address of C function `TXNClearActionChangeCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1923,14 +1923,14 @@ feature
 			"(void*) TXNClearActionChangeCount"
 		end
 
-	frozen txnset_data_from_cfurlref_external (itxnobject: POINTER; iurl: POINTER; istartoffset: INTEGER; iendoffset: INTEGER): INTEGER is
+	txnset_data_from_cfurlref_external (itxnobject: POINTER; iurl: POINTER; istartoffset: INTEGER; iendoffset: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, CFURLRef, TXNOffset, TXNOffset):OSStatus"
 		alias
 			"ewg_function_macro_TXNSetDataFromCFURLRef"
 		end
 
-	frozen txnset_data_from_cfurlref_address_external: POINTER is
+	txnset_data_from_cfurlref_address_external: POINTER is
 			-- Address of C function `TXNSetDataFromCFURLRef'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1938,14 +1938,14 @@ feature
 			"(void*) TXNSetDataFromCFURLRef"
 		end
 
-	frozen txnsave_external (itxnobject: POINTER; itype: INTEGER; irestype: INTEGER; ipermanentencoding: INTEGER; ifilespecification: POINTER; idatareference: INTEGER; iresourcereference: INTEGER): INTEGER is
+	txnsave_external (itxnobject: POINTER; itype: INTEGER; irestype: INTEGER; ipermanentencoding: INTEGER; ifilespecification: POINTER; idatareference: INTEGER; iresourcereference: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (TXNObject, TXNFileType, OSType, TXNPermanentTextEncodingType, FSSpec const*, SInt16, SInt16):OSStatus"
 		alias
 			"ewg_function_macro_TXNSave"
 		end
 
-	frozen txnsave_address_external: POINTER is
+	txnsave_address_external: POINTER is
 			-- Address of C function `TXNSave'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

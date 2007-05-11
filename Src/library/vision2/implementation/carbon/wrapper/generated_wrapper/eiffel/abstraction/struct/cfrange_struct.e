@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_location: INTEGER is
+		obsolete "Use `location' instead."
+			-- Access member `location'
+		require
+			exists: exists
+		do
+			Result := get_location_external (item)
+		ensure
+			result_correct: Result = get_location_external (item)
+		end
 
 	location: INTEGER is
 			-- Access member `location'
@@ -45,6 +56,17 @@ feature {ANY} -- Member Access
 			set_location_external (item, a_value)
 		ensure
 			a_value_set: a_value = location
+		end
+
+	get_length: INTEGER is
+		obsolete "Use `length' instead."
+			-- Access member `length'
+		require
+			exists: exists
+		do
+			Result := get_length_external (item)
+		ensure
+			result_correct: Result = get_length_external (item)
 		end
 
 	length: INTEGER is

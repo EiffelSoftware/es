@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_origin: POINTER is
+		obsolete "Use `origin' instead."
+			-- Access member `origin'
+		require
+			exists: exists
+		do
+			Result := get_origin_external (item)
+		ensure
+			result_correct: Result = get_origin_external (item)
+		end
 
 	origin: POINTER is
 			-- Access member `origin'
@@ -43,6 +54,17 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_origin_external (item, a_value)
+		end
+
+	get_size: POINTER is
+		obsolete "Use `size' instead."
+			-- Access member `size'
+		require
+			exists: exists
+		do
+			Result := get_size_external (item)
+		ensure
+			result_correct: Result = get_size_external (item)
 		end
 
 	size: POINTER is

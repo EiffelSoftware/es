@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -49,6 +49,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value.item = toview
 		end
 
+	get_toview: POINTER is
+		obsolete "Use `toview' instead."
+			-- Access member `toView'
+		require
+			exists: exists
+		do
+			Result := get_toview_external (item)
+		ensure
+			result_correct: Result = get_toview_external (item)
+		end
+
 	toview: POINTER is
 			-- Access member `toView'
 		require
@@ -69,6 +80,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = toview
 		end
 
+	get_kind: INTEGER is
+		obsolete "Use `kind' instead."
+			-- Access member `kind'
+		require
+			exists: exists
+		do
+			Result := get_kind_external (item)
+		ensure
+			result_correct: Result = get_kind_external (item)
+		end
+
 	kind: INTEGER is
 			-- Access member `kind'
 		require
@@ -87,6 +109,17 @@ feature {ANY} -- Member Access
 			set_kind_external (item, a_value)
 		ensure
 			a_value_set: a_value = kind
+		end
+
+	get_offset: REAL is
+		obsolete "Use `offset' instead."
+			-- Access member `offset'
+		require
+			exists: exists
+		do
+			Result := get_offset_external (item)
+		ensure
+			result_correct: Result = get_offset_external (item)
 		end
 
 	offset: REAL is

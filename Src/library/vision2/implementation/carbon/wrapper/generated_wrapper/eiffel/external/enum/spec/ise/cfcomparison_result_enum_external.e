@@ -9,21 +9,21 @@ feature {ANY}
 			Result := a_value = kcfcomparelessthan or a_value = kcfcompareequalto or a_value = kcfcomparegreaterthan
 		end
 
-	 frozen kcfcomparelessthan: INTEGER is
+	kcfcomparelessthan: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCFCompareLessThan"
 		end
 
-	 frozen kcfcompareequalto: INTEGER is
+	kcfcompareequalto: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCFCompareEqualTo"
 		end
 
-	 frozen kcfcomparegreaterthan: INTEGER is
+	kcfcomparegreaterthan: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias

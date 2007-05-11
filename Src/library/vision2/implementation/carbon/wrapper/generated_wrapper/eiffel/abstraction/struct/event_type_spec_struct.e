@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_eventclass: INTEGER is
+		obsolete "Use `eventclass' instead."
+			-- Access member `eventClass'
+		require
+			exists: exists
+		do
+			Result := get_eventclass_external (item)
+		ensure
+			result_correct: Result = get_eventclass_external (item)
+		end
 
 	eventclass: INTEGER is
 			-- Access member `eventClass'
@@ -45,6 +56,17 @@ feature {ANY} -- Member Access
 			set_eventclass_external (item, a_value)
 		ensure
 			a_value_set: a_value = eventclass
+		end
+
+	get_eventkind: INTEGER is
+		obsolete "Use `eventkind' instead."
+			-- Access member `eventKind'
+		require
+			exists: exists
+		do
+			Result := get_eventkind_external (item)
+		ensure
+			result_correct: Result = get_eventkind_external (item)
 		end
 
 	eventkind: INTEGER is

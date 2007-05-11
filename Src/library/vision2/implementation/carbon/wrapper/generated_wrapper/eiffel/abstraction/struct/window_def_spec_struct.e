@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_deftype: INTEGER is
+		obsolete "Use `deftype' instead."
+			-- Access member `defType'
+		require
+			exists: exists
+		do
+			Result := get_deftype_external (item)
+		ensure
+			result_correct: Result = get_deftype_external (item)
+		end
 
 	deftype: INTEGER is
 			-- Access member `defType'

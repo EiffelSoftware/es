@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_picsize: INTEGER is
+		obsolete "Use `picsize' instead."
+			-- Access member `picSize'
+		require
+			exists: exists
+		do
+			Result := get_picsize_external (item)
+		ensure
+			result_correct: Result = get_picsize_external (item)
+		end
 
 	picsize: INTEGER is
 			-- Access member `picSize'
@@ -45,6 +56,17 @@ feature {ANY} -- Member Access
 			set_picsize_external (item, a_value)
 		ensure
 			a_value_set: a_value = picsize
+		end
+
+	get_picframe: POINTER is
+		obsolete "Use `picframe' instead."
+			-- Access member `picFrame'
+		require
+			exists: exists
+		do
+			Result := get_picframe_external (item)
+		ensure
+			result_correct: Result = get_picframe_external (item)
 		end
 
 	picframe: POINTER is

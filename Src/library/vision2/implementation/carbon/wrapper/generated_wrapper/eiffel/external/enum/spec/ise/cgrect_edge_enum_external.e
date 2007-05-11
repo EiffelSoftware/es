@@ -9,28 +9,28 @@ feature {ANY}
 			Result := a_value = cgrectminxedge or a_value = cgrectminyedge or a_value = cgrectmaxxedge or a_value = cgrectmaxyedge
 		end
 
-	 frozen cgrectminxedge: INTEGER is
+	cgrectminxedge: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"CGRectMinXEdge"
 		end
 
-	 frozen cgrectminyedge: INTEGER is
+	cgrectminyedge: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"CGRectMinYEdge"
 		end
 
-	 frozen cgrectmaxxedge: INTEGER is
+	cgrectmaxxedge: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"CGRectMaxXEdge"
 		end
 
-	 frozen cgrectmaxyedge: INTEGER is
+	cgrectmaxyedge: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias

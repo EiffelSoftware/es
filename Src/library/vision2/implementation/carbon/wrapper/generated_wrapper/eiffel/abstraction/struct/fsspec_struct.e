@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_vrefnum: INTEGER is
+		obsolete "Use `vrefnum' instead."
+			-- Access member `vRefNum'
+		require
+			exists: exists
+		do
+			Result := get_vrefnum_external (item)
+		ensure
+			result_correct: Result = get_vrefnum_external (item)
+		end
 
 	vrefnum: INTEGER is
 			-- Access member `vRefNum'
@@ -47,6 +58,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = vrefnum
 		end
 
+	get_parid: INTEGER is
+		obsolete "Use `parid' instead."
+			-- Access member `parID'
+		require
+			exists: exists
+		do
+			Result := get_parid_external (item)
+		ensure
+			result_correct: Result = get_parid_external (item)
+		end
+
 	parid: INTEGER is
 			-- Access member `parID'
 		require
@@ -65,6 +87,17 @@ feature {ANY} -- Member Access
 			set_parid_external (item, a_value)
 		ensure
 			a_value_set: a_value = parid
+		end
+
+	get_name: POINTER is
+		obsolete "Use `name' instead."
+			-- Access member `name'
+		require
+			exists: exists
+		do
+			Result := get_name_external (item)
+		ensure
+			result_correct: Result = get_name_external (item)
 		end
 
 	name: POINTER is

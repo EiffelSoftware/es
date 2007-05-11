@@ -3,14 +3,14 @@
 class HIVIEW_FUNCTIONS_EXTERNAL
 
 feature
-	frozen hiview_get_root_external (inwindow: POINTER): POINTER is
+	hiview_get_root_external (inwindow: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):HIViewRef"
 		alias
 			"ewg_function_macro_HIViewGetRoot"
 		end
 
-	frozen hiview_get_root_address_external: POINTER is
+	hiview_get_root_address_external: POINTER is
 			-- Address of C function `HIViewGetRoot'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -18,14 +18,14 @@ feature
 			"(void*) HIViewGetRoot"
 		end
 
-	frozen hiview_add_subview_external (inparent: POINTER; innewchild: POINTER): INTEGER is
+	hiview_add_subview_external (inparent: POINTER; innewchild: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIViewRef):OSStatus"
 		alias
 			"ewg_function_macro_HIViewAddSubview"
 		end
 
-	frozen hiview_add_subview_address_external: POINTER is
+	hiview_add_subview_address_external: POINTER is
 			-- Address of C function `HIViewAddSubview'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -33,14 +33,14 @@ feature
 			"(void*) HIViewAddSubview"
 		end
 
-	frozen hiview_remove_from_superview_external (inview: POINTER): INTEGER is
+	hiview_remove_from_superview_external (inview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):OSStatus"
 		alias
 			"ewg_function_macro_HIViewRemoveFromSuperview"
 		end
 
-	frozen hiview_remove_from_superview_address_external: POINTER is
+	hiview_remove_from_superview_address_external: POINTER is
 			-- Address of C function `HIViewRemoveFromSuperview'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -48,14 +48,14 @@ feature
 			"(void*) HIViewRemoveFromSuperview"
 		end
 
-	frozen hiview_get_superview_external (inview: POINTER): POINTER is
+	hiview_get_superview_external (inview: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):HIViewRef"
 		alias
 			"ewg_function_macro_HIViewGetSuperview"
 		end
 
-	frozen hiview_get_superview_address_external: POINTER is
+	hiview_get_superview_address_external: POINTER is
 			-- Address of C function `HIViewGetSuperview'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -63,14 +63,14 @@ feature
 			"(void*) HIViewGetSuperview"
 		end
 
-	frozen hiview_get_first_subview_external (inview: POINTER): POINTER is
+	hiview_get_first_subview_external (inview: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):HIViewRef"
 		alias
 			"ewg_function_macro_HIViewGetFirstSubview"
 		end
 
-	frozen hiview_get_first_subview_address_external: POINTER is
+	hiview_get_first_subview_address_external: POINTER is
 			-- Address of C function `HIViewGetFirstSubview'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -78,14 +78,14 @@ feature
 			"(void*) HIViewGetFirstSubview"
 		end
 
-	frozen hiview_get_last_subview_external (inview: POINTER): POINTER is
+	hiview_get_last_subview_external (inview: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):HIViewRef"
 		alias
 			"ewg_function_macro_HIViewGetLastSubview"
 		end
 
-	frozen hiview_get_last_subview_address_external: POINTER is
+	hiview_get_last_subview_address_external: POINTER is
 			-- Address of C function `HIViewGetLastSubview'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -93,14 +93,14 @@ feature
 			"(void*) HIViewGetLastSubview"
 		end
 
-	frozen hiview_get_next_view_external (inview: POINTER): POINTER is
+	hiview_get_next_view_external (inview: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):HIViewRef"
 		alias
 			"ewg_function_macro_HIViewGetNextView"
 		end
 
-	frozen hiview_get_next_view_address_external: POINTER is
+	hiview_get_next_view_address_external: POINTER is
 			-- Address of C function `HIViewGetNextView'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -108,14 +108,14 @@ feature
 			"(void*) HIViewGetNextView"
 		end
 
-	frozen hiview_get_previous_view_external (inview: POINTER): POINTER is
+	hiview_get_previous_view_external (inview: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):HIViewRef"
 		alias
 			"ewg_function_macro_HIViewGetPreviousView"
 		end
 
-	frozen hiview_get_previous_view_address_external: POINTER is
+	hiview_get_previous_view_address_external: POINTER is
 			-- Address of C function `HIViewGetPreviousView'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -123,14 +123,14 @@ feature
 			"(void*) HIViewGetPreviousView"
 		end
 
-	frozen hiview_count_subviews_external (inview: POINTER): INTEGER is
+	hiview_count_subviews_external (inview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):CFIndex"
 		alias
 			"ewg_function_macro_HIViewCountSubviews"
 		end
 
-	frozen hiview_count_subviews_address_external: POINTER is
+	hiview_count_subviews_address_external: POINTER is
 			-- Address of C function `HIViewCountSubviews'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -138,14 +138,14 @@ feature
 			"(void*) HIViewCountSubviews"
 		end
 
-	frozen hiview_get_indexed_subview_external (inview: POINTER; insubviewindex: INTEGER; outsubview: POINTER): INTEGER is
+	hiview_get_indexed_subview_external (inview: POINTER; insubviewindex: INTEGER; outsubview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, CFIndex, HIViewRef*):OSStatus"
 		alias
 			"ewg_function_macro_HIViewGetIndexedSubview"
 		end
 
-	frozen hiview_get_indexed_subview_address_external: POINTER is
+	hiview_get_indexed_subview_address_external: POINTER is
 			-- Address of C function `HIViewGetIndexedSubview'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -153,14 +153,14 @@ feature
 			"(void*) HIViewGetIndexedSubview"
 		end
 
-	frozen hiview_set_zorder_external (inview: POINTER; inop: INTEGER; inother: POINTER): INTEGER is
+	hiview_set_zorder_external (inview: POINTER; inop: INTEGER; inother: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIViewZOrderOp, HIViewRef):OSStatus"
 		alias
 			"ewg_function_macro_HIViewSetZOrder"
 		end
 
-	frozen hiview_set_zorder_address_external: POINTER is
+	hiview_set_zorder_address_external: POINTER is
 			-- Address of C function `HIViewSetZOrder'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -168,14 +168,14 @@ feature
 			"(void*) HIViewSetZOrder"
 		end
 
-	frozen hiview_set_visible_external (inview: POINTER; invisible: INTEGER): INTEGER is
+	hiview_set_visible_external (inview: POINTER; invisible: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_HIViewSetVisible"
 		end
 
-	frozen hiview_set_visible_address_external: POINTER is
+	hiview_set_visible_address_external: POINTER is
 			-- Address of C function `HIViewSetVisible'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -183,14 +183,14 @@ feature
 			"(void*) HIViewSetVisible"
 		end
 
-	frozen hiview_is_visible_external (inview: POINTER): INTEGER is
+	hiview_is_visible_external (inview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):Boolean"
 		alias
 			"ewg_function_macro_HIViewIsVisible"
 		end
 
-	frozen hiview_is_visible_address_external: POINTER is
+	hiview_is_visible_address_external: POINTER is
 			-- Address of C function `HIViewIsVisible'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -198,14 +198,14 @@ feature
 			"(void*) HIViewIsVisible"
 		end
 
-	frozen hiview_is_latently_visible_external (inview: POINTER): INTEGER is
+	hiview_is_latently_visible_external (inview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):Boolean"
 		alias
 			"ewg_function_macro_HIViewIsLatentlyVisible"
 		end
 
-	frozen hiview_is_latently_visible_address_external: POINTER is
+	hiview_is_latently_visible_address_external: POINTER is
 			-- Address of C function `HIViewIsLatentlyVisible'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -213,14 +213,14 @@ feature
 			"(void*) HIViewIsLatentlyVisible"
 		end
 
-	frozen hiview_set_hilite_external (inview: POINTER; inhilitepart: INTEGER): INTEGER is
+	hiview_set_hilite_external (inview: POINTER; inhilitepart: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIViewPartCode):OSStatus"
 		alias
 			"ewg_function_macro_HIViewSetHilite"
 		end
 
-	frozen hiview_set_hilite_address_external: POINTER is
+	hiview_set_hilite_address_external: POINTER is
 			-- Address of C function `HIViewSetHilite'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -228,14 +228,14 @@ feature
 			"(void*) HIViewSetHilite"
 		end
 
-	frozen hiview_is_active_external (inview: POINTER; outislatentactive: POINTER): INTEGER is
+	hiview_is_active_external (inview: POINTER; outislatentactive: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, Boolean*):Boolean"
 		alias
 			"ewg_function_macro_HIViewIsActive"
 		end
 
-	frozen hiview_is_active_address_external: POINTER is
+	hiview_is_active_address_external: POINTER is
 			-- Address of C function `HIViewIsActive'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -243,14 +243,14 @@ feature
 			"(void*) HIViewIsActive"
 		end
 
-	frozen hiview_set_activated_external (inview: POINTER; insetactivated: INTEGER): INTEGER is
+	hiview_set_activated_external (inview: POINTER; insetactivated: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_HIViewSetActivated"
 		end
 
-	frozen hiview_set_activated_address_external: POINTER is
+	hiview_set_activated_address_external: POINTER is
 			-- Address of C function `HIViewSetActivated'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -258,14 +258,14 @@ feature
 			"(void*) HIViewSetActivated"
 		end
 
-	frozen hiview_is_enabled_external (inview: POINTER; outislatentenabled: POINTER): INTEGER is
+	hiview_is_enabled_external (inview: POINTER; outislatentenabled: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, Boolean*):Boolean"
 		alias
 			"ewg_function_macro_HIViewIsEnabled"
 		end
 
-	frozen hiview_is_enabled_address_external: POINTER is
+	hiview_is_enabled_address_external: POINTER is
 			-- Address of C function `HIViewIsEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -273,14 +273,14 @@ feature
 			"(void*) HIViewIsEnabled"
 		end
 
-	frozen hiview_set_enabled_external (inview: POINTER; insetenabled: INTEGER): INTEGER is
+	hiview_set_enabled_external (inview: POINTER; insetenabled: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_HIViewSetEnabled"
 		end
 
-	frozen hiview_set_enabled_address_external: POINTER is
+	hiview_set_enabled_address_external: POINTER is
 			-- Address of C function `HIViewSetEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -288,14 +288,14 @@ feature
 			"(void*) HIViewSetEnabled"
 		end
 
-	frozen hiview_is_compositing_enabled_external (inview: POINTER): INTEGER is
+	hiview_is_compositing_enabled_external (inview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):Boolean"
 		alias
 			"ewg_function_macro_HIViewIsCompositingEnabled"
 		end
 
-	frozen hiview_is_compositing_enabled_address_external: POINTER is
+	hiview_is_compositing_enabled_address_external: POINTER is
 			-- Address of C function `HIViewIsCompositingEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -303,14 +303,14 @@ feature
 			"(void*) HIViewIsCompositingEnabled"
 		end
 
-	frozen hiview_set_text_external (inview: POINTER; intext: POINTER): INTEGER is
+	hiview_set_text_external (inview: POINTER; intext: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, CFStringRef):OSStatus"
 		alias
 			"ewg_function_macro_HIViewSetText"
 		end
 
-	frozen hiview_set_text_address_external: POINTER is
+	hiview_set_text_address_external: POINTER is
 			-- Address of C function `HIViewSetText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -318,14 +318,14 @@ feature
 			"(void*) HIViewSetText"
 		end
 
-	frozen hiview_copy_text_external (inview: POINTER): POINTER is
+	hiview_copy_text_external (inview: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):CFStringRef"
 		alias
 			"ewg_function_macro_HIViewCopyText"
 		end
 
-	frozen hiview_copy_text_address_external: POINTER is
+	hiview_copy_text_address_external: POINTER is
 			-- Address of C function `HIViewCopyText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -333,14 +333,14 @@ feature
 			"(void*) HIViewCopyText"
 		end
 
-	frozen hiview_get_value_external (inview: POINTER): INTEGER is
+	hiview_get_value_external (inview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):SInt32"
 		alias
 			"ewg_function_macro_HIViewGetValue"
 		end
 
-	frozen hiview_get_value_address_external: POINTER is
+	hiview_get_value_address_external: POINTER is
 			-- Address of C function `HIViewGetValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -348,14 +348,14 @@ feature
 			"(void*) HIViewGetValue"
 		end
 
-	frozen hiview_set_value_external (inview: POINTER; invalue: INTEGER): INTEGER is
+	hiview_set_value_external (inview: POINTER; invalue: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, SInt32):OSStatus"
 		alias
 			"ewg_function_macro_HIViewSetValue"
 		end
 
-	frozen hiview_set_value_address_external: POINTER is
+	hiview_set_value_address_external: POINTER is
 			-- Address of C function `HIViewSetValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -363,14 +363,14 @@ feature
 			"(void*) HIViewSetValue"
 		end
 
-	frozen hiview_get_minimum_external (inview: POINTER): INTEGER is
+	hiview_get_minimum_external (inview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):SInt32"
 		alias
 			"ewg_function_macro_HIViewGetMinimum"
 		end
 
-	frozen hiview_get_minimum_address_external: POINTER is
+	hiview_get_minimum_address_external: POINTER is
 			-- Address of C function `HIViewGetMinimum'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -378,14 +378,14 @@ feature
 			"(void*) HIViewGetMinimum"
 		end
 
-	frozen hiview_set_minimum_external (inview: POINTER; inminimum: INTEGER): INTEGER is
+	hiview_set_minimum_external (inview: POINTER; inminimum: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, SInt32):OSStatus"
 		alias
 			"ewg_function_macro_HIViewSetMinimum"
 		end
 
-	frozen hiview_set_minimum_address_external: POINTER is
+	hiview_set_minimum_address_external: POINTER is
 			-- Address of C function `HIViewSetMinimum'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -393,14 +393,14 @@ feature
 			"(void*) HIViewSetMinimum"
 		end
 
-	frozen hiview_get_maximum_external (inview: POINTER): INTEGER is
+	hiview_get_maximum_external (inview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):SInt32"
 		alias
 			"ewg_function_macro_HIViewGetMaximum"
 		end
 
-	frozen hiview_get_maximum_address_external: POINTER is
+	hiview_get_maximum_address_external: POINTER is
 			-- Address of C function `HIViewGetMaximum'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -408,14 +408,14 @@ feature
 			"(void*) HIViewGetMaximum"
 		end
 
-	frozen hiview_set_maximum_external (inview: POINTER; inmaximum: INTEGER): INTEGER is
+	hiview_set_maximum_external (inview: POINTER; inmaximum: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, SInt32):OSStatus"
 		alias
 			"ewg_function_macro_HIViewSetMaximum"
 		end
 
-	frozen hiview_set_maximum_address_external: POINTER is
+	hiview_set_maximum_address_external: POINTER is
 			-- Address of C function `HIViewSetMaximum'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -423,14 +423,14 @@ feature
 			"(void*) HIViewSetMaximum"
 		end
 
-	frozen hiview_get_view_size_external (inview: POINTER): INTEGER is
+	hiview_get_view_size_external (inview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):SInt32"
 		alias
 			"ewg_function_macro_HIViewGetViewSize"
 		end
 
-	frozen hiview_get_view_size_address_external: POINTER is
+	hiview_get_view_size_address_external: POINTER is
 			-- Address of C function `HIViewGetViewSize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -438,14 +438,14 @@ feature
 			"(void*) HIViewGetViewSize"
 		end
 
-	frozen hiview_set_view_size_external (inview: POINTER; inviewsize: INTEGER): INTEGER is
+	hiview_set_view_size_external (inview: POINTER; inviewsize: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, SInt32):OSStatus"
 		alias
 			"ewg_function_macro_HIViewSetViewSize"
 		end
 
-	frozen hiview_set_view_size_address_external: POINTER is
+	hiview_set_view_size_address_external: POINTER is
 			-- Address of C function `HIViewSetViewSize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -453,14 +453,14 @@ feature
 			"(void*) HIViewSetViewSize"
 		end
 
-	frozen hiview_is_valid_external (inview: POINTER): INTEGER is
+	hiview_is_valid_external (inview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):Boolean"
 		alias
 			"ewg_function_macro_HIViewIsValid"
 		end
 
-	frozen hiview_is_valid_address_external: POINTER is
+	hiview_is_valid_address_external: POINTER is
 			-- Address of C function `HIViewIsValid'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -468,14 +468,14 @@ feature
 			"(void*) HIViewIsValid"
 		end
 
-	frozen hiview_set_id_external (inview: POINTER; inid: POINTER): INTEGER is
+	hiview_set_id_external (inview: POINTER; inid: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIViewID*):OSStatus"
 		alias
 			"ewg_function_macro_HIViewSetID"
 		end
 
-	frozen hiview_set_id_address_external: POINTER is
+	hiview_set_id_address_external: POINTER is
 			-- Address of C function `HIViewSetID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -483,14 +483,14 @@ feature
 			"(void*) HIViewSetID"
 		end
 
-	frozen hiview_get_id_external (inview: POINTER; outid: POINTER): INTEGER is
+	hiview_get_id_external (inview: POINTER; outid: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIViewID*):OSStatus"
 		alias
 			"ewg_function_macro_HIViewGetID"
 		end
 
-	frozen hiview_get_id_address_external: POINTER is
+	hiview_get_id_address_external: POINTER is
 			-- Address of C function `HIViewGetID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -498,14 +498,14 @@ feature
 			"(void*) HIViewGetID"
 		end
 
-	frozen hiview_set_command_id_external (inview: POINTER; incommandid: INTEGER): INTEGER is
+	hiview_set_command_id_external (inview: POINTER; incommandid: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, UInt32):OSStatus"
 		alias
 			"ewg_function_macro_HIViewSetCommandID"
 		end
 
-	frozen hiview_set_command_id_address_external: POINTER is
+	hiview_set_command_id_address_external: POINTER is
 			-- Address of C function `HIViewSetCommandID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -513,14 +513,14 @@ feature
 			"(void*) HIViewSetCommandID"
 		end
 
-	frozen hiview_get_command_id_external (inview: POINTER; outcommandid: POINTER): INTEGER is
+	hiview_get_command_id_external (inview: POINTER; outcommandid: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, UInt32*):OSStatus"
 		alias
 			"ewg_function_macro_HIViewGetCommandID"
 		end
 
-	frozen hiview_get_command_id_address_external: POINTER is
+	hiview_get_command_id_address_external: POINTER is
 			-- Address of C function `HIViewGetCommandID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -528,14 +528,14 @@ feature
 			"(void*) HIViewGetCommandID"
 		end
 
-	frozen hiview_get_kind_external (inview: POINTER; outviewkind: POINTER): INTEGER is
+	hiview_get_kind_external (inview: POINTER; outviewkind: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIViewKind*):OSStatus"
 		alias
 			"ewg_function_macro_HIViewGetKind"
 		end
 
-	frozen hiview_get_kind_address_external: POINTER is
+	hiview_get_kind_address_external: POINTER is
 			-- Address of C function `HIViewGetKind'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -543,14 +543,14 @@ feature
 			"(void*) HIViewGetKind"
 		end
 
-	frozen hiview_get_bounds_external (inview: POINTER; outrect: POINTER): INTEGER is
+	hiview_get_bounds_external (inview: POINTER; outrect: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIRect*):OSStatus"
 		alias
 			"ewg_function_macro_HIViewGetBounds"
 		end
 
-	frozen hiview_get_bounds_address_external: POINTER is
+	hiview_get_bounds_address_external: POINTER is
 			-- Address of C function `HIViewGetBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -558,14 +558,14 @@ feature
 			"(void*) HIViewGetBounds"
 		end
 
-	frozen hiview_get_frame_external (inview: POINTER; outrect: POINTER): INTEGER is
+	hiview_get_frame_external (inview: POINTER; outrect: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIRect*):OSStatus"
 		alias
 			"ewg_function_macro_HIViewGetFrame"
 		end
 
-	frozen hiview_get_frame_address_external: POINTER is
+	hiview_get_frame_address_external: POINTER is
 			-- Address of C function `HIViewGetFrame'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -573,14 +573,14 @@ feature
 			"(void*) HIViewGetFrame"
 		end
 
-	frozen hiview_set_frame_external (inview: POINTER; inrect: POINTER): INTEGER is
+	hiview_set_frame_external (inview: POINTER; inrect: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIRect const*):OSStatus"
 		alias
 			"ewg_function_macro_HIViewSetFrame"
 		end
 
-	frozen hiview_set_frame_address_external: POINTER is
+	hiview_set_frame_address_external: POINTER is
 			-- Address of C function `HIViewSetFrame'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -588,14 +588,14 @@ feature
 			"(void*) HIViewSetFrame"
 		end
 
-	frozen hiview_move_by_external (inview: POINTER; indx: REAL; indy: REAL): INTEGER is
+	hiview_move_by_external (inview: POINTER; indx: REAL; indy: REAL): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, float, float):OSStatus"
 		alias
 			"ewg_function_macro_HIViewMoveBy"
 		end
 
-	frozen hiview_move_by_address_external: POINTER is
+	hiview_move_by_address_external: POINTER is
 			-- Address of C function `HIViewMoveBy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -603,14 +603,14 @@ feature
 			"(void*) HIViewMoveBy"
 		end
 
-	frozen hiview_place_in_superview_at_external (inview: POINTER; inx: REAL; iny: REAL): INTEGER is
+	hiview_place_in_superview_at_external (inview: POINTER; inx: REAL; iny: REAL): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, float, float):OSStatus"
 		alias
 			"ewg_function_macro_HIViewPlaceInSuperviewAt"
 		end
 
-	frozen hiview_place_in_superview_at_address_external: POINTER is
+	hiview_place_in_superview_at_address_external: POINTER is
 			-- Address of C function `HIViewPlaceInSuperviewAt'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -618,14 +618,14 @@ feature
 			"(void*) HIViewPlaceInSuperviewAt"
 		end
 
-	frozen hiview_reshape_structure_external (inview: POINTER): INTEGER is
+	hiview_reshape_structure_external (inview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):OSStatus"
 		alias
 			"ewg_function_macro_HIViewReshapeStructure"
 		end
 
-	frozen hiview_reshape_structure_address_external: POINTER is
+	hiview_reshape_structure_address_external: POINTER is
 			-- Address of C function `HIViewReshapeStructure'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -633,14 +633,14 @@ feature
 			"(void*) HIViewReshapeStructure"
 		end
 
-	frozen hiview_region_changed_external (inview: POINTER; inregioncode: INTEGER): INTEGER is
+	hiview_region_changed_external (inview: POINTER; inregioncode: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIViewPartCode):OSStatus"
 		alias
 			"ewg_function_macro_HIViewRegionChanged"
 		end
 
-	frozen hiview_region_changed_address_external: POINTER is
+	hiview_region_changed_address_external: POINTER is
 			-- Address of C function `HIViewRegionChanged'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -648,14 +648,14 @@ feature
 			"(void*) HIViewRegionChanged"
 		end
 
-	frozen hiview_copy_shape_external (inview: POINTER; inpart: INTEGER; outshape: POINTER): INTEGER is
+	hiview_copy_shape_external (inview: POINTER; inpart: INTEGER; outshape: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIViewPartCode, HIShapeRef*):OSStatus"
 		alias
 			"ewg_function_macro_HIViewCopyShape"
 		end
 
-	frozen hiview_copy_shape_address_external: POINTER is
+	hiview_copy_shape_address_external: POINTER is
 			-- Address of C function `HIViewCopyShape'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -663,14 +663,14 @@ feature
 			"(void*) HIViewCopyShape"
 		end
 
-	frozen hiview_get_optimal_bounds_external (inview: POINTER; outbounds: POINTER; outbaselineoffset: POINTER): INTEGER is
+	hiview_get_optimal_bounds_external (inview: POINTER; outbounds: POINTER; outbaselineoffset: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIRect*, float*):OSStatus"
 		alias
 			"ewg_function_macro_HIViewGetOptimalBounds"
 		end
 
-	frozen hiview_get_optimal_bounds_address_external: POINTER is
+	hiview_get_optimal_bounds_address_external: POINTER is
 			-- Address of C function `HIViewGetOptimalBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -678,14 +678,14 @@ feature
 			"(void*) HIViewGetOptimalBounds"
 		end
 
-	frozen hiview_get_view_for_mouse_event_external (inview: POINTER; inevent: POINTER; outview: POINTER): INTEGER is
+	hiview_get_view_for_mouse_event_external (inview: POINTER; inevent: POINTER; outview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, EventRef, HIViewRef*):OSStatus"
 		alias
 			"ewg_function_macro_HIViewGetViewForMouseEvent"
 		end
 
-	frozen hiview_get_view_for_mouse_event_address_external: POINTER is
+	hiview_get_view_for_mouse_event_address_external: POINTER is
 			-- Address of C function `HIViewGetViewForMouseEvent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -693,14 +693,14 @@ feature
 			"(void*) HIViewGetViewForMouseEvent"
 		end
 
-	frozen hiview_click_external (inview: POINTER; inevent: POINTER): INTEGER is
+	hiview_click_external (inview: POINTER; inevent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, EventRef):OSStatus"
 		alias
 			"ewg_function_macro_HIViewClick"
 		end
 
-	frozen hiview_click_address_external: POINTER is
+	hiview_click_address_external: POINTER is
 			-- Address of C function `HIViewClick'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -708,14 +708,14 @@ feature
 			"(void*) HIViewClick"
 		end
 
-	frozen hiview_simulate_click_external (inview: POINTER; inparttoclick: INTEGER; inmodifiers: INTEGER; outpartclicked: POINTER): INTEGER is
+	hiview_simulate_click_external (inview: POINTER; inparttoclick: INTEGER; inmodifiers: INTEGER; outpartclicked: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIViewPartCode, UInt32, HIViewPartCode*):OSStatus"
 		alias
 			"ewg_function_macro_HIViewSimulateClick"
 		end
 
-	frozen hiview_simulate_click_address_external: POINTER is
+	hiview_simulate_click_address_external: POINTER is
 			-- Address of C function `HIViewSimulateClick'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -723,14 +723,14 @@ feature
 			"(void*) HIViewSimulateClick"
 		end
 
-	frozen hiview_get_part_hit_external (inview: POINTER; inpoint: POINTER; outpart: POINTER): INTEGER is
+	hiview_get_part_hit_external (inview: POINTER; inpoint: POINTER; outpart: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIPoint const*, HIViewPartCode*):OSStatus"
 		alias
 			"ewg_function_macro_HIViewGetPartHit"
 		end
 
-	frozen hiview_get_part_hit_address_external: POINTER is
+	hiview_get_part_hit_address_external: POINTER is
 			-- Address of C function `HIViewGetPartHit'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -738,14 +738,14 @@ feature
 			"(void*) HIViewGetPartHit"
 		end
 
-	frozen hiview_get_subview_hit_external (inview: POINTER; inpoint: POINTER; indeep: INTEGER; outview: POINTER): INTEGER is
+	hiview_get_subview_hit_external (inview: POINTER; inpoint: POINTER; indeep: INTEGER; outview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIPoint const*, Boolean, HIViewRef*):OSStatus"
 		alias
 			"ewg_function_macro_HIViewGetSubviewHit"
 		end
 
-	frozen hiview_get_subview_hit_address_external: POINTER is
+	hiview_get_subview_hit_address_external: POINTER is
 			-- Address of C function `HIViewGetSubviewHit'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -753,14 +753,14 @@ feature
 			"(void*) HIViewGetSubviewHit"
 		end
 
-	frozen hiview_new_tracking_area_external (inview: POINTER; inshape: POINTER; inid: INTEGER; outref: POINTER): INTEGER is
+	hiview_new_tracking_area_external (inview: POINTER; inshape: POINTER; inid: INTEGER; outref: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIShapeRef, HIViewTrackingAreaID, HIViewTrackingAreaRef*):OSStatus"
 		alias
 			"ewg_function_macro_HIViewNewTrackingArea"
 		end
 
-	frozen hiview_new_tracking_area_address_external: POINTER is
+	hiview_new_tracking_area_address_external: POINTER is
 			-- Address of C function `HIViewNewTrackingArea'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -768,14 +768,14 @@ feature
 			"(void*) HIViewNewTrackingArea"
 		end
 
-	frozen hiview_change_tracking_area_external (inarea: POINTER; inshape: POINTER): INTEGER is
+	hiview_change_tracking_area_external (inarea: POINTER; inshape: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewTrackingAreaRef, HIShapeRef):OSStatus"
 		alias
 			"ewg_function_macro_HIViewChangeTrackingArea"
 		end
 
-	frozen hiview_change_tracking_area_address_external: POINTER is
+	hiview_change_tracking_area_address_external: POINTER is
 			-- Address of C function `HIViewChangeTrackingArea'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -783,14 +783,14 @@ feature
 			"(void*) HIViewChangeTrackingArea"
 		end
 
-	frozen hiview_get_tracking_area_id_external (inarea: POINTER; outid: POINTER): INTEGER is
+	hiview_get_tracking_area_id_external (inarea: POINTER; outid: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewTrackingAreaRef, HIViewTrackingAreaID*):OSStatus"
 		alias
 			"ewg_function_macro_HIViewGetTrackingAreaID"
 		end
 
-	frozen hiview_get_tracking_area_id_address_external: POINTER is
+	hiview_get_tracking_area_id_address_external: POINTER is
 			-- Address of C function `HIViewGetTrackingAreaID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -798,14 +798,14 @@ feature
 			"(void*) HIViewGetTrackingAreaID"
 		end
 
-	frozen hiview_dispose_tracking_area_external (inarea: POINTER): INTEGER is
+	hiview_dispose_tracking_area_external (inarea: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewTrackingAreaRef):OSStatus"
 		alias
 			"ewg_function_macro_HIViewDisposeTrackingArea"
 		end
 
-	frozen hiview_dispose_tracking_area_address_external: POINTER is
+	hiview_dispose_tracking_area_address_external: POINTER is
 			-- Address of C function `HIViewDisposeTrackingArea'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -813,14 +813,14 @@ feature
 			"(void*) HIViewDisposeTrackingArea"
 		end
 
-	frozen hiview_get_needs_display_external (inview: POINTER): INTEGER is
+	hiview_get_needs_display_external (inview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):Boolean"
 		alias
 			"ewg_function_macro_HIViewGetNeedsDisplay"
 		end
 
-	frozen hiview_get_needs_display_address_external: POINTER is
+	hiview_get_needs_display_address_external: POINTER is
 			-- Address of C function `HIViewGetNeedsDisplay'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -828,14 +828,14 @@ feature
 			"(void*) HIViewGetNeedsDisplay"
 		end
 
-	frozen hiview_set_needs_display_external (inview: POINTER; inneedsdisplay: INTEGER): INTEGER is
+	hiview_set_needs_display_external (inview: POINTER; inneedsdisplay: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_HIViewSetNeedsDisplay"
 		end
 
-	frozen hiview_set_needs_display_address_external: POINTER is
+	hiview_set_needs_display_address_external: POINTER is
 			-- Address of C function `HIViewSetNeedsDisplay'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -843,14 +843,14 @@ feature
 			"(void*) HIViewSetNeedsDisplay"
 		end
 
-	frozen hiview_set_needs_display_in_rect_external (inview: POINTER; inrect: POINTER; inneedsdisplay: INTEGER): INTEGER is
+	hiview_set_needs_display_in_rect_external (inview: POINTER; inrect: POINTER; inneedsdisplay: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIRect const*, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_HIViewSetNeedsDisplayInRect"
 		end
 
-	frozen hiview_set_needs_display_in_rect_address_external: POINTER is
+	hiview_set_needs_display_in_rect_address_external: POINTER is
 			-- Address of C function `HIViewSetNeedsDisplayInRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -858,14 +858,14 @@ feature
 			"(void*) HIViewSetNeedsDisplayInRect"
 		end
 
-	frozen hiview_set_needs_display_in_shape_external (inview: POINTER; inarea: POINTER; inneedsdisplay: INTEGER): INTEGER is
+	hiview_set_needs_display_in_shape_external (inview: POINTER; inarea: POINTER; inneedsdisplay: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIShapeRef, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_HIViewSetNeedsDisplayInShape"
 		end
 
-	frozen hiview_set_needs_display_in_shape_address_external: POINTER is
+	hiview_set_needs_display_in_shape_address_external: POINTER is
 			-- Address of C function `HIViewSetNeedsDisplayInShape'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -873,14 +873,14 @@ feature
 			"(void*) HIViewSetNeedsDisplayInShape"
 		end
 
-	frozen hiview_set_needs_display_in_region_external (inview: POINTER; inrgn: POINTER; inneedsdisplay: INTEGER): INTEGER is
+	hiview_set_needs_display_in_region_external (inview: POINTER; inrgn: POINTER; inneedsdisplay: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, RgnHandle, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_HIViewSetNeedsDisplayInRegion"
 		end
 
-	frozen hiview_set_needs_display_in_region_address_external: POINTER is
+	hiview_set_needs_display_in_region_address_external: POINTER is
 			-- Address of C function `HIViewSetNeedsDisplayInRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -888,14 +888,14 @@ feature
 			"(void*) HIViewSetNeedsDisplayInRegion"
 		end
 
-	frozen hiview_render_external (inview: POINTER): INTEGER is
+	hiview_render_external (inview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):OSStatus"
 		alias
 			"ewg_function_macro_HIViewRender"
 		end
 
-	frozen hiview_render_address_external: POINTER is
+	hiview_render_address_external: POINTER is
 			-- Address of C function `HIViewRender'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -903,14 +903,14 @@ feature
 			"(void*) HIViewRender"
 		end
 
-	frozen hiview_flash_dirty_area_external (inwindow: POINTER): INTEGER is
+	hiview_flash_dirty_area_external (inwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):OSStatus"
 		alias
 			"ewg_function_macro_HIViewFlashDirtyArea"
 		end
 
-	frozen hiview_flash_dirty_area_address_external: POINTER is
+	hiview_flash_dirty_area_address_external: POINTER is
 			-- Address of C function `HIViewFlashDirtyArea'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -918,14 +918,14 @@ feature
 			"(void*) HIViewFlashDirtyArea"
 		end
 
-	frozen hiview_get_size_constraints_external (inview: POINTER; outminsize: POINTER; outmaxsize: POINTER): INTEGER is
+	hiview_get_size_constraints_external (inview: POINTER; outminsize: POINTER; outmaxsize: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HISize*, HISize*):OSStatus"
 		alias
 			"ewg_function_macro_HIViewGetSizeConstraints"
 		end
 
-	frozen hiview_get_size_constraints_address_external: POINTER is
+	hiview_get_size_constraints_address_external: POINTER is
 			-- Address of C function `HIViewGetSizeConstraints'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -933,14 +933,14 @@ feature
 			"(void*) HIViewGetSizeConstraints"
 		end
 
-	frozen hiview_convert_point_external (iopoint: POINTER; insourceview: POINTER; indestview: POINTER): INTEGER is
+	hiview_convert_point_external (iopoint: POINTER; insourceview: POINTER; indestview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIPoint*, HIViewRef, HIViewRef):OSStatus"
 		alias
 			"ewg_function_macro_HIViewConvertPoint"
 		end
 
-	frozen hiview_convert_point_address_external: POINTER is
+	hiview_convert_point_address_external: POINTER is
 			-- Address of C function `HIViewConvertPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -948,14 +948,14 @@ feature
 			"(void*) HIViewConvertPoint"
 		end
 
-	frozen hiview_convert_rect_external (iorect: POINTER; insourceview: POINTER; indestview: POINTER): INTEGER is
+	hiview_convert_rect_external (iorect: POINTER; insourceview: POINTER; indestview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIRect*, HIViewRef, HIViewRef):OSStatus"
 		alias
 			"ewg_function_macro_HIViewConvertRect"
 		end
 
-	frozen hiview_convert_rect_address_external: POINTER is
+	hiview_convert_rect_address_external: POINTER is
 			-- Address of C function `HIViewConvertRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -963,14 +963,14 @@ feature
 			"(void*) HIViewConvertRect"
 		end
 
-	frozen hiview_convert_region_external (iorgn: POINTER; insourceview: POINTER; indestview: POINTER): INTEGER is
+	hiview_convert_region_external (iorgn: POINTER; insourceview: POINTER; indestview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (RgnHandle, HIViewRef, HIViewRef):OSStatus"
 		alias
 			"ewg_function_macro_HIViewConvertRegion"
 		end
 
-	frozen hiview_convert_region_address_external: POINTER is
+	hiview_convert_region_address_external: POINTER is
 			-- Address of C function `HIViewConvertRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -978,14 +978,14 @@ feature
 			"(void*) HIViewConvertRegion"
 		end
 
-	frozen hiview_set_drawing_enabled_external (inview: POINTER; inenabled: INTEGER): INTEGER is
+	hiview_set_drawing_enabled_external (inview: POINTER; inenabled: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_HIViewSetDrawingEnabled"
 		end
 
-	frozen hiview_set_drawing_enabled_address_external: POINTER is
+	hiview_set_drawing_enabled_address_external: POINTER is
 			-- Address of C function `HIViewSetDrawingEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -993,14 +993,14 @@ feature
 			"(void*) HIViewSetDrawingEnabled"
 		end
 
-	frozen hiview_is_drawing_enabled_external (inview: POINTER): INTEGER is
+	hiview_is_drawing_enabled_external (inview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):Boolean"
 		alias
 			"ewg_function_macro_HIViewIsDrawingEnabled"
 		end
 
-	frozen hiview_is_drawing_enabled_address_external: POINTER is
+	hiview_is_drawing_enabled_address_external: POINTER is
 			-- Address of C function `HIViewIsDrawingEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1008,14 +1008,14 @@ feature
 			"(void*) HIViewIsDrawingEnabled"
 		end
 
-	frozen hiview_scroll_rect_external (inview: POINTER; inrect: POINTER; indx: REAL; indy: REAL): INTEGER is
+	hiview_scroll_rect_external (inview: POINTER; inrect: POINTER; indx: REAL; indy: REAL): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIRect const*, float, float):OSStatus"
 		alias
 			"ewg_function_macro_HIViewScrollRect"
 		end
 
-	frozen hiview_scroll_rect_address_external: POINTER is
+	hiview_scroll_rect_address_external: POINTER is
 			-- Address of C function `HIViewScrollRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1023,14 +1023,14 @@ feature
 			"(void*) HIViewScrollRect"
 		end
 
-	frozen hiview_set_bounds_origin_external (inview: POINTER; inx: REAL; iny: REAL): INTEGER is
+	hiview_set_bounds_origin_external (inview: POINTER; inx: REAL; iny: REAL): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, float, float):OSStatus"
 		alias
 			"ewg_function_macro_HIViewSetBoundsOrigin"
 		end
 
-	frozen hiview_set_bounds_origin_address_external: POINTER is
+	hiview_set_bounds_origin_address_external: POINTER is
 			-- Address of C function `HIViewSetBoundsOrigin'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1038,14 +1038,14 @@ feature
 			"(void*) HIViewSetBoundsOrigin"
 		end
 
-	frozen hiview_advance_focus_external (inrootforfocus: POINTER; inmodifiers: INTEGER): INTEGER is
+	hiview_advance_focus_external (inrootforfocus: POINTER; inmodifiers: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, EventModifiers):OSStatus"
 		alias
 			"ewg_function_macro_HIViewAdvanceFocus"
 		end
 
-	frozen hiview_advance_focus_address_external: POINTER is
+	hiview_advance_focus_address_external: POINTER is
 			-- Address of C function `HIViewAdvanceFocus'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1053,14 +1053,14 @@ feature
 			"(void*) HIViewAdvanceFocus"
 		end
 
-	frozen hiview_get_focus_part_external (inview: POINTER; outfocuspart: POINTER): INTEGER is
+	hiview_get_focus_part_external (inview: POINTER; outfocuspart: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIViewPartCode*):OSStatus"
 		alias
 			"ewg_function_macro_HIViewGetFocusPart"
 		end
 
-	frozen hiview_get_focus_part_address_external: POINTER is
+	hiview_get_focus_part_address_external: POINTER is
 			-- Address of C function `HIViewGetFocusPart'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1068,14 +1068,14 @@ feature
 			"(void*) HIViewGetFocusPart"
 		end
 
-	frozen hiview_subtree_contains_focus_external (insubtreestart: POINTER): INTEGER is
+	hiview_subtree_contains_focus_external (insubtreestart: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):Boolean"
 		alias
 			"ewg_function_macro_HIViewSubtreeContainsFocus"
 		end
 
-	frozen hiview_subtree_contains_focus_address_external: POINTER is
+	hiview_subtree_contains_focus_address_external: POINTER is
 			-- Address of C function `HIViewSubtreeContainsFocus'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1083,14 +1083,14 @@ feature
 			"(void*) HIViewSubtreeContainsFocus"
 		end
 
-	frozen hiview_set_next_focus_external (inview: POINTER; innextfocus: POINTER): INTEGER is
+	hiview_set_next_focus_external (inview: POINTER; innextfocus: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIViewRef):OSStatus"
 		alias
 			"ewg_function_macro_HIViewSetNextFocus"
 		end
 
-	frozen hiview_set_next_focus_address_external: POINTER is
+	hiview_set_next_focus_address_external: POINTER is
 			-- Address of C function `HIViewSetNextFocus'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1098,14 +1098,14 @@ feature
 			"(void*) HIViewSetNextFocus"
 		end
 
-	frozen hiview_set_first_sub_view_focus_external (inparent: POINTER; insubview: POINTER): INTEGER is
+	hiview_set_first_sub_view_focus_external (inparent: POINTER; insubview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIViewRef):OSStatus"
 		alias
 			"ewg_function_macro_HIViewSetFirstSubViewFocus"
 		end
 
-	frozen hiview_set_first_sub_view_focus_address_external: POINTER is
+	hiview_set_first_sub_view_focus_address_external: POINTER is
 			-- Address of C function `HIViewSetFirstSubViewFocus'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1113,14 +1113,14 @@ feature
 			"(void*) HIViewSetFirstSubViewFocus"
 		end
 
-	frozen hiview_get_layout_info_external (inview: POINTER; outlayoutinfo: POINTER): INTEGER is
+	hiview_get_layout_info_external (inview: POINTER; outlayoutinfo: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HILayoutInfo*):OSStatus"
 		alias
 			"ewg_function_macro_HIViewGetLayoutInfo"
 		end
 
-	frozen hiview_get_layout_info_address_external: POINTER is
+	hiview_get_layout_info_address_external: POINTER is
 			-- Address of C function `HIViewGetLayoutInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1128,14 +1128,14 @@ feature
 			"(void*) HIViewGetLayoutInfo"
 		end
 
-	frozen hiview_set_layout_info_external (inview: POINTER; inlayoutinfo: POINTER): INTEGER is
+	hiview_set_layout_info_external (inview: POINTER; inlayoutinfo: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HILayoutInfo const*):OSStatus"
 		alias
 			"ewg_function_macro_HIViewSetLayoutInfo"
 		end
 
-	frozen hiview_set_layout_info_address_external: POINTER is
+	hiview_set_layout_info_address_external: POINTER is
 			-- Address of C function `HIViewSetLayoutInfo'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1143,14 +1143,14 @@ feature
 			"(void*) HIViewSetLayoutInfo"
 		end
 
-	frozen hiview_suspend_layout_external (inview: POINTER): INTEGER is
+	hiview_suspend_layout_external (inview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):OSStatus"
 		alias
 			"ewg_function_macro_HIViewSuspendLayout"
 		end
 
-	frozen hiview_suspend_layout_address_external: POINTER is
+	hiview_suspend_layout_address_external: POINTER is
 			-- Address of C function `HIViewSuspendLayout'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1158,14 +1158,14 @@ feature
 			"(void*) HIViewSuspendLayout"
 		end
 
-	frozen hiview_resume_layout_external (inview: POINTER): INTEGER is
+	hiview_resume_layout_external (inview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):OSStatus"
 		alias
 			"ewg_function_macro_HIViewResumeLayout"
 		end
 
-	frozen hiview_resume_layout_address_external: POINTER is
+	hiview_resume_layout_address_external: POINTER is
 			-- Address of C function `HIViewResumeLayout'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1173,14 +1173,14 @@ feature
 			"(void*) HIViewResumeLayout"
 		end
 
-	frozen hiview_is_layout_active_external (inview: POINTER): INTEGER is
+	hiview_is_layout_active_external (inview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):Boolean"
 		alias
 			"ewg_function_macro_HIViewIsLayoutActive"
 		end
 
-	frozen hiview_is_layout_active_address_external: POINTER is
+	hiview_is_layout_active_address_external: POINTER is
 			-- Address of C function `HIViewIsLayoutActive'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1188,14 +1188,14 @@ feature
 			"(void*) HIViewIsLayoutActive"
 		end
 
-	frozen hiview_is_layout_latently_active_external (inview: POINTER): INTEGER is
+	hiview_is_layout_latently_active_external (inview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):Boolean"
 		alias
 			"ewg_function_macro_HIViewIsLayoutLatentlyActive"
 		end
 
-	frozen hiview_is_layout_latently_active_address_external: POINTER is
+	hiview_is_layout_latently_active_address_external: POINTER is
 			-- Address of C function `HIViewIsLayoutLatentlyActive'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1203,14 +1203,14 @@ feature
 			"(void*) HIViewIsLayoutLatentlyActive"
 		end
 
-	frozen hiview_apply_layout_external (inview: POINTER): INTEGER is
+	hiview_apply_layout_external (inview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):OSStatus"
 		alias
 			"ewg_function_macro_HIViewApplyLayout"
 		end
 
-	frozen hiview_apply_layout_address_external: POINTER is
+	hiview_apply_layout_address_external: POINTER is
 			-- Address of C function `HIViewApplyLayout'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1218,14 +1218,14 @@ feature
 			"(void*) HIViewApplyLayout"
 		end
 
-	frozen hiview_get_window_external (inview: POINTER): POINTER is
+	hiview_get_window_external (inview: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):WindowRef"
 		alias
 			"ewg_function_macro_HIViewGetWindow"
 		end
 
-	frozen hiview_get_window_address_external: POINTER is
+	hiview_get_window_address_external: POINTER is
 			-- Address of C function `HIViewGetWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1233,14 +1233,14 @@ feature
 			"(void*) HIViewGetWindow"
 		end
 
-	frozen hiview_find_by_id_external (instartview: POINTER; inid: POINTER; outcontrol: POINTER): INTEGER is
+	hiview_find_by_id_external (instartview: POINTER; inid: POINTER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIViewID*, HIViewRef*):OSStatus"
 		alias
 			"ewg_function_macro_HIViewFindByID"
 		end
 
-	frozen hiview_find_by_id_address_external: POINTER is
+	hiview_find_by_id_address_external: POINTER is
 			-- Address of C function `HIViewFindByID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1248,14 +1248,14 @@ feature
 			"(void*) HIViewFindByID"
 		end
 
-	frozen hiview_get_attributes_external (inview: POINTER; outattrs: POINTER): INTEGER is
+	hiview_get_attributes_external (inview: POINTER; outattrs: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, OptionBits*):OSStatus"
 		alias
 			"ewg_function_macro_HIViewGetAttributes"
 		end
 
-	frozen hiview_get_attributes_address_external: POINTER is
+	hiview_get_attributes_address_external: POINTER is
 			-- Address of C function `HIViewGetAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1263,14 +1263,14 @@ feature
 			"(void*) HIViewGetAttributes"
 		end
 
-	frozen hiview_change_attributes_external (inview: POINTER; inattrstoset: INTEGER; inattrstoclear: INTEGER): INTEGER is
+	hiview_change_attributes_external (inview: POINTER; inattrstoset: INTEGER; inattrstoclear: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, OptionBits, OptionBits):OSStatus"
 		alias
 			"ewg_function_macro_HIViewChangeAttributes"
 		end
 
-	frozen hiview_change_attributes_address_external: POINTER is
+	hiview_change_attributes_address_external: POINTER is
 			-- Address of C function `HIViewChangeAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1278,14 +1278,14 @@ feature
 			"(void*) HIViewChangeAttributes"
 		end
 
-	frozen hiview_create_offscreen_image_external (inview: POINTER; inoptions: INTEGER; outframe: POINTER; outimage: POINTER): INTEGER is
+	hiview_create_offscreen_image_external (inview: POINTER; inoptions: INTEGER; outframe: POINTER; outimage: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, OptionBits, HIRect*, CGImageRef*):OSStatus"
 		alias
 			"ewg_function_macro_HIViewCreateOffscreenImage"
 		end
 
-	frozen hiview_create_offscreen_image_address_external: POINTER is
+	hiview_create_offscreen_image_address_external: POINTER is
 			-- Address of C function `HIViewCreateOffscreenImage'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1293,14 +1293,14 @@ feature
 			"(void*) HIViewCreateOffscreenImage"
 		end
 
-	frozen hiview_draw_cgimage_external (incontext: POINTER; inbounds: POINTER; inimage: POINTER): INTEGER is
+	hiview_draw_cgimage_external (incontext: POINTER; inbounds: POINTER; inimage: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGContextRef, HIRect const*, CGImageRef):OSStatus"
 		alias
 			"ewg_function_macro_HIViewDrawCGImage"
 		end
 
-	frozen hiview_draw_cgimage_address_external: POINTER is
+	hiview_draw_cgimage_address_external: POINTER is
 			-- Address of C function `HIViewDrawCGImage'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1308,14 +1308,14 @@ feature
 			"(void*) HIViewDrawCGImage"
 		end
 
-	frozen hiview_get_features_external (inview: POINTER; outfeatures: POINTER): INTEGER is
+	hiview_get_features_external (inview: POINTER; outfeatures: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIViewFeatures*):OSStatus"
 		alias
 			"ewg_function_macro_HIViewGetFeatures"
 		end
 
-	frozen hiview_get_features_address_external: POINTER is
+	hiview_get_features_address_external: POINTER is
 			-- Address of C function `HIViewGetFeatures'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1323,14 +1323,14 @@ feature
 			"(void*) HIViewGetFeatures"
 		end
 
-	frozen hiview_change_features_external (inview: POINTER; infeaturestoset: INTEGER; infeaturestoclear: INTEGER): INTEGER is
+	hiview_change_features_external (inview: POINTER; infeaturestoset: INTEGER; infeaturestoclear: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIViewFeatures, HIViewFeatures):OSStatus"
 		alias
 			"ewg_function_macro_HIViewChangeFeatures"
 		end
 
-	frozen hiview_change_features_address_external: POINTER is
+	hiview_change_features_address_external: POINTER is
 			-- Address of C function `HIViewChangeFeatures'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1338,14 +1338,14 @@ feature
 			"(void*) HIViewChangeFeatures"
 		end
 
-	frozen hicreate_transformed_cgimage_external (inimage: POINTER; intransform: INTEGER; outimage: POINTER): INTEGER is
+	hicreate_transformed_cgimage_external (inimage: POINTER; intransform: INTEGER; outimage: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGImageRef, OptionBits, CGImageRef*):OSStatus"
 		alias
 			"ewg_function_macro_HICreateTransformedCGImage"
 		end
 
-	frozen hicreate_transformed_cgimage_address_external: POINTER is
+	hicreate_transformed_cgimage_address_external: POINTER is
 			-- Address of C function `HICreateTransformedCGImage'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1353,14 +1353,14 @@ feature
 			"(void*) HICreateTransformedCGImage"
 		end
 
-	frozen hiview_get_event_target_external (inview: POINTER): POINTER is
+	hiview_get_event_target_external (inview: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):EventTargetRef"
 		alias
 			"ewg_function_macro_HIViewGetEventTarget"
 		end
 
-	frozen hiview_get_event_target_address_external: POINTER is
+	hiview_get_event_target_address_external: POINTER is
 			-- Address of C function `HIViewGetEventTarget'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1368,14 +1368,14 @@ feature
 			"(void*) HIViewGetEventTarget"
 		end
 
-	frozen higrow_box_view_set_transparent_external (ingrowboxview: POINTER; intransparent: INTEGER): INTEGER is
+	higrow_box_view_set_transparent_external (ingrowboxview: POINTER; intransparent: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_HIGrowBoxViewSetTransparent"
 		end
 
-	frozen higrow_box_view_set_transparent_address_external: POINTER is
+	higrow_box_view_set_transparent_address_external: POINTER is
 			-- Address of C function `HIGrowBoxViewSetTransparent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1383,14 +1383,14 @@ feature
 			"(void*) HIGrowBoxViewSetTransparent"
 		end
 
-	frozen higrow_box_view_is_transparent_external (ingrowboxview: POINTER): INTEGER is
+	higrow_box_view_is_transparent_external (ingrowboxview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):Boolean"
 		alias
 			"ewg_function_macro_HIGrowBoxViewIsTransparent"
 		end
 
-	frozen higrow_box_view_is_transparent_address_external: POINTER is
+	higrow_box_view_is_transparent_address_external: POINTER is
 			-- Address of C function `HIGrowBoxViewIsTransparent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1398,14 +1398,14 @@ feature
 			"(void*) HIGrowBoxViewIsTransparent"
 		end
 
-	frozen hiscroll_view_create_external (inoptions: INTEGER; outview: POINTER): INTEGER is
+	hiscroll_view_create_external (inoptions: INTEGER; outview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (OptionBits, HIViewRef*):OSStatus"
 		alias
 			"ewg_function_macro_HIScrollViewCreate"
 		end
 
-	frozen hiscroll_view_create_address_external: POINTER is
+	hiscroll_view_create_address_external: POINTER is
 			-- Address of C function `HIScrollViewCreate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1413,14 +1413,14 @@ feature
 			"(void*) HIScrollViewCreate"
 		end
 
-	frozen hiscroll_view_set_scroll_bar_auto_hide_external (inview: POINTER; inautohide: INTEGER): INTEGER is
+	hiscroll_view_set_scroll_bar_auto_hide_external (inview: POINTER; inautohide: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_HIScrollViewSetScrollBarAutoHide"
 		end
 
-	frozen hiscroll_view_set_scroll_bar_auto_hide_address_external: POINTER is
+	hiscroll_view_set_scroll_bar_auto_hide_address_external: POINTER is
 			-- Address of C function `HIScrollViewSetScrollBarAutoHide'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1428,14 +1428,14 @@ feature
 			"(void*) HIScrollViewSetScrollBarAutoHide"
 		end
 
-	frozen hiscroll_view_get_scroll_bar_auto_hide_external (inview: POINTER): INTEGER is
+	hiscroll_view_get_scroll_bar_auto_hide_external (inview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):Boolean"
 		alias
 			"ewg_function_macro_HIScrollViewGetScrollBarAutoHide"
 		end
 
-	frozen hiscroll_view_get_scroll_bar_auto_hide_address_external: POINTER is
+	hiscroll_view_get_scroll_bar_auto_hide_address_external: POINTER is
 			-- Address of C function `HIScrollViewGetScrollBarAutoHide'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1443,14 +1443,14 @@ feature
 			"(void*) HIScrollViewGetScrollBarAutoHide"
 		end
 
-	frozen hiscroll_view_navigate_external (inview: POINTER; inaction: INTEGER): INTEGER is
+	hiscroll_view_navigate_external (inview: POINTER; inaction: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIScrollViewAction):OSStatus"
 		alias
 			"ewg_function_macro_HIScrollViewNavigate"
 		end
 
-	frozen hiscroll_view_navigate_address_external: POINTER is
+	hiscroll_view_navigate_address_external: POINTER is
 			-- Address of C function `HIScrollViewNavigate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1458,14 +1458,14 @@ feature
 			"(void*) HIScrollViewNavigate"
 		end
 
-	frozen hiscroll_view_can_navigate_external (inview: POINTER; inaction: INTEGER): INTEGER is
+	hiscroll_view_can_navigate_external (inview: POINTER; inaction: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, HIScrollViewAction):Boolean"
 		alias
 			"ewg_function_macro_HIScrollViewCanNavigate"
 		end
 
-	frozen hiscroll_view_can_navigate_address_external: POINTER is
+	hiscroll_view_can_navigate_address_external: POINTER is
 			-- Address of C function `HIScrollViewCanNavigate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1473,14 +1473,14 @@ feature
 			"(void*) HIScrollViewCanNavigate"
 		end
 
-	frozen hiimage_view_create_external (inimage: POINTER; outcontrol: POINTER): INTEGER is
+	hiimage_view_create_external (inimage: POINTER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGImageRef, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_HIImageViewCreate"
 		end
 
-	frozen hiimage_view_create_address_external: POINTER is
+	hiimage_view_create_address_external: POINTER is
 			-- Address of C function `HIImageViewCreate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1488,14 +1488,14 @@ feature
 			"(void*) HIImageViewCreate"
 		end
 
-	frozen hiimage_view_set_opaque_external (inview: POINTER; inopaque: INTEGER): INTEGER is
+	hiimage_view_set_opaque_external (inview: POINTER; inopaque: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_HIImageViewSetOpaque"
 		end
 
-	frozen hiimage_view_set_opaque_address_external: POINTER is
+	hiimage_view_set_opaque_address_external: POINTER is
 			-- Address of C function `HIImageViewSetOpaque'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1503,14 +1503,14 @@ feature
 			"(void*) HIImageViewSetOpaque"
 		end
 
-	frozen hiimage_view_is_opaque_external (inview: POINTER): INTEGER is
+	hiimage_view_is_opaque_external (inview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):Boolean"
 		alias
 			"ewg_function_macro_HIImageViewIsOpaque"
 		end
 
-	frozen hiimage_view_is_opaque_address_external: POINTER is
+	hiimage_view_is_opaque_address_external: POINTER is
 			-- Address of C function `HIImageViewIsOpaque'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1518,14 +1518,14 @@ feature
 			"(void*) HIImageViewIsOpaque"
 		end
 
-	frozen hiimage_view_set_alpha_external (inview: POINTER; inalpha: REAL): INTEGER is
+	hiimage_view_set_alpha_external (inview: POINTER; inalpha: REAL): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, float):OSStatus"
 		alias
 			"ewg_function_macro_HIImageViewSetAlpha"
 		end
 
-	frozen hiimage_view_set_alpha_address_external: POINTER is
+	hiimage_view_set_alpha_address_external: POINTER is
 			-- Address of C function `HIImageViewSetAlpha'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1533,14 +1533,14 @@ feature
 			"(void*) HIImageViewSetAlpha"
 		end
 
-	frozen hiimage_view_get_alpha_external (inview: POINTER): REAL is
+	hiimage_view_get_alpha_external (inview: POINTER): REAL is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):float"
 		alias
 			"ewg_function_macro_HIImageViewGetAlpha"
 		end
 
-	frozen hiimage_view_get_alpha_address_external: POINTER is
+	hiimage_view_get_alpha_address_external: POINTER is
 			-- Address of C function `HIImageViewGetAlpha'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1548,14 +1548,14 @@ feature
 			"(void*) HIImageViewGetAlpha"
 		end
 
-	frozen hiimage_view_set_scale_to_fit_external (inview: POINTER; inscaletofit: INTEGER): INTEGER is
+	hiimage_view_set_scale_to_fit_external (inview: POINTER; inscaletofit: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_HIImageViewSetScaleToFit"
 		end
 
-	frozen hiimage_view_set_scale_to_fit_address_external: POINTER is
+	hiimage_view_set_scale_to_fit_address_external: POINTER is
 			-- Address of C function `HIImageViewSetScaleToFit'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1563,14 +1563,14 @@ feature
 			"(void*) HIImageViewSetScaleToFit"
 		end
 
-	frozen hiimage_view_get_scale_to_fit_external (inview: POINTER): INTEGER is
+	hiimage_view_get_scale_to_fit_external (inview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):Boolean"
 		alias
 			"ewg_function_macro_HIImageViewGetScaleToFit"
 		end
 
-	frozen hiimage_view_get_scale_to_fit_address_external: POINTER is
+	hiimage_view_get_scale_to_fit_address_external: POINTER is
 			-- Address of C function `HIImageViewGetScaleToFit'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1578,14 +1578,14 @@ feature
 			"(void*) HIImageViewGetScaleToFit"
 		end
 
-	frozen hiimage_view_set_image_external (inview: POINTER; inimage: POINTER): INTEGER is
+	hiimage_view_set_image_external (inview: POINTER; inimage: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, CGImageRef):OSStatus"
 		alias
 			"ewg_function_macro_HIImageViewSetImage"
 		end
 
-	frozen hiimage_view_set_image_address_external: POINTER is
+	hiimage_view_set_image_address_external: POINTER is
 			-- Address of C function `HIImageViewSetImage'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1593,14 +1593,14 @@ feature
 			"(void*) HIImageViewSetImage"
 		end
 
-	frozen hiimage_view_copy_image_external (inview: POINTER): POINTER is
+	hiimage_view_copy_image_external (inview: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):CGImageRef"
 		alias
 			"ewg_function_macro_HIImageViewCopyImage"
 		end
 
-	frozen hiimage_view_copy_image_address_external: POINTER is
+	hiimage_view_copy_image_address_external: POINTER is
 			-- Address of C function `HIImageViewCopyImage'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1608,14 +1608,14 @@ feature
 			"(void*) HIImageViewCopyImage"
 		end
 
-	frozen hicombo_box_create_external (boundsrect: POINTER; text: POINTER; style: POINTER; list: POINTER; inattributes: INTEGER; outcombobox: POINTER): INTEGER is
+	hicombo_box_create_external (boundsrect: POINTER; text: POINTER; style: POINTER; list: POINTER; inattributes: INTEGER; outcombobox: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIRect const*, CFStringRef, ControlFontStyleRec const*, CFArrayRef, OptionBits, HIViewRef*):OSStatus"
 		alias
 			"ewg_function_macro_HIComboBoxCreate"
 		end
 
-	frozen hicombo_box_create_address_external: POINTER is
+	hicombo_box_create_address_external: POINTER is
 			-- Address of C function `HIComboBoxCreate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1623,14 +1623,14 @@ feature
 			"(void*) HIComboBoxCreate"
 		end
 
-	frozen hicombo_box_get_item_count_external (incombobox: POINTER): INTEGER is
+	hicombo_box_get_item_count_external (incombobox: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):ItemCount"
 		alias
 			"ewg_function_macro_HIComboBoxGetItemCount"
 		end
 
-	frozen hicombo_box_get_item_count_address_external: POINTER is
+	hicombo_box_get_item_count_address_external: POINTER is
 			-- Address of C function `HIComboBoxGetItemCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1638,14 +1638,14 @@ feature
 			"(void*) HIComboBoxGetItemCount"
 		end
 
-	frozen hicombo_box_insert_text_item_at_index_external (incombobox: POINTER; inindex: INTEGER; intext: POINTER): INTEGER is
+	hicombo_box_insert_text_item_at_index_external (incombobox: POINTER; inindex: INTEGER; intext: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, CFIndex, CFStringRef):OSStatus"
 		alias
 			"ewg_function_macro_HIComboBoxInsertTextItemAtIndex"
 		end
 
-	frozen hicombo_box_insert_text_item_at_index_address_external: POINTER is
+	hicombo_box_insert_text_item_at_index_address_external: POINTER is
 			-- Address of C function `HIComboBoxInsertTextItemAtIndex'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1653,14 +1653,14 @@ feature
 			"(void*) HIComboBoxInsertTextItemAtIndex"
 		end
 
-	frozen hicombo_box_append_text_item_external (incombobox: POINTER; intext: POINTER; outindex: POINTER): INTEGER is
+	hicombo_box_append_text_item_external (incombobox: POINTER; intext: POINTER; outindex: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, CFStringRef, CFIndex*):OSStatus"
 		alias
 			"ewg_function_macro_HIComboBoxAppendTextItem"
 		end
 
-	frozen hicombo_box_append_text_item_address_external: POINTER is
+	hicombo_box_append_text_item_address_external: POINTER is
 			-- Address of C function `HIComboBoxAppendTextItem'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1668,14 +1668,14 @@ feature
 			"(void*) HIComboBoxAppendTextItem"
 		end
 
-	frozen hicombo_box_copy_text_item_at_index_external (incombobox: POINTER; inindex: INTEGER; outstring: POINTER): INTEGER is
+	hicombo_box_copy_text_item_at_index_external (incombobox: POINTER; inindex: INTEGER; outstring: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, CFIndex, CFStringRef*):OSStatus"
 		alias
 			"ewg_function_macro_HIComboBoxCopyTextItemAtIndex"
 		end
 
-	frozen hicombo_box_copy_text_item_at_index_address_external: POINTER is
+	hicombo_box_copy_text_item_at_index_address_external: POINTER is
 			-- Address of C function `HIComboBoxCopyTextItemAtIndex'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1683,14 +1683,14 @@ feature
 			"(void*) HIComboBoxCopyTextItemAtIndex"
 		end
 
-	frozen hicombo_box_remove_item_at_index_external (incombobox: POINTER; inindex: INTEGER): INTEGER is
+	hicombo_box_remove_item_at_index_external (incombobox: POINTER; inindex: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, CFIndex):OSStatus"
 		alias
 			"ewg_function_macro_HIComboBoxRemoveItemAtIndex"
 		end
 
-	frozen hicombo_box_remove_item_at_index_address_external: POINTER is
+	hicombo_box_remove_item_at_index_address_external: POINTER is
 			-- Address of C function `HIComboBoxRemoveItemAtIndex'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1698,14 +1698,14 @@ feature
 			"(void*) HIComboBoxRemoveItemAtIndex"
 		end
 
-	frozen hicombo_box_change_attributes_external (incombobox: POINTER; inattributestoset: INTEGER; inattributestoclear: INTEGER): INTEGER is
+	hicombo_box_change_attributes_external (incombobox: POINTER; inattributestoset: INTEGER; inattributestoclear: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, OptionBits, OptionBits):OSStatus"
 		alias
 			"ewg_function_macro_HIComboBoxChangeAttributes"
 		end
 
-	frozen hicombo_box_change_attributes_address_external: POINTER is
+	hicombo_box_change_attributes_address_external: POINTER is
 			-- Address of C function `HIComboBoxChangeAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1713,14 +1713,14 @@ feature
 			"(void*) HIComboBoxChangeAttributes"
 		end
 
-	frozen hicombo_box_get_attributes_external (incombobox: POINTER; outattributes: POINTER): INTEGER is
+	hicombo_box_get_attributes_external (incombobox: POINTER; outattributes: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, OptionBits*):OSStatus"
 		alias
 			"ewg_function_macro_HIComboBoxGetAttributes"
 		end
 
-	frozen hicombo_box_get_attributes_address_external: POINTER is
+	hicombo_box_get_attributes_address_external: POINTER is
 			-- Address of C function `HIComboBoxGetAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1728,14 +1728,14 @@ feature
 			"(void*) HIComboBoxGetAttributes"
 		end
 
-	frozen hicombo_box_is_list_visible_external (incombobox: POINTER): INTEGER is
+	hicombo_box_is_list_visible_external (incombobox: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):Boolean"
 		alias
 			"ewg_function_macro_HIComboBoxIsListVisible"
 		end
 
-	frozen hicombo_box_is_list_visible_address_external: POINTER is
+	hicombo_box_is_list_visible_address_external: POINTER is
 			-- Address of C function `HIComboBoxIsListVisible'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1743,14 +1743,14 @@ feature
 			"(void*) HIComboBoxIsListVisible"
 		end
 
-	frozen hicombo_box_set_list_visible_external (incombobox: POINTER; invisible: INTEGER): INTEGER is
+	hicombo_box_set_list_visible_external (incombobox: POINTER; invisible: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_HIComboBoxSetListVisible"
 		end
 
-	frozen hicombo_box_set_list_visible_address_external: POINTER is
+	hicombo_box_set_list_visible_address_external: POINTER is
 			-- Address of C function `HIComboBoxSetListVisible'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1758,14 +1758,14 @@ feature
 			"(void*) HIComboBoxSetListVisible"
 		end
 
-	frozen hisearch_field_create_external (inbounds: POINTER; inattributes: INTEGER; insearchmenu: POINTER; indescriptivetext: POINTER; outref: POINTER): INTEGER is
+	hisearch_field_create_external (inbounds: POINTER; inattributes: INTEGER; insearchmenu: POINTER; indescriptivetext: POINTER; outref: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIRect const*, OptionBits, MenuRef, CFStringRef, HIViewRef*):OSStatus"
 		alias
 			"ewg_function_macro_HISearchFieldCreate"
 		end
 
-	frozen hisearch_field_create_address_external: POINTER is
+	hisearch_field_create_address_external: POINTER is
 			-- Address of C function `HISearchFieldCreate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1773,14 +1773,14 @@ feature
 			"(void*) HISearchFieldCreate"
 		end
 
-	frozen hisearch_field_set_search_menu_external (insearchfield: POINTER; insearchmenu: POINTER): INTEGER is
+	hisearch_field_set_search_menu_external (insearchfield: POINTER; insearchmenu: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, MenuRef):OSStatus"
 		alias
 			"ewg_function_macro_HISearchFieldSetSearchMenu"
 		end
 
-	frozen hisearch_field_set_search_menu_address_external: POINTER is
+	hisearch_field_set_search_menu_address_external: POINTER is
 			-- Address of C function `HISearchFieldSetSearchMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1788,14 +1788,14 @@ feature
 			"(void*) HISearchFieldSetSearchMenu"
 		end
 
-	frozen hisearch_field_get_search_menu_external (insearchfield: POINTER; outsearchmenu: POINTER): INTEGER is
+	hisearch_field_get_search_menu_external (insearchfield: POINTER; outsearchmenu: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, MenuRef*):OSStatus"
 		alias
 			"ewg_function_macro_HISearchFieldGetSearchMenu"
 		end
 
-	frozen hisearch_field_get_search_menu_address_external: POINTER is
+	hisearch_field_get_search_menu_address_external: POINTER is
 			-- Address of C function `HISearchFieldGetSearchMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1803,14 +1803,14 @@ feature
 			"(void*) HISearchFieldGetSearchMenu"
 		end
 
-	frozen hisearch_field_change_attributes_external (insearchfield: POINTER; inattributestoset: INTEGER; inattributestoclear: INTEGER): INTEGER is
+	hisearch_field_change_attributes_external (insearchfield: POINTER; inattributestoset: INTEGER; inattributestoclear: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, OptionBits, OptionBits):OSStatus"
 		alias
 			"ewg_function_macro_HISearchFieldChangeAttributes"
 		end
 
-	frozen hisearch_field_change_attributes_address_external: POINTER is
+	hisearch_field_change_attributes_address_external: POINTER is
 			-- Address of C function `HISearchFieldChangeAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1818,14 +1818,14 @@ feature
 			"(void*) HISearchFieldChangeAttributes"
 		end
 
-	frozen hisearch_field_get_attributes_external (insearchfield: POINTER; outattributes: POINTER): INTEGER is
+	hisearch_field_get_attributes_external (insearchfield: POINTER; outattributes: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, OptionBits*):OSStatus"
 		alias
 			"ewg_function_macro_HISearchFieldGetAttributes"
 		end
 
-	frozen hisearch_field_get_attributes_address_external: POINTER is
+	hisearch_field_get_attributes_address_external: POINTER is
 			-- Address of C function `HISearchFieldGetAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1833,14 +1833,14 @@ feature
 			"(void*) HISearchFieldGetAttributes"
 		end
 
-	frozen hisearch_field_set_descriptive_text_external (insearchfield: POINTER; indescription: POINTER): INTEGER is
+	hisearch_field_set_descriptive_text_external (insearchfield: POINTER; indescription: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, CFStringRef):OSStatus"
 		alias
 			"ewg_function_macro_HISearchFieldSetDescriptiveText"
 		end
 
-	frozen hisearch_field_set_descriptive_text_address_external: POINTER is
+	hisearch_field_set_descriptive_text_address_external: POINTER is
 			-- Address of C function `HISearchFieldSetDescriptiveText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1848,14 +1848,14 @@ feature
 			"(void*) HISearchFieldSetDescriptiveText"
 		end
 
-	frozen hisearch_field_copy_descriptive_text_external (insearchfield: POINTER; outdescription: POINTER): INTEGER is
+	hisearch_field_copy_descriptive_text_external (insearchfield: POINTER; outdescription: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, CFStringRef*):OSStatus"
 		alias
 			"ewg_function_macro_HISearchFieldCopyDescriptiveText"
 		end
 
-	frozen hisearch_field_copy_descriptive_text_address_external: POINTER is
+	hisearch_field_copy_descriptive_text_address_external: POINTER is
 			-- Address of C function `HISearchFieldCopyDescriptiveText'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1863,14 +1863,14 @@ feature
 			"(void*) HISearchFieldCopyDescriptiveText"
 		end
 
-	frozen himenu_view_get_menu_external (inview: POINTER): POINTER is
+	himenu_view_get_menu_external (inview: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):MenuRef"
 		alias
 			"ewg_function_macro_HIMenuViewGetMenu"
 		end
 
-	frozen himenu_view_get_menu_address_external: POINTER is
+	himenu_view_get_menu_address_external: POINTER is
 			-- Address of C function `HIMenuViewGetMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1878,14 +1878,14 @@ feature
 			"(void*) HIMenuViewGetMenu"
 		end
 
-	frozen himenu_get_content_view_external (inmenu: POINTER; inmenutype: INTEGER; outview: POINTER): INTEGER is
+	himenu_get_content_view_external (inmenu: POINTER; inmenutype: INTEGER; outview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (MenuRef, ThemeMenuType, HIViewRef*):OSStatus"
 		alias
 			"ewg_function_macro_HIMenuGetContentView"
 		end
 
-	frozen himenu_get_content_view_address_external: POINTER is
+	himenu_get_content_view_address_external: POINTER is
 			-- Address of C function `HIMenuGetContentView'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1893,14 +1893,14 @@ feature
 			"(void*) HIMenuGetContentView"
 		end
 
-	frozen hisegmented_view_create_external (inbounds: POINTER; outref: POINTER): INTEGER is
+	hisegmented_view_create_external (inbounds: POINTER; outref: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIRect const*, HIViewRef*):OSStatus"
 		alias
 			"ewg_function_macro_HISegmentedViewCreate"
 		end
 
-	frozen hisegmented_view_create_address_external: POINTER is
+	hisegmented_view_create_address_external: POINTER is
 			-- Address of C function `HISegmentedViewCreate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1908,14 +1908,14 @@ feature
 			"(void*) HISegmentedViewCreate"
 		end
 
-	frozen hisegmented_view_set_segment_count_external (insegmentedview: POINTER; insegmentcount: INTEGER): INTEGER is
+	hisegmented_view_set_segment_count_external (insegmentedview: POINTER; insegmentcount: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, UInt32):OSStatus"
 		alias
 			"ewg_function_macro_HISegmentedViewSetSegmentCount"
 		end
 
-	frozen hisegmented_view_set_segment_count_address_external: POINTER is
+	hisegmented_view_set_segment_count_address_external: POINTER is
 			-- Address of C function `HISegmentedViewSetSegmentCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1923,14 +1923,14 @@ feature
 			"(void*) HISegmentedViewSetSegmentCount"
 		end
 
-	frozen hisegmented_view_get_segment_count_external (insegmentedview: POINTER): INTEGER is
+	hisegmented_view_get_segment_count_external (insegmentedview: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef):UInt32"
 		alias
 			"ewg_function_macro_HISegmentedViewGetSegmentCount"
 		end
 
-	frozen hisegmented_view_get_segment_count_address_external: POINTER is
+	hisegmented_view_get_segment_count_address_external: POINTER is
 			-- Address of C function `HISegmentedViewGetSegmentCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1938,14 +1938,14 @@ feature
 			"(void*) HISegmentedViewGetSegmentCount"
 		end
 
-	frozen hisegmented_view_set_segment_behavior_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER; inbehavior: INTEGER): INTEGER is
+	hisegmented_view_set_segment_behavior_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER; inbehavior: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, UInt32, HISegmentBehavior):OSStatus"
 		alias
 			"ewg_function_macro_HISegmentedViewSetSegmentBehavior"
 		end
 
-	frozen hisegmented_view_set_segment_behavior_address_external: POINTER is
+	hisegmented_view_set_segment_behavior_address_external: POINTER is
 			-- Address of C function `HISegmentedViewSetSegmentBehavior'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1953,14 +1953,14 @@ feature
 			"(void*) HISegmentedViewSetSegmentBehavior"
 		end
 
-	frozen hisegmented_view_get_segment_behavior_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER): INTEGER is
+	hisegmented_view_get_segment_behavior_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, UInt32):HISegmentBehavior"
 		alias
 			"ewg_function_macro_HISegmentedViewGetSegmentBehavior"
 		end
 
-	frozen hisegmented_view_get_segment_behavior_address_external: POINTER is
+	hisegmented_view_get_segment_behavior_address_external: POINTER is
 			-- Address of C function `HISegmentedViewGetSegmentBehavior'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1968,14 +1968,14 @@ feature
 			"(void*) HISegmentedViewGetSegmentBehavior"
 		end
 
-	frozen hisegmented_view_change_segment_attributes_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER; inattributestoset: INTEGER; inattributestoclear: INTEGER): INTEGER is
+	hisegmented_view_change_segment_attributes_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER; inattributestoset: INTEGER; inattributestoclear: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, UInt32, OptionBits, OptionBits):OSStatus"
 		alias
 			"ewg_function_macro_HISegmentedViewChangeSegmentAttributes"
 		end
 
-	frozen hisegmented_view_change_segment_attributes_address_external: POINTER is
+	hisegmented_view_change_segment_attributes_address_external: POINTER is
 			-- Address of C function `HISegmentedViewChangeSegmentAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1983,14 +1983,14 @@ feature
 			"(void*) HISegmentedViewChangeSegmentAttributes"
 		end
 
-	frozen hisegmented_view_get_segment_attributes_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER): INTEGER is
+	hisegmented_view_get_segment_attributes_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, UInt32):OptionBits"
 		alias
 			"ewg_function_macro_HISegmentedViewGetSegmentAttributes"
 		end
 
-	frozen hisegmented_view_get_segment_attributes_address_external: POINTER is
+	hisegmented_view_get_segment_attributes_address_external: POINTER is
 			-- Address of C function `HISegmentedViewGetSegmentAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1998,14 +1998,14 @@ feature
 			"(void*) HISegmentedViewGetSegmentAttributes"
 		end
 
-	frozen hisegmented_view_set_segment_value_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER; invalue: INTEGER): INTEGER is
+	hisegmented_view_set_segment_value_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER; invalue: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, UInt32, SInt32):OSStatus"
 		alias
 			"ewg_function_macro_HISegmentedViewSetSegmentValue"
 		end
 
-	frozen hisegmented_view_set_segment_value_address_external: POINTER is
+	hisegmented_view_set_segment_value_address_external: POINTER is
 			-- Address of C function `HISegmentedViewSetSegmentValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2013,14 +2013,14 @@ feature
 			"(void*) HISegmentedViewSetSegmentValue"
 		end
 
-	frozen hisegmented_view_get_segment_value_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER): INTEGER is
+	hisegmented_view_get_segment_value_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, UInt32):SInt32"
 		alias
 			"ewg_function_macro_HISegmentedViewGetSegmentValue"
 		end
 
-	frozen hisegmented_view_get_segment_value_address_external: POINTER is
+	hisegmented_view_get_segment_value_address_external: POINTER is
 			-- Address of C function `HISegmentedViewGetSegmentValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2028,14 +2028,14 @@ feature
 			"(void*) HISegmentedViewGetSegmentValue"
 		end
 
-	frozen hisegmented_view_set_segment_enabled_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER; inenabled: INTEGER): INTEGER is
+	hisegmented_view_set_segment_enabled_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER; inenabled: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, UInt32, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_HISegmentedViewSetSegmentEnabled"
 		end
 
-	frozen hisegmented_view_set_segment_enabled_address_external: POINTER is
+	hisegmented_view_set_segment_enabled_address_external: POINTER is
 			-- Address of C function `HISegmentedViewSetSegmentEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2043,14 +2043,14 @@ feature
 			"(void*) HISegmentedViewSetSegmentEnabled"
 		end
 
-	frozen hisegmented_view_is_segment_enabled_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER): INTEGER is
+	hisegmented_view_is_segment_enabled_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, UInt32):Boolean"
 		alias
 			"ewg_function_macro_HISegmentedViewIsSegmentEnabled"
 		end
 
-	frozen hisegmented_view_is_segment_enabled_address_external: POINTER is
+	hisegmented_view_is_segment_enabled_address_external: POINTER is
 			-- Address of C function `HISegmentedViewIsSegmentEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2058,14 +2058,14 @@ feature
 			"(void*) HISegmentedViewIsSegmentEnabled"
 		end
 
-	frozen hisegmented_view_set_segment_command_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER; incommand: INTEGER): INTEGER is
+	hisegmented_view_set_segment_command_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER; incommand: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, UInt32, UInt32):OSStatus"
 		alias
 			"ewg_function_macro_HISegmentedViewSetSegmentCommand"
 		end
 
-	frozen hisegmented_view_set_segment_command_address_external: POINTER is
+	hisegmented_view_set_segment_command_address_external: POINTER is
 			-- Address of C function `HISegmentedViewSetSegmentCommand'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2073,14 +2073,14 @@ feature
 			"(void*) HISegmentedViewSetSegmentCommand"
 		end
 
-	frozen hisegmented_view_get_segment_command_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER): INTEGER is
+	hisegmented_view_get_segment_command_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, UInt32):UInt32"
 		alias
 			"ewg_function_macro_HISegmentedViewGetSegmentCommand"
 		end
 
-	frozen hisegmented_view_get_segment_command_address_external: POINTER is
+	hisegmented_view_get_segment_command_address_external: POINTER is
 			-- Address of C function `HISegmentedViewGetSegmentCommand'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2088,14 +2088,14 @@ feature
 			"(void*) HISegmentedViewGetSegmentCommand"
 		end
 
-	frozen hisegmented_view_set_segment_label_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER; inlabel: POINTER): INTEGER is
+	hisegmented_view_set_segment_label_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER; inlabel: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, UInt32, CFStringRef):OSStatus"
 		alias
 			"ewg_function_macro_HISegmentedViewSetSegmentLabel"
 		end
 
-	frozen hisegmented_view_set_segment_label_address_external: POINTER is
+	hisegmented_view_set_segment_label_address_external: POINTER is
 			-- Address of C function `HISegmentedViewSetSegmentLabel'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2103,14 +2103,14 @@ feature
 			"(void*) HISegmentedViewSetSegmentLabel"
 		end
 
-	frozen hisegmented_view_copy_segment_label_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER; outlabel: POINTER): INTEGER is
+	hisegmented_view_copy_segment_label_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER; outlabel: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, UInt32, CFStringRef*):OSStatus"
 		alias
 			"ewg_function_macro_HISegmentedViewCopySegmentLabel"
 		end
 
-	frozen hisegmented_view_copy_segment_label_address_external: POINTER is
+	hisegmented_view_copy_segment_label_address_external: POINTER is
 			-- Address of C function `HISegmentedViewCopySegmentLabel'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2118,14 +2118,14 @@ feature
 			"(void*) HISegmentedViewCopySegmentLabel"
 		end
 
-	frozen hisegmented_view_set_segment_content_width_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER; inautocalculatewidth: INTEGER; inwidth: REAL): INTEGER is
+	hisegmented_view_set_segment_content_width_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER; inautocalculatewidth: INTEGER; inwidth: REAL): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, UInt32, Boolean, float):OSStatus"
 		alias
 			"ewg_function_macro_HISegmentedViewSetSegmentContentWidth"
 		end
 
-	frozen hisegmented_view_set_segment_content_width_address_external: POINTER is
+	hisegmented_view_set_segment_content_width_address_external: POINTER is
 			-- Address of C function `HISegmentedViewSetSegmentContentWidth'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2133,14 +2133,14 @@ feature
 			"(void*) HISegmentedViewSetSegmentContentWidth"
 		end
 
-	frozen hisegmented_view_get_segment_content_width_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER; outautocalculated: POINTER): REAL is
+	hisegmented_view_get_segment_content_width_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER; outautocalculated: POINTER): REAL is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, UInt32, Boolean*):float"
 		alias
 			"ewg_function_macro_HISegmentedViewGetSegmentContentWidth"
 		end
 
-	frozen hisegmented_view_get_segment_content_width_address_external: POINTER is
+	hisegmented_view_get_segment_content_width_address_external: POINTER is
 			-- Address of C function `HISegmentedViewGetSegmentContentWidth'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2148,14 +2148,14 @@ feature
 			"(void*) HISegmentedViewGetSegmentContentWidth"
 		end
 
-	frozen hisegmented_view_set_segment_image_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER; inimage: POINTER): INTEGER is
+	hisegmented_view_set_segment_image_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER; inimage: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, UInt32, HIViewImageContentInfo const*):OSStatus"
 		alias
 			"ewg_function_macro_HISegmentedViewSetSegmentImage"
 		end
 
-	frozen hisegmented_view_set_segment_image_address_external: POINTER is
+	hisegmented_view_set_segment_image_address_external: POINTER is
 			-- Address of C function `HISegmentedViewSetSegmentImage'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2163,14 +2163,14 @@ feature
 			"(void*) HISegmentedViewSetSegmentImage"
 		end
 
-	frozen hisegmented_view_get_segment_image_content_type_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER): INTEGER is
+	hisegmented_view_get_segment_image_content_type_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, UInt32):HIViewImageContentType"
 		alias
 			"ewg_function_macro_HISegmentedViewGetSegmentImageContentType"
 		end
 
-	frozen hisegmented_view_get_segment_image_content_type_address_external: POINTER is
+	hisegmented_view_get_segment_image_content_type_address_external: POINTER is
 			-- Address of C function `HISegmentedViewGetSegmentImageContentType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2178,14 +2178,14 @@ feature
 			"(void*) HISegmentedViewGetSegmentImageContentType"
 		end
 
-	frozen hisegmented_view_copy_segment_image_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER; ioimage: POINTER): INTEGER is
+	hisegmented_view_copy_segment_image_external (insegmentedview: POINTER; insegmentindexonebased: INTEGER; ioimage: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIViewRef, UInt32, HIViewImageContentInfo*):OSStatus"
 		alias
 			"ewg_function_macro_HISegmentedViewCopySegmentImage"
 		end
 
-	frozen hisegmented_view_copy_segment_image_address_external: POINTER is
+	hisegmented_view_copy_segment_image_address_external: POINTER is
 			-- Address of C function `HISegmentedViewCopySegmentImage'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

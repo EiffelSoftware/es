@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_lastmenu: INTEGER is
+		obsolete "Use `lastmenu' instead."
+			-- Access member `lastMenu'
+		require
+			exists: exists
+		do
+			Result := get_lastmenu_external (item)
+		ensure
+			result_correct: Result = get_lastmenu_external (item)
+		end
 
 	lastmenu: INTEGER is
 			-- Access member `lastMenu'
@@ -47,6 +58,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = lastmenu
 		end
 
+	get_lastright: INTEGER is
+		obsolete "Use `lastright' instead."
+			-- Access member `lastRight'
+		require
+			exists: exists
+		do
+			Result := get_lastright_external (item)
+		ensure
+			result_correct: Result = get_lastright_external (item)
+		end
+
 	lastright: INTEGER is
 			-- Access member `lastRight'
 		require
@@ -65,6 +87,17 @@ feature {ANY} -- Member Access
 			set_lastright_external (item, a_value)
 		ensure
 			a_value_set: a_value = lastright
+		end
+
+	get_mbresid: INTEGER is
+		obsolete "Use `mbresid' instead."
+			-- Access member `mbResID'
+		require
+			exists: exists
+		do
+			Result := get_mbresid_external (item)
+		ensure
+			result_correct: Result = get_mbresid_external (item)
 		end
 
 	mbresid: INTEGER is

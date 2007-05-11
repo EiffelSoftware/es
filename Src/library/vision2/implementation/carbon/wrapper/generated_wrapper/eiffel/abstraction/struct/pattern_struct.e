@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_pat: POINTER is
+		obsolete "Use `pat' instead."
+			-- Access member `pat'
+		require
+			exists: exists
+		do
+			Result := get_pat_external (item)
+		ensure
+			result_correct: Result = get_pat_external (item)
+		end
 
 	pat: POINTER is
 			-- Access member `pat'

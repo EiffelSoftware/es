@@ -9,28 +9,28 @@ feature {ANY}
 			Result := a_value = kcfstringnormalizationformd or a_value = kcfstringnormalizationformkd or a_value = kcfstringnormalizationformc or a_value = kcfstringnormalizationformkc
 		end
 
-	 frozen kcfstringnormalizationformd: INTEGER is
+	kcfstringnormalizationformd: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCFStringNormalizationFormD"
 		end
 
-	 frozen kcfstringnormalizationformkd: INTEGER is
+	kcfstringnormalizationformkd: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCFStringNormalizationFormKD"
 		end
 
-	 frozen kcfstringnormalizationformc: INTEGER is
+	kcfstringnormalizationformc: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCFStringNormalizationFormC"
 		end
 
-	 frozen kcfstringnormalizationformkc: INTEGER is
+	kcfstringnormalizationformkc: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias

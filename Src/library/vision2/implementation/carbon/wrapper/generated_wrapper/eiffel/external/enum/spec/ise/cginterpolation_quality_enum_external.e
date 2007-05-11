@@ -9,28 +9,28 @@ feature {ANY}
 			Result := a_value = kcginterpolationdefault or a_value = kcginterpolationnone or a_value = kcginterpolationlow or a_value = kcginterpolationhigh
 		end
 
-	 frozen kcginterpolationdefault: INTEGER is
+	kcginterpolationdefault: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGInterpolationDefault"
 		end
 
-	 frozen kcginterpolationnone: INTEGER is
+	kcginterpolationnone: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGInterpolationNone"
 		end
 
-	 frozen kcginterpolationlow: INTEGER is
+	kcginterpolationlow: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCGInterpolationLow"
 		end
 
-	 frozen kcginterpolationhigh: INTEGER is
+	kcginterpolationhigh: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias

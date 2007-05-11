@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_version: INTEGER is
+		obsolete "Use `version' instead."
+			-- Access member `version'
+		require
+			exists: exists
+		do
+			Result := get_version_external (item)
+		ensure
+			result_correct: Result = get_version_external (item)
+		end
 
 	version: INTEGER is
 			-- Access member `version'
@@ -45,6 +56,17 @@ feature {ANY} -- Member Access
 			set_version_external (item, a_value)
 		ensure
 			a_value_set: a_value = version
+		end
+
+	get_minimumwidth: INTEGER is
+		obsolete "Use `minimumwidth' instead."
+			-- Access member `minimumWidth'
+		require
+			exists: exists
+		do
+			Result := get_minimumwidth_external (item)
+		ensure
+			result_correct: Result = get_minimumwidth_external (item)
 		end
 
 	minimumwidth: INTEGER is
@@ -67,6 +89,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = minimumwidth
 		end
 
+	get_maximumwidth: INTEGER is
+		obsolete "Use `maximumwidth' instead."
+			-- Access member `maximumWidth'
+		require
+			exists: exists
+		do
+			Result := get_maximumwidth_external (item)
+		ensure
+			result_correct: Result = get_maximumwidth_external (item)
+		end
+
 	maximumwidth: INTEGER is
 			-- Access member `maximumWidth'
 		require
@@ -85,6 +118,17 @@ feature {ANY} -- Member Access
 			set_maximumwidth_external (item, a_value)
 		ensure
 			a_value_set: a_value = maximumwidth
+		end
+
+	get_titleoffset: INTEGER is
+		obsolete "Use `titleoffset' instead."
+			-- Access member `titleOffset'
+		require
+			exists: exists
+		do
+			Result := get_titleoffset_external (item)
+		ensure
+			result_correct: Result = get_titleoffset_external (item)
 		end
 
 	titleoffset: INTEGER is
@@ -129,6 +173,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value.item = titlestring
 		end
 
+	get_titlestring: POINTER is
+		obsolete "Use `titlestring' instead."
+			-- Access member `titleString'
+		require
+			exists: exists
+		do
+			Result := get_titlestring_external (item)
+		ensure
+			result_correct: Result = get_titlestring_external (item)
+		end
+
 	titlestring: POINTER is
 			-- Access member `titleString'
 		require
@@ -147,6 +202,17 @@ feature {ANY} -- Member Access
 			set_titlestring_external (item, a_value)
 		ensure
 			a_value_set: a_value = titlestring
+		end
+
+	get_initialorder: INTEGER is
+		obsolete "Use `initialorder' instead."
+			-- Access member `initialOrder'
+		require
+			exists: exists
+		do
+			Result := get_initialorder_external (item)
+		ensure
+			result_correct: Result = get_initialorder_external (item)
 		end
 
 	initialorder: INTEGER is
@@ -169,6 +235,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = initialorder
 		end
 
+	get_btnfontstyle: POINTER is
+		obsolete "Use `btnfontstyle' instead."
+			-- Access member `btnFontStyle'
+		require
+			exists: exists
+		do
+			Result := get_btnfontstyle_external (item)
+		ensure
+			result_correct: Result = get_btnfontstyle_external (item)
+		end
+
 	btnfontstyle: POINTER is
 			-- Access member `btnFontStyle'
 		require
@@ -185,6 +262,17 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_btnfontstyle_external (item, a_value)
+		end
+
+	get_btncontentinfo: POINTER is
+		obsolete "Use `btncontentinfo' instead."
+			-- Access member `btnContentInfo'
+		require
+			exists: exists
+		do
+			Result := get_btncontentinfo_external (item)
+		ensure
+			result_correct: Result = get_btncontentinfo_external (item)
 		end
 
 	btncontentinfo: POINTER is

@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_modifiers: INTEGER is
+		obsolete "Use `modifiers' instead."
+			-- Access member `modifiers'
+		require
+			exists: exists
+		do
+			Result := get_modifiers_external (item)
+		ensure
+			result_correct: Result = get_modifiers_external (item)
+		end
 
 	modifiers: INTEGER is
 			-- Access member `modifiers'
@@ -47,6 +58,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = modifiers
 		end
 
+	get_keycode: INTEGER is
+		obsolete "Use `keycode' instead."
+			-- Access member `keyCode'
+		require
+			exists: exists
+		do
+			Result := get_keycode_external (item)
+		ensure
+			result_correct: Result = get_keycode_external (item)
+		end
+
 	keycode: INTEGER is
 			-- Access member `keyCode'
 		require
@@ -65,6 +87,17 @@ feature {ANY} -- Member Access
 			set_keycode_external (item, a_value)
 		ensure
 			a_value_set: a_value = keycode
+		end
+
+	get_charcode: INTEGER is
+		obsolete "Use `charcode' instead."
+			-- Access member `charCode'
+		require
+			exists: exists
+		do
+			Result := get_charcode_external (item)
+		ensure
+			result_correct: Result = get_charcode_external (item)
 		end
 
 	charcode: INTEGER is

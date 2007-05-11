@@ -3,14 +3,14 @@
 class CGGEOMETRY_FUNCTIONS_EXTERNAL
 
 feature
-	frozen cgpoint_make_external (x: REAL; y: REAL): POINTER is
+	cgpoint_make_external (x: REAL; y: REAL): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (float, float):CGPoint*"
 		alias
-			"ewg_function_CGPointMake"
+			"ewg_function_CGPointMake()"
 		end
 
-	frozen cgpoint_make_address_external: POINTER is
+	cgpoint_make_address_external: POINTER is
 			-- Address of C function `CGPointMake'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -18,14 +18,14 @@ feature
 			"(void*) CGPointMake"
 		end
 
-	frozen cgsize_make_external (width: REAL; height: REAL): POINTER is
+	cgsize_make_external (width: REAL; height: REAL): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (float, float):CGSize*"
 		alias
-			"ewg_function_CGSizeMake"
+			"ewg_function_CGSizeMake()"
 		end
 
-	frozen cgsize_make_address_external: POINTER is
+	cgsize_make_address_external: POINTER is
 			-- Address of C function `CGSizeMake'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -33,14 +33,14 @@ feature
 			"(void*) CGSizeMake"
 		end
 
-	frozen cgrect_make_external (x: REAL; y: REAL; width: REAL; height: REAL): POINTER is
+	cgrect_make_external (x: REAL; y: REAL; width: REAL; height: REAL): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (float, float, float, float):CGRect*"
 		alias
-			"ewg_function_CGRectMake"
+			"ewg_function_CGRectMake()"
 		end
 
-	frozen cgrect_make_address_external: POINTER is
+	cgrect_make_address_external: POINTER is
 			-- Address of C function `CGRectMake'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -48,14 +48,14 @@ feature
 			"(void*) CGRectMake"
 		end
 
-	frozen cgrect_get_min_x_external (rect: POINTER): REAL is
+	cgrect_get_min_x_external (rect: POINTER): REAL is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*):float"
 		alias
 			"ewg_function_macro_CGRectGetMinX"
 		end
 
-	frozen cgrect_get_min_x_address_external: POINTER is
+	cgrect_get_min_x_address_external: POINTER is
 			-- Address of C function `CGRectGetMinX'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -63,14 +63,14 @@ feature
 			"(void*) CGRectGetMinX"
 		end
 
-	frozen cgrect_get_mid_x_external (rect: POINTER): REAL is
+	cgrect_get_mid_x_external (rect: POINTER): REAL is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*):float"
 		alias
 			"ewg_function_macro_CGRectGetMidX"
 		end
 
-	frozen cgrect_get_mid_x_address_external: POINTER is
+	cgrect_get_mid_x_address_external: POINTER is
 			-- Address of C function `CGRectGetMidX'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -78,14 +78,14 @@ feature
 			"(void*) CGRectGetMidX"
 		end
 
-	frozen cgrect_get_max_x_external (rect: POINTER): REAL is
+	cgrect_get_max_x_external (rect: POINTER): REAL is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*):float"
 		alias
 			"ewg_function_macro_CGRectGetMaxX"
 		end
 
-	frozen cgrect_get_max_x_address_external: POINTER is
+	cgrect_get_max_x_address_external: POINTER is
 			-- Address of C function `CGRectGetMaxX'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -93,14 +93,14 @@ feature
 			"(void*) CGRectGetMaxX"
 		end
 
-	frozen cgrect_get_min_y_external (rect: POINTER): REAL is
+	cgrect_get_min_y_external (rect: POINTER): REAL is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*):float"
 		alias
 			"ewg_function_macro_CGRectGetMinY"
 		end
 
-	frozen cgrect_get_min_y_address_external: POINTER is
+	cgrect_get_min_y_address_external: POINTER is
 			-- Address of C function `CGRectGetMinY'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -108,14 +108,14 @@ feature
 			"(void*) CGRectGetMinY"
 		end
 
-	frozen cgrect_get_mid_y_external (rect: POINTER): REAL is
+	cgrect_get_mid_y_external (rect: POINTER): REAL is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*):float"
 		alias
 			"ewg_function_macro_CGRectGetMidY"
 		end
 
-	frozen cgrect_get_mid_y_address_external: POINTER is
+	cgrect_get_mid_y_address_external: POINTER is
 			-- Address of C function `CGRectGetMidY'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -123,14 +123,14 @@ feature
 			"(void*) CGRectGetMidY"
 		end
 
-	frozen cgrect_get_max_y_external (rect: POINTER): REAL is
+	cgrect_get_max_y_external (rect: POINTER): REAL is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*):float"
 		alias
 			"ewg_function_macro_CGRectGetMaxY"
 		end
 
-	frozen cgrect_get_max_y_address_external: POINTER is
+	cgrect_get_max_y_address_external: POINTER is
 			-- Address of C function `CGRectGetMaxY'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -138,14 +138,14 @@ feature
 			"(void*) CGRectGetMaxY"
 		end
 
-	frozen cgrect_get_width_external (rect: POINTER): REAL is
+	cgrect_get_width_external (rect: POINTER): REAL is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*):float"
 		alias
 			"ewg_function_macro_CGRectGetWidth"
 		end
 
-	frozen cgrect_get_width_address_external: POINTER is
+	cgrect_get_width_address_external: POINTER is
 			-- Address of C function `CGRectGetWidth'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -153,14 +153,14 @@ feature
 			"(void*) CGRectGetWidth"
 		end
 
-	frozen cgrect_get_height_external (rect: POINTER): REAL is
+	cgrect_get_height_external (rect: POINTER): REAL is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*):float"
 		alias
 			"ewg_function_macro_CGRectGetHeight"
 		end
 
-	frozen cgrect_get_height_address_external: POINTER is
+	cgrect_get_height_address_external: POINTER is
 			-- Address of C function `CGRectGetHeight'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -168,14 +168,14 @@ feature
 			"(void*) CGRectGetHeight"
 		end
 
-	frozen cgpoint_equal_to_point_external (point1: POINTER; point2: POINTER): INTEGER is
+	cgpoint_equal_to_point_external (point1: POINTER; point2: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGPoint*, CGPoint*):int"
 		alias
 			"ewg_function_macro_CGPointEqualToPoint"
 		end
 
-	frozen cgpoint_equal_to_point_address_external: POINTER is
+	cgpoint_equal_to_point_address_external: POINTER is
 			-- Address of C function `CGPointEqualToPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -183,14 +183,14 @@ feature
 			"(void*) CGPointEqualToPoint"
 		end
 
-	frozen cgsize_equal_to_size_external (size1: POINTER; size2: POINTER): INTEGER is
+	cgsize_equal_to_size_external (size1: POINTER; size2: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGSize*, CGSize*):int"
 		alias
 			"ewg_function_macro_CGSizeEqualToSize"
 		end
 
-	frozen cgsize_equal_to_size_address_external: POINTER is
+	cgsize_equal_to_size_address_external: POINTER is
 			-- Address of C function `CGSizeEqualToSize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -198,14 +198,14 @@ feature
 			"(void*) CGSizeEqualToSize"
 		end
 
-	frozen cgrect_equal_to_rect_external (rect1: POINTER; rect2: POINTER): INTEGER is
+	cgrect_equal_to_rect_external (rect1: POINTER; rect2: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*, CGRect*):int"
 		alias
 			"ewg_function_macro_CGRectEqualToRect"
 		end
 
-	frozen cgrect_equal_to_rect_address_external: POINTER is
+	cgrect_equal_to_rect_address_external: POINTER is
 			-- Address of C function `CGRectEqualToRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -213,14 +213,14 @@ feature
 			"(void*) CGRectEqualToRect"
 		end
 
-	frozen cgrect_standardize_external (rect: POINTER): POINTER is
+	cgrect_standardize_external (rect: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*):CGRect*"
 		alias
-			"ewg_function_CGRectStandardize"
+			"ewg_function_CGRectStandardize()"
 		end
 
-	frozen cgrect_standardize_address_external: POINTER is
+	cgrect_standardize_address_external: POINTER is
 			-- Address of C function `CGRectStandardize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -228,14 +228,14 @@ feature
 			"(void*) CGRectStandardize"
 		end
 
-	frozen cgrect_is_empty_external (rect: POINTER): INTEGER is
+	cgrect_is_empty_external (rect: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*):int"
 		alias
 			"ewg_function_macro_CGRectIsEmpty"
 		end
 
-	frozen cgrect_is_empty_address_external: POINTER is
+	cgrect_is_empty_address_external: POINTER is
 			-- Address of C function `CGRectIsEmpty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -243,14 +243,14 @@ feature
 			"(void*) CGRectIsEmpty"
 		end
 
-	frozen cgrect_is_null_external (rect: POINTER): INTEGER is
+	cgrect_is_null_external (rect: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*):int"
 		alias
 			"ewg_function_macro_CGRectIsNull"
 		end
 
-	frozen cgrect_is_null_address_external: POINTER is
+	cgrect_is_null_address_external: POINTER is
 			-- Address of C function `CGRectIsNull'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -258,14 +258,14 @@ feature
 			"(void*) CGRectIsNull"
 		end
 
-	frozen cgrect_is_infinite_external (rect: POINTER): INTEGER is
+	cgrect_is_infinite_external (rect: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*):_Bool"
 		alias
 			"ewg_function_macro_CGRectIsInfinite"
 		end
 
-	frozen cgrect_is_infinite_address_external: POINTER is
+	cgrect_is_infinite_address_external: POINTER is
 			-- Address of C function `CGRectIsInfinite'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -273,14 +273,14 @@ feature
 			"(void*) CGRectIsInfinite"
 		end
 
-	frozen cgrect_inset_external (rect: POINTER; dx: REAL; dy: REAL): POINTER is
+	cgrect_inset_external (rect: POINTER; dx: REAL; dy: REAL): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*, float, float):CGRect*"
 		alias
-			"ewg_function_CGRectInset"
+			"ewg_function_CGRectInset()"
 		end
 
-	frozen cgrect_inset_address_external: POINTER is
+	cgrect_inset_address_external: POINTER is
 			-- Address of C function `CGRectInset'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -288,14 +288,14 @@ feature
 			"(void*) CGRectInset"
 		end
 
-	frozen cgrect_integral_external (rect: POINTER): POINTER is
+	cgrect_integral_external (rect: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*):CGRect*"
 		alias
-			"ewg_function_CGRectIntegral"
+			"ewg_function_CGRectIntegral()"
 		end
 
-	frozen cgrect_integral_address_external: POINTER is
+	cgrect_integral_address_external: POINTER is
 			-- Address of C function `CGRectIntegral'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -303,14 +303,14 @@ feature
 			"(void*) CGRectIntegral"
 		end
 
-	frozen cgrect_union_external (r1: POINTER; r2: POINTER): POINTER is
+	cgrect_union_external (r1: POINTER; r2: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*, CGRect*):CGRect*"
 		alias
-			"ewg_function_CGRectUnion"
+			"ewg_function_CGRectUnion()"
 		end
 
-	frozen cgrect_union_address_external: POINTER is
+	cgrect_union_address_external: POINTER is
 			-- Address of C function `CGRectUnion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -318,14 +318,14 @@ feature
 			"(void*) CGRectUnion"
 		end
 
-	frozen cgrect_intersection_external (r1: POINTER; r2: POINTER): POINTER is
+	cgrect_intersection_external (r1: POINTER; r2: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*, CGRect*):CGRect*"
 		alias
-			"ewg_function_CGRectIntersection"
+			"ewg_function_CGRectIntersection()"
 		end
 
-	frozen cgrect_intersection_address_external: POINTER is
+	cgrect_intersection_address_external: POINTER is
 			-- Address of C function `CGRectIntersection'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -333,14 +333,14 @@ feature
 			"(void*) CGRectIntersection"
 		end
 
-	frozen cgrect_offset_external (rect: POINTER; dx: REAL; dy: REAL): POINTER is
+	cgrect_offset_external (rect: POINTER; dx: REAL; dy: REAL): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*, float, float):CGRect*"
 		alias
-			"ewg_function_CGRectOffset"
+			"ewg_function_CGRectOffset()"
 		end
 
-	frozen cgrect_offset_address_external: POINTER is
+	cgrect_offset_address_external: POINTER is
 			-- Address of C function `CGRectOffset'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -348,14 +348,14 @@ feature
 			"(void*) CGRectOffset"
 		end
 
-	frozen cgrect_divide_external (rect: POINTER; slice: POINTER; remainder: POINTER; amount: REAL; edge: INTEGER) is
+	cgrect_divide_external (rect: POINTER; slice: POINTER; remainder: POINTER; amount: REAL; edge: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*, CGRect*, CGRect*, float, CGRectEdge)"
 		alias
 			"ewg_function_macro_CGRectDivide"
 		end
 
-	frozen cgrect_divide_address_external: POINTER is
+	cgrect_divide_address_external: POINTER is
 			-- Address of C function `CGRectDivide'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -363,14 +363,14 @@ feature
 			"(void*) CGRectDivide"
 		end
 
-	frozen cgrect_contains_point_external (rect: POINTER; point: POINTER): INTEGER is
+	cgrect_contains_point_external (rect: POINTER; point: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*, CGPoint*):int"
 		alias
 			"ewg_function_macro_CGRectContainsPoint"
 		end
 
-	frozen cgrect_contains_point_address_external: POINTER is
+	cgrect_contains_point_address_external: POINTER is
 			-- Address of C function `CGRectContainsPoint'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -378,14 +378,14 @@ feature
 			"(void*) CGRectContainsPoint"
 		end
 
-	frozen cgrect_contains_rect_external (rect1: POINTER; rect2: POINTER): INTEGER is
+	cgrect_contains_rect_external (rect1: POINTER; rect2: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*, CGRect*):int"
 		alias
 			"ewg_function_macro_CGRectContainsRect"
 		end
 
-	frozen cgrect_contains_rect_address_external: POINTER is
+	cgrect_contains_rect_address_external: POINTER is
 			-- Address of C function `CGRectContainsRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -393,14 +393,14 @@ feature
 			"(void*) CGRectContainsRect"
 		end
 
-	frozen cgrect_intersects_rect_external (rect1: POINTER; rect2: POINTER): INTEGER is
+	cgrect_intersects_rect_external (rect1: POINTER; rect2: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGRect*, CGRect*):int"
 		alias
 			"ewg_function_macro_CGRectIntersectsRect"
 		end
 
-	frozen cgrect_intersects_rect_address_external: POINTER is
+	cgrect_intersects_rect_address_external: POINTER is
 			-- Address of C function `CGRectIntersectsRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

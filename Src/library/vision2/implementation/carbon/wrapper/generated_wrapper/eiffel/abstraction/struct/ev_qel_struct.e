@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -49,6 +49,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value.item = qlink
 		end
 
+	get_qlink: POINTER is
+		obsolete "Use `qlink' instead."
+			-- Access member `qLink'
+		require
+			exists: exists
+		do
+			Result := get_qlink_external (item)
+		ensure
+			result_correct: Result = get_qlink_external (item)
+		end
+
 	qlink: POINTER is
 			-- Access member `qLink'
 		require
@@ -67,6 +78,17 @@ feature {ANY} -- Member Access
 			set_qlink_external (item, a_value)
 		ensure
 			a_value_set: a_value = qlink
+		end
+
+	get_qtype: INTEGER is
+		obsolete "Use `qtype' instead."
+			-- Access member `qType'
+		require
+			exists: exists
+		do
+			Result := get_qtype_external (item)
+		ensure
+			result_correct: Result = get_qtype_external (item)
 		end
 
 	qtype: INTEGER is
@@ -89,6 +111,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = qtype
 		end
 
+	get_evtqwhat: INTEGER is
+		obsolete "Use `evtqwhat' instead."
+			-- Access member `evtQWhat'
+		require
+			exists: exists
+		do
+			Result := get_evtqwhat_external (item)
+		ensure
+			result_correct: Result = get_evtqwhat_external (item)
+		end
+
 	evtqwhat: INTEGER is
 			-- Access member `evtQWhat'
 		require
@@ -107,6 +140,17 @@ feature {ANY} -- Member Access
 			set_evtqwhat_external (item, a_value)
 		ensure
 			a_value_set: a_value = evtqwhat
+		end
+
+	get_evtqmessage: INTEGER is
+		obsolete "Use `evtqmessage' instead."
+			-- Access member `evtQMessage'
+		require
+			exists: exists
+		do
+			Result := get_evtqmessage_external (item)
+		ensure
+			result_correct: Result = get_evtqmessage_external (item)
 		end
 
 	evtqmessage: INTEGER is
@@ -129,6 +173,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = evtqmessage
 		end
 
+	get_evtqwhen: INTEGER is
+		obsolete "Use `evtqwhen' instead."
+			-- Access member `evtQWhen'
+		require
+			exists: exists
+		do
+			Result := get_evtqwhen_external (item)
+		ensure
+			result_correct: Result = get_evtqwhen_external (item)
+		end
+
 	evtqwhen: INTEGER is
 			-- Access member `evtQWhen'
 		require
@@ -149,6 +204,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = evtqwhen
 		end
 
+	get_evtqwhere: POINTER is
+		obsolete "Use `evtqwhere' instead."
+			-- Access member `evtQWhere'
+		require
+			exists: exists
+		do
+			Result := get_evtqwhere_external (item)
+		ensure
+			result_correct: Result = get_evtqwhere_external (item)
+		end
+
 	evtqwhere: POINTER is
 			-- Access member `evtQWhere'
 		require
@@ -165,6 +231,17 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_evtqwhere_external (item, a_value)
+		end
+
+	get_evtqmodifiers: INTEGER is
+		obsolete "Use `evtqmodifiers' instead."
+			-- Access member `evtQModifiers'
+		require
+			exists: exists
+		do
+			Result := get_evtqmodifiers_external (item)
+		ensure
+			result_correct: Result = get_evtqmodifiers_external (item)
 		end
 
 	evtqmodifiers: INTEGER is

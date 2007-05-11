@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_trackingdata: POINTER is
+		obsolete "Use `trackingdata' instead."
+			-- Access member `trackingData'
+		require
+			exists: exists
+		do
+			Result := get_trackingdata_external (item)
+		ensure
+			result_correct: Result = get_trackingdata_external (item)
+		end
 
 	trackingdata: POINTER is
 			-- Access member `trackingData'
@@ -43,6 +54,17 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_trackingdata_external (item, a_value)
+		end
+
+	get_context: POINTER is
+		obsolete "Use `context' instead."
+			-- Access member `context'
+		require
+			exists: exists
+		do
+			Result := get_context_external (item)
+		ensure
+			result_correct: Result = get_context_external (item)
 		end
 
 	context: POINTER is

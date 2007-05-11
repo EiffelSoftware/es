@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_userstate: POINTER is
+		obsolete "Use `userstate' instead."
+			-- Access member `userState'
+		require
+			exists: exists
+		do
+			Result := get_userstate_external (item)
+		ensure
+			result_correct: Result = get_userstate_external (item)
+		end
 
 	userstate: POINTER is
 			-- Access member `userState'
@@ -43,6 +54,17 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_userstate_external (item, a_value)
+		end
+
+	get_stdstate: POINTER is
+		obsolete "Use `stdstate' instead."
+			-- Access member `stdState'
+		require
+			exists: exists
+		do
+			Result := get_stdstate_external (item)
+		ensure
+			result_correct: Result = get_stdstate_external (item)
 		end
 
 	stdstate: POINTER is

@@ -3,14 +3,14 @@
 class CONTROLS_FUNCTIONS_EXTERNAL
 
 feature
-	frozen new_control_action_upp_external (userroutine: POINTER): POINTER is
+	new_control_action_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlActionProcPtr):ControlActionUPP"
 		alias
 			"ewg_function_macro_NewControlActionUPP"
 		end
 
-	frozen new_control_action_upp_address_external: POINTER is
+	new_control_action_upp_address_external: POINTER is
 			-- Address of C function `NewControlActionUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -18,14 +18,14 @@ feature
 			"(void*) NewControlActionUPP"
 		end
 
-	frozen dispose_control_action_upp_external (userupp: POINTER) is
+	dispose_control_action_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlActionUPP)"
 		alias
 			"ewg_function_macro_DisposeControlActionUPP"
 		end
 
-	frozen dispose_control_action_upp_address_external: POINTER is
+	dispose_control_action_upp_address_external: POINTER is
 			-- Address of C function `DisposeControlActionUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -33,14 +33,14 @@ feature
 			"(void*) DisposeControlActionUPP"
 		end
 
-	frozen invoke_control_action_upp_external (thecontrol: POINTER; partcode: INTEGER; userupp: POINTER) is
+	invoke_control_action_upp_external (thecontrol: POINTER; partcode: INTEGER; userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlPartCode, ControlActionUPP)"
 		alias
 			"ewg_function_macro_InvokeControlActionUPP"
 		end
 
-	frozen invoke_control_action_upp_address_external: POINTER is
+	invoke_control_action_upp_address_external: POINTER is
 			-- Address of C function `InvokeControlActionUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -48,14 +48,14 @@ feature
 			"(void*) InvokeControlActionUPP"
 		end
 
-	frozen new_control_def_upp_external (userroutine: POINTER): POINTER is
+	new_control_def_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlDefProcPtr):ControlDefUPP"
 		alias
 			"ewg_function_macro_NewControlDefUPP"
 		end
 
-	frozen new_control_def_upp_address_external: POINTER is
+	new_control_def_upp_address_external: POINTER is
 			-- Address of C function `NewControlDefUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -63,14 +63,14 @@ feature
 			"(void*) NewControlDefUPP"
 		end
 
-	frozen dispose_control_def_upp_external (userupp: POINTER) is
+	dispose_control_def_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlDefUPP)"
 		alias
 			"ewg_function_macro_DisposeControlDefUPP"
 		end
 
-	frozen dispose_control_def_upp_address_external: POINTER is
+	dispose_control_def_upp_address_external: POINTER is
 			-- Address of C function `DisposeControlDefUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -78,14 +78,14 @@ feature
 			"(void*) DisposeControlDefUPP"
 		end
 
-	frozen invoke_control_def_upp_external (varcode: INTEGER; thecontrol: POINTER; message: INTEGER; param: INTEGER; userupp: POINTER): INTEGER is
+	invoke_control_def_upp_external (varcode: INTEGER; thecontrol: POINTER; message: INTEGER; param: INTEGER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (SInt16, ControlRef, ControlDefProcMessage, SInt32, ControlDefUPP):SInt32"
 		alias
 			"ewg_function_macro_InvokeControlDefUPP"
 		end
 
-	frozen invoke_control_def_upp_address_external: POINTER is
+	invoke_control_def_upp_address_external: POINTER is
 			-- Address of C function `InvokeControlDefUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -93,14 +93,14 @@ feature
 			"(void*) InvokeControlDefUPP"
 		end
 
-	frozen new_control_key_filter_upp_external (userroutine: POINTER): POINTER is
+	new_control_key_filter_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlKeyFilterProcPtr):ControlKeyFilterUPP"
 		alias
 			"ewg_function_macro_NewControlKeyFilterUPP"
 		end
 
-	frozen new_control_key_filter_upp_address_external: POINTER is
+	new_control_key_filter_upp_address_external: POINTER is
 			-- Address of C function `NewControlKeyFilterUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -108,14 +108,14 @@ feature
 			"(void*) NewControlKeyFilterUPP"
 		end
 
-	frozen dispose_control_key_filter_upp_external (userupp: POINTER) is
+	dispose_control_key_filter_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlKeyFilterUPP)"
 		alias
 			"ewg_function_macro_DisposeControlKeyFilterUPP"
 		end
 
-	frozen dispose_control_key_filter_upp_address_external: POINTER is
+	dispose_control_key_filter_upp_address_external: POINTER is
 			-- Address of C function `DisposeControlKeyFilterUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -123,14 +123,14 @@ feature
 			"(void*) DisposeControlKeyFilterUPP"
 		end
 
-	frozen invoke_control_key_filter_upp_external (thecontrol: POINTER; keycode: POINTER; charcode: POINTER; modifiers: POINTER; userupp: POINTER): INTEGER is
+	invoke_control_key_filter_upp_external (thecontrol: POINTER; keycode: POINTER; charcode: POINTER; modifiers: POINTER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, SInt16*, SInt16*, EventModifiers*, ControlKeyFilterUPP):ControlKeyFilterResult"
 		alias
 			"ewg_function_macro_InvokeControlKeyFilterUPP"
 		end
 
-	frozen invoke_control_key_filter_upp_address_external: POINTER is
+	invoke_control_key_filter_upp_address_external: POINTER is
 			-- Address of C function `InvokeControlKeyFilterUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -138,14 +138,14 @@ feature
 			"(void*) InvokeControlKeyFilterUPP"
 		end
 
-	frozen create_custom_control_external (owningwindow: POINTER; contbounds: POINTER; def: POINTER; initdata: POINTER; outcontrol: POINTER): INTEGER is
+	create_custom_control_external (owningwindow: POINTER; contbounds: POINTER; def: POINTER; initdata: POINTER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, ControlDefSpec const*, Collection, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateCustomControl"
 		end
 
-	frozen create_custom_control_address_external: POINTER is
+	create_custom_control_address_external: POINTER is
 			-- Address of C function `CreateCustomControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -153,14 +153,14 @@ feature
 			"(void*) CreateCustomControl"
 		end
 
-	frozen new_control_external (owningwindow: POINTER; boundsrect: POINTER; controltitle: POINTER; initiallyvisible: INTEGER; initialvalue: INTEGER; minimumvalue: INTEGER; maximumvalue: INTEGER; procid: INTEGER; controlreference: INTEGER): POINTER is
+	new_control_external (owningwindow: POINTER; boundsrect: POINTER; controltitle: POINTER; initiallyvisible: INTEGER; initialvalue: INTEGER; minimumvalue: INTEGER; maximumvalue: INTEGER; procid: INTEGER; controlreference: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, ConstStr255Param, Boolean, SInt16, SInt16, SInt16, SInt16, SInt32):ControlRef"
 		alias
 			"ewg_function_macro_NewControl"
 		end
 
-	frozen new_control_address_external: POINTER is
+	new_control_address_external: POINTER is
 			-- Address of C function `NewControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -168,14 +168,14 @@ feature
 			"(void*) NewControl"
 		end
 
-	frozen get_new_control_external (resourceid: INTEGER; owningwindow: POINTER): POINTER is
+	get_new_control_external (resourceid: INTEGER; owningwindow: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (SInt16, WindowRef):ControlRef"
 		alias
 			"ewg_function_macro_GetNewControl"
 		end
 
-	frozen get_new_control_address_external: POINTER is
+	get_new_control_address_external: POINTER is
 			-- Address of C function `GetNewControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -183,14 +183,14 @@ feature
 			"(void*) GetNewControl"
 		end
 
-	frozen dispose_control_external (thecontrol: POINTER) is
+	dispose_control_external (thecontrol: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef)"
 		alias
 			"ewg_function_macro_DisposeControl"
 		end
 
-	frozen dispose_control_address_external: POINTER is
+	dispose_control_address_external: POINTER is
 			-- Address of C function `DisposeControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -198,14 +198,14 @@ feature
 			"(void*) DisposeControl"
 		end
 
-	frozen kill_controls_external (thewindow: POINTER) is
+	kill_controls_external (thewindow: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef)"
 		alias
 			"ewg_function_macro_KillControls"
 		end
 
-	frozen kill_controls_address_external: POINTER is
+	kill_controls_address_external: POINTER is
 			-- Address of C function `KillControls'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -213,14 +213,14 @@ feature
 			"(void*) KillControls"
 		end
 
-	frozen new_control_cntlto_collection_upp_external (userroutine: POINTER): POINTER is
+	new_control_cntlto_collection_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlCNTLToCollectionProcPtr):ControlCNTLToCollectionUPP"
 		alias
 			"ewg_function_macro_NewControlCNTLToCollectionUPP"
 		end
 
-	frozen new_control_cntlto_collection_upp_address_external: POINTER is
+	new_control_cntlto_collection_upp_address_external: POINTER is
 			-- Address of C function `NewControlCNTLToCollectionUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -228,14 +228,14 @@ feature
 			"(void*) NewControlCNTLToCollectionUPP"
 		end
 
-	frozen dispose_control_cntlto_collection_upp_external (userupp: POINTER) is
+	dispose_control_cntlto_collection_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlCNTLToCollectionUPP)"
 		alias
 			"ewg_function_macro_DisposeControlCNTLToCollectionUPP"
 		end
 
-	frozen dispose_control_cntlto_collection_upp_address_external: POINTER is
+	dispose_control_cntlto_collection_upp_address_external: POINTER is
 			-- Address of C function `DisposeControlCNTLToCollectionUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -243,14 +243,14 @@ feature
 			"(void*) DisposeControlCNTLToCollectionUPP"
 		end
 
-	frozen invoke_control_cntlto_collection_upp_external (bounds: POINTER; value: INTEGER; visible: INTEGER; max: INTEGER; min: INTEGER; procid: INTEGER; refcon: INTEGER; title: POINTER; collection: POINTER; userupp: POINTER): INTEGER is
+	invoke_control_cntlto_collection_upp_external (bounds: POINTER; value: INTEGER; visible: INTEGER; max: INTEGER; min: INTEGER; procid: INTEGER; refcon: INTEGER; title: POINTER; collection: POINTER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (Rect const*, SInt16, Boolean, SInt16, SInt16, SInt16, SInt32, ConstStr255Param, Collection, ControlCNTLToCollectionUPP):OSStatus"
 		alias
 			"ewg_function_macro_InvokeControlCNTLToCollectionUPP"
 		end
 
-	frozen invoke_control_cntlto_collection_upp_address_external: POINTER is
+	invoke_control_cntlto_collection_upp_address_external: POINTER is
 			-- Address of C function `InvokeControlCNTLToCollectionUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -258,14 +258,14 @@ feature
 			"(void*) InvokeControlCNTLToCollectionUPP"
 		end
 
-	frozen register_control_definition_external (incdefresid: INTEGER; incontroldef: POINTER; inconversionproc: POINTER): INTEGER is
+	register_control_definition_external (incdefresid: INTEGER; incontroldef: POINTER; inconversionproc: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (SInt16, ControlDefSpec const*, ControlCNTLToCollectionUPP):OSStatus"
 		alias
 			"ewg_function_macro_RegisterControlDefinition"
 		end
 
-	frozen register_control_definition_address_external: POINTER is
+	register_control_definition_address_external: POINTER is
 			-- Address of C function `RegisterControlDefinition'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -273,14 +273,14 @@ feature
 			"(void*) RegisterControlDefinition"
 		end
 
-	frozen hilite_control_external (thecontrol: POINTER; hilitestate: INTEGER) is
+	hilite_control_external (thecontrol: POINTER; hilitestate: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlPartCode)"
 		alias
 			"ewg_function_macro_HiliteControl"
 		end
 
-	frozen hilite_control_address_external: POINTER is
+	hilite_control_address_external: POINTER is
 			-- Address of C function `HiliteControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -288,14 +288,14 @@ feature
 			"(void*) HiliteControl"
 		end
 
-	frozen show_control_external (thecontrol: POINTER) is
+	show_control_external (thecontrol: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef)"
 		alias
 			"ewg_function_macro_ShowControl"
 		end
 
-	frozen show_control_address_external: POINTER is
+	show_control_address_external: POINTER is
 			-- Address of C function `ShowControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -303,14 +303,14 @@ feature
 			"(void*) ShowControl"
 		end
 
-	frozen hide_control_external (thecontrol: POINTER) is
+	hide_control_external (thecontrol: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef)"
 		alias
 			"ewg_function_macro_HideControl"
 		end
 
-	frozen hide_control_address_external: POINTER is
+	hide_control_address_external: POINTER is
 			-- Address of C function `HideControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -318,14 +318,14 @@ feature
 			"(void*) HideControl"
 		end
 
-	frozen is_control_active_external (incontrol: POINTER): INTEGER is
+	is_control_active_external (incontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):Boolean"
 		alias
 			"ewg_function_macro_IsControlActive"
 		end
 
-	frozen is_control_active_address_external: POINTER is
+	is_control_active_address_external: POINTER is
 			-- Address of C function `IsControlActive'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -333,14 +333,14 @@ feature
 			"(void*) IsControlActive"
 		end
 
-	frozen is_control_visible_external (incontrol: POINTER): INTEGER is
+	is_control_visible_external (incontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):Boolean"
 		alias
 			"ewg_function_macro_IsControlVisible"
 		end
 
-	frozen is_control_visible_address_external: POINTER is
+	is_control_visible_address_external: POINTER is
 			-- Address of C function `IsControlVisible'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -348,14 +348,14 @@ feature
 			"(void*) IsControlVisible"
 		end
 
-	frozen activate_control_external (incontrol: POINTER): INTEGER is
+	activate_control_external (incontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):OSErr"
 		alias
 			"ewg_function_macro_ActivateControl"
 		end
 
-	frozen activate_control_address_external: POINTER is
+	activate_control_address_external: POINTER is
 			-- Address of C function `ActivateControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -363,14 +363,14 @@ feature
 			"(void*) ActivateControl"
 		end
 
-	frozen deactivate_control_external (incontrol: POINTER): INTEGER is
+	deactivate_control_external (incontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):OSErr"
 		alias
 			"ewg_function_macro_DeactivateControl"
 		end
 
-	frozen deactivate_control_address_external: POINTER is
+	deactivate_control_address_external: POINTER is
 			-- Address of C function `DeactivateControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -378,14 +378,14 @@ feature
 			"(void*) DeactivateControl"
 		end
 
-	frozen set_control_visibility_external (incontrol: POINTER; inisvisible: INTEGER; indodraw: INTEGER): INTEGER is
+	set_control_visibility_external (incontrol: POINTER; inisvisible: INTEGER; indodraw: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Boolean, Boolean):OSErr"
 		alias
 			"ewg_function_macro_SetControlVisibility"
 		end
 
-	frozen set_control_visibility_address_external: POINTER is
+	set_control_visibility_address_external: POINTER is
 			-- Address of C function `SetControlVisibility'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -393,14 +393,14 @@ feature
 			"(void*) SetControlVisibility"
 		end
 
-	frozen is_control_enabled_external (incontrol: POINTER): INTEGER is
+	is_control_enabled_external (incontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):Boolean"
 		alias
 			"ewg_function_macro_IsControlEnabled"
 		end
 
-	frozen is_control_enabled_address_external: POINTER is
+	is_control_enabled_address_external: POINTER is
 			-- Address of C function `IsControlEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -408,14 +408,14 @@ feature
 			"(void*) IsControlEnabled"
 		end
 
-	frozen enable_control_external (incontrol: POINTER): INTEGER is
+	enable_control_external (incontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):OSStatus"
 		alias
 			"ewg_function_macro_EnableControl"
 		end
 
-	frozen enable_control_address_external: POINTER is
+	enable_control_address_external: POINTER is
 			-- Address of C function `EnableControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -423,14 +423,14 @@ feature
 			"(void*) EnableControl"
 		end
 
-	frozen disable_control_external (incontrol: POINTER): INTEGER is
+	disable_control_external (incontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):OSStatus"
 		alias
 			"ewg_function_macro_DisableControl"
 		end
 
-	frozen disable_control_address_external: POINTER is
+	disable_control_address_external: POINTER is
 			-- Address of C function `DisableControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -438,14 +438,14 @@ feature
 			"(void*) DisableControl"
 		end
 
-	frozen draw_controls_external (thewindow: POINTER) is
+	draw_controls_external (thewindow: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef)"
 		alias
 			"ewg_function_macro_DrawControls"
 		end
 
-	frozen draw_controls_address_external: POINTER is
+	draw_controls_address_external: POINTER is
 			-- Address of C function `DrawControls'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -453,14 +453,14 @@ feature
 			"(void*) DrawControls"
 		end
 
-	frozen draw1control_external (thecontrol: POINTER) is
+	draw1control_external (thecontrol: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef)"
 		alias
 			"ewg_function_macro_Draw1Control"
 		end
 
-	frozen draw1control_address_external: POINTER is
+	draw1control_address_external: POINTER is
 			-- Address of C function `Draw1Control'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -468,14 +468,14 @@ feature
 			"(void*) Draw1Control"
 		end
 
-	frozen update_controls_external (inwindow: POINTER; inupdateregion: POINTER) is
+	update_controls_external (inwindow: POINTER; inupdateregion: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, RgnHandle)"
 		alias
 			"ewg_function_macro_UpdateControls"
 		end
 
-	frozen update_controls_address_external: POINTER is
+	update_controls_address_external: POINTER is
 			-- Address of C function `UpdateControls'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -483,14 +483,14 @@ feature
 			"(void*) UpdateControls"
 		end
 
-	frozen get_best_control_rect_external (incontrol: POINTER; outrect: POINTER; outbaselineoffset: POINTER): INTEGER is
+	get_best_control_rect_external (incontrol: POINTER; outrect: POINTER; outbaselineoffset: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Rect*, SInt16*):OSErr"
 		alias
 			"ewg_function_macro_GetBestControlRect"
 		end
 
-	frozen get_best_control_rect_address_external: POINTER is
+	get_best_control_rect_address_external: POINTER is
 			-- Address of C function `GetBestControlRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -498,14 +498,14 @@ feature
 			"(void*) GetBestControlRect"
 		end
 
-	frozen set_control_font_style_external (incontrol: POINTER; instyle: POINTER): INTEGER is
+	set_control_font_style_external (incontrol: POINTER; instyle: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlFontStyleRec const*):OSErr"
 		alias
 			"ewg_function_macro_SetControlFontStyle"
 		end
 
-	frozen set_control_font_style_address_external: POINTER is
+	set_control_font_style_address_external: POINTER is
 			-- Address of C function `SetControlFontStyle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -513,14 +513,14 @@ feature
 			"(void*) SetControlFontStyle"
 		end
 
-	frozen draw_control_in_current_port_external (incontrol: POINTER) is
+	draw_control_in_current_port_external (incontrol: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef)"
 		alias
 			"ewg_function_macro_DrawControlInCurrentPort"
 		end
 
-	frozen draw_control_in_current_port_address_external: POINTER is
+	draw_control_in_current_port_address_external: POINTER is
 			-- Address of C function `DrawControlInCurrentPort'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -528,14 +528,14 @@ feature
 			"(void*) DrawControlInCurrentPort"
 		end
 
-	frozen set_up_control_background_external (incontrol: POINTER; indepth: INTEGER; iniscolordevice: INTEGER): INTEGER is
+	set_up_control_background_external (incontrol: POINTER; indepth: INTEGER; iniscolordevice: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, SInt16, Boolean):OSErr"
 		alias
 			"ewg_function_macro_SetUpControlBackground"
 		end
 
-	frozen set_up_control_background_address_external: POINTER is
+	set_up_control_background_address_external: POINTER is
 			-- Address of C function `SetUpControlBackground'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -543,14 +543,14 @@ feature
 			"(void*) SetUpControlBackground"
 		end
 
-	frozen set_up_control_text_color_external (incontrol: POINTER; indepth: INTEGER; iniscolordevice: INTEGER): INTEGER is
+	set_up_control_text_color_external (incontrol: POINTER; indepth: INTEGER; iniscolordevice: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, SInt16, Boolean):OSErr"
 		alias
 			"ewg_function_macro_SetUpControlTextColor"
 		end
 
-	frozen set_up_control_text_color_address_external: POINTER is
+	set_up_control_text_color_address_external: POINTER is
 			-- Address of C function `SetUpControlTextColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -558,14 +558,14 @@ feature
 			"(void*) SetUpControlTextColor"
 		end
 
-	frozen new_control_color_upp_external (userroutine: POINTER): POINTER is
+	new_control_color_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlColorProcPtr):ControlColorUPP"
 		alias
 			"ewg_function_macro_NewControlColorUPP"
 		end
 
-	frozen new_control_color_upp_address_external: POINTER is
+	new_control_color_upp_address_external: POINTER is
 			-- Address of C function `NewControlColorUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -573,14 +573,14 @@ feature
 			"(void*) NewControlColorUPP"
 		end
 
-	frozen dispose_control_color_upp_external (userupp: POINTER) is
+	dispose_control_color_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlColorUPP)"
 		alias
 			"ewg_function_macro_DisposeControlColorUPP"
 		end
 
-	frozen dispose_control_color_upp_address_external: POINTER is
+	dispose_control_color_upp_address_external: POINTER is
 			-- Address of C function `DisposeControlColorUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -588,14 +588,14 @@ feature
 			"(void*) DisposeControlColorUPP"
 		end
 
-	frozen invoke_control_color_upp_external (incontrol: POINTER; inmessage: INTEGER; indrawdepth: INTEGER; indrawincolor: INTEGER; userupp: POINTER): INTEGER is
+	invoke_control_color_upp_external (incontrol: POINTER; inmessage: INTEGER; indrawdepth: INTEGER; indrawincolor: INTEGER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, SInt16, SInt16, Boolean, ControlColorUPP):OSStatus"
 		alias
 			"ewg_function_macro_InvokeControlColorUPP"
 		end
 
-	frozen invoke_control_color_upp_address_external: POINTER is
+	invoke_control_color_upp_address_external: POINTER is
 			-- Address of C function `InvokeControlColorUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -603,14 +603,14 @@ feature
 			"(void*) InvokeControlColorUPP"
 		end
 
-	frozen set_control_color_proc_external (incontrol: POINTER; inproc: POINTER): INTEGER is
+	set_control_color_proc_external (incontrol: POINTER; inproc: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlColorUPP):OSStatus"
 		alias
 			"ewg_function_macro_SetControlColorProc"
 		end
 
-	frozen set_control_color_proc_address_external: POINTER is
+	set_control_color_proc_address_external: POINTER is
 			-- Address of C function `SetControlColorProc'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -618,14 +618,14 @@ feature
 			"(void*) SetControlColorProc"
 		end
 
-	frozen track_control_external (thecontrol: POINTER; startpoint: POINTER; actionproc: POINTER): INTEGER is
+	track_control_external (thecontrol: POINTER; startpoint: POINTER; actionproc: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Point*, ControlActionUPP):ControlPartCode"
 		alias
 			"ewg_function_macro_TrackControl"
 		end
 
-	frozen track_control_address_external: POINTER is
+	track_control_address_external: POINTER is
 			-- Address of C function `TrackControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -633,14 +633,14 @@ feature
 			"(void*) TrackControl"
 		end
 
-	frozen drag_control_external (thecontrol: POINTER; startpoint: POINTER; limitrect: POINTER; sloprect: POINTER; axis: INTEGER) is
+	drag_control_external (thecontrol: POINTER; startpoint: POINTER; limitrect: POINTER; sloprect: POINTER; axis: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Point*, Rect const*, Rect const*, DragConstraint)"
 		alias
 			"ewg_function_macro_DragControl"
 		end
 
-	frozen drag_control_address_external: POINTER is
+	drag_control_address_external: POINTER is
 			-- Address of C function `DragControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -648,14 +648,14 @@ feature
 			"(void*) DragControl"
 		end
 
-	frozen test_control_external (thecontrol: POINTER; testpoint: POINTER): INTEGER is
+	test_control_external (thecontrol: POINTER; testpoint: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Point*):ControlPartCode"
 		alias
 			"ewg_function_macro_TestControl"
 		end
 
-	frozen test_control_address_external: POINTER is
+	test_control_address_external: POINTER is
 			-- Address of C function `TestControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -663,14 +663,14 @@ feature
 			"(void*) TestControl"
 		end
 
-	frozen find_control_external (testpoint: POINTER; thewindow: POINTER; thecontrol: POINTER): INTEGER is
+	find_control_external (testpoint: POINTER; thewindow: POINTER; thecontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (Point*, WindowRef, ControlRef*):ControlPartCode"
 		alias
 			"ewg_function_macro_FindControl"
 		end
 
-	frozen find_control_address_external: POINTER is
+	find_control_address_external: POINTER is
 			-- Address of C function `FindControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -678,14 +678,14 @@ feature
 			"(void*) FindControl"
 		end
 
-	frozen find_control_under_mouse_external (inwhere: POINTER; inwindow: POINTER; outpart: POINTER): POINTER is
+	find_control_under_mouse_external (inwhere: POINTER; inwindow: POINTER; outpart: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (Point*, WindowRef, ControlPartCode*):ControlRef"
 		alias
 			"ewg_function_macro_FindControlUnderMouse"
 		end
 
-	frozen find_control_under_mouse_address_external: POINTER is
+	find_control_under_mouse_address_external: POINTER is
 			-- Address of C function `FindControlUnderMouse'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -693,14 +693,14 @@ feature
 			"(void*) FindControlUnderMouse"
 		end
 
-	frozen handle_control_click_external (incontrol: POINTER; inwhere: POINTER; inmodifiers: INTEGER; inaction: POINTER): INTEGER is
+	handle_control_click_external (incontrol: POINTER; inwhere: POINTER; inmodifiers: INTEGER; inaction: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Point*, EventModifiers, ControlActionUPP):ControlPartCode"
 		alias
 			"ewg_function_macro_HandleControlClick"
 		end
 
-	frozen handle_control_click_address_external: POINTER is
+	handle_control_click_address_external: POINTER is
 			-- Address of C function `HandleControlClick'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -708,14 +708,14 @@ feature
 			"(void*) HandleControlClick"
 		end
 
-	frozen handle_control_contextual_menu_click_external (incontrol: POINTER; inwhere: POINTER; menudisplayed: POINTER): INTEGER is
+	handle_control_contextual_menu_click_external (incontrol: POINTER; inwhere: POINTER; menudisplayed: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Point*, Boolean*):OSStatus"
 		alias
 			"ewg_function_macro_HandleControlContextualMenuClick"
 		end
 
-	frozen handle_control_contextual_menu_click_address_external: POINTER is
+	handle_control_contextual_menu_click_address_external: POINTER is
 			-- Address of C function `HandleControlContextualMenuClick'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -723,14 +723,14 @@ feature
 			"(void*) HandleControlContextualMenuClick"
 		end
 
-	frozen get_control_click_activation_external (incontrol: POINTER; inwhere: POINTER; inmodifiers: INTEGER; outresult: POINTER): INTEGER is
+	get_control_click_activation_external (incontrol: POINTER; inwhere: POINTER; inmodifiers: INTEGER; outresult: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Point*, EventModifiers, ClickActivationResult*):OSStatus"
 		alias
 			"ewg_function_macro_GetControlClickActivation"
 		end
 
-	frozen get_control_click_activation_address_external: POINTER is
+	get_control_click_activation_address_external: POINTER is
 			-- Address of C function `GetControlClickActivation'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -738,14 +738,14 @@ feature
 			"(void*) GetControlClickActivation"
 		end
 
-	frozen handle_control_key_external (incontrol: POINTER; inkeycode: INTEGER; incharcode: INTEGER; inmodifiers: INTEGER): INTEGER is
+	handle_control_key_external (incontrol: POINTER; inkeycode: INTEGER; incharcode: INTEGER; inmodifiers: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, SInt16, SInt16, EventModifiers):ControlPartCode"
 		alias
 			"ewg_function_macro_HandleControlKey"
 		end
 
-	frozen handle_control_key_address_external: POINTER is
+	handle_control_key_address_external: POINTER is
 			-- Address of C function `HandleControlKey'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -753,14 +753,14 @@ feature
 			"(void*) HandleControlKey"
 		end
 
-	frozen handle_control_set_cursor_external (control: POINTER; localpoint: POINTER; modifiers: INTEGER; cursorwasset: POINTER): INTEGER is
+	handle_control_set_cursor_external (control: POINTER; localpoint: POINTER; modifiers: INTEGER; cursorwasset: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Point*, EventModifiers, Boolean*):OSStatus"
 		alias
 			"ewg_function_macro_HandleControlSetCursor"
 		end
 
-	frozen handle_control_set_cursor_address_external: POINTER is
+	handle_control_set_cursor_address_external: POINTER is
 			-- Address of C function `HandleControlSetCursor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -768,14 +768,14 @@ feature
 			"(void*) HandleControlSetCursor"
 		end
 
-	frozen move_control_external (thecontrol: POINTER; h: INTEGER; v: INTEGER) is
+	move_control_external (thecontrol: POINTER; h: INTEGER; v: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, SInt16, SInt16)"
 		alias
 			"ewg_function_macro_MoveControl"
 		end
 
-	frozen move_control_address_external: POINTER is
+	move_control_address_external: POINTER is
 			-- Address of C function `MoveControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -783,14 +783,14 @@ feature
 			"(void*) MoveControl"
 		end
 
-	frozen size_control_external (thecontrol: POINTER; w: INTEGER; h: INTEGER) is
+	size_control_external (thecontrol: POINTER; w: INTEGER; h: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, SInt16, SInt16)"
 		alias
 			"ewg_function_macro_SizeControl"
 		end
 
-	frozen size_control_address_external: POINTER is
+	size_control_address_external: POINTER is
 			-- Address of C function `SizeControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -798,14 +798,14 @@ feature
 			"(void*) SizeControl"
 		end
 
-	frozen set_control_title_external (thecontrol: POINTER; title: POINTER) is
+	set_control_title_external (thecontrol: POINTER; title: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ConstStr255Param)"
 		alias
 			"ewg_function_macro_SetControlTitle"
 		end
 
-	frozen set_control_title_address_external: POINTER is
+	set_control_title_address_external: POINTER is
 			-- Address of C function `SetControlTitle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -813,14 +813,14 @@ feature
 			"(void*) SetControlTitle"
 		end
 
-	frozen get_control_title_external (thecontrol: POINTER; title: POINTER) is
+	get_control_title_external (thecontrol: POINTER; title: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, void*)"
 		alias
 			"ewg_function_macro_GetControlTitle"
 		end
 
-	frozen get_control_title_address_external: POINTER is
+	get_control_title_address_external: POINTER is
 			-- Address of C function `GetControlTitle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -828,14 +828,14 @@ feature
 			"(void*) GetControlTitle"
 		end
 
-	frozen set_control_title_with_cfstring_external (incontrol: POINTER; instring: POINTER): INTEGER is
+	set_control_title_with_cfstring_external (incontrol: POINTER; instring: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, CFStringRef):OSStatus"
 		alias
 			"ewg_function_macro_SetControlTitleWithCFString"
 		end
 
-	frozen set_control_title_with_cfstring_address_external: POINTER is
+	set_control_title_with_cfstring_address_external: POINTER is
 			-- Address of C function `SetControlTitleWithCFString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -843,14 +843,14 @@ feature
 			"(void*) SetControlTitleWithCFString"
 		end
 
-	frozen copy_control_title_as_cfstring_external (incontrol: POINTER; outstring: POINTER): INTEGER is
+	copy_control_title_as_cfstring_external (incontrol: POINTER; outstring: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, CFStringRef*):OSStatus"
 		alias
 			"ewg_function_macro_CopyControlTitleAsCFString"
 		end
 
-	frozen copy_control_title_as_cfstring_address_external: POINTER is
+	copy_control_title_as_cfstring_address_external: POINTER is
 			-- Address of C function `CopyControlTitleAsCFString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -858,14 +858,14 @@ feature
 			"(void*) CopyControlTitleAsCFString"
 		end
 
-	frozen get_control_value_external (thecontrol: POINTER): INTEGER is
+	get_control_value_external (thecontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):SInt16"
 		alias
 			"ewg_function_macro_GetControlValue"
 		end
 
-	frozen get_control_value_address_external: POINTER is
+	get_control_value_address_external: POINTER is
 			-- Address of C function `GetControlValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -873,14 +873,14 @@ feature
 			"(void*) GetControlValue"
 		end
 
-	frozen set_control_value_external (thecontrol: POINTER; newvalue: INTEGER) is
+	set_control_value_external (thecontrol: POINTER; newvalue: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, SInt16)"
 		alias
 			"ewg_function_macro_SetControlValue"
 		end
 
-	frozen set_control_value_address_external: POINTER is
+	set_control_value_address_external: POINTER is
 			-- Address of C function `SetControlValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -888,14 +888,14 @@ feature
 			"(void*) SetControlValue"
 		end
 
-	frozen get_control_minimum_external (thecontrol: POINTER): INTEGER is
+	get_control_minimum_external (thecontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):SInt16"
 		alias
 			"ewg_function_macro_GetControlMinimum"
 		end
 
-	frozen get_control_minimum_address_external: POINTER is
+	get_control_minimum_address_external: POINTER is
 			-- Address of C function `GetControlMinimum'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -903,14 +903,14 @@ feature
 			"(void*) GetControlMinimum"
 		end
 
-	frozen set_control_minimum_external (thecontrol: POINTER; newminimum: INTEGER) is
+	set_control_minimum_external (thecontrol: POINTER; newminimum: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, SInt16)"
 		alias
 			"ewg_function_macro_SetControlMinimum"
 		end
 
-	frozen set_control_minimum_address_external: POINTER is
+	set_control_minimum_address_external: POINTER is
 			-- Address of C function `SetControlMinimum'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -918,14 +918,14 @@ feature
 			"(void*) SetControlMinimum"
 		end
 
-	frozen get_control_maximum_external (thecontrol: POINTER): INTEGER is
+	get_control_maximum_external (thecontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):SInt16"
 		alias
 			"ewg_function_macro_GetControlMaximum"
 		end
 
-	frozen get_control_maximum_address_external: POINTER is
+	get_control_maximum_address_external: POINTER is
 			-- Address of C function `GetControlMaximum'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -933,14 +933,14 @@ feature
 			"(void*) GetControlMaximum"
 		end
 
-	frozen set_control_maximum_external (thecontrol: POINTER; newmaximum: INTEGER) is
+	set_control_maximum_external (thecontrol: POINTER; newmaximum: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, SInt16)"
 		alias
 			"ewg_function_macro_SetControlMaximum"
 		end
 
-	frozen set_control_maximum_address_external: POINTER is
+	set_control_maximum_address_external: POINTER is
 			-- Address of C function `SetControlMaximum'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -948,14 +948,14 @@ feature
 			"(void*) SetControlMaximum"
 		end
 
-	frozen get_control_view_size_external (thecontrol: POINTER): INTEGER is
+	get_control_view_size_external (thecontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):SInt32"
 		alias
 			"ewg_function_macro_GetControlViewSize"
 		end
 
-	frozen get_control_view_size_address_external: POINTER is
+	get_control_view_size_address_external: POINTER is
 			-- Address of C function `GetControlViewSize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -963,14 +963,14 @@ feature
 			"(void*) GetControlViewSize"
 		end
 
-	frozen set_control_view_size_external (thecontrol: POINTER; newviewsize: INTEGER) is
+	set_control_view_size_external (thecontrol: POINTER; newviewsize: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, SInt32)"
 		alias
 			"ewg_function_macro_SetControlViewSize"
 		end
 
-	frozen set_control_view_size_address_external: POINTER is
+	set_control_view_size_address_external: POINTER is
 			-- Address of C function `SetControlViewSize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -978,14 +978,14 @@ feature
 			"(void*) SetControlViewSize"
 		end
 
-	frozen get_control32bit_value_external (thecontrol: POINTER): INTEGER is
+	get_control32bit_value_external (thecontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):SInt32"
 		alias
 			"ewg_function_macro_GetControl32BitValue"
 		end
 
-	frozen get_control32bit_value_address_external: POINTER is
+	get_control32bit_value_address_external: POINTER is
 			-- Address of C function `GetControl32BitValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -993,14 +993,14 @@ feature
 			"(void*) GetControl32BitValue"
 		end
 
-	frozen set_control32bit_value_external (thecontrol: POINTER; newvalue: INTEGER) is
+	set_control32bit_value_external (thecontrol: POINTER; newvalue: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, SInt32)"
 		alias
 			"ewg_function_macro_SetControl32BitValue"
 		end
 
-	frozen set_control32bit_value_address_external: POINTER is
+	set_control32bit_value_address_external: POINTER is
 			-- Address of C function `SetControl32BitValue'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1008,14 +1008,14 @@ feature
 			"(void*) SetControl32BitValue"
 		end
 
-	frozen get_control32bit_maximum_external (thecontrol: POINTER): INTEGER is
+	get_control32bit_maximum_external (thecontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):SInt32"
 		alias
 			"ewg_function_macro_GetControl32BitMaximum"
 		end
 
-	frozen get_control32bit_maximum_address_external: POINTER is
+	get_control32bit_maximum_address_external: POINTER is
 			-- Address of C function `GetControl32BitMaximum'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1023,14 +1023,14 @@ feature
 			"(void*) GetControl32BitMaximum"
 		end
 
-	frozen set_control32bit_maximum_external (thecontrol: POINTER; newmaximum: INTEGER) is
+	set_control32bit_maximum_external (thecontrol: POINTER; newmaximum: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, SInt32)"
 		alias
 			"ewg_function_macro_SetControl32BitMaximum"
 		end
 
-	frozen set_control32bit_maximum_address_external: POINTER is
+	set_control32bit_maximum_address_external: POINTER is
 			-- Address of C function `SetControl32BitMaximum'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1038,14 +1038,14 @@ feature
 			"(void*) SetControl32BitMaximum"
 		end
 
-	frozen get_control32bit_minimum_external (thecontrol: POINTER): INTEGER is
+	get_control32bit_minimum_external (thecontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):SInt32"
 		alias
 			"ewg_function_macro_GetControl32BitMinimum"
 		end
 
-	frozen get_control32bit_minimum_address_external: POINTER is
+	get_control32bit_minimum_address_external: POINTER is
 			-- Address of C function `GetControl32BitMinimum'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1053,14 +1053,14 @@ feature
 			"(void*) GetControl32BitMinimum"
 		end
 
-	frozen set_control32bit_minimum_external (thecontrol: POINTER; newminimum: INTEGER) is
+	set_control32bit_minimum_external (thecontrol: POINTER; newminimum: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, SInt32)"
 		alias
 			"ewg_function_macro_SetControl32BitMinimum"
 		end
 
-	frozen set_control32bit_minimum_address_external: POINTER is
+	set_control32bit_minimum_address_external: POINTER is
 			-- Address of C function `SetControl32BitMinimum'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1068,14 +1068,14 @@ feature
 			"(void*) SetControl32BitMinimum"
 		end
 
-	frozen is_valid_control_handle_external (thecontrol: POINTER): INTEGER is
+	is_valid_control_handle_external (thecontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):Boolean"
 		alias
 			"ewg_function_macro_IsValidControlHandle"
 		end
 
-	frozen is_valid_control_handle_address_external: POINTER is
+	is_valid_control_handle_address_external: POINTER is
 			-- Address of C function `IsValidControlHandle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1083,14 +1083,14 @@ feature
 			"(void*) IsValidControlHandle"
 		end
 
-	frozen set_control_id_external (incontrol: POINTER; inid: POINTER): INTEGER is
+	set_control_id_external (incontrol: POINTER; inid: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlID const*):OSStatus"
 		alias
 			"ewg_function_macro_SetControlID"
 		end
 
-	frozen set_control_id_address_external: POINTER is
+	set_control_id_address_external: POINTER is
 			-- Address of C function `SetControlID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1098,14 +1098,14 @@ feature
 			"(void*) SetControlID"
 		end
 
-	frozen get_control_id_external (incontrol: POINTER; outid: POINTER): INTEGER is
+	get_control_id_external (incontrol: POINTER; outid: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlID*):OSStatus"
 		alias
 			"ewg_function_macro_GetControlID"
 		end
 
-	frozen get_control_id_address_external: POINTER is
+	get_control_id_address_external: POINTER is
 			-- Address of C function `GetControlID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1113,14 +1113,14 @@ feature
 			"(void*) GetControlID"
 		end
 
-	frozen get_control_by_id_external (inwindow: POINTER; inid: POINTER; outcontrol: POINTER): INTEGER is
+	get_control_by_id_external (inwindow: POINTER; inid: POINTER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, ControlID const*, ControlRef*):OSStatus"
 		alias
 			"ewg_function_macro_GetControlByID"
 		end
 
-	frozen get_control_by_id_address_external: POINTER is
+	get_control_by_id_address_external: POINTER is
 			-- Address of C function `GetControlByID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1128,14 +1128,14 @@ feature
 			"(void*) GetControlByID"
 		end
 
-	frozen set_control_command_id_external (incontrol: POINTER; incommandid: INTEGER): INTEGER is
+	set_control_command_id_external (incontrol: POINTER; incommandid: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, UInt32):OSStatus"
 		alias
 			"ewg_function_macro_SetControlCommandID"
 		end
 
-	frozen set_control_command_id_address_external: POINTER is
+	set_control_command_id_address_external: POINTER is
 			-- Address of C function `SetControlCommandID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1143,14 +1143,14 @@ feature
 			"(void*) SetControlCommandID"
 		end
 
-	frozen get_control_command_id_external (incontrol: POINTER; outcommandid: POINTER): INTEGER is
+	get_control_command_id_external (incontrol: POINTER; outcommandid: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, UInt32*):OSStatus"
 		alias
 			"ewg_function_macro_GetControlCommandID"
 		end
 
-	frozen get_control_command_id_address_external: POINTER is
+	get_control_command_id_address_external: POINTER is
 			-- Address of C function `GetControlCommandID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1158,14 +1158,14 @@ feature
 			"(void*) GetControlCommandID"
 		end
 
-	frozen get_control_kind_external (incontrol: POINTER; outcontrolkind: POINTER): INTEGER is
+	get_control_kind_external (incontrol: POINTER; outcontrolkind: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlKind*):OSStatus"
 		alias
 			"ewg_function_macro_GetControlKind"
 		end
 
-	frozen get_control_kind_address_external: POINTER is
+	get_control_kind_address_external: POINTER is
 			-- Address of C function `GetControlKind'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1173,14 +1173,14 @@ feature
 			"(void*) GetControlKind"
 		end
 
-	frozen get_control_property_external (control: POINTER; propertycreator: INTEGER; propertytag: INTEGER; buffersize: INTEGER; actualsize: POINTER; propertybuffer: POINTER): INTEGER is
+	get_control_property_external (control: POINTER; propertycreator: INTEGER; propertytag: INTEGER; buffersize: INTEGER; actualsize: POINTER; propertybuffer: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, OSType, OSType, UInt32, UInt32*, void*):OSStatus"
 		alias
 			"ewg_function_macro_GetControlProperty"
 		end
 
-	frozen get_control_property_address_external: POINTER is
+	get_control_property_address_external: POINTER is
 			-- Address of C function `GetControlProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1188,14 +1188,14 @@ feature
 			"(void*) GetControlProperty"
 		end
 
-	frozen get_control_property_size_external (control: POINTER; propertycreator: INTEGER; propertytag: INTEGER; size: POINTER): INTEGER is
+	get_control_property_size_external (control: POINTER; propertycreator: INTEGER; propertytag: INTEGER; size: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, OSType, OSType, UInt32*):OSStatus"
 		alias
 			"ewg_function_macro_GetControlPropertySize"
 		end
 
-	frozen get_control_property_size_address_external: POINTER is
+	get_control_property_size_address_external: POINTER is
 			-- Address of C function `GetControlPropertySize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1203,14 +1203,14 @@ feature
 			"(void*) GetControlPropertySize"
 		end
 
-	frozen set_control_property_external (control: POINTER; propertycreator: INTEGER; propertytag: INTEGER; propertysize: INTEGER; propertydata: POINTER): INTEGER is
+	set_control_property_external (control: POINTER; propertycreator: INTEGER; propertytag: INTEGER; propertysize: INTEGER; propertydata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, OSType, OSType, UInt32, void const*):OSStatus"
 		alias
 			"ewg_function_macro_SetControlProperty"
 		end
 
-	frozen set_control_property_address_external: POINTER is
+	set_control_property_address_external: POINTER is
 			-- Address of C function `SetControlProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1218,14 +1218,14 @@ feature
 			"(void*) SetControlProperty"
 		end
 
-	frozen remove_control_property_external (control: POINTER; propertycreator: INTEGER; propertytag: INTEGER): INTEGER is
+	remove_control_property_external (control: POINTER; propertycreator: INTEGER; propertytag: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, OSType, OSType):OSStatus"
 		alias
 			"ewg_function_macro_RemoveControlProperty"
 		end
 
-	frozen remove_control_property_address_external: POINTER is
+	remove_control_property_address_external: POINTER is
 			-- Address of C function `RemoveControlProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1233,14 +1233,14 @@ feature
 			"(void*) RemoveControlProperty"
 		end
 
-	frozen get_control_property_attributes_external (control: POINTER; propertycreator: INTEGER; propertytag: INTEGER; attributes: POINTER): INTEGER is
+	get_control_property_attributes_external (control: POINTER; propertycreator: INTEGER; propertytag: INTEGER; attributes: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, OSType, OSType, UInt32*):OSStatus"
 		alias
 			"ewg_function_macro_GetControlPropertyAttributes"
 		end
 
-	frozen get_control_property_attributes_address_external: POINTER is
+	get_control_property_attributes_address_external: POINTER is
 			-- Address of C function `GetControlPropertyAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1248,14 +1248,14 @@ feature
 			"(void*) GetControlPropertyAttributes"
 		end
 
-	frozen change_control_property_attributes_external (control: POINTER; propertycreator: INTEGER; propertytag: INTEGER; attributestoset: INTEGER; attributestoclear: INTEGER): INTEGER is
+	change_control_property_attributes_external (control: POINTER; propertycreator: INTEGER; propertytag: INTEGER; attributestoset: INTEGER; attributestoclear: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, OSType, OSType, UInt32, UInt32):OSStatus"
 		alias
 			"ewg_function_macro_ChangeControlPropertyAttributes"
 		end
 
-	frozen change_control_property_attributes_address_external: POINTER is
+	change_control_property_attributes_address_external: POINTER is
 			-- Address of C function `ChangeControlPropertyAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1263,14 +1263,14 @@ feature
 			"(void*) ChangeControlPropertyAttributes"
 		end
 
-	frozen get_control_region_external (incontrol: POINTER; inpart: INTEGER; outregion: POINTER): INTEGER is
+	get_control_region_external (incontrol: POINTER; inpart: INTEGER; outregion: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlPartCode, RgnHandle):OSStatus"
 		alias
 			"ewg_function_macro_GetControlRegion"
 		end
 
-	frozen get_control_region_address_external: POINTER is
+	get_control_region_address_external: POINTER is
 			-- Address of C function `GetControlRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1278,14 +1278,14 @@ feature
 			"(void*) GetControlRegion"
 		end
 
-	frozen get_control_variant_external (thecontrol: POINTER): INTEGER is
+	get_control_variant_external (thecontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):ControlVariant"
 		alias
 			"ewg_function_macro_GetControlVariant"
 		end
 
-	frozen get_control_variant_address_external: POINTER is
+	get_control_variant_address_external: POINTER is
 			-- Address of C function `GetControlVariant'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1293,14 +1293,14 @@ feature
 			"(void*) GetControlVariant"
 		end
 
-	frozen set_control_action_external (thecontrol: POINTER; actionproc: POINTER) is
+	set_control_action_external (thecontrol: POINTER; actionproc: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlActionUPP)"
 		alias
 			"ewg_function_macro_SetControlAction"
 		end
 
-	frozen set_control_action_address_external: POINTER is
+	set_control_action_address_external: POINTER is
 			-- Address of C function `SetControlAction'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1308,14 +1308,14 @@ feature
 			"(void*) SetControlAction"
 		end
 
-	frozen get_control_action_external (thecontrol: POINTER): POINTER is
+	get_control_action_external (thecontrol: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):ControlActionUPP"
 		alias
 			"ewg_function_macro_GetControlAction"
 		end
 
-	frozen get_control_action_address_external: POINTER is
+	get_control_action_address_external: POINTER is
 			-- Address of C function `GetControlAction'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1323,14 +1323,14 @@ feature
 			"(void*) GetControlAction"
 		end
 
-	frozen set_control_reference_external (thecontrol: POINTER; data: INTEGER) is
+	set_control_reference_external (thecontrol: POINTER; data: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, SInt32)"
 		alias
 			"ewg_function_macro_SetControlReference"
 		end
 
-	frozen set_control_reference_address_external: POINTER is
+	set_control_reference_address_external: POINTER is
 			-- Address of C function `SetControlReference'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1338,14 +1338,14 @@ feature
 			"(void*) SetControlReference"
 		end
 
-	frozen get_control_reference_external (thecontrol: POINTER): INTEGER is
+	get_control_reference_external (thecontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):SInt32"
 		alias
 			"ewg_function_macro_GetControlReference"
 		end
 
-	frozen get_control_reference_address_external: POINTER is
+	get_control_reference_address_external: POINTER is
 			-- Address of C function `GetControlReference'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1353,14 +1353,14 @@ feature
 			"(void*) GetControlReference"
 		end
 
-	frozen send_control_message_external (incontrol: POINTER; inmessage: INTEGER; inparam: POINTER): INTEGER is
+	send_control_message_external (incontrol: POINTER; inmessage: INTEGER; inparam: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, SInt16, void*):SInt32"
 		alias
 			"ewg_function_macro_SendControlMessage"
 		end
 
-	frozen send_control_message_address_external: POINTER is
+	send_control_message_address_external: POINTER is
 			-- Address of C function `SendControlMessage'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1368,14 +1368,14 @@ feature
 			"(void*) SendControlMessage"
 		end
 
-	frozen dump_control_hierarchy_external (inwindow: POINTER; indumpfile: POINTER): INTEGER is
+	dump_control_hierarchy_external (inwindow: POINTER; indumpfile: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, FSSpec const*):OSErr"
 		alias
 			"ewg_function_macro_DumpControlHierarchy"
 		end
 
-	frozen dump_control_hierarchy_address_external: POINTER is
+	dump_control_hierarchy_address_external: POINTER is
 			-- Address of C function `DumpControlHierarchy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1383,14 +1383,14 @@ feature
 			"(void*) DumpControlHierarchy"
 		end
 
-	frozen create_root_control_external (inwindow: POINTER; outcontrol: POINTER): INTEGER is
+	create_root_control_external (inwindow: POINTER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, ControlRef*):OSErr"
 		alias
 			"ewg_function_macro_CreateRootControl"
 		end
 
-	frozen create_root_control_address_external: POINTER is
+	create_root_control_address_external: POINTER is
 			-- Address of C function `CreateRootControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1398,14 +1398,14 @@ feature
 			"(void*) CreateRootControl"
 		end
 
-	frozen get_root_control_external (inwindow: POINTER; outcontrol: POINTER): INTEGER is
+	get_root_control_external (inwindow: POINTER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, ControlRef*):OSErr"
 		alias
 			"ewg_function_macro_GetRootControl"
 		end
 
-	frozen get_root_control_address_external: POINTER is
+	get_root_control_address_external: POINTER is
 			-- Address of C function `GetRootControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1413,14 +1413,14 @@ feature
 			"(void*) GetRootControl"
 		end
 
-	frozen embed_control_external (incontrol: POINTER; incontainer: POINTER): INTEGER is
+	embed_control_external (incontrol: POINTER; incontainer: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlRef):OSErr"
 		alias
 			"ewg_function_macro_EmbedControl"
 		end
 
-	frozen embed_control_address_external: POINTER is
+	embed_control_address_external: POINTER is
 			-- Address of C function `EmbedControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1428,14 +1428,14 @@ feature
 			"(void*) EmbedControl"
 		end
 
-	frozen auto_embed_control_external (incontrol: POINTER; inwindow: POINTER): INTEGER is
+	auto_embed_control_external (incontrol: POINTER; inwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, WindowRef):OSErr"
 		alias
 			"ewg_function_macro_AutoEmbedControl"
 		end
 
-	frozen auto_embed_control_address_external: POINTER is
+	auto_embed_control_address_external: POINTER is
 			-- Address of C function `AutoEmbedControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1443,14 +1443,14 @@ feature
 			"(void*) AutoEmbedControl"
 		end
 
-	frozen get_super_control_external (incontrol: POINTER; outparent: POINTER): INTEGER is
+	get_super_control_external (incontrol: POINTER; outparent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlRef*):OSErr"
 		alias
 			"ewg_function_macro_GetSuperControl"
 		end
 
-	frozen get_super_control_address_external: POINTER is
+	get_super_control_address_external: POINTER is
 			-- Address of C function `GetSuperControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1458,14 +1458,14 @@ feature
 			"(void*) GetSuperControl"
 		end
 
-	frozen count_sub_controls_external (incontrol: POINTER; outnumchildren: POINTER): INTEGER is
+	count_sub_controls_external (incontrol: POINTER; outnumchildren: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, UInt16*):OSErr"
 		alias
 			"ewg_function_macro_CountSubControls"
 		end
 
-	frozen count_sub_controls_address_external: POINTER is
+	count_sub_controls_address_external: POINTER is
 			-- Address of C function `CountSubControls'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1473,14 +1473,14 @@ feature
 			"(void*) CountSubControls"
 		end
 
-	frozen get_indexed_sub_control_external (incontrol: POINTER; inindex: INTEGER; outsubcontrol: POINTER): INTEGER is
+	get_indexed_sub_control_external (incontrol: POINTER; inindex: INTEGER; outsubcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, UInt16, ControlRef*):OSErr"
 		alias
 			"ewg_function_macro_GetIndexedSubControl"
 		end
 
-	frozen get_indexed_sub_control_address_external: POINTER is
+	get_indexed_sub_control_address_external: POINTER is
 			-- Address of C function `GetIndexedSubControl'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1488,14 +1488,14 @@ feature
 			"(void*) GetIndexedSubControl"
 		end
 
-	frozen set_control_supervisor_external (incontrol: POINTER; inboss: POINTER): INTEGER is
+	set_control_supervisor_external (incontrol: POINTER; inboss: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlRef):OSErr"
 		alias
 			"ewg_function_macro_SetControlSupervisor"
 		end
 
-	frozen set_control_supervisor_address_external: POINTER is
+	set_control_supervisor_address_external: POINTER is
 			-- Address of C function `SetControlSupervisor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1503,14 +1503,14 @@ feature
 			"(void*) SetControlSupervisor"
 		end
 
-	frozen get_keyboard_focus_external (inwindow: POINTER; outcontrol: POINTER): INTEGER is
+	get_keyboard_focus_external (inwindow: POINTER; outcontrol: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, ControlRef*):OSErr"
 		alias
 			"ewg_function_macro_GetKeyboardFocus"
 		end
 
-	frozen get_keyboard_focus_address_external: POINTER is
+	get_keyboard_focus_address_external: POINTER is
 			-- Address of C function `GetKeyboardFocus'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1518,14 +1518,14 @@ feature
 			"(void*) GetKeyboardFocus"
 		end
 
-	frozen set_keyboard_focus_external (inwindow: POINTER; incontrol: POINTER; inpart: INTEGER): INTEGER is
+	set_keyboard_focus_external (inwindow: POINTER; incontrol: POINTER; inpart: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, ControlRef, ControlFocusPart):OSErr"
 		alias
 			"ewg_function_macro_SetKeyboardFocus"
 		end
 
-	frozen set_keyboard_focus_address_external: POINTER is
+	set_keyboard_focus_address_external: POINTER is
 			-- Address of C function `SetKeyboardFocus'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1533,14 +1533,14 @@ feature
 			"(void*) SetKeyboardFocus"
 		end
 
-	frozen advance_keyboard_focus_external (inwindow: POINTER): INTEGER is
+	advance_keyboard_focus_external (inwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):OSErr"
 		alias
 			"ewg_function_macro_AdvanceKeyboardFocus"
 		end
 
-	frozen advance_keyboard_focus_address_external: POINTER is
+	advance_keyboard_focus_address_external: POINTER is
 			-- Address of C function `AdvanceKeyboardFocus'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1548,14 +1548,14 @@ feature
 			"(void*) AdvanceKeyboardFocus"
 		end
 
-	frozen reverse_keyboard_focus_external (inwindow: POINTER): INTEGER is
+	reverse_keyboard_focus_external (inwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):OSErr"
 		alias
 			"ewg_function_macro_ReverseKeyboardFocus"
 		end
 
-	frozen reverse_keyboard_focus_address_external: POINTER is
+	reverse_keyboard_focus_address_external: POINTER is
 			-- Address of C function `ReverseKeyboardFocus'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1563,14 +1563,14 @@ feature
 			"(void*) ReverseKeyboardFocus"
 		end
 
-	frozen clear_keyboard_focus_external (inwindow: POINTER): INTEGER is
+	clear_keyboard_focus_external (inwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):OSErr"
 		alias
 			"ewg_function_macro_ClearKeyboardFocus"
 		end
 
-	frozen clear_keyboard_focus_address_external: POINTER is
+	clear_keyboard_focus_address_external: POINTER is
 			-- Address of C function `ClearKeyboardFocus'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1578,14 +1578,14 @@ feature
 			"(void*) ClearKeyboardFocus"
 		end
 
-	frozen get_control_features_external (incontrol: POINTER; outfeatures: POINTER): INTEGER is
+	get_control_features_external (incontrol: POINTER; outfeatures: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, UInt32*):OSErr"
 		alias
 			"ewg_function_macro_GetControlFeatures"
 		end
 
-	frozen get_control_features_address_external: POINTER is
+	get_control_features_address_external: POINTER is
 			-- Address of C function `GetControlFeatures'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1593,14 +1593,14 @@ feature
 			"(void*) GetControlFeatures"
 		end
 
-	frozen set_control_data_external (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER; insize: INTEGER; indata: POINTER): INTEGER is
+	set_control_data_external (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER; insize: INTEGER; indata: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlPartCode, ResType, Size, void const*):OSErr"
 		alias
 			"ewg_function_macro_SetControlData"
 		end
 
-	frozen set_control_data_address_external: POINTER is
+	set_control_data_address_external: POINTER is
 			-- Address of C function `SetControlData'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1608,14 +1608,14 @@ feature
 			"(void*) SetControlData"
 		end
 
-	frozen get_control_data_external (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER; inbuffersize: INTEGER; inbuffer: POINTER; outactualsize: POINTER): INTEGER is
+	get_control_data_external (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER; inbuffersize: INTEGER; inbuffer: POINTER; outactualsize: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlPartCode, ResType, Size, void*, Size*):OSErr"
 		alias
 			"ewg_function_macro_GetControlData"
 		end
 
-	frozen get_control_data_address_external: POINTER is
+	get_control_data_address_external: POINTER is
 			-- Address of C function `GetControlData'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1623,14 +1623,14 @@ feature
 			"(void*) GetControlData"
 		end
 
-	frozen get_control_data_size_external (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER; outmaxsize: POINTER): INTEGER is
+	get_control_data_size_external (incontrol: POINTER; inpart: INTEGER; intagname: INTEGER; outmaxsize: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, ControlPartCode, ResType, Size*):OSErr"
 		alias
 			"ewg_function_macro_GetControlDataSize"
 		end
 
-	frozen get_control_data_size_address_external: POINTER is
+	get_control_data_size_address_external: POINTER is
 			-- Address of C function `GetControlDataSize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1638,14 +1638,14 @@ feature
 			"(void*) GetControlDataSize"
 		end
 
-	frozen handle_control_drag_tracking_external (incontrol: POINTER; inmessage: INTEGER; indrag: POINTER; outlikesdrag: POINTER): INTEGER is
+	handle_control_drag_tracking_external (incontrol: POINTER; inmessage: INTEGER; indrag: POINTER; outlikesdrag: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DragTrackingMessage, DragReference, Boolean*):OSStatus"
 		alias
 			"ewg_function_macro_HandleControlDragTracking"
 		end
 
-	frozen handle_control_drag_tracking_address_external: POINTER is
+	handle_control_drag_tracking_address_external: POINTER is
 			-- Address of C function `HandleControlDragTracking'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1653,14 +1653,14 @@ feature
 			"(void*) HandleControlDragTracking"
 		end
 
-	frozen handle_control_drag_receive_external (incontrol: POINTER; indrag: POINTER): INTEGER is
+	handle_control_drag_receive_external (incontrol: POINTER; indrag: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, DragReference):OSStatus"
 		alias
 			"ewg_function_macro_HandleControlDragReceive"
 		end
 
-	frozen handle_control_drag_receive_address_external: POINTER is
+	handle_control_drag_receive_address_external: POINTER is
 			-- Address of C function `HandleControlDragReceive'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1668,14 +1668,14 @@ feature
 			"(void*) HandleControlDragReceive"
 		end
 
-	frozen set_control_drag_tracking_enabled_external (incontrol: POINTER; intracks: INTEGER): INTEGER is
+	set_control_drag_tracking_enabled_external (incontrol: POINTER; intracks: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_SetControlDragTrackingEnabled"
 		end
 
-	frozen set_control_drag_tracking_enabled_address_external: POINTER is
+	set_control_drag_tracking_enabled_address_external: POINTER is
 			-- Address of C function `SetControlDragTrackingEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1683,14 +1683,14 @@ feature
 			"(void*) SetControlDragTrackingEnabled"
 		end
 
-	frozen is_control_drag_tracking_enabled_external (incontrol: POINTER; outtracks: POINTER): INTEGER is
+	is_control_drag_tracking_enabled_external (incontrol: POINTER; outtracks: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Boolean*):OSStatus"
 		alias
 			"ewg_function_macro_IsControlDragTrackingEnabled"
 		end
 
-	frozen is_control_drag_tracking_enabled_address_external: POINTER is
+	is_control_drag_tracking_enabled_address_external: POINTER is
 			-- Address of C function `IsControlDragTrackingEnabled'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1698,14 +1698,14 @@ feature
 			"(void*) IsControlDragTrackingEnabled"
 		end
 
-	frozen set_automatic_control_drag_tracking_enabled_for_window_external (inwindow: POINTER; intracks: INTEGER): INTEGER is
+	set_automatic_control_drag_tracking_enabled_for_window_external (inwindow: POINTER; intracks: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_SetAutomaticControlDragTrackingEnabledForWindow"
 		end
 
-	frozen set_automatic_control_drag_tracking_enabled_for_window_address_external: POINTER is
+	set_automatic_control_drag_tracking_enabled_for_window_address_external: POINTER is
 			-- Address of C function `SetAutomaticControlDragTrackingEnabledForWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1713,14 +1713,14 @@ feature
 			"(void*) SetAutomaticControlDragTrackingEnabledForWindow"
 		end
 
-	frozen is_automatic_control_drag_tracking_enabled_for_window_external (inwindow: POINTER; outtracks: POINTER): INTEGER is
+	is_automatic_control_drag_tracking_enabled_for_window_external (inwindow: POINTER; outtracks: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Boolean*):OSStatus"
 		alias
 			"ewg_function_macro_IsAutomaticControlDragTrackingEnabledForWindow"
 		end
 
-	frozen is_automatic_control_drag_tracking_enabled_for_window_address_external: POINTER is
+	is_automatic_control_drag_tracking_enabled_for_window_address_external: POINTER is
 			-- Address of C function `IsAutomaticControlDragTrackingEnabledForWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1728,14 +1728,14 @@ feature
 			"(void*) IsAutomaticControlDragTrackingEnabledForWindow"
 		end
 
-	frozen get_control_bounds_external (control: POINTER; bounds: POINTER): POINTER is
+	get_control_bounds_external (control: POINTER; bounds: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Rect*):Rect*"
 		alias
 			"ewg_function_macro_GetControlBounds"
 		end
 
-	frozen get_control_bounds_address_external: POINTER is
+	get_control_bounds_address_external: POINTER is
 			-- Address of C function `GetControlBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1743,14 +1743,14 @@ feature
 			"(void*) GetControlBounds"
 		end
 
-	frozen is_control_hilited_external (control: POINTER): INTEGER is
+	is_control_hilited_external (control: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):Boolean"
 		alias
 			"ewg_function_macro_IsControlHilited"
 		end
 
-	frozen is_control_hilited_address_external: POINTER is
+	is_control_hilited_address_external: POINTER is
 			-- Address of C function `IsControlHilited'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1758,14 +1758,14 @@ feature
 			"(void*) IsControlHilited"
 		end
 
-	frozen get_control_hilite_external (control: POINTER): INTEGER is
+	get_control_hilite_external (control: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):UInt16"
 		alias
 			"ewg_function_macro_GetControlHilite"
 		end
 
-	frozen get_control_hilite_address_external: POINTER is
+	get_control_hilite_address_external: POINTER is
 			-- Address of C function `GetControlHilite'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1773,14 +1773,14 @@ feature
 			"(void*) GetControlHilite"
 		end
 
-	frozen get_control_owner_external (control: POINTER): POINTER is
+	get_control_owner_external (control: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):WindowRef"
 		alias
 			"ewg_function_macro_GetControlOwner"
 		end
 
-	frozen get_control_owner_address_external: POINTER is
+	get_control_owner_address_external: POINTER is
 			-- Address of C function `GetControlOwner'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1788,14 +1788,14 @@ feature
 			"(void*) GetControlOwner"
 		end
 
-	frozen get_control_data_handle_external (control: POINTER): POINTER is
+	get_control_data_handle_external (control: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):Handle"
 		alias
 			"ewg_function_macro_GetControlDataHandle"
 		end
 
-	frozen get_control_data_handle_address_external: POINTER is
+	get_control_data_handle_address_external: POINTER is
 			-- Address of C function `GetControlDataHandle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1803,14 +1803,14 @@ feature
 			"(void*) GetControlDataHandle"
 		end
 
-	frozen get_control_popup_menu_handle_external (control: POINTER): POINTER is
+	get_control_popup_menu_handle_external (control: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):MenuRef"
 		alias
 			"ewg_function_macro_GetControlPopupMenuHandle"
 		end
 
-	frozen get_control_popup_menu_handle_address_external: POINTER is
+	get_control_popup_menu_handle_address_external: POINTER is
 			-- Address of C function `GetControlPopupMenuHandle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1818,14 +1818,14 @@ feature
 			"(void*) GetControlPopupMenuHandle"
 		end
 
-	frozen get_control_popup_menu_id_external (control: POINTER): INTEGER is
+	get_control_popup_menu_id_external (control: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef):short"
 		alias
 			"ewg_function_macro_GetControlPopupMenuID"
 		end
 
-	frozen get_control_popup_menu_id_address_external: POINTER is
+	get_control_popup_menu_id_address_external: POINTER is
 			-- Address of C function `GetControlPopupMenuID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1833,14 +1833,14 @@ feature
 			"(void*) GetControlPopupMenuID"
 		end
 
-	frozen set_control_data_handle_external (control: POINTER; datahandle: POINTER) is
+	set_control_data_handle_external (control: POINTER; datahandle: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Handle)"
 		alias
 			"ewg_function_macro_SetControlDataHandle"
 		end
 
-	frozen set_control_data_handle_address_external: POINTER is
+	set_control_data_handle_address_external: POINTER is
 			-- Address of C function `SetControlDataHandle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1848,14 +1848,14 @@ feature
 			"(void*) SetControlDataHandle"
 		end
 
-	frozen set_control_bounds_external (control: POINTER; bounds: POINTER) is
+	set_control_bounds_external (control: POINTER; bounds: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, Rect const*)"
 		alias
 			"ewg_function_macro_SetControlBounds"
 		end
 
-	frozen set_control_bounds_address_external: POINTER is
+	set_control_bounds_address_external: POINTER is
 			-- Address of C function `SetControlBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1863,14 +1863,14 @@ feature
 			"(void*) SetControlBounds"
 		end
 
-	frozen set_control_popup_menu_handle_external (control: POINTER; popupmenu: POINTER) is
+	set_control_popup_menu_handle_external (control: POINTER; popupmenu: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, MenuRef)"
 		alias
 			"ewg_function_macro_SetControlPopupMenuHandle"
 		end
 
-	frozen set_control_popup_menu_handle_address_external: POINTER is
+	set_control_popup_menu_handle_address_external: POINTER is
 			-- Address of C function `SetControlPopupMenuHandle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1878,14 +1878,14 @@ feature
 			"(void*) SetControlPopupMenuHandle"
 		end
 
-	frozen set_control_popup_menu_id_external (control: POINTER; menuid: INTEGER) is
+	set_control_popup_menu_id_external (control: POINTER; menuid: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (ControlRef, short)"
 		alias
 			"ewg_function_macro_SetControlPopupMenuID"
 		end
 
-	frozen set_control_popup_menu_id_address_external: POINTER is
+	set_control_popup_menu_id_address_external: POINTER is
 			-- Address of C function `SetControlPopupMenuID'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1893,14 +1893,14 @@ feature
 			"(void*) SetControlPopupMenuID"
 		end
 
-	frozen idle_controls_external (inwindow: POINTER) is
+	idle_controls_external (inwindow: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef)"
 		alias
 			"ewg_function_macro_IdleControls"
 		end
 
-	frozen idle_controls_address_external: POINTER is
+	idle_controls_address_external: POINTER is
 			-- Address of C function `IdleControls'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

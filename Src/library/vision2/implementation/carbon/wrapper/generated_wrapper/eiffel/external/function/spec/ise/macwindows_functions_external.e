@@ -3,14 +3,14 @@
 class MACWINDOWS_FUNCTIONS_EXTERNAL
 
 feature
-	frozen new_window_def_upp_external (userroutine: POINTER): POINTER is
+	new_window_def_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowDefProcPtr):WindowDefUPP"
 		alias
 			"ewg_function_macro_NewWindowDefUPP"
 		end
 
-	frozen new_window_def_upp_address_external: POINTER is
+	new_window_def_upp_address_external: POINTER is
 			-- Address of C function `NewWindowDefUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -18,14 +18,14 @@ feature
 			"(void*) NewWindowDefUPP"
 		end
 
-	frozen new_window_paint_upp_external (userroutine: POINTER): POINTER is
+	new_window_paint_upp_external (userroutine: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowPaintProcPtr):WindowPaintUPP"
 		alias
 			"ewg_function_macro_NewWindowPaintUPP"
 		end
 
-	frozen new_window_paint_upp_address_external: POINTER is
+	new_window_paint_upp_address_external: POINTER is
 			-- Address of C function `NewWindowPaintUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -33,14 +33,14 @@ feature
 			"(void*) NewWindowPaintUPP"
 		end
 
-	frozen dispose_window_def_upp_external (userupp: POINTER) is
+	dispose_window_def_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowDefUPP)"
 		alias
 			"ewg_function_macro_DisposeWindowDefUPP"
 		end
 
-	frozen dispose_window_def_upp_address_external: POINTER is
+	dispose_window_def_upp_address_external: POINTER is
 			-- Address of C function `DisposeWindowDefUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -48,14 +48,14 @@ feature
 			"(void*) DisposeWindowDefUPP"
 		end
 
-	frozen dispose_window_paint_upp_external (userupp: POINTER) is
+	dispose_window_paint_upp_external (userupp: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowPaintUPP)"
 		alias
 			"ewg_function_macro_DisposeWindowPaintUPP"
 		end
 
-	frozen dispose_window_paint_upp_address_external: POINTER is
+	dispose_window_paint_upp_address_external: POINTER is
 			-- Address of C function `DisposeWindowPaintUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -63,14 +63,14 @@ feature
 			"(void*) DisposeWindowPaintUPP"
 		end
 
-	frozen invoke_window_def_upp_external (varcode: INTEGER; window: POINTER; message: INTEGER; param: INTEGER; userupp: POINTER): INTEGER is
+	invoke_window_def_upp_external (varcode: INTEGER; window: POINTER; message: INTEGER; param: INTEGER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (short, WindowRef, short, long, WindowDefUPP):long"
 		alias
 			"ewg_function_macro_InvokeWindowDefUPP"
 		end
 
-	frozen invoke_window_def_upp_address_external: POINTER is
+	invoke_window_def_upp_address_external: POINTER is
 			-- Address of C function `InvokeWindowDefUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -78,14 +78,14 @@ feature
 			"(void*) InvokeWindowDefUPP"
 		end
 
-	frozen invoke_window_paint_upp_external (device: POINTER; qdcontext: POINTER; window: POINTER; inclientpaintrgn: POINTER; outsystempaintrgn: POINTER; refcon: POINTER; userupp: POINTER): INTEGER is
+	invoke_window_paint_upp_external (device: POINTER; qdcontext: POINTER; window: POINTER; inclientpaintrgn: POINTER; outsystempaintrgn: POINTER; refcon: POINTER; userupp: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (GDHandle, GrafPtr, WindowRef, RgnHandle, RgnHandle, void*, WindowPaintUPP):OSStatus"
 		alias
 			"ewg_function_macro_InvokeWindowPaintUPP"
 		end
 
-	frozen invoke_window_paint_upp_address_external: POINTER is
+	invoke_window_paint_upp_address_external: POINTER is
 			-- Address of C function `InvokeWindowPaintUPP'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -93,14 +93,14 @@ feature
 			"(void*) InvokeWindowPaintUPP"
 		end
 
-	frozen get_new_cwindow_external (windowid: INTEGER; wstorage: POINTER; behind: POINTER): POINTER is
+	get_new_cwindow_external (windowid: INTEGER; wstorage: POINTER; behind: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (short, void*, WindowRef):WindowRef"
 		alias
 			"ewg_function_macro_GetNewCWindow"
 		end
 
-	frozen get_new_cwindow_address_external: POINTER is
+	get_new_cwindow_address_external: POINTER is
 			-- Address of C function `GetNewCWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -108,14 +108,14 @@ feature
 			"(void*) GetNewCWindow"
 		end
 
-	frozen new_window_external (wstorage: POINTER; boundsrect: POINTER; title: POINTER; visible: INTEGER; theproc: INTEGER; behind: POINTER; goawayflag: INTEGER; refcon: INTEGER): POINTER is
+	new_window_external (wstorage: POINTER; boundsrect: POINTER; title: POINTER; visible: INTEGER; theproc: INTEGER; behind: POINTER; goawayflag: INTEGER; refcon: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, Rect const*, ConstStr255Param, Boolean, short, WindowRef, Boolean, long):WindowRef"
 		alias
 			"ewg_function_macro_NewWindow"
 		end
 
-	frozen new_window_address_external: POINTER is
+	new_window_address_external: POINTER is
 			-- Address of C function `NewWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -123,14 +123,14 @@ feature
 			"(void*) NewWindow"
 		end
 
-	frozen get_new_window_external (windowid: INTEGER; wstorage: POINTER; behind: POINTER): POINTER is
+	get_new_window_external (windowid: INTEGER; wstorage: POINTER; behind: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (short, void*, WindowRef):WindowRef"
 		alias
 			"ewg_function_macro_GetNewWindow"
 		end
 
-	frozen get_new_window_address_external: POINTER is
+	get_new_window_address_external: POINTER is
 			-- Address of C function `GetNewWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -138,14 +138,14 @@ feature
 			"(void*) GetNewWindow"
 		end
 
-	frozen new_cwindow_external (wstorage: POINTER; boundsrect: POINTER; title: POINTER; visible: INTEGER; procid: INTEGER; behind: POINTER; goawayflag: INTEGER; refcon: INTEGER): POINTER is
+	new_cwindow_external (wstorage: POINTER; boundsrect: POINTER; title: POINTER; visible: INTEGER; procid: INTEGER; behind: POINTER; goawayflag: INTEGER; refcon: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (void*, Rect const*, ConstStr255Param, Boolean, short, WindowRef, Boolean, long):WindowRef"
 		alias
 			"ewg_function_macro_NewCWindow"
 		end
 
-	frozen new_cwindow_address_external: POINTER is
+	new_cwindow_address_external: POINTER is
 			-- Address of C function `NewCWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -153,14 +153,14 @@ feature
 			"(void*) NewCWindow"
 		end
 
-	frozen dispose_window_external (window: POINTER) is
+	dispose_window_external (window: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef)"
 		alias
 			"ewg_function_macro_DisposeWindow"
 		end
 
-	frozen dispose_window_address_external: POINTER is
+	dispose_window_address_external: POINTER is
 			-- Address of C function `DisposeWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -168,14 +168,14 @@ feature
 			"(void*) DisposeWindow"
 		end
 
-	frozen create_new_window_external (windowclass: INTEGER; attributes: INTEGER; contentbounds: POINTER; outwindow: POINTER): INTEGER is
+	create_new_window_external (windowclass: INTEGER; attributes: INTEGER; contentbounds: POINTER; outwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowClass, WindowAttributes, Rect const*, WindowRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateNewWindow"
 		end
 
-	frozen create_new_window_address_external: POINTER is
+	create_new_window_address_external: POINTER is
 			-- Address of C function `CreateNewWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -183,14 +183,14 @@ feature
 			"(void*) CreateNewWindow"
 		end
 
-	frozen create_window_from_resource_external (resid: INTEGER; outwindow: POINTER): INTEGER is
+	create_window_from_resource_external (resid: INTEGER; outwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (SInt16, WindowRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateWindowFromResource"
 		end
 
-	frozen create_window_from_resource_address_external: POINTER is
+	create_window_from_resource_address_external: POINTER is
 			-- Address of C function `CreateWindowFromResource'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -198,14 +198,14 @@ feature
 			"(void*) CreateWindowFromResource"
 		end
 
-	frozen store_window_into_collection_external (window: POINTER; collection: POINTER): INTEGER is
+	store_window_into_collection_external (window: POINTER; collection: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Collection):OSStatus"
 		alias
 			"ewg_function_macro_StoreWindowIntoCollection"
 		end
 
-	frozen store_window_into_collection_address_external: POINTER is
+	store_window_into_collection_address_external: POINTER is
 			-- Address of C function `StoreWindowIntoCollection'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -213,14 +213,14 @@ feature
 			"(void*) StoreWindowIntoCollection"
 		end
 
-	frozen create_window_from_collection_external (collection: POINTER; outwindow: POINTER): INTEGER is
+	create_window_from_collection_external (collection: POINTER; outwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (Collection, WindowRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateWindowFromCollection"
 		end
 
-	frozen create_window_from_collection_address_external: POINTER is
+	create_window_from_collection_address_external: POINTER is
 			-- Address of C function `CreateWindowFromCollection'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -228,14 +228,14 @@ feature
 			"(void*) CreateWindowFromCollection"
 		end
 
-	frozen get_window_owner_count_external (window: POINTER; outcount: POINTER): INTEGER is
+	get_window_owner_count_external (window: POINTER; outcount: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, UInt32*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowOwnerCount"
 		end
 
-	frozen get_window_owner_count_address_external: POINTER is
+	get_window_owner_count_address_external: POINTER is
 			-- Address of C function `GetWindowOwnerCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -243,14 +243,14 @@ feature
 			"(void*) GetWindowOwnerCount"
 		end
 
-	frozen clone_window_external (window: POINTER): INTEGER is
+	clone_window_external (window: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):OSStatus"
 		alias
 			"ewg_function_macro_CloneWindow"
 		end
 
-	frozen clone_window_address_external: POINTER is
+	clone_window_address_external: POINTER is
 			-- Address of C function `CloneWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -258,14 +258,14 @@ feature
 			"(void*) CloneWindow"
 		end
 
-	frozen get_window_retain_count_external (inwindow: POINTER): INTEGER is
+	get_window_retain_count_external (inwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):ItemCount"
 		alias
 			"ewg_function_macro_GetWindowRetainCount"
 		end
 
-	frozen get_window_retain_count_address_external: POINTER is
+	get_window_retain_count_address_external: POINTER is
 			-- Address of C function `GetWindowRetainCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -273,14 +273,14 @@ feature
 			"(void*) GetWindowRetainCount"
 		end
 
-	frozen retain_window_external (inwindow: POINTER): INTEGER is
+	retain_window_external (inwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):OSStatus"
 		alias
 			"ewg_function_macro_RetainWindow"
 		end
 
-	frozen retain_window_address_external: POINTER is
+	retain_window_address_external: POINTER is
 			-- Address of C function `RetainWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -288,14 +288,14 @@ feature
 			"(void*) RetainWindow"
 		end
 
-	frozen release_window_external (inwindow: POINTER): INTEGER is
+	release_window_external (inwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):OSStatus"
 		alias
 			"ewg_function_macro_ReleaseWindow"
 		end
 
-	frozen release_window_address_external: POINTER is
+	release_window_address_external: POINTER is
 			-- Address of C function `ReleaseWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -303,14 +303,14 @@ feature
 			"(void*) ReleaseWindow"
 		end
 
-	frozen create_custom_window_external (def: POINTER; windowclass: INTEGER; attributes: INTEGER; contentbounds: POINTER; outwindow: POINTER): INTEGER is
+	create_custom_window_external (def: POINTER; windowclass: INTEGER; attributes: INTEGER; contentbounds: POINTER; outwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowDefSpec const*, WindowClass, WindowAttributes, Rect const*, WindowRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateCustomWindow"
 		end
 
-	frozen create_custom_window_address_external: POINTER is
+	create_custom_window_address_external: POINTER is
 			-- Address of C function `CreateCustomWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -318,14 +318,14 @@ feature
 			"(void*) CreateCustomWindow"
 		end
 
-	frozen reshape_custom_window_external (window: POINTER): INTEGER is
+	reshape_custom_window_external (window: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):OSStatus"
 		alias
 			"ewg_function_macro_ReshapeCustomWindow"
 		end
 
-	frozen reshape_custom_window_address_external: POINTER is
+	reshape_custom_window_address_external: POINTER is
 			-- Address of C function `ReshapeCustomWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -333,14 +333,14 @@ feature
 			"(void*) ReshapeCustomWindow"
 		end
 
-	frozen register_window_definition_external (inresid: INTEGER; indefspec: POINTER): INTEGER is
+	register_window_definition_external (inresid: INTEGER; indefspec: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (SInt16, WindowDefSpec const*):OSStatus"
 		alias
 			"ewg_function_macro_RegisterWindowDefinition"
 		end
 
-	frozen register_window_definition_address_external: POINTER is
+	register_window_definition_address_external: POINTER is
 			-- Address of C function `RegisterWindowDefinition'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -348,14 +348,14 @@ feature
 			"(void*) RegisterWindowDefinition"
 		end
 
-	frozen get_window_widget_hilite_external (inwindow: POINTER; outhilite: POINTER): INTEGER is
+	get_window_widget_hilite_external (inwindow: POINTER; outhilite: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowDefPartCode*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowWidgetHilite"
 		end
 
-	frozen get_window_widget_hilite_address_external: POINTER is
+	get_window_widget_hilite_address_external: POINTER is
 			-- Address of C function `GetWindowWidgetHilite'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -363,14 +363,14 @@ feature
 			"(void*) GetWindowWidgetHilite"
 		end
 
-	frozen is_valid_window_class_external (inclass: INTEGER): INTEGER is
+	is_valid_window_class_external (inclass: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowClass):Boolean"
 		alias
 			"ewg_function_macro_IsValidWindowClass"
 		end
 
-	frozen is_valid_window_class_address_external: POINTER is
+	is_valid_window_class_address_external: POINTER is
 			-- Address of C function `IsValidWindowClass'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -378,14 +378,14 @@ feature
 			"(void*) IsValidWindowClass"
 		end
 
-	frozen get_available_window_attributes_external (inclass: INTEGER): INTEGER is
+	get_available_window_attributes_external (inclass: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowClass):WindowAttributes"
 		alias
 			"ewg_function_macro_GetAvailableWindowAttributes"
 		end
 
-	frozen get_available_window_attributes_address_external: POINTER is
+	get_available_window_attributes_address_external: POINTER is
 			-- Address of C function `GetAvailableWindowAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -393,14 +393,14 @@ feature
 			"(void*) GetAvailableWindowAttributes"
 		end
 
-	frozen get_window_class_external (window: POINTER; outclass: POINTER): INTEGER is
+	get_window_class_external (window: POINTER; outclass: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowClass*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowClass"
 		end
 
-	frozen get_window_class_address_external: POINTER is
+	get_window_class_address_external: POINTER is
 			-- Address of C function `GetWindowClass'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -408,14 +408,14 @@ feature
 			"(void*) GetWindowClass"
 		end
 
-	frozen get_window_attributes_external (window: POINTER; outattributes: POINTER): INTEGER is
+	get_window_attributes_external (window: POINTER; outattributes: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowAttributes*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowAttributes"
 		end
 
-	frozen get_window_attributes_address_external: POINTER is
+	get_window_attributes_address_external: POINTER is
 			-- Address of C function `GetWindowAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -423,14 +423,14 @@ feature
 			"(void*) GetWindowAttributes"
 		end
 
-	frozen change_window_attributes_external (window: POINTER; settheseattributes: INTEGER; cleartheseattributes: INTEGER): INTEGER is
+	change_window_attributes_external (window: POINTER; settheseattributes: INTEGER; cleartheseattributes: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowAttributes, WindowAttributes):OSStatus"
 		alias
 			"ewg_function_macro_ChangeWindowAttributes"
 		end
 
-	frozen change_window_attributes_address_external: POINTER is
+	change_window_attributes_address_external: POINTER is
 			-- Address of C function `ChangeWindowAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -438,14 +438,14 @@ feature
 			"(void*) ChangeWindowAttributes"
 		end
 
-	frozen set_window_class_external (inwindow: POINTER; inwindowclass: INTEGER): INTEGER is
+	set_window_class_external (inwindow: POINTER; inwindowclass: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowClass):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowClass"
 		end
 
-	frozen set_window_class_address_external: POINTER is
+	set_window_class_address_external: POINTER is
 			-- Address of C function `SetWindowClass'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -453,14 +453,14 @@ feature
 			"(void*) SetWindowClass"
 		end
 
-	frozen hiwindow_change_class_external (inwindow: POINTER; inwindowclass: INTEGER): INTEGER is
+	hiwindow_change_class_external (inwindow: POINTER; inwindowclass: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIWindowRef, WindowClass):OSStatus"
 		alias
 			"ewg_function_macro_HIWindowChangeClass"
 		end
 
-	frozen hiwindow_change_class_address_external: POINTER is
+	hiwindow_change_class_address_external: POINTER is
 			-- Address of C function `HIWindowChangeClass'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -468,14 +468,14 @@ feature
 			"(void*) HIWindowChangeClass"
 		end
 
-	frozen hiwindow_flush_external (inwindow: POINTER): INTEGER is
+	hiwindow_flush_external (inwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIWindowRef):OSStatus"
 		alias
 			"ewg_function_macro_HIWindowFlush"
 		end
 
-	frozen hiwindow_flush_address_external: POINTER is
+	hiwindow_flush_address_external: POINTER is
 			-- Address of C function `HIWindowFlush'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -483,14 +483,14 @@ feature
 			"(void*) HIWindowFlush"
 		end
 
-	frozen set_window_modality_external (inwindow: POINTER; inmodalkind: INTEGER; inunavailablewindow: POINTER): INTEGER is
+	set_window_modality_external (inwindow: POINTER; inmodalkind: INTEGER; inunavailablewindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowModality, WindowRef):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowModality"
 		end
 
-	frozen set_window_modality_address_external: POINTER is
+	set_window_modality_address_external: POINTER is
 			-- Address of C function `SetWindowModality'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -498,14 +498,14 @@ feature
 			"(void*) SetWindowModality"
 		end
 
-	frozen get_window_modality_external (inwindow: POINTER; outmodalkind: POINTER; outunavailablewindow: POINTER): INTEGER is
+	get_window_modality_external (inwindow: POINTER; outmodalkind: POINTER; outunavailablewindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowModality*, WindowRef*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowModality"
 		end
 
-	frozen get_window_modality_address_external: POINTER is
+	get_window_modality_address_external: POINTER is
 			-- Address of C function `GetWindowModality'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -513,14 +513,14 @@ feature
 			"(void*) GetWindowModality"
 		end
 
-	frozen hiwindow_is_document_modal_target_external (inwindow: POINTER; outowner: POINTER): INTEGER is
+	hiwindow_is_document_modal_target_external (inwindow: POINTER; outowner: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIWindowRef, HIWindowRef*):Boolean"
 		alias
 			"ewg_function_macro_HIWindowIsDocumentModalTarget"
 		end
 
-	frozen hiwindow_is_document_modal_target_address_external: POINTER is
+	hiwindow_is_document_modal_target_address_external: POINTER is
 			-- Address of C function `HIWindowIsDocumentModalTarget'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -528,14 +528,14 @@ feature
 			"(void*) HIWindowIsDocumentModalTarget"
 		end
 
-	frozen show_floating_windows_external: INTEGER is
+	show_floating_windows_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :OSStatus"
 		alias
 			"ewg_function_macro_ShowFloatingWindows"
 		end
 
-	frozen show_floating_windows_address_external: POINTER is
+	show_floating_windows_address_external: POINTER is
 			-- Address of C function `ShowFloatingWindows'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -543,14 +543,14 @@ feature
 			"(void*) ShowFloatingWindows"
 		end
 
-	frozen hide_floating_windows_external: INTEGER is
+	hide_floating_windows_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :OSStatus"
 		alias
 			"ewg_function_macro_HideFloatingWindows"
 		end
 
-	frozen hide_floating_windows_address_external: POINTER is
+	hide_floating_windows_address_external: POINTER is
 			-- Address of C function `HideFloatingWindows'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -558,14 +558,14 @@ feature
 			"(void*) HideFloatingWindows"
 		end
 
-	frozen are_floating_windows_visible_external: INTEGER is
+	are_floating_windows_visible_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :Boolean"
 		alias
 			"ewg_function_macro_AreFloatingWindowsVisible"
 		end
 
-	frozen are_floating_windows_visible_address_external: POINTER is
+	are_floating_windows_visible_address_external: POINTER is
 			-- Address of C function `AreFloatingWindowsVisible'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -573,14 +573,14 @@ feature
 			"(void*) AreFloatingWindowsVisible"
 		end
 
-	frozen create_window_group_external (inattributes: INTEGER; outgroup: POINTER): INTEGER is
+	create_window_group_external (inattributes: INTEGER; outgroup: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowGroupAttributes, WindowGroupRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateWindowGroup"
 		end
 
-	frozen create_window_group_address_external: POINTER is
+	create_window_group_address_external: POINTER is
 			-- Address of C function `CreateWindowGroup'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -588,14 +588,14 @@ feature
 			"(void*) CreateWindowGroup"
 		end
 
-	frozen retain_window_group_external (ingroup: POINTER): INTEGER is
+	retain_window_group_external (ingroup: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowGroupRef):OSStatus"
 		alias
 			"ewg_function_macro_RetainWindowGroup"
 		end
 
-	frozen retain_window_group_address_external: POINTER is
+	retain_window_group_address_external: POINTER is
 			-- Address of C function `RetainWindowGroup'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -603,14 +603,14 @@ feature
 			"(void*) RetainWindowGroup"
 		end
 
-	frozen release_window_group_external (ingroup: POINTER): INTEGER is
+	release_window_group_external (ingroup: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowGroupRef):OSStatus"
 		alias
 			"ewg_function_macro_ReleaseWindowGroup"
 		end
 
-	frozen release_window_group_address_external: POINTER is
+	release_window_group_address_external: POINTER is
 			-- Address of C function `ReleaseWindowGroup'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -618,14 +618,14 @@ feature
 			"(void*) ReleaseWindowGroup"
 		end
 
-	frozen get_window_group_retain_count_external (ingroup: POINTER): INTEGER is
+	get_window_group_retain_count_external (ingroup: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowGroupRef):ItemCount"
 		alias
 			"ewg_function_macro_GetWindowGroupRetainCount"
 		end
 
-	frozen get_window_group_retain_count_address_external: POINTER is
+	get_window_group_retain_count_address_external: POINTER is
 			-- Address of C function `GetWindowGroupRetainCount'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -633,14 +633,14 @@ feature
 			"(void*) GetWindowGroupRetainCount"
 		end
 
-	frozen get_window_group_of_class_external (windowclass: INTEGER): POINTER is
+	get_window_group_of_class_external (windowclass: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowClass):WindowGroupRef"
 		alias
 			"ewg_function_macro_GetWindowGroupOfClass"
 		end
 
-	frozen get_window_group_of_class_address_external: POINTER is
+	get_window_group_of_class_address_external: POINTER is
 			-- Address of C function `GetWindowGroupOfClass'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -648,14 +648,14 @@ feature
 			"(void*) GetWindowGroupOfClass"
 		end
 
-	frozen set_window_group_name_external (ingroup: POINTER; inname: POINTER): INTEGER is
+	set_window_group_name_external (ingroup: POINTER; inname: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowGroupRef, CFStringRef):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowGroupName"
 		end
 
-	frozen set_window_group_name_address_external: POINTER is
+	set_window_group_name_address_external: POINTER is
 			-- Address of C function `SetWindowGroupName'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -663,14 +663,14 @@ feature
 			"(void*) SetWindowGroupName"
 		end
 
-	frozen copy_window_group_name_external (ingroup: POINTER; outname: POINTER): INTEGER is
+	copy_window_group_name_external (ingroup: POINTER; outname: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowGroupRef, CFStringRef*):OSStatus"
 		alias
 			"ewg_function_macro_CopyWindowGroupName"
 		end
 
-	frozen copy_window_group_name_address_external: POINTER is
+	copy_window_group_name_address_external: POINTER is
 			-- Address of C function `CopyWindowGroupName'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -678,14 +678,14 @@ feature
 			"(void*) CopyWindowGroupName"
 		end
 
-	frozen get_window_group_attributes_external (ingroup: POINTER; outattributes: POINTER): INTEGER is
+	get_window_group_attributes_external (ingroup: POINTER; outattributes: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowGroupRef, WindowGroupAttributes*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowGroupAttributes"
 		end
 
-	frozen get_window_group_attributes_address_external: POINTER is
+	get_window_group_attributes_address_external: POINTER is
 			-- Address of C function `GetWindowGroupAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -693,14 +693,14 @@ feature
 			"(void*) GetWindowGroupAttributes"
 		end
 
-	frozen change_window_group_attributes_external (ingroup: POINTER; settheseattributes: INTEGER; cleartheseattributes: INTEGER): INTEGER is
+	change_window_group_attributes_external (ingroup: POINTER; settheseattributes: INTEGER; cleartheseattributes: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowGroupRef, WindowGroupAttributes, WindowGroupAttributes):OSStatus"
 		alias
 			"ewg_function_macro_ChangeWindowGroupAttributes"
 		end
 
-	frozen change_window_group_attributes_address_external: POINTER is
+	change_window_group_attributes_address_external: POINTER is
 			-- Address of C function `ChangeWindowGroupAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -708,14 +708,14 @@ feature
 			"(void*) ChangeWindowGroupAttributes"
 		end
 
-	frozen set_window_group_level_external (ingroup: POINTER; inlevel: INTEGER): INTEGER is
+	set_window_group_level_external (ingroup: POINTER; inlevel: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowGroupRef, SInt32):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowGroupLevel"
 		end
 
-	frozen set_window_group_level_address_external: POINTER is
+	set_window_group_level_address_external: POINTER is
 			-- Address of C function `SetWindowGroupLevel'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -723,14 +723,14 @@ feature
 			"(void*) SetWindowGroupLevel"
 		end
 
-	frozen get_window_group_level_external (ingroup: POINTER; outlevel: POINTER): INTEGER is
+	get_window_group_level_external (ingroup: POINTER; outlevel: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowGroupRef, SInt32*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowGroupLevel"
 		end
 
-	frozen get_window_group_level_address_external: POINTER is
+	get_window_group_level_address_external: POINTER is
 			-- Address of C function `GetWindowGroupLevel'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -738,14 +738,14 @@ feature
 			"(void*) GetWindowGroupLevel"
 		end
 
-	frozen set_window_group_level_of_type_external (ingroup: POINTER; inleveltype: INTEGER; inlevel: INTEGER): INTEGER is
+	set_window_group_level_of_type_external (ingroup: POINTER; inleveltype: INTEGER; inlevel: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowGroupRef, UInt32, CGWindowLevel):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowGroupLevelOfType"
 		end
 
-	frozen set_window_group_level_of_type_address_external: POINTER is
+	set_window_group_level_of_type_address_external: POINTER is
 			-- Address of C function `SetWindowGroupLevelOfType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -753,14 +753,14 @@ feature
 			"(void*) SetWindowGroupLevelOfType"
 		end
 
-	frozen get_window_group_level_of_type_external (ingroup: POINTER; inleveltype: INTEGER; outlevel: POINTER): INTEGER is
+	get_window_group_level_of_type_external (ingroup: POINTER; inleveltype: INTEGER; outlevel: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowGroupRef, UInt32, CGWindowLevel*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowGroupLevelOfType"
 		end
 
-	frozen get_window_group_level_of_type_address_external: POINTER is
+	get_window_group_level_of_type_address_external: POINTER is
 			-- Address of C function `GetWindowGroupLevelOfType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -768,14 +768,14 @@ feature
 			"(void*) GetWindowGroupLevelOfType"
 		end
 
-	frozen send_window_group_behind_external (ingroup: POINTER; behindgroup: POINTER): INTEGER is
+	send_window_group_behind_external (ingroup: POINTER; behindgroup: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowGroupRef, WindowGroupRef):OSStatus"
 		alias
 			"ewg_function_macro_SendWindowGroupBehind"
 		end
 
-	frozen send_window_group_behind_address_external: POINTER is
+	send_window_group_behind_address_external: POINTER is
 			-- Address of C function `SendWindowGroupBehind'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -783,14 +783,14 @@ feature
 			"(void*) SendWindowGroupBehind"
 		end
 
-	frozen get_window_group_external (inwindow: POINTER): POINTER is
+	get_window_group_external (inwindow: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):WindowGroupRef"
 		alias
 			"ewg_function_macro_GetWindowGroup"
 		end
 
-	frozen get_window_group_address_external: POINTER is
+	get_window_group_address_external: POINTER is
 			-- Address of C function `GetWindowGroup'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -798,14 +798,14 @@ feature
 			"(void*) GetWindowGroup"
 		end
 
-	frozen set_window_group_external (inwindow: POINTER; innewgroup: POINTER): INTEGER is
+	set_window_group_external (inwindow: POINTER; innewgroup: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowGroupRef):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowGroup"
 		end
 
-	frozen set_window_group_address_external: POINTER is
+	set_window_group_address_external: POINTER is
 			-- Address of C function `SetWindowGroup'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -813,14 +813,14 @@ feature
 			"(void*) SetWindowGroup"
 		end
 
-	frozen is_window_contained_in_group_external (inwindow: POINTER; ingroup: POINTER): INTEGER is
+	is_window_contained_in_group_external (inwindow: POINTER; ingroup: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowGroupRef):Boolean"
 		alias
 			"ewg_function_macro_IsWindowContainedInGroup"
 		end
 
-	frozen is_window_contained_in_group_address_external: POINTER is
+	is_window_contained_in_group_address_external: POINTER is
 			-- Address of C function `IsWindowContainedInGroup'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -828,14 +828,14 @@ feature
 			"(void*) IsWindowContainedInGroup"
 		end
 
-	frozen get_window_group_parent_external (ingroup: POINTER): POINTER is
+	get_window_group_parent_external (ingroup: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowGroupRef):WindowGroupRef"
 		alias
 			"ewg_function_macro_GetWindowGroupParent"
 		end
 
-	frozen get_window_group_parent_address_external: POINTER is
+	get_window_group_parent_address_external: POINTER is
 			-- Address of C function `GetWindowGroupParent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -843,14 +843,14 @@ feature
 			"(void*) GetWindowGroupParent"
 		end
 
-	frozen set_window_group_parent_external (ingroup: POINTER; innewgroup: POINTER): INTEGER is
+	set_window_group_parent_external (ingroup: POINTER; innewgroup: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowGroupRef, WindowGroupRef):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowGroupParent"
 		end
 
-	frozen set_window_group_parent_address_external: POINTER is
+	set_window_group_parent_address_external: POINTER is
 			-- Address of C function `SetWindowGroupParent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -858,14 +858,14 @@ feature
 			"(void*) SetWindowGroupParent"
 		end
 
-	frozen get_window_group_sibling_external (ingroup: POINTER; innextgroup: INTEGER): POINTER is
+	get_window_group_sibling_external (ingroup: POINTER; innextgroup: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowGroupRef, Boolean):WindowGroupRef"
 		alias
 			"ewg_function_macro_GetWindowGroupSibling"
 		end
 
-	frozen get_window_group_sibling_address_external: POINTER is
+	get_window_group_sibling_address_external: POINTER is
 			-- Address of C function `GetWindowGroupSibling'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -873,14 +873,14 @@ feature
 			"(void*) GetWindowGroupSibling"
 		end
 
-	frozen get_window_group_owner_external (ingroup: POINTER): POINTER is
+	get_window_group_owner_external (ingroup: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowGroupRef):WindowRef"
 		alias
 			"ewg_function_macro_GetWindowGroupOwner"
 		end
 
-	frozen get_window_group_owner_address_external: POINTER is
+	get_window_group_owner_address_external: POINTER is
 			-- Address of C function `GetWindowGroupOwner'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -888,14 +888,14 @@ feature
 			"(void*) GetWindowGroupOwner"
 		end
 
-	frozen set_window_group_owner_external (ingroup: POINTER; inwindow: POINTER): INTEGER is
+	set_window_group_owner_external (ingroup: POINTER; inwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowGroupRef, WindowRef):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowGroupOwner"
 		end
 
-	frozen set_window_group_owner_address_external: POINTER is
+	set_window_group_owner_address_external: POINTER is
 			-- Address of C function `SetWindowGroupOwner'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -903,14 +903,14 @@ feature
 			"(void*) SetWindowGroupOwner"
 		end
 
-	frozen count_window_group_contents_external (ingroup: POINTER; inoptions: INTEGER): INTEGER is
+	count_window_group_contents_external (ingroup: POINTER; inoptions: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowGroupRef, WindowGroupContentOptions):ItemCount"
 		alias
 			"ewg_function_macro_CountWindowGroupContents"
 		end
 
-	frozen count_window_group_contents_address_external: POINTER is
+	count_window_group_contents_address_external: POINTER is
 			-- Address of C function `CountWindowGroupContents'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -918,14 +918,14 @@ feature
 			"(void*) CountWindowGroupContents"
 		end
 
-	frozen get_window_group_contents_external (ingroup: POINTER; inoptions: INTEGER; inalloweditems: INTEGER; outnumitems: POINTER; outitems: POINTER): INTEGER is
+	get_window_group_contents_external (ingroup: POINTER; inoptions: INTEGER; inalloweditems: INTEGER; outnumitems: POINTER; outitems: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowGroupRef, WindowGroupContentOptions, ItemCount, ItemCount*, void**):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowGroupContents"
 		end
 
-	frozen get_window_group_contents_address_external: POINTER is
+	get_window_group_contents_address_external: POINTER is
 			-- Address of C function `GetWindowGroupContents'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -933,14 +933,14 @@ feature
 			"(void*) GetWindowGroupContents"
 		end
 
-	frozen get_indexed_window_external (ingroup: POINTER; inindex: INTEGER; inoptions: INTEGER; outwindow: POINTER): INTEGER is
+	get_indexed_window_external (ingroup: POINTER; inindex: INTEGER; inoptions: INTEGER; outwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowGroupRef, UInt32, WindowGroupContentOptions, WindowRef*):OSStatus"
 		alias
 			"ewg_function_macro_GetIndexedWindow"
 		end
 
-	frozen get_indexed_window_address_external: POINTER is
+	get_indexed_window_address_external: POINTER is
 			-- Address of C function `GetIndexedWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -948,14 +948,14 @@ feature
 			"(void*) GetIndexedWindow"
 		end
 
-	frozen get_window_index_external (inwindow: POINTER; instartgroup: POINTER; inoptions: INTEGER; outindex: POINTER): INTEGER is
+	get_window_index_external (inwindow: POINTER; instartgroup: POINTER; inoptions: INTEGER; outindex: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowGroupRef, WindowGroupContentOptions, UInt32*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowIndex"
 		end
 
-	frozen get_window_index_address_external: POINTER is
+	get_window_index_address_external: POINTER is
 			-- Address of C function `GetWindowIndex'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -963,14 +963,14 @@ feature
 			"(void*) GetWindowIndex"
 		end
 
-	frozen active_non_floating_window_external: POINTER is
+	active_non_floating_window_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :WindowRef"
 		alias
 			"ewg_function_macro_ActiveNonFloatingWindow"
 		end
 
-	frozen active_non_floating_window_address_external: POINTER is
+	active_non_floating_window_address_external: POINTER is
 			-- Address of C function `ActiveNonFloatingWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -978,14 +978,14 @@ feature
 			"(void*) ActiveNonFloatingWindow"
 		end
 
-	frozen is_window_active_external (inwindow: POINTER): INTEGER is
+	is_window_active_external (inwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):Boolean"
 		alias
 			"ewg_function_macro_IsWindowActive"
 		end
 
-	frozen is_window_active_address_external: POINTER is
+	is_window_active_address_external: POINTER is
 			-- Address of C function `IsWindowActive'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -993,14 +993,14 @@ feature
 			"(void*) IsWindowActive"
 		end
 
-	frozen activate_window_external (inwindow: POINTER; inactivate: INTEGER): INTEGER is
+	activate_window_external (inwindow: POINTER; inactivate: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_ActivateWindow"
 		end
 
-	frozen activate_window_address_external: POINTER is
+	activate_window_address_external: POINTER is
 			-- Address of C function `ActivateWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1008,14 +1008,14 @@ feature
 			"(void*) ActivateWindow"
 		end
 
-	frozen get_window_activation_scope_external (inwindow: POINTER; outscope: POINTER): INTEGER is
+	get_window_activation_scope_external (inwindow: POINTER; outscope: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowActivationScope*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowActivationScope"
 		end
 
-	frozen get_window_activation_scope_address_external: POINTER is
+	get_window_activation_scope_address_external: POINTER is
 			-- Address of C function `GetWindowActivationScope'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1023,14 +1023,14 @@ feature
 			"(void*) GetWindowActivationScope"
 		end
 
-	frozen set_window_activation_scope_external (inwindow: POINTER; inscope: INTEGER): INTEGER is
+	set_window_activation_scope_external (inwindow: POINTER; inscope: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowActivationScope):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowActivationScope"
 		end
 
-	frozen set_window_activation_scope_address_external: POINTER is
+	set_window_activation_scope_address_external: POINTER is
 			-- Address of C function `SetWindowActivationScope'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1038,14 +1038,14 @@ feature
 			"(void*) SetWindowActivationScope"
 		end
 
-	frozen debug_print_window_group_external (ingroup: POINTER) is
+	debug_print_window_group_external (ingroup: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowGroupRef)"
 		alias
 			"ewg_function_macro_DebugPrintWindowGroup"
 		end
 
-	frozen debug_print_window_group_address_external: POINTER is
+	debug_print_window_group_address_external: POINTER is
 			-- Address of C function `DebugPrintWindowGroup'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1053,14 +1053,14 @@ feature
 			"(void*) DebugPrintWindowGroup"
 		end
 
-	frozen debug_print_all_window_groups_external is
+	debug_print_all_window_groups_external is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] "
 		alias
 			"ewg_function_macro_DebugPrintAllWindowGroups"
 		end
 
-	frozen debug_print_all_window_groups_address_external: POINTER is
+	debug_print_all_window_groups_address_external: POINTER is
 			-- Address of C function `DebugPrintAllWindowGroups'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1068,14 +1068,14 @@ feature
 			"(void*) DebugPrintAllWindowGroups"
 		end
 
-	frozen set_theme_window_background_external (inwindow: POINTER; inbrush: INTEGER; inupdate: INTEGER): INTEGER is
+	set_theme_window_background_external (inwindow: POINTER; inbrush: INTEGER; inupdate: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, ThemeBrush, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_SetThemeWindowBackground"
 		end
 
-	frozen set_theme_window_background_address_external: POINTER is
+	set_theme_window_background_address_external: POINTER is
 			-- Address of C function `SetThemeWindowBackground'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1083,14 +1083,14 @@ feature
 			"(void*) SetThemeWindowBackground"
 		end
 
-	frozen set_theme_text_color_for_window_external (inwindow: POINTER; inactive: INTEGER; indepth: INTEGER; incolordev: INTEGER): INTEGER is
+	set_theme_text_color_for_window_external (inwindow: POINTER; inactive: INTEGER; indepth: INTEGER; incolordev: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Boolean, SInt16, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_SetThemeTextColorForWindow"
 		end
 
-	frozen set_theme_text_color_for_window_address_external: POINTER is
+	set_theme_text_color_for_window_address_external: POINTER is
 			-- Address of C function `SetThemeTextColorForWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1098,14 +1098,14 @@ feature
 			"(void*) SetThemeTextColorForWindow"
 		end
 
-	frozen set_window_content_color_external (window: POINTER; color: POINTER): INTEGER is
+	set_window_content_color_external (window: POINTER; color: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, RGBColor const*):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowContentColor"
 		end
 
-	frozen set_window_content_color_address_external: POINTER is
+	set_window_content_color_address_external: POINTER is
 			-- Address of C function `SetWindowContentColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1113,14 +1113,14 @@ feature
 			"(void*) SetWindowContentColor"
 		end
 
-	frozen get_window_content_color_external (window: POINTER; color: POINTER): INTEGER is
+	get_window_content_color_external (window: POINTER; color: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, RGBColor*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowContentColor"
 		end
 
-	frozen get_window_content_color_address_external: POINTER is
+	get_window_content_color_address_external: POINTER is
 			-- Address of C function `GetWindowContentColor'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1128,14 +1128,14 @@ feature
 			"(void*) GetWindowContentColor"
 		end
 
-	frozen get_window_content_pattern_external (window: POINTER; outpixpat: POINTER): INTEGER is
+	get_window_content_pattern_external (window: POINTER; outpixpat: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, PixPatHandle):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowContentPattern"
 		end
 
-	frozen get_window_content_pattern_address_external: POINTER is
+	get_window_content_pattern_address_external: POINTER is
 			-- Address of C function `GetWindowContentPattern'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1143,14 +1143,14 @@ feature
 			"(void*) GetWindowContentPattern"
 		end
 
-	frozen set_window_content_pattern_external (window: POINTER; pixpat: POINTER): INTEGER is
+	set_window_content_pattern_external (window: POINTER; pixpat: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, PixPatHandle):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowContentPattern"
 		end
 
-	frozen set_window_content_pattern_address_external: POINTER is
+	set_window_content_pattern_address_external: POINTER is
 			-- Address of C function `SetWindowContentPattern'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1158,14 +1158,14 @@ feature
 			"(void*) SetWindowContentPattern"
 		end
 
-	frozen install_window_content_paint_proc_external (window: POINTER; paintproc: POINTER; options: INTEGER; refcon: POINTER): INTEGER is
+	install_window_content_paint_proc_external (window: POINTER; paintproc: POINTER; options: INTEGER; refcon: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowPaintUPP, WindowPaintProcOptions, void*):OSStatus"
 		alias
 			"ewg_function_macro_InstallWindowContentPaintProc"
 		end
 
-	frozen install_window_content_paint_proc_address_external: POINTER is
+	install_window_content_paint_proc_address_external: POINTER is
 			-- Address of C function `InstallWindowContentPaintProc'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1173,14 +1173,14 @@ feature
 			"(void*) InstallWindowContentPaintProc"
 		end
 
-	frozen scroll_window_rect_external (inwindow: POINTER; inscrollrect: POINTER; inhpixels: INTEGER; invpixels: INTEGER; inoptions: INTEGER; outexposedrgn: POINTER): INTEGER is
+	scroll_window_rect_external (inwindow: POINTER; inscrollrect: POINTER; inhpixels: INTEGER; invpixels: INTEGER; inoptions: INTEGER; outexposedrgn: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*, SInt16, SInt16, ScrollWindowOptions, RgnHandle):OSStatus"
 		alias
 			"ewg_function_macro_ScrollWindowRect"
 		end
 
-	frozen scroll_window_rect_address_external: POINTER is
+	scroll_window_rect_address_external: POINTER is
 			-- Address of C function `ScrollWindowRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1188,14 +1188,14 @@ feature
 			"(void*) ScrollWindowRect"
 		end
 
-	frozen scroll_window_region_external (inwindow: POINTER; inscrollrgn: POINTER; inhpixels: INTEGER; invpixels: INTEGER; inoptions: INTEGER; outexposedrgn: POINTER): INTEGER is
+	scroll_window_region_external (inwindow: POINTER; inscrollrgn: POINTER; inhpixels: INTEGER; invpixels: INTEGER; inoptions: INTEGER; outexposedrgn: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, RgnHandle, SInt16, SInt16, ScrollWindowOptions, RgnHandle):OSStatus"
 		alias
 			"ewg_function_macro_ScrollWindowRegion"
 		end
 
-	frozen scroll_window_region_address_external: POINTER is
+	scroll_window_region_address_external: POINTER is
 			-- Address of C function `ScrollWindowRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1203,14 +1203,14 @@ feature
 			"(void*) ScrollWindowRegion"
 		end
 
-	frozen clip_above_external (window: POINTER) is
+	clip_above_external (window: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef)"
 		alias
 			"ewg_function_macro_ClipAbove"
 		end
 
-	frozen clip_above_address_external: POINTER is
+	clip_above_address_external: POINTER is
 			-- Address of C function `ClipAbove'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1218,14 +1218,14 @@ feature
 			"(void*) ClipAbove"
 		end
 
-	frozen paint_one_external (window: POINTER; clobberedrgn: POINTER) is
+	paint_one_external (window: POINTER; clobberedrgn: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, RgnHandle)"
 		alias
 			"ewg_function_macro_PaintOne"
 		end
 
-	frozen paint_one_address_external: POINTER is
+	paint_one_address_external: POINTER is
 			-- Address of C function `PaintOne'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1233,14 +1233,14 @@ feature
 			"(void*) PaintOne"
 		end
 
-	frozen paint_behind_external (startwindow: POINTER; clobberedrgn: POINTER) is
+	paint_behind_external (startwindow: POINTER; clobberedrgn: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, RgnHandle)"
 		alias
 			"ewg_function_macro_PaintBehind"
 		end
 
-	frozen paint_behind_address_external: POINTER is
+	paint_behind_address_external: POINTER is
 			-- Address of C function `PaintBehind'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1248,14 +1248,14 @@ feature
 			"(void*) PaintBehind"
 		end
 
-	frozen calc_vis_external (window: POINTER) is
+	calc_vis_external (window: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef)"
 		alias
 			"ewg_function_macro_CalcVis"
 		end
 
-	frozen calc_vis_address_external: POINTER is
+	calc_vis_address_external: POINTER is
 			-- Address of C function `CalcVis'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1263,14 +1263,14 @@ feature
 			"(void*) CalcVis"
 		end
 
-	frozen calc_vis_behind_external (startwindow: POINTER; clobberedrgn: POINTER) is
+	calc_vis_behind_external (startwindow: POINTER; clobberedrgn: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, RgnHandle)"
 		alias
 			"ewg_function_macro_CalcVisBehind"
 		end
 
-	frozen calc_vis_behind_address_external: POINTER is
+	calc_vis_behind_address_external: POINTER is
 			-- Address of C function `CalcVisBehind'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1278,14 +1278,14 @@ feature
 			"(void*) CalcVisBehind"
 		end
 
-	frozen check_update_external (theevent: POINTER): INTEGER is
+	check_update_external (theevent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (EventRecord*):Boolean"
 		alias
 			"ewg_function_macro_CheckUpdate"
 		end
 
-	frozen check_update_address_external: POINTER is
+	check_update_address_external: POINTER is
 			-- Address of C function `CheckUpdate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1293,14 +1293,14 @@ feature
 			"(void*) CheckUpdate"
 		end
 
-	frozen find_window_external (thepoint: POINTER; window: POINTER): INTEGER is
+	find_window_external (thepoint: POINTER; window: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (Point*, WindowRef*):WindowPartCode"
 		alias
 			"ewg_function_macro_FindWindow"
 		end
 
-	frozen find_window_address_external: POINTER is
+	find_window_address_external: POINTER is
 			-- Address of C function `FindWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1308,14 +1308,14 @@ feature
 			"(void*) FindWindow"
 		end
 
-	frozen front_window_external: POINTER is
+	front_window_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :WindowRef"
 		alias
 			"ewg_function_macro_FrontWindow"
 		end
 
-	frozen front_window_address_external: POINTER is
+	front_window_address_external: POINTER is
 			-- Address of C function `FrontWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1323,14 +1323,14 @@ feature
 			"(void*) FrontWindow"
 		end
 
-	frozen bring_to_front_external (window: POINTER) is
+	bring_to_front_external (window: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef)"
 		alias
 			"ewg_function_macro_BringToFront"
 		end
 
-	frozen bring_to_front_address_external: POINTER is
+	bring_to_front_address_external: POINTER is
 			-- Address of C function `BringToFront'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1338,14 +1338,14 @@ feature
 			"(void*) BringToFront"
 		end
 
-	frozen send_behind_external (window: POINTER; behindwindow: POINTER) is
+	send_behind_external (window: POINTER; behindwindow: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowRef)"
 		alias
 			"ewg_function_macro_SendBehind"
 		end
 
-	frozen send_behind_address_external: POINTER is
+	send_behind_address_external: POINTER is
 			-- Address of C function `SendBehind'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1353,14 +1353,14 @@ feature
 			"(void*) SendBehind"
 		end
 
-	frozen select_window_external (window: POINTER) is
+	select_window_external (window: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef)"
 		alias
 			"ewg_function_macro_SelectWindow"
 		end
 
-	frozen select_window_address_external: POINTER is
+	select_window_address_external: POINTER is
 			-- Address of C function `SelectWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1368,14 +1368,14 @@ feature
 			"(void*) SelectWindow"
 		end
 
-	frozen front_non_floating_window_external: POINTER is
+	front_non_floating_window_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :WindowRef"
 		alias
 			"ewg_function_macro_FrontNonFloatingWindow"
 		end
 
-	frozen front_non_floating_window_address_external: POINTER is
+	front_non_floating_window_address_external: POINTER is
 			-- Address of C function `FrontNonFloatingWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1383,14 +1383,14 @@ feature
 			"(void*) FrontNonFloatingWindow"
 		end
 
-	frozen get_next_window_of_class_external (inwindow: POINTER; inwindowclass: INTEGER; mustbevisible: INTEGER): POINTER is
+	get_next_window_of_class_external (inwindow: POINTER; inwindowclass: INTEGER; mustbevisible: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowClass, Boolean):WindowRef"
 		alias
 			"ewg_function_macro_GetNextWindowOfClass"
 		end
 
-	frozen get_next_window_of_class_address_external: POINTER is
+	get_next_window_of_class_address_external: POINTER is
 			-- Address of C function `GetNextWindowOfClass'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1398,14 +1398,14 @@ feature
 			"(void*) GetNextWindowOfClass"
 		end
 
-	frozen get_front_window_of_class_external (inwindowclass: INTEGER; mustbevisible: INTEGER): POINTER is
+	get_front_window_of_class_external (inwindowclass: INTEGER; mustbevisible: INTEGER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowClass, Boolean):WindowRef"
 		alias
 			"ewg_function_macro_GetFrontWindowOfClass"
 		end
 
-	frozen get_front_window_of_class_address_external: POINTER is
+	get_front_window_of_class_address_external: POINTER is
 			-- Address of C function `GetFrontWindowOfClass'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1413,14 +1413,14 @@ feature
 			"(void*) GetFrontWindowOfClass"
 		end
 
-	frozen find_window_of_class_external (where: POINTER; inwindowclass: INTEGER; outwindow: POINTER; outwindowpart: POINTER): INTEGER is
+	find_window_of_class_external (where: POINTER; inwindowclass: INTEGER; outwindow: POINTER; outwindowpart: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (Point const*, WindowClass, WindowRef*, WindowPartCode*):OSStatus"
 		alias
 			"ewg_function_macro_FindWindowOfClass"
 		end
 
-	frozen find_window_of_class_address_external: POINTER is
+	find_window_of_class_address_external: POINTER is
 			-- Address of C function `FindWindowOfClass'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1428,14 +1428,14 @@ feature
 			"(void*) FindWindowOfClass"
 		end
 
-	frozen create_standard_window_menu_external (inoptions: INTEGER; outmenu: POINTER): INTEGER is
+	create_standard_window_menu_external (inoptions: INTEGER; outmenu: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (OptionBits, MenuRef*):OSStatus"
 		alias
 			"ewg_function_macro_CreateStandardWindowMenu"
 		end
 
-	frozen create_standard_window_menu_address_external: POINTER is
+	create_standard_window_menu_address_external: POINTER is
 			-- Address of C function `CreateStandardWindowMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1443,14 +1443,14 @@ feature
 			"(void*) CreateStandardWindowMenu"
 		end
 
-	frozen set_window_alternate_title_external (inwindow: POINTER; intitle: POINTER): INTEGER is
+	set_window_alternate_title_external (inwindow: POINTER; intitle: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, CFStringRef):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowAlternateTitle"
 		end
 
-	frozen set_window_alternate_title_address_external: POINTER is
+	set_window_alternate_title_address_external: POINTER is
 			-- Address of C function `SetWindowAlternateTitle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1458,14 +1458,14 @@ feature
 			"(void*) SetWindowAlternateTitle"
 		end
 
-	frozen copy_window_alternate_title_external (inwindow: POINTER; outtitle: POINTER): INTEGER is
+	copy_window_alternate_title_external (inwindow: POINTER; outtitle: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, CFStringRef*):OSStatus"
 		alias
 			"ewg_function_macro_CopyWindowAlternateTitle"
 		end
 
-	frozen copy_window_alternate_title_address_external: POINTER is
+	copy_window_alternate_title_address_external: POINTER is
 			-- Address of C function `CopyWindowAlternateTitle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1473,14 +1473,14 @@ feature
 			"(void*) CopyWindowAlternateTitle"
 		end
 
-	frozen is_valid_window_ptr_external (possiblewindow: POINTER): INTEGER is
+	is_valid_window_ptr_external (possiblewindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):Boolean"
 		alias
 			"ewg_function_macro_IsValidWindowPtr"
 		end
 
-	frozen is_valid_window_ptr_address_external: POINTER is
+	is_valid_window_ptr_address_external: POINTER is
 			-- Address of C function `IsValidWindowPtr'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1488,14 +1488,14 @@ feature
 			"(void*) IsValidWindowPtr"
 		end
 
-	frozen hilite_window_external (window: POINTER; fhilite: INTEGER) is
+	hilite_window_external (window: POINTER; fhilite: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Boolean)"
 		alias
 			"ewg_function_macro_HiliteWindow"
 		end
 
-	frozen hilite_window_address_external: POINTER is
+	hilite_window_address_external: POINTER is
 			-- Address of C function `HiliteWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1503,14 +1503,14 @@ feature
 			"(void*) HiliteWindow"
 		end
 
-	frozen set_wref_con_external (window: POINTER; data: INTEGER) is
+	set_wref_con_external (window: POINTER; data: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, long)"
 		alias
 			"ewg_function_macro_SetWRefCon"
 		end
 
-	frozen set_wref_con_address_external: POINTER is
+	set_wref_con_address_external: POINTER is
 			-- Address of C function `SetWRefCon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1518,14 +1518,14 @@ feature
 			"(void*) SetWRefCon"
 		end
 
-	frozen get_wref_con_external (window: POINTER): INTEGER is
+	get_wref_con_external (window: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):long"
 		alias
 			"ewg_function_macro_GetWRefCon"
 		end
 
-	frozen get_wref_con_address_external: POINTER is
+	get_wref_con_address_external: POINTER is
 			-- Address of C function `GetWRefCon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1533,14 +1533,14 @@ feature
 			"(void*) GetWRefCon"
 		end
 
-	frozen set_window_pic_external (window: POINTER; pic: POINTER) is
+	set_window_pic_external (window: POINTER; pic: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, PicHandle)"
 		alias
 			"ewg_function_macro_SetWindowPic"
 		end
 
-	frozen set_window_pic_address_external: POINTER is
+	set_window_pic_address_external: POINTER is
 			-- Address of C function `SetWindowPic'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1548,14 +1548,14 @@ feature
 			"(void*) SetWindowPic"
 		end
 
-	frozen get_window_pic_external (window: POINTER): POINTER is
+	get_window_pic_external (window: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):PicHandle"
 		alias
 			"ewg_function_macro_GetWindowPic"
 		end
 
-	frozen get_window_pic_address_external: POINTER is
+	get_window_pic_address_external: POINTER is
 			-- Address of C function `GetWindowPic'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1563,14 +1563,14 @@ feature
 			"(void*) GetWindowPic"
 		end
 
-	frozen get_wvariant_external (window: POINTER): INTEGER is
+	get_wvariant_external (window: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):short"
 		alias
 			"ewg_function_macro_GetWVariant"
 		end
 
-	frozen get_wvariant_address_external: POINTER is
+	get_wvariant_address_external: POINTER is
 			-- Address of C function `GetWVariant'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1578,14 +1578,14 @@ feature
 			"(void*) GetWVariant"
 		end
 
-	frozen get_window_features_external (window: POINTER; outfeatures: POINTER): INTEGER is
+	get_window_features_external (window: POINTER; outfeatures: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, UInt32*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowFeatures"
 		end
 
-	frozen get_window_features_address_external: POINTER is
+	get_window_features_address_external: POINTER is
 			-- Address of C function `GetWindowFeatures'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1593,14 +1593,14 @@ feature
 			"(void*) GetWindowFeatures"
 		end
 
-	frozen get_window_region_external (window: POINTER; inregioncode: INTEGER; iowinrgn: POINTER): INTEGER is
+	get_window_region_external (window: POINTER; inregioncode: INTEGER; iowinrgn: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowRegionCode, RgnHandle):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowRegion"
 		end
 
-	frozen get_window_region_address_external: POINTER is
+	get_window_region_address_external: POINTER is
 			-- Address of C function `GetWindowRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1608,14 +1608,14 @@ feature
 			"(void*) GetWindowRegion"
 		end
 
-	frozen get_window_structure_widths_external (inwindow: POINTER; outrect: POINTER): INTEGER is
+	get_window_structure_widths_external (inwindow: POINTER; outrect: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowStructureWidths"
 		end
 
-	frozen get_window_structure_widths_address_external: POINTER is
+	get_window_structure_widths_address_external: POINTER is
 			-- Address of C function `GetWindowStructureWidths'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1623,14 +1623,14 @@ feature
 			"(void*) GetWindowStructureWidths"
 		end
 
-	frozen hiwindow_change_features_external (inwindow: POINTER; insetthese: INTEGER; inclearthese: INTEGER): INTEGER is
+	hiwindow_change_features_external (inwindow: POINTER; insetthese: INTEGER; inclearthese: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, UInt64, UInt64):OSStatus"
 		alias
 			"ewg_function_macro_HIWindowChangeFeatures"
 		end
 
-	frozen hiwindow_change_features_address_external: POINTER is
+	hiwindow_change_features_address_external: POINTER is
 			-- Address of C function `HIWindowChangeFeatures'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1638,14 +1638,14 @@ feature
 			"(void*) HIWindowChangeFeatures"
 		end
 
-	frozen begin_update_external (window: POINTER) is
+	begin_update_external (window: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef)"
 		alias
 			"ewg_function_macro_BeginUpdate"
 		end
 
-	frozen begin_update_address_external: POINTER is
+	begin_update_address_external: POINTER is
 			-- Address of C function `BeginUpdate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1653,14 +1653,14 @@ feature
 			"(void*) BeginUpdate"
 		end
 
-	frozen end_update_external (window: POINTER) is
+	end_update_external (window: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef)"
 		alias
 			"ewg_function_macro_EndUpdate"
 		end
 
-	frozen end_update_address_external: POINTER is
+	end_update_address_external: POINTER is
 			-- Address of C function `EndUpdate'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1668,14 +1668,14 @@ feature
 			"(void*) EndUpdate"
 		end
 
-	frozen inval_window_rgn_external (window: POINTER; region: POINTER): INTEGER is
+	inval_window_rgn_external (window: POINTER; region: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, RgnHandle):OSStatus"
 		alias
 			"ewg_function_macro_InvalWindowRgn"
 		end
 
-	frozen inval_window_rgn_address_external: POINTER is
+	inval_window_rgn_address_external: POINTER is
 			-- Address of C function `InvalWindowRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1683,14 +1683,14 @@ feature
 			"(void*) InvalWindowRgn"
 		end
 
-	frozen inval_window_rect_external (window: POINTER; bounds: POINTER): INTEGER is
+	inval_window_rect_external (window: POINTER; bounds: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*):OSStatus"
 		alias
 			"ewg_function_macro_InvalWindowRect"
 		end
 
-	frozen inval_window_rect_address_external: POINTER is
+	inval_window_rect_address_external: POINTER is
 			-- Address of C function `InvalWindowRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1698,14 +1698,14 @@ feature
 			"(void*) InvalWindowRect"
 		end
 
-	frozen valid_window_rgn_external (window: POINTER; region: POINTER): INTEGER is
+	valid_window_rgn_external (window: POINTER; region: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, RgnHandle):OSStatus"
 		alias
 			"ewg_function_macro_ValidWindowRgn"
 		end
 
-	frozen valid_window_rgn_address_external: POINTER is
+	valid_window_rgn_address_external: POINTER is
 			-- Address of C function `ValidWindowRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1713,14 +1713,14 @@ feature
 			"(void*) ValidWindowRgn"
 		end
 
-	frozen valid_window_rect_external (window: POINTER; bounds: POINTER): INTEGER is
+	valid_window_rect_external (window: POINTER; bounds: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*):OSStatus"
 		alias
 			"ewg_function_macro_ValidWindowRect"
 		end
 
-	frozen valid_window_rect_address_external: POINTER is
+	valid_window_rect_address_external: POINTER is
 			-- Address of C function `ValidWindowRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1728,14 +1728,14 @@ feature
 			"(void*) ValidWindowRect"
 		end
 
-	frozen draw_grow_icon_external (window: POINTER) is
+	draw_grow_icon_external (window: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef)"
 		alias
 			"ewg_function_macro_DrawGrowIcon"
 		end
 
-	frozen draw_grow_icon_address_external: POINTER is
+	draw_grow_icon_address_external: POINTER is
 			-- Address of C function `DrawGrowIcon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1743,14 +1743,14 @@ feature
 			"(void*) DrawGrowIcon"
 		end
 
-	frozen set_wtitle_external (window: POINTER; title: POINTER) is
+	set_wtitle_external (window: POINTER; title: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, ConstStr255Param)"
 		alias
 			"ewg_function_macro_SetWTitle"
 		end
 
-	frozen set_wtitle_address_external: POINTER is
+	set_wtitle_address_external: POINTER is
 			-- Address of C function `SetWTitle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1758,14 +1758,14 @@ feature
 			"(void*) SetWTitle"
 		end
 
-	frozen get_wtitle_external (window: POINTER; title: POINTER) is
+	get_wtitle_external (window: POINTER; title: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, void*)"
 		alias
 			"ewg_function_macro_GetWTitle"
 		end
 
-	frozen get_wtitle_address_external: POINTER is
+	get_wtitle_address_external: POINTER is
 			-- Address of C function `GetWTitle'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1773,14 +1773,14 @@ feature
 			"(void*) GetWTitle"
 		end
 
-	frozen set_window_title_with_cfstring_external (inwindow: POINTER; instring: POINTER): INTEGER is
+	set_window_title_with_cfstring_external (inwindow: POINTER; instring: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, CFStringRef):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowTitleWithCFString"
 		end
 
-	frozen set_window_title_with_cfstring_address_external: POINTER is
+	set_window_title_with_cfstring_address_external: POINTER is
 			-- Address of C function `SetWindowTitleWithCFString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1788,14 +1788,14 @@ feature
 			"(void*) SetWindowTitleWithCFString"
 		end
 
-	frozen copy_window_title_as_cfstring_external (inwindow: POINTER; outstring: POINTER): INTEGER is
+	copy_window_title_as_cfstring_external (inwindow: POINTER; outstring: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, CFStringRef*):OSStatus"
 		alias
 			"ewg_function_macro_CopyWindowTitleAsCFString"
 		end
 
-	frozen copy_window_title_as_cfstring_address_external: POINTER is
+	copy_window_title_as_cfstring_address_external: POINTER is
 			-- Address of C function `CopyWindowTitleAsCFString'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1803,14 +1803,14 @@ feature
 			"(void*) CopyWindowTitleAsCFString"
 		end
 
-	frozen set_window_proxy_fsspec_external (window: POINTER; infile: POINTER): INTEGER is
+	set_window_proxy_fsspec_external (window: POINTER; infile: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, FSSpec const*):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowProxyFSSpec"
 		end
 
-	frozen set_window_proxy_fsspec_address_external: POINTER is
+	set_window_proxy_fsspec_address_external: POINTER is
 			-- Address of C function `SetWindowProxyFSSpec'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1818,14 +1818,14 @@ feature
 			"(void*) SetWindowProxyFSSpec"
 		end
 
-	frozen get_window_proxy_fsspec_external (window: POINTER; outfile: POINTER): INTEGER is
+	get_window_proxy_fsspec_external (window: POINTER; outfile: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, FSSpec*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowProxyFSSpec"
 		end
 
-	frozen get_window_proxy_fsspec_address_external: POINTER is
+	get_window_proxy_fsspec_address_external: POINTER is
 			-- Address of C function `GetWindowProxyFSSpec'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1833,14 +1833,14 @@ feature
 			"(void*) GetWindowProxyFSSpec"
 		end
 
-	frozen hiwindow_set_proxy_fsref_external (window: POINTER; inref: POINTER): INTEGER is
+	hiwindow_set_proxy_fsref_external (window: POINTER; inref: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, FSRef const*):OSStatus"
 		alias
 			"ewg_function_macro_HIWindowSetProxyFSRef"
 		end
 
-	frozen hiwindow_set_proxy_fsref_address_external: POINTER is
+	hiwindow_set_proxy_fsref_address_external: POINTER is
 			-- Address of C function `HIWindowSetProxyFSRef'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1848,14 +1848,14 @@ feature
 			"(void*) HIWindowSetProxyFSRef"
 		end
 
-	frozen hiwindow_get_proxy_fsref_external (window: POINTER; outref: POINTER): INTEGER is
+	hiwindow_get_proxy_fsref_external (window: POINTER; outref: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, FSRef*):OSStatus"
 		alias
 			"ewg_function_macro_HIWindowGetProxyFSRef"
 		end
 
-	frozen hiwindow_get_proxy_fsref_address_external: POINTER is
+	hiwindow_get_proxy_fsref_address_external: POINTER is
 			-- Address of C function `HIWindowGetProxyFSRef'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1863,14 +1863,14 @@ feature
 			"(void*) HIWindowGetProxyFSRef"
 		end
 
-	frozen set_window_proxy_alias_external (inwindow: POINTER; inalias: POINTER): INTEGER is
+	set_window_proxy_alias_external (inwindow: POINTER; inalias: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, AliasHandle):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowProxyAlias"
 		end
 
-	frozen set_window_proxy_alias_address_external: POINTER is
+	set_window_proxy_alias_address_external: POINTER is
 			-- Address of C function `SetWindowProxyAlias'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1878,14 +1878,14 @@ feature
 			"(void*) SetWindowProxyAlias"
 		end
 
-	frozen get_window_proxy_alias_external (window: POINTER; a_alias: POINTER): INTEGER is
+	get_window_proxy_alias_external (window: POINTER; a_alias: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, AliasHandle*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowProxyAlias"
 		end
 
-	frozen get_window_proxy_alias_address_external: POINTER is
+	get_window_proxy_alias_address_external: POINTER is
 			-- Address of C function `GetWindowProxyAlias'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1893,14 +1893,14 @@ feature
 			"(void*) GetWindowProxyAlias"
 		end
 
-	frozen set_window_proxy_creator_and_type_external (window: POINTER; filecreator: INTEGER; filetype: INTEGER; vrefnum: INTEGER): INTEGER is
+	set_window_proxy_creator_and_type_external (window: POINTER; filecreator: INTEGER; filetype: INTEGER; vrefnum: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, OSType, OSType, SInt16):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowProxyCreatorAndType"
 		end
 
-	frozen set_window_proxy_creator_and_type_address_external: POINTER is
+	set_window_proxy_creator_and_type_address_external: POINTER is
 			-- Address of C function `SetWindowProxyCreatorAndType'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1908,14 +1908,14 @@ feature
 			"(void*) SetWindowProxyCreatorAndType"
 		end
 
-	frozen get_window_proxy_icon_external (window: POINTER; outicon: POINTER): INTEGER is
+	get_window_proxy_icon_external (window: POINTER; outicon: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, IconRef*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowProxyIcon"
 		end
 
-	frozen get_window_proxy_icon_address_external: POINTER is
+	get_window_proxy_icon_address_external: POINTER is
 			-- Address of C function `GetWindowProxyIcon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1923,14 +1923,14 @@ feature
 			"(void*) GetWindowProxyIcon"
 		end
 
-	frozen set_window_proxy_icon_external (window: POINTER; icon: POINTER): INTEGER is
+	set_window_proxy_icon_external (window: POINTER; icon: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, IconRef):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowProxyIcon"
 		end
 
-	frozen set_window_proxy_icon_address_external: POINTER is
+	set_window_proxy_icon_address_external: POINTER is
 			-- Address of C function `SetWindowProxyIcon'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1938,14 +1938,14 @@ feature
 			"(void*) SetWindowProxyIcon"
 		end
 
-	frozen remove_window_proxy_external (window: POINTER): INTEGER is
+	remove_window_proxy_external (window: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):OSStatus"
 		alias
 			"ewg_function_macro_RemoveWindowProxy"
 		end
 
-	frozen remove_window_proxy_address_external: POINTER is
+	remove_window_proxy_address_external: POINTER is
 			-- Address of C function `RemoveWindowProxy'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1953,14 +1953,14 @@ feature
 			"(void*) RemoveWindowProxy"
 		end
 
-	frozen begin_window_proxy_drag_external (window: POINTER; outnewdrag: POINTER; outdragoutlinergn: POINTER): INTEGER is
+	begin_window_proxy_drag_external (window: POINTER; outnewdrag: POINTER; outdragoutlinergn: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, DragReference*, RgnHandle):OSStatus"
 		alias
 			"ewg_function_macro_BeginWindowProxyDrag"
 		end
 
-	frozen begin_window_proxy_drag_address_external: POINTER is
+	begin_window_proxy_drag_address_external: POINTER is
 			-- Address of C function `BeginWindowProxyDrag'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1968,14 +1968,14 @@ feature
 			"(void*) BeginWindowProxyDrag"
 		end
 
-	frozen end_window_proxy_drag_external (window: POINTER; thedrag: POINTER): INTEGER is
+	end_window_proxy_drag_external (window: POINTER; thedrag: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, DragReference):OSStatus"
 		alias
 			"ewg_function_macro_EndWindowProxyDrag"
 		end
 
-	frozen end_window_proxy_drag_address_external: POINTER is
+	end_window_proxy_drag_address_external: POINTER is
 			-- Address of C function `EndWindowProxyDrag'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1983,14 +1983,14 @@ feature
 			"(void*) EndWindowProxyDrag"
 		end
 
-	frozen track_window_proxy_from_existing_drag_external (window: POINTER; startpt: POINTER; drag: POINTER; indragoutlinergn: POINTER): INTEGER is
+	track_window_proxy_from_existing_drag_external (window: POINTER; startpt: POINTER; drag: POINTER; indragoutlinergn: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Point*, DragReference, RgnHandle):OSStatus"
 		alias
 			"ewg_function_macro_TrackWindowProxyFromExistingDrag"
 		end
 
-	frozen track_window_proxy_from_existing_drag_address_external: POINTER is
+	track_window_proxy_from_existing_drag_address_external: POINTER is
 			-- Address of C function `TrackWindowProxyFromExistingDrag'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -1998,14 +1998,14 @@ feature
 			"(void*) TrackWindowProxyFromExistingDrag"
 		end
 
-	frozen track_window_proxy_drag_external (window: POINTER; startpt: POINTER): INTEGER is
+	track_window_proxy_drag_external (window: POINTER; startpt: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Point*):OSStatus"
 		alias
 			"ewg_function_macro_TrackWindowProxyDrag"
 		end
 
-	frozen track_window_proxy_drag_address_external: POINTER is
+	track_window_proxy_drag_address_external: POINTER is
 			-- Address of C function `TrackWindowProxyDrag'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2013,14 +2013,14 @@ feature
 			"(void*) TrackWindowProxyDrag"
 		end
 
-	frozen is_window_modified_external (window: POINTER): INTEGER is
+	is_window_modified_external (window: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):Boolean"
 		alias
 			"ewg_function_macro_IsWindowModified"
 		end
 
-	frozen is_window_modified_address_external: POINTER is
+	is_window_modified_address_external: POINTER is
 			-- Address of C function `IsWindowModified'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2028,14 +2028,14 @@ feature
 			"(void*) IsWindowModified"
 		end
 
-	frozen set_window_modified_external (window: POINTER; modified: INTEGER): INTEGER is
+	set_window_modified_external (window: POINTER; modified: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowModified"
 		end
 
-	frozen set_window_modified_address_external: POINTER is
+	set_window_modified_address_external: POINTER is
 			-- Address of C function `SetWindowModified'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2043,14 +2043,14 @@ feature
 			"(void*) SetWindowModified"
 		end
 
-	frozen is_window_path_select_click_external (window: POINTER; event: POINTER): INTEGER is
+	is_window_path_select_click_external (window: POINTER; event: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, EventRecord const*):Boolean"
 		alias
 			"ewg_function_macro_IsWindowPathSelectClick"
 		end
 
-	frozen is_window_path_select_click_address_external: POINTER is
+	is_window_path_select_click_address_external: POINTER is
 			-- Address of C function `IsWindowPathSelectClick'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2058,14 +2058,14 @@ feature
 			"(void*) IsWindowPathSelectClick"
 		end
 
-	frozen is_window_path_select_event_external (window: POINTER; inevent: POINTER): INTEGER is
+	is_window_path_select_event_external (window: POINTER; inevent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, EventRef):Boolean"
 		alias
 			"ewg_function_macro_IsWindowPathSelectEvent"
 		end
 
-	frozen is_window_path_select_event_address_external: POINTER is
+	is_window_path_select_event_address_external: POINTER is
 			-- Address of C function `IsWindowPathSelectEvent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2073,14 +2073,14 @@ feature
 			"(void*) IsWindowPathSelectEvent"
 		end
 
-	frozen window_path_select_external (window: POINTER; menu: POINTER; outmenuresult: POINTER): INTEGER is
+	window_path_select_external (window: POINTER; menu: POINTER; outmenuresult: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, MenuRef, SInt32*):OSStatus"
 		alias
 			"ewg_function_macro_WindowPathSelect"
 		end
 
-	frozen window_path_select_address_external: POINTER is
+	window_path_select_address_external: POINTER is
 			-- Address of C function `WindowPathSelect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2088,14 +2088,14 @@ feature
 			"(void*) WindowPathSelect"
 		end
 
-	frozen hilite_window_frame_for_drag_external (window: POINTER; hilited: INTEGER): INTEGER is
+	hilite_window_frame_for_drag_external (window: POINTER; hilited: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_HiliteWindowFrameForDrag"
 		end
 
-	frozen hilite_window_frame_for_drag_address_external: POINTER is
+	hilite_window_frame_for_drag_address_external: POINTER is
 			-- Address of C function `HiliteWindowFrameForDrag'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2103,14 +2103,14 @@ feature
 			"(void*) HiliteWindowFrameForDrag"
 		end
 
-	frozen transition_window_external (inwindow: POINTER; ineffect: INTEGER; inaction: INTEGER; inrect: POINTER): INTEGER is
+	transition_window_external (inwindow: POINTER; ineffect: INTEGER; inaction: INTEGER; inrect: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowTransitionEffect, WindowTransitionAction, Rect const*):OSStatus"
 		alias
 			"ewg_function_macro_TransitionWindow"
 		end
 
-	frozen transition_window_address_external: POINTER is
+	transition_window_address_external: POINTER is
 			-- Address of C function `TransitionWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2118,14 +2118,14 @@ feature
 			"(void*) TransitionWindow"
 		end
 
-	frozen transition_window_and_parent_external (inwindow: POINTER; inparentwindow: POINTER; ineffect: INTEGER; inaction: INTEGER; inrect: POINTER): INTEGER is
+	transition_window_and_parent_external (inwindow: POINTER; inparentwindow: POINTER; ineffect: INTEGER; inaction: INTEGER; inrect: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowRef, WindowTransitionEffect, WindowTransitionAction, Rect const*):OSStatus"
 		alias
 			"ewg_function_macro_TransitionWindowAndParent"
 		end
 
-	frozen transition_window_and_parent_address_external: POINTER is
+	transition_window_and_parent_address_external: POINTER is
 			-- Address of C function `TransitionWindowAndParent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2133,14 +2133,14 @@ feature
 			"(void*) TransitionWindowAndParent"
 		end
 
-	frozen transition_window_with_options_external (inwindow: POINTER; ineffect: INTEGER; inaction: INTEGER; inbounds: POINTER; inasync: INTEGER; inoptions: POINTER): INTEGER is
+	transition_window_with_options_external (inwindow: POINTER; ineffect: INTEGER; inaction: INTEGER; inbounds: POINTER; inasync: INTEGER; inoptions: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowTransitionEffect, WindowTransitionAction, HIRect const*, Boolean, TransitionWindowOptions*):OSStatus"
 		alias
 			"ewg_function_macro_TransitionWindowWithOptions"
 		end
 
-	frozen transition_window_with_options_address_external: POINTER is
+	transition_window_with_options_address_external: POINTER is
 			-- Address of C function `TransitionWindowWithOptions'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2148,14 +2148,14 @@ feature
 			"(void*) TransitionWindowWithOptions"
 		end
 
-	frozen move_window_external (window: POINTER; hglobal: INTEGER; vglobal: INTEGER; front: INTEGER) is
+	move_window_external (window: POINTER; hglobal: INTEGER; vglobal: INTEGER; front: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, short, short, Boolean)"
 		alias
 			"ewg_function_macro_MoveWindow"
 		end
 
-	frozen move_window_address_external: POINTER is
+	move_window_address_external: POINTER is
 			-- Address of C function `MoveWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2163,14 +2163,14 @@ feature
 			"(void*) MoveWindow"
 		end
 
-	frozen size_window_external (window: POINTER; w: INTEGER; h: INTEGER; fupdate: INTEGER) is
+	size_window_external (window: POINTER; w: INTEGER; h: INTEGER; fupdate: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, short, short, Boolean)"
 		alias
 			"ewg_function_macro_SizeWindow"
 		end
 
-	frozen size_window_address_external: POINTER is
+	size_window_address_external: POINTER is
 			-- Address of C function `SizeWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2178,14 +2178,14 @@ feature
 			"(void*) SizeWindow"
 		end
 
-	frozen grow_window_external (window: POINTER; startpt: POINTER; bbox: POINTER): INTEGER is
+	grow_window_external (window: POINTER; startpt: POINTER; bbox: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Point*, Rect const*):long"
 		alias
 			"ewg_function_macro_GrowWindow"
 		end
 
-	frozen grow_window_address_external: POINTER is
+	grow_window_address_external: POINTER is
 			-- Address of C function `GrowWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2193,14 +2193,14 @@ feature
 			"(void*) GrowWindow"
 		end
 
-	frozen drag_window_external (window: POINTER; startpt: POINTER; boundsrect: POINTER) is
+	drag_window_external (window: POINTER; startpt: POINTER; boundsrect: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Point*, Rect const*)"
 		alias
 			"ewg_function_macro_DragWindow"
 		end
 
-	frozen drag_window_address_external: POINTER is
+	drag_window_address_external: POINTER is
 			-- Address of C function `DragWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2208,14 +2208,14 @@ feature
 			"(void*) DragWindow"
 		end
 
-	frozen zoom_window_external (window: POINTER; partcode: INTEGER; front: INTEGER) is
+	zoom_window_external (window: POINTER; partcode: INTEGER; front: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowPartCode, Boolean)"
 		alias
 			"ewg_function_macro_ZoomWindow"
 		end
 
-	frozen zoom_window_address_external: POINTER is
+	zoom_window_address_external: POINTER is
 			-- Address of C function `ZoomWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2223,14 +2223,14 @@ feature
 			"(void*) ZoomWindow"
 		end
 
-	frozen is_window_collapsable_external (window: POINTER): INTEGER is
+	is_window_collapsable_external (window: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):Boolean"
 		alias
 			"ewg_function_macro_IsWindowCollapsable"
 		end
 
-	frozen is_window_collapsable_address_external: POINTER is
+	is_window_collapsable_address_external: POINTER is
 			-- Address of C function `IsWindowCollapsable'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2238,14 +2238,14 @@ feature
 			"(void*) IsWindowCollapsable"
 		end
 
-	frozen is_window_collapsed_external (window: POINTER): INTEGER is
+	is_window_collapsed_external (window: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):Boolean"
 		alias
 			"ewg_function_macro_IsWindowCollapsed"
 		end
 
-	frozen is_window_collapsed_address_external: POINTER is
+	is_window_collapsed_address_external: POINTER is
 			-- Address of C function `IsWindowCollapsed'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2253,14 +2253,14 @@ feature
 			"(void*) IsWindowCollapsed"
 		end
 
-	frozen collapse_window_external (window: POINTER; collapse: INTEGER): INTEGER is
+	collapse_window_external (window: POINTER; collapse: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_CollapseWindow"
 		end
 
-	frozen collapse_window_address_external: POINTER is
+	collapse_window_address_external: POINTER is
 			-- Address of C function `CollapseWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2268,14 +2268,14 @@ feature
 			"(void*) CollapseWindow"
 		end
 
-	frozen collapse_all_windows_external (collapse: INTEGER): INTEGER is
+	collapse_all_windows_external (collapse: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (Boolean):OSStatus"
 		alias
 			"ewg_function_macro_CollapseAllWindows"
 		end
 
-	frozen collapse_all_windows_address_external: POINTER is
+	collapse_all_windows_address_external: POINTER is
 			-- Address of C function `CollapseAllWindows'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2283,14 +2283,14 @@ feature
 			"(void*) CollapseAllWindows"
 		end
 
-	frozen create_qdcontext_for_collapsed_window_dock_tile_external (inwindow: POINTER; outcontext: POINTER): INTEGER is
+	create_qdcontext_for_collapsed_window_dock_tile_external (inwindow: POINTER; outcontext: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, CGrafPtr*):OSStatus"
 		alias
 			"ewg_function_macro_CreateQDContextForCollapsedWindowDockTile"
 		end
 
-	frozen create_qdcontext_for_collapsed_window_dock_tile_address_external: POINTER is
+	create_qdcontext_for_collapsed_window_dock_tile_address_external: POINTER is
 			-- Address of C function `CreateQDContextForCollapsedWindowDockTile'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2298,14 +2298,14 @@ feature
 			"(void*) CreateQDContextForCollapsedWindowDockTile"
 		end
 
-	frozen release_qdcontext_for_collapsed_window_dock_tile_external (inwindow: POINTER; incontext: POINTER): INTEGER is
+	release_qdcontext_for_collapsed_window_dock_tile_external (inwindow: POINTER; incontext: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, CGrafPtr):OSStatus"
 		alias
 			"ewg_function_macro_ReleaseQDContextForCollapsedWindowDockTile"
 		end
 
-	frozen release_qdcontext_for_collapsed_window_dock_tile_address_external: POINTER is
+	release_qdcontext_for_collapsed_window_dock_tile_address_external: POINTER is
 			-- Address of C function `ReleaseQDContextForCollapsedWindowDockTile'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2313,14 +2313,14 @@ feature
 			"(void*) ReleaseQDContextForCollapsedWindowDockTile"
 		end
 
-	frozen update_collapsed_window_dock_tile_external (inwindow: POINTER): INTEGER is
+	update_collapsed_window_dock_tile_external (inwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):OSStatus"
 		alias
 			"ewg_function_macro_UpdateCollapsedWindowDockTile"
 		end
 
-	frozen update_collapsed_window_dock_tile_address_external: POINTER is
+	update_collapsed_window_dock_tile_address_external: POINTER is
 			-- Address of C function `UpdateCollapsedWindowDockTile'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2328,14 +2328,14 @@ feature
 			"(void*) UpdateCollapsedWindowDockTile"
 		end
 
-	frozen set_window_dock_tile_menu_external (inwindow: POINTER; inmenu: POINTER): INTEGER is
+	set_window_dock_tile_menu_external (inwindow: POINTER; inmenu: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, MenuRef):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowDockTileMenu"
 		end
 
-	frozen set_window_dock_tile_menu_address_external: POINTER is
+	set_window_dock_tile_menu_address_external: POINTER is
 			-- Address of C function `SetWindowDockTileMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2343,14 +2343,14 @@ feature
 			"(void*) SetWindowDockTileMenu"
 		end
 
-	frozen get_window_dock_tile_menu_external (inwindow: POINTER): POINTER is
+	get_window_dock_tile_menu_external (inwindow: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):MenuRef"
 		alias
 			"ewg_function_macro_GetWindowDockTileMenu"
 		end
 
-	frozen get_window_dock_tile_menu_address_external: POINTER is
+	get_window_dock_tile_menu_address_external: POINTER is
 			-- Address of C function `GetWindowDockTileMenu'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2358,14 +2358,14 @@ feature
 			"(void*) GetWindowDockTileMenu"
 		end
 
-	frozen get_window_bounds_external (window: POINTER; regioncode: INTEGER; globalbounds: POINTER): INTEGER is
+	get_window_bounds_external (window: POINTER; regioncode: INTEGER; globalbounds: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowRegionCode, Rect*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowBounds"
 		end
 
-	frozen get_window_bounds_address_external: POINTER is
+	get_window_bounds_address_external: POINTER is
 			-- Address of C function `GetWindowBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2373,14 +2373,14 @@ feature
 			"(void*) GetWindowBounds"
 		end
 
-	frozen set_window_resize_limits_external (inwindow: POINTER; inminlimits: POINTER; inmaxlimits: POINTER): INTEGER is
+	set_window_resize_limits_external (inwindow: POINTER; inminlimits: POINTER; inmaxlimits: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, HISize const*, HISize const*):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowResizeLimits"
 		end
 
-	frozen set_window_resize_limits_address_external: POINTER is
+	set_window_resize_limits_address_external: POINTER is
 			-- Address of C function `SetWindowResizeLimits'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2388,14 +2388,14 @@ feature
 			"(void*) SetWindowResizeLimits"
 		end
 
-	frozen get_window_resize_limits_external (inwindow: POINTER; outminlimits: POINTER; outmaxlimits: POINTER): INTEGER is
+	get_window_resize_limits_external (inwindow: POINTER; outminlimits: POINTER; outmaxlimits: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, HISize*, HISize*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowResizeLimits"
 		end
 
-	frozen get_window_resize_limits_address_external: POINTER is
+	get_window_resize_limits_address_external: POINTER is
 			-- Address of C function `GetWindowResizeLimits'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2403,14 +2403,14 @@ feature
 			"(void*) GetWindowResizeLimits"
 		end
 
-	frozen resize_window_external (inwindow: POINTER; instartpoint: POINTER; insizeconstraints: POINTER; outnewcontentrect: POINTER): INTEGER is
+	resize_window_external (inwindow: POINTER; instartpoint: POINTER; insizeconstraints: POINTER; outnewcontentrect: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Point*, Rect const*, Rect*):Boolean"
 		alias
 			"ewg_function_macro_ResizeWindow"
 		end
 
-	frozen resize_window_address_external: POINTER is
+	resize_window_address_external: POINTER is
 			-- Address of C function `ResizeWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2418,14 +2418,14 @@ feature
 			"(void*) ResizeWindow"
 		end
 
-	frozen set_window_bounds_external (window: POINTER; regioncode: INTEGER; globalbounds: POINTER): INTEGER is
+	set_window_bounds_external (window: POINTER; regioncode: INTEGER; globalbounds: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowRegionCode, Rect const*):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowBounds"
 		end
 
-	frozen set_window_bounds_address_external: POINTER is
+	set_window_bounds_address_external: POINTER is
 			-- Address of C function `SetWindowBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2433,14 +2433,14 @@ feature
 			"(void*) SetWindowBounds"
 		end
 
-	frozen reposition_window_external (window: POINTER; parentwindow: POINTER; method: INTEGER): INTEGER is
+	reposition_window_external (window: POINTER; parentwindow: POINTER; method: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowRef, WindowPositionMethod):OSStatus"
 		alias
 			"ewg_function_macro_RepositionWindow"
 		end
 
-	frozen reposition_window_address_external: POINTER is
+	reposition_window_address_external: POINTER is
 			-- Address of C function `RepositionWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2448,14 +2448,14 @@ feature
 			"(void*) RepositionWindow"
 		end
 
-	frozen move_window_structure_external (window: POINTER; hglobal: INTEGER; vglobal: INTEGER): INTEGER is
+	move_window_structure_external (window: POINTER; hglobal: INTEGER; vglobal: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, short, short):OSStatus"
 		alias
 			"ewg_function_macro_MoveWindowStructure"
 		end
 
-	frozen move_window_structure_address_external: POINTER is
+	move_window_structure_address_external: POINTER is
 			-- Address of C function `MoveWindowStructure'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2463,14 +2463,14 @@ feature
 			"(void*) MoveWindowStructure"
 		end
 
-	frozen is_window_in_standard_state_external (inwindow: POINTER; inidealsize: POINTER; outidealstandardstate: POINTER): INTEGER is
+	is_window_in_standard_state_external (inwindow: POINTER; inidealsize: POINTER; outidealstandardstate: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Point const*, Rect*):Boolean"
 		alias
 			"ewg_function_macro_IsWindowInStandardState"
 		end
 
-	frozen is_window_in_standard_state_address_external: POINTER is
+	is_window_in_standard_state_address_external: POINTER is
 			-- Address of C function `IsWindowInStandardState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2478,14 +2478,14 @@ feature
 			"(void*) IsWindowInStandardState"
 		end
 
-	frozen zoom_window_ideal_external (inwindow: POINTER; inpartcode: INTEGER; ioidealsize: POINTER): INTEGER is
+	zoom_window_ideal_external (inwindow: POINTER; inpartcode: INTEGER; ioidealsize: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowPartCode, Point*):OSStatus"
 		alias
 			"ewg_function_macro_ZoomWindowIdeal"
 		end
 
-	frozen zoom_window_ideal_address_external: POINTER is
+	zoom_window_ideal_address_external: POINTER is
 			-- Address of C function `ZoomWindowIdeal'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2493,14 +2493,14 @@ feature
 			"(void*) ZoomWindowIdeal"
 		end
 
-	frozen get_window_ideal_user_state_external (inwindow: POINTER; outuserstate: POINTER): INTEGER is
+	get_window_ideal_user_state_external (inwindow: POINTER; outuserstate: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowIdealUserState"
 		end
 
-	frozen get_window_ideal_user_state_address_external: POINTER is
+	get_window_ideal_user_state_address_external: POINTER is
 			-- Address of C function `GetWindowIdealUserState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2508,14 +2508,14 @@ feature
 			"(void*) GetWindowIdealUserState"
 		end
 
-	frozen set_window_ideal_user_state_external (inwindow: POINTER; inuserstate: POINTER): INTEGER is
+	set_window_ideal_user_state_external (inwindow: POINTER; inuserstate: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowIdealUserState"
 		end
 
-	frozen set_window_ideal_user_state_address_external: POINTER is
+	set_window_ideal_user_state_address_external: POINTER is
 			-- Address of C function `SetWindowIdealUserState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2523,14 +2523,14 @@ feature
 			"(void*) SetWindowIdealUserState"
 		end
 
-	frozen get_window_greatest_area_device_external (inwindow: POINTER; inregion: INTEGER; outgreatestdevice: POINTER; outgreatestdevicerect: POINTER): INTEGER is
+	get_window_greatest_area_device_external (inwindow: POINTER; inregion: INTEGER; outgreatestdevice: POINTER; outgreatestdevicerect: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowRegionCode, GDHandle*, Rect*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowGreatestAreaDevice"
 		end
 
-	frozen get_window_greatest_area_device_address_external: POINTER is
+	get_window_greatest_area_device_address_external: POINTER is
 			-- Address of C function `GetWindowGreatestAreaDevice'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2538,14 +2538,14 @@ feature
 			"(void*) GetWindowGreatestAreaDevice"
 		end
 
-	frozen constrain_window_to_screen_external (inwindowref: POINTER; inregioncode: INTEGER; inoptions: INTEGER; inscreenrect: POINTER; outstructure: POINTER): INTEGER is
+	constrain_window_to_screen_external (inwindowref: POINTER; inregioncode: INTEGER; inoptions: INTEGER; inscreenrect: POINTER; outstructure: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowRegionCode, WindowConstrainOptions, Rect const*, Rect*):OSStatus"
 		alias
 			"ewg_function_macro_ConstrainWindowToScreen"
 		end
 
-	frozen constrain_window_to_screen_address_external: POINTER is
+	constrain_window_to_screen_address_external: POINTER is
 			-- Address of C function `ConstrainWindowToScreen'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2553,14 +2553,14 @@ feature
 			"(void*) ConstrainWindowToScreen"
 		end
 
-	frozen get_available_window_positioning_bounds_external (indevice: POINTER; outavailablerect: POINTER): INTEGER is
+	get_available_window_positioning_bounds_external (indevice: POINTER; outavailablerect: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (GDHandle, Rect*):OSStatus"
 		alias
 			"ewg_function_macro_GetAvailableWindowPositioningBounds"
 		end
 
-	frozen get_available_window_positioning_bounds_address_external: POINTER is
+	get_available_window_positioning_bounds_address_external: POINTER is
 			-- Address of C function `GetAvailableWindowPositioningBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2568,14 +2568,14 @@ feature
 			"(void*) GetAvailableWindowPositioningBounds"
 		end
 
-	frozen get_available_window_positioning_region_external (indevice: POINTER; iorgn: POINTER): INTEGER is
+	get_available_window_positioning_region_external (indevice: POINTER; iorgn: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (GDHandle, RgnHandle):OSStatus"
 		alias
 			"ewg_function_macro_GetAvailableWindowPositioningRegion"
 		end
 
-	frozen get_available_window_positioning_region_address_external: POINTER is
+	get_available_window_positioning_region_address_external: POINTER is
 			-- Address of C function `GetAvailableWindowPositioningRegion'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2583,14 +2583,14 @@ feature
 			"(void*) GetAvailableWindowPositioningRegion"
 		end
 
-	frozen hide_window_external (window: POINTER) is
+	hide_window_external (window: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef)"
 		alias
 			"ewg_function_macro_HideWindow"
 		end
 
-	frozen hide_window_address_external: POINTER is
+	hide_window_address_external: POINTER is
 			-- Address of C function `HideWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2598,14 +2598,14 @@ feature
 			"(void*) HideWindow"
 		end
 
-	frozen show_window_external (window: POINTER) is
+	show_window_external (window: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef)"
 		alias
 			"ewg_function_macro_ShowWindow"
 		end
 
-	frozen show_window_address_external: POINTER is
+	show_window_address_external: POINTER is
 			-- Address of C function `ShowWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2613,14 +2613,14 @@ feature
 			"(void*) ShowWindow"
 		end
 
-	frozen show_hide_external (window: POINTER; showflag: INTEGER) is
+	show_hide_external (window: POINTER; showflag: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Boolean)"
 		alias
 			"ewg_function_macro_ShowHide"
 		end
 
-	frozen show_hide_address_external: POINTER is
+	show_hide_address_external: POINTER is
 			-- Address of C function `ShowHide'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2628,14 +2628,14 @@ feature
 			"(void*) ShowHide"
 		end
 
-	frozen is_window_visible_external (window: POINTER): INTEGER is
+	is_window_visible_external (window: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):Boolean"
 		alias
 			"ewg_function_macro_IsWindowVisible"
 		end
 
-	frozen is_window_visible_address_external: POINTER is
+	is_window_visible_address_external: POINTER is
 			-- Address of C function `IsWindowVisible'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2643,14 +2643,14 @@ feature
 			"(void*) IsWindowVisible"
 		end
 
-	frozen is_window_latent_visible_external (inwindow: POINTER; outlatentvisible: POINTER): INTEGER is
+	is_window_latent_visible_external (inwindow: POINTER; outlatentvisible: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowLatentVisibility*):Boolean"
 		alias
 			"ewg_function_macro_IsWindowLatentVisible"
 		end
 
-	frozen is_window_latent_visible_address_external: POINTER is
+	is_window_latent_visible_address_external: POINTER is
 			-- Address of C function `IsWindowLatentVisible'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2658,14 +2658,14 @@ feature
 			"(void*) IsWindowLatentVisible"
 		end
 
-	frozen hiwindow_get_availability_external (inwindow: POINTER; outavailability: POINTER): INTEGER is
+	hiwindow_get_availability_external (inwindow: POINTER; outavailability: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIWindowRef, HIWindowAvailability*):OSStatus"
 		alias
 			"ewg_function_macro_HIWindowGetAvailability"
 		end
 
-	frozen hiwindow_get_availability_address_external: POINTER is
+	hiwindow_get_availability_address_external: POINTER is
 			-- Address of C function `HIWindowGetAvailability'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2673,14 +2673,14 @@ feature
 			"(void*) HIWindowGetAvailability"
 		end
 
-	frozen hiwindow_change_availability_external (inwindow: POINTER; insetavailability: INTEGER; inclearavailability: INTEGER): INTEGER is
+	hiwindow_change_availability_external (inwindow: POINTER; insetavailability: INTEGER; inclearavailability: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIWindowRef, HIWindowAvailability, HIWindowAvailability):OSStatus"
 		alias
 			"ewg_function_macro_HIWindowChangeAvailability"
 		end
 
-	frozen hiwindow_change_availability_address_external: POINTER is
+	hiwindow_change_availability_address_external: POINTER is
 			-- Address of C function `HIWindowChangeAvailability'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2688,14 +2688,14 @@ feature
 			"(void*) HIWindowChangeAvailability"
 		end
 
-	frozen show_sheet_window_external (insheet: POINTER; inparentwindow: POINTER): INTEGER is
+	show_sheet_window_external (insheet: POINTER; inparentwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowRef):OSStatus"
 		alias
 			"ewg_function_macro_ShowSheetWindow"
 		end
 
-	frozen show_sheet_window_address_external: POINTER is
+	show_sheet_window_address_external: POINTER is
 			-- Address of C function `ShowSheetWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2703,14 +2703,14 @@ feature
 			"(void*) ShowSheetWindow"
 		end
 
-	frozen hide_sheet_window_external (insheet: POINTER): INTEGER is
+	hide_sheet_window_external (insheet: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):OSStatus"
 		alias
 			"ewg_function_macro_HideSheetWindow"
 		end
 
-	frozen hide_sheet_window_address_external: POINTER is
+	hide_sheet_window_address_external: POINTER is
 			-- Address of C function `HideSheetWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2718,14 +2718,14 @@ feature
 			"(void*) HideSheetWindow"
 		end
 
-	frozen detach_sheet_window_external (insheet: POINTER): INTEGER is
+	detach_sheet_window_external (insheet: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):OSStatus"
 		alias
 			"ewg_function_macro_DetachSheetWindow"
 		end
 
-	frozen detach_sheet_window_address_external: POINTER is
+	detach_sheet_window_address_external: POINTER is
 			-- Address of C function `DetachSheetWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2733,14 +2733,14 @@ feature
 			"(void*) DetachSheetWindow"
 		end
 
-	frozen get_sheet_window_parent_external (insheet: POINTER; outparentwindow: POINTER): INTEGER is
+	get_sheet_window_parent_external (insheet: POINTER; outparentwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowRef*):OSStatus"
 		alias
 			"ewg_function_macro_GetSheetWindowParent"
 		end
 
-	frozen get_sheet_window_parent_address_external: POINTER is
+	get_sheet_window_parent_address_external: POINTER is
 			-- Address of C function `GetSheetWindowParent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2748,14 +2748,14 @@ feature
 			"(void*) GetSheetWindowParent"
 		end
 
-	frozen get_drawer_preferred_edge_external (indrawerwindow: POINTER): INTEGER is
+	get_drawer_preferred_edge_external (indrawerwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):OptionBits"
 		alias
 			"ewg_function_macro_GetDrawerPreferredEdge"
 		end
 
-	frozen get_drawer_preferred_edge_address_external: POINTER is
+	get_drawer_preferred_edge_address_external: POINTER is
 			-- Address of C function `GetDrawerPreferredEdge'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2763,14 +2763,14 @@ feature
 			"(void*) GetDrawerPreferredEdge"
 		end
 
-	frozen set_drawer_preferred_edge_external (indrawerwindow: POINTER; inedge: INTEGER): INTEGER is
+	set_drawer_preferred_edge_external (indrawerwindow: POINTER; inedge: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, OptionBits):OSStatus"
 		alias
 			"ewg_function_macro_SetDrawerPreferredEdge"
 		end
 
-	frozen set_drawer_preferred_edge_address_external: POINTER is
+	set_drawer_preferred_edge_address_external: POINTER is
 			-- Address of C function `SetDrawerPreferredEdge'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2778,14 +2778,14 @@ feature
 			"(void*) SetDrawerPreferredEdge"
 		end
 
-	frozen get_drawer_current_edge_external (indrawerwindow: POINTER): INTEGER is
+	get_drawer_current_edge_external (indrawerwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):OptionBits"
 		alias
 			"ewg_function_macro_GetDrawerCurrentEdge"
 		end
 
-	frozen get_drawer_current_edge_address_external: POINTER is
+	get_drawer_current_edge_address_external: POINTER is
 			-- Address of C function `GetDrawerCurrentEdge'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2793,14 +2793,14 @@ feature
 			"(void*) GetDrawerCurrentEdge"
 		end
 
-	frozen get_drawer_state_external (indrawerwindow: POINTER): INTEGER is
+	get_drawer_state_external (indrawerwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):WindowDrawerState"
 		alias
 			"ewg_function_macro_GetDrawerState"
 		end
 
-	frozen get_drawer_state_address_external: POINTER is
+	get_drawer_state_address_external: POINTER is
 			-- Address of C function `GetDrawerState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2808,14 +2808,14 @@ feature
 			"(void*) GetDrawerState"
 		end
 
-	frozen get_drawer_parent_external (indrawerwindow: POINTER): POINTER is
+	get_drawer_parent_external (indrawerwindow: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):WindowRef"
 		alias
 			"ewg_function_macro_GetDrawerParent"
 		end
 
-	frozen get_drawer_parent_address_external: POINTER is
+	get_drawer_parent_address_external: POINTER is
 			-- Address of C function `GetDrawerParent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2823,14 +2823,14 @@ feature
 			"(void*) GetDrawerParent"
 		end
 
-	frozen set_drawer_parent_external (indrawerwindow: POINTER; inparent: POINTER): INTEGER is
+	set_drawer_parent_external (indrawerwindow: POINTER; inparent: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, WindowRef):OSStatus"
 		alias
 			"ewg_function_macro_SetDrawerParent"
 		end
 
-	frozen set_drawer_parent_address_external: POINTER is
+	set_drawer_parent_address_external: POINTER is
 			-- Address of C function `SetDrawerParent'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2838,14 +2838,14 @@ feature
 			"(void*) SetDrawerParent"
 		end
 
-	frozen set_drawer_offsets_external (indrawerwindow: POINTER; inleadingoffset: REAL; intrailingoffset: REAL): INTEGER is
+	set_drawer_offsets_external (indrawerwindow: POINTER; inleadingoffset: REAL; intrailingoffset: REAL): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, float, float):OSStatus"
 		alias
 			"ewg_function_macro_SetDrawerOffsets"
 		end
 
-	frozen set_drawer_offsets_address_external: POINTER is
+	set_drawer_offsets_address_external: POINTER is
 			-- Address of C function `SetDrawerOffsets'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2853,14 +2853,14 @@ feature
 			"(void*) SetDrawerOffsets"
 		end
 
-	frozen get_drawer_offsets_external (indrawerwindow: POINTER; outleadingoffset: POINTER; outtrailingoffset: POINTER): INTEGER is
+	get_drawer_offsets_external (indrawerwindow: POINTER; outleadingoffset: POINTER; outtrailingoffset: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, float*, float*):OSStatus"
 		alias
 			"ewg_function_macro_GetDrawerOffsets"
 		end
 
-	frozen get_drawer_offsets_address_external: POINTER is
+	get_drawer_offsets_address_external: POINTER is
 			-- Address of C function `GetDrawerOffsets'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2868,14 +2868,14 @@ feature
 			"(void*) GetDrawerOffsets"
 		end
 
-	frozen toggle_drawer_external (indrawerwindow: POINTER): INTEGER is
+	toggle_drawer_external (indrawerwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):OSStatus"
 		alias
 			"ewg_function_macro_ToggleDrawer"
 		end
 
-	frozen toggle_drawer_address_external: POINTER is
+	toggle_drawer_address_external: POINTER is
 			-- Address of C function `ToggleDrawer'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2883,14 +2883,14 @@ feature
 			"(void*) ToggleDrawer"
 		end
 
-	frozen open_drawer_external (indrawerwindow: POINTER; inedge: INTEGER; inasync: INTEGER): INTEGER is
+	open_drawer_external (indrawerwindow: POINTER; inedge: INTEGER; inasync: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, OptionBits, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_OpenDrawer"
 		end
 
-	frozen open_drawer_address_external: POINTER is
+	open_drawer_address_external: POINTER is
 			-- Address of C function `OpenDrawer'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2898,14 +2898,14 @@ feature
 			"(void*) OpenDrawer"
 		end
 
-	frozen close_drawer_external (indrawerwindow: POINTER; inasync: INTEGER): INTEGER is
+	close_drawer_external (indrawerwindow: POINTER; inasync: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_CloseDrawer"
 		end
 
-	frozen close_drawer_address_external: POINTER is
+	close_drawer_address_external: POINTER is
 			-- Address of C function `CloseDrawer'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2913,14 +2913,14 @@ feature
 			"(void*) CloseDrawer"
 		end
 
-	frozen disable_screen_updates_external: INTEGER is
+	disable_screen_updates_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :OSStatus"
 		alias
 			"ewg_function_macro_DisableScreenUpdates"
 		end
 
-	frozen disable_screen_updates_address_external: POINTER is
+	disable_screen_updates_address_external: POINTER is
 			-- Address of C function `DisableScreenUpdates'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2928,14 +2928,14 @@ feature
 			"(void*) DisableScreenUpdates"
 		end
 
-	frozen enable_screen_updates_external: INTEGER is
+	enable_screen_updates_external: INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :OSStatus"
 		alias
 			"ewg_function_macro_EnableScreenUpdates"
 		end
 
-	frozen enable_screen_updates_address_external: POINTER is
+	enable_screen_updates_address_external: POINTER is
 			-- Address of C function `EnableScreenUpdates'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2943,14 +2943,14 @@ feature
 			"(void*) EnableScreenUpdates"
 		end
 
-	frozen set_window_toolbar_external (inwindow: POINTER; intoolbar: POINTER): INTEGER is
+	set_window_toolbar_external (inwindow: POINTER; intoolbar: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, HIToolbarRef):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowToolbar"
 		end
 
-	frozen set_window_toolbar_address_external: POINTER is
+	set_window_toolbar_address_external: POINTER is
 			-- Address of C function `SetWindowToolbar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2958,14 +2958,14 @@ feature
 			"(void*) SetWindowToolbar"
 		end
 
-	frozen get_window_toolbar_external (inwindow: POINTER; outtoolbar: POINTER): INTEGER is
+	get_window_toolbar_external (inwindow: POINTER; outtoolbar: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, HIToolbarRef*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowToolbar"
 		end
 
-	frozen get_window_toolbar_address_external: POINTER is
+	get_window_toolbar_address_external: POINTER is
 			-- Address of C function `GetWindowToolbar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2973,14 +2973,14 @@ feature
 			"(void*) GetWindowToolbar"
 		end
 
-	frozen show_hide_window_toolbar_external (inwindow: POINTER; inshow: INTEGER; inanimate: INTEGER): INTEGER is
+	show_hide_window_toolbar_external (inwindow: POINTER; inshow: INTEGER; inanimate: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Boolean, Boolean):OSStatus"
 		alias
 			"ewg_function_macro_ShowHideWindowToolbar"
 		end
 
-	frozen show_hide_window_toolbar_address_external: POINTER is
+	show_hide_window_toolbar_address_external: POINTER is
 			-- Address of C function `ShowHideWindowToolbar'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -2988,14 +2988,14 @@ feature
 			"(void*) ShowHideWindowToolbar"
 		end
 
-	frozen is_window_toolbar_visible_external (inwindow: POINTER): INTEGER is
+	is_window_toolbar_visible_external (inwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):Boolean"
 		alias
 			"ewg_function_macro_IsWindowToolbarVisible"
 		end
 
-	frozen is_window_toolbar_visible_address_external: POINTER is
+	is_window_toolbar_visible_address_external: POINTER is
 			-- Address of C function `IsWindowToolbarVisible'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3003,14 +3003,14 @@ feature
 			"(void*) IsWindowToolbarVisible"
 		end
 
-	frozen set_window_alpha_external (inwindow: POINTER; inalpha: REAL): INTEGER is
+	set_window_alpha_external (inwindow: POINTER; inalpha: REAL): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, float):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowAlpha"
 		end
 
-	frozen set_window_alpha_address_external: POINTER is
+	set_window_alpha_address_external: POINTER is
 			-- Address of C function `SetWindowAlpha'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3018,14 +3018,14 @@ feature
 			"(void*) SetWindowAlpha"
 		end
 
-	frozen get_window_alpha_external (inwindow: POINTER; outalpha: POINTER): INTEGER is
+	get_window_alpha_external (inwindow: POINTER; outalpha: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, float*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowAlpha"
 		end
 
-	frozen get_window_alpha_address_external: POINTER is
+	get_window_alpha_address_external: POINTER is
 			-- Address of C function `GetWindowAlpha'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3033,14 +3033,14 @@ feature
 			"(void*) GetWindowAlpha"
 		end
 
-	frozen hiwindow_invalidate_shadow_external (inwindow: POINTER): INTEGER is
+	hiwindow_invalidate_shadow_external (inwindow: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIWindowRef):OSStatus"
 		alias
 			"ewg_function_macro_HIWindowInvalidateShadow"
 		end
 
-	frozen hiwindow_invalidate_shadow_address_external: POINTER is
+	hiwindow_invalidate_shadow_address_external: POINTER is
 			-- Address of C function `HIWindowInvalidateShadow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3048,14 +3048,14 @@ feature
 			"(void*) HIWindowInvalidateShadow"
 		end
 
-	frozen hiwindow_get_scale_mode_external (inwindow: POINTER; outmode: POINTER; outscalefactor: POINTER): INTEGER is
+	hiwindow_get_scale_mode_external (inwindow: POINTER; outmode: POINTER; outscalefactor: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (HIWindowRef, HIWindowScaleMode*, float*):OSStatus"
 		alias
 			"ewg_function_macro_HIWindowGetScaleMode"
 		end
 
-	frozen hiwindow_get_scale_mode_address_external: POINTER is
+	hiwindow_get_scale_mode_address_external: POINTER is
 			-- Address of C function `HIWindowGetScaleMode'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3063,14 +3063,14 @@ feature
 			"(void*) HIWindowGetScaleMode"
 		end
 
-	frozen get_window_property_external (window: POINTER; propertycreator: INTEGER; propertytag: INTEGER; buffersize: INTEGER; actualsize: POINTER; propertybuffer: POINTER): INTEGER is
+	get_window_property_external (window: POINTER; propertycreator: INTEGER; propertytag: INTEGER; buffersize: INTEGER; actualsize: POINTER; propertybuffer: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, PropertyCreator, PropertyTag, UInt32, UInt32*, void*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowProperty"
 		end
 
-	frozen get_window_property_address_external: POINTER is
+	get_window_property_address_external: POINTER is
 			-- Address of C function `GetWindowProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3078,14 +3078,14 @@ feature
 			"(void*) GetWindowProperty"
 		end
 
-	frozen get_window_property_size_external (window: POINTER; creator: INTEGER; tag: INTEGER; size: POINTER): INTEGER is
+	get_window_property_size_external (window: POINTER; creator: INTEGER; tag: INTEGER; size: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, PropertyCreator, PropertyTag, UInt32*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowPropertySize"
 		end
 
-	frozen get_window_property_size_address_external: POINTER is
+	get_window_property_size_address_external: POINTER is
 			-- Address of C function `GetWindowPropertySize'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3093,14 +3093,14 @@ feature
 			"(void*) GetWindowPropertySize"
 		end
 
-	frozen set_window_property_external (window: POINTER; propertycreator: INTEGER; propertytag: INTEGER; propertysize: INTEGER; propertybuffer: POINTER): INTEGER is
+	set_window_property_external (window: POINTER; propertycreator: INTEGER; propertytag: INTEGER; propertysize: INTEGER; propertybuffer: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, PropertyCreator, PropertyTag, UInt32, void const*):OSStatus"
 		alias
 			"ewg_function_macro_SetWindowProperty"
 		end
 
-	frozen set_window_property_address_external: POINTER is
+	set_window_property_address_external: POINTER is
 			-- Address of C function `SetWindowProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3108,14 +3108,14 @@ feature
 			"(void*) SetWindowProperty"
 		end
 
-	frozen remove_window_property_external (window: POINTER; propertycreator: INTEGER; propertytag: INTEGER): INTEGER is
+	remove_window_property_external (window: POINTER; propertycreator: INTEGER; propertytag: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, PropertyCreator, PropertyTag):OSStatus"
 		alias
 			"ewg_function_macro_RemoveWindowProperty"
 		end
 
-	frozen remove_window_property_address_external: POINTER is
+	remove_window_property_address_external: POINTER is
 			-- Address of C function `RemoveWindowProperty'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3123,14 +3123,14 @@ feature
 			"(void*) RemoveWindowProperty"
 		end
 
-	frozen get_window_property_attributes_external (window: POINTER; propertycreator: INTEGER; propertytag: INTEGER; attributes: POINTER): INTEGER is
+	get_window_property_attributes_external (window: POINTER; propertycreator: INTEGER; propertytag: INTEGER; attributes: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, OSType, OSType, UInt32*):OSStatus"
 		alias
 			"ewg_function_macro_GetWindowPropertyAttributes"
 		end
 
-	frozen get_window_property_attributes_address_external: POINTER is
+	get_window_property_attributes_address_external: POINTER is
 			-- Address of C function `GetWindowPropertyAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3138,14 +3138,14 @@ feature
 			"(void*) GetWindowPropertyAttributes"
 		end
 
-	frozen change_window_property_attributes_external (window: POINTER; propertycreator: INTEGER; propertytag: INTEGER; attributestoset: INTEGER; attributestoclear: INTEGER): INTEGER is
+	change_window_property_attributes_external (window: POINTER; propertycreator: INTEGER; propertytag: INTEGER; attributestoset: INTEGER; attributestoclear: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, OSType, OSType, UInt32, UInt32):OSStatus"
 		alias
 			"ewg_function_macro_ChangeWindowPropertyAttributes"
 		end
 
-	frozen change_window_property_attributes_address_external: POINTER is
+	change_window_property_attributes_address_external: POINTER is
 			-- Address of C function `ChangeWindowPropertyAttributes'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3153,14 +3153,14 @@ feature
 			"(void*) ChangeWindowPropertyAttributes"
 		end
 
-	frozen pin_rect_external (therect: POINTER; thept: POINTER): INTEGER is
+	pin_rect_external (therect: POINTER; thept: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (Rect const*, Point*):long"
 		alias
 			"ewg_function_macro_PinRect"
 		end
 
-	frozen pin_rect_address_external: POINTER is
+	pin_rect_address_external: POINTER is
 			-- Address of C function `PinRect'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3168,14 +3168,14 @@ feature
 			"(void*) PinRect"
 		end
 
-	frozen get_gray_rgn_external: POINTER is
+	get_gray_rgn_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :RgnHandle"
 		alias
 			"ewg_function_macro_GetGrayRgn"
 		end
 
-	frozen get_gray_rgn_address_external: POINTER is
+	get_gray_rgn_address_external: POINTER is
 			-- Address of C function `GetGrayRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3183,14 +3183,14 @@ feature
 			"(void*) GetGrayRgn"
 		end
 
-	frozen track_box_external (window: POINTER; thept: POINTER; partcode: INTEGER): INTEGER is
+	track_box_external (window: POINTER; thept: POINTER; partcode: INTEGER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Point*, WindowPartCode):Boolean"
 		alias
 			"ewg_function_macro_TrackBox"
 		end
 
-	frozen track_box_address_external: POINTER is
+	track_box_address_external: POINTER is
 			-- Address of C function `TrackBox'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3198,14 +3198,14 @@ feature
 			"(void*) TrackBox"
 		end
 
-	frozen track_go_away_external (window: POINTER; thept: POINTER): INTEGER is
+	track_go_away_external (window: POINTER; thept: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Point*):Boolean"
 		alias
 			"ewg_function_macro_TrackGoAway"
 		end
 
-	frozen track_go_away_address_external: POINTER is
+	track_go_away_address_external: POINTER is
 			-- Address of C function `TrackGoAway'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3213,14 +3213,14 @@ feature
 			"(void*) TrackGoAway"
 		end
 
-	frozen drag_gray_rgn_external (thergn: POINTER; startpt: POINTER; limitrect: POINTER; sloprect: POINTER; axis: INTEGER; actionproc: POINTER): INTEGER is
+	drag_gray_rgn_external (thergn: POINTER; startpt: POINTER; limitrect: POINTER; sloprect: POINTER; axis: INTEGER; actionproc: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (RgnHandle, Point*, Rect const*, Rect const*, short, DragGrayRgnUPP):long"
 		alias
 			"ewg_function_macro_DragGrayRgn"
 		end
 
-	frozen drag_gray_rgn_address_external: POINTER is
+	drag_gray_rgn_address_external: POINTER is
 			-- Address of C function `DragGrayRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3228,14 +3228,14 @@ feature
 			"(void*) DragGrayRgn"
 		end
 
-	frozen drag_the_rgn_external (thergn: POINTER; startpt: POINTER; limitrect: POINTER; sloprect: POINTER; axis: INTEGER; actionproc: POINTER): INTEGER is
+	drag_the_rgn_external (thergn: POINTER; startpt: POINTER; limitrect: POINTER; sloprect: POINTER; axis: INTEGER; actionproc: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (RgnHandle, Point*, Rect const*, Rect const*, short, DragGrayRgnUPP):long"
 		alias
 			"ewg_function_macro_DragTheRgn"
 		end
 
-	frozen drag_the_rgn_address_external: POINTER is
+	drag_the_rgn_address_external: POINTER is
 			-- Address of C function `DragTheRgn'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3243,14 +3243,14 @@ feature
 			"(void*) DragTheRgn"
 		end
 
-	frozen get_window_list_external: POINTER is
+	get_window_list_external: POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] :WindowRef"
 		alias
 			"ewg_function_macro_GetWindowList"
 		end
 
-	frozen get_window_list_address_external: POINTER is
+	get_window_list_address_external: POINTER is
 			-- Address of C function `GetWindowList'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3258,14 +3258,14 @@ feature
 			"(void*) GetWindowList"
 		end
 
-	frozen get_window_port_external (window: POINTER): POINTER is
+	get_window_port_external (window: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):CGrafPtr"
 		alias
 			"ewg_function_macro_GetWindowPort"
 		end
 
-	frozen get_window_port_address_external: POINTER is
+	get_window_port_address_external: POINTER is
 			-- Address of C function `GetWindowPort'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3273,14 +3273,14 @@ feature
 			"(void*) GetWindowPort"
 		end
 
-	frozen get_window_structure_port_external (inwindow: POINTER): POINTER is
+	get_window_structure_port_external (inwindow: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):CGrafPtr"
 		alias
 			"ewg_function_macro_GetWindowStructurePort"
 		end
 
-	frozen get_window_structure_port_address_external: POINTER is
+	get_window_structure_port_address_external: POINTER is
 			-- Address of C function `GetWindowStructurePort'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3288,14 +3288,14 @@ feature
 			"(void*) GetWindowStructurePort"
 		end
 
-	frozen get_window_kind_external (window: POINTER): INTEGER is
+	get_window_kind_external (window: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):short"
 		alias
 			"ewg_function_macro_GetWindowKind"
 		end
 
-	frozen get_window_kind_address_external: POINTER is
+	get_window_kind_address_external: POINTER is
 			-- Address of C function `GetWindowKind'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3303,14 +3303,14 @@ feature
 			"(void*) GetWindowKind"
 		end
 
-	frozen is_window_hilited_external (window: POINTER): INTEGER is
+	is_window_hilited_external (window: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):Boolean"
 		alias
 			"ewg_function_macro_IsWindowHilited"
 		end
 
-	frozen is_window_hilited_address_external: POINTER is
+	is_window_hilited_address_external: POINTER is
 			-- Address of C function `IsWindowHilited'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3318,14 +3318,14 @@ feature
 			"(void*) IsWindowHilited"
 		end
 
-	frozen is_window_update_pending_external (window: POINTER): INTEGER is
+	is_window_update_pending_external (window: POINTER): INTEGER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):Boolean"
 		alias
 			"ewg_function_macro_IsWindowUpdatePending"
 		end
 
-	frozen is_window_update_pending_address_external: POINTER is
+	is_window_update_pending_address_external: POINTER is
 			-- Address of C function `IsWindowUpdatePending'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3333,14 +3333,14 @@ feature
 			"(void*) IsWindowUpdatePending"
 		end
 
-	frozen get_next_window_external (window: POINTER): POINTER is
+	get_next_window_external (window: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):WindowRef"
 		alias
 			"ewg_function_macro_GetNextWindow"
 		end
 
-	frozen get_next_window_address_external: POINTER is
+	get_next_window_address_external: POINTER is
 			-- Address of C function `GetNextWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3348,14 +3348,14 @@ feature
 			"(void*) GetNextWindow"
 		end
 
-	frozen get_previous_window_external (inwindow: POINTER): POINTER is
+	get_previous_window_external (inwindow: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef):WindowRef"
 		alias
 			"ewg_function_macro_GetPreviousWindow"
 		end
 
-	frozen get_previous_window_address_external: POINTER is
+	get_previous_window_address_external: POINTER is
 			-- Address of C function `GetPreviousWindow'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3363,14 +3363,14 @@ feature
 			"(void*) GetPreviousWindow"
 		end
 
-	frozen get_window_standard_state_external (window: POINTER; rect: POINTER): POINTER is
+	get_window_standard_state_external (window: POINTER; rect: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect*):Rect*"
 		alias
 			"ewg_function_macro_GetWindowStandardState"
 		end
 
-	frozen get_window_standard_state_address_external: POINTER is
+	get_window_standard_state_address_external: POINTER is
 			-- Address of C function `GetWindowStandardState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3378,14 +3378,14 @@ feature
 			"(void*) GetWindowStandardState"
 		end
 
-	frozen get_window_user_state_external (window: POINTER; rect: POINTER): POINTER is
+	get_window_user_state_external (window: POINTER; rect: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect*):Rect*"
 		alias
 			"ewg_function_macro_GetWindowUserState"
 		end
 
-	frozen get_window_user_state_address_external: POINTER is
+	get_window_user_state_address_external: POINTER is
 			-- Address of C function `GetWindowUserState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3393,14 +3393,14 @@ feature
 			"(void*) GetWindowUserState"
 		end
 
-	frozen set_window_kind_external (window: POINTER; kind: INTEGER) is
+	set_window_kind_external (window: POINTER; kind: INTEGER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, short)"
 		alias
 			"ewg_function_macro_SetWindowKind"
 		end
 
-	frozen set_window_kind_address_external: POINTER is
+	set_window_kind_address_external: POINTER is
 			-- Address of C function `SetWindowKind'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3408,14 +3408,14 @@ feature
 			"(void*) SetWindowKind"
 		end
 
-	frozen set_window_standard_state_external (window: POINTER; rect: POINTER) is
+	set_window_standard_state_external (window: POINTER; rect: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*)"
 		alias
 			"ewg_function_macro_SetWindowStandardState"
 		end
 
-	frozen set_window_standard_state_address_external: POINTER is
+	set_window_standard_state_address_external: POINTER is
 			-- Address of C function `SetWindowStandardState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3423,14 +3423,14 @@ feature
 			"(void*) SetWindowStandardState"
 		end
 
-	frozen set_window_user_state_external (window: POINTER; rect: POINTER) is
+	set_window_user_state_external (window: POINTER; rect: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect const*)"
 		alias
 			"ewg_function_macro_SetWindowUserState"
 		end
 
-	frozen set_window_user_state_address_external: POINTER is
+	set_window_user_state_address_external: POINTER is
 			-- Address of C function `SetWindowUserState'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3438,14 +3438,14 @@ feature
 			"(void*) SetWindowUserState"
 		end
 
-	frozen set_port_window_port_external (window: POINTER) is
+	set_port_window_port_external (window: POINTER) is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef)"
 		alias
 			"ewg_function_macro_SetPortWindowPort"
 		end
 
-	frozen set_port_window_port_address_external: POINTER is
+	set_port_window_port_address_external: POINTER is
 			-- Address of C function `SetPortWindowPort'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3453,14 +3453,14 @@ feature
 			"(void*) SetPortWindowPort"
 		end
 
-	frozen get_window_port_bounds_external (window: POINTER; bounds: POINTER): POINTER is
+	get_window_port_bounds_external (window: POINTER; bounds: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (WindowRef, Rect*):Rect*"
 		alias
 			"ewg_function_macro_GetWindowPortBounds"
 		end
 
-	frozen get_window_port_bounds_address_external: POINTER is
+	get_window_port_bounds_address_external: POINTER is
 			-- Address of C function `GetWindowPortBounds'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"
@@ -3468,14 +3468,14 @@ feature
 			"(void*) GetWindowPortBounds"
 		end
 
-	frozen get_window_from_port_external (port: POINTER): POINTER is
+	get_window_from_port_external (port: POINTER): POINTER is
 		external
 			"C [macro <ewg_carbon_function_c_glue_code.h>] (CGrafPtr):WindowRef"
 		alias
 			"ewg_function_macro_GetWindowFromPort"
 		end
 
-	frozen get_window_from_port_address_external: POINTER is
+	get_window_from_port_address_external: POINTER is
 			-- Address of C function `GetWindowFromPort'
 		external
 			"C [macro <Carbon/Carbon.h>]: void*"

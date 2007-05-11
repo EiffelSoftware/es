@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -47,6 +47,17 @@ feature {ANY} -- Member Access
 			set_imagegworld_external (item, a_value.item)
 		ensure
 			a_value_set: a_value.item = imagegworld
+		end
+
+	get_imagegworld: POINTER is
+		obsolete "Use `imagegworld' instead."
+			-- Access member `imageGWorld'
+		require
+			exists: exists
+		do
+			Result := get_imagegworld_external (item)
+		ensure
+			result_correct: Result = get_imagegworld_external (item)
 		end
 
 	imagegworld: POINTER is
@@ -91,6 +102,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value.item = imagergn
 		end
 
+	get_imagergn: POINTER is
+		obsolete "Use `imagergn' instead."
+			-- Access member `imageRgn'
+		require
+			exists: exists
+		do
+			Result := get_imagergn_external (item)
+		ensure
+			result_correct: Result = get_imagergn_external (item)
+		end
+
 	imagergn: POINTER is
 			-- Access member `imageRgn'
 		require
@@ -131,6 +153,17 @@ feature {ANY} -- Member Access
 			set_outlinergn_external (item, a_value.item)
 		ensure
 			a_value_set: a_value.item = outlinergn
+		end
+
+	get_outlinergn: POINTER is
+		obsolete "Use `outlinergn' instead."
+			-- Access member `outlineRgn'
+		require
+			exists: exists
+		do
+			Result := get_outlinergn_external (item)
+		ensure
+			result_correct: Result = get_outlinergn_external (item)
 		end
 
 	outlinergn: POINTER is

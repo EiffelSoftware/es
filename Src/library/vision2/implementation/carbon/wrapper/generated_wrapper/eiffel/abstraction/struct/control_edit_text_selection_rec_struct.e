@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_selstart: INTEGER is
+		obsolete "Use `selstart' instead."
+			-- Access member `selStart'
+		require
+			exists: exists
+		do
+			Result := get_selstart_external (item)
+		ensure
+			result_correct: Result = get_selstart_external (item)
+		end
 
 	selstart: INTEGER is
 			-- Access member `selStart'
@@ -45,6 +56,17 @@ feature {ANY} -- Member Access
 			set_selstart_external (item, a_value)
 		ensure
 			a_value_set: a_value = selstart
+		end
+
+	get_selend: INTEGER is
+		obsolete "Use `selend' instead."
+			-- Access member `selEnd'
+		require
+			exists: exists
+		do
+			Result := get_selend_external (item)
+		ensure
+			result_correct: Result = get_selend_external (item)
 		end
 
 	selend: INTEGER is

@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_flags: INTEGER is
+		obsolete "Use `flags' instead."
+			-- Access member `flags'
+		require
+			exists: exists
+		do
+			Result := get_flags_external (item)
+		ensure
+			result_correct: Result = get_flags_external (item)
+		end
 
 	flags: INTEGER is
 			-- Access member `flags'
@@ -47,6 +58,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = flags
 		end
 
+	get_preferredheapsize: INTEGER is
+		obsolete "Use `preferredheapsize' instead."
+			-- Access member `preferredHeapSize'
+		require
+			exists: exists
+		do
+			Result := get_preferredheapsize_external (item)
+		ensure
+			result_correct: Result = get_preferredheapsize_external (item)
+		end
+
 	preferredheapsize: INTEGER is
 			-- Access member `preferredHeapSize'
 		require
@@ -65,6 +87,17 @@ feature {ANY} -- Member Access
 			set_preferredheapsize_external (item, a_value)
 		ensure
 			a_value_set: a_value = preferredheapsize
+		end
+
+	get_minimumheapsize: INTEGER is
+		obsolete "Use `minimumheapsize' instead."
+			-- Access member `minimumHeapSize'
+		require
+			exists: exists
+		do
+			Result := get_minimumheapsize_external (item)
+		ensure
+			result_correct: Result = get_minimumheapsize_external (item)
 		end
 
 	minimumheapsize: INTEGER is

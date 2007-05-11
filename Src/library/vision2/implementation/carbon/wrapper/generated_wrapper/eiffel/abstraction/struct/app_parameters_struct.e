@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_eventrefcon: INTEGER is
+		obsolete "Use `eventrefcon' instead."
+			-- Access member `eventRefCon'
+		require
+			exists: exists
+		do
+			Result := get_eventrefcon_external (item)
+		ensure
+			result_correct: Result = get_eventrefcon_external (item)
+		end
 
 	eventrefcon: INTEGER is
 			-- Access member `eventRefCon'
@@ -45,6 +56,17 @@ feature {ANY} -- Member Access
 			set_eventrefcon_external (item, a_value)
 		ensure
 			a_value_set: a_value = eventrefcon
+		end
+
+	get_messagelength: INTEGER is
+		obsolete "Use `messagelength' instead."
+			-- Access member `messageLength'
+		require
+			exists: exists
+		do
+			Result := get_messagelength_external (item)
+		ensure
+			result_correct: Result = get_messagelength_external (item)
 		end
 
 	messagelength: INTEGER is

@@ -9,21 +9,21 @@ feature {ANY}
 			Result := a_value = kcfurlposixpathstyle or a_value = kcfurlhfspathstyle or a_value = kcfurlwindowspathstyle
 		end
 
-	 frozen kcfurlposixpathstyle: INTEGER is
+	kcfurlposixpathstyle: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCFURLPOSIXPathStyle"
 		end
 
-	 frozen kcfurlhfspathstyle: INTEGER is
+	kcfurlhfspathstyle: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCFURLHFSPathStyle"
 		end
 
-	 frozen kcfurlwindowspathstyle: INTEGER is
+	kcfurlwindowspathstyle: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias

@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_bgtype: INTEGER is
+		obsolete "Use `bgtype' instead."
+			-- Access member `bgType'
+		require
+			exists: exists
+		do
+			Result := get_bgtype_external (item)
+		ensure
+			result_correct: Result = get_bgtype_external (item)
+		end
 
 	bgtype: INTEGER is
 			-- Access member `bgType'
@@ -45,6 +56,17 @@ feature {ANY} -- Member Access
 			set_bgtype_external (item, a_value)
 		ensure
 			a_value_set: a_value = bgtype
+		end
+
+	get_bg: POINTER is
+		obsolete "Use `bg' instead."
+			-- Access member `bg'
+		require
+			exists: exists
+		do
+			Result := get_bg_external (item)
+		ensure
+			result_correct: Result = get_bg_external (item)
 		end
 
 	bg: POINTER is

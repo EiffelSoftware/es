@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_propertyid: INTEGER is
+		obsolete "Use `propertyid' instead."
+			-- Access member `propertyID'
+		require
+			exists: exists
+		do
+			Result := get_propertyid_external (item)
+		ensure
+			result_correct: Result = get_propertyid_external (item)
+		end
 
 	propertyid: INTEGER is
 			-- Access member `propertyID'
@@ -47,6 +58,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = propertyid
 		end
 
+	get_propertytype: INTEGER is
+		obsolete "Use `propertytype' instead."
+			-- Access member `propertyType'
+		require
+			exists: exists
+		do
+			Result := get_propertytype_external (item)
+		ensure
+			result_correct: Result = get_propertytype_external (item)
+		end
+
 	propertytype: INTEGER is
 			-- Access member `propertyType'
 		require
@@ -65,6 +87,17 @@ feature {ANY} -- Member Access
 			set_propertytype_external (item, a_value)
 		ensure
 			a_value_set: a_value = propertytype
+		end
+
+	get_propertyflags: INTEGER is
+		obsolete "Use `propertyflags' instead."
+			-- Access member `propertyFlags'
+		require
+			exists: exists
+		do
+			Result := get_propertyflags_external (item)
+		ensure
+			result_correct: Result = get_propertyflags_external (item)
 		end
 
 	propertyflags: INTEGER is

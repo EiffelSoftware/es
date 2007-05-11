@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_usecarbonevents: INTEGER is
+		obsolete "Use `usecarbonevents' instead."
+			-- Access member `useCarbonEvents'
+		require
+			exists: exists
+		do
+			Result := get_usecarbonevents_external (item)
+		ensure
+			result_correct: Result = get_usecarbonevents_external (item)
+		end
 
 	usecarbonevents: INTEGER is
 			-- Access member `useCarbonEvents'
@@ -47,6 +58,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = usecarbonevents
 		end
 
+	get_filler: INTEGER is
+		obsolete "Use `filler' instead."
+			-- Access member `filler'
+		require
+			exists: exists
+		do
+			Result := get_filler_external (item)
+		ensure
+			result_correct: Result = get_filler_external (item)
+		end
+
 	filler: INTEGER is
 			-- Access member `filler'
 		require
@@ -65,6 +87,17 @@ feature {ANY} -- Member Access
 			set_filler_external (item, a_value)
 		ensure
 			a_value_set: a_value = filler
+		end
+
+	get_flags: INTEGER is
+		obsolete "Use `flags' instead."
+			-- Access member `flags'
+		require
+			exists: exists
+		do
+			Result := get_flags_external (item)
+		ensure
+			result_correct: Result = get_flags_external (item)
 		end
 
 	flags: INTEGER is
@@ -107,6 +140,17 @@ feature {ANY} -- Member Access
 			set_fdictionary_external (item, a_value.item)
 		ensure
 			a_value_set: a_value.item = fdictionary
+		end
+
+	get_fdictionary: POINTER is
+		obsolete "Use `fdictionary' instead."
+			-- Access member `fDictionary'
+		require
+			exists: exists
+		do
+			Result := get_fdictionary_external (item)
+		ensure
+			result_correct: Result = get_fdictionary_external (item)
 		end
 
 	fdictionary: POINTER is

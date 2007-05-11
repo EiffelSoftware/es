@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_red: INTEGER is
+		obsolete "Use `red' instead."
+			-- Access member `red'
+		require
+			exists: exists
+		do
+			Result := get_red_external (item)
+		ensure
+			result_correct: Result = get_red_external (item)
+		end
 
 	red: INTEGER is
 			-- Access member `red'
@@ -47,6 +58,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = red
 		end
 
+	get_green: INTEGER is
+		obsolete "Use `green' instead."
+			-- Access member `green'
+		require
+			exists: exists
+		do
+			Result := get_green_external (item)
+		ensure
+			result_correct: Result = get_green_external (item)
+		end
+
 	green: INTEGER is
 			-- Access member `green'
 		require
@@ -65,6 +87,17 @@ feature {ANY} -- Member Access
 			set_green_external (item, a_value)
 		ensure
 			a_value_set: a_value = green
+		end
+
+	get_blue: INTEGER is
+		obsolete "Use `blue' instead."
+			-- Access member `blue'
+		require
+			exists: exists
+		do
+			Result := get_blue_external (item)
+		ensure
+			result_correct: Result = get_blue_external (item)
 		end
 
 	blue: INTEGER is

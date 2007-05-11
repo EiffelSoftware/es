@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_nxtcomp: POINTER is
+		obsolete "Use `nxtcomp' instead."
+			-- Access member `nxtComp'
+		require
+			exists: exists
+		do
+			Result := get_nxtcomp_external (item)
+		ensure
+			result_correct: Result = get_nxtcomp_external (item)
+		end
 
 	nxtcomp: POINTER is
 			-- Access member `nxtComp'
@@ -45,6 +56,17 @@ feature {ANY} -- Member Access
 			set_nxtcomp_external (item, a_value)
 		ensure
 			a_value_set: a_value = nxtcomp
+		end
+
+	get_compproc: POINTER is
+		obsolete "Use `compproc' instead."
+			-- Access member `compProc'
+		require
+			exists: exists
+		do
+			Result := get_compproc_external (item)
+		ensure
+			result_correct: Result = get_compproc_external (item)
 		end
 
 	compproc: POINTER is

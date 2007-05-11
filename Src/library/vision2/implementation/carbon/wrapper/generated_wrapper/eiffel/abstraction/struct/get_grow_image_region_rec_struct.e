@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_growrect: POINTER is
+		obsolete "Use `growrect' instead."
+			-- Access member `growRect'
+		require
+			exists: exists
+		do
+			Result := get_growrect_external (item)
+		ensure
+			result_correct: Result = get_growrect_external (item)
+		end
 
 	growrect: POINTER is
 			-- Access member `growRect'
@@ -65,6 +76,17 @@ feature {ANY} -- Member Access
 			set_growimageregion_external (item, a_value.item)
 		ensure
 			a_value_set: a_value.item = growimageregion
+		end
+
+	get_growimageregion: POINTER is
+		obsolete "Use `growimageregion' instead."
+			-- Access member `growImageRegion'
+		require
+			exists: exists
+		do
+			Result := get_growimageregion_external (item)
+		ensure
+			result_correct: Result = get_growimageregion_external (item)
 		end
 
 	growimageregion: POINTER is

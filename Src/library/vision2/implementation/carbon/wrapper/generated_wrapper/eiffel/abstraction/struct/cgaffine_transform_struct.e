@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_a: REAL is
+		obsolete "Use `a' instead."
+			-- Access member `a'
+		require
+			exists: exists
+		do
+			Result := get_a_external (item)
+		ensure
+			result_correct: Result = get_a_external (item)
+		end
 
 	a: REAL is
 			-- Access member `a'
@@ -45,6 +56,17 @@ feature {ANY} -- Member Access
 			set_a_external (item, a_value)
 		ensure
 			a_value_set: a_value = a
+		end
+
+	get_b: REAL is
+		obsolete "Use `b' instead."
+			-- Access member `b'
+		require
+			exists: exists
+		do
+			Result := get_b_external (item)
+		ensure
+			result_correct: Result = get_b_external (item)
 		end
 
 	b: REAL is
@@ -67,6 +89,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = b
 		end
 
+	get_c: REAL is
+		obsolete "Use `c' instead."
+			-- Access member `c'
+		require
+			exists: exists
+		do
+			Result := get_c_external (item)
+		ensure
+			result_correct: Result = get_c_external (item)
+		end
+
 	c: REAL is
 			-- Access member `c'
 		require
@@ -85,6 +118,17 @@ feature {ANY} -- Member Access
 			set_c_external (item, a_value)
 		ensure
 			a_value_set: a_value = c
+		end
+
+	get_d: REAL is
+		obsolete "Use `d' instead."
+			-- Access member `d'
+		require
+			exists: exists
+		do
+			Result := get_d_external (item)
+		ensure
+			result_correct: Result = get_d_external (item)
 		end
 
 	d: REAL is
@@ -107,6 +151,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = d
 		end
 
+	get_tx: REAL is
+		obsolete "Use `tx' instead."
+			-- Access member `tx'
+		require
+			exists: exists
+		do
+			Result := get_tx_external (item)
+		ensure
+			result_correct: Result = get_tx_external (item)
+		end
+
 	tx: REAL is
 			-- Access member `tx'
 		require
@@ -125,6 +180,17 @@ feature {ANY} -- Member Access
 			set_tx_external (item, a_value)
 		ensure
 			a_value_set: a_value = tx
+		end
+
+	get_ty: REAL is
+		obsolete "Use `ty' instead."
+			-- Access member `ty'
+		require
+			exists: exists
+		do
+			Result := get_ty_external (item)
+		ensure
+			result_correct: Result = get_ty_external (item)
 		end
 
 	ty: REAL is

@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_value: INTEGER is
+		obsolete "Use `value' instead."
+			-- Access member `value'
+		require
+			exists: exists
+		do
+			Result := get_value_external (item)
+		ensure
+			result_correct: Result = get_value_external (item)
+		end
 
 	value: INTEGER is
 			-- Access member `value'
@@ -47,6 +58,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = value
 		end
 
+	get_tabtype: INTEGER is
+		obsolete "Use `tabtype' instead."
+			-- Access member `tabType'
+		require
+			exists: exists
+		do
+			Result := get_tabtype_external (item)
+		ensure
+			result_correct: Result = get_tabtype_external (item)
+		end
+
 	tabtype: INTEGER is
 			-- Access member `tabType'
 		require
@@ -65,6 +87,17 @@ feature {ANY} -- Member Access
 			set_tabtype_external (item, a_value)
 		ensure
 			a_value_set: a_value = tabtype
+		end
+
+	get_filler: INTEGER is
+		obsolete "Use `filler' instead."
+			-- Access member `filler'
+		require
+			exists: exists
+		do
+			Result := get_filler_external (item)
+		ensure
+			result_correct: Result = get_filler_external (item)
 		end
 
 	filler: INTEGER is

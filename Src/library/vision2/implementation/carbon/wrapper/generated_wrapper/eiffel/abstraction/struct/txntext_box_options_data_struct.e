@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_optiontags: INTEGER is
+		obsolete "Use `optiontags' instead."
+			-- Access member `optionTags'
+		require
+			exists: exists
+		do
+			Result := get_optiontags_external (item)
+		ensure
+			result_correct: Result = get_optiontags_external (item)
+		end
 
 	optiontags: INTEGER is
 			-- Access member `optionTags'
@@ -45,6 +56,17 @@ feature {ANY} -- Member Access
 			set_optiontags_external (item, a_value)
 		ensure
 			a_value_set: a_value = optiontags
+		end
+
+	get_flushness: INTEGER is
+		obsolete "Use `flushness' instead."
+			-- Access member `flushness'
+		require
+			exists: exists
+		do
+			Result := get_flushness_external (item)
+		ensure
+			result_correct: Result = get_flushness_external (item)
 		end
 
 	flushness: INTEGER is
@@ -67,6 +89,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = flushness
 		end
 
+	get_justification: INTEGER is
+		obsolete "Use `justification' instead."
+			-- Access member `justification'
+		require
+			exists: exists
+		do
+			Result := get_justification_external (item)
+		ensure
+			result_correct: Result = get_justification_external (item)
+		end
+
 	justification: INTEGER is
 			-- Access member `justification'
 		require
@@ -87,6 +120,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = justification
 		end
 
+	get_rotation: INTEGER is
+		obsolete "Use `rotation' instead."
+			-- Access member `rotation'
+		require
+			exists: exists
+		do
+			Result := get_rotation_external (item)
+		ensure
+			result_correct: Result = get_rotation_external (item)
+		end
+
 	rotation: INTEGER is
 			-- Access member `rotation'
 		require
@@ -105,6 +149,17 @@ feature {ANY} -- Member Access
 			set_rotation_external (item, a_value)
 		ensure
 			a_value_set: a_value = rotation
+		end
+
+	get_options: POINTER is
+		obsolete "Use `options' instead."
+			-- Access member `options'
+		require
+			exists: exists
+		do
+			Result := get_options_external (item)
+		ensure
+			result_correct: Result = get_options_external (item)
 		end
 
 	options: POINTER is

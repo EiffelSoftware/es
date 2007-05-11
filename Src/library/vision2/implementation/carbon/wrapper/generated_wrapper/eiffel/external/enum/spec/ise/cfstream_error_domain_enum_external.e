@@ -9,21 +9,21 @@ feature {ANY}
 			Result := a_value = kcfstreamerrordomaincustom or a_value = kcfstreamerrordomainposix or a_value = kcfstreamerrordomainmacosstatus
 		end
 
-	 frozen kcfstreamerrordomaincustom: INTEGER is
+	kcfstreamerrordomaincustom: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCFStreamErrorDomainCustom"
 		end
 
-	 frozen kcfstreamerrordomainposix: INTEGER is
+	kcfstreamerrordomainposix: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias
 			"kCFStreamErrorDomainPOSIX"
 		end
 
-	 frozen kcfstreamerrordomainmacosstatus: INTEGER is
+	kcfstreamerrordomainmacosstatus: INTEGER is
 		external
 			"C macro use <Carbon/Carbon.h>"
 		alias

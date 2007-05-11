@@ -11,14 +11,14 @@ inherit
 			{NONE} all
 		end
 
-create
+creation
 
 	make_new_unshared,
 	make_new_shared,
 	make_unshared,
 	make_shared
 
-feature {ANY} -- Access
+feature {NONE} -- Implementation
 
 	sizeof: INTEGER is
 		do
@@ -26,6 +26,17 @@ feature {ANY} -- Access
 		end
 
 feature {ANY} -- Member Access
+
+	get_version: INTEGER is
+		obsolete "Use `version' instead."
+			-- Access member `version'
+		require
+			exists: exists
+		do
+			Result := get_version_external (item)
+		ensure
+			result_correct: Result = get_version_external (item)
+		end
 
 	version: INTEGER is
 			-- Access member `version'
@@ -47,6 +58,17 @@ feature {ANY} -- Member Access
 			a_value_set: a_value = version
 		end
 
+	get_binding: POINTER is
+		obsolete "Use `binding' instead."
+			-- Access member `binding'
+		require
+			exists: exists
+		do
+			Result := get_binding_external (item)
+		ensure
+			result_correct: Result = get_binding_external (item)
+		end
+
 	binding: POINTER is
 			-- Access member `binding'
 		require
@@ -65,6 +87,17 @@ feature {ANY} -- Member Access
 			set_binding_external (item, a_value)
 		end
 
+	get_scale: POINTER is
+		obsolete "Use `scale' instead."
+			-- Access member `scale'
+		require
+			exists: exists
+		do
+			Result := get_scale_external (item)
+		ensure
+			result_correct: Result = get_scale_external (item)
+		end
+
 	scale: POINTER is
 			-- Access member `scale'
 		require
@@ -81,6 +114,17 @@ feature {ANY} -- Member Access
 			exists: exists
 		do
 			set_scale_external (item, a_value)
+		end
+
+	get_position: POINTER is
+		obsolete "Use `position' instead."
+			-- Access member `position'
+		require
+			exists: exists
+		do
+			Result := get_position_external (item)
+		ensure
+			result_correct: Result = get_position_external (item)
 		end
 
 	position: POINTER is
