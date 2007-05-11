@@ -203,7 +203,12 @@ feature -- internals
 			until
 				i > a_columns
 			loop
-				ret := add_list_view_column (i, {CONTROLDEFINITIONS_ANON_ENUMS}.kdatabrowsertexttype, 100, 10000, "")
+				-- for now: first column is initialized with icon
+				if i = 1 then
+					ret := add_list_view_column (i, {CONTROLDEFINITIONS_ANON_ENUMS}.kDataBrowserIconAndTextType, 100, 10000, "")
+				else
+					ret := add_list_view_column (i, {CONTROLDEFINITIONS_ANON_ENUMS}.kdatabrowsertexttype, 100, 10000, "")
+				end
 				i := i + 1
 
 			end

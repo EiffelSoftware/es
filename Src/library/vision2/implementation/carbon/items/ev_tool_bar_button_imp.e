@@ -42,6 +42,8 @@ inherit
 		end
 	MACHELP_FUNCTIONS_EXTERNAL
 
+	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+
 create
 	make
 
@@ -52,9 +54,24 @@ feature {NONE} -- Initialization
 	needs_event_box: BOOLEAN is do Result := False end
 
 	make (an_interface: like interface) is
-			-- Create the tool bar button.
+			-- Create a Carbon toggle button.
+		local
+			ret: INTEGER
+			rect: RECT_STRUCT
+			ptr: POINTER
 		do
 			base_make (an_interface)
+			create rect.make_new_unshared
+			rect.set_bottom (100)
+			rect.set_right (100)
+			ret := create_bevel_button_control_external ( null, rect.item,
+				null, -- text
+				{CONTROLDEFINITIONS_ANON_ENUMS}.kControlBevelButtonLargeBevel, -- size/thickness
+				{CONTROLDEFINITIONS_ANON_ENUMS}.kControlBehaviorPushButton, -- the behaviour: we want a toggle-button
+				null, 0, 0, 0, $ptr )
+			set_c_object ( ptr )
+
+
 		end
 
 	initialize is
@@ -88,10 +105,11 @@ feature -- Element change
 	set_text (a_text: STRING_GENERAL) is
 			-- Assign `a_text' to `text'.
 			local
-			res: INTEGER
+			ret: INTEGER
 		do
 			create cg_string.make_unshared_with_eiffel_string (a_text)
-		--	res:=set_control_title_with_cfstring_external (c_object, cg_string.item)
+
+			ret:=set_control_title_with_cfstring_external (c_object, cg_string.item)
 		end
 	set_pixmap (a_pixmap: EV_PIXMAP) is
 			-- Assign `a_pixmap' to `pixmap'.

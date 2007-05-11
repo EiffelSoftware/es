@@ -142,9 +142,12 @@ feature -- Implementation
 			-- Insert `v' at position `i'.
 		local
 			v_imp: EV_ITEM_IMP
+			ret: INTEGER
 		do
 			v_imp ?= v.implementation
 			v_imp.set_item_parent_imp (Current)
+			ret := hiview_add_subview_external (c_object, v_imp.c_object)
+			ret := hiview_place_in_superview_at_external (v_imp.c_object, (i - 1) * 100, 0)
 			--{EV_GTK_EXTERNALS}.gtk_toolbar_insert (visual_widget, v_imp.c_object, i - 1)
 			add_radio_button (v)
 			child_array.go_i_th (i)
