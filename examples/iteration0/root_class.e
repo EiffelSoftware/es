@@ -11,60 +11,6 @@ create
 
 feature -- Initialization
 
---	create_logging_player(replay_filename:STRING; log_filename: STRING): LOGGING_PLAYER
---			--
---		local
---			ignore_result: CONTROLLER
---		do
---			create Result.make
---			ignore_result := set_controller (Result)
---			initialize_player (replay_filename,Result)
---			Result.set_recorder (create_recorder (log_filename))
---		end
-
---	create_player (filename: STRING): PLAYER
---			--
---		local
---			ignore_result: CONTROLLER
---		do
---			create Result.make
---			ignore_result := set_controller (Result)
---			initialize_player (filename,Result)
---		end
-
---	create_recorder (filename: STRING_8): RECORDER
---			--
---		local
---			serializer: TEXT_SERIALIZER
---			ignore_result: CONTROLLER
---		do
---			create Result.make
---			ignore_result := set_controller (Result)
---			create serializer.make_on_textfile (filename)
---			Result.set_serializer (serializer)
---			Result.set_capture_replay_enabled (True)
---		end
-
---	initialize_player (filename: STRING; p: PLAYER)
---			--
---		local
---			resolver: ENTITY_RESOLVER
---			event_factory: EVENT_FACTORY
---			parser: TEXT_EVENT_PARSER
---			input_file: KL_TEXT_INPUT_FILE
---			caller: EXAMPLE_CALLER
---		do
---			create caller
---			create resolver.make
---			create event_factory
---			create input_file.make (filename)
---			input_file.open_read
---			create parser.make (input_file, event_factory)
---			p.set_caller (caller)
---			p.set_event_factory (event_factory)
---			p.set_resolver (resolver)
---		end
-
 	make
 			-- Creation procedure.
 		local
@@ -81,6 +27,7 @@ feature -- Initialization
 			test_performance: BOOLEAN
 			ignore_result: ANY
 		do
+		-- Start of C/R setup
 			mode := replay_logged
 			inspect mode
 			when capture then
@@ -107,10 +54,10 @@ feature -- Initialization
 				print ("executing a normal run of the application.")
 			end
 			test_performance := False
-			if controller.is_capture_replay_enabled then
-				controller.methodbody_start ("make", Current, [])
-			end
-			if (not controller.is_replay_phase) or is_observed then
+			-- End of C/R Setup
+
+			-- <methodbody_start name="make" args="[]">
+			-- </methodbody_start>
 				create bank.make
 				atm := bank.atm
 				if test_performance then
@@ -120,10 +67,8 @@ feature -- Initialization
 					ui := atm.ui
 				end
 				ui.run
-			end
-			if controller.is_capture_replay_enabled then
-				ignore_result := controller.methodbody_end (Void)
-			end
+			-- <methodbody_end return_value="False">
+			-- </methodbody_end>
 		end
 
 	replay_include

@@ -24,16 +24,12 @@ feature --creation
 		local
 			ignore_result: ANY
 		do
-			if controller.is_capture_replay_enabled then
-				controller.methodbody_start ("make", Current, [])
-			end
-			if (not controller.is_replay_phase) or is_observed then
+			-- <methodbody_start name="make" args="[]">
+			-- </methodbody_start>
 				create the_account.make ("test")
 				create the_atm.make (Current)
-			end
-			if controller.is_capture_replay_enabled then
-				ignore_result := controller.methodbody_end (Void)
-			end
+			-- <methodbody_end return_value="False">
+			-- </methodbody_end>
 		end
 
 	is_observed: BOOLEAN is True
@@ -46,33 +42,24 @@ feature -- Access
 		require
 			name_not_void: name /= Void
 		do
-			if controller.is_capture_replay_enabled then
-				controller.methodbody_start ("account_for_name", Current, [name])
-			end
-			if (not controller.is_replay_phase) or is_observed then
+			-- <methodbody_start name="account_for_name" args="[name]">
+			-- </methodbody_start>
 				if name.is_equal ("test") then
 					Result := the_account
 				end
-			end
-			if controller.is_capture_replay_enabled then
-				Result ?= controller.methodbody_end (Result)
-			end
-
+			-- <methodbody_end return_value="True">
+			-- </methodbody_end>
 		end
 
 	atm:ATM
 			-- ATM that is connected to this
 			-- bank
 		do
-			if controller.is_capture_replay_enabled then
-				controller.methodbody_start ("atm", Current, [])
-			end
-			if (not controller.is_replay_phase) or is_observed then
+			-- <methodbody_start name="atm" args="[]">
+			-- </methodbody_start>
 				Result := the_atm
-			end
-			if controller.is_capture_replay_enabled then
-				Result ?= controller.methodbody_end (Result)
-			end
+			-- <methodbody_end return_value="True">
+			-- </methodbody_end>
 		ensure
 			result_not_void: Result /= Void
 		end
@@ -87,16 +74,12 @@ feature -- Basic Operations
 		local
 			ignore_result: ANY
 		do
-			if controller.is_capture_replay_enabled then
-				controller.methodbody_start ("withdraw", Current, [an_account, amount])
-			end
-			if (not controller.is_replay_phase) or is_observed then
+			-- <methodbody_start name="withdraw" args="[an_account, amount]">
+			-- </methodbody_start>
 				an_account.withdraw (amount)
 				print (the_atm.authorization_key) -- to test outcalls ;)
-			end
-			if controller.is_capture_replay_enabled then
-				ignore_result := controller.methodbody_end (Void)
-			end
+			-- <methodbody_end return_value="False">
+			-- </methodbody_end>
 		end
 
 	deposit(an_account: BANK_ACCOUNT; amount: REAL)
@@ -107,16 +90,12 @@ feature -- Basic Operations
 		local
 			ignore_result: ANY
 		do
-			if controller.is_capture_replay_enabled then
-				controller.methodbody_start ("deposit", Current, [an_account, amount])
-			end
-			if (not controller.is_replay_phase) or is_observed then
+			-- <methodbody_start name="deposit" args="[an_account, amount]">
+			-- </methodbody_start>
 				an_account.deposit (amount)
 				print (the_atm.authorization_key) -- test outcalls...
-			end
-			if controller.is_capture_replay_enabled then
-				ignore_result := controller.methodbody_end (Void)
-			end
+			-- <methodbody_end return_value="False">
+			-- </methodbody_end>
 		end
 
 feature {NONE} -- Implementation

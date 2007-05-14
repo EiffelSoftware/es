@@ -22,16 +22,12 @@ feature -- creation
 		local
 			ignore_result: ANY
 		do
-			if controller.is_capture_replay_enabled then
-				controller.methodbody_start ("make", Current, [a_bank])
-			end
-			if (not controller.is_replay_phase) or is_observed then
+			-- <methodbody_start name="make" args="[a_bank]">
+			-- </methodbody_start>
 				the_bank := a_bank
 				create the_ui.make (Current)
-			end
-			if controller.is_capture_replay_enabled then
-				ignore_result := controller.methodbody_end (Void)
-			end
+			-- <methodbody_end return_value="False">
+			-- </methodbody_end>
 		end
 
 feature -- Access
@@ -39,15 +35,11 @@ feature -- Access
 	ui: ATM_UI
 			-- UI of the ATM
 		do
-			if controller.is_capture_replay_enabled then
-				controller.methodbody_start ("ui", Current, [])
-			end
-			if (not controller.is_replay_phase) or is_observed then
+			-- <methodbody_start name="ui" args="[]">
+			-- </methodbody_start>
 				Result := the_ui
-			end
-			if controller.is_capture_replay_enabled then
-				Result ?= controller.methodbody_end (Result)
-			end
+			-- <methodbody_end return_value="True">
+			-- </methodbody_end>
 		ensure
 			result_not_void: ui /= Void
 		end
@@ -55,15 +47,11 @@ feature -- Access
 	last_operation_succeeded: BOOLEAN
 			-- Did the last operation succeed?
 		do
-			if controller.is_capture_replay_enabled then
-				controller.methodbody_start ("last_operation_succeeded", Current,[])
-			end
-			if (not controller.is_replay_phase) or is_observed then
+			-- <methodbody_start name="last_operation_succeeded" args="[]">
+			-- </methodbody_start>
 				Result := success
-			end
-			if controller.is_capture_replay_enabled then
-				Result ?= controller.methodbody_end (Result)
-			end
+			-- <methodbody_end return_value="True">
+			-- </methodbody_end>
 		end
 
 
@@ -77,10 +65,8 @@ feature -- Element change
 			an_account: BANK_ACCOUNT
 			ignore_result: ANY
 		do
-			if controller.is_capture_replay_enabled then
-				controller.methodbody_start ("deposit", Current, [account_name,amount])
-			end
-			if (not controller.is_replay_phase) or is_observed then
+			-- <methodbody_start name="deposit" args="[account_name,amount]">
+			-- </methodbody_start>
 				an_account := the_bank.account_for_name (account_name)
 
 				if an_account /= Void then
@@ -89,13 +75,11 @@ feature -- Element change
 				else
 					success := false
 				end
-			end
-			if controller.is_capture_replay_enabled then
-				ignore_result := controller.methodbody_end (Void)
-			end
+			-- <methodbody_end return_value="False">
+			-- </methodbody_end>
 		end
 
-	withdraw (account_name:STRING; amount:REAL)
+	withdraw (account_name: STRING; amount:REAL)
 			-- Withdraw 'amount' on the account with name 'account_name'
 		require
 			account_exists: account_exists(account_name)
@@ -104,10 +88,8 @@ feature -- Element change
 
 			ignore_result: ANY
 		do
-			if controller.is_capture_replay_enabled then
-				controller.methodbody_start ("withdraw", Current, [account_name, amount])
-			end
-			if (not controller.is_replay_phase) or is_observed then
+			-- <methodbody_start name="withdraw" args="[account_name, amount]">
+			-- </methodbody_start>
 				an_account := the_bank.account_for_name (account_name)
 
 				if an_account /= Void then
@@ -116,10 +98,8 @@ feature -- Element change
 				else
 					success := False
 				end
-			end
-			if controller.is_capture_replay_enabled then
-				ignore_result := controller.methodbody_end (Void)
-			end
+			-- <methodbody_end return_value="False">
+			-- </methodbody_end>
 		end
 
 	account_exists (account_name:STRING): BOOLEAN
@@ -127,15 +107,11 @@ feature -- Element change
 		require
 				account_name_not_void: account_name /= Void
 		do
-			if controller.is_capture_replay_enabled then
-				controller.methodbody_start ("account_exists", Current, [account_name])
-			end
-			if (not controller.is_replay_phase) or is_observed then
+			-- <methodbody_start name="account_exists" args="[account_name]">
+			-- </methodbody_start>
 				Result := (the_bank.account_for_name (account_name) /= Void)
-			end
-			if controller.is_capture_replay_enabled then
-				Result ?= controller.methodbody_end (Result)
-			end
+			-- <methodbody_end return_value="True">
+			-- </methodbody_end>
 		end
 
 	balance_for_account_name (account_name: STRING): REAL
@@ -145,31 +121,23 @@ feature -- Element change
 		local
 			an_account: BANK_ACCOUNT
 		do
-			if controller.is_capture_replay_enabled then
-				controller.methodbody_start ("balance_for_account_name", Current, [account_name])
-			end
-			if (not controller.is_replay_phase) or is_observed then
+			-- <methodbody_start name="balance_for_account_name" args="[account_name]">
+			-- </methodbody_start>
 				ui.ping
 				an_account:=the_bank.account_for_name (account_name)
 				Result := an_account.balance
-			end
-			if controller.is_capture_replay_enabled then
-				Result ?= controller.methodbody_end (Result)
-			end
+			-- <methodbody_end return_value="True">
+			-- </methodbody_end>
 		end
 
 	authorization_key: STRING
 			--the (fake) authorization key
 		do
-			if controller.is_capture_replay_enabled then
-				controller.methodbody_start ("authorization_key", Current, [])
-			end
-			if (not controller.is_replay_phase) or is_observed then
+			-- <methodbody_start name="authorization_key" args="[]">
+			-- </methodbody_start>
 				Result:= "100%% trustworthy%N"
-			end
-			if controller.is_capture_replay_enabled then
-				Result ?= controller.methodbody_end (Result)
-			end
+			-- <methodbody_end return_value="True">
+			-- </methodbody_end>
 		end
 
 	set_ui(a_ui: ATM_UI) is
@@ -179,15 +147,11 @@ feature -- Element change
 		local
 			ignore_result: ANY
 		do
-			if controller.is_capture_replay_enabled then
-				controller.methodbody_start ("set_ui", Current, [a_ui])
-			end
-			if (not controller.is_replay_phase) or is_observed then
+			-- <methodbody_start name="set_ui" args="[a_ui]">
+			-- </methodbody_start>
 				the_ui := a_ui
-			end
-			if controller.is_capture_replay_enabled then
-				ignore_result ?= controller.methodbody_end (Void)
-			end
+			-- <methodbody_end return_value="False">
+			-- </methodbody_end>
 		end
 
 

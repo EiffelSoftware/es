@@ -21,15 +21,11 @@ feature -- Access
 		local
 			ignore_result: ANY
 		do
-			if controller.is_capture_replay_enabled then
-				controller.methodbody_start ("make", Current, [an_atm])
-			end
-			if (not controller.is_replay_phase) or is_observed then
+			-- <methodbody_start name="make" args="[an_atm]"> 
+			-- </methodbody_start>
 				atm := an_atm
-			end
-			if controller.is_capture_replay_enabled then
-				ignore_result := controller.methodbody_end (Void)
-			end
+			-- <methodbody_end return_value="False">
+			-- </methodbody_end>
 		end
 
 feature --Basic Operations
@@ -40,10 +36,8 @@ feature --Basic Operations
 			exit: BOOLEAN
 			ignore_result: ANY
 		do
-			if controller.is_capture_replay_enabled then
-				controller.methodbody_start ("run", Current, [])
-			end
-			if (not controller.is_replay_phase) or is_observed then
+			-- <methodbody_start name="run" args="[]"> 
+			-- </methodbody_start>
 				from
 					exit := False
 				until
@@ -69,10 +63,8 @@ feature --Basic Operations
 						print("command not recognized")
 					end
 				end
-			end
-			if controller.is_capture_replay_enabled then
-				ignore_result := controller.methodbody_end (Void)
-			end
+			-- <methodbody_end return_value="False">
+			-- </methodbody_end>
 		end
 
 feature -- Basic operations
@@ -82,15 +74,11 @@ feature -- Basic operations
 		local
 			ignore_result: ANY
 		do
-			if controller.is_capture_replay_enabled then
-				controller.methodbody_start ("ping", Current, [])
-			end
-			if (not controller.is_replay_phase) or is_observed then
+			-- <methodbody_start name="ping" args="[]"> 
+			-- </methodbody_start>
 
-			end
-			if controller.is_capture_replay_enabled then
-				ignore_result := controller.methodbody_end (Void)
-			end
+			-- <methodbody_end return_value="False">
+			-- </methodbody_end>
 		end
 
 feature {NONE} -- Implementation

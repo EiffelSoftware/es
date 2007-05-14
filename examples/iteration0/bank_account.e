@@ -23,15 +23,11 @@ feature -- creation
 		local
 			ignore_result: ANY
 		do
-			if controller.is_capture_replay_enabled then
-				controller.methodbody_start ("make", Current, [a_name])
-			end
-			if (not controller.is_replay_phase) or is_observed then
+			-- <methodbody_start name="make" args="[a_name]"> 
+			-- </methodbody_start>
 				the_name := a_name
-			end
-			if controller.is_capture_replay_enabled then
-				ignore_result ?= controller.methodbody_end (Void)
-			end
+			-- <methodbody_end return_value="False">
+			-- </methodbody_end>
 		end
 
 feature -- Access
@@ -39,29 +35,21 @@ feature -- Access
 	name: STRING is
 			--Name of the account
 		do
-			if controller.is_capture_replay_enabled then
-				controller.methodbody_start ("name", Current, [])
-			end
-			if (not controller.is_replay_phase) or is_observed then
+			-- <methodbody_start name="name" args="[]"> 
+			-- </methodbody_start>
 				Result := the_name
-			end
-			if controller.is_capture_replay_enabled then
-				Result ?= controller.methodbody_end (Result)
-			end
+			-- <methodbody_end return_value="True">
+			-- </methodbody_end>
 		end
 
 	balance: REAL is
 			--Balance of the account
 		do
-			if controller.is_capture_replay_enabled then
-				controller.methodbody_start ("balance", Current, [])
-			end
-			if (not controller.is_replay_phase) or is_observed then
+			-- <methodbody_start name="balance" args="[]"> 
+			-- </methodbody_start>
 				Result := the_balance
-			end
-			if controller.is_capture_replay_enabled then
-				Result ?= controller.methodbody_end (Result)
-			end
+			-- <methodbody_end return_value="True">
+			-- </methodbody_end>
 		end
 
 	is_observed: BOOLEAN is True
@@ -74,15 +62,11 @@ feature {BANK} -- Restricted
 		local
 			ignore_result: ANY
 		do
-			if controller.is_capture_replay_enabled then
-				controller.methodbody_start ("withdraw", Current, [an_amount])
-			end
-			if (not controller.is_replay_phase) or is_observed then
+			-- <methodbody_start name="withdraw" args="[an_amount]"> 
+			-- </methodbody_start>
 				the_balance := the_balance - an_amount
-			end
-			if controller.is_capture_replay_enabled then
-				ignore_result := controller.methodbody_end (Void)
-			end
+			-- <methodbody_end return_value="False">
+			-- </methodbody_end>
 
 		ensure
 			amount_withdrawn: balance = old balance - an_amount
@@ -96,15 +80,11 @@ feature {BANK} -- Restricted
 		local
 			ignore_result: ANY
 		do
-			if controller.is_capture_replay_enabled then
-				controller.methodbody_start ("deposit", Current, [an_amount])
-			end
-			if (not controller.is_replay_phase) or is_observed then
+			-- <methodbody_start name="deposit" args="[an_amount]"> 
+			-- </methodbody_start>
 				the_balance := the_balance + an_amount
-			end
-			if controller.is_capture_replay_enabled then
-				ignore_result := controller.methodbody_end (Void)
-			end
+			-- <methodbody_end return_value="False">
+			-- </methodbody_end>
 		ensure
 			an_amount_deposited: balance = old balance + an_amount
 		end
