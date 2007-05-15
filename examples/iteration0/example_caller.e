@@ -9,7 +9,7 @@ class
 
 inherit
 		CALLER
-		
+
 feature -- Access
 
 feature -- Measurement
@@ -69,20 +69,30 @@ feature {NONE} -- Implementation
 			deposit_arg2: REAL_REF
 		do
 			if feature_name.is_equal ("make") then
+				controller.leave
 				bank.make --no arguments
+				controller.enter
 			elseif feature_name.is_equal ("account_for_name") then
 				account_for_name_arg1 ?= arguments @ 1
+				controller.leave
 				ignored_result := bank.account_for_name (account_for_name_arg1)
+				controller.enter
 			elseif feature_name.is_equal ("atm") then
+				controller.leave
 				ignored_result := bank.atm
+				controller.enter
 			elseif feature_name.is_equal ("withdraw") then
 				withdraw_arg1 ?= arguments @ 1
 				withdraw_arg2 ?= arguments @ 2
+				controller.leave
 				bank.withdraw (withdraw_arg1, withdraw_arg2)
+				controller.enter
 			elseif feature_name.is_equal ("deposit") then
 				deposit_arg1 ?= arguments @ 1
 				deposit_arg2 ?= arguments @ 2
+				controller.leave
 				bank.deposit (deposit_arg1, deposit_arg2)
+				controller.enter
 			else
 				check False end
 			end
@@ -95,11 +105,17 @@ feature {NONE} -- Implementation
 		do
 			if feature_name.is_equal("make") then
 				make_arg1 ?= arguments @ 1
+				controller.leave
 				bank_account.make (make_arg1)
+				controller.enter
 			elseif feature_name.is_equal("name") then
+				controller.leave
 				ignored_result := bank_account.name
+				controller.enter
 			elseif feature_name.is_equal ("balance") then
+				controller.leave
 				ignored_result := bank_account.balance
+				controller.enter
 			else
 				check False end
 			end

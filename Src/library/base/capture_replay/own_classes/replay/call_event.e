@@ -13,7 +13,7 @@ inherit
 	EVENT
 
 feature -- Creation
-	make(a_target: ENTITY; a_feature_name: STRING; the_arguments: LIST[ENTITY])
+	make(a_target: NON_BASIC_ENTITY; a_feature_name: STRING; the_arguments: LIST[ENTITY])
 		--TODO: add contracts for target and feature - name
 		require
 			a_target_not_void: a_target /= Void
@@ -27,7 +27,7 @@ feature -- Creation
 
 feature -- Access
 
-	target: ENTITY
+	target: NON_BASIC_ENTITY
 
 	feature_name: STRING
 

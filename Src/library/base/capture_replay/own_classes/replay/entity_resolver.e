@@ -54,6 +54,22 @@ feature -- Access
 			end
 		end
 
+	register_object(object: OBSERVABLE; entity: NON_BASIC_ENTITY) is
+			-- Register `object' in the object lookup table.
+		require
+			object_not_void: object /= Void
+			entity_not_void: entity /= Void
+			no_different_object_for_same_id: entities[entity.id] /= Void implies object = entities[entity.id]
+		do
+			if entities[entity.id] = Void then
+				entities[entity.id] := object
+				object.set_object_id(entity.id)
+			else
+				-- XXX should we raise an error here?
+			end
+		ensure
+			entity_registered: entities[entity.id] = object
+		end
 
 	resolve_basic_entity(basic: BASIC_ENTITY): ANY is
 			-- Resolve `basic' to an object representing a basic type.
@@ -65,6 +81,8 @@ feature -- Access
 				Result := basic.value.to_real
 			elseif basic.type.is_equal("INTEGER_32") then
 				Result := basic.value.to_integer
+			elseif basic.type.is_equal("BOOLEAN") then
+				Result := basic.value.to_boolean
 			else
 				check False end --not implemented yet.
 			end
@@ -88,17 +106,26 @@ feature -- Access
 			Result := entities[non_basic.id]
 		ensure
 			non_void_entity_resolved: (non_basic.id /= 0) implies (Result /= Void)
+--XXX this should be ensured...			object_id_mathes: non_basic.id = Result.object_id
 		end
 
 	create_entity(non_basic: NON_BASIC_ENTITY)
 			-- Create an object representing `non_basic'
 		require
 			non_basic_not_void: non_basic /= Void
+		local
+			observable: OBSERVABLE
 		do
-			entities[non_basic.id] := new_instance_of(dynamic_type_from_string(non_basic.type))
+			 observable ?= new_instance_of(dynamic_type_from_string(non_basic.type))
+			 entities[non_basic.id] := observable
+			check
+				--this is an observable, otherwise it would not be possible to have an object Id during capturing.
+				resolved_entity_is_obserable: entities[non_basic.id] /= Void
+			end
+			entities[non_basic.id].set_object_id (non_basic.id)
 		end
 
-	entities: ARRAY[ANY]
+	entities: ARRAY[OBSERVABLE]
 
 	represents_void(entity: ENTITY): BOOLEAN
 			-- Does `entity' represent a Void?

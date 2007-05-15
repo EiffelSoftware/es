@@ -74,7 +74,7 @@ feature -- Basic Operations
 			leave
 		end
 
-	methodbody_start (feature_name: STRING_8; target: ANY; arguments: TUPLE)
+	methodbody_start (feature_name: STRING_8; target: OBSERVABLE; arguments: TUPLE)
 			-- Hook for recording. Is to be placed before the methodbody is evaluated
 			-- 'target' is the object whose feature was called
 			-- 'arguments' are the arguments of the feature.

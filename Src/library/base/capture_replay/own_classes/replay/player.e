@@ -104,8 +104,6 @@ feature -- Basic operations
 			callee_observed: BOOLEAN
 			outcallret: OUTCALLRET_EVENT
 		do
-			enter
-
 			callee_observed := observed_stack.item
 			observed_stack.remove
 
@@ -129,37 +127,37 @@ feature -- Basic operations
 			else
 				Result := res
 			end
-
-			leave
 		end
 
-	methodbody_start (feature_name: STRING_8; target: ANY; arguments: TUPLE) is
+	methodbody_start (feature_name: STRING_8; target: OBSERVABLE; arguments: TUPLE) is
 			-- Hook for capture/replay. Is to be placed before the methodbody is evaluated
 			-- 'target' is the object whose feature was called
 			-- 'arguments' are the arguments of the feature.
 		local
 			caller_is_observed: BOOLEAN
+			call_event: CALL_EVENT
 		do
-			enter
-
 			caller_is_observed := observed_stack.item
+			call_event ?= event_factory.last_event
+			if call_event /= Void then
+				if target.is_observed /= caller_is_observed then
+					--boundary cross
+					check_call(event_factory.last_event,feature_name,target,arguments)
+					if target.is_observed then
+						--INCALL
 
-			if target.is_observed /= caller_is_observed then
-				--boudary cross
-				check_call(event_factory.last_event,feature_name,target,arguments)
---				if target_is_observed then
---					--INCALL
---					
---				else	
---					--OUTCALL
---					
---				end
-				-- Consume event
-				event_factory.create_next_event
+					else
+						--OUTCALL
+						resolver.register_object (target, call_event.target)
+						index_arguments(call_event.arguments, arguments)
+					end
+					-- Consume event
+					event_factory.create_next_event
+				end
+			else
+				report_out_of_sync_error("call_event", event_factory.last_event)
 			end
 			observed_stack.put (target.is_observed)
-
-			leave
 		end
 
 	simulate_unobserved_body
@@ -179,14 +177,63 @@ feature -- Basic operations
 		end
 
 
-	handle_incall_event (incall: INCALL_EVENT) is
+	play is
 			--
-		require
-			incall_not_void: incall /= Void
 		do
-			caller.call (resolver.resolve_entity(incall.target), incall.feature_name, resolver.resolve_entities(incall.arguments))
+			enter
+			--grab first event...
+			event_factory.create_next_event
+			simulate_unobserved_body
+			leave
 		end
 
+
+feature -- Obsolete
+
+feature -- Inapplicable
+
+feature {NONE} -- Implementation
+
+	report_out_of_sync_error(expected_event_type: STRING; received_event: EVENT)
+			-- Report that an out of sync error has occurred.
+		do
+
+		end
+
+	report_argument_count_error(actual_number: INTEGER)
+			--
+		do
+
+		end
+
+	index_arguments(expected_arguments: LIST[ENTITY]; actual_arguments: TUPLE) is
+			-- Make sure that all arguments are indexed in the object
+			-- lookup table.
+		local
+			i: INTEGER
+			non_basic: NON_BASIC_ENTITY
+			observable: OBSERVABLE
+		do
+			--is there a mismatch regarding count of arguments?
+			if expected_arguments.count /= actual_arguments.count then
+				report_argument_count_error(actual_arguments.count)
+			end
+
+			--index all arguments
+			from
+				i := 1
+			until
+				i > expected_arguments.count or i > actual_arguments.count
+			loop
+				non_basic ?= expected_arguments @ i
+				observable ?= actual_arguments @ i
+				--TODO: raise error, if both arguments aren't both of the same kind (basic/non-basic)
+				if non_basic /= Void and observable /= Void then
+					resolver.register_object(observable, non_basic)
+				end
+				i := i + 1
+			end
+		end
 
 	check_call(event: EVENT; feature_name: STRING; target: ANY; arguments: TUPLE)
 			-- checks if the call event matches to what we actually have...
@@ -205,40 +252,12 @@ feature -- Basic operations
 			end
 		end
 
---	consume_outcall is
---		do
-
---		end
-
-
---	consume_outcallret: ANY is
---			--
---		do
-
---		end
-
-
-	play is
-			--
+	handle_incall_event (incall: INCALL_EVENT) is
+			-- execute `incall'
+		require
+			incall_not_void: incall /= Void
 		do
-			--grab first event...
-			event_factory.create_next_event
-			simulate_unobserved_body
-		end
-
-
-feature -- Obsolete
-
-feature -- Inapplicable
-
-feature {NONE} -- Implementation
-
-	execute_incall is
-			-- 	
-		do
-			--consume_incall event	
-			--make call
-			--consume incallret_event
+			caller.call (resolver.resolve_entity(incall.target), incall.feature_name, resolver.resolve_entities(incall.arguments))
 		end
 
 invariant

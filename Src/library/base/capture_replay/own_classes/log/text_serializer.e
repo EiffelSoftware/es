@@ -213,6 +213,8 @@ feature {NONE} -- Implementation
 			file_is_open: file.is_open_write
 		do
 			file.put_string (content)
+	--for debugging
+	file.flush
 			print_debug(content)
 		end
 

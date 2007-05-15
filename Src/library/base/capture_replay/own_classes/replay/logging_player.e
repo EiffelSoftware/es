@@ -24,9 +24,9 @@ feature -- Initialization
 	setup_on_text_files(replay_filename:STRING; log_filename: STRING; a_caller: CALLER) is
 			--
 		do
-			setup_player_on_textfile (replay_filename,a_caller)
 			create recorder.make
 			recorder.setup_on_text_serializer (log_filename)
+			setup_player_on_textfile (replay_filename,a_caller)
 		end
 
 feature -- Access
@@ -62,11 +62,11 @@ feature -- Duplication
 feature -- Miscellaneous
 
 feature -- Basic operations
-		methodbody_start (feature_name: STRING_8; target: ANY; arguments: TUPLE) is
+		methodbody_start (feature_name: STRING_8; target: OBSERVABLE; arguments: TUPLE) is
 				--
 			do
-				recorder.methodbody_start(feature_name,target,arguments)
 				Precursor {PLAYER}(feature_name, target, arguments)
+				recorder.methodbody_start(feature_name,target,arguments)
 			end
 
 		methodbody_end (res: ANY): ANY is

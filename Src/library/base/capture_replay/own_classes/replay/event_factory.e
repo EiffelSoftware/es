@@ -40,12 +40,12 @@ feature -- Basic operations
 
 		end
 
-	handle_incall_event(target: ENTITY; feature_name: STRING; arguments: LIST[ENTITY])
+	handle_incall_event(target: NON_BASIC_ENTITY; feature_name: STRING; arguments: LIST[ENTITY])
 		do
 			create {INCALL_EVENT}last_event.make(target,feature_name,arguments)
 		end
 
-	handle_outcall_event(target: ENTITY; feature_name: STRING; arguments: LIST[ENTITY])
+	handle_outcall_event(target: NON_BASIC_ENTITY; feature_name: STRING; arguments: LIST[ENTITY])
 		do
 			create {OUTCALL_EVENT}last_event.make(target, feature_name, arguments)
 		end

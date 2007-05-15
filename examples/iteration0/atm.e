@@ -22,11 +22,25 @@ feature -- creation
 		local
 			ignore_result: ANY
 		do
+
+
 			-- <methodbody_start name="make" args="[a_bank]">
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				controller.methodbody_start("make", Current, [a_bank])
+				controller.leave
+			end
+			if (not controller.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				the_bank := a_bank
 				create the_ui.make (Current)
 			-- <methodbody_end return_value="False">
+			end
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				ignore_result ?= controller.methodbody_end(Void)
+				controller.leave
+			end
 			-- </methodbody_end>
 		end
 
@@ -35,10 +49,24 @@ feature -- Access
 	ui: ATM_UI
 			-- UI of the ATM
 		do
+
+
 			-- <methodbody_start name="ui" args="[]">
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				controller.methodbody_start("ui", Current, [])
+				controller.leave
+			end
+			if (not controller.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				Result := the_ui
 			-- <methodbody_end return_value="True">
+			end
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				Result ?= controller.methodbody_end(Result)
+				controller.leave
+			end
 			-- </methodbody_end>
 		ensure
 			result_not_void: ui /= Void
@@ -47,10 +75,24 @@ feature -- Access
 	last_operation_succeeded: BOOLEAN
 			-- Did the last operation succeed?
 		do
+
+
 			-- <methodbody_start name="last_operation_succeeded" args="[]">
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				controller.methodbody_start("last_operation_succeeded", Current, [])
+				controller.leave
+			end
+			if (not controller.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				Result := success
 			-- <methodbody_end return_value="True">
+			end
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				Result ?= controller.methodbody_end(Result)
+				controller.leave
+			end
 			-- </methodbody_end>
 		end
 
@@ -65,7 +107,15 @@ feature -- Element change
 			an_account: BANK_ACCOUNT
 			ignore_result: ANY
 		do
+
+
 			-- <methodbody_start name="deposit" args="[account_name,amount]">
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				controller.methodbody_start("deposit", Current, [account_name,amount])
+				controller.leave
+			end
+			if (not controller.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				an_account := the_bank.account_for_name (account_name)
 
@@ -76,6 +126,12 @@ feature -- Element change
 					success := false
 				end
 			-- <methodbody_end return_value="False">
+			end
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				ignore_result ?= controller.methodbody_end(Void)
+				controller.leave
+			end
 			-- </methodbody_end>
 		end
 
@@ -88,7 +144,15 @@ feature -- Element change
 
 			ignore_result: ANY
 		do
+
+
 			-- <methodbody_start name="withdraw" args="[account_name, amount]">
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				controller.methodbody_start("withdraw", Current, [account_name, amount])
+				controller.leave
+			end
+			if (not controller.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				an_account := the_bank.account_for_name (account_name)
 
@@ -99,6 +163,12 @@ feature -- Element change
 					success := False
 				end
 			-- <methodbody_end return_value="False">
+			end
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				ignore_result ?= controller.methodbody_end(Void)
+				controller.leave
+			end
 			-- </methodbody_end>
 		end
 
@@ -107,10 +177,24 @@ feature -- Element change
 		require
 				account_name_not_void: account_name /= Void
 		do
+
+
 			-- <methodbody_start name="account_exists" args="[account_name]">
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				controller.methodbody_start("account_exists", Current, [account_name])
+				controller.leave
+			end
+			if (not controller.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				Result := (the_bank.account_for_name (account_name) /= Void)
 			-- <methodbody_end return_value="True">
+			end
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				Result ?= controller.methodbody_end(Result)
+				controller.leave
+			end
 			-- </methodbody_end>
 		end
 
@@ -121,22 +205,50 @@ feature -- Element change
 		local
 			an_account: BANK_ACCOUNT
 		do
+
+
 			-- <methodbody_start name="balance_for_account_name" args="[account_name]">
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				controller.methodbody_start("balance_for_account_name", Current, [account_name])
+				controller.leave
+			end
+			if (not controller.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				ui.ping
 				an_account:=the_bank.account_for_name (account_name)
 				Result := an_account.balance
 			-- <methodbody_end return_value="True">
+			end
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				Result ?= controller.methodbody_end(Result)
+				controller.leave
+			end
 			-- </methodbody_end>
 		end
 
 	authorization_key: STRING
 			--the (fake) authorization key
 		do
+
+
 			-- <methodbody_start name="authorization_key" args="[]">
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				controller.methodbody_start("authorization_key", Current, [])
+				controller.leave
+			end
+			if (not controller.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				Result:= "100%% trustworthy%N"
 			-- <methodbody_end return_value="True">
+			end
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				Result ?= controller.methodbody_end(Result)
+				controller.leave
+			end
 			-- </methodbody_end>
 		end
 
@@ -147,10 +259,24 @@ feature -- Element change
 		local
 			ignore_result: ANY
 		do
+
+
 			-- <methodbody_start name="set_ui" args="[a_ui]">
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				controller.methodbody_start("set_ui", Current, [a_ui])
+				controller.leave
+			end
+			if (not controller.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				the_ui := a_ui
 			-- <methodbody_end return_value="False">
+			end
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				ignore_result ?= controller.methodbody_end(Void)
+				controller.leave
+			end
 			-- </methodbody_end>
 		end
 

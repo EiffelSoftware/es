@@ -16,6 +16,7 @@ create
 	make
 
 feature -- Access
+	line_number: INTEGER
 
 feature -- Creation
 	make(an_input: KI_TEXT_INPUT_STREAM; a_handler: EVENT_PARSER_HANDLER)
@@ -58,6 +59,7 @@ feature -- Basic operations
 			-- Handlers from `handler'
 		do
 			input.read_line
+			line_number := line_number + 1
 			last_line := input.last_string
 			position := 1
 			parse_line

@@ -29,9 +29,6 @@ feature -- Access
 			-- This switch is installed to be able to make performance
 			-- measurements.
 
-	is_capture_replay_enabled_original: BOOLEAN
-			-- is c/r really enabled? (not only temporary)
-
 	is_replay_phase: BOOLEAN
 			-- Is program currently running in replay phase?
 			-- MUST be false if capture/Replay is disabled.
@@ -57,6 +54,7 @@ feature -- Status setting
 			requires_enabled_capture_phase: activated implies is_capture_replay_enabled
 		do
 			is_replay_phase := activated
+			is_replay_phase_original := activated
 		end
 
 feature -- Cursor movement
@@ -83,11 +81,25 @@ feature -- Basic operations
 			-- Return the replacement for the Methodbody's return value.
 		deferred end
 
-	methodbody_start (feature_name: STRING_8; target: ANY; arguments: TUPLE)
+	methodbody_start (feature_name: STRING_8; target: OBSERVABLE; arguments: TUPLE)
 			-- Hook for capture/replay. Is to be placed before the methodbody is evaluated
 			-- 'target' is the object whose feature was called
 			-- 'arguments' are the arguments of the feature.
 		deferred end
+
+	enter is
+			--
+		do
+			is_capture_replay_enabled := False
+			is_replay_phase := False
+		end
+
+	leave is
+			--
+		do
+			is_capture_replay_enabled := is_capture_replay_enabled_original
+			is_replay_phase := is_replay_phase_original
+		end
 
 feature -- Obsolete
 
@@ -95,19 +107,12 @@ feature -- Inapplicable
 
 feature {NONE} -- Implementation
 
-		enter is
-				--
-			do
-				is_capture_replay_enabled := False
-			end
+	is_capture_replay_enabled_original: BOOLEAN
+			-- is c/r really enabled? (not only temporary)
 
-		leave is
-				--
-			do
-				is_capture_replay_enabled := is_capture_replay_enabled_original
-			end
-
+	is_replay_phase_original: BOOLEAN
+			-- Is this in fact the replay phase (not only temporary)
 invariant
-	invariant_clause: True -- Your invariant here
+	replay_requires_enabled_cr: is_replay_phase implies is_capture_replay_enabled
 
 end

@@ -6,6 +6,9 @@ indexing
 class
 	ROOT_CLASS
 
+inherit
+	OBSERVABLE
+
 create
 	make
 
@@ -28,7 +31,7 @@ feature -- Initialization
 			ignore_result: ANY
 		do
 		-- Start of C/R setup
-			mode := replay_logged
+			mode := Replay_logged
 			inspect mode
 			when capture then
 				create recorder.make
@@ -42,7 +45,7 @@ feature -- Initialization
 				create logging_player.make
 				create caller
 				logging_player.setup_on_text_files ("run.log", "replay_run.log", caller)
-				player.play
+				logging_player.play
 			when performance_test_normal then
 				create recorder.make --run with not set-up recorder == without instrumentation.
 				test_performance := True
@@ -56,7 +59,14 @@ feature -- Initialization
 			test_performance := False
 			-- End of C/R Setup
 
+
 			-- <methodbody_start name="make" args="[]">
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				controller.methodbody_start("make", Current, [])
+				controller.leave
+			end
+			if (not controller.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				create bank.make
 				atm := bank.atm
@@ -68,22 +78,27 @@ feature -- Initialization
 				end
 				ui.run
 			-- <methodbody_end return_value="False">
+			end
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				ignore_result ?= controller.methodbody_end(Void)
+				controller.leave
+			end
 			-- </methodbody_end>
 		end
 
-	replay_include
-			-- Feature to make sure, that the library classes
-			-- for replay are included in the build.
-		local
-			event_factory: EVENT_FACTORY
-			parser: TEXT_EVENT_PARSER
-			input_stream: KL_TEXT_INPUT_FILE
-			a: ANY
-		do
-			create input_stream.make ("foo.bar")
-			create event_factory
-			create parser.make (input_stream, event_factory)
-		end
+--	replay_include
+--			-- Feature to make sure, that the library classes
+--			-- for replay are included in the build.
+--		local
+--			event_factory: EVENT_FACTORY
+--			parser: TEXT_EVENT_PARSER
+--			input_stream: KL_TEXT_INPUT_FILE
+--		do
+--			create input_stream.make ("foo.bar")
+--			create event_factory
+--			create parser.make (input_stream, event_factory)
+--		end
 
 
 feature --Access

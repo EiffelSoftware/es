@@ -21,10 +21,23 @@ feature -- Access
 		local
 			ignore_result: ANY
 		do
-			-- <methodbody_start name="make" args="[an_atm]"> 
+
+			-- <methodbody_start name="make" args="[an_atm]">
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				controller.methodbody_start("make", Current, [an_atm])
+				controller.leave
+			end
+			if (not controller.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				atm := an_atm
 			-- <methodbody_end return_value="False">
+			end
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				ignore_result ?= controller.methodbody_end(Void)
+				controller.leave
+			end
 			-- </methodbody_end>
 		end
 
@@ -36,7 +49,14 @@ feature --Basic Operations
 			exit: BOOLEAN
 			ignore_result: ANY
 		do
-			-- <methodbody_start name="run" args="[]"> 
+
+			-- <methodbody_start name="run" args="[]">
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				controller.methodbody_start("run", Current, [])
+				controller.leave
+			end
+			if (not controller.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				from
 					exit := False
@@ -64,6 +84,12 @@ feature --Basic Operations
 					end
 				end
 			-- <methodbody_end return_value="False">
+			end
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				ignore_result ?= controller.methodbody_end(Void)
+				controller.leave
+			end
 			-- </methodbody_end>
 		end
 
@@ -74,10 +100,23 @@ feature -- Basic operations
 		local
 			ignore_result: ANY
 		do
-			-- <methodbody_start name="ping" args="[]"> 
+
+			-- <methodbody_start name="ping" args="[]">
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				controller.methodbody_start("ping", Current, [])
+				controller.leave
+			end
+			if (not controller.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 
 			-- <methodbody_end return_value="False">
+			end
+			if controller.is_capture_replay_enabled then
+				controller.enter
+				ignore_result ?= controller.methodbody_end(Void)
+				controller.leave
+			end
 			-- </methodbody_end>
 		end
 
