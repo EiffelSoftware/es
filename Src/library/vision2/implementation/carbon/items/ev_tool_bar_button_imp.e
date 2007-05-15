@@ -64,10 +64,12 @@ feature {NONE} -- Initialization
 			create rect.make_new_unshared
 			rect.set_bottom (100)
 			rect.set_right (100)
+
+			-- one could try to use create_icon_control_external. just a thought...
 			ret := create_bevel_button_control_external ( null, rect.item,
 				null, -- text
 				{CONTROLDEFINITIONS_ANON_ENUMS}.kControlBevelButtonLargeBevel, -- size/thickness
-				{CONTROLDEFINITIONS_ANON_ENUMS}.kControlBehaviorPushButton, -- the behaviour: we want a toggle-button
+				{CONTROLDEFINITIONS_ANON_ENUMS}.kControlBehaviorPushButton, -- the behaviour: we want a push-button
 				null, 0, 0, 0, $ptr )
 			set_c_object ( ptr )
 

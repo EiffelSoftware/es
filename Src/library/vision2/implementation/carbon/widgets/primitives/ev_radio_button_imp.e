@@ -111,7 +111,7 @@ feature {EV_ANY_I} -- Implementation
 		do
 		end
 
-	radio_group: POINTER is
+		radio_group: POINTER is
 		do
 		end
 

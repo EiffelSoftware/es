@@ -27,9 +27,23 @@ create
 feature -- Initialization
 
 	make (an_interface: like interface) is
-		-- Create the tool-bar toggle button.
+			-- Create a Carbon toggle button.
+		local
+			ret: INTEGER
+			rect: RECT_STRUCT
+			ptr: POINTER
 		do
 			base_make (an_interface)
+			create rect.make_new_unshared
+			rect.set_bottom (100)
+			rect.set_right (100)
+			ret := create_bevel_button_control_external ( null, rect.item,
+				null, -- text
+				{CONTROLDEFINITIONS_ANON_ENUMS}.kControlBevelButtonLargeBevel, -- size/thickness
+				{CONTROLDEFINITIONS_ANON_ENUMS}.kControlBehaviorToggles, -- the behaviour: we want a toggle-button
+				null, 0, 0, 0, $ptr )
+			set_c_object ( ptr )
+
 
 		end
 
