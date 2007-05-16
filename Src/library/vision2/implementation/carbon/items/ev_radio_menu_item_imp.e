@@ -56,9 +56,11 @@ feature {EV_ANY_I} -- Implementation
 		do
 		end
 
-	radio_group: POINTER is
+		radio_group: LINKED_LIST [like current] is
+			-- List of all radio item implementations
 		do
 		end
+
 
 	interface: EV_RADIO_MENU_ITEM;
 

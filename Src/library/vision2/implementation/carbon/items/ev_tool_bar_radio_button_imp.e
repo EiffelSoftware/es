@@ -53,7 +53,7 @@ feature {NONE} -- Initialization
 				null, 0, 0, 0, $ptr )
 			set_c_object ( ptr )
 
-			
+
 
 
 		end
@@ -62,7 +62,21 @@ feature -- Status setting
 
 	enable_select is
 			-- Select `Current'.
+		local
+			temp: EV_TOOL_BAR_RADIO_BUTTON_IMP
 		do
+			temp ?= peers.first.implementation
+
+			temp.disable_select
+			radio_group.prune (current)
+			radio_group.put_front (current)
+			-- First element of 'radio_group' is the one that is selected
+		end
+
+	disable_select is
+			-- Unselect 'Current'
+		do
+			set_control32bit_value_external (c_object, 0)
 		end
 
 feature -- Status report
@@ -70,9 +84,11 @@ feature -- Status report
 	is_selected: BOOLEAN is
 			-- Is `Current' selected.
 		do
+			Result := radio_group.first = current
+			-- First element of 'radio_group' is the one that is selected
 		end
 
-feature {EV_ANY_I, EV_GTK_CALLBACK_MARSHAL} -- Implementation
+feature {EV_ANY_I} -- Implementation
 
 	create_select_actions: EV_NOTIFY_ACTION_SEQUENCE is
 			-- Create a select action sequence.
@@ -85,6 +101,7 @@ feature {NONE} -- Implementation
 	set_item_parent_imp (a_container_imp: EV_ITEM_LIST_IMP [EV_ITEM]) is
 			-- Set `parent_imp' to `a_container_imp'.
 		do
+			Precursor {EV_TOOL_BAR_BUTTON_IMP} (a_container_imp)
 		end
 
 feature {EV_ANY_I} -- Implementation
@@ -94,10 +111,19 @@ feature {EV_ANY_I} -- Implementation
 		do
 		end
 
-	radio_group: POINTER is
-			-- Pointer to the GSList used for holding the radio grouping of `Current'
+	radio_group: LINKED_LIST [like current] is
+			-- List of all radio item implementations
+		local
+			temp: EV_TOOL_BAR_IMP
 		do
+			temp ?= item_parent_imp
+			if
+				temp /= Void
+			then
+				Result ?= temp.radio_group
+			end
 		end
+
 
 	interface: EV_TOOL_BAR_RADIO_BUTTON;
 			-- Interface of `Current'

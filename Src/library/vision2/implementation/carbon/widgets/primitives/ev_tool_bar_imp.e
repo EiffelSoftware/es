@@ -68,7 +68,9 @@ feature {NONE} -- Implementation
 			rect.set_right (300)
 			rect.set_bottom (30)
 			ret := create_user_pane_control_external ( null, rect.item, {CONTROLS_ANON_ENUMS}.kControlSupportsEmbedding, $ptr )
-			set_c_object ( ptr )
+			ret := create_radio_group_control_external (null,rect.item, $radio_group)
+			set_c_object ( radio_group )
+
 
 
 
@@ -153,13 +155,22 @@ feature -- Implementation
 		local
 			v_imp: EV_ITEM_IMP
 			ret: INTEGER
+			radio_peer_imp: EV_RADIO_PEER_IMP
 		do
+
+			-- Special treatment for radio buttons
+			radio_peer_imp ?= v.implementation
 			v_imp ?= v.implementation
+			if
+				radio_peer_imp /= Void
+			then
+				ret := embed_control_external (v_imp.c_object, radio_group)
+			else
+				ret := embed_control_external (v_imp.c_object, c_object)
+			end
 			v_imp.set_item_parent_imp (Current)
-			ret := hiview_add_subview_external (c_object, v_imp.c_object)
-			ret := hiview_place_in_superview_at_external (v_imp.c_object, (i - 1) * 100, 0)
-			--{EV_GTK_EXTERNALS}.gtk_toolbar_insert (visual_widget, v_imp.c_object, i - 1)
-			add_radio_button (v)
+			move_control_external (v_imp.c_object, (i - 1) * 100, 0)
+
 			child_array.go_i_th (i)
 			child_array.put_left (v)
 			if parent_imp /= Void then
@@ -167,17 +178,19 @@ feature -- Implementation
 			end
 		end
 
-	add_radio_button (w: like item) is
+	add_radio_button (w: EV_RADIO_PEER_IMP) is
 			-- Connect radio button to tool bar group.
 		require
 			w_not_void: w /= Void
+		local
+			ret: INTEGER
 		do
+
 		end
 
 feature {EV_TOOL_BAR_RADIO_BUTTON_IMP} -- Implementation
 
 	radio_group: POINTER
-		-- GSList containing the radio peers held within `Current'
 
 feature {EV_ANY_I} -- Implementation
 

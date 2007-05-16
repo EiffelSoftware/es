@@ -26,11 +26,27 @@ feature -- Status report
 	peers: LINKED_LIST [like interface] is
 			-- List of all radio items in the group `Current' is in.
 		do
+			if
+				radio_group.empty
+			then
+				Result.extend (interface)
+			else
+				from
+					radio_group.start
+				until
+					radio_group.after
+				loop
+					Result.extend (radio_group.item.interface)
+					radio_group.forth
+				end
+			end
 		end
 
 	selected_peer: like interface is
 			-- Radio item that is currently selected.
 		do
+			Result := peers.first
+			-- First element of the peers list is the selected one
 		end
 
 feature {NONE} -- Implementation
@@ -42,11 +58,11 @@ feature {NONE} -- Implementation
 
 feature {EV_ANY_I} -- Implementation
 
-	radio_group: POINTER is
-			-- Reference to front of radio group. *GSList.
+	radio_group: LINKED_LIST [like current] is
+			-- List of all radio item implementations
 		deferred
 		end
-
+		
 	interface: EV_RADIO_PEER;
 
 indexing
