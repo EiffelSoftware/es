@@ -13,15 +13,9 @@ feature -- Access
 
 	handler: EVENT_PARSER_HANDLER
 
-	after: BOOLEAN
+	end_of_input: BOOLEAN
 		do
-			if not input.end_of_input then -- make lookahead...
-				input.read_character
-				Result :=  input.end_of_input
-				input.unread_character (input.last_character)
-			else
-				Result := True
-			end
+			Result := input.end_of_input
 		end
 
  	input: KI_TEXT_INPUT_STREAM
@@ -54,7 +48,7 @@ feature -- Basic operations
 	parse_event
 		require
 			handler_not_void: handler /= Void
-			not_after: not after
+			not_end_of_input: not end_of_input
 		deferred
 		end
 

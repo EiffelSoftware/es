@@ -15,8 +15,18 @@ inherit
 create
 	make
 
+-- QUESTIONS:
+--	-should the targets be reset in case of an error (e.g. last_string)?
+
+
 feature -- Access
 	line_number: INTEGER
+			-- Line number of currently parsed line.
+
+	has_error: BOOLEAN
+			-- Did an error occur when parsing the current line?
+	error_message: STRING
+			-- Message for the error (only valid if `has_error')
 
 feature -- Creation
 	make(an_input: KI_TEXT_INPUT_STREAM; a_handler: EVENT_PARSER_HANDLER)
@@ -58,11 +68,14 @@ feature -- Basic operations
 			-- Parse an event and call the corresponding
 			-- Handlers from `handler'
 		do
+			has_error := False
 			input.read_line
-			line_number := line_number + 1
-			last_line := input.last_string
-			position := 1
-			parse_line
+			if not end_of_input then
+				line_number := line_number + 1
+				last_line := input.last_string
+				position := 1
+				parse_line
+			end
 		end
 
 feature -- Obsolete
@@ -91,7 +104,7 @@ feature {NONE} -- Implementation
 		require
 			last_line_not_void: last_line /= Void
 		do
-			Result := position >= last_line.count
+			Result := position > last_line.count
 		end
 
 	parse_line
@@ -111,7 +124,7 @@ feature {NONE} -- Implementation
 			elseif matches(outcall_keyword) then
 				parse_outcall
 			else
-				report_error ("INCALL, OUTCALL, INCALLRET or OUTCALLRET")
+					report_error ("INCALL, OUTCALL, INCALLRET or OUTCALLRET")
 			end
 
 		end
@@ -139,30 +152,42 @@ feature {NONE} -- Implementation
 
 	parse_call(handler_feature: PROCEDURE [ANY, TUPLE[ENTITY, STRING, LIST[ENTITY]]]) is
 			-- Parse the common part of in&outcalls and call the `handler_feature'
-			-- when done.
+			-- when done. Set `has_error' if an error occurred.
+		require
+			handler_feature_not_void: handler_feature /= Void
+			last_line_read: last_line /= Void
+			no_error: not has_error
 		local
 			target: ENTITY
 			feature_name: STRING
 			arguments: ARRAYED_LIST[ENTITY]
 		do
 			parse_entity
-			target := last_entity
-			parse_identifier
-			feature_name := last_string
-			from
-				create arguments.make (5) --should be enough for most cases
-			until
-				end_of_line
-			loop
-				parse_entity
-				arguments.extend (last_entity)
+			if not has_error then
+				target := last_entity
+				parse_identifier
+				if not has_error then
+					feature_name := last_string
+					from
+						create arguments.make (5) --should be enough for most cases
+					until
+						has_error or end_of_line
+					loop
+						parse_entity
+						if not has_error then
+							arguments.extend (last_entity)
+						end
+					end
+					if not has_error then
+						handler_feature.call ([target, feature_name,arguments])
+					end
+				end
 			end
-			handler_feature.call ([target, feature_name,arguments])
 		end
 
 	parse_incallret is
 			-- Parse an INCALLRET event - line; call the handler
-			-- when finished
+			-- when finished or set `has_error' if an error occured.
 		require
 			previous_keyword_ok: matches(incallret_keyword)
 		do
@@ -172,7 +197,7 @@ feature {NONE} -- Implementation
 
 	parse_outcallret is
 			-- Parse an OUTCALLRET event - line; call the handler
-			-- when finished
+			-- when finished or set `has_error' if an error occurred.
 		require
 			previous_keyword_ok: matches(outcallret_keyword)
 		do
@@ -182,23 +207,30 @@ feature {NONE} -- Implementation
 
 	parse_ret(handler_feature: PROCEDURE [ANY, TUPLE[ENTITY]])
 			-- Parse the common part of INCALLRET and OUTCALLRET;
-			-- call `handler_feature' when done.
-		local
-
+			-- call `handler_feature' when done or set `has_error' if an error occurred.
+		require
+			handler_feature_not_void: handler_feature /= Void
+			no_error: not has_error
 		do
 			if(end_of_line) then
 				--no return value
 				handler_feature.call([Void])
 			else
 				parse_entity
-				handler_feature.call([last_entity])
+				if not has_error then
+					handler_feature.call([last_entity])
+				end
 			end
 		end
 
 	parse_entity
 			-- Parse an entity and provide the parsed
-			-- ENTITY in `last_entity'
+			-- ENTITY in `last_entity'. Set `has_error' if there is an error.
+		require
+			no_error: not has_error
 		do
+			last_entity := Void
+
 			if item = '[' then
 				consume("[")
 				if matches(basic_keyword) then
@@ -209,88 +241,127 @@ feature {NONE} -- Implementation
 					parse_non_basic
 				else
 					report_error (basic_keyword + " or " + non_basic_keyword)
-					last_entity := Void
 				end
 			else
 				report_error ("[")
 			end
+		ensure
+			last_entity_parsed: has_error or last_entity /= Void
 		end
 
 	parse_non_basic is
 			-- Parse a NON_BASIC_ENTITY and provide the
-			-- Result in last_entity
+			-- Result in last_entity or set `has_error' if there is an error.
+		require
+			no_error: not has_error
 		local
 			typename: STRING
 			object_id: INTEGER
 		do
+			last_entity := Void
+
 			parse_identifier
-			typename := last_string
+			if not  has_error then
+				typename := last_string
 
-			parse_integer
-			object_id := last_integer
+				parse_integer
+				if not has_error then
+					object_id := last_integer
 
-			if item = ']' then
-				consume("]")
-			else
-				report_error("]")
+					if item = ']' then
+						consume("]")
+					else
+						report_error("]")
+					end
+					if not has_error then
+						create {NON_BASIC_ENTITY}last_entity.make(typename,object_id)
+					end
+				end
 			end
-
-			create {NON_BASIC_ENTITY}last_entity.make(typename,object_id)
+		ensure
+			non_basic_entity_parsed: has_error or last_entity /= Void
 		end
 
 	parse_basic is
 			-- Parse a BASIC_ENTITY and provide the
 			-- Result in last_entity
+		require
+			no_error: not has_error
 		local
 			typename: STRING
 			value: STRING
 		do
 			parse_identifier
-			typename := last_string
+			if not has_error then
+				typename := last_string
+				parse_value
+				if not has_error then
+					value := last_string
 
-			parse_value
-			value := last_string
-
-			if item = ']' then
-				consume("]")
-			else
-				report_error("]")
+					if item = ']' then
+						consume("]")
+					else
+						report_error("]")
+					end
+					if not has_error then
+						create {BASIC_ENTITY}last_entity.make (typename, value)
+					end
+				end
 			end
-
-			create {BASIC_ENTITY}last_entity.make (typename, value)
+		ensure
+			entity_parsed: has_error or last_entity /= Void
 		end
 
 
 	parse_identifier
 			-- Parse the identifier at `position' and provide
 			-- the Result in `last_string'
+		require
+			last_line_read: last_line /= Void
+			no_error: not has_error
 		do
-			parse_regex("^[A-Za-z]\w*", "identifier") --\w means alphanumeric incl '_'
+			parse_regex(Identifier_regex, "identifier") --\w means alphanumeric incl '_'
+		ensure
+			identifier_parsed: has_error or matches_regex(last_string, Identifier_regex)
 		end
 
 	parse_integer
 				-- Parse the next integer or and provide the Result in
 				-- `last_integer'
+		require
+			last_line_read: last_line /= Void
+			no_error: not has_error
 		do
-			parse_regex("^[0-9]+", "integer")
-			last_integer := last_string.to_integer
+			parse_regex(Integer_regex, "integer")
+			if not has_error then
+				last_integer := last_string.to_integer
+			end
 		end
-
 
 	parse_value
 			-- Parse the next value and provide the result in
 			-- last_string
+		require
+			last_line_read: last_line /= Void
+			no_error: not has_error
 		do
-			parse_regex("^%"[^%"]*%"", "value")
+			parse_regex(Value_regex, "value")
 
-			-- remove the double quotes
-			last_string := last_string.substring (2, last_string.count -1)
+			if not has_error then
+				-- remove the double quotes
+				last_string := last_string.substring (2, last_string.count -1)
+			end
+		ensure
+			value_parsed: has_error or matches_regex("%""+last_string+"%"", Value_regex)
 		end
 
 	parse_regex(regex_string: STRING; expected_token: STRING)
 			-- Parse for the regular expression `regex_string' and provide
 			-- the result in `last_string' . If the parsing fails, state, that
 			-- `expected_token' was expected.
+		require
+			last_line_read: last_line /= Void
+			no_error: not has_error
 		local
 			regex: RX_PCRE_REGULAR_EXPRESSION
 		do
@@ -304,12 +375,33 @@ feature {NONE} -- Implementation
 			else
 				report_error(expected_token)
 			end
+		ensure
+			regex_parsed: has_error or matches_regex (last_string, regex_string)
 		end
+
+	matches_regex(a_string, regex_string: STRING): BOOLEAN is
+			-- Does `a_string' match to the regular expression
+			-- `regex_string'?
+		require
+			a_string_not_void: a_string /= Void
+			regex_string_not_void: regex_string /= Void
+		local
+			regex: RX_PCRE_REGULAR_EXPRESSION
+		do
+			create regex.make
+			regex.compile(regex_string)
+			Result := regex.matches(a_string)
+		end
+
 
 	item: CHARACTER is
 			-- character at `position'
+		require
+			not_end_of_line: not end_of_line
 		do
 			Result := last_line.item (position)
+		ensure
+			Result_not_Void: Result /= Void
 		end
 
 
@@ -335,6 +427,8 @@ feature {NONE} -- Implementation
 			not_end_of_line: not end_of_line
 		do
 			position := position + 1
+		ensure
+			position_moved: position = old position + 1
 		end
 
 
@@ -348,6 +442,7 @@ feature {NONE} -- Implementation
 			consume_whitespaces
 		ensure
 			position_shifted: position >= old position + a_string.count
+			whitespaces_read: item /= ' ' and item /= '%T'
 		end
 
 	consume_whitespaces is
@@ -365,21 +460,28 @@ feature {NONE} -- Implementation
 	report_error(expected_token: STRING)
 			--reports an error to the 'user'.
 		do
-			exceptions.raise ("parse error. expected: '" + expected_token + "' but got '" + last_line.substring (position, last_line.count) + "'")
+			has_error := True
+			error_message := "parse error. expected: '" + expected_token + "' but got '" + last_line.substring (position, last_line.count) + "'"
+--			exceptions.raise ("parse error. expected: '" + expected_token + "' but got '" + last_line.substring (position, last_line.count) + "'")
 		end
 
-	incall_keyword: STRING is "INCALL"
+	Incall_keyword: STRING is "INCALL"
 
-	outcall_keyword: STRING is "OUTCALL"
+	Outcall_keyword: STRING is "OUTCALL"
 
-	incallret_keyword: STRING is "INCALLRET"
+	Incallret_keyword: STRING is "INCALLRET"
 
-	outcallret_keyword: STRING is "OUTCALLRET"
+	Outcallret_keyword: STRING is "OUTCALLRET"
 
-	basic_keyword: STRING is "BASIC"
+	Basic_keyword: STRING is "BASIC"
 
-	non_basic_keyword: STRING is "NON_BASIC"
+	Non_basic_keyword: STRING is "NON_BASIC"
 
+	Integer_regex: STRING is "^[0-9]+"
+
+	Identifier_regex: STRING is "^[A-Za-z]\w*"
+
+	Value_regex: STRING is "^%"[^%"]*%""
 
 	exceptions: EXCEPTIONS is
 			-- Standard EXCEPTIONS instance

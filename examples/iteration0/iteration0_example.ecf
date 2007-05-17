@@ -2,13 +2,20 @@
 	<target name="iteration0_example">
 		<root class="ROOT_CLASS" feature="make"/>
 		<option profile="false" warning="true">
-			<assertions precondition="true" postcondition="true"/>
+			<assertions/>
 		</option>
 		<setting name="console_application" value="true"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf" readonly="false"/>
 		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
-		<cluster name="additional_base_classes" location="$ISE_LIBRARY\library\base\capture_replay\own_classes\" recursive="true"/>
+		<cluster name="additional_base_classes" location="$ISE_LIBRARY\library\base\capture_replay\own_classes\" recursive="true">
+			<option>
+				<assertions/>
+			</option>
+		</cluster>
 		<cluster name="root_cluster" location=".\" recursive="true">
+			<option>
+				<assertions/>
+			</option>
 			<file_rule>
 				<exclude>/EIFGENs$</exclude>
 				<exclude>/.svn$</exclude>

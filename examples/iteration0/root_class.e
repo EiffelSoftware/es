@@ -32,6 +32,7 @@ feature -- Initialization
 		do
 		-- Start of C/R setup
 			mode := Replay_logged
+--			mode := Capture
 			inspect mode
 			when capture then
 				create recorder.make

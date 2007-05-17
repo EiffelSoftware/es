@@ -13,8 +13,8 @@ inherit
 	EVENT
 
 feature -- Creation
+
 	make(a_target: NON_BASIC_ENTITY; a_feature_name: STRING; the_arguments: LIST[ENTITY])
-		--TODO: add contracts for target and feature - name
 		require
 			a_target_not_void: a_target /= Void
 			a_feature_name_not_void: a_feature_name /= Void
@@ -28,10 +28,15 @@ feature -- Creation
 feature -- Access
 
 	target: NON_BASIC_ENTITY
+		-- The target of the call
+		-- Note:	can't be a basic entity, because these classes won't be
+		--			instrumented and thus will never receive calls.
 
 	feature_name: STRING
+		-- The name of the called feature.
 
 	arguments: LIST[ENTITY]
+		-- The arguments of the called feature.
 
 
 feature -- Measurement

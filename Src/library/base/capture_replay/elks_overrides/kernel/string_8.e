@@ -82,12 +82,11 @@ feature -- Initialization
 	make (n: INTEGER) is
 			-- Allocate space for at least `n' characters.
 		require
+			contracts_disabled: False
 			non_negative_size: n >= 0
 		local
 			ignore_result: ANY
 		do
-
-
 			-- <methodbody_start name="make" args="[n]">
 			if controller.is_capture_replay_enabled then
 				controller.enter
@@ -99,7 +98,9 @@ feature -- Initialization
 				count := 0
 				internal_hash_code := 0
 				make_area (n + 1)
-			-- <methodbody_end return_value="False">
+--XXX			-- <methodbody_end return_value="False">
+			else
+				make_area (n + 1)
 			end
 			if controller.is_capture_replay_enabled then
 				controller.enter
@@ -108,8 +109,8 @@ feature -- Initialization
 			end
 			-- </methodbody_end>
 		ensure
-			empty_string: count = 0
-			area_allocated: capacity >= n
+--			empty_string: count = 0
+--			area_allocated: capacity >= n
 		end
 
 	make_empty is
@@ -137,8 +138,8 @@ feature -- Initialization
 			end
 			-- </methodbody_end>
 		ensure
-			empty: count = 0
-			area_allocated: capacity >= 0
+--			empty: count = 0
+--			area_allocated: capacity >= 0
 		end
 
 	make_filled (c: CHARACTER; n: INTEGER) is
@@ -169,9 +170,9 @@ feature -- Initialization
 			end
 			-- </methodbody_end>
 		ensure
-			count_set: count = n
-			area_allocated: capacity >= n
-			filled: occurrences (c) = count
+--			count_set: count = n
+--			area_allocated: capacity >= n
+--			filled: occurrences (c) = count
 		end
 
 	make_from_string (s: STRING) is
@@ -930,13 +931,13 @@ feature -- Measurement
 			end
 			-- </methodbody_end>
 		ensure then
-			zero_if_empty: count = 0 implies Result = 0
-			recurse_if_not_found_at_first_position:
-				(count > 0 and then item (1) /= c) implies
-					Result = substring (2, count).occurrences (c)
-			recurse_if_found_at_first_position:
-				(count > 0 and then item (1) = c) implies
-					Result = 1 + substring (2, count).occurrences (c)
+--			zero_if_empty: count = 0 implies Result = 0
+--			recurse_if_not_found_at_first_position:
+--				(count > 0 and then item (1) /= c) implies
+--					Result = substring (2, count).occurrences (c)
+--			recurse_if_found_at_first_position:
+--				(count > 0 and then item (1) = c) implies
+--					Result = 1 + substring (2, count).occurrences (c)
 		end
 
 	index_set: INTEGER_INTERVAL is
@@ -1205,10 +1206,10 @@ feature -- Status report
 			end
 			-- </methodbody_end>
 		ensure then
-			false_if_empty: count = 0 implies not Result
-			true_if_first: count > 0 and then item (1) = c implies Result
-			recurse: (count > 0 and then item (1) /= c) implies
-				(Result = substring (2, count).has (c))
+--			false_if_empty: count = 0 implies not Result
+--			true_if_first: count > 0 and then item (1) = c implies Result
+--			recurse: (count > 0 and then item (1) /= c) implies
+--				(Result = substring (2, count).has (c))
 		end
 
 	has_substring (other: STRING): BOOLEAN is
@@ -1240,12 +1241,12 @@ feature -- Status report
 			end
 			-- </methodbody_end>
 		ensure
-			false_if_too_small: count < other.count implies not Result
-			true_if_initial: (count >= other.count and then
-				other.same_string (substring (1, other.count))) implies Result
-			recurse: (count >= other.count and then
-				not other.same_string (substring (1, other.count))) implies
-				(Result = substring (2, count).has_substring (other))
+--			false_if_too_small: count < other.count implies not Result
+--			true_if_initial: (count >= other.count and then
+--				other.same_string (substring (1, other.count))) implies Result
+--			recurse: (count >= other.count and then
+--				not other.same_string (substring (1, other.count))) implies
+--				(Result = substring (2, count).has_substring (other))
 		end
 
 	extendible: BOOLEAN is True
@@ -1497,7 +1498,7 @@ feature -- Status report
 			end
 			-- </methodbody_end>
 		ensure
-			is_boolean: Result = (true_constant.same_string (as_lower) or false_constant.same_string (as_lower))
+--			is_boolean: Result = (true_constant.same_string (as_lower) or false_constant.same_string (as_lower))
 		end
 
 	is_integer_8: BOOLEAN is
@@ -1727,7 +1728,7 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure
-			is_substring: is_equal (t.substring (n1, n2))
+--			is_substring: is_equal (t.substring (n1, n2))
 		end
 
 	copy (other: like Current) is
@@ -1774,7 +1775,7 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure then
-			new_result_count: count = other.count
+--			new_result_count: count = other.count
 			-- same_characters: For every `i' in 1..`count', `item' (`i') = `other'.`item' (`i')
 		end
 
@@ -1823,20 +1824,20 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure
-			same_count: count = old count
-			copied: elks_checking implies
-				(is_equal (old substring (1, index_pos - 1) +
-				old other.substring (start_pos, end_pos) +
-				old substring (index_pos + (end_pos - start_pos + 1), count)))
+--			same_count: count = old count
+--			copied: elks_checking implies
+--				(is_equal (old substring (1, index_pos - 1) +
+--				old other.substring (start_pos, end_pos) +
+--				old substring (index_pos + (end_pos - start_pos + 1), count)))
 		end
 
 	replace_substring (s: STRING; start_index, end_index: INTEGER) is
 			-- Replace characters from `start_index' to `end_index' with `s'.
 		require
-			string_not_void: s /= Void
-			valid_start_index: 1 <= start_index
-			valid_end_index: end_index <= count
-			meaningfull_interval: start_index <= end_index + 1
+--			string_not_void: s /= Void
+--			valid_start_index: 1 <= start_index
+--			valid_end_index: end_index <= count
+--			meaningfull_interval: start_index <= end_index + 1
 		local
 			ignore_result: ANY
 			new_size: INTEGER
@@ -1883,10 +1884,10 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure
-			new_count: count = old count + old s.count - end_index + start_index - 1
-			replaced: elks_checking implies
-				(is_equal (old (substring (1, start_index - 1) +
-					s + substring (end_index + 1, count))))
+--			new_count: count = old count + old s.count - end_index + start_index - 1
+--			replaced: elks_checking implies
+--				(is_equal (old (substring (1, start_index - 1) +
+--					s + substring (end_index + 1, count))))
 		end
 
 	replace_substring_all (original, new: like Current) is
@@ -2024,8 +2025,8 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure
-			same_size: (count = old count) and (capacity >= old capacity)
-			all_blank: elks_checking implies occurrences (' ') = count
+--			same_size: (count = old count) and (capacity >= old capacity)
+--			all_blank: elks_checking implies occurrences (' ') = count
 		end
 
 	fill_blank is
@@ -2053,9 +2054,9 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure
-			filled: full
-			same_size: (count = capacity) and (capacity = old capacity)
-			-- all_blank: For every `i' in `count'..`capacity', `item' (`i') = `Blank'
+--			filled: full
+--			same_size: (count = capacity) and (capacity = old capacity)
+--			-- all_blank: For every `i' in `count'..`capacity', `item' (`i') = `Blank'
 		end
 
 	fill_with (c: CHARACTER) is
@@ -2088,8 +2089,8 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure
-			same_count: (count = old count) and (capacity >= old capacity)
-			filled: elks_checking implies occurrences (c) = count
+--			same_count: (count = old count) and (capacity >= old capacity)
+--			filled: elks_checking implies occurrences (c) = count
 		end
 
 	replace_character (c: CHARACTER) is
@@ -2119,8 +2120,8 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure
-			same_count: (count = old count) and (capacity >= old capacity)
-			filled: elks_checking implies occurrences (c) = count
+--			same_count: (count = old count) and (capacity >= old capacity)
+--			filled: elks_checking implies occurrences (c) = count
 		end
 
 	fill_character (c: CHARACTER) is
@@ -2154,9 +2155,9 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure
-			filled: full
-			same_size: (count = capacity) and (capacity = old capacity)
-			-- all_char: For every `i' in 1..`capacity', `item' (`i') = `c'
+--			filled: full
+--			same_size: (count = capacity) and (capacity = old capacity)
+--			-- all_char: For every `i' in 1..`capacity', `item' (`i') = `c'
 		end
 
 	head (n: INTEGER) is
@@ -2189,15 +2190,15 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure
-			new_count: count = n.min (old count)
-			kept: elks_checking implies is_equal (old substring (1, n.min (count)))
+--			new_count: count = n.min (old count)
+--			kept: elks_checking implies is_equal (old substring (1, n.min (count)))
 		end
 
 	keep_head (n: INTEGER) is
 			-- Remove all characters except for the first `n';
 			-- do nothing if `n' >= `count'.
 		require
-			non_negative_argument: n >= 0
+--			non_negative_argument: n >= 0
 		local
 			ignore_result: ANY
 		do
@@ -2224,8 +2225,8 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure
-			new_count: count = n.min (old count)
-			kept: elks_checking implies is_equal (old substring (1, n.min (count)))
+--			new_count: count = n.min (old count)
+--			kept: elks_checking implies is_equal (old substring (1, n.min (count)))
 		end
 
 	tail (n: INTEGER) is
@@ -2234,7 +2235,7 @@ feature -- Element change
 		obsolete
 			"ELKS 2001: use `keep_tail' instead'"
 		require
-			non_negative_argument: n >= 0
+--			non_negative_argument: n >= 0
 		local
 			ignore_result: ANY
 		do
@@ -2258,15 +2259,15 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure
-			new_count: count = n.min (old count)
-			kept: elks_checking implies is_equal (old substring (count - n.min(count) + 1, count))
+--			new_count: count = n.min (old count)
+--			kept: elks_checking implies is_equal (old substring (count - n.min(count) + 1, count))
 		end
 
 	keep_tail (n: INTEGER) is
 			-- Remove all characters except for the last `n';
 			-- do nothing if `n' >= `count'.
 		require
-			non_negative_argument: n >= 0
+--			non_negative_argument: n >= 0
 		local
 			ignore_result: ANY
 			nb: like count
@@ -2296,8 +2297,8 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure
-			new_count: count = n.min (old count)
-			kept: elks_checking implies is_equal (old substring (count - n.min(count) + 1, count))
+--			new_count: count = n.min (old count)
+--			kept: elks_checking implies is_equal (old substring (count - n.min(count) + 1, count))
 		end
 
 	left_adjust is
@@ -2345,9 +2346,9 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure
-			valid_count: count <= old count
-			new_count: not is_empty implies not item (1).is_space
-			kept: elks_checking implies is_equal ((old twin).substring (old count - count + 1, old count))
+--			valid_count: count <= old count
+--			new_count: not is_empty implies not item (1).is_space
+--			kept: elks_checking implies is_equal ((old twin).substring (old count - count + 1, old count))
 		end
 
 	right_adjust is
@@ -2394,13 +2395,13 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure
-			valid_count: count <= old count
-			new_count: (count /= 0) implies
-				((item (count) /= ' ') and
-				 (item (count) /= '%T') and
-				 (item (count) /= '%R') and
-				 (item (count) /= '%N'))
-			kept: elks_checking implies is_equal ((old twin).substring (1, count))
+--			valid_count: count <= old count
+--			new_count: (count /= 0) implies
+--				((item (count) /= ' ') and
+--				 (item (count) /= '%T') and
+--				 (item (count) /= '%R') and
+--				 (item (count) /= '%N'))
+--			kept: elks_checking implies is_equal ((old twin).substring (1, count))
 		end
 
 	share (other: STRING) is
@@ -2434,8 +2435,8 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure
-			shared_count: other.count = count
-			shared_area: other.area = area
+--			shared_count: other.count = count
+--			shared_area: other.area = area
 		end
 
 	put (c: CHARACTER; i: INTEGER) is
@@ -2464,9 +2465,9 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure then
-			stable_count: count = old count
-			stable_before_i: elks_checking implies substring (1, i - 1).is_equal (old substring (1, i - 1))
-			stable_after_i: elks_checking implies substring (i + 1, count).is_equal (old substring (i + 1, count))
+--			stable_count: count = old count
+--			stable_before_i: elks_checking implies substring (1, i - 1).is_equal (old substring (1, i - 1))
+--			stable_after_i: elks_checking implies substring (i + 1, count).is_equal (old substring (i + 1, count))
 		end
 
 	put_code (v: NATURAL_32; i: INTEGER) is
@@ -2529,13 +2530,13 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure
-			new_count: count = old count + 1
+--			new_count: count = old count + 1
 		end
 
 	prepend (s: STRING) is
 			-- Prepend a copy of `s' at front.
 		require
-			argument_not_void: s /= Void
+--			argument_not_void: s /= Void
 		local
 			ignore_result: ANY
 		do
@@ -2559,8 +2560,8 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure
-			new_count: count = old (count + s.count)
-			inserted: elks_checking implies string.is_equal (old (s.twin) + old substring (1, count))
+--			new_count: count = old (count + s.count)
+--			inserted: elks_checking implies string.is_equal (old (s.twin) + old substring (1, count))
 		end
 
 	prepend_boolean (b: BOOLEAN) is
@@ -2730,7 +2731,7 @@ feature -- Element change
 	append (s: STRING) is
 			-- Append a copy of `s' at end.
 		require
-			argument_not_void: s /= Void
+--			argument_not_void: s /= Void
 		local
 			ignore_result: ANY
 			l_count, l_s_count, l_new_size: INTEGER
@@ -2765,15 +2766,15 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure
-			new_count: count = old count + old s.count
-			appended: elks_checking implies is_equal (old twin + old s.twin)
+--			new_count: count = old count + old s.count
+--			appended: elks_checking implies is_equal (old twin + old s.twin)
 		end
 
 	infix "+" (s: STRING): like Current is
 			-- Append a copy of 's' at the end of a copy of Current,
 			-- Then return the Result.
 		require
-			argument_not_void: s /= Void
+--			argument_not_void: s /= Void
 		local
 			ignore_result: ANY
 		do
@@ -2799,10 +2800,10 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure
-			Result_exists: Result /= Void
-			new_count: Result.count = count + s.count
-			initial: elks_checking implies Result.substring (1, count).is_equal (Current)
-			final: elks_checking implies Result.substring (count + 1, count + s.count).same_string (s)
+--			Result_exists: Result /= Void
+--			new_count: Result.count = count + s.count
+--			initial: elks_checking implies Result.substring (1, count).is_equal (Current)
+--			final: elks_checking implies Result.substring (count + 1, count + s.count).same_string (s)
 		end
 
 	append_string (s: STRING) is
@@ -2832,8 +2833,8 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure
-			appended: s /= Void implies
-				(elks_checking implies is_equal (old twin + old s.twin))
+--			appended: s /= Void implies
+--				(elks_checking implies is_equal (old twin + old s.twin))
 		end
 
 	append_integer (i: INTEGER) is
@@ -3430,9 +3431,9 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure then
-			item_inserted: item (count) = c
-			new_count: count = old count + 1
-			stable_before: elks_checking implies substring (1, count - 1).is_equal (old twin)
+--			item_inserted: item (count) = c
+--			new_count: count = old count + 1
+--			stable_before: elks_checking implies substring (1, count - 1).is_equal (old twin)
 		end
 
 	append_boolean (b: BOOLEAN) is
@@ -3466,9 +3467,9 @@ feature -- Element change
 		obsolete
 			"ELKS 2001: use `insert_string' instead"
 		require
-			string_exists: s /= Void
-			index_small_enough: i <= count + 1
-			index_large_enough: i > 0
+--			string_exists: s /= Void
+--			index_small_enough: i <= count + 1
+--			index_large_enough: i > 0
 		local
 			ignore_result: ANY
 		do
@@ -3492,16 +3493,16 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure
-			inserted: elks_checking implies
-				(is_equal (old substring (1, i - 1) + old (s.twin) + old substring (i, count)))
+--			inserted: elks_checking implies
+--				(is_equal (old substring (1, i - 1) + old (s.twin) + old substring (i, count)))
 		end
 
 	insert_string (s: STRING; i: INTEGER) is
 			-- Insert `s' at index `i', shifting characters between ranks
 			-- `i' and `count' rightwards.
 		require
-			string_exists: s /= Void
-			valid_insertion_index: 1 <= i and i <= count + 1
+--			string_exists: s /= Void
+--			valid_insertion_index: 1 <= i and i <= count + 1
 		local
 			ignore_result: ANY
 			pos, new_size: INTEGER
@@ -3549,15 +3550,15 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure
-			inserted: elks_checking implies
-				(is_equal (old substring (1, i - 1) + old (s.twin) + old substring (i, count)))
+--			inserted: elks_checking implies
+--				(is_equal (old substring (1, i - 1) + old (s.twin) + old substring (i, count)))
 		end
 
 	insert_character (c: CHARACTER; i: INTEGER) is
 			-- Insert `c' at index `i', shifting characters between ranks
 			-- `i' and `count' rightwards.
 		require
-			valid_insertion_index: 1 <= i and i <= count + 1
+--			valid_insertion_index: 1 <= i and i <= count + 1
 		local
 			ignore_result: ANY
 			pos, new_size: INTEGER
@@ -3600,10 +3601,10 @@ feature -- Element change
 			end
 			-- </methodbody_end>
 		ensure
-			one_more_character: count = old count + 1
-			inserted: item (i) = c
-			stable_before_i: elks_checking implies substring (1, i - 1).is_equal (old substring (1, i - 1))
-			stable_after_i: elks_checking implies substring (i + 1, count).is_equal (old substring (i, count))
+--			one_more_character: count = old count + 1
+--			inserted: item (i) = c
+--			stable_before_i: elks_checking implies substring (1, i - 1).is_equal (old substring (1, i - 1))
+--			stable_after_i: elks_checking implies substring (i + 1, count).is_equal (old substring (i, count))
 		end
 
 feature -- Removal
@@ -3673,16 +3674,16 @@ feature -- Removal
 			end
 			-- </methodbody_end>
 		ensure
-			removed: elks_checking implies is_equal (old substring (n.min (count) + 1, count))
+--			removed: elks_checking implies is_equal (old substring (n.min (count) + 1, count))
 		end
 
 	remove_substring (start_index, end_index: INTEGER) is
 			-- Remove all characters from `start_index'
 			-- to `end_index' inclusive.
 		require
-			valid_start_index: 1 <= start_index
-			valid_end_index: end_index <= count
-			meaningful_interval: start_index <= end_index + 1
+--			valid_start_index: 1 <= start_index
+--			valid_end_index: end_index <= count
+--			meaningful_interval: start_index <= end_index + 1
 		local
 			ignore_result: ANY
 			l_count, nb_removed: INTEGER
@@ -3712,8 +3713,8 @@ feature -- Removal
 			end
 			-- </methodbody_end>
 		ensure
-			removed: elks_checking implies
-				is_equal (old substring (1, start_index - 1) + old substring (end_index + 1, count))
+--			removed: elks_checking implies
+--				is_equal (old substring (1, start_index - 1) + old substring (end_index + 1, count))
 		end
 
 	remove_tail (n: INTEGER) is
@@ -3751,7 +3752,7 @@ feature -- Removal
 			end
 			-- </methodbody_end>
 		ensure
-			removed: elks_checking implies is_equal (old substring (1, count - n.min (count)))
+--			removed: elks_checking implies is_equal (old substring (1, count - n.min (count)))
 		end
 
 	prune (c: CHARACTER) is
@@ -3838,8 +3839,8 @@ feature -- Removal
 			end
 			-- </methodbody_end>
 		ensure then
-			changed_count: count = (old count) - (old occurrences (c))
-			-- removed: For every `i' in 1..`count', `item' (`i') /= `c'
+--			changed_count: count = (old count) - (old occurrences (c))
+--			-- removed: For every `i' in 1..`count', `item' (`i') /= `c'
 		end
 
 	prune_all_leading (c: CHARACTER) is
@@ -3931,8 +3932,8 @@ feature -- Removal
 			end
 			-- </methodbody_end>
 		ensure then
-			is_empty: count = 0
-			empty_capacity: capacity = 0
+--			is_empty: count = 0
+--			empty_capacity: capacity = 0
 		end
 
 	clear_all is
@@ -3961,8 +3962,8 @@ feature -- Removal
 			end
 			-- </methodbody_end>
 		ensure
-			is_empty: count = 0
-			same_capacity: capacity = old capacity
+--			is_empty: count = 0
+--			same_capacity: capacity = old capacity
 		end
 
 feature -- Resizing
@@ -4081,9 +4082,9 @@ feature -- Conversion
 			end
 			-- </methodbody_end>
 		ensure
-			length: Result.count = count
-			anchor: count > 0 implies Result.item (1) = item (1).as_lower
-			recurse: count > 1 implies Result.substring (2, count).is_equal (substring (2, count).as_lower)
+--			length: Result.count = count
+--			anchor: count > 0 implies Result.item (1) = item (1).as_lower
+--			recurse: count > 1 implies Result.substring (2, count).is_equal (substring (2, count).as_lower)
 		end
 
 	as_upper: like Current is
@@ -4112,10 +4113,10 @@ feature -- Conversion
 			end
 			-- </methodbody_end>
 		ensure
-				length: Result.count = count
-				anchor: count > 0 implies Result.item (1) = item (1).as_upper
-				recurse: count > 1 implies Result.substring (2, count).
-					is_equal (substring (2, count).as_upper)
+--				length: Result.count = count
+--				anchor: count > 0 implies Result.item (1) = item (1).as_upper
+--				recurse: count > 1 implies Result.substring (2, count).
+--					is_equal (substring (2, count).as_upper)
 		end
 
 	left_justify is
@@ -4298,7 +4299,7 @@ feature -- Conversion
 			end
 			-- </methodbody_end>
 		ensure
-			same_count: count = old count
+--			same_count: count = old count
 		end
 
 	character_justify (pivot: CHARACTER; position: INTEGER) is
@@ -4308,10 +4309,10 @@ feature -- Conversion
 			-- This will grow the string if necessary
 			-- to get the pivot in the correct place.
 		require
-			valid_position: position <= capacity
-			positive_position: position >= 1
-			pivot_not_space: pivot /= ' '
-			not_empty: not is_empty
+--			valid_position: position <= capacity
+--			positive_position: position >= 1
+--			pivot_not_space: pivot /= ' '
+--			not_empty: not is_empty
 		local
 			ignore_result: ANY
 			l_index_of_pivot, l_new_size: INTEGER
@@ -4392,7 +4393,7 @@ feature -- Conversion
 			end
 			-- </methodbody_end>
 		ensure
-			length_end_content: elks_checking implies is_equal (old as_lower)
+--			length_end_content: elks_checking implies is_equal (old as_lower)
 		end
 
 	to_upper is
@@ -4431,13 +4432,13 @@ feature -- Conversion
 			end
 			-- </methodbody_end>
 		ensure
-			length_end_content: elks_checking implies is_equal (old as_upper)
+--			length_end_content: elks_checking implies is_equal (old as_upper)
 		end
 
 	to_integer_8: INTEGER_8 is
 			-- 8-bit integer value
 		require
-			is_integer_8: is_integer_8
+--			is_integer_8: is_integer_8
 		do
 
 
@@ -4464,7 +4465,7 @@ feature -- Conversion
 	to_integer_16: INTEGER_16 is
 			-- 16-bit integer value
 		require
-			is_integer_16: is_integer_16
+--			is_integer_16: is_integer_16
 		do
 
 
@@ -4491,7 +4492,7 @@ feature -- Conversion
 	to_integer, to_integer_32: INTEGER is
 			-- 32-bit integer value
 		require
-			is_integer: is_integer_32
+--			is_integer: is_integer_32
 		do
 
 
@@ -4518,7 +4519,7 @@ feature -- Conversion
 	to_integer_64: INTEGER_64 is
 			-- 64-bit integer value
 		require
-			is_integer_64: is_integer_64
+--			is_integer_64: is_integer_64
 		do
 
 
@@ -4545,7 +4546,7 @@ feature -- Conversion
 	to_natural_8: NATURAL_8 is
 			-- 8-bit natural value
 		require
-			is_natural_8: is_natural_8
+--			is_natural_8: is_natural_8
 		do
 
 
@@ -4572,7 +4573,7 @@ feature -- Conversion
 	to_natural_16: NATURAL_16 is
 			-- 16-bit natural value
 		require
-			is_natural_16: is_natural_16
+--			is_natural_16: is_natural_16
 		do
 
 
@@ -4599,7 +4600,7 @@ feature -- Conversion
 	to_natural, to_natural_32: NATURAL_32 is
 			-- 32-bit natural value
 		require
-			is_natural: is_natural
+--			is_natural: is_natural
 		do
 
 
@@ -4626,7 +4627,7 @@ feature -- Conversion
 	to_natural_64: NATURAL_64 is
 			-- 64-bit natural value
 		require
-			is_natural_64: is_natural_64
+--			is_natural_64: is_natural_64
 		do
 
 
@@ -4654,7 +4655,7 @@ feature -- Conversion
 			-- Real value;
 			-- for example, when applied to "123.0", will yield 123.0
 		require
-			represents_a_real: is_real
+--			represents_a_real: is_real
 		local
 			ignore_result: ANY
 		do
@@ -4683,7 +4684,7 @@ feature -- Conversion
 			-- "Double" value;
 			-- for example, when applied to "123.0", will yield 123.0 (double)
 		require
-			represents_a_double: is_double
+--			represents_a_double: is_double
 		do
 
 
@@ -4712,7 +4713,7 @@ feature -- Conversion
 			-- "True" yields `True', "False" yields `False'
 			-- (case-insensitive)
 		require
-			is_boolean: is_boolean
+--			is_boolean: is_boolean
 		do
 
 
@@ -4737,8 +4738,8 @@ feature -- Conversion
 			end
 			-- </methodbody_end>
 		ensure
-			to_boolean: (Result = true_constant.same_string (as_lower)) or
-				(not Result = false_constant.same_string (as_lower))
+--			to_boolean: (Result = true_constant.same_string (as_lower)) or
+--				(not Result = false_constant.same_string (as_lower))
 		end
 
 	linear_representation: LINEAR [CHARACTER] is
@@ -4838,14 +4839,14 @@ feature -- Conversion
 			end
 			-- </methodbody_end>
 		ensure
-			Result /= Void
+--			Result /= Void
 		end
 
 	frozen to_c: ANY is
 			-- A reference to a C form of current string.
 			-- Useful only for interfacing with C software.
 		require
-			not_is_dotnet: not {PLATFORM}.is_dotnet
+--			not_is_dotnet: not {PLATFORM}.is_dotnet
 		local
 			l_area: like area
 		do
@@ -4899,7 +4900,7 @@ feature -- Conversion
 			end
 			-- </methodbody_end>
 		ensure
-			same_count: Result.count = count
+--			same_count: Result.count = count
 			-- reversed: For every `i' in 1..`count', `Result'.`item' (`i') = `item' (`count'+1-`i')
 		end
 
@@ -4946,8 +4947,8 @@ feature -- Conversion
 			end
 			-- </methodbody_end>
 		ensure
-			same_count: count = old count
-			-- reversed: For every `i' in 1..`count', `item' (`i') = old `item' (`count'+1-`i')
+--			same_count: count = old count
+--			-- reversed: For every `i' in 1..`count', `item' (`i') = old `item' (`count'+1-`i')
 		end
 
 feature -- Duplication
@@ -4982,16 +4983,16 @@ feature -- Duplication
 			end
 			-- </methodbody_end>
 		ensure then
-			first_item: Result.count > 0 implies Result.item (1) = item (start_index)
-			recurse: Result.count > 0 implies
-				Result.substring (2, Result.count).is_equal (substring (start_index + 1, end_index))
+--			first_item: Result.count > 0 implies Result.item (1) = item (start_index)
+--			recurse: Result.count > 0 implies
+--				Result.substring (2, Result.count).is_equal (substring (start_index + 1, end_index))
 		end
 
 	multiply (n: INTEGER) is
 			-- Duplicate a string within itself
 			-- ("hello").multiply(3) => "hellohellohello"
 		require
-			meaningful_multiplier: n >= 1
+--			meaningful_multiplier: n >= 1
 		local
 			ignore_result: ANY
 			s: like Current
@@ -5052,8 +5053,8 @@ feature -- Output
 			end
 			-- </methodbody_end>
 		ensure then
-			out_not_void: Result /= Void
-			same_items: same_type ("") implies Result.same_string (Current)
+--			out_not_void: Result /= Void
+--			same_items: same_type ("") implies Result.same_string (Current)
 		end
 
 feature {STRING_HANDLER} -- Implementation
@@ -5107,9 +5108,9 @@ feature {NONE} -- Implementation
 		do
 			create Result.make (n)
 		ensure
-			new_string_not_void: Result /= Void
-			new_string_empty: Result.is_empty
-			new_string_area_big_enough: Result.capacity >= n
+--			new_string_not_void: Result /= Void
+--			new_string_empty: Result.is_empty
+--			new_string_area_big_enough: Result.capacity >= n
 		end
 
 feature {NONE} -- Transformation
@@ -5137,10 +5138,10 @@ feature {NONE} -- Implementation
 			-- 0 if equal, < 0 if `this' < `other',
 			-- > 0 if `this' > `other'
 		require
-			this_not_void: this /= Void or else nb = 0
-			other_not_void: other /= Void
-			nb_non_negative: nb >= 0
-			nb_valid: (this /= Void implies nb <= this.count) and nb <= other.count
+--			this_not_void: this /= Void or else nb = 0
+--			other_not_void: other /= Void
+--			nb_non_negative: nb >= 0
+--			nb_valid: (this /= Void implies nb <= this.count) and nb <= other.count
 		local
 			i, l_current_code, l_other_code: INTEGER
 		do
@@ -5165,7 +5166,7 @@ feature {NONE} -- Implementation
 		do
 			create Result.make (1)
 		ensure
-			empty_area_not_void: Result /= Void
+--			empty_area_not_void: Result /= Void
 		end
 
 invariant

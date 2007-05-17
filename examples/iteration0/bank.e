@@ -23,6 +23,7 @@ feature --creation
 		-- Create a bank
 		local
 			ignore_result: ANY
+			test_string: STRING
 		do
 
 			-- <methodbody_start name="make" args="[]">
@@ -33,6 +34,7 @@ feature --creation
 			end
 			if (not controller.is_replay_phase) or is_observed then
 			-- </methodbody_start>
+				test_string := "test_string"
 				create the_account.make ("test")
 				create the_atm.make (Current)
 			-- <methodbody_end return_value="False">
