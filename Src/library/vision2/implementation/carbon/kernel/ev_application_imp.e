@@ -94,9 +94,23 @@ feature {NONE} -- Event loop
 	 launch is
 			-- Display the first window, set up the post_launch_actions,
 			-- and start the event loop.
+		local
+			target: POINTER
+			event: OPAQUE_EVENT_REF_STRUCT_EXTERNAL
+			ret: INTEGER
 		do
 			enable_foreground_operation
 			run_application_event_loop_external
+--			target := get_event_dispatcher_target_external
+--			from
+--
+--			until
+--				false
+--			loop
+--				receive_next_event_external (0, null, kEventDurationForever, true, event.item)
+--				send_event_to_event_target_external (event, target)
+--				release_event_external (event.item)
+--			end
 		end
 
 	enable_foreground_operation is
@@ -289,6 +303,8 @@ feature -- Thread Handling.
 	try_lock: BOOLEAN is
 			-- Try to see if we can lock, False means no lock could be attained
 		do
+			Result := True
+			-- TODO: Uhhh, this could be dangerous
 		end
 
 	unlock is
@@ -312,13 +328,17 @@ feature {NONE} -- callback handling for events
 		local
 			a_id: INTEGER
 		do
-				a_id := pointer_to_int ( a_inuserdata )
-				check
-					valid_id : widget_list.index_set.has ( a_id )
-					target_valid : widget_list.item ( a_id ) /= Void
-				end
-				--print ("on_callback has been called by id:" + a_id.out + "%N")
-				Result := widget_list.item ( a_id ).on_event ( a_inhandlercallref, a_inevent, a_inuserdata )
+			a_id := pointer_to_int ( a_inuserdata )
+			check
+				valid_id : widget_list.index_set.has ( a_id )
+				target_valid : widget_list.item ( a_id ) /= Void
+			end
+			--print ("on_callback has been called by id:" + a_id.out + "%N")
+			Result := widget_list.item ( a_id ).on_event ( a_inhandlercallref, a_inevent, a_inuserdata )
+
+			call_idle_actions
+			-- TODO: We should call the idle_actions when the application is in idle status.
+			--       This is a hack to get the tour runnung!
 		end
 
 	id_count: INTEGER  -- the next id for an event.
