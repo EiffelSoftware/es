@@ -40,16 +40,14 @@ feature -- Initialization
 		setup_on_text_file (filename: STRING; a_caller: CALLER)
 			--
 		local
---			resolver: ENTITY_RESOLVER
---			event_factory: EVENT_FACTORY
 			parser: TEXT_EVENT_PARSER
 			input_file: KL_TEXT_INPUT_FILE
 		do
 			create resolver.make
-			create event_reader
+			create event_input
 			create input_file.make (filename)
 			input_file.open_read
-			create parser.make (input_file, event_reader)
+			create parser.make (input_file, event_input)
 
 			caller := a_caller
 
@@ -59,7 +57,7 @@ feature -- Initialization
 
 feature -- Access
 
-	event_reader: EVENT_INPUT
+	event_input: EVENT_INPUT
 
 	caller: CALLER
 
@@ -75,10 +73,10 @@ feature -- Status report
 
 feature -- Status setting
 
-	set_event_factory(a_factory: EVENT_INPUT) is
+	set_event_input(a_factory: EVENT_INPUT) is
 			--
 		do
-			event_reader := a_factory
+			event_input := a_factory
 		end
 
 	set_caller(a_caller: EXAMPLE_CALLER) is
@@ -129,12 +127,12 @@ feature -- Basic operations
 
 			if callee_observed /= observed_stack.item then
 				-- boundary cross
-				if event_reader.end_of_input then
+				if event_input.end_of_input then
 					report_and_set_error ("Received Callret_event, but log is finished.")
 				else
-					set_error_status_for_callret (event_reader.last_event, res, callee_observed)
+					set_error_status_for_callret (event_input.last_event, res, callee_observed)
 					if not has_error then
-						callret ?= event_reader.last_event
+						callret ?= event_input.last_event
 						if callee_observed then
 							--INCALLRET
 							observable_returnvalue ?= res
@@ -155,7 +153,7 @@ feature -- Basic operations
 								Result := resolver.resolve_entity(callret.return_value)
 							end
 						end
-						event_reader.read_next_event
+						event_input.read_next_event
 					end
 				end
 			else
@@ -174,20 +172,20 @@ feature -- Basic operations
 			caller_is_observed := observed_stack.item
 			if target.is_observed /= caller_is_observed then
 				--boundary cross
-				if not event_reader.end_of_input then
-					set_error_status_for_call (event_reader.last_event, feature_name, target, arguments)
+				if not event_input.end_of_input then
+					set_error_status_for_call (event_input.last_event, feature_name, target, arguments)
 					if not has_error then
 						if target.is_observed then
 							-- INCALL
 							-- XXX nothing to do here (?)
 						else
-							call_event ?= event_reader.last_event
+							call_event ?= event_input.last_event
 							--OUTCALL
 							resolver.register_object (target, call_event.target)
 							index_arguments(call_event.arguments, arguments)
 						end
 						-- Consume event
-						event_reader.read_next_event
+						event_input.read_next_event
 					end
 				else
 					report_and_set_error ("Received call event, but log is finished.")
@@ -197,32 +195,31 @@ feature -- Basic operations
 		end
 
 	simulate_unobserved_body
-			-- Handle all following incalls...
+			-- Handle all consecuting incalls from the event_input.
 		require
-			event_reader_not_void: event_reader /= Void
+			event_input_not_void: event_input /= Void
 		local
 			incall_event: INCALL_EVENT
 		do
 			--Handle all following incall events...
 			from
-				incall_event ?= event_reader.last_event
+				incall_event ?= event_input.last_event
 			until
-				event_reader.end_of_input or (not event_reader.last_event.conforms_to(incall_event))
+				has_error or event_input.end_of_input or (not event_input.last_event.conforms_to(incall_event))
 			loop
-				incall_event ?= event_reader.last_event
+				incall_event ?= event_input.last_event
 				handle_incall_event(incall_event)
 				-- the next event will be read by the triggered methodbody_start and
 				-- methodbody_end...
 			end
 		end
 
-
 	play is
-			--
+			-- Replay the captured events from the event_input
 		do
 			enter
 			--grab first event...
-			event_reader.read_next_event
+			event_input.read_next_event
 			simulate_unobserved_body
 			leave
 		end
@@ -241,7 +238,6 @@ feature {NONE} -- Implementation
 		do
 			has_error := True
 			print("replay error: " + message)
-			exceptions.raise ("replay error: " + message)
 		end
 
 	index_arguments (expected_arguments: LIST[ENTITY]; actual_arguments: TUPLE) is
@@ -270,12 +266,14 @@ feature {NONE} -- Implementation
 				end
 				i := i + 1
 			end
+		ensure
+			--all arguments are now found by the entity resolver, if looked up by these entities.
 		end
 
 
 
 	set_error_status_for_call (event: EVENT; feature_name: STRING; target: ANY; arguments: TUPLE) is
-			-- Check if the call event matches to what we actually have.
+			-- Check if the recorded call event matches to the actual one and set `has_error' accordingly.
 		require
 			no_error: not has_error
 			event_not_void: event /= Void
@@ -291,7 +289,7 @@ feature {NONE} -- Implementation
 			if call /= Void then
 				if target.is_observed implies (incall /= Void) then
 					if feature_name.is_equal(call.feature_name) then
-						set_error_status_for_arguments (call, arguments)
+						set_error_status_for_arguments (call.arguments, arguments)
 					else
 						report_and_set_error ("Expected call on feature '" + feature_name + "' but got" + call.feature_name)
 					end
@@ -301,42 +299,37 @@ feature {NONE} -- Implementation
 			else
 				report_and_set_error ("Expected call event")
 			end
-
---			feature_name_correct: feature_name = call.feature_name
---			-- we could check, if the arguments conform, but probably this is too
---			-- expensive
---			end
 		ensure
 			is_call_event: has_error or is_instance_of (event, call_type_id)
---			feature_name matches.
 			is_incall_event_if_target_is_observed: has_error or (target.is_observed implies is_instance_of(event, incall_type_id))
 			is_outcall_event_if_target_is_unobserved: has_error or ((not target.is_observed) implies is_instance_of(event, outcall_type_id))
 		end
 
-	set_error_status_for_arguments(call: CALL_EVENT; arguments: TUPLE) is
-			--
+	set_error_status_for_arguments(expected_arguments: LIST[ENTITY]; actual_arguments: TUPLE) is
+			-- Check if the actual arguments match the expected ones and set `has_error' accordingly.
 		require
 			no_error: not has_error
-			call_not_void: call /= Void
-			arguments_not_void: arguments /= Void
+			expected_arguments_not_void: expected_arguments /= Void
+			arguments_not_void: actual_arguments /= Void
 		local
 			i: INTEGER
 		do
-			if call.arguments.count = arguments.count then
+			if expected_arguments.count = actual_arguments.count then
 				--does type of arguments match?
 				from
 					i := 1
 				until
-					has_error or i > arguments.count
+					has_error or i > actual_arguments.count
 				loop
-					set_error_status_for_object(call.arguments[i],arguments[i])
+					set_error_status_for_object(expected_arguments[i],actual_arguments[i])
 					i := i + 1
 				end
 			end
 		end
 
 	set_error_status_for_object (expected_entity: ENTITY; object: ANY) is
-			--
+			-- Check if expected_entity represents `object' and set `has_error' if this
+			-- is not the case.
 		require
 			no_error: not has_error
 			expected_entity_not_void: expected_entity /= Void
@@ -363,8 +356,9 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	set_error_status_for_callret(event: EVENT; return_value: ANY; is_incallret: BOOLEAN) is
-			--
+	set_error_status_for_callret (event: EVENT; return_value: ANY; is_incallret: BOOLEAN) is
+			-- Check if `event' is a CALLRET - event and if it matches the actual callret event,
+			-- set `has_error' if this is not the case.
 		require
 			event_not_void: event /= Void
 		local
@@ -400,16 +394,16 @@ feature {NONE} -- Implementation
 
 		end
 
-
 	handle_incall_event (incall: INCALL_EVENT) is
-			-- execute `incall'
+			-- Execute the INCALL `incall'
 		require
 			incall_not_void: incall /= Void
 		do
 			caller.call (resolver.resolve_entity(incall.target), incall.feature_name, resolver.resolve_entities(incall.arguments))
 		end
 
-	--prototypes used for type comparison:
+feature {NONE}  -- Prototypes used for type comparison:
+
 	call_type_id: INTEGER is
 			-- Type_id of CALL_EVENT
 		once
@@ -422,21 +416,11 @@ feature {NONE} -- Implementation
 			Result := dynamic_type_from_string ("INCALL_EVENT")
 		end
 
-
 	outcall_type_id: INTEGER is
 			-- Type_id of OUTCALL_EVENT
 		once
 			Result := dynamic_type_from_string("OUTCALL_EVENT")
 		end
-
-	exceptions : EXCEPTIONS is
-			-- Standard instance of EXCEPTIONS
-		once
-			create Result
-		end
-
-
-
 
 invariant
 	invariant_clause: True -- Your invariant here
