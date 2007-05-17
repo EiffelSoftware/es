@@ -58,6 +58,13 @@ inherit
 		end
 
 	CONTROLS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+	HIGEOMETRY_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
 
 feature {NONE} -- Initialization
 
@@ -198,12 +205,32 @@ feature {EV_ANY_I, EV_GTK_DEPENDENT_INTERMEDIARY_ROUTINES} -- Position retrieval
 
 	screen_x: INTEGER is
 			-- Horizontal position of the client area on screen,
+		local
+			err : INTEGER
+			rect : CGRECT_STRUCT
+			point : CGPOINT_STRUCT
 		do
+			-- Get the relative coordinates in the parent view and call HIPointConvert to get screen coordinates
+			create rect.make_new_unshared
+			err := hiview_get_frame_external ( c_object, rect.item )
+			create point.make_shared (rect.origin)
+			hipoint_convert_external (point.item, 4, c_object, 2, null)
+			Result := point.x.rounded
 		end
 
 	screen_y: INTEGER is
 			-- Vertical position of the client area on screen,
+		local
+			err : INTEGER
+			rect : CGRECT_STRUCT
+			point : CGPOINT_STRUCT
 		do
+			-- Get the relative coordinates in the parent view and call HIPointConvert to get screen coordinates
+			create rect.make_new_unshared
+			err := hiview_get_frame_external ( c_object, rect.item )
+			create point.make_shared (rect.origin)
+			hipoint_convert_external (point.item, 4, c_object, 2, null)
+			Result := point.y.rounded
 		end
 
 feature -- Status setting
