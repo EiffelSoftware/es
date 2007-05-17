@@ -120,7 +120,9 @@ feature -- Basic operations
 			-- 'res' is the Result of the Method that should be instrumented.
 		local
 			callee_observed: BOOLEAN
-			outcallret: OUTCALLRET_EVENT
+			callret: RETURN_EVENT
+			observable_returnvalue: OBSERVABLE
+			non_basic_return_entity: NON_BASIC_ENTITY
 		do
 			callee_observed := observed_stack.item
 			observed_stack.remove
@@ -132,15 +134,25 @@ feature -- Basic operations
 				else
 					set_error_status_for_callret (event_reader.last_event, res, callee_observed)
 					if not has_error then
+						callret ?= event_reader.last_event
 						if callee_observed then
 							--INCALLRET
-							-- ignore event:
-							Result := res
+							observable_returnvalue ?= res
+							non_basic_return_entity ?= callret.return_value
+							if non_basic_return_entity /= Void then
+								if observable_returnvalue /= Void then
+									-- This return value must be registered.
+									resolver.register_object (observable_returnvalue, non_basic_return_entity)
+								else
+									report_and_set_error ("Received non-basic return value that is not observable")
+								end
+							end
+							Result := res --don't change the return value.
 						else
 							--OUTCALLRET
-							outcallret ?= event_reader.last_event
-							if outcallret.return_value /= Void then
-								Result := resolver.resolve_entity(outcallret.return_value)
+
+							if callret.return_value /= Void then
+								Result := resolver.resolve_entity(callret.return_value)
 							end
 						end
 						event_reader.read_next_event
