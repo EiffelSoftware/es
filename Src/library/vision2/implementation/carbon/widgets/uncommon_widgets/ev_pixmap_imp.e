@@ -340,11 +340,6 @@ feature {EV_ANY_I, EV_GTK_DEPENDENT_APPLICATION_IMP} -- Implementation
 		do
 		end
 
-	copy_from_gdk_data (a_src_pix, a_src_mask: POINTER; a_width, a_height: INTEGER) is
-			-- Update `Current' to use passed gdk pixmap data.
-		do
-		end
-
 feature {EV_ANY_I, EV_ANY_IMP} -- Implementation
 
 	drawable: POINTER
@@ -353,31 +348,10 @@ feature {EV_ANY_I, EV_ANY_IMP} -- Implementation
 	mask: POINTER
 			-- Pointer to the GdkBitmap used for masking.
 
-feature {EV_GTK_DEPENDENT_APPLICATION_IMP, EV_ANY_I} -- Implementation
+feature {EV_ANY_I} -- Implementation
 
 	internal_xpm_data: POINTER
 		-- Pointer to the appropriate XPM image used for the default stock cursor if any
-
-feature {EV_STOCK_PIXMAPS_IMP, EV_PIXMAPABLE_IMP} -- Implementation
-
-	set_pixmap (gdkpix, gdkmask: POINTER) is
-			-- Set the GtkPixmap using Gdk pixmap data and mask.
-		do
-		end
-
-	set_from_xpm_data (a_xpm_data: POINTER) is
-			-- Pixmap symbolizing a piece of information.
-		require
-			xpm_data_not_null: a_xpm_data /= NULL
-		do
-		end
-
-	set_from_stock_id (a_stock_id: POINTER) is
-			-- Pixmap symbolizing a piece of information
-		require
-			a_stock_id_not_null: a_stock_id /= NULL
-		do
-		end
 
 feature {NONE} -- Implementation
 
@@ -418,6 +392,6 @@ feature {EV_ANY_I} -- Implementation
 	interface: EV_PIXMAP;
 
 indexing
-	copyright:	"Copyright (c) 2006, The Eiffel.Mac Team"
+	copyright:	"Copyright (c) 2006-2007, The Eiffel.Mac Team"
 end -- EV_PIXMAP_IMP
 

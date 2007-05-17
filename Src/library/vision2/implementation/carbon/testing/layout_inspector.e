@@ -32,6 +32,7 @@ feature {NONE} -- Implementation
 			create show_button.make_with_text_and_action ("show", agent show_widget)
 			create info_label.default_create
 			info_label.align_text_left
+			info_label.set_minimum_height (100)
 			vertical_box.extend (refresh_button)
 			vertical_box.extend (hide_button)
 			vertical_box.extend (show_button)

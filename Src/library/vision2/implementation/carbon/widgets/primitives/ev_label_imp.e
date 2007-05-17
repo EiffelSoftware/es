@@ -90,15 +90,17 @@ feature -- Minimum size
 				a_size: CGSIZE_STRUCT
 				ret, size: INTEGER
 			do
-				ret := get_control_data_size_external (c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolstatictexttextheighttag, $size)
-				ret := get_control_data_external (c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolstatictexttextheighttag, size, $Result, $size)
+				if internal_minimum_height > 0 then
+					Result := internal_minimum_height
+				else
+					ret := get_control_data_size_external (c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolstatictexttextheighttag, $size)
+					ret := get_control_data_external (c_object, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolentirecontrol, {CONTROLDEFINITIONS_ANON_ENUMS}.kcontrolstatictexttextheighttag, size, $Result, $size)
+				end
 			end
 
 	minimum_width: INTEGER is
 			do
-				--Result:= text.count * font.width
-
-				Result:= text.split ('%N').first.count * 8 + 5 -- Currently we take the width of 
+				Result:= text.split ('%N').first.count * 8 + 5 -- Currently we approximate the width of the first text line
 			end
 
 feature -- status setting

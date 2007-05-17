@@ -66,16 +66,6 @@ feature {EV_ITEM_PIXMAP_SCALER_I} -- Implementation
 	internal_pixmap: EV_PIXMAP_IMP
 			-- Internal stored pixmap.		
 
-feature {NONE} -- Implementation
-
-	gtk_pixmap: POINTER is
-			-- Pointer to the GtkPixmap widget.
-		do
-		end
-
-	pixmap_box: POINTER
-			-- GtkHBox to hold the GtkPixmap.
-
 feature {EV_ANY_I} -- Implementation
 
 	interface: EV_PIXMAPABLE;
