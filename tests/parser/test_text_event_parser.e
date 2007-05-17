@@ -33,7 +33,12 @@ feature -- Setup
 		local
 			arguments: ARRAYED_LIST[ENTITY]
 			entity: NON_BASIC_ENTITY
+			null_sink: NULL_EVENT_SINK
 		do
+				--make sure that capture - replay is disabled
+				create null_sink.make
+				null_sink ?= set_controller(null_sink)
+
 				create entity.make ("FOO_TYPE", 99)
 				create arguments.make(1)
 				create incall_prototype.make(entity, "incall_prototype", arguments)
@@ -56,55 +61,55 @@ feature -- Testing the tests:
 
 		end
 
-	test_event_types
+	test_event_types is
 			-- Only check if events of the right type are generated
 		local
-			factory: EVENT_FACTORY
+			event_input: EVENT_INPUT
 		do
-			factory := create_factory("test_calls.res")
+			event_input := create_event_input("test_calls.res")
 
-			factory.create_next_event
-			assert_true("correct event-type", factory.last_event.conforms_to (incall_prototype))
-			factory.create_next_event
-			assert_true("correct event-type", factory.last_event.conforms_to(incall_prototype))
-			factory.create_next_event
-			assert_true("correct event-type", factory.last_event.conforms_to(incall_prototype))
+			event_input.read_next_event
+			assert_true("correct event-type", event_input.last_event.conforms_to (incall_prototype))
+			event_input.read_next_event
+			assert_true("correct event-type", event_input.last_event.conforms_to(incall_prototype))
+			event_input.read_next_event
+			assert_true("correct event-type", event_input.last_event.conforms_to(incall_prototype))
 
-			factory.create_next_event
-			assert_true("correct event-type", factory.last_event.conforms_to(outcall_prototype))
-			factory.create_next_event
-			assert_true("correct event-type", factory.last_event.conforms_to(outcall_prototype))
-			factory.create_next_event
-			assert_true("correct event-type", factory.last_event.conforms_to(outcall_prototype))
+			event_input.read_next_event
+			assert_true("correct event-type", event_input.last_event.conforms_to(outcall_prototype))
+			event_input.read_next_event
+			assert_true("correct event-type", event_input.last_event.conforms_to(outcall_prototype))
+			event_input.read_next_event
+			assert_true("correct event-type", event_input.last_event.conforms_to(outcall_prototype))
 		end
 
 	test_call_parsing
 			-- Test the parsing of the call events (INCALL/OUTCALL)
 		local
-			factory: EVENT_FACTORY
+			event_input: EVENT_INPUT
 		do
-			factory := create_factory("test_calls.res")
+			event_input := create_event_input("test_calls.res")
 
 			-- Test the 3 INCALLS in the log
-			check_calls(factory, incall_prototype)
+			check_calls(event_input, incall_prototype)
 
 			-- Test the 3 OUTCALLS in the log
-			check_calls(factory, outcall_prototype)
+			check_calls(event_input, outcall_prototype)
 		end
 
 
 	test_callret_parsing
 			-- Test for parsing of the callret events(INCALLRET/OUTCALLRET).
 		local
-			factory: EVENT_FACTORY
+			event_input: EVENT_INPUT
 		do
-			factory := create_factory("test_callrets.res")
+			event_input := create_event_input("test_callrets.res")
 
 			--test the 3 INCALLRETs in the log
-			check_callrets(factory, incallret_prototype)
+			check_callrets(event_input, incallret_prototype)
 
 			--test the 3 OUTCALLRETs in the log
-			check_callrets(factory, outcallret_prototype)
+			check_callrets(event_input, outcallret_prototype)
 		end
 
 feature -- Status report
@@ -135,7 +140,7 @@ feature -- Inapplicable
 
 feature {NONE} -- Implementation
 
-	check_calls(factory: EVENT_FACTORY; call_event_prototype: CALL_EVENT)
+	check_calls(event_input: EVENT_INPUT; call_event_prototype: CALL_EVENT)
 		-- Check 4 Callret events, if they match the sample log file and
 		-- check if the type conforms to `call_event_prototype'.
 		local
@@ -144,10 +149,10 @@ feature {NONE} -- Implementation
 			basic: BASIC_ENTITY
 		do
 
-			factory.create_next_event
-			assert_true("correct event type", factory.last_event.conforms_to (call_event_prototype))
+			event_input.read_next_event
+			assert_true("correct event type", event_input.last_event.conforms_to (call_event_prototype))
 
-			call ?= factory.last_event
+			call ?= event_input.last_event
 			--Target
 			non_basic ?= call.target
 			check_non_basic("target", call.target, "EXAMPLE_CLASS", 1)
@@ -166,10 +171,10 @@ feature {NONE} -- Implementation
 			check_basic("argument 4", call.arguments @ 4, "INTEGER_32", "12")
 
 			--check call without arguments
-			factory.create_next_event
-			assert_true("correct event type", factory.last_event.conforms_to (call_event_prototype))
+			event_input.read_next_event
+			assert_true("correct event type", event_input.last_event.conforms_to (call_event_prototype))
 
-			call ?= factory.last_event
+			call ?= event_input.last_event
 			-- Target
 			check_non_basic("target", call.target, "EXAMPLE_CLASS", 1)
 
@@ -181,10 +186,10 @@ feature {NONE} -- Implementation
 			assert_equal("argument_count correct", 0, call.arguments.count)
 
 			--check call on basic type
-			factory.create_next_event
-			assert_true("correct event type", factory.last_event.conforms_to (call_event_prototype))
+			event_input.read_next_event
+			assert_true("correct event type", event_input.last_event.conforms_to (call_event_prototype))
 
-			call ?= factory.last_event
+			call ?= event_input.last_event
 			--Target
 			basic ?= call.target
 			check_basic("target", call.target, "REAL_32", "12.99")
@@ -199,45 +204,42 @@ feature {NONE} -- Implementation
 			check_basic("argument 1", call.arguments @ 1, "INTEGER_32", "12")
 		end
 
-	check_callrets(factory: EVENT_FACTORY; event_prototype: RETURN_EVENT) is
-			-- Check three callrets from `factory'. check if the return-event type
+	check_callrets(event_input: EVENT_INPUT; event_prototype: RETURN_EVENT) is
+			-- Check three callrets from `event_input'. check if the return-event type
 			-- conforms to `event_prototype', too.
 		local
 			ret: RETURN_EVENT
 		do
-			factory.create_next_event
-			assert_true("correct event type", factory.last_event.conforms_to (event_prototype))
+			event_input.read_next_event
+			assert_true("correct event type", event_input.last_event.conforms_to (event_prototype))
 
-			ret ?= factory.last_event
+			ret ?= event_input.last_event
 			check_non_basic ("return_value, line 1:", ret.return_value, "NON_BASIC_EXAMPLE", 4)
 
-			factory.create_next_event
-			assert_true("correct event type", factory.last_event.conforms_to (event_prototype))
+			event_input.read_next_event
+			assert_true("correct event type", event_input.last_event.conforms_to (event_prototype))
 
-			ret ?= factory.last_event
+			ret ?= event_input.last_event
 			check_basic ("return value, line 2", ret.return_value, "REAL_32", "1.21234565")
 
-			factory.create_next_event
-			assert_true("correct event type", factory.last_event.conforms_to (event_prototype))
+			event_input.read_next_event
+			assert_true("correct event type", event_input.last_event.conforms_to (event_prototype))
 
-			ret ?= factory.last_event
+			ret ?= event_input.last_event
 			assert_true("no return value", ret.return_value = Void)
 		end
 
 
-	create_factory(file_name: STRING): EVENT_FACTORY
+	create_event_input(file_name: STRING): EVENT_INPUT
 			--A new EVENT_FACTORY on file `file_name'
 		local
-			factory: EVENT_FACTORY
 			parser: TEXT_EVENT_PARSER
 			input: KL_TEXT_INPUT_FILE
 		do
 			create input.make(file_name)
 			input.open_read
-			create factory
-			create parser.make(input,factory)
-
-			Result := factory
+			create Result
+			create parser.make(input,Result)
 		end
 
 	check_non_basic(tag: STRING; an_entity: ANY; expected_type:STRING; expected_id: INTEGER)

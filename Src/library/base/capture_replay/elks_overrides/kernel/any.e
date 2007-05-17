@@ -374,9 +374,14 @@ feature -- Capture/Replay
 			-- Recorder for capturing events on the object
 			-- `set_controller' needs to be executed before this feature is called.
 		once
-		--	create {RECORDER}Result.make
-		--	create {PLAYER}Result.make
 			Result := set_controller(Void)
+			if Result = Void then
+				--not initialized yet. Assume that capture/replay should be disabled.
+				create {NULL_EVENT_SINK}Result.make
+				print("controller not set, capture/replay disabled")
+			end
+		ensure
+			Result_not_void: Result /= Void
 		end
 
 	is_observed: BOOLEAN

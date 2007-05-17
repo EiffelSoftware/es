@@ -82,7 +82,7 @@ feature -- Initialization
 	make (n: INTEGER) is
 			-- Allocate space for at least `n' characters.
 		require
-			contracts_disabled: False
+--			contracts_disabled: False
 			non_negative_size: n >= 0
 		local
 			ignore_result: ANY
