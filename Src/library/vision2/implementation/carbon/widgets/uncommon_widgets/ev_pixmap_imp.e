@@ -169,10 +169,10 @@ feature -- Element change
 	read_from_named_file (file_name: STRING_GENERAL) is
 			-- Attempt to load pixmap data from a file specified by `file_name'.
 		local
-			url, provider : POINTER
-			ret : INTEGER
+			url, provider: POINTER
+			ret: INTEGER
 			cf_filename, cf_dir: EV_CARBON_CF_STRING
-			c_name : C_STRING
+			c_name: C_STRING
 		do
 			create cf_filename.make_unshared_with_eiffel_string (file_name)
 			create cf_dir.make_unshared_with_eiffel_string ("./")
@@ -181,7 +181,6 @@ feature -- Element change
 			if url = null then
 				create cf_dir.make_unshared_with_eiffel_string ("./../../../")
 				url := cfbundle_copy_resource_url_external (cfbundle_get_main_bundle_external, cf_filename.item, null, cf_dir.item)
-
 			end
 			if url = null then
 				create c_name.make (file_name)
@@ -189,7 +188,7 @@ feature -- Element change
 			end
 			if url /= null then
 				provider := cgdata_provider_create_with_url_external (url)
-				drawable := cgimage_create_with_pngdata_provider_external (provider, null, 1, kCGRenderingIntentDefault)
+				drawable := cgimage_create_with_pngdata_provider_external (provider, null, 0, kCGRenderingIntentDefault) -- source, decode, shouldInterpolate, intent
 
 				cgdata_provider_release_external (provider)
 				cfrelease_external (url)
@@ -333,7 +332,7 @@ feature -- Duplication
 			ret := hiimage_view_set_image_external (c_object, drawable)
 		end
 
-feature {EV_ANY_I, EV_GTK_DEPENDENT_APPLICATION_IMP} -- Implementation
+feature {EV_ANY_I} -- Implementation
 
 	set_pixmap_from_pixbuf (a_pixbuf: POINTER) is
 			-- Construct `Current' from GdkPixbuf `a_pixbuf'

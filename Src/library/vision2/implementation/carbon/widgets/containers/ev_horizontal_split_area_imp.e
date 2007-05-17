@@ -20,6 +20,7 @@ inherit
 
 	EV_SPLIT_AREA_IMP
 		redefine
+			initialize,
 			interface,
 			client_height,
 			client_width
@@ -29,6 +30,14 @@ create
 	make
 
 feature {NONE} -- Implementation
+
+	initialize is
+			--
+		do
+			Precursor
+			create splitter_image.make_with_file ("VSplitter.png")
+			create ridges_image.make_with_file ("VRidges.png")
+		end
 
 	calculate_rects is
 			-- Calculate the CGRECTS rect_a, rect_b and splitter_rect

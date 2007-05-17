@@ -47,6 +47,8 @@ inherit
 			{NONE} all
 		end
 
+
+
 feature {NONE} -- Initialization
 
 	make (an_interface: like interface) is
@@ -107,8 +109,6 @@ feature {NONE} -- Initialization
 		end
 
 feature -- Access
-
-
 
 	split_position: INTEGER is
 			-- Position from the left/top of the splitter from `Current'.
@@ -199,6 +199,10 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
+	splitter_image: EV_CARBON_CGIMAGE
+
+	ridges_image: EV_CARBON_CGIMAGE
+
 	splitter_width: INTEGER is 8
 
 	split_ratio : REAL_32
@@ -211,8 +215,6 @@ feature {NONE} -- Implementation
 			else
 				second_expandable := a_resizable
 			end
-			--set_gtk_paned_struct_child1_resize (container_widget, first_expandable)
-			--set_gtk_paned_struct_child2_resize (container_widget, second_expandable)
 		end
 
 	adjust_subviews is
@@ -285,8 +287,6 @@ feature {NONE} -- Implementation
 			if parent_imp /= void then
 				parent_imp.child_has_resized (current)
 			end
-
-
 		end
 
 	on_event (a_inhandlercallref: POINTER; a_inevent: POINTER; a_inuserdata: POINTER): INTEGER is
@@ -306,13 +306,13 @@ feature {NONE} -- Implementation
 				event_kind := get_event_kind_external (a_inevent)
 
 				if event_class = {CARBONEVENTS_ANON_ENUMS}.kEventClassControl then
-					if event_kind =  {CARBONEVENTS_ANON_ENUMS}.keventcontroldraw then
-						err := get_event_parameter_external ( a_inevent, {CARBONEVENTS_ANON_ENUMS}.keventparamrgnhandle,{CARBONEVENTS_ANON_ENUMS}.typeqdrgnhandle, $actual_type, sizeof(region.item), $actual_size, region.item )
-						err := get_event_parameter_external ( a_inevent, {CARBONEVENTS_ANON_ENUMS}.keventparamcgcontextref, {CARBONEVENTS_ANON_ENUMS}.typecgcontextref, $actual_type, sizeof(context.item), $actual_size, context.item)
+					if event_kind =  {CARBONEVENTS_ANON_ENUMS}.kEventControlDraw then
+						err := get_event_parameter_external ( a_inevent, {CARBONEVENTS_ANON_ENUMS}.kEventParamRgnHandle,{CARBONEVENTS_ANON_ENUMS}.typeQDRgnHandle, $actual_type, sizeof(region.item), $actual_size, region.item )
+						err := get_event_parameter_external (a_inevent, {carbonevents_anon_enums}.kEventParamCGContextRef,  {carbonevents_anon_enums}.typeCGContextRef, null, 4, null, $context)
 						draw ( region, context )
 						err := call_next_event_handler_external (a_inhandlercallref, a_inevent )
 						Result := noErr -- event handled
-					elseif event_kind =  {CARBONEVENTS_ANON_ENUMS}.keventcontrolhittest then
+					elseif event_kind =  {CARBONEVENTS_ANON_ENUMS}.kEventControlHitTest then
 						create where.make_new_unshared
 						err := get_event_parameter_external ( a_inevent, {CARBONEVENTS_ANON_ENUMS}.keventparammouselocation, {CARBONEVENTS_ANON_ENUMS}.typehipoint, $actual_type, where.sizeof, $actual_size, where.item )
 						part := hit_test ( where )
@@ -348,8 +348,22 @@ feature {NONE} -- Implementation
 
 	draw ( limit_rgn, context : POINTER ) is
 			-- Draw the splitter
+		local
+			ret: INTEGER
+			ridges_rect: CGRECT_STRUCT
+			ridges_rect_origin: CGPOINT_STRUCT
+			ridges_rect_size: CGSIZE_STRUCT
 		do
-
+			calculate_rects
+			ret := hiview_draw_cgimage_external (context, splitter_rect.item, splitter_image.item)
+			create ridges_rect.make_new_unshared
+			create ridges_rect_origin.make_shared (ridges_rect.origin)
+			create ridges_rect_size.make_shared (ridges_rect.size)
+			ridges_rect_origin.set_x ((splitter_rect_origin.x + splitter_rect_size.width / 2 - ridges_image.width / 2).rounded)
+			ridges_rect_origin.set_y ((splitter_rect_origin.y + splitter_rect_size.height / 2 - ridges_image.height / 2).rounded)
+			ridges_rect_size.set_width (ridges_image.width)
+			ridges_rect_size.set_height (ridges_image.height)
+			ret := hiview_draw_cgimage_external (context, ridges_rect.item, ridges_image.item)
 		end
 
 	hit_test ( where : CGPOINT_STRUCT ) : INTEGER_16 is
