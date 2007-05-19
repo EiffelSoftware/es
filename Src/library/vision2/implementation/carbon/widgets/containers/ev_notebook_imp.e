@@ -40,9 +40,25 @@ inherit
 		end
 
 	EV_NOTEBOOK_ACTION_SEQUENCES_IMP
+		export
+			{NONE} all
+		end
+
 	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
 	CONTROLS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
 	CARBONEVENTS_FUNCTIONS_EXTERNAL
+		export
+			{NONE} all
+		end
+
 
 create
 	make
@@ -304,9 +320,9 @@ feature {EV_NOTEBOOK} -- Status setting
 				elseif tab_position = interface.tab_left then
 					a_rect.set_left ( a_rect.left + tab_offset )
 				elseif tab_position = interface.tab_bottom then
-					a_rect.set_bottom ( a_rect.bottom + tab_offset )
+					a_rect.set_bottom ( a_rect.bottom - tab_offset )
 				elseif tab_position = interface.tab_right then
-					a_rect.set_right ( a_rect.right + tab_offset )
+					a_rect.set_right ( a_rect.right - tab_offset )
 				end
 
 				set_control_bounds_external ( w_imp.c_object, a_rect.item )
@@ -391,9 +407,9 @@ feature -- Element change
 			elseif tab_position = interface.tab_left then
 				a_rect.set_left ( a_rect.left + tab_offset )
 			elseif tab_position = interface.tab_bottom then
-				a_rect.set_bottom ( a_rect.bottom + tab_offset )
+				a_rect.set_bottom ( a_rect.bottom - tab_offset )
 			elseif tab_position = interface.tab_right then
-				a_rect.set_right ( a_rect.right + tab_offset )
+				a_rect.set_right ( a_rect.right - tab_offset )
 			end
 
 			set_control_bounds_external ( w_imp.c_object, a_rect.item )
@@ -569,18 +585,6 @@ feature {EV_ANY_I, EV_ANY} -- Implementation
 			-- functionality implemented by `Current'
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
-		]"
-
-
-
-
+	copyright:	"Copyright (c) 2006-2007, The Eiffel.Mac Team"
 end -- class EV_NOTEBOOK_IMP
 

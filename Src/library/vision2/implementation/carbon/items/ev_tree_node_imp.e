@@ -118,8 +118,13 @@ feature -- Status setting
 
 	set_text (a_text: STRING_GENERAL) is
 			-- Set 'text' to 'a_text'
+		local
+			ret: INTEGER
 		do
 			internal_text := a_text -- .twin??
+			if parent_tree_imp /= Void then
+				ret := update_data_browser_items_external (parent_tree_imp.c_object, 0, 1, $item_id, 1, 1)
+			end
 		end
 
 feature -- PND

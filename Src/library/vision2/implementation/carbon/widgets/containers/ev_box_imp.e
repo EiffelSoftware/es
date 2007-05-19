@@ -135,7 +135,8 @@ feature {NONE} -- Carbon implementation
 		end
 
 
-feature {EV_CONTAINER_IMP}
+feature {EV_CONTAINER_IMP} -- Layouting
+
 --	carbon_arrange_children is
 --	--		 Setup positioning constraints for all children
 --		require
