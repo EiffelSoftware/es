@@ -61,7 +61,6 @@ feature -- Status setting
 		do
 			ret := set_bevel_button_text_alignment_external ( c_object, 1, 0 )
 			ret := hiview_set_needs_display_external (c_object, 1)
-
 		end
 
 	align_text_left is
@@ -86,13 +85,18 @@ feature -- Status setting
 
 	enable_select is
 			-- Set `is_selected' `True'.
+		local
+			ret: INTEGER
 		do
-
+			ret := hiview_set_value_external (c_object, 1)
 		end
 
 	disable_select is
 				-- Set `is_selected' `False'.
+		local
+			ret: INTEGER
 		do
+			ret := hiview_set_value_external (c_object, 0)
 		end
 
 feature -- Status report
@@ -100,6 +104,7 @@ feature -- Status report
 	is_selected: BOOLEAN is
 			-- Is toggle button pressed?
 		do
+			Result := hiview_get_value_external (c_object).to_boolean
 		end
 
 
