@@ -55,6 +55,13 @@ inherit
 			{NONE} all
 		end
 
+	EVENT_LOOP_IDLE_TIMER_PROC_PTR_CALLBACK
+		rename
+			on_callback as on_idle
+		export
+			{NONE} all
+		end
+
 	HIOBJECT_FUNCTIONS_EXTERNAL
 		export
 			{NONE} all
@@ -77,6 +84,7 @@ feature {NONE} -- Initialization
 			create widget_list.make ( 1, initial_widget_list_size )
 
 			create dispatcher.make (Current)
+			create idle_dispatcher.make (Current)
 		ensure then
 			free_ids_exists : free_ids /= Void
 			windows_exists : windows /= Void
@@ -98,8 +106,13 @@ feature {NONE} -- Event loop
 			target: POINTER
 			event: OPAQUE_EVENT_REF_STRUCT_EXTERNAL
 			ret: INTEGER
+			timer: EVENT_LOOP_TIMER_STRUCT
 		do
 			enable_foreground_operation
+
+			create timer.make_new_unshared
+			ret := install_event_loop_idle_timer_external (get_main_event_loop_external, 1, 1, idle_dispatcher.c_dispatcher, int_to_pointer(0), timer.item)
+
 			run_application_event_loop_external
 --			target := get_event_dispatcher_target_external
 --			from
@@ -252,23 +265,6 @@ feature -- Implementation
 		do
 		end
 
-feature {EV_ANY_I, EV_FONT_IMP, EV_STOCK_PIXMAPS_IMP, EV_INTERMEDIARY_ROUTINES} -- Implementation
-
-	default_window: EV_WINDOW is
-			-- Default Window used for creation of agents and holder of clipboard widget.
-		once
-		end
-
-	default_window_imp: EV_WINDOW_IMP is
-			-- Default window implementation.
-		once
-		end
-
-	default_font_height: INTEGER is
-			-- Default font height.
-		do
-		end
-
 feature {EV_PICK_AND_DROPABLE_IMP} -- Pnd Handling
 
 	x_origin, y_origin: INTEGER
@@ -312,6 +308,21 @@ feature -- Thread Handling.
 		do
 		end
 
+feature {NONE} -- Idle handling
+
+	idle_dispatcher: EVENT_LOOP_IDLE_TIMER_PROC_PTR_DISPATCHER
+			-- The dispatcher is on the one side connected to a C function,
+			-- that can be given to the C library as a callback target
+			-- and on the other hand to an Eiffel object with a feature
+			-- `on_idle'. Whenn its C function gets called, the dispatcher
+			-- calls `on_idle' in the connected Eiffel object
+
+	on_idle (a_intimer: POINTER; a_instate: INTEGER; a_inuserdata: POINTER) is
+			-- Callback target. This feature gets called when the application idles
+		do
+			call_idle_actions
+		end
+
 feature {NONE} -- callback handling for events
 
 	dispatcher: EVENT_HANDLER_PROC_PTR_DISPATCHER
@@ -335,10 +346,6 @@ feature {NONE} -- callback handling for events
 			end
 			--print ("on_callback has been called by id:" + a_id.out + "%N")
 			Result := widget_list.item ( a_id ).on_event ( a_inhandlercallref, a_inevent, a_inuserdata )
-
-			call_idle_actions
-			-- TODO: We should call the idle_actions when the application is in idle status.
-			--       This is a hack to get the tour runnung!
 		end
 
 	id_count: INTEGER  -- the next id for an event.
@@ -427,6 +434,6 @@ invariant
 	dispatcher_exists : dispatcher /= Void
 
 indexing
-	copyright:	"Copyright (c) 2006, The ETH Eiffel.Mac Team"
+	copyright:	"Copyright (c) 2006-2007, The Eiffel.Mac Team"
 end -- class EV_APPLICATION_IMP
 
