@@ -23,7 +23,8 @@ inherit
 		redefine
 			interface,
 			insert_i_th,
-			initialize
+			initialize,
+			child_has_resized
 		end
 
 	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
@@ -67,12 +68,19 @@ feature -- Status setting
 		local
 			w_imp : EV_WIDGET_IMP
 			err : INTEGER
+			old_minimum_height, old_minimum_width : INTEGER
 		do
+			old_minimum_height := minimum_height
+			old_minimum_width := minimum_width
 			w_imp ?= a_widget.implementation
 			check
 				w_imp_not_void : w_imp /= Void
 			end
 			err := hiview_place_in_superview_at_external ( w_imp.c_object, an_x, a_y )
+			calculate_minimum_sizes
+			if old_minimum_height /= minimum_height or old_minimum_width /= minimum_width then
+				child_has_resized (current, (minimum_height - old_minimum_height), (minimum_width -old_minimum_width))
+			end
 		end
 
 	set_item_size (a_widget: EV_WIDGET; a_width, a_height: INTEGER) is
@@ -93,29 +101,47 @@ feature -- Measurement
 	minimum_width: INTEGER is
 			-- Item edge with highest x value
 		do
-			from
-				start
-				Result := 0
-			until
-				off
-			loop
-				Result := Result.max ( item.x_position + item.width )
-				forth
-			end
+			Result := buffered_minimum_width
 		end
 
 	minimum_height: INTEGER is
+			-- Item edge with highest x value
+		do
+			Result := buffered_minimum_height
+		end
+
+	calculate_minimum_sizes is
 			-- Item edge with highest y value
 		do
 			from
 				start
-				Result := 0
+				buffered_minimum_height := 0
+				buffered_minimum_width := 0
 			until
 				off
 			loop
-				Result := Result.max ( item.y_position + item.height )
+				buffered_minimum_height := buffered_minimum_height.max ( item.y_position + item.height )
+				buffered_minimum_width := buffered_minimum_width.max (item.x_position + item.width)
 				forth
 			end
+		end
+
+	child_has_resized (a_widget_imp: EV_WIDGET_IMP; a_height, a_width: INTEGER) is
+			-- propagate it to the top (or if we could resize, resize)
+			-- calculate minimum sizes for containers with just one element
+		local
+			a_widget: EV_WIDGET_IMP
+			old_min_height, old_min_width: INTEGER
+		do
+			old_min_height := minimum_height
+			old_min_width := minimum_width
+			calculate_minimum_sizes
+			if parent_imp /= void then
+				parent_imp.child_has_resized (current, (minimum_height - old_min_height), (minimum_width - old_min_width))
+			else
+				setup_layout
+			end
+
 		end
 
 feature {EV_ANY_I} -- Implementation
@@ -127,6 +153,8 @@ feature {EV_ANY_I} -- Implementation
 			set_item_position ( v, 0, 0 )
 			set_item_size ( v, v.minimum_width, v.minimum_height )
 		end
+
+
 
 	x_position_of_child (a_widget_imp: EV_WIDGET_IMP): INTEGER is
 			-- X position of `a_widget_imp' within `Current'.

@@ -79,7 +79,7 @@ feature {NONE} -- Initialization
 		--	set_style (Ev_frame_etched_in)
 			align_text_left
 			create a_font.default_create
-			a_font.set_height (12)
+			a_font.set_height (10)
 			set_font (a_font)
 			Precursor {EV_CELL_IMP}
 		end
@@ -89,7 +89,7 @@ feature -- layout information
 	child_offset_top: INTEGER is
 			--
 		do
-			Result := child_offset_bottom + font.height
+			Result := child_offset_bottom + font.height + 1
 		end
 	child_offset_bottom: INTEGER
 	do
@@ -125,11 +125,7 @@ feature -- Element change
 		local
 			a,b: INTEGER
 		do
-			a := internal_minimum_width
-			if item /= void then
-				b := (item.minimum_width + child_offset_right + child_offset_left).max (font.width * text.count)
-			end
-			Result := a.max (b)
+			Result :=buffered_minimum_width.max (font.width * text.count)
 
 		end
 
@@ -137,13 +133,7 @@ feature -- Element change
 		local
 			a,b: INTEGER
 		do
-			a := internal_minimum_height
-			if item /= void then
-				b := item.minimum_height + child_offset_top + child_offset_bottom  --child_height + offset
-			end
-			Result := a.max (b)
-
-
+			Result := buffered_minimum_height
 		end
 
 

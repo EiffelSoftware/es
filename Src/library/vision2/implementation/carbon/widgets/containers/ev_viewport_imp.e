@@ -127,7 +127,7 @@ feature -- Element change
 				size.set_height (1)
 				size.set_width (1)
 				ret := hiview_set_frame_external (container, rect.item)
-				setup_layout (w)
+				setup_layout
 
 			end
 			if v /= Void then
@@ -150,65 +150,65 @@ feature -- Element change
 					view_added: ret = 0
 				end
 
-				setup_layout (w)
+				setup_layout
 
 				on_new_item (w)
 				item := v
 			end
 		end
 
-	child_has_resized (a_widget_imp: EV_WIDGET_IMP) is
+	child_has_resized (a_widget_imp: EV_WIDGET_IMP; a_height, a_width: INTEGER_32) is
 			--
 		do
-			setup_layout (a_widget_imp)
+			setup_layout
 		end
 
-	setup_layout (a_widget: EV_WIDGET_IMP) is
+	setup_layout  is
 
 				-- set the container size to at least the size of the viewport
-				-- Sets the child control's size to the container site minus some spacing
+				-- Sets the child control's size to the container size minus some spacing
 		local
 			v_rect, c_rect, child_rect : CGRECT_STRUCT
 			v_size, c_size, child_size : CGSIZE_STRUCT
 			a_point : CGPOINT_STRUCT
 			ret: INTEGER
+			a_widget: EV_WIDGET_IMP
+			c: EV_CONTAINER_IMP
 		do
-			-- Get initial positions right
 			create v_rect.make_new_unshared
 			create c_rect.make_new_unshared
 			create child_rect.make_new_unshared
-
 			create v_size.make_shared ( v_rect.size )
 			create c_size.make_shared ( c_rect.size )
 			create child_size.make_shared ( child_rect.size )
-
-
+			-- Get initial positions right
 			ret := hiview_get_frame_external (viewport, v_rect.item)
 			ret := hiview_get_frame_external (container, c_rect.item)
-			ret := hiview_get_frame_external (a_widget.c_object, child_rect.item)
+			if item /= void then
+				a_widget ?= item.implementation
+				check
+					has_implementation: a_widget /= void
+				end
+				ret := hiview_get_frame_external (a_widget.c_object, child_rect.item)
 
-			--if v_size.height.max(a_widget.minimum_height) > c_size.height then
 				c_size.set_height (v_size.height.max(a_widget.minimum_height))
-			--end
-			--if v_size.width.max(a_widget.minimum_width) > c_size.width then
 				c_size.set_width (v_size.width.max(a_widget.minimum_width))
-			--end
-
-			--if a_widget.minimum_height > c_size.height then
-			--	c_size.set_height (a_widget.minimum_height)
-			--end
-
-			--if a_widget.minimum_width > c_size.width then
-			--	c_size.set_width (a_widget.minimum_width)
-			--end
-
-
-
-			child_size.set_width (c_size.width)
-			child_size.set_height (c_size.height)
-
+				child_size.set_width (c_size.width)
+				child_size.set_height (c_size.height)
+				ret := hiview_set_frame_external (a_widget.c_object, child_rect.item)
+			else
+				c_size.set_height (v_size.height)
+				c_size.set_width (v_size.width)
+			end
 			ret := hiview_set_frame_external (container, c_rect.item)
-			ret := hiview_set_frame_external (a_widget.c_object, child_rect.item)
+
+
+			if item /= void then
+				c ?= item.implementation
+				if c /= void then
+					c.setup_layout
+				end
+			end
 		end
 
 	block_resize_actions is

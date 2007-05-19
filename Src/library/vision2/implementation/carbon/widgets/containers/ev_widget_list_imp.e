@@ -25,7 +25,9 @@ inherit
 			minimum_height
 		redefine
 			interface,
-			initialize
+			initialize,
+			setup_layout,
+			layout
 		end
 
 	EV_DYNAMIC_LIST_IMP [EV_WIDGET]
@@ -51,6 +53,7 @@ feature {NONE} -- Implementation
 		local
 			v_imp : EV_WIDGET_IMP
 			ret : INTEGER
+			a_height, a_width: INTEGER
 		do
 			if v /= Void then
 				v_imp ?= v.implementation
@@ -63,10 +66,12 @@ feature {NONE} -- Implementation
 				end
 				child_array.go_i_th (i)
 				child_array.put_left (v)
+				a_height := v_imp.minimum_height
+				a_width := v_imp.minimum_width
 			end
 			on_new_item (v_imp)
 			if parent_imp /= void then
-				parent_imp.child_has_resized (current)
+				parent_imp.child_has_resized (current, a_height, a_width)
 			end
 		end
 
@@ -89,6 +94,34 @@ feature {NONE} -- Implementation
 			end
 			on_removed_item ( v_imp )
 		end
+
+		setup_layout is
+			local
+				w: EV_WIDGET_IMP
+				c: EV_CONTAINER_IMP
+				i: INTEGER
+			do
+
+					layout
+					from
+						i := 1
+					until
+						(i = 0) or (i = count + 1)
+					loop
+						c ?= i_th (i).implementation
+						if c /= void then
+							c.setup_layout
+						end
+						i := i + 1
+					end
+
+			end
+
+	layout is
+			do
+
+			end
+
 
 
 feature {NONE} -- Implementation

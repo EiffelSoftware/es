@@ -21,13 +21,14 @@ inherit
 
 	EV_CONTAINER_IMP
 		undefine
-			replace,
-			bounds_changed
+			replace
 		redefine
 			interface,
 			initialize,
 			on_event,
-			child_has_resized
+			child_has_resized,
+			setup_layout,
+			bounds_changed
 		end
 
 	HIOBJECT_FUNCTIONS_EXTERNAL
@@ -121,7 +122,11 @@ feature -- Access
 		local
 			item_imp: EV_WIDGET_IMP
 			err : INTEGER
+			old_min_height, old_min_width: INTEGER
 		do
+			old_min_width := minimum_width
+			old_min_height := minimum_height
+
 			item_imp ?= an_item.implementation
 			check
 				item_imp_not_void : item_imp /= Void
@@ -131,6 +136,9 @@ feature -- Access
 			first := an_item
 			calculate_rects
 			adjust_subviews
+			if old_min_width /= minimum_width or old_min_height /= minimum_height then
+				child_has_resized (item_imp, minimum_height-old_min_height, minimum_width-old_min_width)
+			end
 		end
 
 	set_second (an_item: like item) is
@@ -138,7 +146,10 @@ feature -- Access
 		local
 			item_imp: EV_WIDGET_IMP
 			err : INTEGER
+			old_min_height, old_min_width: INTEGER
 		do
+			old_min_width := minimum_width
+			old_min_height := minimum_height
 			item_imp ?= an_item.implementation
 			check
 				item_imp_not_void : item_imp /= Void
@@ -148,6 +159,9 @@ feature -- Access
 			second := an_item
 			calculate_rects
 			adjust_subviews
+			if old_min_width /= minimum_width or old_min_height /= minimum_height then
+				child_has_resized (item_imp, minimum_height-old_min_height, minimum_width-old_min_width)
+			end
 		end
 
 	prune (an_item: like item) is
@@ -221,10 +235,25 @@ feature {NONE} -- Implementation
 			-- Set the subview sizes according to the rects
 		local
 			err : INTEGER
+			c: EV_CONTAINER_IMP
 		do
 			err := hiview_set_frame_external ( subview_a.item, rect_a.item )
 			err := hiview_set_frame_external ( subview_b.item, rect_b.item )
+			if first /= void then
+				c ?= first.implementation
+				if c /= void then
+					c.setup_layout
+				end
+			end
+			if second /= void then
+
+				c ?= second.implementation
+				if c /= void then
+					c.setup_layout
+				end
+			end
 			err := hiview_set_needs_display_external ( c_object, ( true ).to_integer )
+
 		end
 
 	qdglobal_to_hiview_local ( a_global_point : POINT_STRUCT; dest_view : POINTER ) : CGPOINT_STRUCT is
@@ -239,10 +268,7 @@ feature {NONE} -- Implementation
 			Result := view_point
 		end
 
-	calculate_rects is
-			-- Calculate the CGRECTS rect_a, rect_b and splitter_rect
-		deferred
-		end
+
 
 feature {NONE} -- Implementation constants
 
@@ -278,16 +304,41 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation
 
-		child_has_resized (a_widget_imp: EV_WIDGET_IMP) is
-			--
+		child_has_resized (a_widget_imp: EV_WIDGET_IMP; a_height, a_width: INTEGER_32) is
+			-- propagate it to the top and recalculate minimumsizes
+		local
+			old_min_height, old_min_width: INTEGER
 		do
-			calculate_rects
-			adjust_subviews
-			-- By default do nothing
+			old_min_height := minimum_height
+			old_min_width := minimum_width
+			calculate_minimum_sizes -- to recalculate the minimum sizes
 			if parent_imp /= void then
-				parent_imp.child_has_resized (current)
+				parent_imp.child_has_resized (current, (minimum_height - old_min_height), (minimum_width - old_min_width))
 			end
+
 		end
+
+	calculate_rects is
+			-- Calculate the CGRECTS rect_a, rect_b and splitter_rect
+		deferred
+		end
+
+	setup_layout is
+			local
+				w: EV_CONTAINER_IMP
+			do
+				calculate_rects
+				adjust_subviews
+--				w ?= first
+--				if  w /= void then
+--					w.setup_layout
+--				end
+--				w ?= second
+--				if  w /= void then
+--					w.setup_layout
+--				end
+			end
+
 
 	on_event (a_inhandlercallref: POINTER; a_inevent: POINTER; a_inuserdata: POINTER): INTEGER is
 			-- Feature that is called if an event occurs

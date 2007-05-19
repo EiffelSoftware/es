@@ -23,10 +23,10 @@ inherit
 		redefine
 			interface,
 			make,
+			layout,
 			bounds_changed,
-			minimum_width,
 			minimum_height,
-			layout
+			minimum_width
 		end
 
 	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
@@ -61,43 +61,74 @@ feature {NONE} -- Initialization
 
 feature -- Measturement
 
-	minimum_width: INTEGER is
-			-- The minimum width of a vertical box is the maximum of the minimum_width's of its children
-	local
-		a, b, i: INTEGER
-	do
-		a := internal_minimum_width
+--	minimum_width: INTEGER is
+--			-- The minimum width of a vertical box is the maximum of the minimum_width's of its children
+--	local
+--		a, b, i: INTEGER
+--	do
+--		a := internal_minimum_width
+--		from
+--			b := 0
+--			i := 1
+--		until
+--			(i = 0) or (i = count + 1)
+--		loop
+--			b := b.max(i_th(i).minimum_width)
+--			i := i + 1
+--		end
+--		b := b + child_offset_left + child_offset_right
+--		Result := a.max (b)
+--	end
+
+	calculate_minimum_sizes is
+			local
+		min_width, min_height, i: INTEGER
+		do
 		from
-			b := 0
+			min_width := 0
+			min_height := 0
 			i := 1
 		until
 			(i = 0) or (i = count + 1)
 		loop
-			b := b.max(i_th(i).minimum_width)
+			min_width := min_width.max(i_th(i).minimum_width)
+			min_height := min_height + i_th(i).minimum_height
 			i := i + 1
 		end
-		b := b + child_offset_left + child_offset_right
-		Result := a.max (b)
+		min_width := min_width + child_offset_left + child_offset_right
+		min_height := min_height + (count -1) * padding + child_offset_bottom + child_offset_top
+		buffered_minimum_height := min_height.max (internal_minimum_height)
+		buffered_minimum_width := min_width.max (internal_minimum_width)
 	end
 
 	minimum_height: INTEGER is
-			-- The minimum height of a vertical box is the sum of the minimum_heights's of its children
-	local
-		a, b, i: INTEGER
-	do
-		a := internal_minimum_height
-		from
-			b := 0
-			i := 1
-		until
-			(i = 0) or (i = count + 1)
-		loop
-			b := b + i_th(i).minimum_height
-			i := i + 1
-		end
-		b := b + (count-1) * padding + child_offset_bottom + child_offset_top
-		Result := a.max (b)
-	end
+			do
+				Result := buffered_minimum_height
+			end
+	minimum_width: INTEGER is
+			do
+				Result := buffered_minimum_width
+			end
+
+
+--	minimum_height: INTEGER is
+--			-- The minimum height of a vertical box is the sum of the minimum_heights's of its children
+--	local
+--		a, b, i: INTEGER
+--	do
+--		a := internal_minimum_height
+--		from
+--			b := 0
+--			i := 1
+--		until
+--			(i = 0) or (i = count + 1)
+--		loop
+--			b := b + i_th(i).minimum_height
+--			i := i + 1
+--		end
+--		b := b + (count-1) * padding + child_offset_bottom + child_offset_top
+--		Result := a.max (b)
+--	end
 
 feature -- Implementation
 
@@ -152,7 +183,6 @@ feature -- Implementation
 			end
 
 			min_height :=  expandable_height + non_expandable_height + (count-1)*padding +child_offset_bottom + child_offset_top
-
 			-- Set height of userpane so that it can accomodate all widgets + padding. We reset this change at the end of the feature
 			old_height := height -- save old height
 			--size_control_external ( c_object, width, min_height)
@@ -213,6 +243,9 @@ feature -- Implementation
 
 			--reset original height
 			--size_control_external ( c_object, width, old_height )
+
+			buffered_minimum_width := internal_minimum_width.max (min_width + child_offset_left + child_offset_right)
+			buffered_minimum_height := internal_minimum_height.max (min_height)
 		end
 
 

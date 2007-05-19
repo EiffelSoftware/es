@@ -36,7 +36,10 @@ inherit
 			destroy,
 			has_focus,
 			on_focus_changed,
-			on_event
+			on_event,
+			child_has_resized,
+			layout,
+			calculate_minimum_sizes
 		end
 
 	EV_CARBON_WINDOW_IMP
@@ -78,9 +81,9 @@ feature {NONE} -- Initialization
 			base_make (an_interface)
 			create rect.make_new_shared
 
-			rect.set_bottom (46)
+			rect.set_bottom (200)
 			rect.set_left (45)
-			rect.set_right (46)
+			rect.set_right (600)
 			rect.set_top (45)
 			window_attributes := ({MACWINDOWS_ANON_ENUMS}.kWindowLiveResizeAttribute).bit_or(
 									{MACWINDOWS_ANON_ENUMS}.kWindowStandardDocumentAttributes).bit_or(
@@ -243,7 +246,7 @@ feature -- Element change
 					item_has_implementation: w_imp /= Void
 				end
 				on_removed_item ( w_imp )
-				dispose_control_external ( w_imp.c_object )
+			--	dispose_control_external ( w_imp.c_object ) why should we do this?
 			end
 			-- Insert new item, if any
 			if v /= Void then
@@ -258,6 +261,46 @@ feature -- Element change
 				on_new_item ( w_imp )
 			end
 			item := v
+		end
+
+	child_has_resized (a_widget_imp: EV_WIDGET_IMP; a_height, a_width: INTEGER) is
+			--
+		do
+			setup_layout
+		end
+
+
+	layout  is
+				-- Sets the child control's size to the container site minus some spacing
+		local
+			ret: INTEGER
+			a_widget : EV_WIDGET_IMP
+		do
+				a_widget := temp_item
+				if a_widget = void and then item /= void then
+					a_widget ?= item.implementation
+				end
+					check
+						no_imp: a_widget /= void
+					end
+
+			--	set_size (a_widget.minimum_width + child_offset_left + child_offset_right, a_widget.minimum_height + child_offset_bottom + child_offset_top)
+				calculate_minimum_sizes
+			temp_item := void
+		end
+
+		calculate_minimum_sizes is
+		do
+			if temp_item /= void then
+				buffered_minimum_width := (temp_item.minimum_width + child_offset_left + child_offset_right).max(internal_minimum_width)
+				buffered_minimum_height := (temp_item.minimum_height + child_offset_top + child_offset_bottom).max(internal_minimum_height)
+			elseif item /= void then
+					buffered_minimum_width := (item.minimum_width + child_offset_left + child_offset_right).max(internal_minimum_width)
+					buffered_minimum_height := (item.minimum_height + child_offset_top + child_offset_bottom).max(internal_minimum_height)
+			else
+					buffered_minimum_width := internal_minimum_width.max (child_offset_left + child_offset_right)
+					buffered_minimum_height := internal_minimum_height.max (child_offset_top + child_offset_bottom)
+			end
 		end
 
 	setup_window_binding (a_control : POINTER) is

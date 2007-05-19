@@ -113,7 +113,7 @@ feature {NONE} -- Initialization
 	minimum_width: INTEGER is
 			-- Strangely GetOptimalBounds doesn't seem to work here
 		do
-			Result := 40
+			Result := 30
 		end
 
 feature {NONE} -- Initialization

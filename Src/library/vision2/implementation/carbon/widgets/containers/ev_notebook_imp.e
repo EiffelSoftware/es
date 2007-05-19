@@ -28,7 +28,10 @@ inherit
 			insert_i_th,
 			minimum_width,
 			minimum_height,
-			on_event
+			on_event,
+			layout,
+			setup_layout,
+			child_has_resized
 		end
 
 	EV_FONTABLE_IMP
@@ -175,56 +178,49 @@ feature -- Status report
 
 feature -- Measurement
 
-	minimum_width : INTEGER is
+	calculate_minimum_sizes  is
 			-- minimum_width is the largest minimum_width of all items + tab_offset if tabs are on left or right
 		local
 			i : INTEGER
-			max : INTEGER
+			max_width, max_height : INTEGER
 		do
 			if count > 0 then
-				max := 0
+				max_width := 0
+				max_height := 0
 				from
 					i := 1
 				until
 					i > count
 				loop
-					max := max.max ( i_th(i).minimum_width )
+					max_width := max_width.max ( i_th(i).minimum_width )
+					max_height := max_height.max ( i_th(i).minimum_height )
 					i := i + 1
+
 				end
 				if tab_position = interface.tab_left or else tab_position = interface.tab_right then
-					Result := max + tab_offset
+					buffered_minimum_width := max_width + tab_offset
 				else
-					Result := max
+					buffered_minimum_width := max_width
+				end
+				if tab_position = interface.tab_top or else tab_position = interface.tab_bottom then
+					buffered_minimum_height := max_height + tab_offset
+				else
+					buffered_minimum_width := max_height
 				end
 			else
-				Result := 0
+				buffered_minimum_height := 0
+				buffered_minimum_width := 0
 			end
 		end
 
 	minimum_height : INTEGER is
-			-- minimum_hight is the largest minimum_width of all items + tab_offset if tabs are on top or bottom
-		local
-			i : INTEGER
-			max : INTEGER
 		do
-			if count > 0 then
-				max := 0
-				from
-					i := 1
-				until
-					i > count
-				loop
-					max := max.max ( i_th(i).minimum_height )
-					i := i + 1
-				end
-				if tab_position = interface.tab_top or else tab_position = interface.tab_bottom then
-					Result := max + tab_offset
-				else
-					Result := max
-				end
-			else
-				Result := 0
-			end
+			Result := buffered_minimum_height
+		end
+
+	minimum_width : INTEGER is
+		do
+			Result := buffered_minimum_width
 		end
 
 feature {EV_NOTEBOOK} -- Status setting
@@ -415,6 +411,54 @@ feature -- Element change
 			remove_i_th (index)
 			insert_i_th (v, index)
 		end
+
+	child_has_resized (a_widget_imp: EV_WIDGET_IMP; a_height, a_width: INTEGER) is
+			-- propagate it to the top (or if we could resize, resize)
+			-- calculate minimum sizes for containers with just one element
+		local
+			a_widget: EV_WIDGET_IMP
+			old_min_height, old_min_width: INTEGER
+		do
+			old_min_height := minimum_height
+			old_min_width := minimum_width
+			calculate_minimum_sizes
+			if parent_imp /= void then
+				parent_imp.child_has_resized (current, (minimum_height - old_min_height), (minimum_width - old_min_width))
+			else
+				setup_layout
+			end
+
+		end
+
+		setup_layout is
+			local
+				w: EV_WIDGET_IMP
+				c: EV_CONTAINER_IMP
+				i: INTEGER
+			do
+				if count > 0 then
+					layout
+					from
+						i := 1
+					until
+						(i = 0) or (i = count + 1)
+					loop
+						c ?= i_th (i).implementation
+						if c /= void then
+							c.setup_layout
+						end
+						i := i + 1
+					end
+				end
+			end
+
+			layout is
+			--what should we do here?
+					do
+
+					end
+
+
 
 feature {EV_NOTEBOOK, EV_NOTEBOOK_TAB_IMP} -- Element change
 

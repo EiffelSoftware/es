@@ -79,6 +79,8 @@ feature -- Element change
 			ret: INTEGER
 			root_control_ptr: POINTER
 			cfstring: EV_CARBON_CF_STRING
+			w2: EV_BOX_IMP
+			a_height, a_width : INTEGER
 		do
 			if not interface.is_empty then
 				w ?= interface.item.implementation
@@ -86,6 +88,8 @@ feature -- Element change
 				check
 					item_has_implementation: w /= Void
 				end
+				a_height := - w.minimum_height
+				a_width := - w.minimum_width
 				ret := hiview_remove_from_superview_external (w.c_object)
 				check
 					view_removed: ret = 0
@@ -93,59 +97,82 @@ feature -- Element change
 			end
 			if v /= Void then
 				w ?= v.implementation
+				temp_item := w
 				ret := hiview_add_subview_external ( c_object, w.c_object )
 				check
 					view_added: ret = 0
 				end
 
-				setup_layout (w)
-
+				a_height := a_height + w.minimum_height
+				a_width := a_width + w.minimum_width
 				on_new_item (w)
+				--layout
 			end
+			child_has_resized (void, a_height, a_width)
+
 		end
 
 		child_offset_top: INTEGER is
 				-- The offset a child needs to have from this type of container
 			do
-				Result := 5
+				Result := 2
 			end
 
 
-		setup_layout (a_widget: EV_WIDGET_IMP) is
+		setup_layout is
+			local
+				w: EV_WIDGET_IMP
+				c: EV_CONTAINER_IMP
+			do
+
+				if item /= void  then
+						layout
+						w ?= item.implementation
+						check
+							has_imp: w /= void
+						end
+
+						c ?= w
+						if c /= void then
+							c.setup_layout
+						end
+
+				end
+			end
+
+
+		layout  is
 				-- Sets the child control's size to the container site minus some spacing
 		local
 			a_rect : CGRECT_STRUCT
 			a_size : CGSIZE_STRUCT
 			a_point : CGPOINT_STRUCT
 			ret: INTEGER
+			a_widget : EV_WIDGET_IMP
 		do
-			-- Get initial positions right
-			create a_rect.make_new_unshared
-			create a_size.make_shared ( a_rect.size )
-			create a_point.make_shared ( a_rect.origin )
-
-			a_point.set_x (child_offset_right)
-			a_point.set_y (child_offset_top)
-			a_size.set_width (width - (child_offset_right + child_offset_left))
-			a_size.set_height (height - child_offset_bottom - child_offset_top)
-			ret := hiview_set_frame_external (a_widget.c_object, a_rect.item)
-
-			setup_automatic_layout (a_widget.c_object, c_object, child_offset_top, child_offset_bottom, child_offset_right, child_offset_left)
-		end
-
-		update_minimum_size is
-				local
-					w: EV_CONTAINER_IMP
-				do
-					if parent /= void then
-						w ?= parent.implementation
-						check
-							has_implementation: w /= void
-						end
-						w.update_minimum_size
-					end
+				a_widget := temp_item
+				if a_widget = void and then item /= void then
+					a_widget ?= item.implementation
 				end
+					check
+						no_imp: a_widget /= void
+					end
 
+				-- Get initial positions right
+				create a_rect.make_new_unshared
+				create a_size.make_shared ( a_rect.size )
+				create a_point.make_shared ( a_rect.origin )
+
+				a_point.set_x (child_offset_right)
+				a_point.set_y (child_offset_top)
+				a_size.set_width (width - (child_offset_right + child_offset_left))
+				a_size.set_height (height - child_offset_bottom - child_offset_top)
+				ret := hiview_set_frame_external (a_widget.c_object, a_rect.item)
+
+				setup_automatic_layout (a_widget.c_object, c_object, child_offset_top, child_offset_bottom, child_offset_right, child_offset_left)
+
+			temp_item := void
+		end
 
 		setup_automatic_layout (a_control, a_container: POINTER; offset_top, offset_bottom, offset_right, offset_left: INTEGER) is
 				-- Make the child follow it's parent when it's reszed
@@ -193,41 +220,33 @@ feature -- Measurement
 	minimum_width: INTEGER is
 			-- If not set otherwise, the minimum width of a container is equal to the minimum width of 'item'
 		do
-			if internal_minimum_width /= -1 then
-				Result := internal_minimum_width
-			else
-				if interface.count > 0 then
-					Result := item.minimum_width
-				end
-			end
+			Result := buffered_minimum_width
 		end
 
 	minimum_height: INTEGER is
 			-- If not set otherwise, the minimum height of a container is equal to the minimum height of 'item'
 		do
-			if internal_minimum_height /= -1 then
-				Result := internal_minimum_height
-			else
-				if interface.count > 0 then
-					Result := item.minimum_height
-				end
-			end
+			Result := buffered_minimum_height
 		end
 
 	child_offset_bottom: INTEGER
 	do
-		Result := 5
+		Result := 2
 	end
 
 	child_offset_right: INTEGER
 	do
-		Result := 5
+		Result := 2
 	end
 
 	child_offset_left: INTEGER
 	do
-		Result := 5
+		Result := 2
 	end
+
+	buffered_minimum_width: INTEGER
+	buffered_minimum_height: INTEGER
+	temp_item: EV_WIDGET_IMP -- ueli: this is ugly. i know.
 
 feature -- Status setting
 
@@ -320,15 +339,29 @@ feature -- Event handling
 
 feature {EV_WIDGET_IMP} -- Implementation
 
-	child_has_resized (a_widget_imp: EV_WIDGET_IMP) is
-			--
+	child_has_resized (a_widget_imp: EV_WIDGET_IMP; a_height, a_width: INTEGER) is
+			-- propagate it to the top (or if we could resize, resize)
+			-- calculate minimum sizes for containers with just one element
+		local
+			a_widget: EV_WIDGET_IMP
+			old_min_height, old_min_width: INTEGER
 		do
-			-- By default do nothing
+			old_min_height := minimum_height
+			old_min_width := minimum_width
+			calculate_minimum_sizes
 			if parent_imp /= void then
-				parent_imp.child_has_resized (current)
+				parent_imp.child_has_resized (current, (minimum_height - old_min_height), (minimum_width - old_min_width))
+			else
+				setup_layout
 			end
 
 		end
+
+	calculate_minimum_sizes is
+			deferred
+			end
+
+
 
 	set_parent_imp (a_parent_imp: EV_CONTAINER_IMP) is
 			--

@@ -69,13 +69,14 @@ feature {NONE} -- Initialization
 			ret := hiview_set_frame_external (c_object, rect.item)
 
 			--ret := hiscroll_view_set_scroll_bar_auto_hide_external (c_object, 1)
-			--set_scrolling_policy ({EV_GTK_EXTERNALS}.gTK_POLICY_AUTOMATIC_ENUM, {EV_GTK_EXTERNALS}.gTK_POLICY_AUTOMATIC_ENUM)
+
 
 			create a_rect.make_new_unshared
-			a_rect.set_left (20)
-			a_rect.set_right (100)
-			a_rect.set_bottom (40)
-			a_rect.set_top (20)
+			a_rect.set_left (0)
+			a_rect.set_right (0)
+			a_rect.set_bottom (0)
+			a_rect.set_top (0)
+
 			ret := create_user_pane_control_external ( null, a_rect.item, {CONTROLS_ANON_ENUMS}.kControlSupportsEmbedding, $viewport )
 			ret := hiview_set_visible_external (viewport, 1)
 			ret := hiview_set_frame_external (viewport, rect.item)
@@ -306,7 +307,7 @@ feature {NONE} -- Implementation
 	end
 
 		setup_binding (a_control : POINTER) is
-			-- What does this do?
+			-- Binds the viewport to the scroll bars
 		external
 			"C inline use <Carbon/Carbon.h>"
 		alias
@@ -350,15 +351,16 @@ feature {NONE} -- Implementation
 		do
 		end
 
-	child_has_resized (item_imp: EV_WIDGET_IMP) is
+	child_has_resized (item_imp: EV_WIDGET_IMP; a_height, a_width: INTEGER_32) is
 			-- If child has resized and smaller than parent then set position in center of `Current'.
 		local
-			a_height: INTEGER_32
 			a: CGSIZE_STRUCT
 			a_event: POINTER
 			ret: INTEGER
 		do
-			internal_set_container_size (item_imp.minimum_height, item_imp.minimum_width)
+			--internal_set_container_size (item_imp.minimum_height, item_imp.minimum_width)
+			precursor {EV_VIEWPORT_IMP} (item_imp, a_height, a_width)
+
 			ret := create_event_external (null, kEventClassScrollable, kEventScrollableInfoChanged, 0, kEventAttributeUserEvent, $a_event)
 			ret := send_event_to_event_target_external (a_event, get_control_event_target_external (c_object))
 			release_event_external (a_event)

@@ -264,8 +264,20 @@ feature -- Element change
 
 	set_minimum_height (a_minimum_height: INTEGER) is
 			-- Set the minimum vertical size to `a_minimum_height'.
+		local
+			c: EV_CONTAINER_IMP
+			old_height, old_width: INTEGER
 		do
+			old_height := minimum_height
+			old_width := minimum_width
 			internal_set_minimum_size (internal_minimum_width, a_minimum_height)
+			if parent /= void then
+				c ?= parent.implementation
+				check
+					has_implementation: c /= void
+				end
+				c.child_has_resized (current, minimum_height - old_height, minimum_width - old_width)
+			end
 		end
 
 	set_minimum_size (a_minimum_width, a_minimum_height: INTEGER) is

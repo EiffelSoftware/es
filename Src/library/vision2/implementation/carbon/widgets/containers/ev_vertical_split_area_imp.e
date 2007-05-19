@@ -76,6 +76,24 @@ feature {NONE} -- Implementation
 			rect_b_origin.set_y ( splitter_rect_origin.y + splitter_rect_size.height )
 		end
 
+	calculate_minimum_sizes is
+			--calculate the minimum sizes for buffered_minimum_heigth and width
+		local
+			first_width, second_width, first_height, second_height: INTEGER
+		do
+			if first /= void then
+				first_width := first.minimum_width
+				first_height := first.minimum_height
+			end
+			if second /= void then
+				second_width := second.minimum_width
+				second_height := second.minimum_height
+			end
+
+			buffered_minimum_width :=  first_width.max (second_width)
+			buffered_minimum_height := first_height + second_height + splitter_width
+		end
+
 	track ( event :POINTER ) : TUPLE[INTEGER, INTEGER_16] is
 			-- Tracking event handler
 		local

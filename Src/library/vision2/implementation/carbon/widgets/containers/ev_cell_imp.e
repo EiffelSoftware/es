@@ -22,8 +22,6 @@ inherit
 		redefine
 			interface,
 			replace,
-			minimum_width,
-			minimum_height,
 			child_offset_bottom,
 			child_offset_top,
 			child_offset_left,
@@ -97,29 +95,44 @@ feature -- Measurement
 		Result := 2
 	end
 
-	minimum_width: INTEGER is
-		local
-			a,b: INTEGER
+	calculate_minimum_sizes is
+			-- Calculate the CGRECTS rect_a, rect_b and splitter_rect
 		do
-			a := internal_minimum_width
-			if item /= void then
-				b := item.minimum_width + child_offset_right + child_offset_left
+			if temp_item /= void then
+				buffered_minimum_width := (temp_item.minimum_width + child_offset_left + child_offset_right).max(internal_minimum_width)
+				buffered_minimum_height := (temp_item.minimum_height + child_offset_top + child_offset_bottom).max(internal_minimum_height)
+			elseif item /= void then
+					buffered_minimum_width := (item.minimum_width + child_offset_left + child_offset_right).max(internal_minimum_width)
+					buffered_minimum_height := (item.minimum_height + child_offset_top + child_offset_bottom).max(internal_minimum_height)
+			else
+					buffered_minimum_width := internal_minimum_width.max (child_offset_left + child_offset_right)
+					buffered_minimum_height := internal_minimum_height.max (child_offset_top + child_offset_bottom)
 			end
-			Result := a.max (b)
-
 		end
 
-	minimum_height: INTEGER is
-		local
-			a,b: INTEGER
-		do
-			a := internal_minimum_height
-			if item /= void then
-				b := item.minimum_height + child_offset_top + child_offset_bottom
-			end
-			Result := a.max (b)
+--	minimum_width: INTEGER is
+--		local
+--			a,b: INTEGER
+--		do
+--			a := internal_minimum_width
+--			if item /= void then
+--				b := item.minimum_width + child_offset_right + child_offset_left
+--			end
+--			Result := a.max (b)
 
-		end
+--		end
+
+--	minimum_height: INTEGER is
+--		local
+--			a,b: INTEGER
+--		do
+--			a := internal_minimum_height
+--			if item /= void then
+--				b := item.minimum_height + child_offset_top + child_offset_bottom
+--			end
+--			Result := a.max (b)
+
+--		end
 
 feature {EV_ANY_I} -- Implementation
 

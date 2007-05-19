@@ -26,7 +26,8 @@ inherit
 
 	EV_CONTAINER_IMP
 		redefine
-			interface
+			interface,
+			setup_layout
 		end
 
 	CONTROLDEFINITIONS_FUNCTIONS_EXTERNAL
@@ -84,6 +85,33 @@ feature -- Status report
 
 
 		end
+
+	setup_layout is
+			local
+				w: EV_WIDGET_IMP
+				c: EV_CONTAINER_IMP
+				i: INTEGER
+			do
+--				if count > 0 then
+--					layout
+--					from
+--						i := 1
+--					until
+--						(i = 0) or (i = count + 1)
+--					loop
+--						c ?= i_th (i).implementation
+--						if c /= void then
+--							c.setup_layout
+--						end
+--						i := i + 1
+--					end
+--				end
+			end
+
+	calculate_minimum_sizes is
+			--calculate the minimum sizes for buffered_minimum_heigth and width
+			do
+			end
 
 feature -- Status settings
 

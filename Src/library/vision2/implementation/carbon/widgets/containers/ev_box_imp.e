@@ -30,7 +30,7 @@ inherit
 			child_offset_bottom,
 			child_offset_left,
 			child_offset_right,
-			update_minimum_size
+			child_has_resized
 		end
 
 feature -- Initialization
@@ -77,7 +77,7 @@ feature {EV_ANY, EV_ANY_I} -- Status settings
 			-- Set whether every child is the same size.
 		do
 			is_homogeneous := flag
-			carbon_arrange_children
+			setup_layout
 		end
 
 	set_border_width (value: INTEGER) is
@@ -88,10 +88,20 @@ feature {EV_ANY, EV_ANY_I} -- Status settings
 
 	set_padding (value: INTEGER) is
 			-- Assign `value' to `padding'.
+		local
+			old_padding: INTEGER
+			v: EV_VERTICAL_BOX_IMP
+			h: EV_HORIZONTAL_BOX_IMP
 		do
+			old_padding := padding
 			padding := value
 			if count > 0 then
-				carbon_arrange_children
+				v ?= current
+				if v/= void then
+					child_has_resized (void, (count-1) * (padding - old_padding), 0)
+				else
+					child_has_resized (void, 0, (count-1) * (padding - old_padding))
+				end
 			end
 		end
 
@@ -112,7 +122,7 @@ feature {EV_ANY, EV_ANY_I} -- Status settings
 				end
 			end
 			w_imp.set_expandable ( flag )
-			carbon_arrange_children
+			setup_layout
 		end
 
 feature {NONE} -- Carbon implementation
@@ -124,30 +134,49 @@ feature {NONE} -- Carbon implementation
 		deferred
 		end
 
-	layout is
-		deferred
+
+feature {EV_CONTAINER_IMP}
+--	carbon_arrange_children is
+--	--		 Setup positioning constraints for all children
+--		require
+--			at_least_one_child : count > 0
+--		local
+--			w: EV_BOX_IMP
+--		do
+--			layout
+--			if parent /= void then
+--				w ?= parent.implementation
+--				if w /= void then
+--					w.carbon_arrange_children
+--				end
+
+--			end
+
+--		end
+
+
+
+	child_has_resized (a_widget_imp: EV_WIDGET_IMP; a_height, a_width: INTEGER) is
+			-- propagate it to the top (or if we could resize, resize)
+			-- calculate minimum sizes
+		local
+			a_widget: EV_WIDGET_IMP
+			old_minimum_width, old_minimum_height: INTEGER
+		do
+			old_minimum_width := minimum_width
+			old_minimum_height := minimum_height
+
+				calculate_minimum_sizes
+				if parent_imp /= void then
+					parent_imp.child_has_resized (current, minimum_height - old_minimum_height,  minimum_width - old_minimum_width)
+				end
 		end
 
-
-
-feature {EV_BOX_IMP}
-	carbon_arrange_children is
-			-- Setup positioning constraints for all children
-		require
-			at_least_one_child : count > 0
-		local
-			w: EV_BOX_IMP
-		do
-			layout
-			if parent /= void then
-				w ?= parent.implementation
-				if w /= void then
-					w.carbon_arrange_children
-				end
-
+	calculate_minimum_sizes is
+			deferred
 			end
 
-		end
+
 feature --Meassurement
 
 	child_offset_bottom: INTEGER
@@ -203,7 +232,7 @@ feature -- Event handling
 			Precursor ( an_item_imp )
 			an_item_imp.set_expandable ( True )
 			expandable_item_count := expandable_item_count + 1
-			carbon_arrange_children
+			child_has_resized (current, an_item_imp.minimum_height, an_item_imp.minimum_width)
 		end
 
 	on_removed_item (an_item_imp: EV_WIDGET_IMP) is
@@ -214,14 +243,9 @@ feature -- Event handling
 				expandable_item_count := expandable_item_count - 1
 			end
 			if count > 0 then
-				carbon_arrange_children
+				child_has_resized (current, - an_item_imp.minimum_height, - an_item_imp.minimum_width)
 			end
 		end
-
-	update_minimum_size is
-			do
-				carbon_arrange_children
-			end
 
 
 
