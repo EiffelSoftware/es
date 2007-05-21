@@ -33,7 +33,7 @@ feature -- Initialization
 			dev_window := a_window
 		end
 
-feature {NONE} -- Implementation
+feature -- Status report
 
 	menu_displayable (a_pebble: ANY): BOOLEAN
 			-- Should the menu be displayed?
@@ -55,17 +55,46 @@ feature -- Editor menu
 		require
 			a_menu_not_void: a_menu /= Void
 			a_editor_not_void: a_editor /= Void
+		local
+			l_pebble: ANY
+			l_classi_stone: CLASSI_STONE
+			l_classc_stone: CLASSC_STONE
 		do
-			if menu_displayable (a_pebble) or a_pebble = Void then
+			if a_pebble = Void then
+					-- If no pebble is selected, and if we show a menu in a real editor, we select
+					-- the stone associated with the editor for displaying the context menu.
+				if a_editor = dev_window.editors_manager.current_editor then
+						-- Try to get `stone' from editor and transformed it into a CLASSI_STONE
+						-- or CLASSC_STONE depending on the stone. We do this because the stone
+						-- could represent a feature and we want the context menu to show what is
+						-- applicable to the current class.
+					l_classc_stone ?= a_editor.stone
+					if l_classc_stone /= Void and then l_classc_stone.is_valid then
+						create {CLASSC_STONE} l_pebble.make (l_classc_stone.e_class)
+					else
+						l_classi_stone ?= a_editor.stone
+						if l_classi_stone /= Void and then l_classi_stone.is_valid then
+							create {CLASSI_STONE} l_pebble.make (l_classi_stone.class_i)
+						end
+					end
+				end
+			else
+				l_pebble := a_pebble
+			end
+				-- Note: we still use `a_pebble' to check whether or not we should display the
+				-- context menu, since `l_pebble' might not be Void anymore with the above change.
+			if menu_displayable (l_pebble) or a_pebble = Void then
 				current_editor := a_editor
 				build_name (a_pebble)
 				setup_pick_item (a_menu, a_pebble)
 				if a_pebble /= Void then
+					extend_separator (a_menu)
 					extend_standard_compiler_item_menu (a_menu, a_pebble)
 					extend_separator (a_menu)
 				end
 				extend_basic_editor_menus (a_menu, a_editor.is_editable)
 				extend_view_in_main_formatters_menus (a_menu)
+				extend_property_menu (a_menu, a_pebble)
 				current_editor := Void
 			end
 		end
@@ -87,6 +116,7 @@ feature -- Class Tree Menu
 				setup_pick_item (a_menu, a_pebble)
 				l_stone ?= a_pebble
 				if l_stone /= Void then
+					extend_separator (a_menu)
 					l_target_stone ?= l_stone
 					if l_target_stone /= Void then
 						extend_add_to_menu (a_menu, l_stone)
@@ -107,12 +137,9 @@ feature -- Class Tree Menu
 						end
 						extend_standard_compiler_item_menu (a_menu, l_stone)
 						extend_separator (a_menu)
-						if l_cluster_stone = Void then
-							extend_view_in_main_formatters_menus (a_menu)
-							extend_separator (a_menu)
-						end
 						extend_delete_class_cluster_menu (a_menu, l_stone)
 					end
+					extend_property_menu (a_menu, l_stone)
 				end
 			end
 		end
@@ -192,6 +219,7 @@ feature -- Diagram tool
 				else
 					build_name (a_pebble)
 					setup_pick_item (a_menu, a_pebble)
+					extend_separator (a_menu)
 					extend_standard_compiler_item_menu (a_menu, a_pebble)
 					extend_separator (a_menu)
 					l_feature_stone ?= a_pebble
@@ -203,6 +231,7 @@ feature -- Diagram tool
 						extend_remove_from_diagram (a_menu, a_pebble)
 						extend_diagram_delete_menu (a_menu, a_pebble)
 					end
+					extend_property_menu (a_menu, a_pebble)
 				end
 			end
 		end
@@ -250,6 +279,7 @@ feature -- Favorites menus
 			if menu_displayable (a_pebble) then
 				build_name (a_pebble)
 				setup_pick_item (a_menu, a_pebble)
+				extend_separator (a_menu)
 				extend_standard_compiler_item_menu (a_menu, a_pebble)
 				extend_separator (a_menu)
 				extend_new_favorite_class (a_menu)
@@ -267,6 +297,7 @@ feature -- Metrics tool
 			if menu_displayable (a_pebble) then
 				build_name (a_pebble)
 				setup_pick_item (a_menu, a_pebble)
+				extend_separator (a_menu)
 				extend_standard_compiler_item_menu (a_menu, a_pebble)
 				extend_separator (a_menu)
 				extend_metric_selector_remove (a_menu, a_pebble, a_selector)
@@ -311,6 +342,7 @@ feature -- Call stack menu
 			if menu_displayable (a_pebble) then
 				build_name (a_pebble)
 				setup_pick_item (a_menu, a_pebble)
+				extend_separator (a_menu)
 				l_call_stack_stone ?= a_pebble
 				if l_call_stack_stone /= Void then
 					extend_standard_compiler_item_menu (a_menu, a_pebble)
@@ -331,6 +363,7 @@ feature -- Object and Watch tool menus
 			if menu_displayable (a_pebble) then
 				build_name (a_pebble)
 				setup_pick_item (a_menu, a_pebble)
+				extend_separator (a_menu)
 				extend_standard_compiler_item_menu (a_menu, a_pebble)
 				l_object_stone ?= a_pebble
 				if l_object_stone /= Void then
@@ -349,6 +382,7 @@ feature -- Object and Watch tool menus
 			if menu_displayable (a_pebble) then
 				build_name (a_pebble)
 				setup_pick_item (a_menu, a_pebble)
+				extend_separator (a_menu)
 				extend_standard_compiler_item_menu (a_menu, a_pebble)
 				l_object_stone ?= a_pebble
 				if l_object_stone /= Void then
@@ -373,6 +407,7 @@ feature -- Search scope menu
 			if menu_displayable (a_pebble) then
 				build_name (a_pebble)
 				setup_pick_item (a_menu, a_pebble)
+				extend_separator (a_menu)
 				extend_standard_compiler_item_menu (a_menu, a_pebble)
 				extend_separator (a_menu)
 				extend_search_scope_remove (a_menu, a_pebble)
@@ -387,6 +422,7 @@ feature -- Standard menus
 			if menu_displayable (a_pebble) then
 				build_name (a_pebble)
 				setup_pick_item (a_menu, a_pebble)
+				extend_separator (a_menu)
 				extend_standard_compiler_item_menu (a_menu, a_pebble)
 			end
 		end
@@ -465,6 +501,9 @@ feature {NONE} -- Menu section, Granularity 1.
 			a_menu.last.set_text (add_type_and_name (names.m_new_window))
 			a_menu.last.select_actions.wipe_out
 			a_menu.last.select_actions.extend (agent (dev_window.new_development_window_cmd).execute_with_stone (l_stone))
+			if current_editor /= Void and then l_stone.same_as (current_editor.stone) then
+				a_menu.last.disable_sensitive
+			end
 
 			if a_external_editor then
 				a_menu.extend (dev_window.commands.shell_cmd.new_menu_item_unmanaged)
@@ -527,10 +566,10 @@ feature {NONE} -- Menu section, Granularity 1.
 				end
 				l_commands.forth
 			end
-			extend_separator (a_menu)
 		end
 
 	extend_view_in_main_formatters_menus (a_menu: EV_MENU) is
+			--|----
 			--| View -->	Basic view
 			--|				Clickable view
 			--|				Flat view
@@ -542,25 +581,37 @@ feature {NONE} -- Menu section, Granularity 1.
 			l_menu: EV_MENU
 			l_item, l_selected_item: EV_RADIO_MENU_ITEM
 			l_form: EB_CLASS_INFO_FORMATTER
+			l_editor: EB_SMART_EDITOR
 		do
-			create l_menu.make_with_text (names.m_view)
-			a_menu.extend (l_menu)
-			from
-				dev_window.managed_main_formatters.start
-			until
-				dev_window.managed_main_formatters.after
-			loop
-				l_form := dev_window.managed_main_formatters.item
-				l_item := l_form.new_standalone_menu_item
-				if l_form.selected and l_form.is_button_sensitive then
-					l_selected_item := l_item
+			l_editor := dev_window.editors_manager.current_editor
+			if l_editor /= Void and then l_editor = current_editor then
+					-- Menu only appears when showing the context menu in a real editor (the one where
+					-- classes are edited).
+				extend_separator (a_menu)
+				create l_menu.make_with_text (names.m_view)
+				a_menu.extend (l_menu)
+				from
+					dev_window.managed_main_formatters.start
+				until
+					dev_window.managed_main_formatters.after
+				loop
+					l_form := dev_window.managed_main_formatters.item
+					l_item := l_form.new_standalone_menu_item
+					if l_form.selected and l_form.is_button_sensitive then
+						l_selected_item := l_item
+					end
+					l_menu.extend (l_item)
+					l_menu.last.select_actions.extend (agent l_form.execute)
+					dev_window.managed_main_formatters.forth
 				end
-				l_menu.extend (l_item)
-				l_menu.last.select_actions.extend (agent l_form.execute)
-				dev_window.managed_main_formatters.forth
-			end
-			if l_selected_item /= Void then
-				l_selected_item.enable_select
+				if l_selected_item /= Void then
+					l_selected_item.enable_select
+				end
+				if l_editor.changed then
+						-- Editor is being edited, disble the view menu since selecting one
+						-- of the entry could discard the changes being made.
+					l_menu.disable_sensitive
+				end
 			end
 		end
 
@@ -956,6 +1007,28 @@ feature {NONE} -- Menu section, Granularity 1.
 			a_menu.last.select_actions.extend (agent l_search_tool.on_drop_remove (a_pebble))
 			a_menu.extend (new_menu_item (names.m_remove_all))
 			a_menu.last.select_actions.extend (agent l_search_tool.remove_all)
+		end
+
+	extend_property_menu (a_menu: EV_MENU; a_pebble: ANY)
+			-- Extend Properties menu item relating to `a_pebble'.
+		require
+			a_menu_not_void: a_menu /= Void
+		local
+			l_menu_item: EV_MENU_ITEM
+			l_properties_tool: EB_PROPERTIES_TOOL
+			l_stone: STONE
+		do
+			l_stone ?= a_pebble
+			if l_stone /= Void then
+				l_properties_tool := dev_window.tools.properties_tool
+				if l_properties_tool.dropable (l_stone) then
+					create l_menu_item.make_with_text (l_properties_tool.menu_name)
+					l_menu_item.select_actions.extend (agent l_properties_tool.show)
+					l_menu_item.select_actions.extend (agent l_properties_tool.set_stone (l_stone))
+					a_menu.extend (create {EV_MENU_SEPARATOR})
+					a_menu.extend (l_menu_item)
+				end
+			end
 		end
 
 feature {NONE} -- Diagram menu section, Granularity 1.
@@ -1501,8 +1574,17 @@ feature {NONE} -- Implementation
 			-- Extend a separator into `a_menu'.
 		require
 			a_menu_not_void: a_menu /= Void
+		local
+			l_sep: EV_MENU_SEPARATOR
 		do
-			a_menu.extend (create {EV_MENU_SEPARATOR})
+				-- Add a separator, only if it is not the first entry in the menu
+				-- and if the last inserted entry was not a separator.
+			if not a_menu.is_empty then
+				l_sep ?= a_menu.last
+				if l_sep = Void then
+					a_menu.extend (create {EV_MENU_SEPARATOR})
+				end
+			end
 		end
 
 	new_menu_item (a_name: STRING_GENERAL): EV_MENU_ITEM is

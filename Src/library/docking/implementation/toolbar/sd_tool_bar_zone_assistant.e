@@ -36,7 +36,7 @@ feature -- Command
 			l_item: SD_TOOL_BAR_ITEM
 			l_separator: SD_TOOL_BAR_SEPARATOR
 		do
-			l_items := zone.content.items
+			l_items := zone.content.items_visible
 			from
 				l_items.finish
 			until
@@ -354,7 +354,7 @@ feature -- Command
 						end
 						l_all_items.forth
 					end
-					check must_fount: l_item /= Void end
+					check must_found: l_item /= Void end
 					l_content.items.extend (l_item)
 				end
 				l_datas.forth
@@ -392,7 +392,7 @@ feature -- Query
 			l_item: SD_TOOL_BAR_ITEM
 			l_separator: SD_TOOL_BAR_SEPARATOR
 		do
-			l_items := zone.content.items
+			l_items := zone.content.items_visible
 			from
 				l_items.finish
 			until
@@ -486,7 +486,7 @@ feature -- Query
 			l_separator: SD_TOOL_BAR_SEPARATOR
 			l_group: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 		do
-			l_items := zone.content.items
+			l_items := zone.content.items_visible
 			from
 				create Result.make (1)
 				create l_group.make (1)

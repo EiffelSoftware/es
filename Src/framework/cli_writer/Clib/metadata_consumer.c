@@ -5,11 +5,11 @@
 /* link this file in with the server and any clients */
 
 
- /* File created by MIDL compiler version 6.00.0365 */
-/* at Wed Jan 17 15:51:27 2007
+ /* File created by MIDL compiler version 6.00.0366 */
+/* at Wed May 16 22:00:14 2007
  */
 /* Compiler settings for metadata_consumer.idl:
-    Oicf, W1, Zp8, env=Win64 (32b run)
+    Oicf, W1, Zp8, env=Win32 (32b run)
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 

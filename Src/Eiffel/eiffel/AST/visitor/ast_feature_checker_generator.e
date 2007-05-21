@@ -5883,12 +5883,6 @@ feature -- Implementation
 			process_eiffel_list (l_as)
 		end
 
-	process_restrict_clause_as (l_as: RESTRICT_CLAUSE_AS) is
-			-- Process `l_as'.
-		do
-			l_as.type_list.process (Current)
-		end
-
 feature {NONE} -- Predefined types
 
 	string_type: CL_TYPE_A is
@@ -8021,7 +8015,7 @@ feature {NONE} -- Implementation: catcall check
 			l_descendants: ARRAYED_LIST [CLASS_C]
 			l_type: TYPE_A
 			l_formal: FORMAL_A
-			l_generics: ARRAY [TYPE_A]
+--			l_generics: ARRAY [TYPE_A]
 		do
 			if a_type.is_formal then
 				l_formal ?= a_type

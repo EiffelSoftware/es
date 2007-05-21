@@ -472,8 +472,10 @@ feature {NONE} -- Process Vision2 events
 				-- Redraw the line where the cursor is (we will erase the cursor)
 			show_cursor := False
 			if not editor_drawing_area.is_destroyed then
-				invalidate_selection_rect (True)
-				suspend_cursor_blinking
+				invalidate_selection_rect (False)
+					-- No need to suspend the blinking of the cursor here since the drawing
+					-- routine `draw_cursor' takes into consideration that when you do not have
+					-- the focus we draw a fix grey cursor.
 			end
 		end
 
@@ -817,7 +819,7 @@ feature {NONE} -- Blink Cursor Management
 			if not is_empty then
 				line_start := text_displayed.selection_start.y_in_lines
 				line_end := text_displayed.selection_end.y_in_lines
-				invalidate_block (line_start, line_end, true)
+				invalidate_block (line_start, line_end, flush_screen)
 			end
 		end
 
@@ -833,10 +835,8 @@ feature {NONE} -- Blink Cursor Management
 			if editor_preferences.blinking_cursor and has_focus then
 					-- Set up a timeout to be called to make the cursor blink
 				blinking_timeout.actions.extend (agent internal_draw_cursor (media, x, y, width, line_height, show_cursor))
-				blinking_timeout.actions.call (Void)
-			else
-				internal_draw_cursor (media, x, y, width, line_height, show_cursor)
 			end
+			internal_draw_cursor (media, x, y, width, line_height, show_cursor)
  		end
 
 	internal_draw_cursor (media: EV_DRAWABLE; x, y, width_cursor, ln_height: INTEGER; do_show: BOOLEAN) is
@@ -847,7 +847,7 @@ feature {NONE} -- Blink Cursor Management
 		do
 			if not updating_line then
 				blink_on := not blink_on
-				invalidate_cursor_rect (True)
+				invalidate_cursor_rect (False)
 			end
 			media.set_xor_mode
 			if not do_show then

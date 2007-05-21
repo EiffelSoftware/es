@@ -90,6 +90,11 @@ feature -- Settings
 				end
 			end
 			count := count + 1
+			if f.written_in /= id then
+					-- Ensure the generic wrapper is generated even though the written feature
+					-- may be without a formal in the signature.
+				system.byte_context.record_wrapper (f.body_index, rout_id)
+			end
 		end
 
 	transfer is

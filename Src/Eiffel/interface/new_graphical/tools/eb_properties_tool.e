@@ -1,5 +1,5 @@
 indexing
-	description	: "Tool to view the favorites"
+	description	: "Tool to view the properties of a system/cluster/class"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date		: "$Date$"
@@ -173,7 +173,7 @@ feature {NONE} -- External changes to classes/clusters
 			refresh
 		end
 
-feature {EB_STONE_CHECKER} -- Actions
+feature {EB_STONE_CHECKER, EB_CONTEXT_MENU_FACTORY} -- Actions
 
 	set_stone (a_stone: STONE) is
 			-- Add `a_stone'.
