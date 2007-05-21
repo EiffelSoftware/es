@@ -30,10 +30,6 @@ feature -- Basic operations
 			end
 		end
 
-feature -- Obsolete
-
-feature -- Inapplicable
-
 feature {NONE} -- Implementation
 	call_bank(bank: BANK; feature_name: STRING; arguments: LIST[ANY]) is
 			-- Call features of BANK

@@ -9,7 +9,6 @@ class
 inherit
 	OBSERVABLE
 
-	
 create
 	make
 
@@ -88,20 +87,6 @@ feature -- Initialization
 			end
 			-- </methodbody_end>
 		end
-
---	replay_include
---			-- Feature to make sure, that the library classes
---			-- for replay are included in the build.
---		local
---			event_factory: EVENT_FACTORY
---			parser: TEXT_EVENT_PARSER
---			input_stream: KL_TEXT_INPUT_FILE
---		do
---			create input_stream.make ("foo.bar")
---			create event_factory
---			create parser.make (input_stream, event_factory)
---		end
-
 
 feature --Access
 -- Modes for the example application:

@@ -12,14 +12,16 @@ deferred class
 feature -- Access
 
 	handler: EVENT_PARSER_HANDLER
+			-- Handler for the parse - events.
 
 	end_of_input: BOOLEAN
+			-- Already read beyond the end of the input?
 		do
 			Result := input.end_of_input
 		end
 
  	input: KI_TEXT_INPUT_STREAM
-
+		-- Input where the parser reads from
 
 feature -- Status setting
 	set_handler(a_handler: EVENT_PARSER_HANDLER)
@@ -27,36 +29,15 @@ feature -- Status setting
 			handler := a_handler
 		end
 
-feature -- Cursor movement
-
-feature -- Element change
-
-feature -- Removal
-
-feature -- Resizing
-
-feature -- Transformation
-
-feature -- Conversion
-
-feature -- Duplication
-
-feature -- Miscellaneous
-
 feature -- Basic operations
 
 	parse_event
+			-- Parse the next event.
 		require
 			handler_not_void: handler /= Void
 			not_end_of_input: not end_of_input
 		deferred
 		end
-
-feature -- Obsolete
-
-feature -- Inapplicable
-
-feature {NONE} -- Implementation
 
 invariant
 	invariant_clause: True -- Your invariant here

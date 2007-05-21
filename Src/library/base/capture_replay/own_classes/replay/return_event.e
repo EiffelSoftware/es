@@ -2,7 +2,7 @@ indexing
 	description: "[
 				Common interface for RET (feature-return) - events for the replay phase
 				]"
-	author: ""
+	author: "Stefan Sieber"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -22,12 +22,6 @@ feature -- Stub for creation procedure
 feature -- Access
 
 	return_value: ENTITY
-
-feature -- Basic operations
-
-feature -- Obsolete
-
-feature -- Inapplicable
 
 feature {NONE} -- Implementation
 

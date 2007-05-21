@@ -15,6 +15,7 @@ inherit
 feature -- Creation
 
 	make(a_target: NON_BASIC_ENTITY; a_feature_name: STRING; the_arguments: LIST[ENTITY])
+			-- Make the event of the call `a_target'.`a_feature_name'(`the_arguments').
 		require
 			a_target_not_void: a_target /= Void
 			a_feature_name_not_void: a_feature_name /= Void
@@ -37,37 +38,6 @@ feature -- Access
 
 	arguments: LIST[ENTITY]
 		-- The arguments of the called feature.
-
-
-feature -- Measurement
-
-feature -- Status report
-
-feature -- Status setting
-
-feature -- Cursor movement
-
-feature -- Element change
-
-feature -- Removal
-
-feature -- Resizing
-
-feature -- Transformation
-
-feature -- Conversion
-
-feature -- Duplication
-
-feature -- Miscellaneous
-
-feature -- Basic operations
-
-feature -- Obsolete
-
-feature -- Inapplicable
-
-feature {NONE} -- Implementation
 
 invariant
 		target_not_void: target /= Void

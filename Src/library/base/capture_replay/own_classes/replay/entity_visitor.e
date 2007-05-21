@@ -7,8 +7,6 @@ indexing
 deferred class
 	ENTITY_VISITOR
 
-feature -- Access
-
 feature -- Basic operations
 
 	visit_basic_entity(basic: BASIC_ENTITY): ANY is

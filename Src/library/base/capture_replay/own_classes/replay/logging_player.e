@@ -1,6 +1,6 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "Event Sink for replay that writes a log while replaying."
+	author: "Stefan Sieber"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -22,7 +22,8 @@ create
 feature -- Initialization
 
 	setup_on_text_files(replay_filename:STRING; log_filename: STRING; a_caller: CALLER) is
-			--
+			-- Set up the player for replay from `replay_filename', logging to `log_filename' using
+			-- `a_caller' to execute calls.
 		do
 			create recorder.make
 			recorder.setup_on_text_serializer (log_filename)
@@ -31,10 +32,7 @@ feature -- Initialization
 
 feature -- Access
 	recorder: RECORDER
-
-feature -- Measurement
-
-feature -- Status report
+		-- The recorder to record the events.
 
 feature -- Status setting
 	set_recorder(a_recorder: RECORDER) is
@@ -44,22 +42,6 @@ feature -- Status setting
 		do
 			recorder := a_recorder
 		end
-
-feature -- Cursor movement
-
-feature -- Element change
-
-feature -- Removal
-
-feature -- Resizing
-
-feature -- Transformation
-
-feature -- Conversion
-
-feature -- Duplication
-
-feature -- Miscellaneous
 
 feature -- Basic operations
 		methodbody_start (feature_name: STRING_8; target: OBSERVABLE; arguments: TUPLE) is
@@ -77,12 +59,6 @@ feature -- Basic operations
 				Result := Precursor {PLAYER}(res)
 				ignore_result := recorder.methodbody_end(Result)
 			end
-
-feature -- Obsolete
-
-feature -- Inapplicable
-
-feature {NONE} -- Implementation
 
 invariant
 	invariant_clause: True -- Your invariant here

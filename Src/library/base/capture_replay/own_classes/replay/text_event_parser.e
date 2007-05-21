@@ -41,27 +41,6 @@ feature -- Creation
 			handler.set_parser(Current)
 		end
 
-
-feature -- Status report
-
-feature -- Status setting
-
-feature -- Cursor movement
-
-feature -- Element change
-
-feature -- Removal
-
-feature -- Resizing
-
-feature -- Transformation
-
-feature -- Conversion
-
-feature -- Duplication
-
-feature -- Miscellaneous
-
 feature -- Basic operations
 
 	parse_event
@@ -77,10 +56,6 @@ feature -- Basic operations
 				parse_line
 			end
 		end
-
-feature -- Obsolete
-
-feature -- Inapplicable
 
 feature {NONE} -- Implementation
 
@@ -395,7 +370,7 @@ feature {NONE} -- Implementation
 
 
 	item: CHARACTER is
-			-- character at `position'
+			-- Character at `position'
 		require
 			not_end_of_line: not end_of_line
 		do
@@ -458,11 +433,10 @@ feature {NONE} -- Implementation
 		end
 
 	report_error(expected_token: STRING)
-			--reports an error to the 'user'.
+			-- Reports an error to the 'user'.
 		do
 			has_error := True
 			error_message := "parse error. expected: '" + expected_token + "' but got '" + last_line.substring (position, last_line.count) + "'"
---			exceptions.raise ("parse error. expected: '" + expected_token + "' but got '" + last_line.substring (position, last_line.count) + "'")
 		end
 
 	Incall_keyword: STRING is "INCALL"

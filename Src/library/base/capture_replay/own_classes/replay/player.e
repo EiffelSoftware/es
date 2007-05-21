@@ -58,29 +58,31 @@ feature -- Initialization
 feature -- Access
 
 	event_input: EVENT_INPUT
+		-- Input where the events are read from
 
 	caller: CALLER
+		-- Caller that executes the feature calls
 
 	resolver: ENTITY_RESOLVER
+		-- Resolver that resolves the entities to objects
 
 	has_error: BOOLEAN
+		-- Has an error occurred?
 
 	error_message: STRING
-
-feature -- Measurement
-
-feature -- Status report
+		-- What error has occurred?
+		-- Note: valid if `has_error' is True
 
 feature -- Status setting
 
 	set_event_input(a_factory: EVENT_INPUT) is
-			--
+			-- Set `event_input'
 		do
 			event_input := a_factory
 		end
 
 	set_caller(a_caller: EXAMPLE_CALLER) is
-			--
+			-- Set `caller'
 		require
 			a_caller_not_void: a_caller /= Void
 		do
@@ -94,22 +96,6 @@ feature -- Status setting
 		do
 			resolver := a_resolver
 		end
-
-feature -- Cursor movement
-
-feature -- Element change
-
-feature -- Removal
-
-feature -- Resizing
-
-feature -- Transformation
-
-feature -- Conversion
-
-feature -- Duplication
-
-feature -- Miscellaneous
 
 feature -- Basic operations
 
@@ -223,11 +209,6 @@ feature -- Basic operations
 			simulate_unobserved_body
 			leave
 		end
-
-
-feature -- Obsolete
-
-feature -- Inapplicable
 
 feature {NONE} -- Implementation
 

@@ -12,8 +12,6 @@ class
 inherit
 	EVENT_PARSER_HANDLER
 
-feature -- Creation
-
 feature -- Access
 
 	last_event: EVENT is
@@ -26,18 +24,16 @@ feature -- Access
 			result_not_void: Result /= Void
 		end
 
-
 	end_of_input: BOOLEAN
-			-- Read beyond the last event.
+			-- Already read beyond the last event?
 		do
 			Result := parser.end_of_input
 		end
 
 feature -- Basic operations
 
-
-
 	read_next_event
+			-- Read the next event.
 		require
 			parser_not_void: parser /= Void
 			event_available: not parser.end_of_input
@@ -46,21 +42,25 @@ feature -- Basic operations
 		end
 
 	handle_incall_event(target: NON_BASIC_ENTITY; feature_name: STRING; arguments: LIST[ENTITY])
+			-- Create an incall event.
 		do
 			create {INCALL_EVENT}internal_last_event.make(target,feature_name,arguments)
 		end
 
 	handle_outcall_event(target: NON_BASIC_ENTITY; feature_name: STRING; arguments: LIST[ENTITY])
+			-- Create an outcall event.
 		do
 			create {OUTCALL_EVENT}internal_last_event.make(target, feature_name, arguments)
 		end
 
 	handle_incallret_event(return_value: ENTITY)
+			-- Create an incallret event
 		do
 			create {INCALLRET_EVENT}internal_last_event.make(return_value)
 		end
 
 	handle_outcallret_event(return_value: ENTITY)
+			-- Create an outcallret event
 		do
 			create {OUTCALLRET_EVENT}internal_last_event.make(return_value)
 		end

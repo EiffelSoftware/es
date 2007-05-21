@@ -25,23 +25,26 @@ feature -- Basic operations
 		end
 
 	handle_incall_event(target: ENTITY; feature_name: STRING; arguments: LIST[ENTITY])
+			-- Handle an incall event (`target'.`feature_name'(`arguments')).
 		deferred
 		end
 
 	handle_outcall_event(target: ENTITY; feature_name: STRING; arguments: LIST[ENTITY])
+			-- Handle an outcall event (`target'.`feature_name'(`arguments'))
 		deferred
 		end
 
 	handle_incallret_event(return_value: ENTITY)
+			-- Handle an incallret event with return value `return_value'
 		deferred
 		end
 
 	handle_outcallret_event(return_value: ENTITY)
+			-- Handle an outcallret event with return value `return_value'
 		deferred
 		end
 
 feature {NONE} -- Implementation
-
 
 invariant
 	invariant_clause: True -- Your invariant here

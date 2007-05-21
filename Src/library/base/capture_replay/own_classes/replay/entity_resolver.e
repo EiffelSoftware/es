@@ -1,5 +1,5 @@
 indexing
-	description: "Objects that ..."
+	description: "Object that's responsible for resolving entities to objects"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -39,7 +39,7 @@ feature -- Access
 		end
 
 	resolve_entities (arguments: LIST[ENTITY]): LIST[ANY] is
-			--
+			-- Resolve all entities from `arguments'.
 		require
 			arguments_not_void: arguments /= Void
 		local
@@ -138,36 +138,6 @@ feature -- Access
 				Result := False
 			end
 		end
-
-feature -- Measurement
-
-feature -- Status report
-
-feature -- Status setting
-
-feature -- Cursor movement
-
-feature -- Element change
-
-feature -- Removal
-
-feature -- Resizing
-
-feature -- Transformation
-
-feature -- Conversion
-
-feature -- Duplication
-
-feature -- Miscellaneous
-
-feature -- Basic operations
-
-feature -- Obsolete
-
-feature -- Inapplicable
-
-feature {NONE} -- Implementation
 
 invariant
 	invariant_clause: True -- Your invariant here

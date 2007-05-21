@@ -11,6 +11,9 @@ class
 
 inherit
 	ENTITY
+		rename
+			resolve as accept
+		end
 
 create
 	make
@@ -25,36 +28,14 @@ feature -- Creation
 			type := a_type
 		end
 
-
 feature -- Access
 
 	id: INTEGER
-
-feature -- Measurement
-
-feature -- Status report
-
-feature -- Status setting
-
-feature -- Cursor movement
-
-feature -- Element change
-
-feature -- Removal
-
-feature -- Resizing
-
-feature -- Transformation
-
-feature -- Conversion
-
-feature -- Duplication
-
-feature -- Miscellaneous
+		-- Object ID of the entity
 
 feature -- Basic operations
 
-	resolve(resolver: ENTITY_VISITOR): ANY is
+	accept(resolver: ENTITY_VISITOR): ANY is
 			-- Resolve this entity
 		do
 			Result := resolver.visit_non_basic_entity(Current)
