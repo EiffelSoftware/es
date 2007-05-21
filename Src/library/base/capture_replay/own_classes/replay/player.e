@@ -8,7 +8,7 @@ class
 	PLAYER
 
 inherit
-	CONTROLLER
+	PROGRAM_FLOW_SINK
 
 	INTERNAL
 
@@ -99,9 +99,8 @@ feature -- Status setting
 
 feature -- Basic operations
 
-	methodbody_end (res: ANY): ANY is
-			-- Hook for capture/replay. Is to be placed at the end of a MethodBody
-			-- 'res' is the Result of the Method that should be instrumented.
+	put_feature_exit (res: ANY): ANY is
+			-- Notice that a feature exit event with result `res' occurred.
 		local
 			callee_observed: BOOLEAN
 			callret: RETURN_EVENT
@@ -134,7 +133,6 @@ feature -- Basic operations
 							Result := res --don't change the return value.
 						else
 							--OUTCALLRET
-
 							if callret.return_value /= Void then
 								Result := resolver.resolve_entity(callret.return_value)
 							end
@@ -147,10 +145,8 @@ feature -- Basic operations
 			end
 		end
 
-	methodbody_start (feature_name: STRING_8; target: OBSERVABLE; arguments: TUPLE) is
-			-- Hook for capture/replay. Is to be placed before the methodbody is evaluated
-			-- 'target' is the object whose feature was called
-			-- 'arguments' are the arguments of the feature.
+	put_feature_invocation (feature_name: STRING_8; target: OBSERVABLE; arguments: TUPLE) is
+			-- Notice that a feature invocation event (`target'.`feature_name'(`arguments')) occurred.
 		local
 			caller_is_observed: BOOLEAN
 			call_event: CALL_EVENT

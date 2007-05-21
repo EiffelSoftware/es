@@ -363,21 +363,21 @@ feature -- Basic operations
 
 feature -- Capture/Replay
 
-	set_controller(a_controller: CONTROLLER): CONTROLLER
+	set_program_flow_sink(a_sink: PROGRAM_FLOW_SINK): PROGRAM_FLOW_SINK
 			-- Set the Controller for capture/replay
 			-- (First execution sets the controller)
 		once
-			Result := a_controller
+			Result := a_sink
 		end
 
-	controller: CONTROLLER
+	program_flow_sink: PROGRAM_FLOW_SINK
 			-- Recorder for capturing events on the object
 			-- `set_controller' needs to be executed before this feature is called.
 		once
-			Result := set_controller(Void)
+			Result := set_program_flow_sink(Void)
 			if Result = Void then
 				--not initialized yet. Assume that capture/replay should be disabled.
-				create {NULL_EVENT_SINK}Result.make
+				create {NULL_PROGRAM_FLOW_SINK}Result.make
 				print("controller not set, capture/replay disabled")
 			end
 		ensure

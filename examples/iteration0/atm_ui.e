@@ -22,21 +22,23 @@ feature -- Access
 			ignore_result: ANY
 		do
 
+
+
 			-- <methodbody_start name="make" args="[an_atm]">
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				controller.methodbody_start("make", Current, [an_atm])
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				program_flow_sink.put_feature_invocation("make", Current, [an_atm])
+				program_flow_sink.leave
 			end
-			if (not controller.is_replay_phase) or is_observed then
+			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				atm := an_atm
 			-- <methodbody_end return_value="False">
 			end
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				ignore_result ?= controller.methodbody_end(Void)
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.leave
 			end
 			-- </methodbody_end>
 		end
@@ -50,13 +52,15 @@ feature --Basic Operations
 			ignore_result: ANY
 		do
 
+
+
 			-- <methodbody_start name="run" args="[]">
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				controller.methodbody_start("run", Current, [])
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				program_flow_sink.put_feature_invocation("run", Current, [])
+				program_flow_sink.leave
 			end
-			if (not controller.is_replay_phase) or is_observed then
+			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				from
 					exit := False
@@ -85,10 +89,10 @@ feature --Basic Operations
 				end
 			-- <methodbody_end return_value="False">
 			end
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				ignore_result ?= controller.methodbody_end(Void)
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.leave
 			end
 			-- </methodbody_end>
 		end
@@ -101,21 +105,23 @@ feature -- Basic operations
 			ignore_result: ANY
 		do
 
+
+
 			-- <methodbody_start name="ping" args="[]">
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				controller.methodbody_start("ping", Current, [])
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				program_flow_sink.put_feature_invocation("ping", Current, [])
+				program_flow_sink.leave
 			end
-			if (not controller.is_replay_phase) or is_observed then
+			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 
 			-- <methodbody_end return_value="False">
 			end
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				ignore_result ?= controller.methodbody_end(Void)
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.leave
 			end
 			-- </methodbody_end>
 		end

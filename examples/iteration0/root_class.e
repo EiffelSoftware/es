@@ -61,13 +61,15 @@ feature -- Initialization
 			-- End of C/R Setup
 
 
+
+
 			-- <methodbody_start name="make" args="[]">
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				controller.methodbody_start("make", Current, [])
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				program_flow_sink.put_feature_invocation("make", Current, [])
+				program_flow_sink.leave
 			end
-			if (not controller.is_replay_phase) or is_observed then
+			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				create bank.make
 				atm := bank.atm
@@ -80,10 +82,10 @@ feature -- Initialization
 				ui.run
 			-- <methodbody_end return_value="False">
 			end
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				ignore_result ?= controller.methodbody_end(Void)
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.leave
 			end
 			-- </methodbody_end>
 		end

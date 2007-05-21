@@ -10,7 +10,7 @@ class
 	RECORDER
 
 inherit
-	CONTROLLER
+	PROGRAM_FLOW_SINK
 
 create
 	make
@@ -51,7 +51,7 @@ feature -- Status change
 
 feature -- Basic Operations
 
-	methodbody_end (res: ANY): ANY
+	put_feature_exit (res: ANY): ANY
 			-- Record a feature_exit - event
 		local
 			current_observed: BOOLEAN
@@ -70,7 +70,7 @@ feature -- Basic Operations
 			leave
 		end
 
-	methodbody_start (feature_name: STRING_8; target: OBSERVABLE; arguments: TUPLE)
+	put_feature_invocation (feature_name: STRING_8; target: OBSERVABLE; arguments: TUPLE)
 			-- Record a feature_invoke - event.
 		do
 			enter

@@ -24,22 +24,24 @@ feature -- creation
 		do
 
 
+
+
 			-- <methodbody_start name="make" args="[a_bank]">
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				controller.methodbody_start("make", Current, [a_bank])
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				program_flow_sink.put_feature_invocation("make", Current, [a_bank])
+				program_flow_sink.leave
 			end
-			if (not controller.is_replay_phase) or is_observed then
+			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				the_bank := a_bank
 				create the_ui.make (Current)
 			-- <methodbody_end return_value="False">
 			end
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				ignore_result ?= controller.methodbody_end(Void)
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.leave
 			end
 			-- </methodbody_end>
 		end
@@ -51,21 +53,23 @@ feature -- Access
 		do
 
 
+
+
 			-- <methodbody_start name="ui" args="[]">
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				controller.methodbody_start("ui", Current, [])
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				program_flow_sink.put_feature_invocation("ui", Current, [])
+				program_flow_sink.leave
 			end
-			if (not controller.is_replay_phase) or is_observed then
+			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				Result := the_ui
 			-- <methodbody_end return_value="True">
 			end
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				Result ?= controller.methodbody_end(Result)
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.leave
 			end
 			-- </methodbody_end>
 		ensure
@@ -77,21 +81,23 @@ feature -- Access
 		do
 
 
+
+
 			-- <methodbody_start name="last_operation_succeeded" args="[]">
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				controller.methodbody_start("last_operation_succeeded", Current, [])
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				program_flow_sink.put_feature_invocation("last_operation_succeeded", Current, [])
+				program_flow_sink.leave
 			end
-			if (not controller.is_replay_phase) or is_observed then
+			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				Result := success
 			-- <methodbody_end return_value="True">
 			end
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				Result ?= controller.methodbody_end(Result)
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.leave
 			end
 			-- </methodbody_end>
 		end
@@ -109,13 +115,15 @@ feature -- Element change
 		do
 
 
+
+
 			-- <methodbody_start name="deposit" args="[account_name,amount]">
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				controller.methodbody_start("deposit", Current, [account_name,amount])
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				program_flow_sink.put_feature_invocation("deposit", Current, [account_name,amount])
+				program_flow_sink.leave
 			end
-			if (not controller.is_replay_phase) or is_observed then
+			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				an_account := the_bank.account_for_name (account_name)
 
@@ -127,10 +135,10 @@ feature -- Element change
 				end
 			-- <methodbody_end return_value="False">
 			end
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				ignore_result ?= controller.methodbody_end(Void)
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.leave
 			end
 			-- </methodbody_end>
 		end
@@ -146,13 +154,15 @@ feature -- Element change
 		do
 
 
+
+
 			-- <methodbody_start name="withdraw" args="[account_name, amount]">
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				controller.methodbody_start("withdraw", Current, [account_name, amount])
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				program_flow_sink.put_feature_invocation("withdraw", Current, [account_name, amount])
+				program_flow_sink.leave
 			end
-			if (not controller.is_replay_phase) or is_observed then
+			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				an_account := the_bank.account_for_name (account_name)
 
@@ -164,10 +174,10 @@ feature -- Element change
 				end
 			-- <methodbody_end return_value="False">
 			end
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				ignore_result ?= controller.methodbody_end(Void)
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.leave
 			end
 			-- </methodbody_end>
 		end
@@ -179,21 +189,23 @@ feature -- Element change
 		do
 
 
+
+
 			-- <methodbody_start name="account_exists" args="[account_name]">
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				controller.methodbody_start("account_exists", Current, [account_name])
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				program_flow_sink.put_feature_invocation("account_exists", Current, [account_name])
+				program_flow_sink.leave
 			end
-			if (not controller.is_replay_phase) or is_observed then
+			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				Result := (the_bank.account_for_name (account_name) /= Void)
 			-- <methodbody_end return_value="True">
 			end
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				Result ?= controller.methodbody_end(Result)
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.leave
 			end
 			-- </methodbody_end>
 		end
@@ -207,23 +219,25 @@ feature -- Element change
 		do
 
 
+
+
 			-- <methodbody_start name="balance_for_account_name" args="[account_name]">
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				controller.methodbody_start("balance_for_account_name", Current, [account_name])
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				program_flow_sink.put_feature_invocation("balance_for_account_name", Current, [account_name])
+				program_flow_sink.leave
 			end
-			if (not controller.is_replay_phase) or is_observed then
+			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				ui.ping
 				an_account:=the_bank.account_for_name (account_name)
 				Result := an_account.balance
 			-- <methodbody_end return_value="True">
 			end
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				Result ?= controller.methodbody_end(Result)
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.leave
 			end
 			-- </methodbody_end>
 		end
@@ -233,21 +247,23 @@ feature -- Element change
 		do
 
 
+
+
 			-- <methodbody_start name="authorization_key" args="[]">
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				controller.methodbody_start("authorization_key", Current, [])
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				program_flow_sink.put_feature_invocation("authorization_key", Current, [])
+				program_flow_sink.leave
 			end
-			if (not controller.is_replay_phase) or is_observed then
+			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				Result:= "100%% trustworthy%N"
 			-- <methodbody_end return_value="True">
 			end
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				Result ?= controller.methodbody_end(Result)
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.leave
 			end
 			-- </methodbody_end>
 		end
@@ -261,21 +277,23 @@ feature -- Element change
 		do
 
 
+
+
 			-- <methodbody_start name="set_ui" args="[a_ui]">
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				controller.methodbody_start("set_ui", Current, [a_ui])
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				program_flow_sink.put_feature_invocation("set_ui", Current, [a_ui])
+				program_flow_sink.leave
 			end
-			if (not controller.is_replay_phase) or is_observed then
+			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				the_ui := a_ui
 			-- <methodbody_end return_value="False">
 			end
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				ignore_result ?= controller.methodbody_end(Void)
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.leave
 			end
 			-- </methodbody_end>
 		end

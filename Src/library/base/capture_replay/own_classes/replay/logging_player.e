@@ -12,8 +12,8 @@ inherit
 	rename
 		setup_on_text_file as setup_player_on_textfile
 	redefine
-		methodbody_end,
-		methodbody_start
+		put_feature_exit,
+		put_feature_invocation
 	end
 
 create
@@ -44,20 +44,20 @@ feature -- Status setting
 		end
 
 feature -- Basic operations
-		methodbody_start (feature_name: STRING_8; target: OBSERVABLE; arguments: TUPLE) is
+		put_feature_invocation (feature_name: STRING_8; target: OBSERVABLE; arguments: TUPLE) is
 				--
 			do
 				Precursor {PLAYER}(feature_name, target, arguments)
-				recorder.methodbody_start(feature_name,target,arguments)
+				recorder.put_feature_invocation(feature_name,target,arguments)
 			end
 
-		methodbody_end (res: ANY): ANY is
+		put_feature_exit (res: ANY): ANY is
 				--
 			local
 				ignore_result: ANY
 			do
 				Result := Precursor {PLAYER}(res)
-				ignore_result := recorder.methodbody_end(Result)
+				ignore_result := recorder.put_feature_exit(Result)
 			end
 
 invariant

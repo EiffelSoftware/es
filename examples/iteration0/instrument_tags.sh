@@ -10,32 +10,32 @@ feature_start_tag2='-- <\/methodbody_start'
 feature_start_action=\
 's/.*-- <methodbody_start name=\(\"[^\"]*\"\) args=\"\([^\"]*\)\".*\n\([^\n]*\)/\
 \t\t\t-- <methodbody_start name=\1 args=\"\2\">\
-\t\t\tif controller.is_capture_replay_enabled then\
-\t\t\t\tcontroller.enter\
-\t\t\t\tcontroller.methodbody_start\(\1, Current, \2)\
-\t\t\t\tcontroller.leave\
+\t\t\tif program_flow_sink.is_capture_replay_enabled then\
+\t\t\t\tprogram_flow_sink.enter\
+\t\t\t\tprogram_flow_sink.methodbody_start\(\1, Current, \2)\
+\t\t\t\tprogram_flow_sink.leave\
 \t\t\tend\
-\t\t\tif (not controller.is_replay_phase) or is_observed then\
+\t\t\tif (not program_flow_sink.is_replay_phase) or is_observed then\
 \t\t\t-- <\/methodbody_start>/; # baba'
 
 feature_end_res_tag1='-- <methodbody_end return_value="True"'
 feature_end_res_tag2='-- <\/methodbody_end'
 feature_end_res_content=\
 '\t\t\tend\
-\t\t\tif controller.is_capture_replay_enabled then\
-\t\t\t\tcontroller.enter\
-\t\t\t\tResult ?= controller.methodbody_end\(Result)\
-\t\t\t\tcontroller.leave\
+\t\t\tif program_flow_sink.is_capture_replay_enabled then\
+\t\t\t\tprogram_flow_sink.enter\
+\t\t\t\tResult ?= program_flow_sink.methodbody_end\(Result)\
+\t\t\t\tprogram_flow_sink.leave\
 \t\t\tend'
 
 feature_end_no_res_tag1='-- <methodbody_end return_value="False"'
 feature_end_no_res_tag2='-- <\/methodbody_end'
 feature_end_no_res_content=\
 '\t\t\tend\
-\t\t\tif controller.is_capture_replay_enabled then\
-\t\t\t\tcontroller.enter\
-\t\t\t\tignore_result ?= controller.methodbody_end\(Void)\
-\t\t\t\tcontroller.leave\
+\t\t\tif program_flow_sink.is_capture_replay_enabled then\
+\t\t\t\tprogram_flow_sink.enter\
+\t\t\t\tignore_result ?= program_flow_sink.methodbody_end\(Void)\
+\t\t\t\tprogram_flow_sink.leave\
 \t\t\tend'
 
 

@@ -25,23 +25,26 @@ feature --creation
 			ignore_result: ANY
 			test_string: STRING
 		do
+
+
+
 			-- <methodbody_start name="make" args="[]">
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				controller.methodbody_start("make", Current, [])
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				program_flow_sink.put_feature_invocation("make", Current, [])
+				program_flow_sink.leave
 			end
-			if (not controller.is_replay_phase) or is_observed then
+			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				test_string := "test_string"
 				create the_account.make ("test")
 				create the_atm.make (Current)
 			-- <methodbody_end return_value="False">
 			end
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				ignore_result ?= controller.methodbody_end(Void)
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.leave
 			end
 			-- </methodbody_end>
 		end
@@ -56,23 +59,26 @@ feature -- Access
 		require
 			name_not_void: name /= Void
 		do
+
+
+
 			-- <methodbody_start name="account_for_name" args="[name]">
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				controller.methodbody_start("account_for_name", Current, [name])
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				program_flow_sink.put_feature_invocation("account_for_name", Current, [name])
+				program_flow_sink.leave
 			end
-			if (not controller.is_replay_phase) or is_observed then
+			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				if name.is_equal ("test") then
 					Result := the_account
 				end
 			-- <methodbody_end return_value="True">
 			end
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				Result ?= controller.methodbody_end(Result)
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.leave
 			end
 			-- </methodbody_end>
 		end
@@ -81,21 +87,24 @@ feature -- Access
 			-- ATM that is connected to this
 			-- bank
 		do
+
+
+
 			-- <methodbody_start name="atm" args="[]">
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				controller.methodbody_start("atm", Current, [])
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				program_flow_sink.put_feature_invocation("atm", Current, [])
+				program_flow_sink.leave
 			end
-			if (not controller.is_replay_phase) or is_observed then
+			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				Result := the_atm
 			-- <methodbody_end return_value="True">
 			end
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				Result ?= controller.methodbody_end(Result)
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.leave
 			end
 			-- </methodbody_end>
 		ensure
@@ -112,22 +121,25 @@ feature -- Basic Operations
 		local
 			ignore_result: ANY
 		do
+
+
+
 			-- <methodbody_start name="withdraw" args="[an_account, amount]">
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				controller.methodbody_start("withdraw", Current, [an_account, amount])
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				program_flow_sink.put_feature_invocation("withdraw", Current, [an_account, amount])
+				program_flow_sink.leave
 			end
-			if (not controller.is_replay_phase) or is_observed then
+			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				an_account.withdraw (amount)
 				--XXX breaks replay	print (the_atm.authorization_key) -- to test outcalls ;)
 			-- <methodbody_end return_value="False">
 			end
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				ignore_result ?= controller.methodbody_end(Void)
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.leave
 			end
 			-- </methodbody_end>
 		end
@@ -141,22 +153,25 @@ feature -- Basic Operations
 			ignore_result: ANY
 		do
 
+
+
+
 			-- <methodbody_start name="deposit" args="[an_account, amount]">
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				controller.methodbody_start("deposit", Current, [an_account, amount])
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				program_flow_sink.put_feature_invocation("deposit", Current, [an_account, amount])
+				program_flow_sink.leave
 			end
-			if (not controller.is_replay_phase) or is_observed then
+			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				an_account.deposit (amount)
 				--XXX breaks replay? print (the_atm.authorization_key) -- test outcalls...
 			-- <methodbody_end return_value="False">
 			end
-			if controller.is_capture_replay_enabled then
-				controller.enter
-				ignore_result ?= controller.methodbody_end(Void)
-				controller.leave
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.leave
 			end
 			-- </methodbody_end>
 		end

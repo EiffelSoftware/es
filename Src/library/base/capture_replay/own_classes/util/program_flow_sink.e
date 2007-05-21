@@ -5,7 +5,7 @@ indexing
 	revision: "$Revision$"
 
 deferred class
-	CONTROLLER
+	PROGRAM_FLOW_SINK
 
 feature --Initialization
 
@@ -18,7 +18,7 @@ feature --Initialization
 			observed_stack.put (False)
 
 			set_capture_replay_enabled (False)
-			ctrl := set_controller(Current)
+			ctrl := set_program_flow_sink(Current)
 		end
 
 feature -- Access
@@ -58,16 +58,12 @@ feature -- Status setting
 
 feature -- Basic operations
 
-	methodbody_end (res: ANY): ANY is
-			-- Hook for capture/replay. Is to be placed at the end of a MethodBody
-			-- 'res' is the Result of the Method that should be instrumented.
-			-- Return the replacement for the Methodbody's return value.
+	put_feature_exit (res: ANY): ANY is
+			-- Put a feature exit event with result `res' into the sink.
 		deferred end
 
-	methodbody_start (feature_name: STRING_8; target: OBSERVABLE; arguments: TUPLE)
-			-- Hook for capture/replay. Is to be placed before the methodbody is evaluated
-			-- 'target' is the object whose feature was called
-			-- 'arguments' are the arguments of the feature.
+	put_feature_invocation (feature_name: STRING_8; target: OBSERVABLE; arguments: TUPLE)
+			-- Put a feature invocation event (`target'.`feature_name'(`arguments')) into the sink.
 		require
 			feature_name_not_void: feature_name /= Void
 			target_not_void: target /= Void
