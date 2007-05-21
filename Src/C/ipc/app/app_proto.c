@@ -123,9 +123,10 @@ rt_private void modify_object_attribute(rt_int_ptr arg_addr, long arg_attr_numbe
 rt_private void opush_dmpitem(struct item *item);
 rt_private struct item *previous_otop = NULL;
 rt_private unsigned char otop_recorded = 0;
-rt_private void dynamic_evaluation(EIF_PSTREAM s, int fid, int stype, int is_precompiled, int is_basic_type);
+rt_private void dynamic_evaluation(EIF_PSTREAM s, int fid, int stype, int is_precompiled, int is_basic_type, int is_static_call);
+rt_private void dbg_new_instance_of_type(EIF_PSTREAM s, int typeid);
 rt_private void dbg_exception_trace (EIF_PSTREAM sp, int eid);
-extern struct item *dynamic_eval_dbg(int fid, int stype, int is_precompiled, int is_basic_type, struct item* previous_otop, int* exception_occured); /* dynamic evaluation of a feature (while debugging) */
+extern struct item *dynamic_eval_dbg(int fid, int stype, int is_precompiled, int is_basic_type, int is_static_call, struct item* previous_otop, int* exception_occured); /* dynamic evaluation of a feature (while debugging) */
 extern uint32 critical_stack_depth;	/* Call stack depth at which a warning is sent to the debugger to prevent stack overflows. */
 extern int already_warned; /* Have we already warned the user concerning a possible stack overflow? */
 
@@ -223,10 +224,13 @@ static int curr_modify = NO_CURRMODIF;
 		send_stack(sp, (uint32) arg_1); /* Since we convert int -> uint32, passing -1 will inspect the whole stack. */
 		dthread_restore();
 		break;
-	case DYNAMIC_EVAL: /* arg_1 = feature_id / arg2=static_type / arg3=is_external / arg4=is_precompiled / arg5=is_basic_type*/
+	case DYNAMIC_EVAL: /* arg_1 = feature_id / arg2=static_type / arg3=is_external / arg4=is_precompiled / arg5=is_basic_type / arg6=is_static_call */
 		dthread_prepare();
-		dynamic_evaluation(sp, arg_1, arg_2, (arg_3 >> 1) & 1, (arg_3 >> 2) & 1);
+		dynamic_evaluation(sp, arg_1, arg_2, (arg_3 >> 1) & 1, (arg_3 >> 2) & 1, (arg_3 >> 3) & 1);
 		dthread_restore();
+		break;
+	case NEW_INSTANCE:
+		dbg_new_instance_of_type (sp, (int) arg_1);
 		break;
 	case DBG_EXCEPTION_TRACE:
 		dbg_exception_trace(sp, (int) arg_1);
@@ -271,22 +275,12 @@ static int curr_modify = NO_CURRMODIF;
 		critical_stack_depth = (uint32) arg_3;
 		dstatus(arg_1);				/* Debugger status (DX_STEP, DX_NEXT,..) */
 
-#ifdef EIF_WINDOWS
 #ifdef USE_ADD_LOG
 		add_log(9, "RESUME");
 		if ((void (*)()) 0 == rem_input(sp))
 			add_log(12, "rem_input: %s (%s)", s_strerror(), s_strname());
 #else
 		(void) rem_input(sp);		/* Stop selection -> exit listening loop */
-#endif
-#else
-#ifdef USE_ADD_LOG
-		add_log(9, "RESUME");
-		if ((void (*)()) 0 == rem_input(sp))
-			add_log(12, "rem_input: %s (%s)", s_strerror(), s_strname());
-#else
-		(void) rem_input(sp);		/* Stop selection -> exit listening loop */
-#endif
 #endif
 		break;
 	case QUIT:						/* Die, immediately */
@@ -814,8 +808,13 @@ rt_private void load_bc(int slots, int amount)
 #ifdef USE_ADD_LOG
 		add_log(9, "in load_bc loop");
 #endif
+
+		/* Read BYTECODE request */
 #ifdef EIF_WINDOWS
-		app_recv_packet(sp, &rqst, TRUE);			/* Read BYTECODE request */
+		app_recv_packet(sp, &rqst, TRUE);			
+#else
+		app_recv_packet(sp, &rqst);
+#endif
 		if (rqst.rq_type != BYTECODE) {	/* Wrong request */
 			send_ack(sp, AK_PROTO);		/* Protocol error */
 			return;
@@ -839,24 +838,6 @@ rt_private void load_bc(int slots, int amount)
 #ifdef USE_ADD_LOG
 		add_log(9, "sent ack");
 #endif
-
-#else /* NOT EIF_WINDOWS */
-		app_recv_packet(sp, &rqst);			/* Read BYTECODE request */
-		if (rqst.rq_type != BYTECODE) {	/* Wrong request */
-			send_ack(sp, AK_PROTO);		/* Protocol error */
-			return;
-		}
-#ifdef USE_ADD_LOG
-		add_log(9, "received packet BYTECODE");
-#endif
-		bc = (unsigned char *) app_tread((int *) 0);			/* Get byte code in memory */
-		if (bc == NULL) {			/* Not enough memory */
-			send_ack(sp, AK_ERROR);		/* Notify failure */
-			return;						/* And abort downloading */
-		}
-		drecord_bc((BODY_INDEX) arg_1, (BODY_INDEX) arg_2, bc);	/* Place byte code in run-time tables*/
-		send_ack(sp, AK_OK);				/* Byte code loaded successfully */
-#endif /* NOT EIF_WINDOWS */
 	}
 
 #undef arg_1
@@ -1603,7 +1584,103 @@ rt_private void opush_dmpitem(struct item *item)
 	opush(item);
 	}
 
-rt_private void dynamic_evaluation(EIF_PSTREAM sp, int fid, int stype, int is_precompiled, int is_basic_type)
+rt_private EIF_BOOLEAN app_recv_ack (EIF_PSTREAM sp)
+{
+	Request pack;
+
+	Request_Clean (pack);
+#ifdef EIF_WINDOWS
+	if (-1 == app_recv_packet(sp, &pack, TRUE))
+#else
+	if (-1 == app_recv_packet(sp, &pack))
+#endif
+		return (EIF_BOOLEAN) 0;
+
+	switch (pack.rq_type) {
+	case ACKNLGE:
+
+		switch (pack.rq_ack.ak_type) {
+		case AK_OK:
+			return (EIF_BOOLEAN) 1;
+		case AK_ERROR:
+			return (EIF_BOOLEAN) 0;
+		default:
+			return (EIF_BOOLEAN) 0;
+		}
+	default:
+		return (EIF_BOOLEAN) 0;
+	}
+}
+
+rt_private void dbg_new_instance_of_type (EIF_PSTREAM sp, int typeid)
+{
+	/* Must be the typeid of a Reference class */
+
+	struct item *ip = NULL;
+	Request rqst;				/* What we receive and send back */
+	struct dump dumped;			/* Item returned */
+	EIF_REFERENCE tmp = NULL;
+	EIF_REFERENCE loc1 = (EIF_REFERENCE) 0;
+	EIF_TYPE_ID tid;
+	char* s = NULL;
+
+	/* Get type name */
+	Request_Clean (rqst);
+	/* Get request */
+#ifdef EIF_WINDOWS
+	if (-1 == app_recv_packet(sp, &rqst, TRUE)) 
+#else
+	if (-1 == app_recv_packet(sp, &rqst))
+#endif
+	{
+		send_ack(sp, AK_ERROR);		/* Protocol error */
+		return;
+	}
+	if (rqst.rq_type == DUMPED && rqst.rq_dump.dmp_type == DMP_ITEM) {
+		ip = rqst.rq_dump.dmp_item;
+		if ((ip != NULL) && (ip->type & SK_HEAD) == SK_STRING) {
+			s = (char*) ip->it_ref;
+		} else {
+			ip = NULL;
+		}
+	}
+	if (s == NULL) {
+		send_ack(sp, AK_ERROR);		/* Protocol error */
+		return;
+	} else {
+		send_ack(sp, AK_OK);
+	}
+	
+	ip = (struct item*) malloc (sizeof (struct item));
+	memset (ip, 0, sizeof(struct item));	
+	if (s != NULL) {
+		tid = eif_type_id(s);
+		if (tid != -1) {
+			tmp = RTLNSMART(tid);
+		}
+	} else {
+		tmp = RTLN(RTUD(typeid));
+	}
+	if (tmp != NULL) {
+		loc1 = (EIF_REFERENCE)RTCCL(tmp);
+		ip->it_ref = (EIF_REFERENCE) loc1;
+		ip->type = SK_REF | Dtype(ip->it_ref);
+		ip->it_addr = NULL;
+	} else {
+		ip->it_ref = (EIF_REFERENCE) 0;
+		ip->type = SK_VOID;
+		ip->it_addr = NULL;
+	}
+
+	Request_Clean (rqst);
+	rqst.rq_type = DUMPED;			/* A dumped stack item */
+	dumped.dmp_type = DMP_ITEM;		/* We are dumping a variable */
+	dumped.dmp_item = ip;
+	memcpy (&rqst.rq_dump, &dumped, sizeof(struct dump));
+	app_send_packet(sp, &rqst);		/* Send to network */
+}
+
+rt_private void dynamic_evaluation(EIF_PSTREAM sp, int fid, int stype, int is_precompiled, int is_basic_type, int is_static_call)
 {
 	struct item *ip;
 	Request rqst;					/* What we send back */
@@ -1614,7 +1691,7 @@ rt_private void dynamic_evaluation(EIF_PSTREAM sp, int fid, int stype, int is_pr
 	rqst.rq_type = DUMPED;			/* A dumped stack item */
 
 	c_opush(0);	/*Is needed since the stack management seems to have problems with uninitialized c stack*/
-	ip = dynamic_eval_dbg(fid,stype, is_precompiled, is_basic_type, previous_otop, &exception_occured);
+	ip = dynamic_eval_dbg(fid,stype, is_precompiled, is_basic_type, is_static_call, previous_otop, &exception_occured);
 	c_opop();
 	if (ip == (struct item *) 0) {
 		dumped.dmp_type = DMP_VOID;		/* Tell ebench there are no more */

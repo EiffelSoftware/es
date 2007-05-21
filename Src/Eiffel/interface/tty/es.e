@@ -314,6 +314,7 @@ feature -- Properties
 			Result.put (implementers_help, implementers_cmd_name)
 			Result.put (library_help, library_cmd_name)
 			Result.put (loop_help, loop_cmd_name)
+			Result.put (debug_help, debug_info_name)
 			Result.put (melt_help, melt_cmd_name)
 			Result.put (overwrite_old_project_help, overwrite_old_project_cmd_name)
 			Result.put (project_help, project_cmd_name)
@@ -390,7 +391,7 @@ feature -- Output
 			localized_print (argument (0))
 			io.put_string (" [-help | -version | -batch | -clean | -use_settings | ")
 			add_usage_special_cmds
-			io.put_string ("-loop | -quick_melt | -melt | ")
+			io.put_string ("-loop | -debug | -quick_melt | -melt | ")
 			if eiffel_layout.Has_documentation_generation then
 				io.put_string ("-clients [-filter filtername] class |%N%
 					%%T-suppliers [-filter filtername] class |%N%
@@ -1117,6 +1118,10 @@ feature -- Update
 					is_single_file_compilation := True
 						-- Implies finish freezing
 					is_finish_freezing_called := True
+						-- If no libraries are set yet, initialize empty list
+					if single_file_compilation_libraries = Void then
+						create {LINKED_LIST [STRING]} single_file_compilation_libraries.make
+					end
 				else
 					option_error := True
 				end

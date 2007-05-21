@@ -154,7 +154,10 @@ feature -- Status
 				Result := True
 			else
 				l_count := l_constraints.count
-				if l_count = 1 then
+				if l_count = 0 then
+					Result := True
+				elseif l_count = 1 then
+						-- Further investigations are necessary
 					l_constraining_type := l_constraints.first
 					if l_constraining_type.renaming = Void then
 							-- If we don't have a renaming check whether it is a formal
@@ -170,6 +173,8 @@ feature -- Status
 					end
 				end
 			end
+				-- Uncomment this line for testing tcs#26
+		 	--Result := False
 		end
 
 	is_multi_constrained (a_generics: EIFFEL_LIST [FORMAL_DEC_AS]): BOOLEAN is
@@ -206,6 +211,8 @@ feature -- Status
 					 Result := l_count > 1
 				end
 			end
+				-- Uncomment this line for testing tcs#26
+			-- Result := True
 		end
 
 	has_creation_constraint: BOOLEAN is

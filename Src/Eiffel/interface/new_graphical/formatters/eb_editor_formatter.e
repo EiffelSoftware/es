@@ -15,7 +15,6 @@ inherit
 			veto_pebble_function
 		redefine
 			displayer,
-			internal_recycle,
 			is_editor_formatter
 		end
 
@@ -49,7 +48,7 @@ feature -- Access
 			Result := [agent displayer_generators.new_editor_displayer, displayer_generators.editor_displayer]
 		end
 
-	control_bar: EV_WIDGET is
+	control_bar: ARRAYED_LIST [SD_TOOL_BAR_ITEM] is
 			-- Possible area to display a tool bar
 		do
 		end
@@ -95,18 +94,6 @@ feature -- Positioning
 			then
 				editor.display_line_at_top_when_ready (stone.position)
 			end
-		end
-
-feature{NONE} -- Recycle
-
-	internal_recycle is
-			-- Recycle.
-		do
-			if displayer /= Void then
-				displayer.recycle
-			end
-			displayer := Void
-			Precursor {EB_FORMATTER}
 		end
 
 indexing

@@ -50,7 +50,7 @@ create
 
 feature -- Access
 
-	control_bar: EV_WIDGET is
+	control_bar: ARRAYED_LIST [SD_TOOL_BAR_ITEM] is
 			-- Widget of a control bar through which, certain control can be performed upon current view
 			-- Every view can provide a customized control bar. Normally a tool bar is placed in this area
 			-- through which behavior (such as tooltip display) of current view can be changed.
@@ -476,7 +476,9 @@ feature{NONE} -- Implementation
 			end
 
 			l_item.set_stone (stone_from_ql_item (l_ql_item))
-			l_path_item.set_stone (stone_from_ql_item (l_ql_item.parent))
+			if l_ql_item.parent /= Void then
+				l_path_item.set_stone (stone_from_ql_item (l_ql_item.parent))
+			end
 
 			content.i_th (1).force (l_item, a_y)
 			content.i_th (2).force (l_path_item, a_y)

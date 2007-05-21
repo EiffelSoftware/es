@@ -195,7 +195,7 @@ feature
 			create saved_context.make_from_context (context)
 			target_type := target.type
 
-			check not target_type.is_multi_constrained_formal end
+			check not target_type.is_multi_constrained end
 			target_type := context.real_type_fixed (target_type)
 
 			if simple_op_assignment = No_simple_op then
@@ -436,8 +436,7 @@ feature
 			buf := buffer
 			if how = Metamorphose_assignment then
 				basic_source_type ?= context.real_type (source.type)
-				basic_source_type.metamorphose
-					(register, source, buf, context.workbench_mode)
+				basic_source_type.metamorphose (register, source, buf)
 				buf.put_character (';')
 				buf.put_new_line
 			elseif how = Clone_assignment then

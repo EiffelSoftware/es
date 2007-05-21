@@ -98,7 +98,7 @@ feature -- Properties
 			result_valid: Result.any_generator /= Void and then (Result.name /= Void and then not Result.name.is_empty)
 		end
 
-	control_bar: EV_WIDGET is
+	control_bar: ARRAYED_LIST [SD_TOOL_BAR_ITEM] is
 			-- Possible area to display a tool bar
 		deferred
 		end
@@ -151,6 +151,9 @@ feature -- Status report
 			-- Is Current formatter based on a browser?
 		do
 		end
+
+	should_displayer_be_recycled: BOOLEAN
+			-- Should `displayer' be recycled in `internal_recycle'?
 
 feature -- Setting
 
@@ -259,6 +262,14 @@ feature -- Setting
 			end
 		end
 
+	set_should_displayer_be_recycled (b: BOOLEAN) is
+			-- Set `should_displayer_be_recycled' with `b'.
+		do
+			should_displayer_be_recycled := b
+		ensure
+			should_displayer_be_recycled_set: should_displayer_be_recycled = b
+		end
+
 feature -- Formatting
 
 	format is
@@ -268,6 +279,14 @@ feature -- Formatting
 
 	last_was_error: BOOLEAN
 			-- Did an error occur during the last attempt to format?
+
+	set_must_format (b: BOOLEAN) is
+			-- Set `must_format' with `b'.
+		do
+			must_format := b
+		ensure
+			must_format_set: must_format = b
+		end
 
 feature -- Interface
 
@@ -281,8 +300,8 @@ feature -- Interface
 		deferred
 		end
 
-	new_menu_item: EV_RADIO_MENU_ITEM is
-			-- Create a new menu item for `Current'.
+	new_standalone_menu_item: EV_RADIO_MENU_ITEM is
+			-- Create a new menu item.
 		local
 			mname: STRING_GENERAL
 		do
@@ -292,7 +311,18 @@ feature -- Interface
 				mname.append (shortcut_string)
 			end
 			create Result.make_with_text (mname)
+			Result.set_pixmap (symbol @ 1)
+		ensure
+			new_standalone_menu_item_not_void: Result /= Void
+		end
+
+	new_menu_item: EV_RADIO_MENU_ITEM
+			-- Create a new menu item for `Current'.
+		do
+			Result := new_standalone_menu_item
 			set_menu_item (Result)
+		ensure
+			new_menu_item_not_void: Result /= Void
 		end
 
 	new_button: EV_TOOL_BAR_RADIO_BUTTON is
@@ -507,6 +537,11 @@ feature {NONE} -- Recyclable
 			-- Recycle
 		do
 			manager := Void
+			if should_displayer_be_recycled then
+				if displayer /= Void then
+					displayer.recycle
+				end
+			end
 		end
 
 feature {NONE} -- Implementation

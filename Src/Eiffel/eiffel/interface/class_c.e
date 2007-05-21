@@ -140,6 +140,18 @@ feature -- Access
 		do
 		end
 
+	is_valid_formal_position (a_formal_position: INTEGER): BOOLEAN
+			-- Is `a_formal_position' a valid formal position for this class?
+			--
+			-- `a_formal_position' is the position index which has to be checked.
+		require
+			is_generic: is_generic
+		do
+			Result := a_formal_position >= 1 and then a_formal_position <= generics.count
+		ensure
+			Result_set: Result = (a_formal_position >= 1 and then a_formal_position <= generics.count)
+		end
+
 	eiffel_class_c: EIFFEL_CLASS_C is
 			-- `Current' as `EIFFEL_CLASS_C'.
 		require
@@ -528,7 +540,7 @@ feature -- Expanded rues validity
 			-- Pass 2 must be done on all the classes
 			-- (the creators must be up to date)
 		local
-			constraint_types: LIST[RENAMED_TYPE_A]
+			constraint_types: LIST[RENAMED_TYPE_A [TYPE_A]]
 			l_formals: like generic_features
 			l_cursor: CURSOR
 			l_formal_dec: FORMAL_CONSTRAINT_AS
@@ -1257,6 +1269,8 @@ feature -- Parent checking
 			l_single_classes: LINKED_LIST [CLASS_C]
 			l_old_is_single, l_has_external_parent: BOOLEAN
 		do
+				-- Clear feature context
+			ast_context.clear_feature_context
 			from
 				l_area := parents.area
 				nb := parents.count
@@ -1852,7 +1866,7 @@ feature -- Actual class type
 			actual_type_not_void: Result /= Void
 		end
 
-feature {TYPE_AS, AST_TYPE_A_GENERATOR} -- Actual class type
+feature {TYPE_AS, AST_TYPE_A_GENERATOR, AST_FEATURE_CHECKER_GENERATOR} -- Actual class type
 
 	partial_actual_type (gen: ARRAY [TYPE_A]; is_exp, is_sep: BOOLEAN): CL_TYPE_A is
 			-- Actual type of `current depending on the context in which it is declared
@@ -1914,6 +1928,24 @@ end
 			constraint_not_void: Result /= Void
 		end
 
+	constraint_if_possible (i: INTEGER): TYPE_A is
+			-- I-th constraint of the class
+		require
+			generics_exists: is_generic
+			valid_index: generics.valid_index (i)
+			not_is_multi_constraint: not generics.i_th (i).has_multi_constraints
+		local
+			l_formal_dec: FORMAL_CONSTRAINT_AS
+			l_result: RENAMED_TYPE_A [TYPE_A]
+		do
+			l_formal_dec ?= generics.i_th (i)
+			check l_formal_dec_not_void: l_formal_dec /= Void end
+			l_result := l_formal_dec.constraint_type_if_possible (Current)
+			if l_result /= Void then
+				Result := l_result.type
+			end
+		end
+
 	constraints (i: INTEGER): TYPE_SET_A is
 			-- I-th constraint set of the class
 		require
@@ -1922,10 +1954,10 @@ end
 		local
 			l_formal_dec: FORMAL_CONSTRAINT_AS
 		do
-			-- MTNASK: optimize with array? (store it when once accessed)
-				l_formal_dec ?= generics.i_th (i)
-				check l_formal_dec_not_void: l_formal_dec /= Void end
-				Result := l_formal_dec.constraint_types (Current)
+				-- Fixme: Should we store computation of `constraint_types'?
+			l_formal_dec ?= generics.i_th (i)
+			check l_formal_dec_not_void: l_formal_dec /= Void end
+			Result := l_formal_dec.constraint_types (Current)
 		ensure
 			constraint_not_void: Result /= Void
 		end
@@ -1938,12 +1970,71 @@ end
 		local
 			l_formal_dec: FORMAL_CONSTRAINT_AS
 		do
-			-- MTNASK: optimize with array? (store it when once accessed)
-				l_formal_dec ?= generics.i_th (i)
-				check l_formal_dec_not_void: l_formal_dec /= Void end
-				Result := l_formal_dec.constraint_types_if_possible (Current)
+				-- Fixme: Should we store computation of `constraint_types_if_possible'?
+			l_formal_dec ?= generics.i_th (i)
+			check l_formal_dec_not_void: l_formal_dec /= Void end
+			Result := l_formal_dec.constraint_types_if_possible (Current)
 		ensure
 			constraint_not_void: Result /= Void
+		end
+
+	constrained_type (a_formal_position: INTEGER): TYPE_A
+			-- Constraint of Current.
+			--
+			-- `a_formal_position' is the position of the formal whose constraint is returned.
+			-- Warning: Result is cached, do not modify it.
+		require
+			is_generic: is_generic
+			valid_formal_position: is_valid_formal_position (a_formal_position)
+			not_multi_constraint: not generics[a_formal_position].is_multi_constrained (generics)
+		local
+			l_formal_type: FORMAL_A
+			l_recursion_break: SPECIAL [BOOLEAN]
+			l_break: BOOLEAN
+			l_formal_type_position: INTEGER
+		do
+			Result := constrained_type_cache[a_formal_position]
+			if Result = Void then
+				create l_recursion_break.make (generics.count + 1)
+				from
+					Result := constraint (a_formal_position)
+				until
+					not Result.is_formal or l_break
+				loop
+					l_formal_type ?= Result
+					check l_formal_type_not_void: l_formal_type /= Void end
+					l_formal_type_position := l_formal_type.position
+					check valid_formal_position: is_valid_formal_position (l_formal_type_position) end
+					l_break := l_recursion_break[l_formal_type_position]
+					l_recursion_break[l_formal_type_position] := True
+					Result := constraint (l_formal_type_position)
+				end
+				if l_break then
+					Result := any_type
+				end
+				constrained_type_cache[a_formal_position] := Result
+			end
+		ensure
+			Result_not_void: Result /= Void
+			Result_is_named_but_not_formal:  Result.is_named_type and not Result.is_formal
+		end
+
+	constrained_types (a_formal_position: INTEGER): TYPE_SET_A
+			-- Constrained types of Current.
+			--
+			-- `a_context_class' is the context class where the formal occurs in.
+			--| It is a list of class types which constraint the current Formal.
+			-- Warning: Result is cached, do not modify it.
+		require
+			valid_formal_position: is_valid_formal_position (a_formal_position)
+		do
+			Result ?= constrained_types_cache[a_formal_position]
+			if Result = Void then
+				Result := constraints (a_formal_position).constraining_types (Current)
+				constrained_types_cache[a_formal_position] := Result
+			end
+		ensure
+			Result_not_void_and_not_empty: Result /= Void and not Result.is_empty
 		end
 
 	update_instantiator1 is
@@ -2688,6 +2779,14 @@ feature {NONE} -- IL code generation
 	data_prefix: STRING is "Data"
 			-- Prefix in a name of class data
 
+	constrained_type_cache: ARRAY [TYPE_A]
+			-- Constraining type for each given formal, if there exists one
+
+	constrained_types_cache: ARRAY [TYPE_SET_A]
+			-- Constraining types for each given formal
+			--| In case someone requests a type set for a single constraint this is just fine.
+			--| That is why we have two caches.
+
 feature -- status
 
 	hash_code: INTEGER is
@@ -3293,6 +3392,10 @@ feature {COMPILER_EXPORTER} -- Setting
 			-- Assign `g' to `generics'.
 		do
 			generics := g
+			if g /= Void then
+				create constrained_type_cache.make (1, g.count)
+				create constrained_types_cache.make (1, g.count)
+			end
 		ensure
 			generics_set: generics = g
 		end

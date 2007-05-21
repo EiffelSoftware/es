@@ -15,7 +15,8 @@ inherit
 		redefine
 			mini_pixmap,
 			mini_pixel_buffer,
-			new_mini_toolbar_item
+			new_mini_toolbar_item,
+			new_mini_sd_toolbar_item
 		end
 
 	EB_CONSTANTS
@@ -86,6 +87,14 @@ feature -- Access
 		end
 
 	new_mini_toolbar_item: EB_COMMAND_TOOL_BAR_BUTTON is
+			-- Create a new mini toolbar button for this command.
+		do
+			Result := Precursor
+			Result.drop_actions.extend (agent on_stone_dropped)
+			Result.drop_actions.set_veto_pebble_function (agent accepts_stone)
+		end
+
+	new_mini_sd_toolbar_item: EB_SD_COMMAND_TOOL_BAR_BUTTON is
 			-- Create a new mini toolbar button for this command.
 		do
 			Result := Precursor
@@ -173,7 +182,7 @@ feature {EB_DEBUGGER_MANAGER} -- Tool management
 			create Result.make_with_command (Current, w)
 		end
 
-feature {NONE} -- Implementation
+feature {EB_CONTEXT_MENU_FACTORY} -- Implementation
 
 	on_stone_dropped (st: OBJECT_STONE) is
 			-- An object was dropped on the button, display it.
@@ -182,6 +191,8 @@ feature {NONE} -- Implementation
 			last_opened_viewer.set_stone (st)
 		end
 
+feature {NONE} -- Implementation
+
 	opened_viewers: ARRAYED_LIST [EB_OBJECT_VIEWERS_I]
 			-- All expanded viewers linked to `Current'.		
 
@@ -189,11 +200,17 @@ feature {NONE} -- Implementation
 			-- Create and display a new expanded viewer dialog
 		local
 			dlg: EB_OBJECT_VIEWERS_DIALOG
+			w: EV_WINDOW
 		do
 			create dlg.make (Current)
 			opened_viewers.extend (dlg)
 			last_opened_viewer := dlg
-			dlg.show
+			w := associated_window
+			if w /= Void then
+				dlg.show_relative_to_window (w)
+			else
+				dlg.show
+			end
 		ensure
 			added_a_dialog: opened_viewers.count = (old opened_viewers.count) + 1
 		end

@@ -67,6 +67,8 @@ feature {NONE}-- Initialization
 			editor_drawing_area.set_pebble_function (agent pebble_from_x_y)
 			editor_drawing_area.enable_pebble_positioning
 			editor_drawing_area.drop_actions.extend (agent resume_cursor_for_drop)
+			editor_drawing_area.pick_actions.force_extend (agent suspend_cursor_blinking)
+			editor_drawing_area.pick_ended_actions.force_extend (agent resume_cursor_blinking)
 
 			editor_drawing_area.set_configurable_target_menu_mode
 			editor_drawing_area.set_configurable_target_menu_handler (agent (dev_window.menus.context_menu_factory).editor_menu (?, ?, ?, ?, Current))
@@ -384,9 +386,6 @@ feature {EB_CLICKABLE_MARGIN}-- Process Vision2 Events
 			-- Process single click on mouse buttons.
 		do
 			if not is_recycled then
-				if pick_n_drop_status = pnd_pick then
-					refresh_now
-				end
 				Precursor {EB_CUSTOM_WIDGETTED_EDITOR} (abs_x_pos, y_pos, button, unused1, unused2, unused3, a_screen_x, a_screen_y)
 			end
 		end
@@ -404,7 +403,6 @@ feature {EB_CLICKABLE_MARGIN}-- Process Vision2 Events
 		do
 			if button = 1 then
 				Precursor {EB_CUSTOM_WIDGETTED_EDITOR} (x_pos, y_pos, button, a_screen_x, a_screen_y)
-				set_pick_and_drop_status (no_pnd)
 			elseif button = 3 then
 				mouse_right_button_down := True
 				if x_pos <= 0 then
@@ -444,14 +442,21 @@ feature {EB_CLICKABLE_MARGIN}-- Process Vision2 Events
  			-- Process the push on an extended key.
 		local
 			l_shortcuts: like matching_customizable_commands
+			l_x_offset, l_y_offset: INTEGER
 		do
 			l_shortcuts := matching_customizable_commands (ev_key.code, ctrled_key, alt_key, shifted_key)
 				--| Fixme: When l_shortcuts is not empty, l_short_cuts.first can be void.
 			if not l_shortcuts.is_empty and then l_shortcuts.first /= Void then
 				l_shortcuts.first.apply
 				check_cursor_position
-			elseif ev_key.code = {EV_KEY_CONSTANTS}.key_menu and not dev_window.preferences.misc_data.is_pnd_mode then
-				editor_drawing_area.show_configurable_target_menu (0, 0)
+			elseif ev_key.code = {EV_KEY_CONSTANTS}.key_menu then
+				if not text_displayed.is_empty then
+					check_cursor_position
+					l_x_offset := current_cursor_position + left_margin_width
+					l_y_offset := (text_displayed.cursor.y_in_lines - first_line_displayed + 1) *
+						line_height + editor_viewport.y_offset - 1
+					editor_drawing_area.show_configurable_target_menu (l_x_offset, l_y_offset)
+				end
 			else
 				Precursor {EB_CUSTOM_WIDGETTED_EDITOR} (ev_key)
 			end
@@ -485,6 +490,7 @@ feature {EB_CLICKABLE_MARGIN} -- Pick and drop
 			bkst		: BREAKABLE_STONE
 			old_offset	: INTEGER
 			l_line		: INTEGER
+			l_update_selection: BOOLEAN
 		do
 			if not (ctrled_key or else mouse_copy_cut) then
 				if not text_displayed.is_empty then
@@ -498,30 +504,45 @@ feature {EB_CLICKABLE_MARGIN} -- Pick and drop
 						l_number > 0 and then
 						l_number <= number_of_lines and then
 						x_pos >= -left_margin_width + offset and then
-						x_pos < editor_viewport.width + offset and then
-						(not dev_window.preferences.misc_data.is_pnd_mode implies not has_selection)
+						x_pos < editor_viewport.width + offset
 					then
 						create cur.make_from_character_pos (1, 1, text_displayed)
 						position_cursor (cur, x_pos, y_pos)
 						Result := text_displayed.stone_at (cur)
+						if Result = Void then
+							position_cursor (cur, x_pos -1, y_pos)
+							Result := text_displayed.stone_at (cur)
+								-- Restore cursor position.
+							position_cursor (cur, x_pos, y_pos)
+						end
+							-- Are we outside a selection?
+						l_update_selection := not text_displayed.has_selection or else
+							(text_displayed.selection_start > cur or text_displayed.selection_end < cur)
 						if Result /= Void and then Result.is_valid then
+								-- FIXME: Is it really possible to have a BREAKABLE_STONE?
 							bkst ?= Result
 							if bkst = Void then
 								l_number := cur.y_in_lines
 								token_pos := cur.token.position
-								if text_displayed.has_selection then
-									text_displayed.disable_selection
-									invalidate_block (text_displayed.selection_start.y_in_lines, text_displayed.selection_end.y_in_lines, True)
-								else
-									invalidate_line (text_displayed.cursor.y_in_lines, False)
+									-- Pick and drop mode, we set the selection to the pebble.
+								if not dev_window.menus.context_menu_factory.menu_displayable (Result) then
+									if text_displayed.has_selection then
+	  									text_displayed.disable_selection
+	  									invalidate_block (text_displayed.selection_start.y_in_lines, text_displayed.selection_end.y_in_lines, False)
+									else
+										invalidate_line (text_displayed.cursor.y_in_lines, False)
+									end
+									l_line := text_displayed.current_line_number
+									cur.set_current_char (cur.token, 1)
+									text_displayed.cursor.make_from_character_pos (cur.x_in_characters, l_number, text_displayed)
+									text_displayed.selection_cursor.make_from_character_pos (cur.x_in_characters + cur.token.length, l_number, text_displayed)
+									text_displayed.enable_selection
+									old_offset := offset
+									invalidate_line (l_number, False)
+									invalidate_line (l_line, False)
+									l_update_selection := False
 								end
-								l_line := text_displayed.current_line_number
-								cur.set_current_char (cur.token, 1)
-								text_displayed.cursor.make_from_character_pos (cur.x_in_characters, l_number, text_displayed)
-								text_displayed.selection_cursor.make_from_character_pos (cur.x_in_characters + cur.token.length, l_number, text_displayed)
-								text_displayed.enable_selection
-								old_offset := offset
-								check_cursor_position
+								check_position (cur)
 								editor_drawing_area.set_pebble_position (token_pos + left_margin_width, (l_number - first_line_displayed)*line_height + line_height//2 + editor_viewport.y_offset)
 								if Result.stone_cursor /= Void then
 									editor_drawing_area.set_accept_cursor (Result.stone_cursor)
@@ -529,36 +550,24 @@ feature {EB_CLICKABLE_MARGIN} -- Pick and drop
 								if Result.x_stone_cursor /= Void then
 									editor_drawing_area.set_deny_cursor (Result.x_stone_cursor)
 								end
-								set_pick_and_drop_status (pnd_pick)
-
-								invalidate_line (l_number, True)
-								invalidate_line (l_line, True)
 							else
 								Result := Void
 							end
 						else
 							Result := Void
 						end
+						if l_update_selection then
+							text_displayed.disable_selection
+							l_line := text_displayed.selection_start.y_in_lines
+							l_number := text_displayed.selection_end.y_in_lines
+							text_displayed.cursor.make_from_character_pos (cur.x_in_characters, cur.y_in_lines, text_displayed)
+							text_displayed.set_selection_cursor (text_displayed.cursor)
+							invalidate_block (l_line, l_number, False)
+						end
 					end
 				end
 			end
 		end
-
-	set_pick_and_drop_status (a_status: INTEGER) is
-			-- Set status of pick and drop
-		require
-			status_valid: a_status = pnd_pick or a_status = no_pnd
-		do
-			if a_status = pnd_pick then
-				suspend_cursor_blinking
-			end
-		end
-
-	pick_n_drop_status: INTEGER
-			-- Step of the pick n drop where the editor is.
-
-	pnd_pick: INTEGER is 1
-	no_pnd: INTEGER is 2
 
 feature {NONE} -- Text Loading
 
@@ -724,6 +733,10 @@ feature {NONE} -- Memory management
 	internal_recycle is
 			-- Destroy `Current'
 		do
+			if dev_window /= Void and then dev_window.ui.current_editor = Current then
+					-- To avoid reference on recycled editor.
+				dev_window.ui.set_current_editor (Void)
+			end
 			Precursor {EB_CUSTOM_WIDGETTED_EDITOR}
 			if customizable_commands /= Void then
 				customizable_commands.wipe_out

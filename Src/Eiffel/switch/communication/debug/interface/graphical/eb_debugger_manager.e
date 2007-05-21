@@ -27,17 +27,14 @@ inherit
 			on_application_resumed,
 			on_application_before_stopped,
 			on_application_just_stopped,
-			on_application_quit,
+			on_debugging_terminated,
 			process_breakpoint,
-			implementation,
 			set_default_parameters,
 			set_maximum_stack_depth,
 			notify_breakpoints_changes,
-			add_idle_action, remove_idle_action, new_timer,
 			debugger_output_message, debugger_warning_message, debugger_status_message,
 			display_application_status, display_system_info, display_debugger_info,
-			set_error_message,
-			windows_handle
+			set_error_message
 		end
 
 	EB_CONSTANTS
@@ -71,6 +68,7 @@ feature {NONE} -- Initialization
 			-- Initialize `Current'.
 		do
 			Precursor
+			create_events_handler
 
 			if not eiffel_project.batch_mode then
 					--| When compiling in batch mode with the graphical "ec"
@@ -524,6 +522,10 @@ feature -- tools management
 			create sep
 			Result.extend (sep)
 
+
+			l_item := restart_cmd.new_menu_item
+			Result.extend (l_item)
+			a_recycler.add_recyclable (l_item)
 			l_item := stop_cmd.new_menu_item
 			Result.extend (l_item)
 			a_recycler.add_recyclable (l_item)
@@ -815,26 +817,10 @@ feature -- Windows observer
 
 feature -- Events helpers
 
-	new_timer: EV_DEBUGGER_TIMER is
+	create_events_handler is
+			-- Create `events_handler'
 		do
-			create Result
-		end
-
-	add_idle_action (v: PROCEDURE [ANY, TUPLE]) is
-		do
-			ev_application.add_idle_action (v)
-		end
-
-	remove_idle_action (v: PROCEDURE [ANY, TUPLE]) is
-		do
-			ev_application.remove_idle_action (v)
-		end
-
-feature -- GUI Access
-
-	windows_handle: POINTER is
-		do
-			Result := implementation.ev_window_win32_handle (debugging_window.window)
+			set_events_handler (create {EB_DEBUGGER_EVENTS_HANDLER}.make (agent debugging_window))
 		end
 
 feature {NONE} -- watch tool numbering
@@ -1288,6 +1274,11 @@ feature -- Status setting
 			update_all_debugging_tools_menu
 			unpopup_switching_mode
 			force_debug_mode_cmd.enable_sensitive
+
+			-- Save default debug layout file if not exists.
+			-- Because if not save, the default layout of debug mode is restored by `restore_standard_debug_docking_layout_by_code' which
+			-- put debugging tools to current layout directly. This will confuse end user.
+			debugging_window.commands.set_default_layout_command.execute_if_not_setted
 		ensure
 			raised
 		end
@@ -1543,6 +1534,7 @@ feature -- Debugging events
 		do
 			Precursor
 			disable_debugging_commands (False)
+			notify_breakpoints_changes
 		end
 
 	on_application_launched is
@@ -1706,26 +1698,18 @@ feature -- Debugging events
 			end
 		end
 
-	on_application_quit is
+	on_debugging_terminated (was_executing: BOOLEAN) is
 			-- Application just quit.
 			-- This application means the debuggee.
-		local
-			was_executing: BOOLEAN
 		do
-			debug("debugger_trace_synchro")
-				io.put_string (generator + ".on_application_quit %N")
-			end
-			was_executing := application_is_executing
-			Precursor
+				-- Modify the debugging window display.
+			window_manager.quick_refresh_all_margins
+			disable_debugging_commands (False)
+
+				--| Clean and reset debugging tools
+			reset_tools
 
 			if was_executing then
-					-- Modify the debugging window display.
-				window_manager.quick_refresh_all_margins
-				disable_debugging_commands (False)
-
-					--| Clean and reset debugging tools
-				reset_tools
-
 					-- Make all debugging tools disappear.
 				if debugging_window.destroyed then
 					debugging_window := Void
@@ -1739,29 +1723,26 @@ feature -- Debugging events
 					unraise
 					debugging_window := Void
 				end
-
-				enable_debugging_commands
-				update_all_debugging_tools_menu
-
-					-- Make related buttons insensitive.
-				stop_cmd.disable_sensitive
-				quit_cmd.disable_sensitive
-				restart_cmd.disable_sensitive
-				debug_cmd.enable_sensitive
-				debug_cmd.set_launched (False)
-				no_stop_cmd.enable_sensitive
-
-				step_cmd.enable_sensitive
-				into_cmd.enable_sensitive
-				out_cmd.disable_sensitive
-
-				set_critical_stack_depth_cmd.enable_sensitive
-				assertion_checking_handler_cmd.reset
 			end
+			enable_debugging_commands
+			update_all_debugging_tools_menu
 
-			debug("debugger_trace_synchro")
-				io.put_string (generator + ".on_application_quit : done%N")
-			end
+				-- Make related buttons insensitive.
+			stop_cmd.disable_sensitive
+			quit_cmd.disable_sensitive
+			restart_cmd.disable_sensitive
+			debug_cmd.enable_sensitive
+			debug_cmd.set_launched (False)
+			no_stop_cmd.enable_sensitive
+
+			step_cmd.enable_sensitive
+			into_cmd.enable_sensitive
+			out_cmd.disable_sensitive
+
+			set_critical_stack_depth_cmd.enable_sensitive
+			assertion_checking_handler_cmd.reset
+
+			Precursor (was_executing)
 		end
 
 	first_valid_call_stack_stone: CALL_STACK_STONE is
@@ -1798,7 +1779,7 @@ feature {EB_DEVELOPMENT_WINDOW, EB_DEVELOPMENT_WINDOW_PART} -- Implementation
 	display_error_help_cmd: EB_ERROR_INFORMATION_CMD
 			-- Command to pop up a dialog giving help on compilation errors.
 
-feature {ES_OBJECTS_GRID_MANAGER} -- Command
+feature {ES_OBJECTS_GRID_MANAGER, EB_CONTEXT_MENU_FACTORY} -- Command
 
 	object_viewer_cmd: EB_OBJECT_VIEWER_COMMAND
 
@@ -2163,12 +2144,8 @@ feature {NONE} -- MSIL system implementation
 					and then equal (Eiffel_system.System.msil_generation_type, dll_type)
 		end
 
-	dll_type: STRING is "dll"
+	dll_type: STRING is "dll";
 			-- DLL type constant for MSIL system
-
-feature {NONE} -- specific implementation
-
-	implementation: EB_DEBUGGER_MANAGER_IMP;
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

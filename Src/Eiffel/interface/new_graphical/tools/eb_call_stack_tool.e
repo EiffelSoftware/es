@@ -141,7 +141,7 @@ feature {NONE} -- Initialization
 			create tb_but_exception.make
 			tb_but_exception.set_pixmap (pixmaps.icon_pixmaps.debug_exception_dialog_icon)
 			tb_but_exception.set_pixel_buffer (pixmaps.icon_pixmaps.debug_exception_dialog_icon_buffer)
-			tb_but_exception.set_tooltip ("Open exception dialog for more details")
+			tb_but_exception.set_tooltip (interface_names.l_open_exception_dialog_tooltip)
 			tb_but_exception.pointer_button_press_actions.extend (agent show_call_stack_message)
 			tb_exception.extend (tb_but_exception)
 			tb_exception.compute_minimum_size
@@ -194,6 +194,9 @@ feature {NONE} -- Initialization
 			else
 				stack_grid.pointer_button_press_item_actions.extend (agent on_grid_item_pointer_pressed)
 			end
+			stack_grid.set_configurable_target_menu_mode
+			stack_grid.set_configurable_target_menu_handler (agent (development_window.menus.context_menu_factory).call_stack_menu)
+
 			preferences.debug_tool_data.select_call_stack_level_on_double_click_preference.change_actions.extend (agent update_call_stack_level_selection_mode)
 
 			box.extend (stack_grid)

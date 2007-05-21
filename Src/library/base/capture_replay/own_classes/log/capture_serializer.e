@@ -1,6 +1,6 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "Interface for event Serializers."
+	author: "Stefan Sieber"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -9,9 +9,6 @@ deferred class
 
 feature -- Access
 	file: FILE deferred end --the log file
-
--- TODO: * What do we do with Void Arguments?
-
 
 feature -- Basic operations
 
@@ -44,7 +41,7 @@ feature -- Basic operations
 		end
 
 	close_file
-			-- See comment in 'open_file'
+			-- Close `file'
 		require
 			file_open: file.is_open_write
 		deferred

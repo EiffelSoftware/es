@@ -11,8 +11,6 @@ class
 inherit
 
 	EB_MULTI_SEARCH_TOOL_IMP
-		export
-			{MSR_REPLACE_IN_ESTUDIO_STRATEGY, EB_SEARCH_REPORT_TOOL} develop_window
 		redefine
 			make,
 			reverse,
@@ -105,9 +103,6 @@ feature {NONE} -- Initialization
 
 			replace_combo_box.key_press_actions.extend (agent key_pressed (?, False))
 			replace_combo_box.drop_actions.extend (agent display_stone_signature (replace_combo_box, ?))
-
-			replace_check_button.select_actions.extend (agent switch_mode)
-			replace_check_button.key_press_actions.extend (agent key_pressed (?, True ))
 
 			replace_button.select_actions.extend (agent replace_current)
 			replace_button.key_press_actions.extend (agent handle_enter_on_button (?, agent replace_current))
@@ -676,7 +671,7 @@ feature {NONE} -- Shortcut button actions
 			end
 		end
 
-feature {EB_CUSTOM_WIDGETTED_EDITOR} -- Actions handler
+feature {EB_CUSTOM_WIDGETTED_EDITOR, EB_CONTEXT_MENU_FACTORY} -- Actions handler
 
 	new_search_or_go_next is
 			-- If new search is not necessary, go to next found.
@@ -899,6 +894,12 @@ feature {EB_CUSTOM_WIDGETTED_EDITOR} -- Actions handler
 					remove_cluster_item (l_cluster_stone.group)
 				end
 			end
+		end
+
+	remove_all is
+			-- Remove all from scope
+		do
+			scope_list.wipe_out
 		end
 
 	on_text_edited (directly_edited: BOOLEAN) is
@@ -1519,6 +1520,8 @@ feature -- Custom search scope
 				l_item.set_pebble_function (agent scope_pebble_function (a_class))
 				l_item.set_accept_cursor (Cursors.cur_class)
 				l_item.set_deny_cursor (Cursors.cur_x_class)
+				l_item.set_configurable_target_menu_mode
+				l_item.set_configurable_target_menu_handler (agent (develop_window.menus.context_menu_factory).search_scope_menu)
 				force_new_search
 			end
 		end
@@ -1553,6 +1556,8 @@ feature -- Custom search scope
 					l_item.set_pebble_function (agent scope_pebble_function (a_group))
 					l_item.set_accept_cursor (Cursors.cur_cluster)
 					l_item.set_deny_cursor (Cursors.cur_x_cluster)
+					l_item.set_configurable_target_menu_mode
+					l_item.set_configurable_target_menu_handler (agent (develop_window.menus.context_menu_factory).search_scope_menu)
 					force_new_search
 				end
 			end
@@ -1587,6 +1592,8 @@ feature -- Custom search scope
 				l_item.set_pebble_function (agent scope_pebble_function (a_folder))
 				l_item.set_accept_cursor (Cursors.cur_cluster)
 				l_item.set_deny_cursor (Cursors.cur_x_cluster)
+				l_item.set_configurable_target_menu_mode
+				l_item.set_configurable_target_menu_handler (agent (develop_window.menus.context_menu_factory).search_scope_menu)
 				force_new_search
 			end
 		end
@@ -1607,7 +1614,7 @@ feature -- Custom search scope
 			-- Scope pebble function
 		local
 			l_class_i: CLASS_I
-			l_cluster_i: CLUSTER_I
+			l_cluster_i: CONF_GROUP
 			l_folder: EB_FOLDER
 		do
 			l_class_i ?= a_data
@@ -1615,10 +1622,10 @@ feature -- Custom search scope
 			l_folder ?= a_data
 			if l_class_i /= Void then
 				Result := stone_from_class_i (l_class_i)
-			elseif l_cluster_i /= Void then
-				create {CLUSTER_STONE}Result.make (l_cluster_i)
 			elseif l_folder /= Void then
 				create {CLUSTER_STONE}Result.make_subfolder (l_folder.cluster, l_folder.path, l_folder.name)
+			elseif l_cluster_i /= Void then
+				create {CLUSTER_STONE}Result.make (l_cluster_i)
 			end
 		end
 
@@ -1862,12 +1869,6 @@ feature {EB_SEARCH_REPORT_GRID, EB_CUSTOM_WIDGETTED_EDITOR} -- Implementation
 			end
 		end
 
-	remove_all is
-			-- Remove all from scope
-		do
-			scope_list.wipe_out
-		end
-
 	switch_mode is
 			-- Switch from the normal mode to the replace mode
 			-- or the opposite
@@ -2051,7 +2052,6 @@ feature {EB_SEARCH_REPORT_GRID, EB_CUSTOM_WIDGETTED_EDITOR} -- Implementation
 		do
 			keyword_field.change_actions.block
 			replace_combo_box.key_press_actions.block
-			replace_check_button.key_press_actions.block
 			case_sensitive_button.key_press_actions.block
 			whole_word_button.key_press_actions.block
 			use_regular_expression_button.key_press_actions.block
@@ -2075,7 +2075,6 @@ feature {EB_SEARCH_REPORT_GRID, EB_CUSTOM_WIDGETTED_EDITOR} -- Implementation
 		do
 			keyword_field.change_actions.resume
 			replace_combo_box.key_press_actions.resume
-			replace_check_button.key_press_actions.resume
 			case_sensitive_button.key_press_actions.resume
 			whole_word_button.key_press_actions.resume
 			use_regular_expression_button.key_press_actions.resume

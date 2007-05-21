@@ -16,7 +16,7 @@ class MULTI_FORMAL_I
 inherit
 	TYPE_I
 		redefine
-			is_formal,is_multi_constrained_formal, is_valid, same_as, has_true_formal, has_formal, instantiation_in,
+			is_formal, is_multi_constrained, is_valid, same_as, has_true_formal, has_formal, instantiation_in,
 			complete_instantiation_in,
 			generated_id, is_explicit, generate_gen_type_il,
 			generate_cid, generate_cid_array, generate_cid_init,
@@ -64,8 +64,9 @@ feature -- Status report
 	tuple_code: INTEGER_8 is
 			-- Multi Formal tuple code.
 		do
-			-- MTN so far this code has never been called. why?
-			check false end
+				-- Before we said that we should not be called, but now we use `tuple_code' for the
+				-- argument passing for our new implementation of expanded conformance with generics.
+				-- For example the eweasel test#multicon005 exercises this code.
 			Result := {SHARED_GEN_CONF_LEVEL}.reference_tuple_code
 		end
 
@@ -107,7 +108,7 @@ feature -- Status report
 	is_formal: BOOLEAN is True
 			-- Is the type a formal type ?
 
-	is_multi_constrained_formal: BOOLEAN is True
+	is_multi_constrained: BOOLEAN is True
 			-- Is the type a formal type ?
 
 	is_explicit: BOOLEAN is False

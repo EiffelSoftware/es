@@ -265,6 +265,15 @@ feature -- Command
 			l_config.open_maximized_tool_data (a_file)
 		end
 
+	open_tool_bar_item_config (a_file: STRING_GENERAL) is
+			-- Open maximized tool config data.
+		local
+			l_config: SD_OPEN_CONFIG_MEDIATOR
+		do
+			create l_config.make (Current)
+			l_config.open_tool_bar_item_data (a_file)
+		end
+
 	set_main_area_background_color (a_color: EV_COLOR) is
 			-- Set main area (editors' area) background color.
 		require
@@ -278,7 +287,8 @@ feature -- Command
 
 	main_area_drop_action: EV_PND_ACTION_SEQUENCE is
 			-- Main area (editor area) drop acitons.
-			-- This actions will be called if there is no editor zone and end user drop a stone to the void editor area.
+			-- This actions will be called if there is no editor zone and end user drop
+			-- a stone to the void editor area.
 		do
 			Result := property.main_area_drop_actions
 		ensure
@@ -286,7 +296,8 @@ feature -- Command
 		end
 
 	update_mini_tool_bar_size (a_content: SD_CONTENT) is
-			-- After mini tool bar widget size changes, update mini tool bar size to best fit new size of mini tool bar widget.
+			-- After mini tool bar widget size changes, update mini tool bar size to best
+			-- fit new size of mini tool bar widget.
 			-- `a_content' can be void if not known.
 		do
 			command.update_mini_tool_bar_size (a_content)
@@ -338,12 +349,25 @@ feature -- Command
 
 	destroy is
 			-- Destroy all underline objects.
+		local
+			l_floating_zones: ARRAYED_LIST [SD_FLOATING_ZONE]
 		do
 			internal_shared.docking_manager_list.prune_all (Current)
 			property.destroy
 			agents.destroy
 			tool_bar_manager.destroy
 			contents.wipe_out
+
+			-- We have to destroy floating zones for Linux implementation, on Windows not needed.
+			from
+				l_floating_zones := query.floating_zones
+				l_floating_zones.start
+			until
+				l_floating_zones.after
+			loop
+				l_floating_zones.item.destroy
+				l_floating_zones.forth
+			end
 		end
 
 feature -- Contract support
@@ -385,9 +409,10 @@ feature -- Contract support
 		end
 
 feature {SD_TOOL_BAR_HOT_ZONE, SD_FLOATING_TOOL_BAR_ZONE, SD_CONTENT, SD_STATE,
-		SD_DOCKER_MEDIATOR, SD_OPEN_CONFIG_MEDIATOR, SD_SAVE_CONFIG_MEDIATOR, SD_HOT_ZONE, SD_ZONE, SD_TOOL_BAR_DOCKER_MEDIATOR,
-	 	SD_TOOL_BAR_MANAGER, SD_AUTO_HIDE_PANEL, SD_TOOL_BAR_ZONE,
-	  	SD_TAB_STUB, SD_MULTI_DOCK_AREA, SD_DOCKING_MANAGER_AGENTS,
+		SD_DOCKER_MEDIATOR, SD_OPEN_CONFIG_MEDIATOR, SD_SAVE_CONFIG_MEDIATOR,
+		SD_HOT_ZONE, SD_ZONE, SD_TOOL_BAR_DOCKER_MEDIATOR,
+	 	SD_TOOL_BAR_MANAGER, SD_AUTO_HIDE_PANEL, SD_TOOL_BAR_ZONE, SD_WIDGET_TOOL_BAR,
+	  	SD_TAB_STUB, SD_MULTI_DOCK_AREA, SD_DOCKING_MANAGER_AGENTS, SD_TOOL_BAR_HIDDEN_ITEM_DIALOG,
 	  	SD_DOCKING_MANAGER_COMMAND, SD_DOCKING_MANAGER_ZONES, SD_AUTO_HIDE_ANIMATION,
 	  	SD_DOCKING_MANAGER_QUERY, SD_NOTEBOOK, SD_ZONE_NAVIGATION_DIALOG,
 	  	SD_TAB_STATE_ASSISTANT, SD_TOOL_BAR_HOT_ZONE, SD_TOOL_BAR_ZONE_ASSISTANT,
@@ -435,8 +460,7 @@ feature {SD_TOOL_BAR_HOT_ZONE, SD_CONTENT, SD_STATE, SD_DOCKER_MEDIATOR,
 	main_container: SD_MAIN_CONTAINER
 			-- Container has four tab stub areas in four side and main area in center.
 
-feature {SD_DOCKING_MANAGER_AGENTS, SD_DOCKING_MANAGER_QUERY,
-	SD_DOCKING_MANAGER_COMMAND} -- Implementation
+feature {SD_DOCKING_MANAGER_AGENTS, SD_DOCKING_MANAGER_QUERY, SD_DOCKING_MANAGER_COMMAND} -- Implementation
 
 	internal_viewport: EV_VIEWPORT
 			-- The viewport which contain `fixed_area'.
@@ -444,7 +468,10 @@ feature {SD_DOCKING_MANAGER_AGENTS, SD_DOCKING_MANAGER_QUERY,
 	internal_shared: SD_SHARED
 			-- All singletons
 
-	internal_auto_hide_panel_left, internal_auto_hide_panel_right, internal_auto_hide_panel_top, internal_auto_hide_panel_bottom: SD_AUTO_HIDE_PANEL
+	internal_auto_hide_panel_left,
+	internal_auto_hide_panel_right,
+	internal_auto_hide_panel_top,
+	internal_auto_hide_panel_bottom: SD_AUTO_HIDE_PANEL
 			-- Auto hide panels
 
 invariant

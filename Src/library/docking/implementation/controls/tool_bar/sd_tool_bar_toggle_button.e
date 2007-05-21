@@ -35,7 +35,7 @@ feature -- Query
 	is_selected: BOOLEAN is
 			-- If current selected?
 		do
-			Result := state = {SD_TOOL_BAR_ITEM_STATE}.checked
+			Result := state = {SD_TOOL_BAR_ITEM_STATE}.checked or state = {SD_TOOL_BAR_ITEM_STATE}.hot_checked
 		end
 
 feature -- Command
@@ -78,7 +78,7 @@ feature {NONE} -- Agents
 			-- Handle pointer release actions.
 		do
 			if is_sensitive then
-				if has_position (a_relative_x, a_relative_y) then
+				if tool_bar /= Void and then has_position (a_relative_x, a_relative_y) then
 					if last_state = {SD_TOOL_BAR_ITEM_STATE}.hot or last_state = {SD_TOOL_BAR_ITEM_STATE}.normal then
 						state := {SD_TOOL_BAR_ITEM_STATE}.hot_checked
 						last_state := {SD_TOOL_BAR_ITEM_STATE}.checked

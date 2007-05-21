@@ -1,5 +1,9 @@
 indexing
-	description: "Objects that ..."
+	description: "[
+					 Set of types. This class encapsulates features to handle conformance and feature lookup on a set of types .
+					 TODO: This class could be made generic constrained to TYPE_A. 
+					 The issue is that the agent conformance does not allow it because some features become invalid.
+				]"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -24,10 +28,10 @@ inherit
 			to_type_set
 		end
 
-	ARRAYED_LIST[RENAMED_TYPE_A]
-	rename
-		duplicate as list_duplicate
-	end
+	ARRAYED_LIST [RENAMED_TYPE_A [TYPE_A]]
+		rename
+			duplicate as list_duplicate
+		end
 
 	COMPILER_EXPORTER
 		export
@@ -74,18 +78,24 @@ feature -- Access
 			--
 		local
 			l_instantiated_type: TYPE_A
+			l_item_type: TYPE_A
+			l_type_set: TYPE_SET_A
 		do
+			create l_type_set.make (count)
+
 			from
 				start
 			until
 				after
 			loop
-				l_instantiated_type := item.type.instantiation_in (a_type, a_written_id)
+				l_item_type := item.type
+				l_instantiated_type := l_item_type.instantiation_in (a_type, a_written_id)
 				if l_instantiated_type /= Void then
-					item.set_type (l_instantiated_type)
+					l_type_set.extend (create {RENAMED_TYPE_A [TYPE_A]}.make (l_instantiated_type, item.renaming))
 				end
 				forth
 			end
+			Result := l_type_set
 		end
 
 	feature_i_state (a_name: ID_AS): TUPLE [feature_item: FEATURE_I; class_type_of_feature: CL_TYPE_A;  features_found_count: INTEGER]  is
@@ -106,7 +116,7 @@ feature -- Access
 	feature_i_state_by_name_id (a_name_id: INTEGER): TUPLE [feature_item: FEATURE_I; class_type_of_feature: CL_TYPE_A; features_found_count: INTEGER; constraint_position: INTEGER]  is
 			-- Compute feature state.
 			--
-			-- `a_name_id' is the `names_heap'-id of the feature name string.
+			-- `a_name_id': This is the `names_heap'-id of the feature name string.
 			-- Returns `feature_item' void if the feature cannot be found in the type set.
 			-- If there are multiple features found use `features_found_count' from the result tuple to find out how many.
 			-- Use features from the family `info_about_feature*' to get detailed information.
@@ -114,12 +124,13 @@ feature -- Access
 			not_has_formal: not has_formal
 		local
 			l_last_feature, l_feature: FEATURE_I
+			l_class_type: CL_TYPE_A
 			l_last_class_type: CL_TYPE_A
 			l_features_found_count: INTEGER
 			l_renaming: RENAMING_A
 			l_constraint_position: INTEGER
 			l_feature_table: FEATURE_TABLE
-			l_item: RENAMED_TYPE_A
+			l_item: RENAMED_TYPE_A [TYPE_A]
 		do
 			from
 				start
@@ -139,17 +150,29 @@ feature -- Access
 					end
 
 					l_feature :=  l_feature_table.found_item
-
+						-- Duplicated code. Occurs also in `feature_i_state_by_rout_id'.
 					if
 						l_feature /= Void
 					then
 						l_constraint_position := cursor.index
 						l_last_feature  :=  l_feature
-						l_last_class_type ?= l_item.type
+						l_class_type ?= l_item.type
 							-- This check is guaranteed by the precondition.
-						check l_last_class_type_not_void: l_last_class_type /= Void end
-						l_features_found_count := l_features_found_count + 1
+						check l_class_type_not_void: l_class_type /= Void end
+
+						if l_last_class_type = Void or else (not l_class_type.same_as (l_last_class_type)) then
+								-- Only if we found a true new static type we count up.
+							l_features_found_count := l_features_found_count + 1
+						else
+							-- If it was the same static type that is ok because it does not change anything
+							-- regarding the dynamic binding.
+							-- G -> {COMPARABLE, COMPARABLE} is an example for such code.
+							-- There are more complex examples which lead to the same effect where it makes
+							-- more sense than this given example.
+						end
+						l_last_class_type := l_class_type
 					end
+
 				end
 				forth
 			end
@@ -168,7 +191,7 @@ feature -- Access
 	feature_i_state_by_rout_id (a_routine_id: INTEGER): TUPLE [feature_item: FEATURE_I; class_type_of_feature: CL_TYPE_A; features_found_count: INTEGER; constraint_position: INTEGER]
 			-- Compute feature state.
 			--
-			-- `a_routine_id' is the routine id of the feature we're looking for.
+			-- `a_routine_id': This is the routine id of the feature we're looking for.
 			-- Returns `feature_item' void if the feature cannot be found in the type set.
 			-- If there are multiple features found use `features_found_count' from the result tuple to find out how many.
 			-- Use features from the family `info_about_feature*' to get detailed information.
@@ -176,10 +199,11 @@ feature -- Access
 			not_loose: not is_loose
 		local
 			l_last_feature, l_feature: FEATURE_I
+			l_class_type: CL_TYPE_A
 			l_last_class_type: CL_TYPE_A
 			l_features_found_count: INTEGER
 			l_constraint_position: INTEGER
-			l_item: RENAMED_TYPE_A
+			l_item: RENAMED_TYPE_A [TYPE_A]
 		do
 			from
 				start
@@ -191,15 +215,21 @@ feature -- Access
 
 				l_feature :=  l_item.type.associated_class.feature_of_rout_id (a_routine_id)
 
+					-- Duplicated code. Occurs also in `feature_i_state_by_name_id'.
 				if
 					l_feature /= Void
 				then
 					l_constraint_position := cursor.index
 					l_last_feature  :=  l_feature
-					l_last_class_type ?= l_item.type
+					l_class_type ?= l_item.type
 						-- This check is guaranteed by the precondition.
-					check l_last_class_type_not_void: l_last_class_type /= Void end
-					l_features_found_count := l_features_found_count + 1
+					check l_class_type_not_void: l_class_type /= Void end
+
+						-- See comments in `feature_i_state_by_name_id'
+					if l_last_class_type = Void or else (not l_class_type.same_as (l_last_class_type)) then
+						l_features_found_count := l_features_found_count + 1
+					end
+					l_last_class_type := l_class_type
 				end
 				forth
 			end
@@ -216,16 +246,17 @@ feature -- Access
 
 		end
 
-	any_feature_i_by_routine_id (a_routine_id: INTEGER): TUPLE [feature_item: FEATURE_I; class_type: RENAMED_TYPE_A]
-			-- Returns the first matching feature and its class type (you need to to an assignment attempt)
+	any_feature_i_by_routine_id (a_routine_id: INTEGER): TUPLE [feature_item: FEATURE_I; class_type: RENAMED_TYPE_A [TYPE_A]]
+			-- Returns the first matching feature and its class type
 			--
 			-- `a_routine_id' is a routine id for which we query all types in the type set.
+			--| An assignment attempt is needed.
 		require
 			not_loose: not is_loose
 		local
 			l_class: CLASS_C
 			l_feat: FEATURE_I
-			l_item: RENAMED_TYPE_A
+			l_item: RENAMED_TYPE_A [TYPE_A]
 		do
 			from
 				start
@@ -244,8 +275,8 @@ feature -- Access
 			end
 		end
 
-	feature_i_list_by_rout_id (a_routine_id: INTEGER): ARRAYED_LIST[TUPLE[feature_item: FEATURE_I; class_type: RENAMED_TYPE_A]]
-			-- Builds a list of pairs of FEATURE_I and RENAMED_TYPE_A which all have a feature with routine id `a_routine_id'.
+	feature_i_list_by_rout_id (a_routine_id: INTEGER): ARRAYED_LIST[TUPLE[feature_item: FEATURE_I; class_type: RENAMED_TYPE_A [TYPE_A]]]
+			-- Builds a list of pairs of FEATURE_I and RENAMED_TYPE_A [TYPE_A] which all have a feature with routine id `a_routine_id'.
 			--
 			-- `a_routine_id' is the routine ID of the routine for which the list is built.
 			--| If you are just interested in any feature for a given routine id use `first_feature_i'
@@ -254,7 +285,7 @@ feature -- Access
 		local
 			l_class: CLASS_C
 			l_feat: FEATURE_I
-			l_item: RENAMED_TYPE_A
+			l_item: RENAMED_TYPE_A [TYPE_A]
 		do
 			create Result.make (3)
 			from
@@ -293,7 +324,7 @@ feature -- Access
 			l_constraint_position: INTEGER
 				-- The Position at which the constraint where the feature was selected from is written.
 			l_features_found_count: INTEGER
-			l_item: RENAMED_TYPE_A
+			l_item: RENAMED_TYPE_A [TYPE_A]
 		do
 			from
 				start
@@ -475,14 +506,14 @@ feature -- Access
 			result_semantic_correct: Result.features_found_count > 1  implies (Result.feature_item = Void and Result.class_type_of_feature = Void)
 		end
 
-	e_feature_list_by_rout_id (a_routine_id: INTEGER): ARRAYED_LIST[TUPLE[feature_item: E_FEATURE; class_type: RENAMED_TYPE_A]]
+	e_feature_list_by_rout_id (a_routine_id: INTEGER): ARRAYED_LIST[TUPLE[feature_item: E_FEATURE; class_type: RENAMED_TYPE_A [TYPE_A]]]
 			--
 		require
 			not_loose: not is_loose
 		local
 			l_class: CLASS_C
 			l_feat: E_FEATURE
-			l_item: RENAMED_TYPE_A
+			l_item: RENAMED_TYPE_A [TYPE_A]
 		do
 			create Result.make (3)
 			from
@@ -508,7 +539,7 @@ feature -- Access
 				-- All associated classes of the current type set.
 			do
 				create {LINKED_LIST[CLASS_C]} Result.make
-				do_all (agent (a_class_list: LIST[CLASS_C]; a_type: RENAMED_TYPE_A)
+				do_all (agent (a_class_list: LIST[CLASS_C]; a_type: RENAMED_TYPE_A [TYPE_A])
 							do
 								if a_type.has_associated_class then
 									a_class_list.extend (a_type.associated_class)
@@ -541,10 +572,10 @@ feature -- Access for Error handling
 			a_name_id_valid: a_name_id > 0
 			a_context_class_not_void_if_needed: has_formal implies a_context_class /= Void
 		local
-			l_feature_agent: FUNCTION [ANY, TUPLE [RENAMED_TYPE_A], TUPLE [e_feature: E_FEATURE; feature_i: FEATURE_I]]
+			l_feature_agent: FUNCTION [ANY, TUPLE [RENAMED_TYPE_A [TYPE_A]], TUPLE [e_feature: E_FEATURE; feature_i: FEATURE_I]]
 		do
 			l_feature_agent :=
-				agent (g_name_id: INTEGER; a_ext_type: RENAMED_TYPE_A): TUPLE [E_FEATURE,FEATURE_I]
+				agent (g_name_id: INTEGER; a_ext_type: RENAMED_TYPE_A [TYPE_A]): TUPLE [E_FEATURE,FEATURE_I]
 					local
 						l_renamed_id: INTEGER
 						l_class: CLASS_C
@@ -580,10 +611,10 @@ feature -- Access for Error handling
 		require
 			a_context_class_not_void_if_needed: has_formal implies a_context_class /= Void
 		local
-			l_feature_agent: FUNCTION[ANY,TUPLE [RENAMED_TYPE_A], TUPLE [e_feature: E_FEATURE; feature_i: FEATURE_I]]
+			l_feature_agent: FUNCTION[ANY,TUPLE [RENAMED_TYPE_A [TYPE_A]], TUPLE [e_feature: E_FEATURE; feature_i: FEATURE_I]]
 		do
 			l_feature_agent :=
-				agent (g_routine_id: INTEGER; l_ext_type: RENAMED_TYPE_A): TUPLE [E_FEATURE,FEATURE_I]
+				agent (g_routine_id: INTEGER; l_ext_type: RENAMED_TYPE_A [TYPE_A]): TUPLE [E_FEATURE,FEATURE_I]
 						-- Note that `g_renaming' is not used for routine id.
 					local
 						l_class: CLASS_C
@@ -619,7 +650,7 @@ feature -- Access for Error handling
 
 feature {TYPE_SET_A} -- Access implementation
 
-	info_about_feature_by_agent (a_feature: FUNCTION [ANY, TUPLE [RENAMED_TYPE_A], TUPLE [e_feature: E_FEATURE; feature_i: FEATURE_I]]; a_formal_position: INTEGER; a_context_class: CLASS_C; a_visited_formals: SEARCH_TABLE [INTEGER]): like info_about_feature_by_rout_id
+	info_about_feature_by_agent (a_feature: FUNCTION [ANY, TUPLE [RENAMED_TYPE_A [TYPE_A]], TUPLE [e_feature: E_FEATURE; feature_i: FEATURE_I]]; a_formal_position: INTEGER; a_context_class: CLASS_C; a_visited_formals: SEARCH_TABLE [INTEGER]): like info_about_feature_by_rout_id
 			-- Gather information about feature
 			-- 			
 			-- `a_feature' is an agent which returns information about a feature given a `CLASS_C' instance.			
@@ -631,7 +662,7 @@ feature {TYPE_SET_A} -- Access implementation
 			a_visited_formals_not_void: has_formal implies a_visited_formals /= Void
 			a_context_class_not_void_if_needed: has_formal implies a_context_class /= Void
 		local
-			l_item: RENAMED_TYPE_A
+			l_item: RENAMED_TYPE_A [TYPE_A]
 			l_item_type: TYPE_A
 			l_formal: FORMAL_A
 			l_formal_position: INTEGER
@@ -805,9 +836,7 @@ feature -- Output
 
 	ext_append_to (a_text_formatter: TEXT_FORMATTER; c: CLASS_C) is
 			-- Append `Current' to `text'.
-			-- `f' is used to retreive the generic type or argument name as string.	
-			-- MTNASK: f? why not a class... why a feature?	(only LIKE_ARGUMENT uses f really... what to do?)
-			-- MTN Other solution: Use append_to if not possible ext can handle void...
+			-- `c' is used to retreive the generic type or argument name as string.	
 		do
 				check first /= Void  end
 				if count > 1 then
@@ -858,7 +887,7 @@ feature -- Status
 	has_expanded: BOOLEAN is
 			-- Does the current type set contain the NONE type?
 		do
-			Result := there_exists (agent(a_renamed_type: RENAMED_TYPE_A): BOOLEAN
+			Result := there_exists (agent(a_renamed_type: RENAMED_TYPE_A [TYPE_A]): BOOLEAN
 						do
 							Result := a_renamed_type.type.is_expanded
 						end)
@@ -867,7 +896,7 @@ feature -- Status
 	has_none: BOOLEAN is
 			-- Does the current type set contain the NONE type?
 		do
-			Result := there_exists (agent(a_renamed_type: RENAMED_TYPE_A): BOOLEAN
+			Result := there_exists (agent(a_renamed_type: RENAMED_TYPE_A [TYPE_A]): BOOLEAN
 						do
 							Result := a_renamed_type.type.is_none
 						end)
@@ -876,7 +905,7 @@ feature -- Status
 	has_void: BOOLEAN is
 			-- Does the current type set contain the NONE type?
 		do
-			Result := there_exists (agent(a_renamed_type: RENAMED_TYPE_A): BOOLEAN
+			Result := there_exists (agent(a_renamed_type: RENAMED_TYPE_A [TYPE_A]): BOOLEAN
 						do
 							Result := a_renamed_type.type.is_void
 						end)
@@ -915,7 +944,7 @@ feature -- Status
 	has_renamings: BOOLEAN is
 			-- Has the `current' any renamings?
 		do
-			Result := there_exists (agent(a_renamed_type: RENAMED_TYPE_A): BOOLEAN
+			Result := there_exists (agent(a_renamed_type: RENAMED_TYPE_A [TYPE_A]): BOOLEAN
 						do
 							Result := a_renamed_type.type.has_renaming
 						end)
@@ -924,7 +953,7 @@ feature -- Status
 	has_formal_generic: BOOLEAN is
 			-- Has current type set any formal genrics?
 		do
-			Result := there_exists (agent(a_renamed_type: RENAMED_TYPE_A): BOOLEAN
+			Result := there_exists (agent(a_renamed_type: RENAMED_TYPE_A [TYPE_A]): BOOLEAN
 						do
 							Result := a_renamed_type.type.has_formal_generic
 						end)
@@ -939,7 +968,7 @@ feature -- Status
 	is_valid: BOOLEAN is
 			-- Is the type set valid, meaning that all items are valid items?
 		do
-			Result := for_all (agent (a_item: RENAMED_TYPE_A): BOOLEAN
+			Result := for_all (agent (a_item: RENAMED_TYPE_A [TYPE_A]): BOOLEAN
 						do
 							Result := a_item.type.is_valid
 						end)
@@ -948,7 +977,7 @@ feature -- Status
 	is_loose: BOOLEAN is
 			-- Is at least one of the types om the type set a loose type (`is_loose')?
 		do
-			Result := there_exists (agent (a_item: RENAMED_TYPE_A): BOOLEAN
+			Result := there_exists (agent (a_item: RENAMED_TYPE_A [TYPE_A]): BOOLEAN
 						 do
 						 	Result := a_item.type.is_loose
 						 end)
@@ -958,7 +987,7 @@ feature -- Status
 			-- Does the current set contain a formal type?
 			--| A generic (GEN_TYPE_A) which has a formal type parameter is not counted.
 		do
-			Result := there_exists (agent (a_item: RENAMED_TYPE_A): BOOLEAN
+			Result := there_exists (agent (a_item: RENAMED_TYPE_A [TYPE_A]): BOOLEAN
 						 do
 						 	Result := a_item.type.is_formal
 						 end)
@@ -967,7 +996,7 @@ feature -- Status
 	has_deferred: BOOLEAN is
 			-- Does the current set contain a deferred class?
 		do
-			Result := there_exists (agent (a_item: RENAMED_TYPE_A): BOOLEAN
+			Result := there_exists (agent (a_item: RENAMED_TYPE_A [TYPE_A]): BOOLEAN
 						 do
 						 	if a_item.has_associated_class then
 						 		Result := a_item.associated_class.is_deferred
@@ -977,7 +1006,7 @@ feature -- Status
 
 feature -- Access
 
-	expanded_representative: RENAMED_TYPE_A is
+	expanded_representative: RENAMED_TYPE_A [TYPE_A] is
 			-- Expanded item is returned.
 			--| Such a case can be treated like a normal type because there's no other class which can satisfy the constraint but the expanded itself.
 			--| If you write code like G-> {COMPARABLE,INTEGER_REF,INTEGER} (which is non-sense)
@@ -987,7 +1016,7 @@ feature -- Access
 		require
 			has_expanded: has_expanded
 		local
-			l_renamed_type: RENAMED_TYPE_A
+			l_renamed_type: RENAMED_TYPE_A [TYPE_A]
 		do
 			from
 				start
@@ -1052,7 +1081,7 @@ feature -- Access
 				end
 				if Result.is_empty and formal_resolution_stack.is_empty then
 						-- if formal_resolution_stack.is_empty we are at the end of computation.
-					Result.extend (create {RENAMED_TYPE_A}.make (create {CL_TYPE_A}.make (system.any_id), Void))
+					Result.extend (create {RENAMED_TYPE_A [TYPE_A]}.make (create {CL_TYPE_A}.make (system.any_id), Void))
 				end
 			--| Martins 1/23/07:
 			--| We do not remove duplicates as one can rename features differently.
@@ -1112,7 +1141,7 @@ feature -- Access
 				end
 				if Result.is_empty and formal_resolution_stack.is_empty then
 						-- if formal_resolution_stack.is_empty we are at the end of computation.
-					Result.extend (create {RENAMED_TYPE_A}.make (create {CL_TYPE_A}.make (system.any_id), Void))
+					Result.extend (create {RENAMED_TYPE_A [TYPE_A]}.make (create {CL_TYPE_A}.make (system.any_id), Void))
 				end
 			--| Martins 1/23/07:
 			--| We do not remove duplicates as one can rename features differently.
@@ -1167,7 +1196,7 @@ feature -- Access
 			end
 		end
 
-	last_type_checked: RENAMED_TYPE_A
+	last_type_checked: RENAMED_TYPE_A [TYPE_A]
 		-- Last type checked.
 		-- Use this feature for error reporting.
 

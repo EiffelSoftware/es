@@ -17,11 +17,11 @@ inherit
 				  screen_y, hide, show, is_displayed,parent,
 					pointer_motion_actions, pointer_button_release_actions,
 					enable_capture, disable_capture, has_capture,
-					x_position, y_position, destroy,
+					x_position, y_position, destroy, out,
 					set_minimum_width, set_minimum_height
 			{SD_TOOL_BAR_DRAWER_I, SD_TOOL_BAR_ZONE, SD_TOOL_BAR} implementation, draw_pixmap, clear_rectangle
 			{SD_TOOL_BAR_ITEM, SD_TOOL_BAR} tooltip, set_tooltip, remove_tooltip, font
-			{SD_TOOL_BAR_DRAGGING_AGENTS, SD_TOOL_BAR_DOCKER_MEDIATOR, SD_TOOL_BAR} set_pointer_style
+			{SD_TOOL_BAR_DRAGGING_AGENTS, SD_TOOL_BAR_DOCKER_MEDIATOR, SD_TOOL_BAR, SD_TOOL_BAR_ITEM} set_pointer_style
 			{SD_TOOL_BAR_ZONE, SD_TOOL_BAR} expose_actions, pointer_button_press_actions, pointer_double_press_actions,
 							redraw_rectangle
 			{SD_NOTEBOOK_HIDE_TAB_DIALOG} key_press_actions, focus_out_actions, set_focus, has_focus
@@ -97,6 +97,7 @@ feature -- Command
 			internal_items.go_i_th (a_index)
 			internal_items.put_left (a_item)
 			a_item.set_tool_bar (Current)
+			is_need_calculate_size := True
 		end
 
 	prune (a_item: SD_TOOL_BAR_ITEM) is
@@ -104,6 +105,7 @@ feature -- Command
 		do
 			internal_items.prune_all (a_item)
 			a_item.set_tool_bar (Void)
+			is_need_calculate_size := True
 		ensure
 			pruned: not has (a_item)
 			parent_void: a_item.tool_bar = Void
@@ -274,18 +276,19 @@ feature -- Query
 				is_need_calculate_size := False
 				l_pixmap_height := prefered_height
 				if not items_have_texts then
-					internal_row_height := l_pixmap_height
+					Result := l_pixmap_height
 				else
 					l_font_height := standard_height
 					if l_font_height >= l_pixmap_height then
-						internal_row_height := l_font_height
+						Result := l_font_height
 					else
-						internal_row_height := l_pixmap_height
+						Result := l_pixmap_height
 					end
 				end
+				internal_row_height := Result
+			else
+				Result := internal_row_height
 			end
-
-			Result := internal_row_height
 		ensure
 			valid: is_row_height_valid (Result)
 		end
@@ -530,8 +533,18 @@ feature {NONE} -- Agents
 		local
 			l_items: like internal_items
 			l_item: SD_TOOL_BAR_ITEM
+			l_platform: PLATFORM
+			l_capture_enabled: BOOLEAN
 		do
-			if pointer_entered then
+			-- Special handing for GTK.
+			-- Because on GTK, pointer leave actions doesn't have same behavior as Windows implementation.
+			-- This will cause `pointer_entered' flag not same between Windows and Gtk after pressed at SD_TOOL_BAR_RESIZABLE_ITEM end area.
+			create l_platform
+			if not l_platform.is_windows then
+				l_capture_enabled := has_capture
+			end
+
+			if pointer_entered or l_capture_enabled then
 				from
 					l_items := items
 					l_items.start
@@ -560,7 +573,7 @@ feature {NONE} -- Agents
 			debug ("docking")
 				print ("%NSD_TOOL_BAR on_pointer_press")
 			end
-			if a_button = 1 then
+			if a_button = {EV_POINTER_CONSTANTS}.left then
 				enable_capture
 				from
 					l_items := items
@@ -602,7 +615,7 @@ feature {NONE} -- Agents
 			l_items: like internal_items
 			l_item: SD_TOOL_BAR_ITEM
 		do
-			if a_button = 1 then
+			if a_button = {EV_POINTER_CONSTANTS}.left then
 				disable_capture
 				internal_pointer_pressed := False
 				from

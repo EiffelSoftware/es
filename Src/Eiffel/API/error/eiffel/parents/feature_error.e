@@ -70,7 +70,8 @@ feature -- Output
 			a_text_formatter.add ("Class: ")
 			class_c.append_signature (a_text_formatter, False)
 			a_text_formatter.add_new_line
-			if written_class /= Void then
+				-- Display source class only if different.
+			if written_class /= Void and then class_c /= written_class then
 				a_text_formatter.add ("Source class: ")
 				written_class.append_signature (a_text_formatter, False)
 				a_text_formatter.add_new_line
@@ -82,14 +83,14 @@ feature -- Output
 				elseif feature_name /= Void then
 					a_text_formatter.add_feature_error (e_feature, feature_name, line)
 				else
-					a_text_formatter.add ("invariant")
+					a_text_formatter.add ("inheritance or invariant clause")
 				end
 			elseif e_feature /= Void then
 				e_feature.append_name (a_text_formatter)
 			elseif feature_name /= Void then
 				a_text_formatter.add (feature_name)
 			else
-				a_text_formatter.add ("invariant")
+				a_text_formatter.add ("inheritance or invariant clause")
 			end
 			a_text_formatter.add_new_line
 			build_explain (a_text_formatter)

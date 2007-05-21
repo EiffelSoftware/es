@@ -544,9 +544,9 @@ feature -- Plug and Makefile file
 
 			if final_mode then
 				init_name :=
-					Encoder.table_name (system.routine_id_counter.initialization_rout_id).twin
+					Encoder.routine_table_name (system.routine_id_counter.initialization_rout_id).twin
 				exp_init_name :=
-					Encoder.table_name (system.routine_id_counter.creation_rout_id).twin
+					Encoder.routine_table_name (system.routine_id_counter.creation_rout_id).twin
 
 				buffer.put_string ("extern char *(*")
 				buffer.put_string (init_name)
@@ -555,7 +555,7 @@ feature -- Plug and Makefile file
 				buffer.put_string (exp_init_name)
 				buffer.put_string ("[])();%N")
 
-				dispose_name := Encoder.table_name (system.routine_id_counter.dispose_rout_id).twin
+				dispose_name := Encoder.routine_table_name (system.routine_id_counter.dispose_rout_id).twin
 				buffer.put_string ("extern char *(*")
 				buffer.put_string (dispose_name)
 				buffer.put_string ("[])();%N%N")
@@ -579,22 +579,38 @@ feature -- Plug and Makefile file
 			buffer.put_string (";%N")
 
 				-- Pointer on `equal' of class ANY
-			buffer.put_string ("%Tegc_equal = (EIF_BOOLEAN (*)(EIF_REFERENCE, EIF_REFERENCE, EIF_REFERENCE)) ")
+			if final_mode then
+				buffer.put_string ("%Tegc_equal = (EIF_BOOLEAN (*)(EIF_REFERENCE, EIF_REFERENCE, EIF_REFERENCE)) ")
+			else
+				buffer.put_string ("%Tegc_equal = (EIF_UNION (*)(EIF_REFERENCE, EIF_UNION, EIF_UNION)) ")
+			end
 			buffer.put_string (equal_name)
 			buffer.put_string (";%N")
 
 				-- Pointer on `twin' of class ANY
-			buffer.put_string ("%Tegc_twin = (EIF_REFERENCE (*)(EIF_REFERENCE)) ")
+			if final_mode then
+				buffer.put_string ("%Tegc_twin = (EIF_REFERENCE (*)(EIF_REFERENCE)) ")
+			else
+				buffer.put_string ("%Tegc_twin = (EIF_UNION (*)(EIF_REFERENCE)) ")
+			end
 			buffer.put_string (twin_name)
 			buffer.put_string (";%N")
 
 				-- Pointer on creation feature of class STRING
-			buffer.put_string ("%Tegc_strmake = (void (*)(EIF_REFERENCE, EIF_INTEGER)) ")
+			if final_mode then
+				buffer.put_string ("%Tegc_strmake = (void (*)(EIF_REFERENCE, EIF_INTEGER)) ")
+			else
+				buffer.put_string ("%Tegc_strmake = (void (*)(EIF_REFERENCE, EIF_UNION)) ")
+			end
 			buffer.put_string (str_make_name)
 			buffer.put_string (";%N")
 
 				-- Pointer on creation feature of class ARRAY[ANY]
-			buffer.put_string ("%Tegc_arrmake = (void (*)(EIF_REFERENCE, EIF_INTEGER, EIF_INTEGER)) ")
+			if final_mode then
+				buffer.put_string ("%Tegc_arrmake = (void (*)(EIF_REFERENCE, EIF_INTEGER, EIF_INTEGER)) ")
+			else
+				buffer.put_string ("%Tegc_arrmake = (void (*)(EIF_REFERENCE, EIF_UNION, EIF_UNION)) ")
+			end
 			buffer.put_string (arr_make_name)
 			buffer.put_string (";%N")
 
@@ -609,7 +625,7 @@ feature -- Plug and Makefile file
 				string_cl.types.first.skeleton.generate_offset (buffer, internal_hash_code_feat.feature_id, False)
 				buffer.put_string (";%N")
 			else
-				buffer.put_string ("%Tegc_strset = (void (*)(EIF_REFERENCE, EIF_INTEGER)) ")
+				buffer.put_string ("%Tegc_strset = (void (*)(EIF_REFERENCE, EIF_UNION)) ")
 				buffer.put_string (set_count_name)
 				buffer.put_string (";%N")
 			end
@@ -619,7 +635,7 @@ feature -- Plug and Makefile file
 				if final_mode then
 					buffer.put_string ("%Tegc_routdisp_fl = (void (*)(EIF_REFERENCE, EIF_POINTER, EIF_POINTER, EIF_POINTER, EIF_REFERENCE, EIF_BOOLEAN, EIF_INTEGER)) ")
 				else
-					buffer.put_string ("%Tegc_routdisp_wb = (void (*)(EIF_REFERENCE, EIF_POINTER, EIF_POINTER, EIF_POINTER, EIF_INTEGER, EIF_INTEGER, EIF_REFERENCE, EIF_BOOLEAN, EIF_BOOLEAN, EIF_BOOLEAN, EIF_BOOLEAN, EIF_REFERENCE, EIF_INTEGER)) ")
+					buffer.put_string ("%Tegc_routdisp_wb = (void (*)(EIF_REFERENCE, EIF_UNION, EIF_UNION, EIF_UNION, EIF_UNION, EIF_UNION, EIF_UNION, EIF_UNION, EIF_UNION, EIF_UNION, EIF_UNION, EIF_UNION, EIF_UNION)) ")
 				end
 				buffer.put_string (set_rout_disp_name)
 				buffer.put_string (";%N")

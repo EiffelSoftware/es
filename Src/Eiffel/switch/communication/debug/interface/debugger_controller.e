@@ -96,6 +96,7 @@ feature -- Debug Operation
 
 	debug_application (a_execution_mode: INTEGER) is
 			-- Launch the program from the project target.
+			-- see EXEC_MODES for `a_execution_mode' values.
 		local
 			launch_program: BOOLEAN
 			makefile_sh_name: FILE_NAME
@@ -104,6 +105,7 @@ feature -- Debug Operation
 			l_il_env: IL_ENVIRONMENT
 			l_app_string: STRING
 			is_dotnet_system: BOOLEAN
+			prefstr: STRING
 			dotnet_debugger: STRING
 		do
 			launch_program := False
@@ -182,9 +184,14 @@ feature -- Debug Operation
 							else
 								launch_program := True
 								if manager.has_breakpoints and then a_execution_mode = {EXEC_MODES}.no_stop_points then
+									if preferences.dialog_data /= Void then
+										prefstr := preferences.dialog_data.confirm_ignore_all_breakpoints_string
+									else
+										prefstr := Void
+									end
 									discardable_if_confirmed_do (Warning_messages.w_Ignoring_all_stop_points,
 														agent debug_workbench_application (a_execution_mode),
-														2, preferences.dialog_data.confirm_ignore_all_breakpoints_string
+														2, prefstr
 													)
 								else
 									debug_workbench_application (a_execution_mode)
@@ -238,44 +245,47 @@ feature -- Debug Operation
 
 feature {DEBUGGER_MANAGER} -- Debugging operation
 
+	debug_operate (a_exec_mode: INTEGER) is
+		require
+			safe_application_is_stopped: manager.safe_application_is_stopped
+		do
+			manager.application.set_execution_mode (a_exec_mode)
+			resume_workbench_application
+		end
+
 	debug_step_next is
 		require
 			safe_application_is_stopped: manager.safe_application_is_stopped
 		do
-			manager.application.set_execution_mode ({EXEC_MODES}.step_by_step)
-			resume_workbench_application
+			debug_operate ({EXEC_MODES}.step_by_step)
 		end
 
 	debug_step_into is
 		require
 			safe_application_is_stopped: manager.safe_application_is_stopped
 		do
-			manager.application.set_execution_mode ({EXEC_MODES}.step_into)
-			resume_workbench_application
+			debug_operate ({EXEC_MODES}.step_into)
 		end
 
 	debug_step_out is
 		require
 			safe_application_is_stopped: manager.safe_application_is_stopped
 		do
-			manager.application.set_execution_mode ({EXEC_MODES}.out_of_routine)
-			resume_workbench_application
+			debug_operate ({EXEC_MODES}.out_of_routine)
 		end
 
 	debug_run is
 		require
 			safe_application_is_stopped: manager.safe_application_is_stopped
 		do
-			manager.application.set_execution_mode ({EXEC_MODES}.user_stop_points)
-			resume_workbench_application
+			debug_operate ({EXEC_MODES}.user_stop_points)
 		end
 
 	debug_run_without_stop_points is
 		require
 			safe_application_is_stopped: manager.safe_application_is_stopped
 		do
-			manager.application.set_execution_mode ({EXEC_MODES}.no_stop_points)
-			resume_workbench_application
+			debug_operate ({EXEC_MODES}.no_stop_points)
 		end
 
 	debug_kill is

@@ -17,7 +17,7 @@ create
 
 feature -- Initialization
 	setup_on_text_serializer (filename: STRING) is
-			--
+			-- Create a recorder based on a TEXT_SERIALIZER on the file `filename'
 		do
 			create {TEXT_SERIALIZER}serializer.make_on_textfile (filename)
 
@@ -42,7 +42,7 @@ feature -- Access
 
 feature -- Status change
 	set_debug_output(new_debug_output: BOOLEAN)
-			--set `debug_output'
+			-- Set `debug_output'
 		do
 			debug_output := new_debug_output
 		ensure
@@ -52,14 +52,11 @@ feature -- Status change
 feature -- Basic Operations
 
 	methodbody_end (res: ANY): ANY
-			-- See comment in CONTROLLER
---		require
---			serializer_not_void: serializer /= Void
+			-- Record a feature_exit - event
 		local
 			current_observed: BOOLEAN
 		do
 			enter
-
 			current_observed := observed_stack.item
 			observed_stack.remove
 			if current_observed /= observed_stack.item then
@@ -70,23 +67,14 @@ feature -- Basic Operations
 				end
 			end
 			Result := res
-
 			leave
 		end
 
 	methodbody_start (feature_name: STRING_8; target: OBSERVABLE; arguments: TUPLE)
-			-- Hook for recording. Is to be placed before the methodbody is evaluated
-			-- 'target' is the object whose feature was called
-			-- 'arguments' are the arguments of the feature.
---		require
---			feature_name_not_void: feature_name /= Void
---			target_not_void: target /= Void
---			arguments_not_void: arguments /= Void
---			serializer_not_void: serializer /= Void
+			-- Record a feature_invoke - event.
 		do
 			enter
-
---opt			print_debug ("{REC}: MethodBodyStart: " + feature_name + "%N")
+			--opt print_debug ("{REC}: MethodBodyStart: " + feature_name + "%N")
 			if (target.is_observed /= observed_stack.item) then
 				if target.is_observed then
 					serializer.write_incall (feature_name, target, arguments)
@@ -95,7 +83,6 @@ feature -- Basic Operations
 				end
 			end
 			observed_stack.put (target.is_observed)
-
 			leave
 		end
 
@@ -107,32 +94,18 @@ feature -- Basic Operations
 
 feature {NONE} -- Implementation
 
-
--- For optimization - purposes removed.
---		print_debug(message: STRING)
---				-- Print a debug message if debug_output is enabled
---			do
---				if debug_output then
---					print("{REC}" +message)
---				end
---			end
-
-
-feature --test
-
-feature --RUBBISH
-	expanded_test: ANY
-			--test to see how eiffel converts an expanded type to any.
-		local
-			da_real: REAL
-		do
-			da_real:=5
-			Result:=da_real
-		end
+		print_debug(message: STRING)
+				-- Print a debug message if debug_output is enabled
+			do
+				if debug_output then
+					print("{REC}" +message)
+				end
+			end
 
 invariant
 	observed_stack_not_void: observed_stack /= Void
 	observed_stack_not_empty: not observed_stack.is_empty
+	serializer_not_void: serializer /= Void
 
 end -- class RECORDER
 

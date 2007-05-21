@@ -110,6 +110,16 @@ feature {NONE} -- Event loop
 
 feature {EV_ANY_I} -- Implementation
 
+	set_currently_shown_control (a_control: EV_PICK_AND_DROPABLE)
+			-- Set `currently_shown_control' to `a_control'.
+		do
+			currently_shown_control := a_control
+		end
+
+	currently_shown_control: EV_PICK_AND_DROPABLE
+		-- Graphical objects that is presently shown
+		-- Used for holding a reference do not get garbage collected.
+
 	focused_widget: EV_WIDGET is
 			-- Widget with keyboard focus
 		local
@@ -431,6 +441,12 @@ feature {EV_ANY_I} -- Implementation
 						debug ("GDK_EVENT")
 							print ("GDK_UNMAP%N")
 						end
+						l_gtk_widget_imp ?= eif_object_from_gtk_object (l_grab_widget)
+						if l_gtk_widget_imp /= Void then
+							if currently_shown_control = l_gtk_widget_imp.interface then
+								set_currently_shown_control (Void)
+							end
+						end
 					when GDK_SELECTION_CLEAR then
 						debug ("GDK_EVENT")
 							print ("GDK_SELECTION_CLEAR%N")
@@ -493,6 +509,11 @@ feature {EV_ANY_I} -- Implementation
 										l_gtk_widget_imp := Void
 										l_top_level_window_imp := Void
 										l_gtk_widget_ptr := default_pointer
+									else
+											-- This code is needed for standard dialogs where we do not have a handle to all
+											-- gtk widgets.
+										{EV_GTK_EXTERNALS}.gtk_main_do_event (gdk_event)
+										l_call_event := False
 									end
 								end
 							end
@@ -1067,8 +1088,8 @@ feature -- Implementation
 	enable_debugger is
 			-- Enable the Eiffel debugger.
 		do
-			if not debugger_is_disabled then
-				debugger_is_disabled := True
+			if debugger_is_disabled then
+				debugger_is_disabled := False
 				internal_set_debug_mode (saved_debug_mode)
 			end
 		end
@@ -1076,15 +1097,15 @@ feature -- Implementation
 	disable_debugger is
 			-- Disable the Eiffel debugger.
 		do
-			if debugger_is_disabled then
-				debugger_is_disabled := False
+			if not debugger_is_disabled then
+				debugger_is_disabled := True
 				saved_debug_mode := debug_mode
 				internal_set_debug_mode (0)
 			end
 		end
 
 	debugger_is_disabled: BOOLEAN
-		-- Is the debugger disabled?
+			-- Is the debugger disabled?
 
 feature {EV_ANY_I, EV_FONT_IMP, EV_STOCK_PIXMAPS_IMP, EV_INTERMEDIARY_ROUTINES} -- Implementation
 

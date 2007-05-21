@@ -5,6 +5,7 @@ indexing
 	author      : "$Author$"
 	date        : "$Date$"
 	revision    : "$Revision$"
+	fixme: "FIXME jfiat [2007/05/07] : factorize code between evaluate_array_const_b and evaluate_tuple_const_b"
 
 class
 	DBG_EXPRESSION_EVALUATOR_B
@@ -212,6 +213,8 @@ feature {NONE} -- INSTR_B evaluation
 		end
 
 	evaluate_call_b (a_call_b: CALL_B) is
+		require
+			a_call_b /= Void
 		local
 			l_access_b: ACCESS_B
 			l_nested_b: NESTED_B
@@ -228,6 +231,26 @@ feature {NONE} -- INSTR_B evaluation
 				end
 			end
 		end
+
+--| Keep this commented code for later use.		
+--	standalone_evaluation_expr_b (a_expr_b: EXPR_B): DUMP_VALUE
+--			-- (export status {NONE})
+--		require
+--			a_expr_b /= Void
+--		local
+--			l_tmp_result_value_backup: like tmp_result_value
+--			l_tmp_target_backup: like tmp_target
+--			l_tmp_result_static_type_backup: like tmp_result_static_type
+--		do
+--			l_tmp_result_value_backup := tmp_result_value
+--			l_tmp_target_backup := tmp_target
+--			l_tmp_result_static_type_backup := tmp_result_static_type
+--			evaluate_expr_b (a_expr_b)
+--			Result := tmp_result_value
+--			tmp_result_value := l_tmp_result_value_backup
+--			tmp_target := l_tmp_target_backup
+--			tmp_result_static_type := l_tmp_result_static_type_backup
+--		end		
 
 feature {NONE} -- EXPR_B evaluation
 
@@ -344,6 +367,7 @@ feature {NONE} -- EXPR_B evaluation
 		local
 			l_string_b: STRING_B
 			l_tuple_const_b: TUPLE_CONST_B
+			l_array_const_b: ARRAY_CONST_B
 		do
 			l_string_b ?= a_expr_b
 			if l_string_b /= Void then
@@ -356,8 +380,12 @@ feature {NONE} -- EXPR_B evaluation
 				if l_tuple_const_b /= Void then
 					evaluate_tuple_const_b (l_tuple_const_b)
 				else
-						--| NotYetReady |--
-					notify_error_not_implemented (a_expr_b.generator + Cst_error_not_yet_ready)
+					l_array_const_b ?= a_expr_b
+					if l_array_const_b /= Void then
+						evaluate_array_const_b (l_array_const_b)
+					else
+						notify_error_not_implemented (a_expr_b.generator + Cst_error_not_yet_ready)
+					end
 				end
 			end
 		end
@@ -366,37 +394,164 @@ feature {NONE} -- EXPR_B evaluation
 			-- Manifest Tuple
 		require
 			a_tuple_const_b_not_void: a_tuple_const_b /= Void
---		local
---			l_values: ARRAY [DUMP_VALUE]
---			l_byte_list: LIST [BYTE_NODE]
---			l_expr_b: EXPR_B
---			i: INTEGER
---			dv: DUMP_VALUE
+		local
+			l_byte_list: LIST [BYTE_NODE]
+			l_arg_as_lst: LINKED_LIST [DUMP_VALUE]
+			l_expr_b: EXPR_B
+			i: INTEGER
+			dv: DUMP_VALUE
+			index_dv: DUMP_VALUE_BASIC
+			l_class: CLASS_C
+			l_def_create_feat_i,
+			l_put_feat_i: FEATURE_I
+			l_tmp_target_backup: like tmp_target
+			l_call_value: DUMP_VALUE
+			l_type_i: CL_TYPE_I
 		do
---			l_byte_list := a_tuple_const_b.expressions
---			if l_byte_list.count > 0 then
---				create l_values.make (1, l_byte_list.count)
---				from
---					l_byte_list.start
---					i := 1
---				until
---					l_byte_list.after or error_occurred
---				loop
---					l_expr_b ?= l_byte_list.item
---					if l_expr_b /= Void then
---						dv := parameter_evaluation (l_expr_b)
---						l_values.put (dv, i)
---					end
---					i := i + 1
---					l_byte_list.forth
---				end
---			end
---
---			tmp_result_value := Debugger_manager.Dump_value_factory.new_tuple_const_value (
---					l_tuple_const_b.value,
---					debugger_manager.compiler_data.tuple_class_c
---				)
-			notify_error_not_implemented (a_tuple_const_b.generator + Cst_error_not_yet_ready)
+			l_tmp_target_backup := tmp_target
+			l_type_i := a_tuple_const_b.type
+			create_empty_instance_of (l_type_i)
+			if not error_occurred then
+				l_call_value := tmp_result_value
+				tmp_target := l_call_value
+					--| Call default_create
+				l_class := debugger_manager.compiler_data.tuple_class_c
+				l_def_create_feat_i := l_class.default_create_feature
+				evaluate_routine (tmp_target.address, tmp_target, l_class, l_def_create_feat_i, Void)
+				tmp_target := l_call_value
+				if not error_occurred then
+					l_byte_list := a_tuple_const_b.expressions
+					if l_byte_list.count > 0 then
+						from
+							l_class := l_type_i.associated_class_type.associated_class
+							l_put_feat_i := l_class.feature_named ("put")
+							check l_put_feat_i /= Void end
+							create l_arg_as_lst.make
+							l_arg_as_lst.extend (Void)
+							l_arg_as_lst.extend (Void)
+							l_byte_list.start
+							i := 1
+						until
+							l_byte_list.after or error_occurred
+						loop
+							l_expr_b ?= l_byte_list.item
+							if l_expr_b /= Void then
+								dv := parameter_evaluation (l_expr_b)
+								check l_arg_as_lst.count = 2 end
+								if not error_occurred then
+									l_arg_as_lst.start
+									l_arg_as_lst.replace (dv)
+									l_arg_as_lst.forth
+									if index_dv = Void then
+										index_dv := new_integer_dump_value (i)
+									else
+										index_dv.replace_integer_32_value (i)
+									end
+									l_arg_as_lst.replace (index_dv)
+
+									tmp_target := l_call_value
+									evaluate_routine (tmp_target.address, tmp_target, l_class, l_put_feat_i, l_arg_as_lst)
+								end
+							end
+							i := i + 1
+							l_byte_list.forth
+						end
+						if error_occurred then
+							notify_error_evaluation ("Creation of class {" + l_type_i.name + "} raised an error.%N")
+						end
+					end
+				end
+				tmp_result_value := l_call_value
+			end
+			tmp_target := l_tmp_target_backup
+		end
+
+	evaluate_array_const_b (a_array_const_b: ARRAY_CONST_B) is
+		require
+			a_array_const_b_not_void: a_array_const_b /= Void
+		local
+			l_byte_list: LIST [BYTE_NODE]
+			l_arg_as_lst: LINKED_LIST [DUMP_VALUE]
+			l_expr_b: EXPR_B
+			i: INTEGER
+			dv: DUMP_VALUE
+			index_dv: DUMP_VALUE_BASIC
+			l_class, l_int_class: CLASS_C
+			l_create_feat_i,
+			l_put_feat_i: FEATURE_I
+			l_tmp_target_backup: like tmp_target
+			l_call_value: DUMP_VALUE
+			l_type_i: CL_TYPE_I
+			dbg: like debugger_manager
+		do
+			l_tmp_target_backup := tmp_target
+			l_type_i := a_array_const_b.type
+			create_empty_instance_of (l_type_i)
+			if not error_occurred then
+				dbg := debugger_manager
+				l_call_value := tmp_result_value
+				tmp_target := l_call_value
+
+				l_byte_list := a_array_const_b.expressions
+
+					--| Call default_create
+				l_class := dbg.compiler_data.array_class_c
+				if l_class /= Void then
+					l_create_feat_i := l_class.feature_named ("make")
+					create l_arg_as_lst.make
+					l_int_class := dbg.compiler_data.integer_32_class_c
+					l_arg_as_lst.extend (dbg.dump_value_factory.new_integer_32_value (0, l_int_class))
+					l_arg_as_lst.extend (dbg.dump_value_factory.new_integer_32_value (l_byte_list.count - 1, l_int_class))
+					evaluate_routine (tmp_target.address, tmp_target, l_class, l_create_feat_i, l_arg_as_lst)
+					l_arg_as_lst := Void
+				else
+					notify_error_evaluation ("Creation of class {" + l_type_i.name + "} raised an error.%N")
+				end
+				if not error_occurred then
+					tmp_target := l_call_value
+					if l_byte_list.count > 0 then
+						from
+							l_class := l_type_i.associated_class_type.associated_class
+							l_put_feat_i := l_class.feature_named ("put")
+							check l_put_feat_i /= Void end
+							create l_arg_as_lst.make
+							l_arg_as_lst.extend (Void)
+							l_arg_as_lst.extend (Void)
+							l_byte_list.start
+							i := 0
+						until
+							l_byte_list.after or error_occurred
+						loop
+							l_expr_b ?= l_byte_list.item
+							if l_expr_b /= Void then
+								dv := parameter_evaluation (l_expr_b)
+								check l_arg_as_lst.count = 2 end
+								if not error_occurred then
+									l_arg_as_lst.start
+									l_arg_as_lst.replace (dv)
+									l_arg_as_lst.forth
+									if index_dv = Void then
+										index_dv := new_integer_dump_value (i)
+									else
+										index_dv.replace_integer_32_value (i)
+									end
+									l_arg_as_lst.replace (index_dv)
+
+									tmp_target := l_call_value
+									evaluate_routine (tmp_target.address, tmp_target, l_class, l_put_feat_i, l_arg_as_lst)
+								end
+							end
+							i := i + 1
+							l_byte_list.forth
+						end
+						if error_occurred then
+							notify_error_evaluation ("Creation of class {" + l_type_i.name + "} raised an error.%N")
+						end
+					end
+				end
+				tmp_result_value := l_call_value
+			end
+			tmp_target := l_tmp_target_backup
 		end
 
 	evaluate_value_i (a_value_i: VALUE_I; cl: CLASS_C) is
@@ -765,9 +920,18 @@ feature {NONE} -- EXPR_B evaluation
 			l_supported: BOOLEAN
 			l_has_error: BOOLEAN
 		do
+			if context_class_type /= Void then
+				if Byte_context.class_type = Void then
+					Byte_context.init (context_class_type)
+				else
+					Byte_context.change_class_type_context (context_class_type, context_class_type)
+				end
+			end
 			l_type_to_create := a_creation_expr_b.info.type_to_create
+			if byte_context.is_class_type_changed then
+				byte_context.restore_class_type_context
+			end
 			if not retried then
-				fixme ("2004/03/18 for now we just process basic type ..., to improve ...")
 				if l_type_to_create /= Void and then l_type_to_create.is_basic then
 					l_f_b ?= a_creation_expr_b.call
 					if l_f_b /= Void and then l_f_b.parameters /= Void then
@@ -786,7 +950,13 @@ feature {NONE} -- EXPR_B evaluation
 						end
 					end
 				else
-					l_has_error := True
+					if l_type_to_create /= Void then
+						evaluate_creation_expr_b_with_type (a_creation_expr_b, l_type_to_create)
+						l_has_error := error_occurred
+					else
+						fixme ("2004/03/18 for now we just process basic type ..., to improve ...")
+						l_has_error := True
+					end
 				end
 			else
 				l_has_error := True
@@ -803,6 +973,31 @@ feature {NONE} -- EXPR_B evaluation
 		rescue
 			retried := True
 			retry
+		end
+
+	evaluate_creation_expr_b_with_type (a_creation_expr_b: CREATION_EXPR_B; a_type_i: CL_TYPE_I) is
+			-- (export status {NONE})
+		require
+			a_type_i_not_void: a_type_i /= Void
+		local
+			l_tmp_target_backup: like tmp_target
+			l_call_value: DUMP_VALUE
+			l_call: CALL_B
+		do
+			l_tmp_target_backup := tmp_target
+			create_empty_instance_of (a_type_i)
+			if not error_occurred then
+				tmp_target := tmp_result_value
+				l_call_value := tmp_target
+				l_call := a_creation_expr_b.call
+				if l_call /= Void then
+					evaluate_call_b (l_call)
+				end
+				if not error_occurred then
+					tmp_result_value := l_call_value
+				end
+			end
+			tmp_target := l_tmp_target_backup
 		end
 
 	evaluate_tuple_access_b (a_tuple_access_b: TUPLE_ACCESS_B) is
@@ -930,24 +1125,37 @@ feature {NONE} -- EXPR_B evaluation
 
 	evaluate_external_b	(a_external_b: EXTERNAL_B) is
 		local
+			ti: TYPE_I
 			fi: FEATURE_I
 			cl: CLASS_C
 			params: ARRAYED_LIST [DUMP_VALUE]
 		do
-			if tmp_target /= Void then
-				cl := tmp_target.dynamic_class
-			elseif context_class /= Void then
-				cl := context_class
-			else
-				cl := system.class_of_id (a_external_b.written_in)
+			if a_external_b.is_static_call then
+				ti := a_external_b.static_class_type
+				if
+					ti /= Void
+					and then ti.type_a /= Void
+					and then ti.type_a.has_associated_class
+				then
+					cl := ti.type_a.associated_class
+				end
+			end
+			if cl = Void then
+				if tmp_target /= Void then
+					cl := tmp_target.dynamic_class
+				elseif context_class /= Void then
+					cl := context_class
+				else
+					cl := system.class_of_id (a_external_b.written_in)
+				end
 			end
 
 			if cl = Void then
 				notify_error_evaluation (Cst_error_call_on_void_target +
-						Cst_feature_name_left_limit + a_external_b.feature_name + Cst_feature_name_right_limit
-					)
+							Cst_feature_name_left_limit + a_external_b.feature_name + Cst_feature_name_right_limit
+						)
 			else
-					fi := feature_i_from_call_access_b_in_context (cl, a_external_b)
+				fi := feature_i_from_call_access_b_in_context (cl, a_external_b)
 				if fi = Void then
 					params := parameter_values_from_parameters_b (a_external_b.parameters)
 					if not error_occurred then
@@ -965,12 +1173,20 @@ feature {NONE} -- EXPR_B evaluation
 							--| parameters ...
 						params := parameter_values_from_parameters_b (a_external_b.parameters)
 						if not error_occurred then
-							if tmp_target /= Void then
-								evaluate_routine (tmp_target.value_address, tmp_target, Void, fi, params)
-							elseif context_address /= Void then
-								evaluate_routine (context_address, Void, Void, fi, params)
+							if a_external_b.is_static_call then
+								if tmp_target /= Void then
+									evaluate_static_routine (tmp_target.value_address, tmp_target, cl, fi, params)
+								else
+									evaluate_static_routine (context_address, Void, cl, fi, params)
+								end
 							else
-								evaluate_static_function (fi, cl, params)
+								if tmp_target /= Void then
+									evaluate_routine (tmp_target.value_address, tmp_target, cl, fi, params)
+								elseif context_address /= Void then
+									evaluate_routine (context_address, Void, cl, fi, params)
+								else
+									evaluate_static_function (fi, cl, params)
+								end
 							end
 						end
 					elseif fi.is_attribute then
@@ -1259,7 +1475,23 @@ feature {NONE} -- Concrete evaluation
 					)
 			else
 				prepare_evaluation
-				Dbg_evaluator.evaluate_routine (a_addr, a_target, cl, f, params)
+				Dbg_evaluator.evaluate_routine (a_addr, a_target, cl, f, params, False)
+				retrieve_evaluation
+			end
+		end
+
+	evaluate_static_routine (a_addr: STRING; a_target: DUMP_VALUE; cl: CLASS_C; f: FEATURE_I; params: LIST [DUMP_VALUE]) is
+		require
+			f /= Void
+			f_is_not_attribute: not f.is_attribute
+		do
+			if a_target /= Void and then a_target.is_void then
+				notify_error_evaluation (Cst_error_call_on_void_target +
+						Cst_feature_name_left_limit + f.feature_name + Cst_feature_name_right_limit
+					)
+			else
+				prepare_evaluation
+				Dbg_evaluator.evaluate_routine (a_addr, a_target, cl, f, params, True)
 				retrieve_evaluation
 			end
 		end
@@ -1283,6 +1515,45 @@ feature {NONE} -- Concrete evaluation
 				prepare_evaluation
 				Dbg_evaluator.evaluate_function_with_name (l_addr, a_target, a_feature_name, a_external_name, params)
 				retrieve_evaluation
+			end
+		end
+
+	create_empty_instance_of (a_type_i: CL_TYPE_I) is
+			-- New empty instance of class represented by `a_type_id'.
+		require
+			a_type_i_not_void: a_type_i /= Void
+		local
+			l_type_i: TYPE_I
+			l_cl_type_i: CL_TYPE_I
+			ct: CLASS_TYPE
+			l_is_special: BOOLEAN
+		do
+			if a_type_i.has_associated_class_type then
+				if context_class_type /= Void then
+					l_type_i := byte_context.real_type_in (a_type_i, context_class_type)
+					if l_type_i /= Void then
+						l_cl_type_i ?= l_type_i
+					end
+				end
+				if l_cl_type_i = Void then
+					l_cl_type_i := a_type_i
+				end
+				if l_cl_type_i.has_associated_class_type then
+					ct := l_cl_type_i.associated_class_type
+					if ct.associated_class /= Void then
+						l_is_special := ct.associated_class.is_special
+					end
+				end
+				if l_is_special then
+					fixme ("To create SPECIAL objects, we have to use INTERNAL.new_special_any_instance ... ")
+					notify_error_evaluation ("Can not instanciate class {" + l_type_i.name + "} (SPECIAL is not yet supported)%N")
+				else
+					prepare_evaluation
+					Dbg_evaluator.create_empty_instance_of (l_cl_type_i)
+					retrieve_evaluation
+				end
+			else
+				notify_error_evaluation ("Can not instanciate class {" + l_type_i.name + "} (not compiled)%N")
 			end
 		end
 
@@ -1480,6 +1751,14 @@ feature {NONE} -- Implementation
 			addr /= Void
 		do
 			Result := dbg_evaluator.dump_value_at_address (addr)
+		end
+
+	new_integer_dump_value (i: INTEGER): DUMP_VALUE_BASIC is
+		local
+			dbgm: like debugger_manager
+		do
+			dbgm := debugger_manager
+			Result := dbgm.dump_value_factory.new_integer_32_value (i, dbgm.compiler_data.integer_32_class_c)
 		end
 
 	prepare_contexts (cl: CLASS_C; ct: CLASS_TYPE) is

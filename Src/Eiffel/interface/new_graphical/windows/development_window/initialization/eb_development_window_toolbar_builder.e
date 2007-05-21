@@ -20,6 +20,8 @@ feature -- Building commands
 			-- Build all the tool bars in Eiffel Studio.
 		local
 			l_toolbars_area: EV_VERTICAL_BOX
+			l_debugger: EB_DEBUGGER_MANAGER
+			l_file: RAW_FILE
 		do
 			create l_toolbars_area
 			develop_window.set_toolbars_area (l_toolbars_area)
@@ -31,6 +33,20 @@ feature -- Building commands
 			build_project_toolbar
 			build_refactoring_toolbar
 
+			l_debugger ?= develop_window.debugger_manager
+			if l_debugger /= Void then
+				if not l_debugger.raised then
+					create l_file.make (develop_window.docking_config_tools_file)
+					if l_file.exists then
+						develop_window.docking_manager.open_tool_bar_item_config (develop_window.docking_config_tools_file)
+					end
+				else
+					create l_file.make (develop_window.docking_debug_config_file)
+					if l_file.exists then
+						develop_window.docking_manager.open_tool_bar_item_config (develop_window.docking_debug_config_file)
+					end
+				end
+			end
 		end
 
 	build_general_toolbar is

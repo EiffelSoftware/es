@@ -36,7 +36,7 @@ feature -- Command
 			l_item: SD_TOOL_BAR_ITEM
 			l_separator: SD_TOOL_BAR_SEPARATOR
 		do
-			l_items := zone.content.items
+			l_items := zone.content.items_visible
 			from
 				l_items.finish
 			until
@@ -197,31 +197,12 @@ feature -- Command
 		local
 			l_dialog: SD_TOOL_BAR_HIDDEN_ITEM_DIALOG
 			l_all_hiden_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
-			l_tool_bars: DS_ARRAYED_LIST [SD_TOOL_BAR_ZONE]
+
 			l_helper: SD_POSITION_HELPER
 			l_indicator_size: INTEGER
-			l_temp_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+
 		do
-			create l_all_hiden_items.make (1)
-			-- Prepare all hiden items in Current row.
-			l_tool_bars := zone.row.zones
-			from
-				l_tool_bars.start
-			until
-				l_tool_bars.after
-			loop
-				-- We can't just call `append' to insert items, because we want to reverse items order.
-				from
-					l_temp_items := l_tool_bars.item_for_iteration.assistant.hide_tool_bar_items
-					l_temp_items.finish
-				until
-					l_temp_items.before
-				loop
-					l_all_hiden_items.extend (l_temp_items.item)
-					l_temp_items.back
-				end
-				l_tool_bars.forth
-			end
+			l_all_hiden_items := zone.row.hidden_items
 
 			create l_dialog.make (l_all_hiden_items, zone)
 			create l_helper.make
@@ -261,10 +242,10 @@ feature -- Command
 				-- The row it missing, we should create a new one.
 				-- Or the row last time is in the only one in row.
 				if last_state.container_direction = {SD_ENUMERATION}.top or last_state.container_direction = {SD_ENUMERATION}.bottom then
-					create l_row.make (False)
+					create l_row.make (zone.docking_manager, False)
 				else
 					check direction_valid: last_state.container_direction = {SD_ENUMERATION}.left or last_state.container_direction = {SD_ENUMERATION}.right end
-					create l_row.make (True)
+					create l_row.make (zone.docking_manager, True)
 				end
 				if l_container.count > last_state.container_row_number then
 					l_container.go_i_th (last_state.container_row_number)
@@ -293,10 +274,18 @@ feature -- Command
 		local
 			l_box: EV_BOX
 			l_parent: SD_TOOL_BAR_ROW
+			l_direction: INTEGER
 		do
 			last_state.set_position (zone.position)
 			last_state.set_size (zone.size)
-			last_state.set_container_direction (zone.docking_manager.tool_bar_manager.container_direction (zone))
+			l_direction := zone.docking_manager.tool_bar_manager.container_direction (zone)
+
+			if not (create {SD_ENUMERATION}).is_direction_valid (l_direction) then
+				-- Maybe `zone' can't be found at the moment, don't know exactly why now, see bug#12611.
+				-- We set top as default. Larry 5/10/2007
+				l_direction := {SD_ENUMERATION}.top
+			end
+			last_state.set_container_direction (l_direction)
 
 			l_box := zone.docking_manager.tool_bar_manager.tool_bar_container (last_state.container_direction)
 			l_parent ?= zone.tool_bar.parent
@@ -334,7 +323,7 @@ feature -- Command
 		do
 			from
 				create l_separator.make
-				l_all_items :=  zone.content.items.twin
+				l_all_items :=  zone.content.items_visible
 				l_content := zone.content
 				l_content.wipe_out
 				l_datas := last_state.items_layout
@@ -365,7 +354,7 @@ feature -- Command
 						end
 						l_all_items.forth
 					end
-					check must_fount: l_item /= Void end
+					check must_found: l_item /= Void end
 					l_content.items.extend (l_item)
 				end
 				l_datas.forth
@@ -403,7 +392,7 @@ feature -- Query
 			l_item: SD_TOOL_BAR_ITEM
 			l_separator: SD_TOOL_BAR_SEPARATOR
 		do
-			l_items := zone.content.items
+			l_items := zone.content.items_visible
 			from
 				l_items.finish
 			until
@@ -497,7 +486,7 @@ feature -- Query
 			l_separator: SD_TOOL_BAR_SEPARATOR
 			l_group: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 		do
-			l_items := zone.content.items
+			l_items := zone.content.items_visible
 			from
 				create Result.make (1)
 				create l_group.make (1)

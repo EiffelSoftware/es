@@ -110,9 +110,9 @@ feature {NONE} -- Implementation
 	pixel_buffer: EV_PIXEL_BUFFER is
 			-- Pixel buffer representing the command.
 		do
-			-- Currently there is no pixel buffer for this command.
+			Result := pixmaps.icon_pixmaps.general_print_icon_buffer
 		end
-		
+
 	tooltip: STRING_GENERAL is
 			-- Tooltip for the toolbar button.
 		do
@@ -162,6 +162,7 @@ feature {NONE} -- Recyclable
 feature {NONE} -- implementation
 
 	saved: BOOLEAN
+			-- If saved?
 
 	save_to_file (a_text: STRING; a_filename: STRING) is
 			-- Save `a_text' in `a_filename'.

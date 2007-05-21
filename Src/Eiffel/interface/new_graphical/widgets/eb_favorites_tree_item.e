@@ -20,6 +20,11 @@ inherit
 			default_create, is_equal, copy
 		end
 
+	EB_CONTEXT_MENU_HANDLER
+		undefine
+			default_create, is_equal, copy
+		end
+
 create
 	make
 
@@ -75,6 +80,16 @@ feature {NONE} -- Initialization
 			end
 			set_accept_cursor (an_item.mouse_cursor)
 			set_deny_cursor (an_item.Xmouse_cursor)
+			set_configurable_target_menu_mode
+			set_configurable_target_menu_handler (agent context_menu_handler)
+		end
+
+	context_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY) is
+			-- Context menu handler
+		do
+			if context_menu_factory /= Void then
+				context_menu_factory.favorites_menu (a_menu, a_target_list, a_source, a_pebble, Current)
+			end
 		end
 
 feature -- Status setting

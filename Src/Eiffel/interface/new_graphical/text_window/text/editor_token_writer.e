@@ -22,6 +22,8 @@ inherit
 
 	EV_SHARED_APPLICATION
 
+	EB_EDITOR_TOKEN_IDS
+
 create {NONE}
 
 feature {NONE} -- Initialization
@@ -424,11 +426,13 @@ feature -- Text processing
 		do
 		end
 
-	process_ast (a_name: STRING; a_ast: AST_EIFFEL; a_written_class: CLASS_C; a_appearance: TUPLE [a_font_id: INTEGER; a_text_color_id: INTEGER; a_background_color_id: INTEGER]; a_for_feature_invocation: BOOLEAN) is
+	process_ast (a_name: STRING; a_ast: AST_EIFFEL; a_written_class: CLASS_C; a_appearance: TUPLE [a_font_id: INTEGER; a_text_color_id: INTEGER; a_background_color_id: INTEGER]; a_for_feature_invocation: BOOLEAN; a_cursor, a_x_cursor: EV_POINTER_STYLE) is
 			-- Process `a_ast' from `a_written_class'.
 			-- `a_name' is displayed name for `a_ast'.
 			-- `a_appearance' is new appearance (font, text color and background color) associated with `a_name', if Void, default values will be used.
 			-- If `a_for_feature_invocation' is True, mark stone contained in `a_name' as for feature invocation.
+			-- If `a_cursor' is not Void , it will be used as cursor for generated text.
+			-- If `a_x_cursor' is not Void , it will be used as X cursor for generated text.
 		require
 			a_name_attached: a_name /= Void
 		local
@@ -443,6 +447,12 @@ feature -- Text processing
 			if a_ast /= Void and then a_written_class /= Void then
 				create l_stone.make (a_written_class, a_ast)
 				l_stone.set_is_for_feature_invocation (a_for_feature_invocation)
+				if a_cursor /= Void then
+					l_stone.set_stone_cursor (a_cursor)
+				end
+				if a_x_cursor /= Void then
+					l_stone.set_x_stone_cursor (a_x_cursor)
+				end
 				l_ast_token.set_pebble (l_stone)
 			end
 			last_line.append_token (l_ast_token)
@@ -453,20 +463,34 @@ feature -- Text processing
 		require
 			a_warning_message_attached: a_warning_message /= Void
 		do
-			process_ast (a_warning_message, Void, Void, a_appearance, False)
+			process_ast (a_warning_message, Void, Void, a_appearance, False, Void, Void)
 		end
 
-	process_line (a_name: STRING; a_line_number: INTEGER; a_class_i: CLASS_I; a_selected: BOOLEAN) is
+	process_compiled_line (a_name: STRING; a_line_number: INTEGER; a_class_c: CLASS_C; a_selected: BOOLEAN) is
+			-- Process `a_name' which represents a line of a class.
+		require
+			a_name_attached: a_name /= Void
+			a_line_number_positive: a_line_number > 0
+			a_class_c_attached: a_class_c /= Void
+		local
+			l_token: EDITOR_TOKEN_AST
+		do
+			create l_token.make_with_appearance (a_name, [editor_font_id, line_number_text_color_id, string_background_color_id])
+			l_token.set_pebble (create {COMPILED_LINE_STONE}.make_with_line (a_class_c, a_line_number, a_selected))
+			last_line.append_token (l_token)
+		end
+
+	process_uncompiled_line (a_name: STRING; a_line_number: INTEGER; a_class_i: CLASS_I; a_selected: BOOLEAN) is
 			-- Process `a_name' which represents a line of a class.
 		require
 			a_name_attached: a_name /= Void
 			a_line_number_positive: a_line_number > 0
 			a_class_i_attached: a_class_i /= Void
 		local
-			l_token: EDITOR_TOKEN_TEXT
+			l_token: EDITOR_TOKEN_AST
 		do
-			create l_token.make (a_name)
-			l_token.set_pebble (create {LINE_STONE}.make_with_line (a_class_i, a_line_number, a_selected))
+			create l_token.make_with_appearance (a_name, [editor_font_id, line_number_text_color_id, string_background_color_id])
+			l_token.set_pebble (create {UNCOMPILED_LINE_STONE}.make_with_line (a_class_i, a_line_number, a_selected))
 			last_line.append_token (l_token)
 		end
 
@@ -486,6 +510,24 @@ feature -- Text processing
 			-- Add string.
 		do
 			process_string_text (s, Void)
+		end
+
+	process_folder_text (a_folder_name: STRING; a_path: STRING; a_group: CONF_GROUP) is
+			-- Process folder text.
+			-- `a_folder_name' is the name of the folder,
+			-- `a_path' is the path in which `a_folder_name' exist, so for example,
+			-- for path "/abc/def", "def" is the folder name, while "/abc/def" is the path.
+			-- `a_group' is the group where this folder is located.
+		require
+			a_folder_name_attached: a_folder_name /= Void
+			a_path_attached: a_path /= Void
+			a_group_attached: a_group /= Void
+		local
+			l_token: EDITOR_TOKEN_AST
+		do
+			create l_token.make_with_appearance (a_folder_name, [editor_font_id, folder_text_color_id, folder_background_color_id])
+			l_token.set_pebble (create {CLUSTER_STONE}.make_subfolder (a_group, a_path, a_folder_name))
+			last_line.append_token (l_token)
 		end
 
 feature {NONE} -- Initialisations and File status
@@ -548,7 +590,9 @@ feature {NONE} -- Initialisations and File status
 			feature_start_found: BOOLEAN
 			editor_tok: EDITOR_TOKEN
 		do
-			create stone.make (a_feature)
+			if a_feature /= Void then
+				create stone.make (a_feature)
+			end
 			from
 				last_line.start
 			until
@@ -578,9 +622,9 @@ feature {NONE} -- Initialisations and File status
 				last_line.append_token (feature_start)
 			else
 				if is_keyword (t) then
-					create {EDITOR_TOKEN_KEYWORD}tok.make (t.as_string_8)
+					create {EDITOR_TOKEN_KEYWORD} tok.make (t.as_string_8)
 				else
-					create {EDITOR_TOKEN_OPERATOR}tok.make (t.as_string_8)
+					create {EDITOR_TOKEN_OPERATOR} tok.make (t.as_string_8)
 				end
 				tok.set_pebble (stone)
 				last_line.append_token (tok)

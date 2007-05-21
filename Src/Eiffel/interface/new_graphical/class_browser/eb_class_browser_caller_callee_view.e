@@ -38,26 +38,21 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	control_bar: EV_WIDGET is
+	control_bar: ARRAYED_LIST [SD_TOOL_BAR_ITEM] is
 			-- Widget of a control bar through which, certain control can be performed upon current view
-		local
-			l_tool_bar: SD_TOOL_BAR
 		do
 			if control_tool_bar = Void then
-				create control_tool_bar
-				create l_tool_bar.make
-				l_tool_bar.extend (create{SD_TOOL_BAR_SEPARATOR}.make)
-				l_tool_bar.extend (show_tooltip_button)
-				control_tool_bar.set_padding (2)
-				control_tool_bar.extend (l_tool_bar)
-				control_tool_bar.disable_item_expand (l_tool_bar)
+				create control_tool_bar.make (2)
+
+				control_tool_bar.extend (create{SD_TOOL_BAR_SEPARATOR}.make)
+				control_tool_bar.extend (show_tooltip_button)
 			end
 			Result := control_tool_bar
 		ensure then
 			result_attached: Result /= Void
 		end
 
-	control_tool_bar: EV_HORIZONTAL_BOX
+	control_tool_bar: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 			-- Implementation of `control_bar'
 
 	version_count: INTEGER
@@ -174,22 +169,23 @@ feature -- Grind binding
 			loop
 				l_feature := l_data.item
 				l_related_feature ?= l_feature.data
-				check l_related_feature /= Void end
-				if l_table.has (l_related_feature) then
-					l_inner_tbl := l_table.item (l_related_feature)
-				else
-					l_version_count := l_version_count + 1
-					create l_inner_tbl.make (20)
-					l_table.put (l_inner_tbl, l_related_feature)
+				if l_related_feature /= Void then
+					if l_table.has (l_related_feature) then
+						l_inner_tbl := l_table.item (l_related_feature)
+					else
+						l_version_count := l_version_count + 1
+						create l_inner_tbl.make (20)
+						l_table.put (l_inner_tbl, l_related_feature)
+					end
+					l_class_c := l_feature.class_c
+					if l_inner_tbl.has (l_class_c) then
+						l_feature_list := l_inner_tbl.item (l_class_c)
+					else
+						create l_feature_list.make
+						l_inner_tbl.put (l_feature_list, l_class_c)
+					end
+					l_feature_list.extend (l_feature)
 				end
-				l_class_c := l_feature.class_c
-				if l_inner_tbl.has (l_class_c) then
-					l_feature_list := l_inner_tbl.item (l_class_c)
-				else
-					create l_feature_list.make
-					l_inner_tbl.put (l_feature_list, l_class_c)
-				end
-				l_feature_list.extend (l_feature)
 				l_data.forth
 			end
 			set_version_count (l_version_count)

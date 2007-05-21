@@ -124,9 +124,11 @@ feature {NONE} -- Initialization
 				-- Setup domain selector.
 			create domain_selector
 			domain_selector.setup_delayed_domain_item_buttons (True, False, False)
+			domain_selector.set_context_menu_factory (metric_tool.develop_window.menus.context_menu_factory)
 				-- Setup metric selector.
 			create metric_selector.make (True)
 			metric_selector.double_click_actions.extend (agent on_pointer_double_click_on_metric_item)
+			metric_selector.set_context_menu_factory (metric_tool.develop_window.menus.context_menu_factory)
 
 				-- Setup toolbar.
 			run_btn.set_pixmap (pixmaps.icon_pixmaps.debug_run_icon)
@@ -522,17 +524,19 @@ feature {NONE} -- Implementation
 			l_archive: LIST [EB_METRIC_ARCHIVE_NODE]
 		do
 			l_file_name := a_text_field.text
-			create l_file.make (l_file_name)
-			create l_dir.make (l_file_name)
-			if l_file.exists and then not l_file.is_directory then
-				metric_tool.show_feedback_dialog (metric_names.t_analysing_archive, agent metric_manager.load_metric_archive (l_file_name), metric_tool.develop_window)
-				l_archive := metric_manager.last_loaded_metric_archive
-				a_action.call ([True, not metric_manager.has_error, l_archive])
-				metric_manager.clear_last_error
-			elseif not l_dir.exists then
-				a_action.call ([False, False, Void])
+			if not l_file_name.is_empty then
+				create l_file.make (l_file_name)
+				create l_dir.make (l_file_name)
+				if l_file.exists and then not l_file.is_directory then
+					metric_tool.show_feedback_dialog (metric_names.t_analysing_archive, agent metric_manager.load_metric_archive (l_file_name), metric_tool.develop_window)
+					l_archive := metric_manager.last_loaded_metric_archive
+					a_action.call ([True, not metric_manager.has_error, l_archive])
+					metric_manager.clear_last_error
+				elseif not l_dir.exists then
+					a_action.call ([False, False, Void])
+				end
+				a_timer.set_interval (0)
 			end
-			a_timer.set_interval (0)
 		end
 
 	check_selected_metrics (a_list: LIST [STRING]): STRING_GENERAL is

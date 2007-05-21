@@ -457,7 +457,7 @@ feature{NONE} -- Actions
 			else
 				l_appearance := feature_appearance
 			end
-			l_writer.process_ast ("#" + a_index.out, a_accessor, a_written_class, l_appearance, True)
+			l_writer.process_ast ("#" + a_index.out, a_accessor, a_written_class, l_appearance, True, cursors.cur_feature, cursors.cur_x_feature)
 			create l_component.make (l_writer.last_line.content, 2)
 
 				-- Setup general tooltip.

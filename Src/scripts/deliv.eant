@@ -18,9 +18,45 @@
 		<echo message=" geant ${opt} build_es"/>
 	</target>
 
+	<target name="menu">
+		<echo message="Menu"/>
+		<echo message="1) clean ..." />
+		<echo message="2) build_es (includes 3,4)" />
+		<echo message="---(sub tasks)---" />
+		<echo message="3) compile_es" />
+		<echo message="4) build_es_eiffelxx" />
+		<echo message="----" />
+		<echo message="Q) quit" />
+		<input message=" -> " variable="answer" answer_required="true" validargs="1,2,3,4,Q,q" />
+		<geant target="menu_clean" if="$answer=1" reuse_variables="true" />
+		<geant target="build_es" if="$answer=2" reuse_variables="true" />
+		<geant target="compile_es" if="$answer=3" reuse_variables="true" />
+		<geant target="build_es_eiffelxx" if="$answer=4" reuse_variables="true" />
+		<echo message="Bye..."/>
+	</target>
+
+	<target name="menu_clean">
+		<echo message="Menu"/>
+		<echo message="1) clean all (3,4,5)" />
+		<echo message="2) clean es (4,5 : all but output)" />
+		<echo message="----" />
+		<echo message="3) clean output folder (bin)" />
+		<echo message="4) clean compile folder (EIFGENs)" />
+		<echo message="5) clean delivery folder (EiffelXX)" />
+		<echo message="----" />
+		<echo message="Q) quit" />
+		<input message=" -> " variable="answer" answer_required="true" validargs="1,2,3,4,5,Q,q" />
+		<geant target="clean_all" if="$answer=1" reuse_variables="true" />
+		<geant target="clean_es" if="$answer=2" reuse_variables="true" />
+		<geant target="clean_bin" if="$answer=3" reuse_variables="true" />
+		<geant target="clean_compile" if="$answer=4" reuse_variables="true" />
+		<geant target="clean_delivery" if="$answer=5" reuse_variables="true" />
+	</target>
+
 	<target name="init_deliv" depend="init_system" >
 		<set name="INSTALL_DIR" value="${cwd}${path_separator}EiffelXX" unless="${INSTALL_DIR}" />
 		<set name="OUTPUT_DIR" value="${cwd}${path_separator}bin" unless="${OUTPUT_DIR}"/>
+		<set name="EIFGENS_DIR" value="${cwd}${path_separator}EIFGENs" unless="${EIFGENS_DIR}"/>
 		<set name="build_es_logfile" value="${cwd}${path_separator}build_es.log" unless="$build_es_logfile" />
 	</target>
 
@@ -30,6 +66,10 @@
 
 		<geant target="set_version"			fork="false" reuse_variables="true" />
 		<geant target="compile_es" 			fork="false" reuse_variables="true" />
+		<geant target="build_es_eiffelxx"	fork="false" reuse_variables="true" />
+	</target>
+
+	<target name="build_es_eiffelxx" depend="init_deliv" >
 		<geant target="create_es_delivery" 	fork="false" reuse_variables="true" />
 		<geant target="install_es" 			fork="false" reuse_variables="true" />
 	</target>
@@ -79,11 +119,11 @@
 		<copy file="${EIFFEL_SRC}\Eiffel\eiffel\com_il_generation\Core\run-time\EiffelSoftware.Runtime.dll" to_file="${OUTPUT_DIR}${path_separator}EiffelSoftware.Runtime.dll" if="${tmp_available}=true" />
 		
 		<!-- ec -->
-		<!--
 		<available resource="${OUTPUT_DIR}${path_separator}ec${exe}" variable="tmp_available"/>
 		<geant target="get_bin__ec" if="$tmp_available=false" />
-		-->
+		<!--
 		<geant target="get_bin__ec" />
+		-->
 
 		<!-- estudio -->
 		<available resource="${OUTPUT_DIR}${path_separator}estudio${exe}" variable="tmp_available"/>
@@ -284,20 +324,38 @@
 			if="${tmp_available}=true"/>
 	</target>
 
+	<target name="clean_all" depend="init_deliv" >
+		<echo message="Cleaning All ..." />
+		<geant target="clean_bin" reuse_variables="true" fork="false" />
+		<geant target="clean_es" reuse_variables="true" fork="false" />
+		<geant target="clean_compile" reuse_variables="true" fork="false" />
+	</target>
+	<target name="clean_bin" depend="init_deliv" >
+		<echo message="Cleaning Bin folder: ${OUTPUT_DIR} ..." />
+		<exec executable="rmdir /q/s ${OUTPUT_DIR}" if="${is_windows}" accept_errors="true" exit_code_variable="return_code" />
+		<exec executable="\rm -rf ${OUTPUT_DIR}" unless="${is_windows}" accept_errors="true" exit_code_variable="return_code" />
+	</target>
 	<target name="clean_es" depend="init_deliv" >
-		<exec executable="rmdir /q/s ${EIFGENs}" if="${is_windows}" />
-		<exec executable="\rm -rf ${EIFGENs}" unless="${is_windows}" />
-		<available resource="${INSTALL_DIR}" variable="installdir_available"/>
-		<geant target="clean_delivery" reuse_variables="true" fork="false" if="${installdir_available}=true" />
+		<echo message="Cleaning EIFGENs ..." />
+		<geant target="clean_compile" reuse_variables="true" fork="false" />
+		<geant target="clean_delivery" reuse_variables="true" fork="false" />
+	</target>
+
+	<target name="clean_compile" depend="init_deliv" >
+		<echo message="Cleaning Compile folder: ${EIFGENS_DIR} ..." />
+		<exec executable="rmdir /q/s ${EIFGENS_DIR}" if="${is_windows}" accept_errors="true" exit_code_variable="return_code" />
+		<exec executable="\rm -rf ${EIFGENS_DIR}" unless="${is_windows}" accept_errors="true" iit_code_variable="return_code" />
 	</target>
 
 	<target name="clean_delivery" depend="init_deliv" >
+		<echo message="Cleaning Install folder: ${INSTALL_DIR} ..." />
 		<!--
 		<delete directory="${INSTALL_DIR}" if="${installdir_available}=true" />
 		-->
 		<exec executable="rmdir /q/s ${INSTALL_DIR}" if="${is_windows}" accept_errors="true" exit_code_variable="return_code" />
 		<exec executable="\rm -rf ${INSTALL_DIR}" unless="${is_windows}" accept_errors="true" exit_code_variable="return_code" />
 	</target>
+
 	<target name="make_delivery" depend="init_deliv" >
 		<echo message="Task: make_delivery"/>
 		<echo message="Task: make_delivery" to_file="$build_es_logfile" append="true" />
@@ -326,9 +384,26 @@
 	<target name="make_delivery_common" depend="init_deliv" >
 		<!-- platform independant -->
 		<set name="SVNURL" value="https://eiffelsoftware.origo.ethz.ch/svn/es/trunk" />
+		<echo message=" - Copy Delivery to ${cwd}"/>
+		<copy to_directory="${cwd}" dir="${EIFFEL_SRC}${path_separator}..${path_separator}Delivery" >
+			<fileset include="@(**/*)" />
+		</copy>
+		<mkdir directory="library"/>
+		<echo message=" - Copy library to ${cwd}${path_separator}library"/>
+		<copy to_directory="${cwd}${path_separator}library" dir="${EIFFEL_SRC}${path_separator}library" >
+			<fileset include="@(**/*)" />
+		</copy>
+		<mkdir directory="C_library"/>
+		<echo message=" - Copy C_library to ${cwd}${path_separator}C_library"/>
+		<copy to_directory="${cwd}${path_separator}C_library" dir="${EIFFEL_SRC}${path_separator}C_library" >
+			<fileset include="@(**/*)" />
+		</copy>
+		<!--
 		<exec executable="svn checkout $SVNURL/Delivery . " />
 		<exec executable="svn checkout $SVNURL/Src/library library" />
 		<exec executable="svn checkout $SVNURL/Src/C_library C_library" />
+		-->
+		<echo message=" - ..." />
 		<mkdir directory="studio/spec/$ISE_PLATFORM"/>
 		<mkdir directory="studio/spec/$ISE_PLATFORM/bin"/>
 		<echo message="make dir : studio/spec/$ISE_PLATFORM/include" />

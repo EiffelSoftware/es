@@ -80,6 +80,7 @@ feature {NONE} -- Initialization
 		local
 			esgrid: ES_OBJECTS_GRID
 		do
+			auto_expressions_deltas := [-2, +1]
 			create watched_items.make (10)
 
 			create esgrid.make_with_name (title, "watches" + watch_id.out)
@@ -113,6 +114,9 @@ feature {NONE} -- Initialization
 			esgrid.key_press_string_actions.extend (agent string_key_pressed)
 
 			esgrid.set_pre_activation_action (agent pre_activate_cell)
+
+			esgrid.set_configurable_target_menu_mode
+			esgrid.set_configurable_target_menu_handler (agent context_menu_handler)
 
 			watches_grid := esgrid
 			initialize_watches_grid_layout (preferences.debug_tool_data.is_watches_grids_layout_managed_preference)
@@ -222,6 +226,12 @@ feature {NONE} -- Initialization
 		do
 			Precursor {EB_STONABLE_TOOL} (a_docking_manager)
 			content.drop_actions.extend (agent on_element_drop)
+		end
+
+	context_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY) is
+			-- Context menu handler
+		do
+			develop_window.menus.context_menu_factory.watch_tool_menu (a_menu, a_target_list, a_source, a_pebble, Current)
 		end
 
 feature -- Properties
@@ -334,11 +344,10 @@ feature -- Properties setting
 
 feature {ES_OBJECTS_GRID_SLICES_CMD} -- Query
 
-	objects_grid_item (addr: STRING): ES_OBJECTS_GRID_LINE is
+	objects_grid_object_line (addr: STRING): ES_OBJECTS_GRID_OBJECT_LINE is
 		local
 			r: INTEGER
 			lrow: EV_GRID_ROW
-			litem: ES_OBJECTS_GRID_LINE
 			ladd: STRING
 		do
 			from
@@ -348,11 +357,11 @@ feature {ES_OBJECTS_GRID_SLICES_CMD} -- Query
 			loop
 				lrow := watches_grid.row (r)
 				if lrow.parent_row = Void then
-					litem ?= grid_data_from_widget (lrow)
-					if litem /= Void then
-						ladd := litem.object_address
-						if ladd /= Void and then ladd.is_equal (addr) then
-							Result := litem
+					Result ?= grid_data_from_widget (lrow)
+					if Result /= Void then
+						ladd := Result.object_address
+						if ladd = Void or else not ladd.is_equal (addr) then
+							Result := Void
 						end
 					end
 				end
@@ -522,6 +531,79 @@ feature {NONE} -- add new expression from the grid
 			Result := s /= Void and then not s.has ('%R') and not s.has ('%N')
 		end
 
+feature {EB_CONTEXT_MENU_FACTORY} -- Context menu
+
+	on_element_drop (s: CLASSC_STONE) is
+			-- Something was dropped in `ev_list'.
+		local
+			fst: FEATURE_STONE
+			cst: CLASSC_STONE
+			ost: OBJECT_STONE
+			fost: FEATURE_ON_OBJECT_STONE
+			dlg: EB_EXPRESSION_DEFINITION_DIALOG
+			oname: STRING
+		do
+			show
+			fost ?= s
+			if fost /= Void then
+				oname := fost.feature_name
+				if ev_application.ctrl_pressed then
+					ost := fost.object_stone
+					if ost /= Void then
+						on_element_drop (ost)
+					end
+				else
+					create dlg.make_with_expression_on_object (fost.object_address, fost.feature_name)
+				end
+			else
+				fst ?= s
+				if fst /= Void then
+					oname := fst.feature_name
+					create dlg.make_with_expression_text (fst.feature_name)
+					if fst.e_class /= Void then
+						dlg.set_class_text (fst.e_class)
+					end
+				else
+					ost ?= s
+					if ost /= Void then
+						oname := ost.name + ": " + ost.object_address
+						if ev_application.ctrl_pressed then
+							add_object (ost, oname)
+						else
+							create dlg.make_with_named_object (ost.object_address, oname)
+						end
+					else
+						cst ?= s
+						if cst /= Void then
+							create dlg.make_with_class (cst.e_class)
+						end
+					end
+				end
+			end
+			if dlg /= Void then
+				dlg.set_callback (agent add_expression_with_dialog (dlg))
+				dlg.show_modal_to_window (debugger_manager.debugging_window.window)
+			end
+		end
+
+	is_removable (a: ANY): BOOLEAN is
+		do
+			Result := True
+		end
+
+	remove_object_line (a: ANY) is
+		do
+			remove_selected
+		end
+
+	has_selected_item: BOOLEAN is
+			-- Does the grid have selected item?
+		do
+			if watches_grid /= Void then
+				Result := not watches_grid.selected_items.is_empty
+			end
+		end
+
 feature {NONE} -- Event handling
 
 	open_watch_menu (w: EV_WIDGET; ax, ay: INTEGER) is
@@ -581,6 +663,7 @@ feature {NONE} -- Event handling
 				else
 					create dlg.make_new_expression
 				end
+				dlg.set_new_expression_mode
 				dlg.set_callback (agent add_expression_with_dialog (dlg))
 				dlg.show_modal_to_window (debwin.window)
 			end
@@ -604,6 +687,9 @@ feature {NONE} -- Event handling
 			end
 		end
 
+	auto_expressions_deltas: TUPLE [low: INTEGER; up: INTEGER]
+			-- Default might be (-)2, (+)1
+
 	add_auto_expressions is
 		local
 			l_auto: AST_DEBUGGER_AUTO_EXPRESSION_VISITOR
@@ -613,7 +699,13 @@ feature {NONE} -- Event handling
 			watched_items.wipe_out
 			clean_watched_grid
 			create l_auto
-			expressions := l_auto.auto_expressions (debugger_manager.current_debugging_breakable_index, -2, +1, debugger_manager.current_debugging_feature, debugger_manager.current_debugging_class_c)
+			expressions := l_auto.auto_expressions (
+									debugger_manager.current_debugging_breakable_index,
+									auto_expressions_deltas.low,
+									auto_expressions_deltas.up,
+									debugger_manager.current_debugging_feature,
+									debugger_manager.current_debugging_class_c
+								)
 			if expressions /= Void and then not expressions.is_empty then
 				watches_grid_empty := False
 				from
@@ -652,6 +744,7 @@ feature {NONE} -- Event handling
 						expr := l_item.expression
 						check expr /= Void end
 						create dlg.make_with_expression (expr)
+						dlg.set_edit_expression_title
 						dlg.set_callback (agent refresh_expression (expr))
 						dlg.show_modal_to_window (debugger_manager.debugging_window.window)
 					end
@@ -746,16 +839,6 @@ feature {NONE} -- Event handling
 			end
 		end
 
-	is_removable (a: ANY): BOOLEAN is
-		do
-			Result := True
-		end
-
-	remove_object_line (a: ANY) is
-		do
-			remove_selected
-		end
-
 	remove_selected is
 			-- Remove the selected expressions from the list.
 		local
@@ -805,59 +888,6 @@ feature {NONE} -- Event handling
 			watches_grid.remove_rows (row.index, row.index + row.subrow_count_recursive)
 		end
 
-	on_element_drop (s: CLASSC_STONE) is
-			-- Something was dropped in `ev_list'.
-		local
-			fst: FEATURE_STONE
-			cst: CLASSC_STONE
-			ost: OBJECT_STONE
-			fost: FEATURE_ON_OBJECT_STONE
-			dlg: EB_EXPRESSION_DEFINITION_DIALOG
-			oname: STRING
-		do
-			show
-			fost ?= s
-			if fost /= Void then
-				oname := fost.feature_name
-				if ev_application.ctrl_pressed then
-					ost := fost.object_stone
-					if ost /= Void then
-						on_element_drop (ost)
-					end
-				else
-					create dlg.make_with_expression_on_object (fost.object_address, fost.feature_name)
-				end
-			else
-				fst ?= s
-				if fst /= Void then
-					oname := fst.feature_name
-					create dlg.make_with_expression_text (fst.feature_name)
-					if fst.e_class /= Void then
-						dlg.set_class_text (fst.e_class)
-					end
-				else
-					ost ?= s
-					if ost /= Void then
-						oname := ost.name + ": " + ost.object_address
-						if ev_application.ctrl_pressed then
-							add_object (ost, oname)
-						else
-							create dlg.make_with_named_object (ost.object_address, oname)
-						end
-					else
-						cst ?= s
-						if cst /= Void then
-							create dlg.make_with_class (cst.e_class)
-						end
-					end
-				end
-			end
-			if dlg /= Void then
-				dlg.set_callback (agent add_expression_with_dialog (dlg))
-				dlg.show_modal_to_window (debugger_manager.debugging_window.window)
-			end
-		end
-
 	disable_commands_on_expressions is
 		do
 			delete_expression_cmd.disable_sensitive
@@ -894,14 +924,7 @@ feature {NONE} -- Event handling
 	on_row_deselected (row: EV_GRID_ROW) is
 			-- An item in the list of expression was selected.
 		do
-			if
-				not auto_expression_enabled and
-				row /= Void and then row.parent_row = Void
-			then
-				enable_commands_on_expressions
-			else
-				disable_commands_on_expressions
-			end
+			disable_commands_on_expressions
 		end
 
 	key_pressed (k: EV_KEY) is
@@ -1059,16 +1082,25 @@ feature {NONE} -- Event handling
 		local
 			expr_item: like watched_item_from
 		do
-			if auto_expression_enabled and expr.error_occurred then
-				-- Do not display it
+			if auto_expression_enabled then
+				if debugger_manager.safe_application_is_stopped then
+					if not expr.is_evaluated then
+						expr.evaluate
+					end
+				end
+				if not expr.error_occurred then
+					expr_item := new_watched_item_from_expression (expr, watches_grid)
+				end
 			else
 				expr_item := new_watched_item_from_expression (expr, watches_grid)
-				if debugger_manager.safe_application_is_stopped then
+			end
+			if expr_item /= Void then
+				if not expr.is_evaluated and debugger_manager.safe_application_is_stopped then
 					expr_item.request_evaluation (True)
 				end
-				watched_items.extend (expr_item)
 
-				if expr_item /= Void and then expr_item.row /= Void then
+				watched_items.extend (expr_item)
+				if expr_item.row /= Void then
 					if
 						not expr_item.compute_grid_display_done
 						and then (expr /= Void and then (expr.evaluation_disabled or not expr.is_evaluated))

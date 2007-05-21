@@ -35,9 +35,9 @@
 	<PREF NAME="debugger.grid_column_layout_stack_objects" DESCRIPTION="Configuration of the stack objects grid.%N This should be a list of 5 sequences: nature_id;is_shown;is_auto_resized;width;header_name; %NThe position in the list indicate the column.%NThe nature_id are: 1:name; 2:value; 3:type; 4:address; 5:context..." RESTART="True"><STRING>1;True;False;150;Name;2;True;False;76;Value;3;True;False;100;Type;4;True;False;173;Address;5;False;False;80;</STRING></PREF>
 	<PREF NAME="debugger.grid_column_layout_debugged_objects" DESCRIPTION="Configuration of the debugged objects grid.%NCheck grid_column_layout_stack_objects for full description." RESTART="True"><STRING>1;True;False;150;Name;2;True;False;150;Value;3;True;False;200;Type;4;True;False;80;Address;5;False;False;80;</STRING></PREF>
 	<PREF NAME="debugger.grid_column_layout_watches" DESCRIPTION="Configuration of the watches objects grid. %NCheck grid_column_layout_stack_objects for full description." RESTART="True"><STRING>1;True;False;150;Expression;2;True;False;150;Value;3;True;False;100;Type;4;True;False;80;Address;5;True;False;200;Context</STRING></PREF>
-	<PREF NAME="debugger.objects_tool_layout" HIDDEN="true" DESCRIPTION="Location of main objects tool's items &lt;&lt;'Current object', 'Stack information', 'Argument(s)', 'Local(s)', 'Result', 'Dropped references'&gt;&gt;. The left grid is represented by '1' and the right grid by '2'"><LIST>1;1;1;1;1;1</LIST></PREF>
+	<PREF NAME="debugger.objects_tool_layout" HIDDEN="true" DESCRIPTION="Location of main objects tool's items &lt;&lt;'Current object', 'Stack information', 'Argument(s)', 'Local(s)', 'Result', 'Dropped references'&gt;&gt;. The left grid is represented by '#1' and the right grid by '#2'"><LIST>#1;1;2;3;4;5;6;#2</LIST></PREF>
 	<PREF NAME="debugger.show_text_in_project_toolbar" HIDDEN="true" DESCRIPTION="Should text be shown alongside preselected toolbar items?"><BOOLEAN>True</BOOLEAN></PREF>
-	<PREF NAME="debugger.show_all_text_in_project_toolbar" HIDDEN="true" DESCRIPTION="Should text be shown alongside all toolbar items?"><BOOLEAN>False</BOOLEAN></PREF>
+	<PREF NAME="debugger.show_all_text_in_project_toolbar" HIDDEN="true" DESCRIPTION="Is text of toolbar items displayed?"><BOOLEAN>False</BOOLEAN></PREF>
 	<PREF NAME="debugger.watch_tools_layout" HIDDEN="true" DESCRIPTION="Layout of watch tools."><LIST></LIST></PREF>
 	
 	<PREF NAME="tools.diagram_tool.diagram_background_color" DESCRIPTION="Background Color for Diagram Tool"><COLOR>255;255;235</COLOR></PREF>
@@ -578,7 +578,11 @@
 	<PREF NAME="editor.general.colors.number_text_color" DESCRIPTION="Color of number text."><COLOR>128;0;255</COLOR></PREF>
 	<PREF NAME="editor.general.colors.number_background_color" DESCRIPTION="Background color of number text."><COLOR>auto</COLOR></PREF>
 	<PREF NAME="editor.general.colors.warning_text_color" DESCRIPTION="Warning text color"><COLOR>200;64;0</COLOR></PREF>
-	<PREF NAME="editor.general.colors.warning_background_color" DESCRIPTION="Background color of warning text"><COLOR>255;255;255</COLOR></PREF>	
+  <PREF NAME="editor.general.colors.warning_background_color" DESCRIPTION="Background color of warning text"><COLOR>255;255;255</COLOR></PREF>
+  <PREF NAME="editor.general.colors.folder_background_color" DESCRIPTION="Background color of folder text."><COLOR>auto</COLOR></PREF>
+  <PREF NAME="editor.general.colors.folder_text_color" DESCRIPTION="Folder text color"><COLOR>166;137;149</COLOR></PREF>
+  <PREF NAME="editor.general.colors.argument_background_color" DESCRIPTION="Background color of argument text."><COLOR>auto</COLOR></PREF>
+  <PREF NAME="editor.general.colors.argument_text_color" DESCRIPTION="Argument text color"><COLOR>145;86;84</COLOR></PREF>    
 	<PREF NAME="editor.general.use_buffered_line" DESCRIPTION="Indicates if editor line drawing is first buffered and then drawn, or just drawn directly to the screen.  If set to True, content will not flicker, but drawing performance will be reduced."><BOOLEAN>True</BOOLEAN></PREF>
 	<PREF NAME="editor.general.show_line_numbers" DESCRIPTION="Indicates if editor displays the line numbers by default."><BOOLEAN>False</BOOLEAN></PREF>
 	<PREF NAME="editor.general.smart_home" DESCRIPTION="Indicates if editor should go to the beginning on the first non-whitespace character, on a line, when the HOME key is pressed."><BOOLEAN>True</BOOLEAN></PREF>
@@ -637,9 +641,9 @@
 
 	<PREF NAME="shortcuts.code_completion.toggle_filter" DESCRIPTION="Toggle filter button in completion list."><SHORTCUT>F1</SHORTCUT></PREF>
 	<PREF NAME="shortcuts.code_completion.toggle_show_type" DESCRIPTION="Toggle show type in completion list."><SHORTCUT>F2</SHORTCUT></PREF>
-	<PREF NAME="shortcuts.code_completion.toggle_show_signature" DESCRIPTION="Key"><SHORTCUT>F3</SHORTCUT></PREF>
-	<PREF NAME="shortcuts.code_completion.toggle_show_disambiguated_name" DESCRIPTION="Key"><SHORTCUT>F4</SHORTCUT></PREF>
-	<PREF NAME="shortcuts.code_completion.toggle_remember_size" DESCRIPTION="Key"><SHORTCUT>F5</SHORTCUT></PREF>
+	<PREF NAME="shortcuts.code_completion.toggle_show_signature" DESCRIPTION="Toggle signature in completion list."><SHORTCUT>F3</SHORTCUT></PREF>
+	<PREF NAME="shortcuts.code_completion.toggle_show_disambiguated_name" DESCRIPTION="Toggle disambiguated name in completion list."><SHORTCUT>F4</SHORTCUT></PREF>
+	<PREF NAME="shortcuts.code_completion.toggle_remember_size" DESCRIPTION="Toggle remember size in completion list."><SHORTCUT>F5</SHORTCUT></PREF>
 	<PREF NAME="shortcuts.code_completion.autocomplete" DESCRIPTION="Trigger feature completion."><SHORTCUT Ctrl="True">Space</SHORTCUT></PREF>
 	<PREF NAME="shortcuts.code_completion.class_autocomplete" DESCRIPTION="Trigger class completion"><SHORTCUT Ctrl="True" Shift="True">Space</SHORTCUT></PREF>
 	
@@ -652,8 +656,8 @@
 	<PREF NAME="shortcuts.editor.expand_tree_node" DESCRIPTION="Trigger expansion of current tree node."><SHORTCUT Ctrl="True">Right</SHORTCUT></PREF>
 	<PREF NAME="shortcuts.editor.search_backward" DESCRIPTION="Trigger backward search."><SHORTCUT Shift="True">F3</SHORTCUT></PREF>
 	<PREF NAME="shortcuts.editor.search_forward" DESCRIPTION="Trigger forward search."><SHORTCUT>F3</SHORTCUT></PREF>
-	<PREF NAME="shortcuts.editor.search_selection_forward" DESCRIPTION="Trigger search on current selection and goes to previous result."><SHORTCUT Ctrl="True">F3</SHORTCUT></PREF>
-	<PREF NAME="shortcuts.editor.search_selection_backward" DESCRIPTION="Trigger search on current selection and goes to next result."><SHORTCUT Ctrl="True" Shift="True">F3</SHORTCUT></PREF>
+	<PREF NAME="shortcuts.editor.search_selection_forward" DESCRIPTION="Trigger search on current selection and goes to next result."><SHORTCUT Ctrl="True">F3</SHORTCUT></PREF>
+	<PREF NAME="shortcuts.editor.search_selection_backward" DESCRIPTION="Trigger search on current selection and goes to previous result."><SHORTCUT Ctrl="True" Shift="True">F3</SHORTCUT></PREF>
 	<PREF NAME="shortcuts.editor.show_quick_search_bar" DESCRIPTION="Trigger quick search bar."><SHORTCUT Ctrl="True">F</SHORTCUT></PREF>
 	<PREF NAME="shortcuts.editor.show_search_and_replace_panel" DESCRIPTION="Trigger display of search panel focused on replace."><SHORTCUT Ctrl="True">H</SHORTCUT></PREF>
 	<PREF NAME="shortcuts.editor.toggle_line_number_visibility" DESCRIPTION="Toggle visibility of line numbers."><SHORTCUT Ctrl="True">L</SHORTCUT></PREF>

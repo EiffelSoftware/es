@@ -33,6 +33,13 @@ inherit
 			is_equal
 		end
 
+	EB_CONTEXT_MENU_HANDLER
+		undefine
+			default_create,
+			copy,
+			is_equal
+		end
+
 feature {NONE} -- Initialization
 
 	user_initialization is
@@ -56,6 +63,7 @@ feature {NONE} -- Initialization
 			grid.set_focused_selection_color (preferences.editor_data.selection_background_color)
 			grid.enable_selection_on_single_button_click
 			l_grid_support.enable_grid_item_pnd_support
+			l_grid_support.set_context_menu_factory_function (agent context_menu_factory)
 
 			grid.set_item_veto_pebble_function (agent is_pebble_droppable)
 			grid.item_drop_actions.extend (agent on_pebble_drop)
@@ -338,7 +346,7 @@ feature {NONE} -- Implementation
 			l_value_item: EB_METRIC_VALUE_CRITERION_GRID_ITEM
 		do
 			create l_value_item.make_with_setting (a_metric_value_retriever.input_domain, False)
-			l_value_item.pointer_button_press_actions.force_extend (agent activate_grid_item (?, ?, ?, ?, ?, ?, ?, ?, l_value_item))
+			l_value_item.set_is_empty_tester_displayed (False)
 			l_value_item.dialog_ok_actions.extend (agent resize_grid (l_value_item))
 			l_value_item.set_tooltip (metric_names.f_pick_and_drop_metric_and_items)
 			l_value_item.set_dialog_function (metric_value_retriever_dialog_function)
@@ -424,6 +432,12 @@ feature {NONE} -- Implementation
 				Result := l_metric_value_item.is_pebble_droppable (a_pebble)
 			end
 			Result := True
+		end
+
+	context_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
+			-- Context menu handler
+		do
+			-- Do nothing.
 		end
 
 invariant

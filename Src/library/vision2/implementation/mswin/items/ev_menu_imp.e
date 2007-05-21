@@ -115,7 +115,7 @@ feature {EV_ANY_I} -- Basic operations
 			if count > 0 then
 				create wel_point.make (0, 0)
 				wel_point.set_cursor_position
-				create l_popup.make_with_menu (Current)
+				create l_popup.make_with_menu (Current, wel_point.window_at)
 				show_track (wel_point.x, wel_point.y, l_popup)
 					-- If we do not process events now, the fact we remove the
 					-- menu from `l_popup' will prevent the action to be executed.
@@ -169,14 +169,18 @@ feature {EV_ANY_I} -- Basic operations
 		do
 			if count > 0 then
 				create wel_point.make (a_x, a_y)
-				wel_win ?= a_widget.implementation
+				if a_widget /= Void then
+					wel_win ?= a_widget.implementation
+				end
 				if wel_win /= Void then
-					create wel_point.make (a_x, a_y)
 					wel_point.client_to_screen (wel_win)
 				else
-					create wel_point.make (0, 0)
+						-- If no Window found, we still try to locate the window below the current
+						-- coordinate. That way the window won't loose its focus due to EV_POPUP_MENU_HANDLER
+						-- creating a top window.
+					wel_win ?= wel_point.window_at
 				end
-				create l_popup.make_with_menu (Current)
+				create l_popup.make_with_menu (Current, wel_win)
 				show_track (wel_point.x, wel_point.y, l_popup)
 					-- If we do not process events now, the fact we remove the
 					-- menu from `l_popup' will prevent the action to be executed.

@@ -447,7 +447,7 @@ feature -- Access
 			Result := widget_internal
 		end
 
-	control_bar: EV_WIDGET is
+	control_bar: ARRAYED_LIST [SD_TOOL_BAR_ITEM] is
 			-- Widget of a control bar through which, certain control can be performed upon current view
 			-- Every view can provide a customized control bar. Normally a tool bar is placed in this area
 			-- through which behavior (such as tooltip display) of current view can be changed.
@@ -490,6 +490,7 @@ feature -- Access
 			if show_tooltip_button_internal = Void then
 				create show_tooltip_button_internal.make (preferences.class_browser_data.show_tooltip_preference)
 				show_tooltip_button_internal.set_pixmap (pixmaps.icon_pixmaps.general_show_tool_tips_icon)
+				show_tooltip_button_internal.set_pixel_buffer (pixmaps.icon_pixmaps.general_show_tool_tips_icon_buffer)
 				show_tooltip_button_internal.set_tooltip (interface_names.h_show_tooltip)
 				show_tooltip_button_internal.select_actions.extend (agent on_show_tooltip_changed)
 			end
@@ -721,11 +722,29 @@ feature {NONE} -- Implementation
 
 	default_row_height: INTEGER is
 			-- Default height to set grid rows.
+		local
+			l_height: INTEGER
+			l_font_table: like label_font_table
+			l_index, l_count: INTEGER
 		do
 			if is_fixed_fonts_used then
-				Result := (create {EV_FONT}).height.max (pixmap_height)
+				from
+					l_font_table := label_font_table
+					l_count := l_font_table.count
+				until
+					l_index = l_count
+				loop
+					if l_font_table.item (l_index) /= Void then
+						l_height := l_font_table.item (l_index).height
+						if l_height > Result then
+							Result := l_height
+						end
+					end
+					l_index := l_index + 1
+				end
+				Result := Result.max (pixmap_height) + 1
 			else
-				Result := line_height.max (pixmap_height)
+				Result := line_height.max (pixmap_height) + 1
 					-- We make sure we give enough space to display the pixmap.
 			end
 		end

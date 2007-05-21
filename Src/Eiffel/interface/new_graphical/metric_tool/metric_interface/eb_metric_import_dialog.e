@@ -165,6 +165,8 @@ feature {NONE} -- Initialization
 			show_actions.extend (agent file_name_combo.set_focus)
 			set_default_cancel_button (close_btn)
 			set_icon_pixmap (pixmaps.icon_pixmaps.tool_metric_icon)
+			backup_btn.set_minimum_width (190)
+			import_btn.set_minimum_width (190)
 		end
 
 feature {NONE} -- Actions
@@ -896,7 +898,9 @@ feature{NONE} -- Implementation
 					until
 						l_libraries.after
 					loop
-						library_uuid_table_internal.force (l_libraries.key_for_iteration, l_libraries.item_for_iteration.library_target.system.uuid.out)
+						if l_libraries.item_for_iteration.library_target /= Void then
+							library_uuid_table_internal.force (l_libraries.key_for_iteration, l_libraries.item_for_iteration.library_target.system.uuid.out)
+						end
 						l_libraries.forth
 					end
 				end

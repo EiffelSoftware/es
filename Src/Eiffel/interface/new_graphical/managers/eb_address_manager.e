@@ -50,6 +50,8 @@ inherit
 			{NONE} all
 		end
 
+	EB_CONTEXT_MENU_HANDLER
+
 create
 	make
 
@@ -133,7 +135,7 @@ feature {NONE} -- Initialization
 				hbox.extend (class_address)
 			else
 				-- Then we build a `class_addre
-				create {SD_TOOL_BAR_WIDGET_ITEM} l_item.make (class_address)
+				create {SD_TOOL_BAR_RESIZABLE_ITEM} l_item.make (class_address)
 				l_item.set_description ("Class address")
 				l_item.set_name (l_item.description)
 
@@ -166,7 +168,7 @@ feature {NONE} -- Initialization
 			if mode then
 				hbox.extend (feature_address)
 			else
-				create {SD_TOOL_BAR_WIDGET_ITEM} l_item.make (feature_address)
+				create {SD_TOOL_BAR_RESIZABLE_ITEM} l_item.make (feature_address)
 				l_item.set_description ("Feature address")
 				l_item.set_name (l_item.description)
 				tool_bar_items.extend (l_item)
@@ -189,6 +191,7 @@ feature {NONE} -- Initialization
 			end
 			if not mode then
 				build_viewpoints
+				view_points_combo.set_font (l_font)
 				parent_widget.set_view_points (view_points_combo)
 			end
 
@@ -269,8 +272,14 @@ feature -- Access
 
 	new_view_points_tool_bar_item: SD_TOOL_BAR_ITEM is
 			-- New view points docking widget
+		local
+			l_combo: EV_COMBO_BOX
 		do
-			create {SD_TOOL_BAR_WIDGET_ITEM} Result.make (view_points_widget)
+			l_combo := view_points_combo
+			if l_combo.parent /= Void then
+				l_combo.parent.prune (l_combo)
+			end
+			create {SD_TOOL_BAR_RESIZABLE_ITEM} Result.make (l_combo)
 			Result.set_name ("Viewpoints")
 			Result.set_description (Result.name)
 		ensure
@@ -1072,6 +1081,7 @@ feature {NONE} -- Implementation
 					process_cluster_callback (1)
 				else
 					create choice.make_default (address_dialog, agent process_cluster_callback (?))
+					choice.destroy_actions.extend (agent one_lost_focus)
 					choice.set_title (Interface_names.t_Select_cluster)
 					choice.set_list (cluster_names, cluster_pixmaps)
 					choice.set_position (cluster_address.screen_x, cluster_address.screen_y + cluster_address.height)
@@ -1140,6 +1150,7 @@ feature {NONE} -- Implementation
 					process_class_callback (1)
 				else
 					create choice.make_default (address_dialog, agent process_class_callback (?))
+					choice.destroy_actions.extend (agent one_lost_focus)
 					choice.set_title (Interface_names.t_Select_class)
 					choice.set_list (class_names, class_pixmaps)
 					choice.set_position (class_address.screen_x, class_address.screen_y + class_address.height)
@@ -1180,6 +1191,7 @@ feature {NONE} -- Implementation
 					process_feature_callback (1)
 				else
 					create choice.make_default (address_dialog, agent process_feature_callback (?))
+					choice.destroy_actions.extend (agent one_lost_focus)
 					choice.set_title (Interface_names.t_Select_feature)
 					choice.set_list (feature_names, feature_pixmaps)
 					choice.set_position (feature_address.screen_x, feature_address.screen_y + feature_address.height)
@@ -2164,6 +2176,14 @@ feature {NONE} -- Implementation of the clickable labels for `header_info'
 			highlight_label (feature_label)
 			unhighlight_label (feature_label)
 
+			cluster_label.set_configurable_target_menu_mode
+			class_label.set_configurable_target_menu_mode
+			feature_label.set_configurable_target_menu_mode
+
+			cluster_label.set_configurable_target_menu_handler (agent context_menu_handler)
+			class_label.set_configurable_target_menu_handler (agent context_menu_handler)
+			feature_label.set_configurable_target_menu_handler (agent context_menu_handler)
+
 			hb.set_padding (2)
 			hb.extend (cluster_label)
 			hb.extend (class_label)
@@ -2172,6 +2192,14 @@ feature {NONE} -- Implementation of the clickable labels for `header_info'
 			hb.disable_item_expand (class_label)
 			hb.disable_item_expand (feature_label)
 			header_info.extend (hb)
+		end
+
+	context_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY) is
+			-- Context menu handler
+		do
+			if context_menu_factory /= Void then
+				context_menu_factory.standard_compiler_item_menu (a_menu, a_target_list, a_source, a_pebble)
+			end
 		end
 
 	update_labels is

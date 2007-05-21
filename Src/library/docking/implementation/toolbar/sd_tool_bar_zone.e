@@ -335,7 +335,7 @@ feature -- Query
 			-- Content in `Current'.
 
 	tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM] is
-			-- Tool bar items on `Current'.
+			-- Tool bar items on `Current' including invisible items.
 		do
 			Result := content.items
 		ensure
@@ -355,9 +355,13 @@ feature -- Query
 			-- Current size.
 		do
 			if is_vertical then
-				Result := tool_bar.height
+				Result := tool_bar.minimum_height
 			else
-				Result := tool_bar.width
+				-- On GTK, SD_TOOL_BAR `minimum_width' is not always equal `width' here.
+				-- On Windows, SD_TOOL_BAR `minimum_width' is always equal `width' here.
+				-- See bug#12651, so we use `minimum_width' for it.
+				-- Same for `minimum_height' and `height'.
+				Result := tool_bar.minimum_width
 			end
 		ensure
 			valid: Result >= 0
@@ -498,17 +502,24 @@ feature {NONE} -- Implmentation
 
 	set_drag_area (a_is_for_horizontal: BOOLEAN) is
 			-- Set `drag_area_rectangle' and `start_x', `start_y' for tool bar.
+		local
+			l_row_height: INTEGER
 		do
+			l_row_height := tool_bar.row_height
+			-- Maybe the row height not setted at the moment, we use `standard_height' as default.
+			if l_row_height <= 0 then
+				l_row_height := tool_bar.standard_height
+			end
 			if a_is_for_horizontal then
 				-- Change to horizontal drag area.
 				tool_bar.set_start_x (internal_drag_area_size)
 				tool_bar.set_start_y (0)
-				create drag_area_rectangle.make (0, 0, internal_drag_area_size, tool_bar.row_height)
+				create drag_area_rectangle.make (0, 0, internal_drag_area_size, l_row_height)
 			else
 				-- Change to vertical drag area.
 				tool_bar.set_start_x (0)
 				tool_bar.set_start_y (internal_drag_area_size)
-				create drag_area_rectangle.make (0, 0, tool_bar.row_height, internal_drag_area_size)
+				create drag_area_rectangle.make (0, 0, l_row_height, internal_drag_area_size)
 			end
 		end
 
@@ -548,17 +559,7 @@ feature {NONE} -- Implmentation
 			end
 		end
 
-	update_maximum_size is
-			-- Update `maximize_size'
-		do
-			if is_vertical then
-				maximize_size := tool_bar.minimum_height
-			else
-				maximize_size := tool_bar.minimum_width
-			end
-		end
-
-feature {SD_TOOL_BAR_ZONE_ASSISTANT, SD_TOOL_BAR_HIDDEN_ITEM_DIALOG, SD_FLOATING_TOOL_BAR_ZONE} -- Internal issues
+feature {SD_TOOL_BAR_ZONE_ASSISTANT, SD_TOOL_BAR_HIDDEN_ITEM_DIALOG, SD_FLOATING_TOOL_BAR_ZONE, SD_TOOL_BAR} -- Internal issues
 
 	tail_indicator: SD_TOOL_BAR_NARROW_BUTTON
 			-- Button at tail of Current, which used for show hide buttons and customize dialog.
@@ -579,6 +580,16 @@ feature {SD_TOOL_BAR_ZONE_ASSISTANT, SD_TOOL_BAR_HIDDEN_ITEM_DIALOG, SD_FLOATING
 					end
 				end
 				tool_bar.extend (a_item)
+			end
+		end
+
+	update_maximum_size is
+			-- Update `maximize_size'
+		do
+			if is_vertical then
+				maximize_size := tool_bar.minimum_height
+			else
+				maximize_size := tool_bar.minimum_width
 			end
 		end
 

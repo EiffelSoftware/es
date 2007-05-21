@@ -1,6 +1,6 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "Objects that serializers captured events to a text file"
+	author: "Stefan Sieber"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -15,39 +15,10 @@ create
 
 feature -- Creation
 
-	basic_types: ARRAY[STRING]
-			-- Array of all typenames that are considered to be a basic type.
-		once
-			create 	Result.make (1, 19)
-			Result.put ("NONE", 1) --does this type belong here?
-			Result.put ("POINTER", 2)
-			Result.put ("CHARACTER_8", 3)
-			Result.put ("BOOLEAN", 4)
-			Result.put ("INTEGER_32", 5)
-			Result.put ("INTEGER", 6)
-			Result.put ("REAL", 7)
-			Result.put ("REAL_32", 8)
-			Result.put ("DOUBLE", 9)
-			Result.put ("REAL_64", 10)
-			Result.put ("POINTER", 11)
-			Result.put ("INTEGER_8", 12)
-			Result.put ("INTEGER_16", 13)
-			Result.put ("INTEGER_64", 14)
-			Result.put ("CHARACTER_32", 15)
-			Result.put ("NATURAL_8", 16)
-			Result.put ("NATURAL_16", 17)
-			Result.put ("NATURAL_32", 18)
-			Result.put ("NATURAL_64", 19)
-
-			Result.compare_objects
-		end
-
-
 	make_on_textfile(filename: STRING)
 			-- Create the Serializer on the textfile `filename'
 		do
 			create {PLAIN_TEXT_FILE}file.make_open_write(filename)
-	  		create internal
 	 	end
 
  feature -- Access
@@ -106,7 +77,39 @@ feature -- Basic operations
 
 feature {NONE} -- Implementation
 
-	internal: INTERNAL
+	basic_types: ARRAY[STRING]
+			-- Array of all typenames that are considered to be a basic type.
+		once
+			create 	Result.make (1, 19)
+			Result.put ("NONE", 1) --does this type belong here?
+			Result.put ("POINTER", 2)
+			Result.put ("CHARACTER_8", 3)
+			Result.put ("BOOLEAN", 4)
+			Result.put ("INTEGER_32", 5)
+			Result.put ("INTEGER", 6)
+			Result.put ("REAL", 7)
+			Result.put ("REAL_32", 8)
+			Result.put ("DOUBLE", 9)
+			Result.put ("REAL_64", 10)
+			Result.put ("POINTER", 11)
+			Result.put ("INTEGER_8", 12)
+			Result.put ("INTEGER_16", 13)
+			Result.put ("INTEGER_64", 14)
+			Result.put ("CHARACTER_32", 15)
+			Result.put ("NATURAL_8", 16)
+			Result.put ("NATURAL_16", 17)
+			Result.put ("NATURAL_32", 18)
+			Result.put ("NATURAL_64", 19)
+
+			Result.compare_objects
+		end
+
+	internal: INTERNAL is
+			-- The standard INTERNAL - instance
+		once
+			create Result
+		end
+
 
 	is_basic_type (value: ANY): BOOLEAN
 			-- Is `value' of a reference type (and not of a basic type)?
@@ -129,14 +132,14 @@ feature {NONE} -- Implementation
 			if is_basic_type (value) then
 				write_basic (value)
 			else --basic type
-				-- TODO: All these cases can be merged together
+				-- These cases can be merged together
 				-- as soon as we can assume that all non basic types
 				-- are observable.
 				observable_object ?= value
 				if (value = Void) or (observable_object /= Void) then --something we can handle...
 					write_non_basic (observable_object)
 				else
-					write_error ("Reference Type not observable!! Type: " + value.generating_type + " ")
+					report_error ("Reference Type not observable!! Type: " + value.generating_type + " ")
 				end
 			end
 		end
@@ -177,7 +180,7 @@ feature {NONE} -- Implementation
 		end
 
 	write_return(return_tag: STRING; return_value: ANY)
-			-- write a return event with tag 'return_tag' (e.g. OUTCALLRET)
+			-- Write a return event with tag 'return_tag' (e.g. OUTCALLRET)
 			-- and value 'return_value' 
 		require
 			return_tag_not_void: return_tag /= Void
@@ -190,7 +193,7 @@ feature {NONE} -- Implementation
 		end
 
 	write_arguments(arguments: TUPLE)
-			--write out 'arguments'
+			--Write out 'arguments'
 		require
 			arguments_not_void: arguments /= Void
 		local
@@ -208,17 +211,20 @@ feature {NONE} -- Implementation
 
 
 	write(content: STRING)
+			-- Write `content'
 		require
 			content_not_void: content /= Void
 			file_is_open: file.is_open_write
 		do
 			file.put_string (content)
-	--for debugging
-	file.flush
+			--XXX for debugging this is to make sure all events are in the file
+			--    just in case of crashes.
+			file.flush
 			print_debug(content)
 		end
 
 	write_endline
+			-- Append an newline character to the file.
 		require
 			file_is_open: file.is_open_write
 		do
@@ -226,7 +232,8 @@ feature {NONE} -- Implementation
 			print_debug("%N")
 		end
 
-	write_error(message: STRING)
+	report_error(message: STRING)
+			-- Report the Error `message'
 		require
 			message_not_void: message /= Void
 		do

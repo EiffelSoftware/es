@@ -9,6 +9,9 @@ class
 
 inherit
 	EB_CUSTOMIZED_FORMATTER_DIALOG [EB_CUSTOMIZED_FORMATTER_DESP]
+		redefine
+			on_ok
+		end
 
 create
 	make
@@ -171,6 +174,43 @@ feature{NONE} -- Actions
 			a_descriptor.set_metric_name (string_32_from_string_8 (a_metric))
 		end
 
+	on_ok is
+			-- Action to be performed when "OK" button is pressed
+		local
+			l_dialog: EB_DISCARDABLE_CONFIRMATION_DIALOG
+		do
+			if
+				has_changed and then
+				not workbench.system_defined and then
+				descriptors.there_exists (agent (a_descriptor: EB_CUSTOMIZED_FORMATTER_DESP): BOOLEAN do Result := a_descriptor.is_target_scope end)
+			then
+				create l_dialog.make_initialized (
+					2,
+					preferences.dialog_data.discard_target_scope_customized_formatter_string,
+					interface_names.l_target_scope_customzied_formatter_not_saved,
+					Interface_names.l_discard_target_scope_customized_formatter, preferences.preferences
+				)
+				l_dialog.set_ok_action (
+					agent do
+						on_confirmed_ok
+						set_is_loaded (False)
+					end
+				)
+				l_dialog.show_modal_to_window (Window_manager.last_focused_development_window.window)
+			else
+				on_confirmed_ok
+			end
+		end
+
+	on_confirmed_ok is
+			-- Action to be performed when close and save is conformed
+		do
+			if is_displayed then
+				hide
+			end
+			ok_actions.call (Void)
+		end
+
 feature -- Setting
 
 	load_descriptors is
@@ -317,14 +357,14 @@ feature{NONE} -- Implementation
 			create l_header.make (interface_names.l_header)
 			l_header.set_value (string_32_from_string_8 (a_descriptor.header))
 			l_header.change_value_actions.extend (agent on_data_change (?, agent a_descriptor.set_header, Void))
-			l_header.set_description (metric_names.concatenated_string ((<<interface_names.l_formatter_header_help, interface_names.l_formatter_placeholder>>).linear_representation, " "))
+			l_header.set_description (metric_names.concatenated_string ((<<interface_names.l_formatter_header_help, interface_names.l_formatter_placeholder>>).linear_representation, "%N"))
 			header_property := l_header
 			l_grid.add_property (l_header)
 
 			create l_temp_header.make (interface_names.l_temp_header)
 			l_temp_header.set_value (string_32_from_string_8 (a_descriptor.temp_header))
 			l_temp_header.change_value_actions.extend (agent on_data_change (?, agent a_descriptor.set_temp_header, Void))
-			l_temp_header.set_description (metric_names.concatenated_string ((<<interface_names.l_formatter_temp_header_help, interface_names.l_formatter_placeholder>>).linear_representation, " "))
+			l_temp_header.set_description (metric_names.concatenated_string ((<<interface_names.l_formatter_temp_header_help, interface_names.l_formatter_placeholder>>).linear_representation, "%N"))
 			temp_header_property := l_temp_header
 			l_grid.add_property (l_temp_header)
 

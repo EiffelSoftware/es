@@ -21,7 +21,6 @@ feature --Initialization
 			ctrl := set_controller(Current)
 		end
 
-
 feature -- Access
 
 	is_capture_replay_enabled: BOOLEAN
@@ -69,6 +68,10 @@ feature -- Basic operations
 			-- Hook for capture/replay. Is to be placed before the methodbody is evaluated
 			-- 'target' is the object whose feature was called
 			-- 'arguments' are the arguments of the feature.
+		require
+			feature_name_not_void: feature_name /= Void
+			target_not_void: target /= Void
+			arguments_not_void: arguments /= Void
 		deferred end
 
 	enter is

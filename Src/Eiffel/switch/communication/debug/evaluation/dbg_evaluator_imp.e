@@ -146,7 +146,9 @@ feature {NONE} -- Error code id
 feature {DBG_EVALUATOR} -- Interface
 
 	effective_evaluate_routine (a_addr: STRING; a_target: DUMP_VALUE; f, realf: FEATURE_I;
-			ctype: CLASS_TYPE; orig_class: CLASS_C; params: LIST [DUMP_VALUE]) is
+				ctype: CLASS_TYPE; orig_class: CLASS_C; params: LIST [DUMP_VALUE];
+				is_static_call: BOOLEAN
+			) is
 		require
 			realf /= Void
 		deferred
@@ -177,6 +179,15 @@ feature {DBG_EVALUATOR} -- Interface
 			f_is_once: f.is_once
 		deferred
 		end
+
+	create_empty_instance_of (a_type_i: CL_TYPE_I) is
+		require
+			a_type_i_not_void: a_type_i /= Void
+			a_type_i_compiled: a_type_i.has_associated_class_type
+		deferred
+		end
+
+feature {DBG_EVALUATOR} -- Query		
 
 	associated_reference_basic_class_type (cl: CLASS_C): CLASS_TYPE is
 			-- Associated _REF classtype for type `cl'
@@ -299,6 +310,8 @@ feature {NONE} -- Implementation
 					Result := ctype
 				else
 					if l_f_class_c.types.count = 1 then
+						Result := l_f_class_c.types.first
+					elseif l_f_class_c.is_basic then
 						Result := l_f_class_c.types.first
 					else
 							--| The feature is inherited

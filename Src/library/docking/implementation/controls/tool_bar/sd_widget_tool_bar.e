@@ -32,8 +32,6 @@ inherit
 			item_x,
 			item_y,
 			update,
-			is_row_height_set,
-			is_row_height_valid,
 			is_parent_set,
 			is_start_x_set,
 			is_start_y_set,
@@ -62,6 +60,7 @@ inherit
 			drawer,
 			items_have_texts,
 			on_pointer_release,
+			on_expose,
 			initialize,
 			item_at_position
 		end
@@ -105,6 +104,7 @@ feature {NONE} -- Initlization
 
 			tool_bar := a_tool_bar
 
+			tool_bar.expose_actions.extend (agent on_expose)
 			default_create
 
 			extend_fixed (tool_bar)
@@ -124,8 +124,29 @@ feature -- Properties
 
 	row_height: INTEGER is
 			--  Height of row.
+		local
+			l_tool_bar: SD_TOOL_BAR
 		do
-			Result := tool_bar.row_height
+			if is_need_calculate_size then
+				is_need_calculate_size := False
+				Result := tool_bar.row_height
+				from
+					start
+				until
+					after
+				loop
+					l_tool_bar ?= item
+					-- Ignore SD_TOOL_BAR's height, only take account of other widgets' height such as EV_COMBO_BOX.
+					-- Otherwise, when dragging a multi-row floating tool bar, the height is larger and larger after dock it back.
+					if l_tool_bar = Void then
+						Result := Result.max (item.minimum_height)
+					end
+					forth
+				end
+				internal_row_height  := Result
+			else
+				Result := internal_row_height
+			end
 		end
 
 feature -- Command
@@ -142,6 +163,7 @@ feature -- Command
 				extend_fixed (l_widget_item.widget)
 				set_item_size (l_widget_item.widget, l_widget_item.widget.minimum_width, l_widget_item.widget.minimum_height)
 			end
+			is_need_calculate_size := True
 		end
 
 	force (a_item: SD_TOOL_BAR_ITEM; a_index: INTEGER) is
@@ -155,18 +177,26 @@ feature -- Command
 				extend_fixed (l_widget_item.widget)
 				set_item_size (l_widget_item.widget, l_widget_item.widget.minimum_width, l_widget_item.widget.minimum_height)
 			end
+			is_need_calculate_size := True
 		end
 
 	prune (a_item: SD_TOOL_BAR_ITEM) is
 			-- Prune `a_item'
 		local
 			l_widget_item: SD_TOOL_BAR_WIDGET_ITEM
+			l_resizable_item: SD_TOOL_BAR_RESIZABLE_ITEM
 		do
 			tool_bar.prune (a_item)
 			l_widget_item ?= a_item
 			if l_widget_item /= Void then
 				prune_fixed (l_widget_item.widget)
 			end
+
+			l_resizable_item ?= a_item
+			if l_resizable_item /= Void then
+				l_resizable_item.clear
+			end
+			is_need_calculate_size := True
 		end
 
 	compute_minimum_size is
@@ -196,12 +226,116 @@ feature -- Command
 			tool_bar.disable_capture
 		end
 
+	in_main_window: BOOLEAN is
+			-- If docking in main window?
+		local
+			l_tool_bar_row: SD_TOOL_BAR_ROW
+		do
+			l_tool_bar_row ?= parent
+			if l_tool_bar_row /= Void then
+				Result := l_tool_bar_row.docking_manager.query.is_in_main_window (Current)
+			end
+		end
+
+	resize is
+			-- Recalculate items sizes in the row.
+		local
+			l_tool_bar_row: SD_TOOL_BAR_ROW
+		do
+			l_tool_bar_row ?= parent
+			if l_tool_bar_row /= Void then
+				l_tool_bar_row.on_resize (l_tool_bar_row.size)
+			end
+		end
+
+	resize_for_sizeble_item is
+			--	Call `resize' when no hidden items exist.
+		local
+			l_tool_bar_row: SD_TOOL_BAR_ROW
+			l_content: SD_TOOL_BAR_CONTENT
+		do
+			l_tool_bar_row ?= parent
+			if l_tool_bar_row /= Void then
+				l_content := l_tool_bar_row.docking_manager.tool_bar_manager.content_of (Current)
+				check not_void: l_content /= Void end
+				if l_content /= Void then
+					if l_tool_bar_row.hidden_items.count > 0 then
+						resize
+					end
+					l_content.zone.update_maximum_size
+				end
+			end
+		end
+
+	record_width (a_name: STRING_GENERAL; a_width: INTEGER) is
+			-- Record the with of item for store.
+		require
+			not_void: a_name /= Void
+			valid: a_width >= 0
+		local
+			l_tool_bar_row: SD_TOOL_BAR_ROW
+			l_data: ARRAYED_LIST [TUPLE [name: STRING_GENERAL; width: INTEGER]]
+			l_found: BOOLEAN
+		do
+			l_tool_bar_row ?= parent
+			if l_tool_bar_row /= Void then
+				l_data := l_tool_bar_row.docking_manager.property.resizable_items_data
+				from
+					l_data.start
+				until
+					l_data.after or l_found
+				loop
+					if l_data.item.name.as_string_32.is_equal (a_name.as_string_32) then
+						l_data.item.width := a_width
+						l_found := True
+					end
+					l_data.forth
+				end
+				if not l_found then
+					l_data.extend ([a_name, a_width])
+				end
+			end
+		end
+
+	screen_x_end_row: INTEGER is
+			-- Maximum x position.
+		local
+			l_tool_bar_row: SD_TOOL_BAR_ROW
+			l_zones: DS_ARRAYED_LIST [SD_TOOL_BAR_ZONE]
+			l_found, l_is_end: BOOLEAN
+			l_next_tool_bar: SD_TOOL_BAR
+		do
+			l_tool_bar_row ?= parent
+			if l_tool_bar_row /= Void then
+
+				from
+					l_zones := l_tool_bar_row.zones
+					l_zones.start
+				until
+					l_zones.after or l_found
+				loop
+					if l_zones.item_for_iteration.tool_bar = Current then
+						l_found := True
+					end
+					l_is_end := l_zones.index = l_zones.count
+					l_zones.forth
+				end
+
+				if l_is_end then
+					Result := l_tool_bar_row.screen_x + l_tool_bar_row.width
+				else
+					l_next_tool_bar := l_zones.item_for_iteration.tool_bar
+					Result := l_next_tool_bar.screen_x
+				end
+			end
+		end
+
 	update_size is
 			-- Update `tool_bar' size if Current width changed.
 		local
 			l_tool_bar_row: SD_TOOL_BAR_ROW
 			l_parent: EV_CONTAINER
-			l_floating_zone: SD_FLOATING_TOOL_BAR_ZONE
+			l_floating_zone: EV_WINDOW
 		do
 			compute_minimum_size
 			l_tool_bar_row ?= parent
@@ -319,18 +453,6 @@ feature {SD_TOOL_BAR_DRAWER_I, SD_TOOL_BAR_ZONE}
 
 feature -- Contract support
 
-	is_row_height_set (a_new_height: INTEGER): BOOLEAN is
-			-- If `a_new_height' equal `row_height'?
-		do
-			Result := tool_bar.row_height = a_new_height
-		end
-
-	is_row_height_valid (a_height: INTEGER): BOOLEAN is
-			-- If `a_height' equal `row_height'?
-		do
-			Result := tool_bar.row_height = a_height
-		end
-
 	is_parent_set (a_item: SD_TOOL_BAR_ITEM): BOOLEAN is
 			-- If `a_item' parent equal `tool_bar'?
 		do
@@ -379,6 +501,7 @@ feature {SD_TOOL_BAR_DRAWER_IMP, SD_TOOL_BAR_ITEM, SD_TOOL_BAR} -- Internal issu
 			-- Redraw item(s) which `is_need_redraw'
 		do
 			tool_bar.update
+			on_expose (0, 0, width, height)
 		end
 
 	set_start_x (a_x: INTEGER) is
@@ -415,13 +538,7 @@ feature {NONE} -- Implementation
 
 	redraw_item (a_item: SD_TOOL_BAR_ITEM) is
 			-- Redraw `a_item'
-		local
-			l_item: SD_TOOL_BAR_WIDGET_ITEM
 		do
-			l_item ?= a_item
-			if l_item = Void then
-				tool_bar.redraw_item (a_item)
-			end
 		end
 
 	tool_bar: SD_TOOL_BAR
@@ -437,6 +554,32 @@ feature {NONE} -- Implementation
 	on_pointer_release (a_x: INTEGER_32; a_y: INTEGER_32; a_button: INTEGER_32; a_x_tilt: REAL_64; a_y_tilt: REAL_64; a_pressure: REAL_64; a_screen_x: INTEGER_32; a_screen_y: INTEGER_32) is
 			-- Redefine
 		do
+		end
+
+	on_expose (a_x, a_y, a_width, a_height: INTEGER_32) is
+			-- Redefine.
+		local
+			l_items: like internal_items
+			l_rect: EV_RECTANGLE
+			l_widget_item: SD_TOOL_BAR_WIDGET_ITEM
+			l_widget: EV_WIDGET
+		do
+			create l_rect.make (a_x, a_y, a_width, a_height)
+			from
+				l_items := items
+				l_items.start
+			until
+				l_items.after
+			loop
+				if l_items.item.has_rectangle (l_rect) then
+					l_widget_item ?= l_items.item
+					if l_widget_item /= Void then
+						l_widget := l_widget_item.widget
+						set_item_width (l_widget, l_widget.minimum_width)
+					end
+				end
+				l_items.forth
+			end
 		end
 
 	on_tool_bar_expose_actions (a_x: INTEGER; a_y: INTEGER; a_width: INTEGER; a_height: INTEGER) is

@@ -64,6 +64,8 @@ feature{NONE} -- Implementation
 			l_target: QL_TARGET
 			l_ql_code_item: QL_CODE_STRUCTURE_ITEM
 			l_line: QL_LINE
+			l_cursors: like cursors_for_item
+			l_class_c: CLASS_C
 		do
 			if a_item.is_class then
 				l_class ?= a_item
@@ -89,12 +91,55 @@ feature{NONE} -- Implementation
 				a_writer.process_target_name_text (l_target.name, l_target.target)
 			elseif a_item.is_line then
 				l_line ?= a_item
-				a_writer.process_line (l_line.name, l_line.line_in_file, l_line.code_structure.class_i, False)
+				l_ql_code_item := l_line.code_structure
+				if l_ql_code_item.is_compiled then
+					l_class_c := l_ql_code_item.class_c
+				end
+				if l_class_c /= Void then
+					a_writer.process_compiled_line (l_line.name, l_line.line_in_file, l_class_c, False)
+				else
+					a_writer.process_uncompiled_line (l_line.name, l_line.line_in_file, l_ql_code_item.class_i, False)
+				end
 			elseif a_item.is_code_structure then
 				l_ql_code_item ?= a_item
-				a_writer.process_ast (l_ql_code_item.name, l_ql_code_item.ast, l_ql_code_item.written_class, Void, False)
+				l_cursors := cursors_for_item (a_item)
+				a_writer.process_ast (l_ql_code_item.name, l_ql_code_item.ast, l_ql_code_item.written_class, appearance_for_item (a_item), False, l_cursors.cursor, l_cursors.x_cursor)
 			else
 				a_writer.add_string (a_item.name)
+			end
+		end
+
+	appearance_for_item (a_item: QL_ITEM): TUPLE [a_font_id: INTEGER; a_text_color_id: INTEGER; a_background_color_id: INTEGER] is
+			-- Appearance for `a_item'
+			-- Void if no appearance available.
+		require
+			a_item_attached: a_item /= Void
+		do
+			if a_item.is_argument then
+				Result := [editor_font_id, argument_text_color_id, argument_background_color_id]
+			elseif a_item.is_local then
+				Result := [editor_font_id, local_text_color_id, local_background_color_id]
+			elseif a_item.is_generic then
+				Result := [editor_font_id, generic_text_color_id, generic_background_color_id]
+			elseif a_item.is_assertion then
+				Result := [editor_font_id, assertion_tag_text_color_id, assertion_tag_background_color_id]
+			end
+		end
+
+	cursors_for_item (a_item: QL_ITEM): TUPLE [cursor: EV_POINTER_STYLE; x_cursor: EV_POINTER_STYLE] is
+			-- Cursor and X cursor for `a_item'
+		require
+			a_item_attached: a_item /= Void
+		local
+			l_cursors: like cursors
+		do
+			l_cursors := cursors
+			if a_item.is_argument or else a_item.is_local then
+				Result := [l_cursors.cur_metric_local, l_cursors.cur_x_metric_local]
+			elseif a_item.is_assertion then
+				Result := [l_cursors.cur_metric_assertion, l_cursors.cur_x_metric_assertion]
+			elseif a_item.is_generic then
+				Result := [l_cursors.cur_metric_generic, l_cursors.cur_x_metric_generic]
 			end
 		end
 
