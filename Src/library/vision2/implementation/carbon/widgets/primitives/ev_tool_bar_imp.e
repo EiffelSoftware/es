@@ -63,13 +63,15 @@ feature {NONE} -- Implementation
 			ptr: POINTER
 			control_ptr : POINTER
 		do
+
 			base_make (an_interface)
 			create rect.make_new_unshared
-			rect.set_right (300)
-			rect.set_bottom (30)
+			rect.set_right (parent_imp.width)
+			rect.set_bottom (parent_imp.height)
 			ret := create_user_pane_control_external ( null, rect.item, {CONTROLS_ANON_ENUMS}.kControlSupportsEmbedding, $ptr )
 			ret := create_radio_group_control_external (null,rect.item, $radio_group)
-			set_c_object ( radio_group )
+			ret := hiview_add_subview_external (ptr, radio_group)
+			set_c_object ( ptr )
 
 
 
