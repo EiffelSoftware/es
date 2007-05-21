@@ -22,7 +22,7 @@
 				<exclude>/CVS$</exclude>
 			</file_rule>
 		</cluster>
-		<override name="elks_overrides" location="$ISE_LIBRARY\library\base\capture_replay\elks_overrides\" recursive="true">
+		<override name="elks_overrides" location="..\..\Src\library\base\capture_replay\elks_overrides\" recursive="true">
 			<option>
 				<assertions/>
 			</option>

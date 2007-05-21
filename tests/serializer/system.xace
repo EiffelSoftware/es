@@ -17,11 +17,11 @@
 	<cluster name="ap_tester" location="."/><!-- test cases -->
 	<cluster name="ap_testgen" location="TESTGEN"/><!-- generated test classes -->
 	
-	<cluster name="additional_base_classes" location="${ISE_LIBRARY}/library/base/capture_replay/own_classes/">
+	<cluster name="additional_base_classes" location="../../Src/library/base/capture_replay/own_classes/">
 		<option name="recursive" value="true" />
 	</cluster>
 
-	<cluster name="elks_kernel_overrides" location="${ISE_LIBRARY}/library/base/capture_replay/elks_overrides/kernel" >
+	<cluster name="elks_kernel_overrides" location="../../Src/library/base/capture_replay/elks_overrides/kernel" >
 		<option name="read_only" value="False" />
 	</cluster>
 
