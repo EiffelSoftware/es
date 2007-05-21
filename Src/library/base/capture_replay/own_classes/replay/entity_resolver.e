@@ -10,6 +10,8 @@ class
 inherit
 	INTERNAL
 
+	ENTITY_VISITOR
+
 create
 	make
 
@@ -31,7 +33,7 @@ feature -- Access
 		require
 			entity_not_void: entity /= Void
 		do
-			Result := entity.accept(Current)
+			Result := entity.resolve(Current)
 		ensure
 			only_void_entities_resolved_to_void: (Result = Void) implies represents_void(entity)
 		end
@@ -64,50 +66,45 @@ feature -- Access
 			if entities[entity.id] = Void then
 				entities[entity.id] := object
 				object.set_object_id(entity.id)
-			else
-				-- XXX should we raise an error here?
 			end
 		ensure
 			entity_registered: entities[entity.id] = object
 		end
 
-	resolve_basic_entity(basic: BASIC_ENTITY): ANY is
-			-- Resolve `basic' to an object representing a basic type.
-		require
-			basic_not_void: basic /= Void
-		do
-			--hmm... do some magic ;)
-			if basic.type.is_equal ("REAL_32") then
-				Result := basic.value.to_real
-			elseif basic.type.is_equal("INTEGER_32") then
-				Result := basic.value.to_integer
-			elseif basic.type.is_equal("BOOLEAN") then
-				Result := basic.value.to_boolean
-			else
-				check False end --not implemented yet.
+	visit_basic_entity(basic: BASIC_ENTITY): ANY is
+				-- Resolve `basic' to an object representing a basic type.
+			do
+				--hmm... do some magic ;)
+				if basic.type.is_equal ("REAL_32") then
+					Result := basic.value.to_real
+				elseif basic.type.is_equal("INTEGER_32") then
+					Result := basic.value.to_integer
+				elseif basic.type.is_equal("BOOLEAN") then
+					Result := basic.value.to_boolean
+				else
+					check False end --not implemented yet.
+				end
+			ensure then
+				result_not_void: Result /= Void
 			end
-		ensure
-			result_not_void: Result /= Void
-		end
 
-	resolve_non_basic_entity(non_basic: NON_BASIC_ENTITY): ANY is
+	visit_non_basic_entity(non_basic: NON_BASIC_ENTITY): ANY is
 			-- Resolve `non_basic' to an object representing a non basic type.
-		require
-			non_basic_not_void: non_basic /= Void
-		do
-			if entities.upper < non_basic.id then
-				entities.resize (0, non_basic.id * 2)
-			end
+			do
+				if entities.upper < non_basic.id then
+					entities.resize (0, non_basic.id * 2)
+				end
 
-			if entities[non_basic.id] = Void then
-				create_entity(non_basic)
-			end
+				if entities[non_basic.id] = Void then
+					create_entity(non_basic)
+				end
 
-			Result := entities[non_basic.id]
-		ensure
-			non_void_entity_resolved: (non_basic.id /= 0) implies (Result /= Void)
---XXX this should be ensured...			object_id_mathes: non_basic.id = Result.object_id
-		end
+				Result := entities[non_basic.id]
+			ensure then
+				non_void_entity_resolved: (non_basic.id /= 0) implies (Result /= Void)
+				-- this  is not possible until ANY contains 'observable's' functionality
+				-- object_id_mathes: non_basic.id = Result.object_id
+			end
 
 	create_entity(non_basic: NON_BASIC_ENTITY)
 			-- Create an object representing `non_basic'

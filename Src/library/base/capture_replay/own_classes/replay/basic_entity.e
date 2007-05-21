@@ -25,46 +25,17 @@ feature -- Creation
 			value := a_value
 		end
 
-
 feature -- Access
 
 	value: STRING
-feature -- Measurement
-
-feature -- Status report
-
-feature -- Status setting
-
-feature -- Cursor movement
-
-feature -- Element change
-
-feature -- Removal
-
-feature -- Resizing
-
-feature -- Transformation
-
-feature -- Conversion
-
-feature -- Duplication
-
-feature -- Miscellaneous
 
 feature -- Basic operations
 
-	accept(resolver: ENTITY_RESOLVER): ANY is
-			-- Resolve this entity
+	resolve(resolver: ENTITY_VISITOR): ANY is
+			-- Resolve this basic entity
 		do
-			Result := resolver.resolve_basic_entity(Current)
+			Result := resolver.visit_basic_entity(Current)
 		end
-
-
-feature -- Obsolete
-
-feature -- Inapplicable
-
-feature {NONE} -- Implementation
 
 invariant
 	invariant_clause: True -- Your invariant here

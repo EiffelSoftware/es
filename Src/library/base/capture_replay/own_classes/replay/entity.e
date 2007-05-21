@@ -40,8 +40,8 @@ feature -- Miscellaneous
 
 feature -- Basic operations
 
-	accept(resolver: ENTITY_RESOLVER): ANY is
-			-- Visitor for entity resolution.
+	resolve(resolver: ENTITY_VISITOR): ANY is
+			-- Accept visitor for entity resolution.
 		deferred end
 
 feature -- Obsolete

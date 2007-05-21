@@ -54,10 +54,10 @@ feature -- Miscellaneous
 
 feature -- Basic operations
 
-	accept(resolver: ENTITY_RESOLVER): ANY is
+	resolve(resolver: ENTITY_VISITOR): ANY is
 			-- Resolve this entity
 		do
-			Result := resolver.resolve_non_basic_entity(Current)
+			Result := resolver.visit_non_basic_entity(Current)
 		end
 
 feature -- Obsolete
