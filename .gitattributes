@@ -3470,6 +3470,7 @@ eweasel/tests/vd13001/weasel -text
 free_add_ons/eclop/doc/eclop.pdf -text
 free_add_ons/gobo/gobo_35_unix.tbz2 -text
 free_add_ons/gobo/gobo_35_win.tbz2 -text
+free_add_ons/gobo/test -text
 free_add_ons/wex/examples/wex/Framework_example/TOOLBAR.BMP svneol=native#unset
 free_add_ons/wex/examples/wex/Framework_example/app.ico svneol=native#unset
 free_add_ons/wex/examples/wex/MCI_Splash/APP.ICO svneol=native#unset
