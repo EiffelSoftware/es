@@ -7,7 +7,7 @@
 		<setting name="console_application" value="true"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf" readonly="false"/>
 		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
-		<cluster name="additional_base_classes" location="$ISE_LIBRARY\library\base\capture_replay\own_classes\" recursive="true">
+		<cluster name="additional_base_classes" location="..\..\Src\library\base\capture_replay\own_classes\" recursive="true">
 			<option>
 				<assertions/>
 			</option>
