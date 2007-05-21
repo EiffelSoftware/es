@@ -18,7 +18,6 @@ feature --Initialization
 			observed_stack.put (False)
 
 			set_capture_replay_enabled (False)
-			ctrl := set_program_flow_sink(Current)
 		end
 
 feature -- Access

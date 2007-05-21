@@ -363,26 +363,40 @@ feature -- Basic operations
 
 feature -- Capture/Replay
 
-	set_program_flow_sink(a_sink: PROGRAM_FLOW_SINK): PROGRAM_FLOW_SINK
-			-- Set the Controller for capture/replay
-			-- (First execution sets the controller)
-		once
-			Result := a_sink
-		end
-
 	program_flow_sink: PROGRAM_FLOW_SINK
 			-- Recorder for capturing events on the object
 			-- `set_controller' needs to be executed before this feature is called.
+		local
+			environment: EXECUTION_ENVIRONMENT
+			mode: STRING
 		once
-			Result := set_program_flow_sink(Void)
-			if Result = Void then
-				--not initialized yet. Assume that capture/replay should be disabled.
-				create {NULL_PROGRAM_FLOW_SINK}Result.make
-				print("controller not set, capture/replay disabled")
+			create {NULL_PROGRAM_FLOW_SINK}Result.make
+			create environment
+			-- XXX hack for (again) not working string constants.
+			mode := environment.get("cr_mode")
+			if mode = Void then
+				print("'cr_mode' not defined. Disabling capture/replay.")
+			elseif mode.is_case_insensitive_equal (mode_capture) then
+				print(mode_capture)
+				create {RECORDER}Result.make
+			elseif mode.is_case_insensitive_equal (mode_replay) then
+				print(mode_replay)
+				create {PLAYER}Result.make
+			elseif mode.is_case_insensitive_equal (mode_log_replay) then
+				print(mode_log_replay)
+				create {LOGGING_PLAYER}Result.make
+			else
+				print("'cr_mode' = '" + mode + "' is not a recognized Value.")
 			end
 		ensure
 			Result_not_void: Result /= Void
 		end
+
+	mode_replay:STRING is "replay"
+
+	mode_capture: STRING is "capture"
+
+	mode_log_replay: STRING is "log_replay"
 
 	is_observed: BOOLEAN
 			-- Is this object observed?

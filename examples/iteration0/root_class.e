@@ -30,37 +30,28 @@ feature -- Initialization
 			test_performance: BOOLEAN
 			ignore_result: ANY
 		do
-		-- Start of C/R setup
-			mode := Replay_logged
---			mode := Capture
-			inspect mode
-			when capture then
-				create recorder.make
+			--Initialize the rest of the PROGRAM_FLOW_SINK:
+			-- XXX is there a better way to do it? Problem:
+			-- at least caller can't be known in ANY, because it
+			-- depends on the application.
+			recorder ?= program_flow_sink
+			if recorder /= Void then
 				recorder.setup_on_text_serializer ("run.log")
-			when replay_simple then
-				create player.make
-				create caller
-				player.setup_on_text_file ("run.log", caller)
-				player.play
-			when replay_logged then
-				create logging_player.make
+			end
+			player ?= program_flow_sink
+			logging_player ?= program_flow_sink
+			if logging_player /= Void then
 				create caller
 				logging_player.setup_on_text_files ("run.log", "replay_run.log", caller)
 				logging_player.play
-			when performance_test_normal then
-				create recorder.make --run with not set-up recorder == without instrumentation.
-				test_performance := True
-			when performance_test_capture then
-				create recorder.make
-				recorder.setup_on_text_serializer ("run.log")
-				test_performance := True
-			else
-				print ("executing a normal run of the application.")
+			elseif player /= Void then
+				create caller
+				player.setup_on_text_file ("run.log", caller)
+				player.play
 			end
+
+
 			test_performance := False
-			-- End of C/R Setup
-
-
 
 
 			-- <methodbody_start name="make" args="[]">
