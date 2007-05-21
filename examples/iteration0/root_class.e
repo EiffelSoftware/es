@@ -9,6 +9,7 @@ class
 inherit
 	OBSERVABLE
 
+	
 create
 	make
 

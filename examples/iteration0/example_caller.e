@@ -1,5 +1,5 @@
 indexing
-	description: "Objects that ..."
+	description: "Caller implementation for the example application"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -10,33 +10,10 @@ class
 inherit
 		CALLER
 
-feature -- Access
-
-feature -- Measurement
-
-feature -- Status report
-
-feature -- Status setting
-
-feature -- Cursor movement
-
-feature -- Element change
-
-feature -- Removal
-
-feature -- Resizing
-
-feature -- Transformation
-
-feature -- Conversion
-
-feature -- Duplication
-
-feature -- Miscellaneous
-
 feature -- Basic operations
 
 	call (target: ANY; feature_name: STRING; arguments: LIST[ANY]) is
+			-- Call features on BANK or BANK_ACCOUNT
 		local
 			bank: BANK
 			bank_account: BANK_ACCOUNT
@@ -49,7 +26,7 @@ feature -- Basic operations
 				bank_account ?= target
 				call_bank_account(bank_account, feature_name, arguments)
 			else
-				check False end
+				check False end --Die
 			end
 		end
 
@@ -59,7 +36,7 @@ feature -- Inapplicable
 
 feature {NONE} -- Implementation
 	call_bank(bank: BANK; feature_name: STRING; arguments: LIST[ANY]) is
-			--
+			-- Call features of BANK
 		local
 			ignored_result: ANY
 			account_for_name_arg1: STRING
@@ -99,6 +76,7 @@ feature {NONE} -- Implementation
 		end
 
 	call_bank_account(bank_account: BANK_ACCOUNT; feature_name: STRING; arguments: LIST[ANY]) is
+			-- Call features on BANK_ACCOUNT
 		local
 			ignored_result: ANY
 			make_arg1: STRING

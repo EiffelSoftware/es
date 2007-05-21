@@ -130,52 +130,6 @@ feature --RUBBISH
 			Result:=da_real
 		end
 
---	object_from_pointer (p: POINTER): ANY
---			--returns the Eiffel object that 'p' points to.
---		external
---			"C inline use %"eif_eiffel.h%""
---		alias
---			"return (EIF_REFERENCE) $p;"
---		end
-
--- Not needed: for he prototype implemented in stack.c...
---	stack_offset(depth: INTEGER_32): INTEGER_32
---		external
---			"C signature(EIF_INTEGER):EIF_REFERENCE"
---		alias
---			"c_get_stack_offset"
---		end
-
---	argument_for_position (stack_level: INTEGER_32; i: INTEGER_32): ANY
---			--Returns the 'i'th argument of the feature call on level
----			--'stack_level'. Returns void if the Argument is an
---			--expanded type.
---		external
---			"C signature (EIF_INTEGER,EIF_INTEGER):EIF_REFERENCE use controller.h"
---		alias
---			"c_extract_argument"
---		end
-
---	capture_object (obj: ANY)
---			-- capture 'obj'
---		local
---			test: INTERNAL
---			id: IDENTIFIED
---		do
-
---			if obj = Void then
---				print("Void")
---			else
---				print ("generating type: " + obj.generating_type + "%N")
---				id ?= obj
---				if (id /= Void) then
---					print ("objectId: " + id.object_id.out + "%N")
---				else
---					print ("objectId: #ERROR(not IDENTIFIED) %N")
---				end
---			end
---		end
-
 invariant
 	observed_stack_not_void: observed_stack /= Void
 	observed_stack_not_empty: not observed_stack.is_empty

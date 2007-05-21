@@ -1,6 +1,6 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "Objects that represents a bank"
+	author: "Stefan Sieber"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -25,7 +25,6 @@ feature --creation
 			ignore_result: ANY
 			test_string: STRING
 		do
-
 			-- <methodbody_start name="make" args="[]">
 			if controller.is_capture_replay_enabled then
 				controller.enter
@@ -57,7 +56,6 @@ feature -- Access
 		require
 			name_not_void: name /= Void
 		do
-
 			-- <methodbody_start name="account_for_name" args="[name]">
 			if controller.is_capture_replay_enabled then
 				controller.enter
@@ -83,7 +81,6 @@ feature -- Access
 			-- ATM that is connected to this
 			-- bank
 		do
-
 			-- <methodbody_start name="atm" args="[]">
 			if controller.is_capture_replay_enabled then
 				controller.enter
@@ -115,7 +112,6 @@ feature -- Basic Operations
 		local
 			ignore_result: ANY
 		do
-
 			-- <methodbody_start name="withdraw" args="[an_account, amount]">
 			if controller.is_capture_replay_enabled then
 				controller.enter
@@ -125,7 +121,7 @@ feature -- Basic Operations
 			if (not controller.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				an_account.withdraw (amount)
---XXX breaks replay				print (the_atm.authorization_key) -- to test outcalls ;)
+				--XXX breaks replay	print (the_atm.authorization_key) -- to test outcalls ;)
 			-- <methodbody_end return_value="False">
 			end
 			if controller.is_capture_replay_enabled then
@@ -154,7 +150,7 @@ feature -- Basic Operations
 			if (not controller.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				an_account.deposit (amount)
---XXX breaks replay?				print (the_atm.authorization_key) -- test outcalls...
+				--XXX breaks replay? print (the_atm.authorization_key) -- test outcalls...
 			-- <methodbody_end return_value="False">
 			end
 			if controller.is_capture_replay_enabled then

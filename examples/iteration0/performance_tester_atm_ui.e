@@ -1,6 +1,6 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "Object that simulates an atm_ui to make performance tests"
+	author: "Stefan Sieber"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -53,9 +53,7 @@ feature -- Basic operations
 			print("starting test")
 			create clock.make
 			time_before := clock.time_now
-
 			acc_name := "test"
-
 			from
 				i := 0
 			until
@@ -68,11 +66,8 @@ feature -- Basic operations
 				end
 				i := i+1
 			end
-
 			time_after := clock.time_now
-
 			duration := time_after.time_duration (time_before)
-
 			print("duration: " + duration.out)
 		end
 

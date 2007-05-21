@@ -57,22 +57,6 @@ feature -- Status setting
 			is_replay_phase_original := activated
 		end
 
-feature -- Cursor movement
-
-feature -- Element change
-
-feature -- Removal
-
-feature -- Resizing
-
-feature -- Transformation
-
-feature -- Conversion
-
-feature -- Duplication
-
-feature -- Miscellaneous
-
 feature -- Basic operations
 
 	methodbody_end (res: ANY): ANY is
@@ -88,14 +72,16 @@ feature -- Basic operations
 		deferred end
 
 	enter is
-			--
+			-- Enter into the capture/replay management code.
+			-- Note: disables Capture/Replay
 		do
 			is_capture_replay_enabled := False
 			is_replay_phase := False
 		end
 
 	leave is
-			--
+			-- Leave the Capture/Replay management code.
+			-- note sets Capture/Replay to the original status.
 		do
 			is_capture_replay_enabled := is_capture_replay_enabled_original
 			is_replay_phase := is_replay_phase_original

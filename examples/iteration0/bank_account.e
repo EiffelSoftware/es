@@ -16,14 +16,14 @@ create
 	make
 
 feature -- creation
+
 	make (a_name: STRING)
-			--
+			-- Make a Bank account with name `a_name'.
 		require
 			a_name_not_void: a_name /= Void
 		local
 			ignore_result: ANY
 		do
-
 			-- <methodbody_start name="make" args="[a_name]">
 			if controller.is_capture_replay_enabled then
 				controller.enter
@@ -41,14 +41,15 @@ feature -- creation
 				controller.leave
 			end
 			-- </methodbody_end>
+		ensure
+			name_set: name = a_name
 		end
 
 feature -- Access
 
 	name: STRING is
-			--Name of the account
+			-- Name of the account
 		do
-
 			-- <methodbody_start name="name" args="[]">
 			if controller.is_capture_replay_enabled then
 				controller.enter
@@ -69,9 +70,8 @@ feature -- Access
 		end
 
 	balance: REAL is
-			--Balance of the account
+			-- Balance of the account
 		do
-
 			-- <methodbody_start name="balance" args="[]">
 			if controller.is_capture_replay_enabled then
 				controller.enter
@@ -94,6 +94,7 @@ feature -- Access
 	is_observed: BOOLEAN is True
 
 feature {BANK} -- Restricted
+
 	withdraw (an_amount: REAL) is
 			-- Withdraw 'an_amount'
 		require
@@ -101,7 +102,6 @@ feature {BANK} -- Restricted
 		local
 			ignore_result: ANY
 		do
-
 			-- <methodbody_start name="withdraw" args="[an_amount]">
 			if controller.is_capture_replay_enabled then
 				controller.enter
@@ -119,7 +119,6 @@ feature {BANK} -- Restricted
 				controller.leave
 			end
 			-- </methodbody_end>
-
 		ensure
 			amount_withdrawn: balance = old balance - an_amount
 		end
@@ -132,7 +131,6 @@ feature {BANK} -- Restricted
 		local
 			ignore_result: ANY
 		do
-
 			-- <methodbody_start name="deposit" args="[an_amount]">
 			if controller.is_capture_replay_enabled then
 				controller.enter
@@ -158,6 +156,7 @@ feature {NONE} -- Implementation
 	the_balance: REAL
 
 	the_name: STRING
+
 invariant
 	a_name_not_void: the_name /= Void
 end

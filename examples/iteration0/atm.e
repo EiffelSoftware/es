@@ -1,6 +1,6 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "Objects that represents an ATM"
+	author: "Stefan Sieber"
 	date: "$Date$"
 	revision: "$Revision$"
 
