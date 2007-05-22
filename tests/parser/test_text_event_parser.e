@@ -33,12 +33,7 @@ feature -- Setup
 		local
 			arguments: ARRAYED_LIST[ENTITY]
 			entity: NON_BASIC_ENTITY
-			null_sink: NULL_EVENT_SINK
 		do
-				--make sure that capture - replay is disabled
-				create null_sink.make
-				null_sink ?= set_controller(null_sink)
-
 				create entity.make ("FOO_TYPE", 99)
 				create arguments.make(1)
 				create incall_prototype.make(entity, "incall_prototype", arguments)

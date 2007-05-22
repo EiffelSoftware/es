@@ -372,7 +372,6 @@ feature -- Capture/Replay
 		once
 			create {NULL_PROGRAM_FLOW_SINK}Result.make
 			create environment
-			-- XXX hack for (again) not working string constants.
 			mode := environment.get("cr_mode")
 			if mode = Void then
 				print("*'cr_mode' not defined. Disabling capture/replay.")

@@ -25,7 +25,7 @@ feature -- Access
 
 	has_error: BOOLEAN
 			-- Did an error occur when parsing the current line?
-			
+
 	error_message: STRING
 			-- Message for the error (only valid if `has_error')
 
@@ -418,7 +418,7 @@ feature {NONE} -- Implementation
 			consume_whitespaces
 		ensure
 			position_shifted: position >= old position + a_string.count
-			whitespaces_read: item /= ' ' and item /= '%T'
+			whitespaces_read: end_of_line or (item /= ' ' and item /= '%T')
 		end
 
 	consume_whitespaces is
@@ -431,6 +431,8 @@ feature {NONE} -- Implementation
 			loop
 				forth
 			end
+		ensure
+			whitespaces_read: end_of_line or (item /= ' ' and item /= '%T')
 		end
 
 	report_error(expected_token: STRING)

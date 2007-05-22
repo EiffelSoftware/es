@@ -27,7 +27,7 @@
 
 	<option name="override_cluster" value="elks_kernel_overrides" /> <!-- overrides for modified elks library. -->
 	 
-	<mount location="${GOBO}/library/test/library.xace"/>
+<!--	<mount location="${GOBO}/library/test/library.xace"/>
 	<mount location="${GOBO}/library/argument/library.xace"/>
 	<mount location="${GOBO}/library/pattern/library.xace"/>
 	<mount location="${GOBO}/library/structure/library.xace"/>
@@ -36,4 +36,7 @@
 	<mount location="${GOBO}/library/kernel/library.xace"/>
 	<mount location="${GOBO}/library/kernel.xace"/>
 	<mount location="${GOBO}/library/regexp/library.xace"/>
+-->
+	<mount location="${GOBO}/library/library.xace"/>
+	<mount location="${GOBO}/library/kernel.xace"/>
 </system>

@@ -81,7 +81,7 @@ feature -- Status setting
 			event_input := a_factory
 		end
 
-	set_caller(a_caller: EXAMPLE_CALLER) is
+	set_caller(a_caller: CALLER) is
 			-- Set `caller'
 		require
 			a_caller_not_void: a_caller /= Void
