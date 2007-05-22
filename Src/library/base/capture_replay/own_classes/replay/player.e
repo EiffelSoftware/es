@@ -214,7 +214,7 @@ feature {NONE} -- Implementation
 			no_consecuting_errors: not has_error
 		do
 			has_error := True
-			print("replay error: " + message)
+			print("replay error on event " + event_input.event_number.out + ": "+ message + "%N")
 		end
 
 	index_arguments (expected_arguments: LIST[ENTITY]; actual_arguments: TUPLE) is

@@ -375,15 +375,15 @@ feature -- Capture/Replay
 			-- XXX hack for (again) not working string constants.
 			mode := environment.get("cr_mode")
 			if mode = Void then
-				print("'cr_mode' not defined. Disabling capture/replay.")
+				print("*'cr_mode' not defined. Disabling capture/replay.")
 			elseif mode.is_case_insensitive_equal (mode_capture) then
-				print(mode_capture)
+				print("* Capture activated%N")
 				create {RECORDER}Result.make
 			elseif mode.is_case_insensitive_equal (mode_replay) then
-				print(mode_replay)
+				print("* Replay activated%N")
 				create {PLAYER}Result.make
 			elseif mode.is_case_insensitive_equal (mode_log_replay) then
-				print(mode_log_replay)
+				print("* Replay with logging player activated.%N")
 				create {LOGGING_PLAYER}Result.make
 			else
 				print("'cr_mode' = '" + mode + "' is not a recognized Value.")

@@ -20,11 +20,12 @@ create
 
 
 feature -- Access
-	line_number: INTEGER
+	event_number: INTEGER
 			-- Line number of currently parsed line.
 
 	has_error: BOOLEAN
 			-- Did an error occur when parsing the current line?
+			
 	error_message: STRING
 			-- Message for the error (only valid if `has_error')
 
@@ -50,7 +51,7 @@ feature -- Basic operations
 			has_error := False
 			input.read_line
 			if not end_of_input then
-				line_number := line_number + 1
+				event_number := event_number + 1
 				last_line := input.last_string
 				position := 1
 				parse_line

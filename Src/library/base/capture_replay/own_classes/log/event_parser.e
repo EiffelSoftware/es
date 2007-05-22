@@ -23,6 +23,11 @@ feature -- Access
  	input: KI_TEXT_INPUT_STREAM
 		-- Input where the parser reads from
 
+	event_number: INTEGER is
+			-- The number of the last treated event
+		deferred end
+
+
 feature -- Status setting
 	set_handler(a_handler: EVENT_PARSER_HANDLER)
 		do

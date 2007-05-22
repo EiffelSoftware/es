@@ -30,6 +30,13 @@ feature -- Access
 			Result := parser.end_of_input
 		end
 
+	event_number: INTEGER is
+			-- Sequence number of `last_event'
+		do
+			Result := parser.event_number
+		end
+
+
 feature -- Basic operations
 
 	read_next_event
