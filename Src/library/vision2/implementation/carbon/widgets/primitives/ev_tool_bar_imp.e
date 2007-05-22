@@ -66,8 +66,8 @@ feature {NONE} -- Implementation
 
 			base_make (an_interface)
 			create rect.make_new_unshared
-			rect.set_right (parent_imp.width)
-			rect.set_bottom (parent_imp.height)
+			rect.set_right (1)
+			rect.set_bottom (1)
 			ret := create_user_pane_control_external ( null, rect.item, {CONTROLS_ANON_ENUMS}.kControlSupportsEmbedding, $ptr )
 			ret := create_radio_group_control_external (null,rect.item, $radio_group)
 			ret := hiview_add_subview_external (ptr, radio_group)

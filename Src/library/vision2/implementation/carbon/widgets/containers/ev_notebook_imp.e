@@ -433,22 +433,6 @@ feature -- Element change
 			check
 				not_void : w_imp /=  Void
 			end
-
-<<<<<<< .mine
-=======
-			if tab_position = interface.tab_top then
-				a_rect.set_top ( a_rect.top + tab_offset )
-			elseif tab_position = interface.tab_left then
-				a_rect.set_left ( a_rect.left + tab_offset )
-			elseif tab_position = interface.tab_bottom then
-				a_rect.set_bottom ( a_rect.bottom - tab_offset )
-			elseif tab_position = interface.tab_right then
-				a_rect.set_right ( a_rect.right - tab_offset )
-			end
-
-			set_control_bounds_external ( w_imp.c_object, a_rect.item )
-			bind_to_tabcontrol ( w_imp.c_object, c_object )
->>>>>>> .r68573
 			hide_control_external ( w_imp.c_object )
 			if count = 1  then
 				page_switch
