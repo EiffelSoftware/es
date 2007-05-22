@@ -2,8 +2,8 @@ indexing
 	description: "Preferences for graphical components of the Eiffel Compiler."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
-	date: "$Date$"
-	revision: "$Revision$"
+	date: "$Date: 2007-03-07 09:02:49 +0100 (Mi, 07 Mrz 2007) $"
+	revision: "$Revision: 67095 $"
 
 class
 	EB_GUI_PREFERENCES
@@ -30,6 +30,7 @@ feature {NONE} -- Initialization
 			create external_command_data.make (a_preferences)
 			create metric_tool_data.make (a_preferences)
 			create misc_shortcut_data.make (a_preferences)
+			create origo_data.make (a_preferences)
 		end
 
 feature -- Access
@@ -70,6 +71,9 @@ feature -- Access
 	misc_shortcut_data: EB_MISC_SHORTCUT_DATA
 			-- Shortcuts other than editor shortcuts and external command shortcuts.
 
+	origo_data: EB_ORIGO_DATA
+			-- Preference data for origo
+
 invariant
 	dialog_data_not_void: dialog_data /= Void
 	context_tool_data_not_void: context_tool_data /= Void
@@ -80,6 +84,7 @@ invariant
 	search_tool_data_not_void: search_tool_data /= Void
 	metric_tool_data_attached: metric_tool_data /= Void
 	class_browser_data_attached: class_browser_data /= Void
+	origo_data_attacked: origo_data /= Void
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
