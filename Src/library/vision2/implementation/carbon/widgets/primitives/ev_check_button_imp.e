@@ -69,7 +69,7 @@ feature -- Minimum Size
 			create rect.make_new_unshared
 			err := get_best_control_rect_external ( c_object, rect.item, $y )
 			Result := rect.bottom - rect.top
-			Result := 12
+			Result := 14
 		end
 
 	minimum_width: INTEGER is

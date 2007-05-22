@@ -114,6 +114,7 @@ feature -- Element change
 		local
 			ret: INTEGER
 		do
+
 			if accelerators_enabled then
 				create real_text.make_unshared_with_eiffel_string (u_lined_filter (a_text))
 			else

@@ -135,8 +135,7 @@ feature {NONE} -- Carbon implementation
 		end
 
 
-feature {EV_CONTAINER_IMP} -- Layouting
-
+feature {EV_CONTAINER_IMP}
 --	carbon_arrange_children is
 --	--		 Setup positioning constraints for all children
 --		require
@@ -166,11 +165,11 @@ feature {EV_CONTAINER_IMP} -- Layouting
 		do
 			old_minimum_width := minimum_width
 			old_minimum_height := minimum_height
+			calculate_minimum_sizes
 
-				calculate_minimum_sizes
-				if parent_imp /= void then
-					parent_imp.child_has_resized (current, minimum_height - old_minimum_height,  minimum_width - old_minimum_width)
-				end
+			if parent_imp /= void then
+				parent_imp.child_has_resized (current, minimum_height - old_minimum_height,  minimum_width - old_minimum_width)
+			end
 		end
 
 	calculate_minimum_sizes is

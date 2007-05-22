@@ -15,7 +15,6 @@ inherit
 
 	EV_CONTAINER_IMP
 		undefine
-			replace,
 			x_position,
 			y_position,
 			screen_x,

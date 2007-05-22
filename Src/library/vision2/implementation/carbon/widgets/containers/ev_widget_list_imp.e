@@ -20,7 +20,6 @@ inherit
 
 	EV_CONTAINER_IMP
 		undefine
-			replace,
 			minimum_width,
 			minimum_height
 		redefine
@@ -114,6 +113,7 @@ feature {NONE} -- Implementation
 						end
 						i := i + 1
 					end
+
 
 			end
 
