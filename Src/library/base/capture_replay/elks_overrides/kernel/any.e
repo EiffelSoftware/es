@@ -402,7 +402,7 @@ feature -- Capture/Replay
 			-- Classes that belong to the observed
 			-- set should override this.
 		once
-			Result := False
+			Result := True
 		end
 invariant
 	reflexive_equality: standard_is_equal (Current)

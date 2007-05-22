@@ -1,6 +1,6 @@
 indexing
 	description: "Caller implementation for the example application"
-	author: ""
+	author: "Stefan Sieber"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -8,7 +8,9 @@ class
 	EXAMPLE_CALLER
 
 inherit
-		CALLER
+	CALLER
+
+	STRING_HANDLER --necessary to call {STRING}.set_count
 
 feature -- Basic operations
 
@@ -17,6 +19,7 @@ feature -- Basic operations
 		local
 			bank: BANK
 			bank_account: BANK_ACCOUNT
+			string: STRING_8
 		do
 			-- Discriminate by target type first, to speed things up.
 			if target.generating_type.is_equal("BANK") then
@@ -25,8 +28,11 @@ feature -- Basic operations
 			elseif target.generating_type.is_equal("BANK_ACCOUNT") then
 				bank_account ?= target
 				call_bank_account(bank_account, feature_name, arguments)
+			elseif target.generating_type.is_equal("STRING_8") then
+				string ?= target
+				call_string_8 (string, feature_name, arguments)
 			else
-				check False end --Die
+				report_and_set_type_error(target)
 			end
 		end
 
@@ -67,7 +73,7 @@ feature {NONE} -- Implementation
 				bank.deposit (deposit_arg1, deposit_arg2)
 				program_flow_sink.enter
 			else
-				check False end
+				report_and_set_feature_error(bank, feature_name)
 			end
 		end
 
@@ -91,7 +97,43 @@ feature {NONE} -- Implementation
 				ignored_result := bank_account.balance
 				program_flow_sink.enter
 			else
-				check False end
+				report_and_set_feature_error(bank_account, feature_name)
+			end
+		end
+
+	call_string_8(string: STRING_8; feature_name: STRING; arguments: LIST[ANY]) is
+			-- Call features of STRING_8
+		local
+			make_arg1: INTEGER
+			set_count_arg1: INTEGER
+			resize_arg1: INTEGER
+			ignore_result: ANY
+		do
+			if feature_name.is_equal("make") then
+				program_flow_sink.leave
+				make_arg1 ?= arguments @ 1
+				string.make (make_arg1)
+				program_flow_sink.enter
+			elseif feature_name.is_equal("set_count") then
+				program_flow_sink.leave
+				set_count_arg1 ?= arguments @ 1
+				string.set_count(set_count_arg1)
+				program_flow_sink.enter
+			elseif feature_name.is_equal("out") then
+				program_flow_sink.leave
+				ignore_result := string.out
+				program_flow_sink.enter
+			elseif feature_name.is_equal("capacity") then
+				program_flow_sink.leave
+				ignore_result := string.capacity
+				program_flow_sink.enter
+			elseif feature_name.is_equal("resize") then
+				program_flow_sink.leave
+				resize_arg1 ?= arguments @ 1
+				string.resize (resize_arg1)
+				program_flow_sink.enter
+			else
+				report_and_set_feature_error(string, feature_name)
 			end
 		end
 

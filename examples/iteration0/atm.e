@@ -9,6 +9,9 @@ class
 
 inherit
 	OBSERVABLE
+	redefine
+		is_observed
+	end
 
 create
 	make
@@ -22,10 +25,6 @@ feature -- creation
 		local
 			ignore_result: ANY
 		do
-
-
-
-
 			-- <methodbody_start name="make" args="[a_bank]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
@@ -48,13 +47,11 @@ feature -- creation
 
 feature -- Access
 
+	is_observed: BOOLEAN is False
+
 	ui: ATM_UI
 			-- UI of the ATM
 		do
-
-
-
-
 			-- <methodbody_start name="ui" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
@@ -79,11 +76,7 @@ feature -- Access
 	last_operation_succeeded: BOOLEAN
 			-- Did the last operation succeed?
 		do
-
-
-
-
-			-- <methodbody_start name="last_operation_succeeded" args="[]">
+		-- <methodbody_start name="last_operation_succeeded" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
 				program_flow_sink.put_feature_invocation("last_operation_succeeded", Current, [])
@@ -113,10 +106,6 @@ feature -- Element change
 			an_account: BANK_ACCOUNT
 			ignore_result: ANY
 		do
-
-
-
-
 			-- <methodbody_start name="deposit" args="[account_name,amount]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
@@ -152,10 +141,6 @@ feature -- Element change
 
 			ignore_result: ANY
 		do
-
-
-
-
 			-- <methodbody_start name="withdraw" args="[account_name, amount]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
@@ -187,10 +172,6 @@ feature -- Element change
 		require
 				account_name_not_void: account_name /= Void
 		do
-
-
-
-
 			-- <methodbody_start name="account_exists" args="[account_name]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
@@ -217,10 +198,6 @@ feature -- Element change
 		local
 			an_account: BANK_ACCOUNT
 		do
-
-
-
-
 			-- <methodbody_start name="balance_for_account_name" args="[account_name]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
@@ -245,10 +222,6 @@ feature -- Element change
 	authorization_key: STRING
 			--the (fake) authorization key
 		do
-
-
-
-
 			-- <methodbody_start name="authorization_key" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
@@ -275,10 +248,6 @@ feature -- Element change
 		local
 			ignore_result: ANY
 		do
-
-
-
-
 			-- <methodbody_start name="set_ui" args="[a_ui]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter

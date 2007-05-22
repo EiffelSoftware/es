@@ -15,7 +15,7 @@ inherit
 create
 	make
 
--- Assumptions: event_factory.last_event always contains the event that is
+-- Assumptions: event_factory.last_event always contains theevent that is
 --				currently being treated. As soon as the treatment is finished
 --				the next event will be read.
 --				Thus every method handling an event can assume that the event it
@@ -321,7 +321,7 @@ feature {NONE} -- Implementation
 					report_and_set_error ("Expected basic entity '" + expected_entity.type +"' but got Void")
 				else
 					if non_basic_entity.id /= 0 then
-						report_and_set_error ("Got Void argument but expected non-Void argument")
+						report_and_set_error ("Got Void object but expected non-Void object")
 					end
 				end
 			else
@@ -345,30 +345,31 @@ feature {NONE} -- Implementation
 		do
 			return_event ?= event
 			if return_event /= Void then
-				if return_event.return_value /= Void then
-					set_error_status_for_object (return_event.return_value, return_value)
-				else
-					if return_value /= Void then
-						report_and_set_error ("Expected no return value, but received one.")
+				if is_incallret then
+					-- Only return value of incallrets can be checked
+					-- outcall retval not known yet.
+					if return_event.return_value /= Void then
+						set_error_status_for_object (return_event.return_value, return_value)
+					else
+						if return_value /= Void then
+							report_and_set_error ("Expected no return value, but received one.")
+						end
 					end
-				end
-				if not has_error then
-					if is_incallret then
+					if has_error /= Void then
 						incallret_event ?= event
 						if incallret_event = Void then
 							report_and_set_error ("Expected incallret event")
 						end
-					else
-						outcallret_event ?= event
-						if outcallret_event = Void then
-							report_and_set_error ("Expected outcallret event")
-						end
+					end
+				else
+					outcallret_event ?= event
+					if outcallret_event = Void then
+						report_and_set_error ("Expected outcallret event")
 					end
 				end
 			else
 				report_and_set_error ("expected callret event")
 			end
-
 		end
 
 	handle_incall_event (incall: INCALL_EVENT) is
@@ -377,6 +378,9 @@ feature {NONE} -- Implementation
 			incall_not_void: incall /= Void
 		do
 			caller.call (resolver.resolve_entity(incall.target), incall.feature_name, resolver.resolve_entities(incall.arguments))
+			if caller.has_error then
+				report_and_set_error("error in caller: " + caller.error_message)
+			end
 		end
 
 feature {NONE}  -- Prototypes used for type comparison:

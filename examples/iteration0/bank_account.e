@@ -9,9 +9,7 @@ class
 
 inherit
 	OBSERVABLE
-		redefine
-			is_observed
-		end
+
 create
 	make
 
@@ -24,8 +22,6 @@ feature -- creation
 		local
 			ignore_result: ANY
 		do
-
-
 			-- <methodbody_start name="make" args="[a_name]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
@@ -52,8 +48,6 @@ feature -- Access
 	name: STRING is
 			-- Name of the account
 		do
-
-
 			-- <methodbody_start name="name" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
@@ -76,8 +70,6 @@ feature -- Access
 	balance: REAL is
 			-- Balance of the account
 		do
-
-
 			-- <methodbody_start name="balance" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
@@ -97,8 +89,6 @@ feature -- Access
 			-- </methodbody_end>
 		end
 
-	is_observed: BOOLEAN is True
-
 feature {BANK} -- Restricted
 
 	withdraw (an_amount: REAL) is
@@ -108,8 +98,6 @@ feature {BANK} -- Restricted
 		local
 			ignore_result: ANY
 		do
-
-
 			-- <methodbody_start name="withdraw" args="[an_amount]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
@@ -139,8 +127,6 @@ feature {BANK} -- Restricted
 		local
 			ignore_result: ANY
 		do
-
-
 			-- <methodbody_start name="deposit" args="[an_amount]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter

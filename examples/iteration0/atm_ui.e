@@ -9,10 +9,16 @@ class
 
 inherit
 	OBSERVABLE
+	redefine
+		is_observed
+	end
+
 create
 	make
 
 feature -- Access
+
+	is_observed: BOOLEAN is False
 
 	make (an_atm: ATM)
 			-- Create a new ATM_UI for 'an_atm'.
@@ -21,9 +27,6 @@ feature -- Access
 		local
 			ignore_result: ANY
 		do
-
-
-
 			-- <methodbody_start name="make" args="[an_atm]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
@@ -51,9 +54,6 @@ feature --Basic Operations
 			exit: BOOLEAN
 			ignore_result: ANY
 		do
-
-
-
 			-- <methodbody_start name="run" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
@@ -104,9 +104,6 @@ feature -- Basic operations
 		local
 			ignore_result: ANY
 		do
-
-
-
 			-- <methodbody_start name="ping" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter

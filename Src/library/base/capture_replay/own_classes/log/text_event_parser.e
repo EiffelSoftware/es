@@ -21,7 +21,7 @@ create
 
 feature -- Access
 	event_number: INTEGER
-			-- Line number of currently parsed line.
+			-- number of currently parsed event.
 
 	has_error: BOOLEAN
 			-- Did an error occur when parsing the current line?

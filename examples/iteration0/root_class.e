@@ -8,6 +8,9 @@ class
 
 inherit
 	OBSERVABLE
+	redefine
+		is_observed
+	end
 
 create
 	make
@@ -82,19 +85,9 @@ feature -- Initialization
 		end
 
 feature --Access
+	is_observed: BOOLEAN is False
+
 -- Modes for the example application:
-
-	capture: INTEGER_32 is unique
-
-	normal_run: INTEGER_32 is unique
-
-	performance_test_capture: INTEGER_32 is unique
-
-	performance_test_normal: INTEGER_32 is unique
-
-	replay_logged: INTEGER_32 is unique
-
-	replay_simple: INTEGER_32 is unique
 
 invariant
 		-- from OBSERVABLE

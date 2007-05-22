@@ -9,11 +9,42 @@ indexing
 deferred class
 	CALLER
 
-feature -- Basic operations
+feature -- Access
 
-call (target: ANY; feature_name: STRING; arguments: LIST[ANY]) is
-		-- Call `target'.`feature_name'(`arguments')
-	deferred end
+	has_error: BOOLEAN
+
+	error_message: STRING
+
+feature -- Basic operations
+	call (target: ANY; feature_name: STRING; arguments: LIST[ANY]) is
+			-- Call `target'.`feature_name'(`arguments')
+		deferred end
+
+feature {NONE} -- Implementation
+	report_and_set_type_error(object: ANY) is
+			-- Report that an unknown class was provided as argument
+		require
+			object_not_void: object /= Void
+		do
+			has_error := True
+			error_message := "error: EXAMPLE_CALLER cannot make calls on '" + object.generating_type + "'"
+		ensure
+			error_set: has_error = True
+			error_message_set: error_message /= Void
+		end
+
+	report_and_set_feature_error(target: ANY; feature_name: STRING) is
+			-- Report that a call to an unknown feature was requested.
+		require
+			target_not_void: target /= Void
+			feature_name_not_void: feature_name /= Void
+		do
+			has_error := True
+			error_message := "feature '" + feature_name + "' is not known for type '" + target.generating_type + "'"
+		ensure
+			error_set: has_error = True
+			error_message_set: error_message /= Void
+		end
 
 invariant
 	invariant_clause: True -- Your invariant here
