@@ -98,9 +98,9 @@ feature -- Initialization
 				count := 0
 				internal_hash_code := 0
 				make_area (n + 1)
---XXX			-- <methodbody_end return_value="False">
 			else
 				make_area (n + 1)
+			-- <methodbody_end return_value="False">
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter

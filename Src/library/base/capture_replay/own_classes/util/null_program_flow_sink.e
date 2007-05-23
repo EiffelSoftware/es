@@ -10,9 +10,6 @@ class
 inherit
 	PROGRAM_FLOW_SINK
 
-create
-	make
-
 feature -- Basic operations
 
 	put_feature_exit (res: ANY): ANY is

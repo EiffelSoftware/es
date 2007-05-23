@@ -31,9 +31,6 @@ create
 --Questions: 	-is there a way to recover from that problem?
 --				-What could be signalled to the players client?
 
---TODO: 		--find way to say more about the current position of event_input (like line)
---					in case of an error.
-
 feature -- Initialization
 
 

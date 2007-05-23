@@ -370,9 +370,9 @@ feature -- Capture/Replay
 			environment: EXECUTION_ENVIRONMENT
 			mode: STRING
 		once
-			create {NULL_PROGRAM_FLOW_SINK}Result.make
+			create {NULL_PROGRAM_FLOW_SINK}Result
 			create environment
-			mode := environment.get("cr_mode")
+			mode := environment.get("CR_MODE")
 			if mode = Void then
 				print("*'cr_mode' not defined. Disabling capture/replay.")
 			elseif mode.is_case_insensitive_equal (mode_capture) then
