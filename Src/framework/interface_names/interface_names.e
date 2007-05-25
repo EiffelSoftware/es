@@ -624,6 +624,7 @@ feature -- Accelerator, focus label and menu name
 	l_compiled_class_stone_name: STRING_GENERAL is do Result := locale.translation ("Compiled class stone") end
 	l_group_stone_name: STRING_GENERAL is do Result := locale.translation ("Group stone") end
 	l_target_stone_name: STRING_GENERAL is do Result := locale.translation ("Target stone") end
+	m_Origo_settings: STRING_GENERAL is do Result := locale.translation ("Origo Settings...") end
 
 feature -- Formatter displayer names
 	l_class_tree_displayer_help: STRING_GENERAL do Result := locale.translation ("This view is suitable for displaying class hierarchy%Nsuch as class ancestors/descendants") end
@@ -1684,6 +1685,7 @@ feature -- Title part
 	t_New_project: STRING_GENERAL is					do Result := locale.translation("New Project")	end
 	t_Open_backup: STRING_GENERAL is					do Result := locale.translation("Backup Found")	end
 	t_Organize_favorites: STRING_GENERAL is				do Result := locale.translation("Organize Favorites")	end
+	t_Origo: STRING_GENERAL is							do Result := locale.translation("Origo") end
 	t_Profile_query_window: STRING_GENERAL is			do Result := locale.translation("Profile Query Window")	end
 	t_Profiler_wizard: STRING_GENERAL is				do Result := locale.translation("Profiler Wizard")	end
 	t_Project: STRING is

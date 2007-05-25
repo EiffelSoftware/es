@@ -6,7 +6,7 @@
 
 
  /* File created by MIDL compiler version 6.00.0366 */
-/* at Wed May 16 22:00:14 2007
+/* at Thu May 24 09:58:55 2007
  */
 /* Compiler settings for metadata_consumer.idl:
     Oicf, W1, Zp8, env=Win32 (32b run)
