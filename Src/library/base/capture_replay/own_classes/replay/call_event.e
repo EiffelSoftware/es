@@ -14,7 +14,7 @@ inherit
 
 feature -- Creation
 
-	make(a_target: NON_BASIC_ENTITY; a_feature_name: STRING; the_arguments: LIST[ENTITY])
+	make(a_target: NON_BASIC_ENTITY; a_feature_name: STRING; the_arguments: DS_LIST[ENTITY])
 			-- Make the event of the call `a_target'.`a_feature_name'(`the_arguments').
 		require
 			a_target_not_void: a_target /= Void
@@ -36,7 +36,7 @@ feature -- Access
 	feature_name: STRING
 		-- The name of the called feature.
 
-	arguments: LIST[ENTITY]
+	arguments: DS_LIST[ENTITY]
 		-- The arguments of the called feature.
 
 invariant

@@ -14,7 +14,7 @@ inherit
 
 feature -- Basic operations
 
-	call (target: ANY; feature_name: STRING; arguments: LIST[ANY]) is
+	call (target: ANY; feature_name: STRING; arguments: DS_LIST[ANY]) is
 			-- Call features on BANK or BANK_ACCOUNT
 		local
 			bank: BANK
@@ -37,7 +37,7 @@ feature -- Basic operations
 		end
 
 feature {NONE} -- Implementation
-	call_bank(bank: BANK; feature_name: STRING; arguments: LIST[ANY]) is
+	call_bank(bank: BANK; feature_name: STRING; arguments: DS_LIST[ANY]) is
 			-- Call features of BANK
 		local
 			ignored_result: ANY
@@ -77,7 +77,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	call_bank_account(bank_account: BANK_ACCOUNT; feature_name: STRING; arguments: LIST[ANY]) is
+	call_bank_account(bank_account: BANK_ACCOUNT; feature_name: STRING; arguments: DS_LIST[ANY]) is
 			-- Call features on BANK_ACCOUNT
 		local
 			ignored_result: ANY
@@ -101,7 +101,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	call_string_8(string: STRING_8; feature_name: STRING; arguments: LIST[ANY]) is
+	call_string_8(string: STRING_8; feature_name: STRING; arguments: DS_LIST[ANY]) is
 			-- Call features of STRING_8
 		local
 			make_arg1: INTEGER

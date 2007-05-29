@@ -31,7 +31,7 @@ feature -- Access
 			-- Is program currently running in replay phase?
 			-- MUST be false if capture/Replay is disabled.
 
-	observed_stack: ARRAYED_STACK [BOOLEAN]
+	observed_stack: DS_ARRAYED_STACK [BOOLEAN]
 			--Stack of the is_observed Values
 
 feature -- Measurement

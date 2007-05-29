@@ -16,7 +16,7 @@ feature -- Access
 	error_message: STRING
 
 feature -- Basic operations
-	call (target: ANY; feature_name: STRING; arguments: LIST[ANY]) is
+	call (target: ANY; feature_name: STRING; arguments: DS_LIST[ANY]) is
 			-- Call `target'.`feature_name'(`arguments')
 		deferred end
 

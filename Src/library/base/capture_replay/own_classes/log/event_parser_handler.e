@@ -24,12 +24,12 @@ feature -- Basic operations
 			parser.set_handler(Current)
 		end
 
-	handle_incall_event(target: ENTITY; feature_name: STRING; arguments: LIST[ENTITY])
+	handle_incall_event(target: ENTITY; feature_name: STRING; arguments: DS_LIST[ENTITY])
 			-- Handle an incall event (`target'.`feature_name'(`arguments')).
 		deferred
 		end
 
-	handle_outcall_event(target: ENTITY; feature_name: STRING; arguments: LIST[ENTITY])
+	handle_outcall_event(target: ENTITY; feature_name: STRING; arguments: DS_LIST[ENTITY])
 			-- Handle an outcall event (`target'.`feature_name'(`arguments'))
 		deferred
 		end

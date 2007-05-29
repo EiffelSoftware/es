@@ -214,7 +214,7 @@ feature {NONE} -- Implementation
 			print("replay error on event " + event_input.event_number.out + ": "+ message + "%N")
 		end
 
-	index_arguments (expected_arguments: LIST[ENTITY]; actual_arguments: TUPLE) is
+	index_arguments (expected_arguments: DS_LIST[ENTITY]; actual_arguments: TUPLE) is
 			-- Make sure that all arguments are indexed in the object
 			-- lookup table.
 		require
@@ -279,7 +279,7 @@ feature {NONE} -- Implementation
 			is_outcall_event_if_target_is_unobserved: has_error or ((not target.is_observed) implies is_instance_of(event, outcall_type_id))
 		end
 
-	set_error_status_for_arguments(expected_arguments: LIST[ENTITY]; actual_arguments: TUPLE) is
+	set_error_status_for_arguments(expected_arguments: DS_LIST[ENTITY]; actual_arguments: TUPLE) is
 			-- Check if the actual arguments match the expected ones and set `has_error' accordingly.
 		require
 			no_error: not has_error
@@ -295,7 +295,7 @@ feature {NONE} -- Implementation
 				until
 					has_error or i > actual_arguments.count
 				loop
-					set_error_status_for_object(expected_arguments[i],actual_arguments[i])
+					set_error_status_for_object(expected_arguments.item(i),actual_arguments[i])
 					i := i + 1
 				end
 			end
@@ -352,7 +352,7 @@ feature {NONE} -- Implementation
 							report_and_set_error ("Expected no return value, but received one.")
 						end
 					end
-					if has_error /= Void then
+					if not has_error then
 						incallret_event ?= event
 						if incallret_event = Void then
 							report_and_set_error ("Expected incallret event")

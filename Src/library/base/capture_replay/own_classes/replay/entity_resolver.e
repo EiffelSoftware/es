@@ -1,6 +1,6 @@
 indexing
 	description: "Object that's responsible for resolving entities to objects"
-	author: ""
+	author: "Stefan Sieber"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -38,7 +38,7 @@ feature -- Access
 			only_void_entities_resolved_to_void: (Result = Void) implies represents_void(entity)
 		end
 
-	resolve_entities (arguments: LIST[ENTITY]): LIST[ANY] is
+	resolve_entities (arguments: DS_LIST[ENTITY]): DS_LIST[ANY] is
 			-- Resolve all entities from `arguments'.
 		require
 			arguments_not_void: arguments /= Void
@@ -46,12 +46,12 @@ feature -- Access
 			i: INTEGER
 		do
 			from
-				create {ARRAYED_LIST[ANY]}Result.make(arguments.count)
+				create {DS_ARRAYED_LIST[ANY]}Result.make(arguments.count)
 				i := 1
 			until
 				i >arguments.count
 			loop
-				Result.put_i_th (resolve_entity(arguments @ i),i)
+				Result.put_last (resolve_entity(arguments @ i))
 				i := i + 1
 			end
 		end

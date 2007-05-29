@@ -31,7 +31,7 @@ feature -- Setup
 	set_up
 			-- Set up the environment
 		local
-			arguments: ARRAYED_LIST[ENTITY]
+			arguments: DS_ARRAYED_LIST[ENTITY]
 			entity: NON_BASIC_ENTITY
 		do
 				create entity.make ("FOO_TYPE", 99)

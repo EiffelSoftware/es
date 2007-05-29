@@ -126,7 +126,7 @@ feature {NONE} -- Implementation
 			parse_call(agent handler.handle_outcall_event)
 		end
 
-	parse_call(handler_feature: PROCEDURE [ANY, TUPLE[ENTITY, STRING, LIST[ENTITY]]]) is
+	parse_call(handler_feature: PROCEDURE [ANY, TUPLE[ENTITY, STRING, DS_LIST[ENTITY]]]) is
 			-- Parse the common part of in&outcalls and call the `handler_feature'
 			-- when done. Set `has_error' if an error occurred.
 		require
@@ -136,7 +136,7 @@ feature {NONE} -- Implementation
 		local
 			target: ENTITY
 			feature_name: STRING
-			arguments: ARRAYED_LIST[ENTITY]
+			arguments: DS_ARRAYED_LIST[ENTITY]
 		do
 			parse_entity
 			if not has_error then
@@ -151,7 +151,7 @@ feature {NONE} -- Implementation
 					loop
 						parse_entity
 						if not has_error then
-							arguments.extend (last_entity)
+							arguments.put_last (last_entity)
 						end
 					end
 					if not has_error then
@@ -459,13 +459,6 @@ feature {NONE} -- Implementation
 	Identifier_regex: STRING is "^[A-Za-z]\w*"
 
 	Value_regex: STRING is "^%"[^%"]*%""
-
-	exceptions: EXCEPTIONS is
-			-- Standard EXCEPTIONS instance
-		once
-			create Result
-		end
-
 
 invariant
 	handler_not_void: handler /= Void -- Your invariant here
