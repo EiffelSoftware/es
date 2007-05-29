@@ -110,17 +110,22 @@ feature {NONE} -- Implementation
 			box.disable_item_expand (cell)
 		end
 
---	refresh_project_list (st: STONE) is
 	refresh_project_list is
 			-- refresh content of project list combo box
 		local
 			l_list_item: EV_LIST_ITEM
 			l_preferences: EB_ORIGO_DATA
+			l_origo_client: EB_ORIGO_API_CALLS
+			session: STRING
 		do
-			io.output.put_string (preferences.origo_data.user_key)
-			io.output.new_line
-			io.output.put_string (preferences.origo_data.xml_rpc_client_path)
-			io.output.new_line
+			create l_origo_client.make (Current)
+			session := l_origo_client.login
+--			io.output.put_string (session)
+--			io.output.new_line
+--			io.output.put_string (preferences.origo_data.user_key)
+--			io.output.new_line
+--			io.output.put_string (preferences.origo_data.xml_rpc_client_path)
+--			io.output.new_line
 --			create l_list_item.make_with_text ("moo")
 --			project_list.extend (l_list_item)
 		end

@@ -303,7 +303,6 @@
 					<platform value="windows"/>
 				</condition>
 			</file_rule>
-			<cluster name="origo" location="C:\ETH\Masterarbeit\EiffelStudio\dev60\Eiffel\interface\new_graphical\origo\"/>
 		</cluster>
 		<cluster name="process_gui" location="$ISE_LIBRARY\library\process\gui\" recursive="true"/>
 		<cluster name="switch" location="$EIFFEL_SRC\Eiffel\switch\">
