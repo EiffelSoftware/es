@@ -21,8 +21,8 @@
 <!-- Implementation -->
 
 	<target name="init_system">
-		<set name="system" value="xparser"/>
-		<set name="library" value="parser"/>
+		<set name="system" value="xlog"/>
+		<set name="library" value="log"/>
 		<set name="system_dir" value="."/>
 	</target>
 
@@ -31,6 +31,7 @@
 		<delete>
 			<fileset include="*.log" />
 		</delete>
+		<delete directory="EIFGENs" />
 	</target>
 
 </project>

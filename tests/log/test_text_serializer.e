@@ -71,7 +71,7 @@ feature -- Testing the tests:
 			serializer.write_outcall ("test_outcall", example, [example, string_arg, real_arg, int_arg])
 			serializer.close_file
 
-			assert_files_equal ("written file correct", filename, "test_calls.res")
+			assert_files_equal ("written file correct", filename, "test_serializer_calls.res")
 		end
 
 	test_special_arguments
@@ -85,7 +85,7 @@ feature -- Testing the tests:
 			serializer.write_outcall("no_argument", example, [])
 			serializer.close_file
 
-			assert_files_equal ("written file correct", filename, "test_special_arguments.res")
+			assert_files_equal ("written file correct", filename, "test_serializer_special_arguments.res")
 		end
 
 
@@ -100,7 +100,7 @@ feature -- Testing the tests:
 			serializer.write_incallret(Void)
 			serializer.close_file
 
-			assert_files_equal ("written file correct", filename, "test_retcalls.res")
+			assert_files_equal ("written file correct", filename, "test_serializer_retcalls.res")
 		end
 feature -- Access
 

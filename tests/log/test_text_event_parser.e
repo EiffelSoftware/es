@@ -61,7 +61,7 @@ feature -- Testing the tests:
 		local
 			event_input: EVENT_INPUT
 		do
-			event_input := create_event_input("test_calls.res")
+			event_input := create_event_input("test_parser_calls.res")
 
 			event_input.read_next_event
 			assert_true("correct event-type", event_input.last_event.conforms_to (incall_prototype))
@@ -83,7 +83,7 @@ feature -- Testing the tests:
 		local
 			event_input: EVENT_INPUT
 		do
-			event_input := create_event_input("test_calls.res")
+			event_input := create_event_input("test_parser_calls.res")
 
 			-- Test the 3 INCALLS in the log
 			check_calls(event_input, incall_prototype)
@@ -98,7 +98,7 @@ feature -- Testing the tests:
 		local
 			event_input: EVENT_INPUT
 		do
-			event_input := create_event_input("test_callrets.res")
+			event_input := create_event_input("test_parser_callrets.res")
 
 			--test the 3 INCALLRETs in the log
 			check_callrets(event_input, incallret_prototype)
