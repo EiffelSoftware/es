@@ -69,6 +69,108 @@ feature -- XML RPC calls
 			end
 		end
 
+	my_username (session: STRING): STRING is
+			-- receive your own username
+		require
+			session_attached: session /= Void and not session.is_empty
+		local
+			l_process: PROCESS
+			l_factory: PROCESS_FACTORY
+			command_line: STRING
+			error: STRING
+			username: STRING
+		do
+			username := ""
+			error := ""
+			command_line := preferences.origo_data.xml_rpc_client_path.out
+			command_line.append (" my_name -s ")
+			command_line.append (session)
+			create l_factory
+			l_process := l_factory.process_launcher_with_command_line (command_line, Void)
+			l_process.redirect_output_to_agent (agent username.append)
+			l_process.redirect_error_to_agent (agent error.append)
+			l_process.launch
+
+				-- launch process
+			if l_process.launched then
+				l_process.wait_for_exit
+
+					-- if everything went fine
+				if error.is_empty then
+					Result := username
+
+					-- an error occurred
+				else
+					error.insert_string ("Error during my_username:%N", 1)
+					show_warning (error)
+				end
+
+				-- the process could not be launched
+			else
+				show_warning ("Error during my_username:%NCommand line tool could not be launched")
+			end
+		end
+
+	project_list_of_user (session: STRING; username: STRING): DS_LINKED_LIST [STRING] is
+			-- return project list of `username'
+		require
+			session_attached: session /= Void and not session.is_empty
+			username_attached: username /= Void and not username.is_empty
+		local
+			l_process: PROCESS
+			l_factory: PROCESS_FACTORY
+			command_line: STRING
+			error: STRING
+			project_list_string: STRING
+			l_lines: LIST [STRING]
+		do
+			project_list_string := ""
+			error := ""
+			command_line := preferences.origo_data.xml_rpc_client_path.out
+			command_line.append (" project_list_of_user -s ")
+			command_line.append (session)
+			command_line.append (" -u ")
+			command_line.append (username)
+			create l_factory
+			l_process := l_factory.process_launcher_with_command_line (command_line, Void)
+			l_process.redirect_output_to_agent (agent project_list_string.append)
+			l_process.redirect_error_to_agent (agent error.append)
+			l_process.launch
+
+				-- launch process
+			if l_process.launched then
+				l_process.wait_for_exit
+
+					-- if everything went fine
+				if error.is_empty then
+
+						-- parse the result and fill the Result
+					l_lines := project_list_string.split ('%N')
+					create Result.make
+					if l_lines.count > 0 then
+						from
+							l_lines.start
+						until
+							l_lines.item = l_lines.last
+						loop
+							Result.force_first (l_lines.item.split ('%T').i_th (2))
+							l_lines.forth
+						end
+					end
+
+					-- an error occurred
+				else
+					error.insert_string ("Error during project_list_of_user:%N", 1)
+					show_warning (error)
+				end
+
+				-- the process could not be launched
+			else
+				show_warning ("Error during project_list_of_user:%NCommand line tool could not be launched")
+			end
+		end
+
+
 feature {NONE} -- Implementation
 
 	show_warning (warning: STRING) is

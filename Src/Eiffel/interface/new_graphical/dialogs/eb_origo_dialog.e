@@ -53,16 +53,14 @@ feature -- Initialization
 				-- labels
 			create project_name_label.make_with_text (t_project_name)
 			project_name_label.align_text_left
-			create state_label.make_with_text (t_state)
+			create state_label.make_with_text ("")
 			state_label.align_text_left
 
 				-- combobox
 			create project_list
 			project_list.align_text_left
 			project_list.disable_edit
-			create list_item.make_with_text ("-- none --")
-			project_list.extend (list_item)
-			create list_item.make_with_text ("moo")
+			create list_item.make_with_text (t_no_origo_project)
 			project_list.extend (list_item)
 			project_list.list_shown_actions.force (agent refresh_project_list)
 
@@ -116,10 +114,52 @@ feature {NONE} -- Implementation
 			l_list_item: EV_LIST_ITEM
 			l_preferences: EB_ORIGO_DATA
 			l_origo_client: EB_ORIGO_API_CALLS
-			session: STRING
+			l_session: STRING
+			l_username: STRING
+			l_project_names: DS_LINKED_LIST [STRING]
 		do
 			create l_origo_client.make (Current)
-			session := l_origo_client.login
+			state_label.set_text ("Logging in...")
+			state_label.refresh_now
+			l_session := l_origo_client.login
+
+				-- login was successful
+			if l_session /= Void then
+				state_label.set_text ("Receiving username...")
+				state_label.refresh_now
+				l_username := l_origo_client.my_username (l_session)
+			end
+
+				-- username was received
+			if l_username /= Void then
+				state_label.set_text ("Receiving project list...")
+				state_label.refresh_now
+				l_project_names := l_origo_client.project_list_of_user (l_session, l_username)
+			end
+
+				-- project list was received
+			if l_project_names /= Void then
+				-- initalize project list
+				project_list.wipe_out
+				create l_list_item.make_with_text (t_no_origo_project)
+				project_list.force (l_list_item)
+
+				-- fill project list
+				from
+					l_project_names.start
+				until
+					l_project_names.after
+				loop
+					create l_list_item.make_with_text (l_project_names.item_for_iteration)
+					project_list.force (l_list_item)
+					l_project_names.forth
+				end
+				state_label.set_text ("")
+
+				-- something went wrong
+			else
+				state_label.set_text ("An error ocurred")
+			end
 --			io.output.put_string (session)
 --			io.output.new_line
 --			io.output.put_string (preferences.origo_data.user_key)
@@ -144,7 +184,7 @@ feature {NONE} -- Implementation
 
 		-- strings
 	t_project_name: STRING is "Origo Project Name"
-	t_state: STRING is "State"
+	t_no_origo_project: STRING is "-- none --"
 
 
 
