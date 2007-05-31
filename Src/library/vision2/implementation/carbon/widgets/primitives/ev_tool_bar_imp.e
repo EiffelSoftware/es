@@ -66,8 +66,8 @@ feature {NONE} -- Implementation
 
 			base_make (an_interface)
 			create rect.make_new_unshared
-			rect.set_right (1)
-			rect.set_bottom (1)
+			rect.set_right (100)
+			rect.set_bottom (100)
 			ret := create_user_pane_control_external ( null, rect.item, {CONTROLS_ANON_ENUMS}.kControlSupportsEmbedding, $ptr )
 			ret := create_radio_group_control_external (null,rect.item, $radio_group)
 			ret := hiview_add_subview_external (ptr, radio_group)
@@ -158,6 +158,8 @@ feature -- Implementation
 			v_imp: EV_ITEM_IMP
 			ret: INTEGER
 			radio_peer_imp: EV_RADIO_PEER_IMP
+			rect, rect_1: RECT_STRUCT
+			ptr: POINTER
 		do
 
 			-- Special treatment for radio buttons
@@ -166,7 +168,12 @@ feature -- Implementation
 			if
 				radio_peer_imp /= Void
 			then
+				create rect_1.make_new_unshared
 				ret := embed_control_external (v_imp.c_object, radio_group)
+				ptr := get_control_bounds_external (radio_group, rect_1.item)
+				create rect.make_unshared ($rect_1)
+				ret := rect.right
+				size_control_external (radio_group, v_imp.height, (rect.right + v_imp.width))
 			else
 				ret := embed_control_external (v_imp.c_object, c_object)
 			end
