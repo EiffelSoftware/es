@@ -3509,3 +3509,4 @@ tests/log/test_parser_calls.res -text
 tests/log/test_serializer_calls.res -text
 tests/log/test_serializer_retcalls.res -text
 tests/log/test_serializer_special_arguments.res -text
+tests/system/getest.cfg -text

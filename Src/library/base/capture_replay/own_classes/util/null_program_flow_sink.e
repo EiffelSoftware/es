@@ -10,6 +10,12 @@ class
 inherit
 	PROGRAM_FLOW_SINK
 
+feature -- Access
+	is_capture_replay_enabled: BOOLEAN is False
+
+	is_replay_phase: BOOLEAN is False
+
+
 feature -- Basic operations
 
 	put_feature_exit (res: ANY): ANY is
@@ -23,6 +29,20 @@ feature -- Basic operations
 		do
 
 		end
+
+	enter is
+			--
+		do
+
+		end
+
+	leave is
+			--
+		do
+			
+		end
+
+
 
 feature {NONE} -- Implementation
 

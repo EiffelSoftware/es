@@ -9,51 +9,24 @@ deferred class
 
 feature --Initialization
 
-	make
-			-- Create the controller.
-		local
-			ctrl: like Current
-		do
-			create observed_stack.make(200)
-			observed_stack.put (False)
-
-			set_capture_replay_enabled (False)
-		end
-
 feature -- Access
 
-	is_capture_replay_enabled: BOOLEAN
+	is_capture_replay_enabled: BOOLEAN is
 			-- Is Capture/Replay enabled?
 			-- This switch is installed to be able to make performance
 			-- measurements.
+	deferred end
 
-	is_replay_phase: BOOLEAN
+	is_replay_phase: BOOLEAN is
 			-- Is program currently running in replay phase?
 			-- MUST be false if capture/Replay is disabled.
-
-	observed_stack: DS_ARRAYED_STACK [BOOLEAN]
-			--Stack of the is_observed Values
+	deferred end
 
 feature -- Measurement
 
 feature -- Status report
 
 feature -- Status setting
-	set_capture_replay_enabled(enabled: BOOLEAN) is
-			-- Set `is_capture_replay_enabled' to `enabled'
-		do
-			is_capture_replay_enabled := enabled
-			is_capture_replay_enabled_original := enabled
-		end
-
-	set_replay_phase(activated: BOOLEAN) is
-			-- 	Set `is_replay_phase' to `activated'
-		require
-			requires_enabled_capture_phase: activated implies is_capture_replay_enabled
-		do
-			is_replay_phase := activated
-			is_replay_phase_original := activated
-		end
 
 feature -- Basic operations
 
@@ -72,18 +45,12 @@ feature -- Basic operations
 	enter is
 			-- Enter into the capture/replay management code.
 			-- Note: disables Capture/Replay
-		do
-			is_capture_replay_enabled := False
-			is_replay_phase := False
-		end
+		deferred end
 
 	leave is
 			-- Leave the Capture/Replay management code.
 			-- note sets Capture/Replay to the original status.
-		do
-			is_capture_replay_enabled := is_capture_replay_enabled_original
-			is_replay_phase := is_replay_phase_original
-		end
+		deferred end
 
 feature -- Obsolete
 
@@ -91,11 +58,6 @@ feature -- Inapplicable
 
 feature {NONE} -- Implementation
 
-	is_capture_replay_enabled_original: BOOLEAN
-			-- is c/r really enabled? (not only temporary)
-
-	is_replay_phase_original: BOOLEAN
-			-- Is this in fact the replay phase (not only temporary)
 invariant
 	replay_requires_enabled_cr: is_replay_phase implies is_capture_replay_enabled
 

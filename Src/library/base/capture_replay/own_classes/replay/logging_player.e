@@ -24,6 +24,10 @@ feature -- Initialization
 	setup_on_text_files(replay_filename:STRING; log_filename: STRING; a_caller: CALLER) is
 			-- Set up the player for replay from `replay_filename', logging to `log_filename' using
 			-- `a_caller' to execute calls.
+		require
+			replay_filename_not_void: replay_filename /= Void
+			log_filename_not_void: log_filename /= Void
+			a_caller_not_void: a_caller /= Void
 		do
 			create recorder.make
 			recorder.setup_on_text_serializer (log_filename)

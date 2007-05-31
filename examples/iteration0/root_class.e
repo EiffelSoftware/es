@@ -35,7 +35,7 @@ feature -- Initialization
 		do
 			--Initialize the rest of the PROGRAM_FLOW_SINK:
 			-- XXX is there a better way to do it? Problem:
-			-- at least caller can't be known in ANY, because it
+			-- at least CALLER can't be known in ANY, because it
 			-- depends on the application.
 			recorder ?= program_flow_sink
 			if recorder /= Void then
@@ -54,7 +54,7 @@ feature -- Initialization
 			end
 
 
-			test_performance := False
+			test_performance := True
 
 
 			-- <methodbody_start name="make" args="[]">

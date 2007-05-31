@@ -8,7 +8,7 @@ class
 	PLAYER
 
 inherit
-	PROGRAM_FLOW_SINK
+	PROGRAM_FLOW_SINK_IMPL
 
 	INTERNAL
 
@@ -36,6 +36,9 @@ feature -- Initialization
 
 		setup_on_text_file (filename: STRING; a_caller: CALLER)
 			--
+		require
+			filename_not_void: filename /= Void
+			a_caller_not_void: a_caller /= Void
 		local
 			parser: TEXT_EVENT_PARSER
 			input_file: KL_TEXT_INPUT_FILE

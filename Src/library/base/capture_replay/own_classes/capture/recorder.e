@@ -10,7 +10,7 @@ class
 	RECORDER
 
 inherit
-	PROGRAM_FLOW_SINK
+	PROGRAM_FLOW_SINK_IMPL
 
 create
 	make
