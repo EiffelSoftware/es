@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-2-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-2-0 http://www.eiffel.com/developers/xml/configuration-1-2-0.xsd" name="application" uuid="D816830B-15A7-4CFF-95F6-732DDD74048B">
+	<target name="application">
+		<root class="APPLICATION_RUNNER" feature="make"/>
+		<option warning="true">
+			<assertions precondition="true"/>
+		</option>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
+		<cluster name="additional_base_classes" location="..\..\Src\library\base\capture_replay\own_classes\" recursive="true"/>
+		<cluster name="application" location=".\" recursive="true">
+			<file_rule>
+				<exclude>/EIFGENs$</exclude>
+				<exclude>/.svn$</exclude>
+				<exclude>/CVS$</exclude>
+			</file_rule>
+		</cluster>
+		<cluster name="example_application" location="..\..\examples\iteration0\" recursive="true"/>
+		<override name="elks_overrides" location="..\..\Src\library\base\capture_replay\elks_overrides\" recursive="true"/>
+	</target>
+</system>

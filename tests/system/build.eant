@@ -14,12 +14,12 @@
 		<parent location="${GOBO}/misc/test.eant">
 			<redefine target="init_system"/>
 			<redefine target="other_clean"/>
+			<redefine target="test"/>
 		</parent>
 	</inherit>
 
 
 <!-- Implementation -->
-
 	<target name="init_system">
 		<set name="system" value="xsystem"/>
 		<set name="library" value="system"/>
@@ -32,6 +32,11 @@
 			<fileset include="*.log" />
 		</delete>
 		<delete directory="EIFGENs" />
+	</target>
+
+	<target name="test">
+		<ise ace="application.ecf" system="application" finalize="true" finish_freezing="true"/>
+		<precursor/>
 	</target>
 
 </project>

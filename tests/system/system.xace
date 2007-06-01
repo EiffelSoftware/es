@@ -17,19 +17,18 @@
 	<cluster name="ap_tester" location="."/><!-- test cases -->
 	<cluster name="ap_testgen" location="TESTGEN"/><!-- generated test classes -->
 	
+<!-- as the Tests will only launch the instrumented application (and not be instrumented themselves), 
+     it's not necessary to have the classes and overrides for instrumentation
+
 	<cluster name="additional_base_classes" location="../../Src/library/base/capture_replay/own_classes/">
 		<option name="recursive" value="true" />
 	</cluster>
-
 	<cluster name="elks_kernel_overrides" location="../../Src/library/base/capture_replay/elks_overrides/kernel">
 		<option name="read_only" value="False" />
 	</cluster>
 
-	<cluster name="example_application" location="../../examples/iteration0" >
-	</cluster>
-
-	<option name="override_cluster" value="elks_kernel_overrides" /> <!-- overrides for modified elks library. -->
-	 
+	<option name="override_cluster" value="elks_kernel_overrides" />
+-->	 
 <!-- use the whole gobo library: -->
 	<mount location="${GOBO}/library/library.xace"/>
 	<mount location="${GOBO}/library/kernel.xace"/>
