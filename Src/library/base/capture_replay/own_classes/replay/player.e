@@ -8,7 +8,7 @@ class
 	PLAYER
 
 inherit
-	PROGRAM_FLOW_SINK_IMPL
+	PROGRAM_FLOW_SINK
 
 	INTERNAL
 
@@ -109,39 +109,40 @@ feature -- Basic operations
 		do
 			callee_observed := observed_stack.item
 			observed_stack.remove
-
-			if callee_observed /= observed_stack.item then
-				-- boundary cross
-				if event_input.end_of_input then
-					report_and_set_error ("Received Callret_event, but log is finished.")
-				else
-					set_error_status_for_callret (event_input.last_event, res, callee_observed)
-					if not has_error then
-						callret ?= event_input.last_event
-						if callee_observed then
-							--INCALLRET
-							observable_returnvalue ?= res
-							non_basic_return_entity ?= callret.return_value
-							if non_basic_return_entity /= Void then
-								if observable_returnvalue /= Void then
-									-- This return value must be registered.
-									resolver.register_object (observable_returnvalue, non_basic_return_entity)
-								else
-									report_and_set_error ("Received non-basic return value that is not observable")
+			if not has_error then
+				if callee_observed /= observed_stack.item then
+					-- boundary cross
+					if event_input.end_of_input then
+						report_and_set_error ("Received Callret_event, but log is finished.")
+					else
+						set_error_status_for_callret (event_input.last_event, res, callee_observed)
+						if not has_error then
+							callret ?= event_input.last_event
+							if callee_observed then
+								--INCALLRET
+								observable_returnvalue ?= res
+								non_basic_return_entity ?= callret.return_value
+								if non_basic_return_entity /= Void then
+									if observable_returnvalue /= Void then
+										-- This return value must be registered.
+										resolver.register_object (observable_returnvalue, non_basic_return_entity)
+									else
+										report_and_set_error ("Received non-basic return value that is not observable")
+									end
+								end
+								Result := res --don't change the return value.
+							else
+								--OUTCALLRET
+								if callret.return_value /= Void then
+									Result := resolver.resolve_entity(callret.return_value)
 								end
 							end
-							Result := res --don't change the return value.
-						else
-							--OUTCALLRET
-							if callret.return_value /= Void then
-								Result := resolver.resolve_entity(callret.return_value)
-							end
+							event_input.read_next_event
 						end
-						event_input.read_next_event
 					end
+				else
+					Result := res
 				end
-			else
-				Result := res
 			end
 		end
 
@@ -151,29 +152,31 @@ feature -- Basic operations
 			caller_is_observed: BOOLEAN
 			call_event: CALL_EVENT
 		do
-			caller_is_observed := observed_stack.item
-			if target.is_observed /= caller_is_observed then
-				--boundary cross
-				if not event_input.end_of_input then
-					set_error_status_for_call (event_input.last_event, feature_name, target, arguments)
-					if not has_error then
-						if target.is_observed then
-							-- INCALL
-							-- XXX nothing to do here (?)
-						else
-							call_event ?= event_input.last_event
-							--OUTCALL
-							resolver.register_object (target, call_event.target)
-							index_arguments(call_event.arguments, arguments)
+			if not has_error then
+				caller_is_observed := observed_stack.item
+				if target.is_observed /= caller_is_observed then
+					--boundary cross
+					if not event_input.end_of_input then
+						set_error_status_for_call (event_input.last_event, feature_name, target, arguments)
+						if not has_error then
+							if target.is_observed then
+								-- INCALL
+								-- XXX nothing to do here (?)
+							else
+								call_event ?= event_input.last_event
+								--OUTCALL
+								resolver.register_object (target, call_event.target)
+								index_arguments(call_event.arguments, arguments)
+							end
+							-- Consume event
+							event_input.read_next_event
 						end
-						-- Consume event
-						event_input.read_next_event
+					else
+						report_and_set_error ("Received call event, but log is finished.")
 					end
-				else
-					report_and_set_error ("Received call event, but log is finished.")
 				end
+				observed_stack.put (target.is_observed)
 			end
-			observed_stack.put (target.is_observed)
 		end
 
 	simulate_unobserved_body
@@ -221,6 +224,7 @@ feature {NONE} -- Implementation
 			-- Make sure that all arguments are indexed in the object
 			-- lookup table.
 		require
+			no_error: not has_error
 			expected_arguments_not_void: expected_arguments /= Void
 			actual_arguments_not_void: actual_arguments /= Void
 			actual_argument_count_matches_expected: expected_arguments.count = actual_arguments.count
@@ -237,7 +241,6 @@ feature {NONE} -- Implementation
 			loop
 				non_basic ?= expected_arguments @ i
 				observable ?= actual_arguments @ i
-				--TODO: raise error, if both arguments aren't both of the same kind (basic/non-basic)
 				if non_basic /= Void and observable /= Void then
 					resolver.register_object(observable, non_basic)
 				end
@@ -268,7 +271,7 @@ feature {NONE} -- Implementation
 					if feature_name.is_equal(call.feature_name) then
 						set_error_status_for_arguments (call.arguments, arguments)
 					else
-						report_and_set_error ("Expected call on feature '" + feature_name + "' but got" + call.feature_name)
+						report_and_set_error ("Expected call on feature '" + feature_name + "' but got '" + call.feature_name + "' instead")
 					end
 				else
 					report_and_set_error("Expected incall event")

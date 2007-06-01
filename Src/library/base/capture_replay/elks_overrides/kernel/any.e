@@ -374,13 +374,9 @@ feature -- Capture/Replay
 			create environment
 			mode := environment.get("CR_MODE")
 			if mode = Void then
-				--XXX this is only to make testing possible without defining environment variables
-				--    before running the test (otherwise the NULL-SINK should be the standard)
 				print("*'cr_mode' not defined. Using program_flow_proxy with disabled capture_replay.%N")
-				mode := mode_proxy
-			end
-
-			if mode.is_case_insensitive_equal (mode_capture) then
+				--sink already created.
+			elseif mode.is_case_insensitive_equal (mode_capture) then
 				print("* Capture activated%N")
 				create {RECORDER}Result.make
 			elseif mode.is_case_insensitive_equal (mode_replay) then
@@ -389,9 +385,6 @@ feature -- Capture/Replay
 			elseif mode.is_case_insensitive_equal (mode_log_replay) then
 				print("* Replay with logging player activated.%N")
 				create {LOGGING_PLAYER}Result.make
-			elseif mode.is_case_insensitive_equal(mode_proxy) then
-				print("Proxy used for program_flow_sink%N")
-				create {PROGRAM_FLOW_SINK_PROXY}Result.make
 			else
 				print("'cr_mode' = '" + mode + "' is not a recognized Value.")
 			end
