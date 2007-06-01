@@ -14,7 +14,6 @@
 		<parent location="${GOBO}/misc/test.eant">
 			<redefine target="init_system"/>
 			<redefine target="other_clean"/>
-			<redefine target="test"/>
 		</parent>
 	</inherit>
 
@@ -34,9 +33,9 @@
 		<delete directory="EIFGENs" />
 	</target>
 
-	<target name="test">
-		<ise ace="application.ecf" system="application" finalize="true" finish_freezing="true"/>
-		<precursor/>
+	<target name="run_test">
+		<ise ace="application.ecf" system="application" finalize="false" finish_freezing="true"/> 
+		<exec executable="getest --ise"/>
 	</target>
 
 </project>

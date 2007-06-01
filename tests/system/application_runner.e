@@ -37,7 +37,21 @@ feature -- Initialization
 				create caller
 				log_player.setup_on_text_files ("run.log", "replay_run.log",caller)
 				log_player.play
+				log_player.enter
+				if log_player.has_error then
+					exceptions.raise("Replay finished with error.")
+				end
 			end
+
 		end
+
+feature {NONE}
+
+	exceptions: EXCEPTIONS is
+			--
+		once
+			create Result
+		end
+
 
 end -- class APPLICATION_RUNNER
