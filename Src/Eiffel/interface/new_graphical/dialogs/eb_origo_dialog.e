@@ -24,6 +24,13 @@ inherit
 			default_create, copy
 		end
 
+	SHARED_WORKBENCH
+		export
+			{NONE} all
+		undefine
+			default_create, copy
+		end
+
 create
 	make
 
@@ -38,6 +45,7 @@ feature -- Initialization
 			button_box: EV_HORIZONTAL_BOX
 			project_name_label: EV_LABEL
 			list_item: EV_LIST_ITEM
+			l_user_opts: USER_OPTIONS
 		do
 			default_create
 			set_size (dialog_width, dialog_height)
@@ -45,7 +53,11 @@ feature -- Initialization
 			disable_user_resize
 
 				-- buttons
-			create ok_button.make_with_text_and_action (Interface_names.b_Ok, agent destroy)
+			create ok_button.make_with_text_and_action (Interface_names.b_Ok, agent
+															do
+																save_data
+																destroy
+															end)
 			Layout_constants.set_default_width_for_button (ok_button)
 			create cancel_button.make_with_text_and_action (Interface_names.b_cancel, agent destroy)
 			Layout_constants.set_default_width_for_button (cancel_button)
@@ -60,8 +72,14 @@ feature -- Initialization
 			create project_list
 			project_list.align_text_left
 			project_list.disable_edit
-			create list_item.make_with_text (t_no_origo_project)
+			create list_item.make_with_text (Interface_names.t_No_origo_project)
 			project_list.extend (list_item)
+			l_user_opts := lace.user_options
+			if not l_user_opts.origo_project_name.is_equal (interface_names.t_no_origo_project.to_string_8) then
+				create list_item.make_with_text (l_user_opts.origo_project_name)
+				project_list.extend (list_item)
+				project_list.select_region (2, 2)
+			end
 			project_list.list_shown_actions.force (agent refresh_project_list)
 
 				-- button box
@@ -141,7 +159,7 @@ feature {NONE} -- Implementation
 			if l_project_names /= Void then
 				-- initalize project list
 				project_list.wipe_out
-				create l_list_item.make_with_text (t_no_origo_project)
+				create l_list_item.make_with_text (Interface_names.t_no_origo_project)
 				project_list.force (l_list_item)
 
 				-- fill project list
@@ -170,6 +188,19 @@ feature {NONE} -- Implementation
 --			project_list.extend (l_list_item)
 		end
 
+	save_data is
+			-- save selected project name
+		local
+			l_user_opts: USER_OPTIONS
+			l_user_factory: USER_OPTIONS_FACTORY
+		do
+			l_user_opts := lace.user_options
+			l_user_opts.set_origo_project_name (project_list.selected_item.text)
+			create l_user_factory
+			l_user_factory.store (lace.user_options)
+		end
+
+
 
 feature {NONE} -- Implementation
 
@@ -184,7 +215,6 @@ feature {NONE} -- Implementation
 
 		-- strings
 	t_project_name: STRING is "Origo Project Name"
-	t_no_origo_project: STRING is "-- none --"
 
 
 

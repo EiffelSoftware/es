@@ -23,6 +23,7 @@ feature {NONE} -- Initialization
 			project_file_path := a_project_file_path
 			target_name := a_target_name
 			create targets.make (1)
+			origo_project_name := "nothing so far"
 		ensure
 			project_file_path_set: project_file_path = a_project_file_path
 			target_name_set: target_name = a_target_name
@@ -66,6 +67,9 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
+	origo_project_name: STRING
+			-- Name of Origo Project
+
 feature {USER_OPTIONS, USER_OPTIONS_FACTORY} -- Implementation: Access
 
 	targets: HASH_TABLE [TARGET_USER_OPTIONS, STRING]
@@ -81,6 +85,16 @@ feature -- Update
 			target_name := a_target
 		ensure
 			target_name_set: target_name = a_target
+		end
+
+	set_origo_project_name (a_project_name: like origo_project_name) is
+			-- set `origo_project_name' to `a_project_name'
+		require
+			a_project_name_not_void: a_project_name /= Void
+		do
+			origo_project_name := a_project_name
+		ensure
+			origo_project_name_set: origo_project_name = a_project_name
 		end
 
 invariant
