@@ -26,6 +26,12 @@ feature -- Basic operations
 
 		end
 
+	accept(visitor: PROGRAM_FLOW_SINK_VISITOR) is
+			-- Accept a visitor.
+		do
+			visitor.visit_null_sink (Current)
+		end
+
 feature {NONE} -- Implementation
 
 invariant

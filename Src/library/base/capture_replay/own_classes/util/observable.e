@@ -26,6 +26,8 @@ feature -- Access
 			Result.set_item(1)
 		end
 
+feature -- Basic Operations
+
 feature {ENTITY_RESOLVER}
 	set_object_id(new_object_id: INTEGER) is
 			-- Manually set `object_id'.

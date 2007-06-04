@@ -13,7 +13,8 @@ inherit
 		setup_on_text_file as setup_player_on_textfile
 	redefine
 		put_feature_exit,
-		put_feature_invocation
+		put_feature_invocation,
+		accept
 	end
 
 create
@@ -32,6 +33,9 @@ feature -- Initialization
 			create recorder.make
 			recorder.setup_on_text_serializer (log_filename)
 			setup_player_on_textfile (replay_filename,a_caller)
+		ensure
+			capture_replay_enabled: is_capture_replay_enabled
+			replay_phase_enabled: is_replay_phase
 		end
 
 feature -- Access
@@ -63,6 +67,12 @@ feature -- Basic operations
 				Result := Precursor {PLAYER}(res)
 				ignore_result := recorder.put_feature_exit(Result)
 			end
+
+	accept(visitor: PROGRAM_FLOW_SINK_VISITOR) is
+			-- Accept a visitor.
+		do
+			visitor.visit_logging_player (Current)
+		end
 
 invariant
 	invariant_clause: True -- Your invariant here

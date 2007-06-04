@@ -1,6 +1,6 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "A general Sink for program flow events"
+	author: "Stefan Sieber"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -66,6 +66,10 @@ feature -- Basic operations
 			is_capture_replay_enabled := is_capture_replay_enabled_original
 			is_replay_phase := is_replay_phase_original
 		end
+
+	accept(visitor: PROGRAM_FLOW_SINK_VISITOR) is
+			-- Accept a visitor.
+		deferred end
 
 feature -- Obsolete
 

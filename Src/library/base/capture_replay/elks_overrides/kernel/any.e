@@ -374,7 +374,7 @@ feature -- Capture/Replay
 			create environment
 			mode := environment.get("CR_MODE")
 			if mode = Void then
-				print("*'cr_mode' not defined. Using program_flow_proxy with disabled capture_replay.%N")
+				print("*'cr_mode' not defined. Using NULL_PROGRAM_FLOW_SINK to disable capture_replay.%N")
 				--sink already created.
 			elseif mode.is_case_insensitive_equal (mode_capture) then
 				print("* Capture activated%N")
@@ -392,6 +392,15 @@ feature -- Capture/Replay
 			Result_not_void: Result /= Void
 		end
 
+	is_observed: BOOLEAN
+			-- Is this object observed?
+			-- Classes that belong to the observed
+			-- set should override this.
+		once
+			Result := True
+		end
+feature {NONE} -- Implementation
+
 	mode_replay:STRING is "replay"
 
 	mode_capture: STRING is "capture"
@@ -400,13 +409,6 @@ feature -- Capture/Replay
 
 	mode_proxy: STRING is "proxy"
 
-	is_observed: BOOLEAN
-			-- Is this object observed?
-			-- Classes that belong to the observed
-			-- set should override this.
-		once
-			Result := True
-		end
 invariant
 	reflexive_equality: standard_is_equal (Current)
 	reflexive_conformance: conforms_to (Current)

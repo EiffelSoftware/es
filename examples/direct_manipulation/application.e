@@ -24,7 +24,18 @@ feature -- Initialization
 			-- Creation procedure.
 		local
 			observed_object: OBSERVED_CLASS
+			configurator: CONFIGURATION_HELPER
+			player: PLAYER
+			caller: APPLICATION_CALLER
 		do
+			create caller
+			create configurator.make(caller)
+			configurator.configure_program_flow_sink (program_flow_sink)
+			player ?= program_flow_sink
+			if player /= Void then
+				player.play
+			end
+
 			create observed_object.make
 			if not observed_object.is_literal_string_correct then
 				report_error("literal string incorrect")
@@ -40,6 +51,7 @@ feature {NONE} -- Implementation
 		do
 			exceptions.raise(message)
 		end
+
 
 	exceptions: EXCEPTIONS is
 			-- standard EXCEPTIONS instance

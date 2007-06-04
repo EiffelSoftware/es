@@ -22,6 +22,9 @@ feature -- Initialization
 			create {TEXT_SERIALIZER}serializer.make_on_textfile (filename)
 
 			set_capture_replay_enabled(True)
+		ensure
+			capture_replay_enabled: is_capture_replay_enabled
+			no_replay: not is_replay_phase
 		end
 
 
@@ -90,6 +93,12 @@ feature -- Basic Operations
 			-- Set the serializer to `a_serializer'
 		do
 			serializer := a_serializer
+		end
+
+	accept(visitor: PROGRAM_FLOW_SINK_VISITOR) is
+			-- Accept a visitor.
+		do
+			visitor.visit_recorder (Current)
 		end
 
 feature {NONE} -- Implementation

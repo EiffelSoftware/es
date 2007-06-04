@@ -53,6 +53,9 @@ feature -- Initialization
 
 			set_capture_replay_enabled(True)
 			set_replay_phase(True)
+		ensure
+			capture_replay_enabled: is_capture_replay_enabled
+			replay_phase_enabled: is_replay_phase
 		end
 
 feature -- Access
@@ -207,6 +210,12 @@ feature -- Basic operations
 			event_input.read_next_event
 			simulate_unobserved_body
 			leave
+		end
+
+	accept(visitor: PROGRAM_FLOW_SINK_VISITOR) is
+			-- Accept a visitor.
+		do
+			visitor.visit_player (Current)
 		end
 
 feature {NONE} -- Implementation
