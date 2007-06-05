@@ -48,6 +48,12 @@ feature -- Basic operations
 			arguments_not_void: arguments /= Void
 		deferred end
 
+	put_special_modification(target: SPECIAL[ANY]; size: INTEGER)
+			-- Put a special modification event.
+		require
+			target_not_void: target /= Void
+		deferred end
+
 	observed_stack: DS_ARRAYED_STACK [BOOLEAN]
 			--Stack of the is_observed Values
 

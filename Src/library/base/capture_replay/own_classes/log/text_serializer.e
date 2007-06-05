@@ -80,7 +80,7 @@ feature {NONE} -- Implementation
 	basic_types: ARRAY[STRING]
 			-- Array of all typenames that are considered to be a basic type.
 		once
-			create 	Result.make (1, 19)
+			create 	Result.make (1, 20)
 			Result.put ("NONE", 1) --does this type belong here?
 			Result.put ("POINTER", 2)
 			Result.put ("CHARACTER_8", 3)
@@ -100,7 +100,7 @@ feature {NONE} -- Implementation
 			Result.put ("NATURAL_16", 17)
 			Result.put ("NATURAL_32", 18)
 			Result.put ("NATURAL_64", 19)
-
+			Result.put ("MANIFEST_SPECIAL", 20)
 			Result.compare_objects
 		end
 

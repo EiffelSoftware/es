@@ -26,6 +26,12 @@ feature -- Basic operations
 
 		end
 
+	put_special_modification(target: SPECIAL[ANY]; size: INTEGER)
+			-- ignore event.
+		do
+
+		end
+
 	accept(visitor: PROGRAM_FLOW_SINK_VISITOR) is
 			-- Accept a visitor.
 		do

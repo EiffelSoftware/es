@@ -202,6 +202,12 @@ feature -- Basic operations
 			end
 		end
 
+	put_special_modification(target: SPECIAL[ANY]; size: INTEGER)
+			-- Record a special modification event.
+		do
+			print("special modification!!! target: " + target.generating_type + "%N")
+		end
+
 	play is
 			-- Replay the captured events from the event_input
 		do

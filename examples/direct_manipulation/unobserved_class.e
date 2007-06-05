@@ -38,6 +38,7 @@ feature -- Access
 			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 			Result := "literal string"
+			Result.memory_copy (Result.area)
 			-- <methodbody_end return_value="True">
 			end
 			if program_flow_sink.is_capture_replay_enabled then
@@ -59,6 +60,8 @@ feature -- Access
 			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 			file.read_line
+			 -- This would belong to the FILE class:
+			program_flow_sink.put_special_modification (file.last_string.area, file.last_string.area.count)
 			Result := file.last_string
 			-- <methodbody_end return_value="True">
 			end

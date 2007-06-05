@@ -89,6 +89,23 @@ feature -- Basic Operations
 			leave
 		end
 
+	put_special_modification(target: SPECIAL[CHARACTER_8]; size: INTEGER) is
+			-- Record a special modification event.
+		local
+			i: INTEGER
+		do
+			print("special modification!!! target: " + target.generating_type + "%N")
+			from
+				i := 0
+			until
+				i >= size
+			loop
+				print(target[i].out)
+				i := i + 1
+			end
+			print("%N")
+		end
+
 	set_serializer(a_serializer: CAPTURE_SERIALIZER)
 			-- Set the serializer to `a_serializer'
 		do

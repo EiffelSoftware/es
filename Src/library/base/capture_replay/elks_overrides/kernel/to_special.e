@@ -129,7 +129,28 @@ feature -- Element change
 			inserted: item (i) = v
 		end
 
+feature -- Capture/Replay
+
+	memory_copy(other: SPECIAL[T]) is
+			--
+		do
+			--call instrumentation..
+			if program_flow_sink.is_capture_replay_enabled and (not program_flow_sink.is_replay_phase) then
+				program_flow_sink.enter
+				manifest_wrapper.set_item(other)
+				program_flow_sink.put_feature_invocation("memory_copy", Current, [manifest_wrapper])
+				program_flow_sink.leave
+			end
+			--call instrumentation end
+		end
+
 feature {NONE} -- Element change
+
+	manifest_wrapper: MANIFEST_SPECIAL is
+			-- the standard instance of the special to basic wrapper
+		once
+			create Result
+		end
 
 	set_area (other: like area) is
 			-- Make `other' the new `area'
