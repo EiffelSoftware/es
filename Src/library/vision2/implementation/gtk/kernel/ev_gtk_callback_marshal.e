@@ -44,7 +44,7 @@ feature {NONE} -- Initialization
 	initialize is
 			-- Initialize callbacks
 		once
-			c_ev_gtk_callback_marshal_init (Current, $marshal)
+			c_ev_gtk_callback_marshal_init ($Current, $marshal)
 			c_ev_gtk_callback_marshal_set_is_enabled (True)
 		end
 
@@ -286,11 +286,13 @@ feature {NONE} -- Tuple optimizations.
 feature {EV_GTK_CALLBACK_MARSHAL} -- Externals
 
 	frozen c_ev_gtk_callback_marshal_init (
-		object: EV_GTK_CALLBACK_MARSHAL; a_marshal: POINTER
+		object: POINTER; a_marshal: POINTER
 		) is
 			-- See ev_gtk_callback_marshal.c
 		external
-			"C | %"ev_gtk_callback_marshal.h%""
+			"C inline use %"ev_gtk_callback_marshal.h%""
+		alias
+			"c_ev_gtk_callback_marshal_init ((EIF_REFERENCE) $object, (void (*) (EIF_REFERENCE, EIF_REFERENCE, EIF_INTEGER, EIF_POINTER)) $a_marshal);"
 		end
 
 	frozen c_ev_gtk_callback_marshal_destroy
@@ -315,9 +317,9 @@ feature {EV_ANY_IMP, EV_GTK_CALLBACK_MARSHAL} -- Externals
 				-- Store Eiffel object_id in `gtk_object'.
 				-- Set up signal handlers.
 		external
-			"C (GtkWidget*, int, void*) | %"ev_any_imp.h%""
+			"C inline use %"ev_any_imp.h%""
 		alias
-			"c_ev_any_imp_set_eif_oid_in_c_object"
+			"c_ev_any_imp_set_eif_oid_in_c_object ((GtkWidget*) $a_c_object, (int) $eif_oid, (void(*) (EIF_REFERENCE)) $c_object_dispose_address);"
 		end
 
 	frozen c_signal_connect (a_c_object: POINTER; a_signal_name: POINTER;

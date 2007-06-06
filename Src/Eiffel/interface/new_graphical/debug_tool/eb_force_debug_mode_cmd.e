@@ -51,14 +51,18 @@ feature -- Execution
 			set_select (is_selected)
 			if is_selected then
 				eb_debugger_manager.force_debug_mode (a_save_tools_layout)
-				internal_managed_sd_toolbar_items.do_all (agent (a_button: like new_sd_toolbar_item) do
-					a_button.set_tooltip (interface_names.e_restore_normal_mode)
-				end)
+				if internal_managed_sd_toolbar_items /= Void then
+					internal_managed_sd_toolbar_items.do_all (agent (a_button: like new_sd_toolbar_item) do
+						a_button.set_tooltip (interface_names.e_restore_normal_mode)
+					end)
+				end
 			else
 				eb_debugger_manager.unforce_debug_mode
-				internal_managed_sd_toolbar_items.do_all (agent (a_button: like new_sd_toolbar_item) do
-					a_button.set_tooltip (interface_names.e_force_debug_mode)
-				end)
+				if internal_managed_sd_toolbar_items /= Void then
+					internal_managed_sd_toolbar_items.do_all (agent (a_button: like new_sd_toolbar_item) do
+						a_button.set_tooltip (interface_names.e_force_debug_mode)
+					end)
+				end
 			end
 --			update_graphical
 		end

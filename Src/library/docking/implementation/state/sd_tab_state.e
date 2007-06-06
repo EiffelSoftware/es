@@ -187,22 +187,25 @@ feature -- Redefine
 				l_titles.forth
 			end
 
-			l_tab_zone ?= internal_content.state.zone
-			-- `l_tab_zone' maybe void (zone is docking zone), because `l_content' can't be found.
-			if l_tab_zone /= Void then
-				if l_tab_zone.contents.count >= l_selected_index then
-					l_tab_zone.select_item (l_tab_zone.contents.i_th (l_selected_index), False)
+			-- At least found one content?
+			if internal_content /= Void then
+				l_tab_zone ?= internal_content.state.zone
+				-- `l_tab_zone' maybe void (zone is docking zone), because `l_content' can't be found.
+				if l_tab_zone /= Void then
+					if l_tab_zone.contents.count >= l_selected_index then
+						l_tab_zone.select_item (l_tab_zone.contents.i_th (l_selected_index), False)
+					end
 				end
+
+				if a_data.is_minimized then
+					restore_minimize
+				end
+
+				is_set_width_after_restore := True
+				is_set_height_after_restore := True
+
+				update_floating_zone_visible (internal_content.state.zone, a_data.is_visible)
 			end
-
-			if a_data.is_minimized then
-				restore_minimize
-			end
-
-			is_set_width_after_restore := True
-			is_set_height_after_restore := True
-
-			update_floating_zone_visible (internal_content.state.zone, a_data.is_visible)
 		ensure then
 			restored:
 		end
@@ -302,7 +305,9 @@ feature -- Redefine
 				assistant.change_zone_split_area_to_docking_zone (a_target_zone, a_direction)
 				internal_docking_manager.command.update_title_bar
 			end
-
+			
+			-- We have to `remove_empty_split_area' here, see bug#12330
+			internal_docking_manager.command.remove_empty_split_area
 			internal_docking_manager.query.inner_container_main.update_middle_container
 			internal_docking_manager.command.unlock_update
 		ensure then
@@ -502,7 +507,7 @@ feature -- Properties redefine.
 		do
 			Result := internal_content
 		ensure then
-			not_void: Result /= Void
+			not_void: not internal_docking_manager.property.is_opening_config implies Result /= Void
 		end
 
 	zone: SD_TAB_ZONE is

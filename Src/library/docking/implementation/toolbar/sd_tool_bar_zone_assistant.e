@@ -323,7 +323,7 @@ feature -- Command
 		do
 			from
 				create l_separator.make
-				l_all_items :=  zone.content.items_visible
+				l_all_items :=  zone.content.items.twin
 				l_content := zone.content
 				l_content.wipe_out
 				l_datas := last_state.items_layout
@@ -360,7 +360,7 @@ feature -- Command
 				l_datas.forth
 			end
 			zone.wipe_out
-			l_content.clear_widget_items_parents
+			l_content.clear
 			zone.extend (l_content)
 			update_indicator
 			if zone.row /= Void then

@@ -382,9 +382,27 @@ feature {NONE} -- Interface
 			gids: LIST [INTEGER]
 			i: INTEGER
 			missings: ARRAYED_LIST [INTEGER]
+			l_keys: TWO_WAY_SORTED_SET [STRING]
 		do
 			if not objects_grids.is_empty then
 				create m
+				create mi.make_with_text (interface_names.m_objects_tool_layout_menu_title)
+				m.extend (mi)
+				mi.disable_sensitive
+				m.extend (create {EV_MENU_SEPARATOR})
+				create mi.make_with_text (interface_names.m_objects_tool_layout_reset)
+				mi.select_actions.extend (agent reset_objects_grids_positions)
+				m.extend (mi)
+
+				from
+					create l_keys.make
+					objects_grids.start
+				until
+					objects_grids.after
+				loop
+					l_keys.extend (objects_grids.key_for_iteration)
+					objects_grids.forth
+				end
 				from
 					create pos_titles.make (Position_entries.lower, Position_entries.upper)
 					pos_titles[position_stack] := Interface_names.l_stack_information
@@ -394,24 +412,26 @@ feature {NONE} -- Interface
 					pos_titles[position_result] := Interface_names.l_result
 					pos_titles[position_dropped] := Interface_names.l_dropped_references
 
-					objects_grids.start
+					l_keys.start
 				until
-					objects_grids.after
+					l_keys.after
 				loop
+					lid := l_keys.item
+					gdata := objects_grids.item (lid)
+
 					create missings.make_from_array (position_entries.deep_twin)
-					og := objects_grids.item_for_iteration.grid
+					og := gdata.grid
 					create sm.make_with_text (og.name)
 					m.extend (sm)
 
 					l_has_all := True
-					lid := objects_grids.key_for_iteration
-					gdata := objects_grids.item_for_iteration
 					gids := gdata.ids
 					if gids /= Void and then not gids.is_empty then
-						create mall.make_with_text ("All")
+						create mall.make_with_text (interface_names.m_objects_tool_layout_remove_all)
 						mall.set_pixmap (pixmaps.mini_pixmaps.general_delete_icon)
 						mall.enable_sensitive
 						sm.extend (mall)
+						sm.extend (create {EV_MENU_SEPARATOR})
 
 						from
 							gids.start
@@ -448,10 +468,11 @@ feature {NONE} -- Interface
 
 					l_has_all := missings.is_empty
 					if not l_has_all then
-						create mall.make_with_text ("All")
+						create mall.make_with_text (interface_names.m_objects_tool_layout_add_all)
 						mall.set_pixmap (pixmaps.mini_pixmaps.general_add_icon)
 						mall.enable_sensitive
 						sm.extend (mall)
+						sm.extend (create {EV_MENU_SEPARATOR})
 
 						from
 							missings.start
@@ -470,7 +491,7 @@ feature {NONE} -- Interface
 							missings.forth
 						end
 					end
-					objects_grids.forth
+					l_keys.forth
 				end
 
 				m.show_at (w, ax, ay)
@@ -495,6 +516,17 @@ feature {NONE} -- Interface
 				apref := preferences.debug_tool_data.objects_tool_layout_preference
 				apref.set_value (objects_grids_contents_to_array) --| Should trigger "update"				
 			end
+		end
+
+	reset_objects_grids_positions is
+			-- Reset Objects tool grids positions
+		local
+			apref: ARRAY_PREFERENCE
+			lst: LIST [INTEGER]
+		do
+			reset_objects_grids_contents_to_default
+			apref := preferences.debug_tool_data.objects_tool_layout_preference
+			apref.set_value (objects_grids_contents_to_array) --| Should trigger "update"				
 		end
 
 	remove_objects_grids_position (a_gid: STRING; a_pos: INTEGER) is
@@ -1413,11 +1445,13 @@ feature {NONE} -- Impl : Debugged objects grid specifics
 		local
 			row: EV_GRID_ROW
 		do
-			row ?= ost.ev_item
-			if row /= Void then
-				Result := is_removable_debugged_object_row (row)
+			if ost /= Void then
+				row ?= ost.ev_item
+				if row /= Void then
+					Result := is_removable_debugged_object_row (row)
+				end
+				Result := Result and then is_removable_debugged_object_address (ost.object_address)
 			end
-			Result := Result and then is_removable_debugged_object_address (ost.object_address)
 		end
 
 	is_removable_debugged_object_row (row: EV_GRID_ROW): BOOLEAN is

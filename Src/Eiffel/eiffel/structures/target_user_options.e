@@ -135,7 +135,7 @@ feature -- Update
 		require
 			valid_profile: a_profile = Void or else profiles.has (a_profile)
 		do
-			if a_profile /= Void then
+			if a_profile /= Void and profiles /= Void then
 				last_profile_index := profiles.index_of (a_profile, 1)
 			else
 				last_profile_index := -1

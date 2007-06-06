@@ -315,7 +315,6 @@ feature -- Commands
 				save_starting_backup_info
 			end
 
-			start_compilation
 				-- We perform a degree 6 only when it is the first the compilation or
 				-- when there was an error during the compilation concerning a missing
 				-- class and that no degree 6 has been done before.
@@ -342,14 +341,7 @@ feature -- Commands
 					else
 						System.set_config_changed (False)
 					end
-					if Lace.has_group_changed then
-						System.set_rebuild (True)
-					end
-					if missing_class_error then
-						system.set_rebuild (True)
-					end
-						-- force a rebuild for the discover melt
-					if compilation_modes.is_discover then
+					if Lace.has_group_changed or missing_class_error or compilation_modes.is_discover then
 						system.set_rebuild (True)
 					end
 					System.recompile
@@ -385,10 +377,6 @@ feature -- Commands
 				--| directory)
 			if system /= Void and then system.automatic_backup then
 				save_ending_backup_info
-			end
-
-			if not compilation_modes.is_finalizing then
-				stop_compilation
 			end
 		ensure
 			increment_compilation_counter:

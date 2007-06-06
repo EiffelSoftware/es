@@ -34,6 +34,13 @@ inherit
 			default_create, is_equal, copy
 		end
 
+	EB_SHARED_PREFERENCES
+		export
+			{NONE} all
+		undefine
+			default_create, is_equal, copy
+		end
+
 	DEBUGGER_OBSERVER
 		export
 			{NONE} all
@@ -72,7 +79,7 @@ feature {NONE} -- Initialization
 			show_actions.extend (agent debugging_options_control.on_show)
 			key_press_actions.extend (agent escape_check (?))
 			focus_in_actions.extend (agent on_window_focused)
-			close_request_actions.extend (agent on_cancel)
+			close_request_actions.extend (agent on_close)
 		end
 
 	build_interface is
@@ -96,17 +103,11 @@ feature {NONE} -- Initialization
 			vbox.set_border_width (Layout_constants.Small_border_size)
 			vbox.set_padding (Layout_constants.Small_padding_size)
 
-			create b.make_with_text (interface_names.b_ok)
+			create b.make_with_text (interface_names.b_close)
 			vbox.extend (b)
 			Layout_constants.set_default_width_for_button (b)
 			vbox.disable_item_expand (b)
-			b.select_actions.extend (agent on_ok)
-
-			create b.make_with_text (interface_names.b_cancel)
-			vbox.extend (b)
-			Layout_constants.set_default_width_for_button (b)
-			vbox.disable_item_expand (b)
-			b.select_actions.extend (agent on_cancel)
+			b.select_actions.extend (agent on_close)
 
 			if run /= Void then
 				create run_button.make_with_text (interface_names.b_run)
@@ -133,7 +134,7 @@ feature {NONE} -- Initialization
 				vbox.disable_item_expand (start_wb_button)
 				start_wb_button.set_pixmap (cmd.pixmap)
 				start_wb_button.set_tooltip (cmd.tooltip)
-				start_wb_button.select_actions.extend (agent cmd.execute)
+				start_wb_button.select_actions.extend (agent execute_operation (agent cmd.execute))
 				Layout_constants.set_default_width_for_button (start_wb_button)
 
 				cmd := eb_debugger_manager.run_finalized_cmd
@@ -142,7 +143,7 @@ feature {NONE} -- Initialization
 				vbox.disable_item_expand (start_final_button)
 				start_final_button.set_pixmap (cmd.pixmap)
 				start_final_button.set_tooltip (cmd.tooltip)
-				start_final_button.select_actions.extend (agent cmd.execute)
+				start_final_button.select_actions.extend (agent execute_operation (agent cmd.execute))
 				Layout_constants.set_default_width_for_button (start_final_button)
 			end
 
@@ -175,16 +176,21 @@ feature -- Status Setting
 
 feature {NONE} -- Actions
 
-	on_cancel is
+	on_close is
 	 		-- Action to take when user presses 'Cancel' button.
+		local
+			dlg: EB_CONFIRMATION_DIALOG
 		do
-			hide
-		end
-
-	on_ok is
-	 		-- Action to take when user presses 'OK' button.
-		do
-			debugging_options_control.store_dbg_options
+			if debugging_options_control.has_changed then
+				create dlg.make_with_text (warning_messages.w_apply_debugger_profiles_before_continuing)
+				dlg.set_buttons_and_actions (
+					<<interface_names.b_yes, interface_names.b_no>>,
+					<<agent debugging_options_control.store_dbg_options, Void>>
+					)
+				dlg.show_modal_to_window (Current)
+			else
+				debugging_options_control.validate
+			end
 			hide
 		end
 
@@ -217,23 +223,49 @@ feature {NONE} -- Implementation
 			key_not_void: key /= Void
      	do
         	if key.code = {EV_KEY_CONSTANTS}.key_escape then
-            	on_cancel
+            	on_close
             end
       	end
 
+	execute_operation (op: PROCEDURE [ANY, TUPLE]) is
+			-- Execute operation `op'
+		local
+			dlg: EB_CONFIRMATION_DIALOG
+		do
+			if debugging_options_control.has_changed then
+				create dlg.make_with_text (warning_messages.w_apply_debugger_profiles_before_continuing)
+				dlg.set_buttons_and_actions (<<interface_names.b_yes, interface_names.b_no, interface_names.b_cancel>>,
+						<<
+							agent (a_op: PROCEDURE [ANY, TUPLE])
+								do
+									debugging_options_control.apply_changes
+									a_op.call (Void)
+								end (op),
+							agent (a_op: PROCEDURE [ANY, TUPLE])
+								do
+									debugging_options_control.validate
+									debugging_options_control.reset_changes
+									a_op.call (Void)
+								end (op),
+							agent do_nothing
+						>>
+						)
+
+				dlg.show_modal_to_window (Current)
+			else
+				debugging_options_control.validate
+				op.call (Void)
+			end
+		end
+
 	execute is
 		do
-			debugging_options_control.store_dbg_options
-			run.call (Void)
+			execute_operation (run)
 		end
 
 	execute_and_close is
 		do
-			debugging_options_control.store_dbg_options
-				-- Hide first since it may take a long time before the program is
-				-- actually launched.
-			hide
-			run.call (Void)
+			execute_operation (agent do hide; run.call (Void) end)
 		end
 
 feature {NONE} -- Observing event handling.

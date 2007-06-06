@@ -602,18 +602,21 @@ feature {NONE} -- Implementation
 				when Pg_overflow then
 					stop_cause.set_text (Interface_names.l_Possible_overflow)
 					m.append (Interface_names.l_Possible_overflow)
+					set_focus_is_visible
 				when Pg_raise then
 					stop_cause.set_text (Interface_names.l_Explicit_exception_pending)
 					m.append (Interface_names.l_Explicit_exception_pending)
 					m.append (": ")
 					m.append (exception_tag_text)
 					display_exception
+					set_focus_is_visible
 				when Pg_viol then
 					stop_cause.set_text (Interface_names.l_Implicit_exception_pending)
 					m.append (Interface_names.l_Implicit_exception_pending)
 					m.append (": ")
 					m.append (exception_tag_text)
 					display_exception
+					set_focus_is_visible
 				when Pg_new_breakpoint then
 					stop_cause.set_text (Interface_names.l_New_breakpoint)
 					m.append (Interface_names.l_New_breakpoint)
@@ -622,6 +625,14 @@ feature {NONE} -- Implementation
 					m.append (Interface_names.l_Unknown_status)
 				end
 				Eb_debugger_manager.debugging_window.status_bar.display_message ( first_line_of (m) )
+			end
+		end
+
+	set_focus_is_visible is
+			-- Set focus if visible
+		do
+			if content /= Void and then content.is_visible then
+				content.set_focus
 			end
 		end
 
@@ -649,7 +660,7 @@ feature {NONE} -- Implementation
 				dlg.show_modal_to_window (Eb_debugger_manager.debugging_window.window)
 			else
 				create wdlg.make_with_text (interface_names.l_Only_available_for_stopped_application)
-				wdlg.show_modal_to_window (Eb_debugger_manager.debugging_window.window)
+				wdlg.show --| preventing X server issue, do not use: show_modal_to_window (Eb_debugger_manager.debugging_window.window)
 			end
 		end
 
@@ -1116,10 +1127,7 @@ feature {NONE} -- Implementation
 			th_tools: ES_DBG_THREADS_TOOL
 		do
 			th_tools := Eb_debugger_manager.threads_tool
-			if not th_tools.shown then
-				th_tools.show
-				th_tools.widget.set_focus
-			end
+			th_tools.show
 		end
 
 	select_call_stack_thread (lab: EV_LABEL; x, y, button: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER) is

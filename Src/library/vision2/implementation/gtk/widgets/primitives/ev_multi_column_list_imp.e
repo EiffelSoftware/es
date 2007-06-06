@@ -40,7 +40,8 @@ inherit
 			create_pointer_motion_actions,
 			visual_widget,
 			on_pointer_motion,
-			pebble_source
+			pebble_source,
+			needs_event_box
 		end
 
 	EV_ITEM_LIST_IMP [EV_MULTI_COLUMN_LIST_ROW]
@@ -112,6 +113,8 @@ feature {NONE} -- Initialization
 			l_release_actions := pointer_button_release_actions
 			connect_selection_actions
 		end
+
+	needs_event_box: BOOLEAN = True
 
 feature {EV_GTK_DEPENDENT_INTERMEDIARY_ROUTINES} -- Implementation
 
@@ -854,6 +857,8 @@ feature -- Implementation
 				if not (pnd_row_imp.able_to_transport (a_button) or pnd_row_imp.mode_is_configurable_target_menu) then
 					pnd_row_imp := Void
 				end
+			else
+				pnd_row_imp := Void
 			end
 
 			Precursor (

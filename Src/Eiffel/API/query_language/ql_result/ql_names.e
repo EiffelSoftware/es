@@ -64,7 +64,7 @@ feature -- Criterion names
 	ql_cri_is_used_in_library: STRING is "is_used_in_library"
 	ql_cri_is_class_set: STRING is "is_class_set"
 
-	ql_cri_has_invariant: STRING is "has_invariant"
+	ql_cri_has_invariant: STRING is "has_immediate_invariant"
 	ql_cri_ancestor_is: STRING is "ancestor_is"
 	ql_cri_proper_ancestor_is: STRING is "proper_ancestor_is"
 	ql_cri_parent_is: STRING is "parent_is"
@@ -557,6 +557,10 @@ feature -- AST node match
 		ensure
 			result_attached: Result /= Void
 		end
+
+feature -- Access
+
+	ql_no_tag: STRING is "no tag";
 
 indexing
         copyright:	"Copyright (c) 1984-2006, Eiffel Software"

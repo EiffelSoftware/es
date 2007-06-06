@@ -114,6 +114,7 @@ feature {NONE} -- Initialization
 				set_slices (preferences.debugger_data.min_slice, preferences.debugger_data.max_slice)
 				set_displayed_string_size (preferences.debugger_data.default_displayed_string_size)
 				set_maximum_stack_depth (preferences.debugger_data.default_maximum_stack_depth)
+				set_critical_stack_depth (preferences.debugger_data.critical_stack_depth)
 
 				set_max_evaluation_duration (preferences.debugger_data.max_evaluation_duration)
 				preferences.debugger_data.max_evaluation_duration_preference.typed_change_actions.extend (agent set_max_evaluation_duration)
@@ -1585,7 +1586,6 @@ feature -- Debugging events
 			-- Application was just stopped (by a breakpoint, ...).
 		local
 			st: CALL_STACK_STONE
-			cd: EB_CONFIRMATION_DIALOG
 		do
 			Precursor
 			debug ("debugger_trace_synchro")
@@ -1634,8 +1634,7 @@ feature -- Debugging events
 			debugging_window.window.raise
 
 			if application_status.reason_is_overflow then
-				create cd.make_with_text_and_actions (Warning_messages.w_Overflow_detected, <<agent do_nothing, agent resume_application>>)
-				cd.show_modal_to_window (debugging_window.window)
+				on_overflow_detected
 			end
 
 			debug ("debugger_interface")
@@ -1644,6 +1643,20 @@ feature -- Debugging events
 			debug ("debugger_trace_synchro")
 				io.put_string (generator + ".on_application_just_stopped : done%N")
 			end
+		end
+
+	on_overflow_detected is
+			-- OVERFLOW detected
+		do
+			--| Fixme: we might try to prevent debugging tools to refresh before poping up this dialog...				
+			ev_application.do_once_on_idle (agent
+					local
+						cd: EB_CONFIRMATION_DIALOG
+					do
+						create cd.make_with_text_and_actions (Warning_messages.w_Overflow_detected, <<agent do_nothing, agent resume_application>>)
+						cd.show_modal_to_window (debugging_window.window)
+					end
+				)
 		end
 
 	on_application_before_resuming is
@@ -1916,6 +1929,7 @@ feature {NONE} -- Implementation
 				enable_bkpt.disable_sensitive
 				disable_bkpt.disable_sensitive
 				bkpt_info_cmd.disable_sensitive
+				force_debug_mode_cmd.disable_sensitive
 			end
 
 			debug_cmd.disable_sensitive

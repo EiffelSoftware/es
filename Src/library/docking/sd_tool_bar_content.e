@@ -274,6 +274,8 @@ feature -- Query
 		do
 			Result := 1
 			from
+				-- If first one is separator, we ignore it.
+				l_last_is_separator := True
 				if a_include_invisible then
 					l_items := items
 				else
@@ -285,7 +287,8 @@ feature -- Query
 			loop
 				if l_items.item.is_displayed then
 					l_separator ?= l_items.item
-					if l_separator /= Void and not l_last_is_separator then
+					if l_separator /= Void and not l_last_is_separator
+						and l_items.index /= l_items.count then -- We ignore last separator
 						Result := Result + 1
 						l_last_is_separator := True
 					elseif l_separator = Void then
@@ -294,10 +297,22 @@ feature -- Query
 				end
 				l_items.forth
 			end
+			if items.valid_index (l_items.count - 1) then
+				l_separator ?= l_items.i_th (l_items.count - 1)
+				if l_last_is_separator and l_separator /= Void then
+					-- At least two sepators at the end.
+					Result := Result - 1
+				end
+			elseif l_last_is_separator = True and l_items.count = 1 then
+				-- Only one separator
+				Result := 0
+			elseif l_items.count = 0 then
+				Result := 0
+			end
 		end
 
 	group_items (a_group_index: INTEGER; a_include_invisible: BOOLEAN): ARRAYED_LIST [SD_TOOL_BAR_ITEM] is
-			-- Group items except hidden items.
+			-- Group items.
 		require
 			valid: 0 < a_group_index and a_group_index <= groups_count (False)
 		local
@@ -305,8 +320,11 @@ feature -- Query
 			l_group_count: INTEGER
 			l_stop: BOOLEAN
 			l_items: like items_visible
+			l_last_is_separator: BOOLEAN
 		do
 			from
+				-- If first item is separator, we ingore it.
+				l_last_is_separator := True
 				if a_include_invisible then
 					l_items := items
 				else
@@ -319,10 +337,16 @@ feature -- Query
 				l_items.after or l_stop
 			loop
 				l_separator ?= l_items.item
-				if l_separator /= Void then
+
+				if l_separator /= Void and not l_last_is_separator then
 					l_group_count := l_group_count + 1
-				elseif l_group_count = a_group_index and l_items.item.is_displayed then
+				elseif l_separator = Void and then l_group_count = a_group_index and l_items.item.is_displayed then
 					Result.extend (l_items.item)
+				end
+				if l_separator /= Void then
+					l_last_is_separator := True
+				else
+					l_last_is_separator := False
 				end
 				if l_group_count > a_group_index then
 					l_stop := True
@@ -332,6 +356,15 @@ feature -- Query
 		ensure
 			not_void: Result /= Void
 			not_contain_separator:
+		end
+
+	show_request_actions: EV_NOTIFY_ACTION_SEQUENCE is
+			-- Actions to perform when show requested
+		do
+			if internal_show_request_actions = Void then
+				create internal_show_request_actions
+			end
+			Result := internal_show_request_actions
 		end
 
 	close_request_actions: EV_NOTIFY_ACTION_SEQUENCE is
@@ -465,8 +498,8 @@ feature {SD_TOOL_BAR_ZONE, SD_FLOATING_TOOL_BAR_ZONE, SD_TOOL_BAR_ZONE_ASSISTANT
 			items.wipe_out
 		end
 
-	clear_widget_items_parents is
-			-- Clear widget items' parents.
+	clear is
+			-- Clear widget items' parents and reset state flags.
 		local
 			l_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 			l_widget_item: SD_TOOL_BAR_WIDGET_ITEM
@@ -486,6 +519,11 @@ feature {SD_TOOL_BAR_ZONE, SD_FLOATING_TOOL_BAR_ZONE, SD_TOOL_BAR_ZONE_ASSISTANT
 					end
 				end
 				l_items.forth
+			end
+
+			if zone /= Void and then zone.customize_dialog /= Void then
+				zone.customize_dialog.destroy
+				zone.set_customize_dialog (Void)
 			end
 		end
 
@@ -566,8 +604,10 @@ feature {SD_TOOL_BAR_ZONE, SD_FLOATING_TOOL_BAR_ZONE, SD_TOOL_BAR_ZONE_ASSISTANT
 			l_separator: SD_TOOL_BAR_SEPARATOR
 			l_group_count: INTEGER
 			l_items: like items_visible
+			l_last_is_separator: BOOLEAN
 		do
 			from
+				l_last_is_separator := True
 				if a_inclue_invisible then
 					l_items := items
 				else
@@ -581,8 +621,13 @@ feature {SD_TOOL_BAR_ZONE, SD_FLOATING_TOOL_BAR_ZONE, SD_TOOL_BAR_ZONE_ASSISTANT
 				l_items.after or l_group_count = a_group_index
 			loop
 				l_separator ?= l_items.item
-				if l_separator /= Void then
+				if l_separator /= Void and not l_last_is_separator then
 					l_group_count := l_group_count + 1
+				end
+				if l_separator /= Void then
+					l_last_is_separator := True
+				else
+					l_last_is_separator := False
 				end
 				Result := Result + 1
 
@@ -654,6 +699,9 @@ feature {NONE} -- Implementation
 				zone.destroy
 			end
 		end
+
+	internal_show_request_actions: EV_NOTIFY_ACTION_SEQUENCE
+			-- Actions to perform when show requested.
 
 	internal_close_request_actions: EV_NOTIFY_ACTION_SEQUENCE;
 			-- Actions to perfrom when close requested.
