@@ -15,7 +15,11 @@
 			</file_rule>
 		</cluster>
 		<cluster name="own_base_classes" location="..\..\Src\library\base\capture_replay\own_classes\" recursive="true"/>
-		<override name="elks_overrides" location="..\..\Src\library\base\capture_replay\elks_overrides\" recursive="true"/>
+		<override name="elks_overrides" location="..\..\Src\library\base\capture_replay\elks_overrides\" recursive="true">
+			<option>
+				<assertions/>
+			</option>
+		</override>
 	</target>
 	<target name="direct_manipulation_dotnet" extends="direct_manipulation">
 		<setting name="msil_generation" value="true"/>

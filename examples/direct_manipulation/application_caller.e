@@ -40,13 +40,12 @@ feature -- Basic operations
 			-- Call features on BANK or BANK_ACCOUNT
 		local
 			observed: OBSERVED_CLASS
-			unobserved: UNOBSERVED_CLASS
 			string: STRING_8
 		do
 			-- Discriminate by target type first, to speed things up.
-			if target.generating_type.is_equal("UNOBSERVED_CLASS") then
-				unobserved ?= target
-				call_unobserved(unobserved, feature_name, arguments)
+			if target.generating_type.is_equal("OBSERVED_CLASS") then
+				observed ?= target
+				call_observed(observed, feature_name, arguments)
 			elseif target.generating_type.is_equal("STRING_8") then
 				string ?= target
 				call_string_8 (string, feature_name, arguments)
@@ -62,15 +61,23 @@ feature -- Inapplicable
 
 feature {NONE} -- Implementation
 
-		call_unobserved(unobserved: UNOBSERVED_CLASS; feature_name: STRING; arguments: DS_LIST[ANY]) is
+		call_observed(observed: OBSERVED_CLASS; feature_name: STRING; arguments: DS_LIST[ANY]) is
 			-- Call features of UNOBSERVED_CLASS
 		local
 			ignored_result: ANY
 		do
-			if feature_name.is_equal ("read_literal_string") then
-				ignored_result := unobserved.read_literal_string
-			elseif feature_name.is_equal ("read_from_file") then
-				ignored_result := unobserved.read_from_file
+			if feature_name.is_equal("make") then
+				program_flow_sink.leave
+				observed.make
+				program_flow_sink.enter
+			elseif feature_name.is_equal ("is_literal_string_correct") then
+				program_flow_sink.leave
+				ignored_result := observed.is_literal_string_correct
+				program_flow_sink.enter
+			elseif feature_name.is_equal ("is_string_from_file_correct") then
+				program_flow_sink.leave
+				ignored_result := observed.is_string_from_file_correct
+				program_flow_sink.enter
 			end
 		end
 invariant

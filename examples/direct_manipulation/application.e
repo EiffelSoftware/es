@@ -7,7 +7,7 @@ class
 	APPLICATION
 
 inherit
-	ANY
+	OBSERVABLE
 	redefine
 		is_observed
 	end
@@ -27,6 +27,7 @@ feature -- Initialization
 			configurator: CONFIGURATION_HELPER
 			player: PLAYER
 			caller: APPLICATION_CALLER
+			ignore_result: ANY
 		do
 			create caller
 			create configurator.make(caller)
@@ -35,14 +36,29 @@ feature -- Initialization
 			if player /= Void then
 				player.play
 			end
-
-			create observed_object.make
-			if not observed_object.is_literal_string_correct then
-				report_error("literal string incorrect")
+			-- <methodbody_start name="make" args="[]">
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				program_flow_sink.put_feature_invocation("make", Current, [])
+				program_flow_sink.leave
 			end
-			if not observed_object.is_string_from_file_correct then
-				report_error("string from file incorrect")
+			if (not program_flow_sink.is_replay_phase) or is_observed then
+			-- </methodbody_start>
+				create observed_object.make
+				if not observed_object.is_literal_string_correct then
+					report_error("literal string incorrect")
+				end
+				if not observed_object.is_string_from_file_correct then
+					report_error("string from file incorrect")
+				end
+			-- <methodbody_end return_value="False">
 			end
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.leave
+			end
+			-- </methodbody_end>
 		end
 
 feature {NONE} -- Implementation

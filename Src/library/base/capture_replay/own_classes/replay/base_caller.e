@@ -68,6 +68,10 @@ feature -- Basic operations
 				resize_arg1 ?= arguments @ 1
 				string.resize (resize_arg1)
 				program_flow_sink.enter
+			elseif feature_name.is_equal("to_c") then
+				program_flow_sink.leave
+				ignore_result := string.to_c
+				program_flow_sink.enter
 			else
 				report_and_set_feature_error(string, feature_name)
 			end

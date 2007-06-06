@@ -18,9 +18,27 @@ create
 feature -- Initialization
 	make is
 			-- Create an object of UNOBSERVED_CLASS
+		local
+			ignore_result: ANY
 		do
+			-- <methodbody_start name="make" args="[]">
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				program_flow_sink.put_feature_invocation("make", Current, [])
+				program_flow_sink.leave
+			end
+			if (not program_flow_sink.is_replay_phase) or is_observed then
+			-- </methodbody_start>
 			create file.make("input.txt")
 			file.open_read
+			-- <methodbody_end return_value="False">
+			end
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.leave
+			end
+			-- </methodbody_end>
 		end
 
 feature -- Access
@@ -38,7 +56,7 @@ feature -- Access
 			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 			Result := "literal string"
-			Result.memory_copy (Result.area)
+			Result.memory_copy(Result.area)
 			-- <methodbody_end return_value="True">
 			end
 			if program_flow_sink.is_capture_replay_enabled then
@@ -61,7 +79,6 @@ feature -- Access
 			-- </methodbody_start>
 			file.read_line
 			 -- This would belong to the FILE class:
-			program_flow_sink.put_special_modification (file.last_string.area, file.last_string.area.count)
 			Result := file.last_string
 			-- <methodbody_end return_value="True">
 			end

@@ -17,8 +17,26 @@ feature -- Initialization
 
 	make is
 			-- create an observed object.
+		local
+			ignore_result: ANY
 		do
+			-- <methodbody_start name="make" args="[]">
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				program_flow_sink.put_feature_invocation("make", Current, [])
+				program_flow_sink.leave
+			end
+			if (not program_flow_sink.is_replay_phase) or is_observed then
+			-- </methodbody_start>
 			create unobserved_object.make
+			-- <methodbody_end return_value="False">
+			end
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.leave
+			end
+			-- </methodbody_end>
 		end
 
 

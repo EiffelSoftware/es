@@ -59,7 +59,6 @@ feature -- Basic Operations
 		local
 			current_observed: BOOLEAN
 		do
-			enter
 			current_observed := observed_stack.item
 			observed_stack.remove
 			if current_observed /= observed_stack.item then
@@ -70,13 +69,11 @@ feature -- Basic Operations
 				end
 			end
 			Result := res
-			leave
 		end
 
 	put_feature_invocation (feature_name: STRING_8; target: OBSERVABLE; arguments: TUPLE)
 			-- Record a feature_invoke - event.
 		do
-			enter
 			--opt print_debug ("{REC}: MethodBodyStart: " + feature_name + "%N")
 			if (target.is_observed /= observed_stack.item) then
 				if target.is_observed then
@@ -86,7 +83,6 @@ feature -- Basic Operations
 				end
 			end
 			observed_stack.put (target.is_observed)
-			leave
 		end
 
 	put_special_modification(target: SPECIAL[CHARACTER_8]; size: INTEGER) is

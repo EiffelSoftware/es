@@ -157,6 +157,7 @@ feature -- Basic operations
 		do
 			if not has_error then
 				caller_is_observed := observed_stack.item
+				observed_stack.put(target.is_observed)
 				if target.is_observed /= caller_is_observed then
 					--boundary cross
 					if not event_input.end_of_input then
@@ -164,21 +165,21 @@ feature -- Basic operations
 						if not has_error then
 							if target.is_observed then
 								-- INCALL
-								-- XXX nothing to do here (?)
+								event_input.read_next_event
 							else
 								call_event ?= event_input.last_event
 								--OUTCALL
 								resolver.register_object (target, call_event.target)
 								index_arguments(call_event.arguments, arguments)
+								-- Consume event
+								event_input.read_next_event
+								simulate_unobserved_body
 							end
-							-- Consume event
-							event_input.read_next_event
 						end
 					else
 						report_and_set_error ("Received call event, but log is finished.")
 					end
 				end
-				observed_stack.put (target.is_observed)
 			end
 		end
 
@@ -186,17 +187,19 @@ feature -- Basic operations
 			-- Handle all consecuting incalls from the event_input.
 		require
 			event_input_not_void: event_input /= Void
+			no_error: not has_error
 		local
 			incall_event: INCALL_EVENT
 		do
 			--Handle all following incall events...
+			incall_event ?= event_input.last_event
 			from
 				incall_event ?= event_input.last_event
 			until
-				has_error or event_input.end_of_input or (not event_input.last_event.conforms_to(incall_event))
+				has_error or event_input.end_of_input or (incall_event = Void)
 			loop
-				incall_event ?= event_input.last_event
 				handle_incall_event(incall_event)
+				incall_event ?= event_input.last_event
 				-- the next event will be read by the triggered methodbody_start and
 				-- methodbody_end...
 			end

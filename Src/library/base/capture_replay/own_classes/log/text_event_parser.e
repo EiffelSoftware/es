@@ -270,23 +270,37 @@ feature {NONE} -- Implementation
 			parse_identifier
 			if not has_error then
 				typename := last_string
-				parse_value
-				if not has_error then
-					value := last_string
-
-					if item = ']' then
-						consume("]")
-					else
-						report_error("]")
-					end
+--				if typename.has_substring (Manifest_special_prefix) then
+--					parse_manifest_special(typename)
+--				else
+					parse_value
 					if not has_error then
-						create {BASIC_ENTITY}last_entity.make (typename, value)
+						value := last_string
+
+						if item = ']' then
+							consume("]")
+						else
+							report_error("]")
+						end
+						if not has_error then
+							create {BASIC_ENTITY}last_entity.make (typename, value)
+						end
 					end
-				end
+--				end
 			end
 		ensure
 			entity_parsed: has_error or last_entity /= Void
 		end
+
+--	parse_manifest_special(typename: STRING) is
+--			--
+--		require
+--			no_error: not has_error
+--		local
+
+--		do
+
+--		end
 
 
 	parse_identifier
@@ -459,6 +473,8 @@ feature {NONE} -- Implementation
 	Identifier_regex: STRING is "^[A-Za-z]\w*"
 
 	Value_regex: STRING is "^%"[^%"]*%""
+
+	Manifest_special_prefix: STRING is "MANIFEST_SPECIAL["
 
 invariant
 	handler_not_void: handler /= Void -- Your invariant here

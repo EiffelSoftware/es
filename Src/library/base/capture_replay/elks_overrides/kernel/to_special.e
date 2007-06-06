@@ -133,12 +133,20 @@ feature -- Capture/Replay
 
 	memory_copy(other: SPECIAL[T]) is
 			--
+		local
+			ignore_result: ANY
 		do
 			--call instrumentation..
-			if program_flow_sink.is_capture_replay_enabled and (not program_flow_sink.is_replay_phase) then
+			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
 				manifest_wrapper.set_item(other)
 				program_flow_sink.put_feature_invocation("memory_copy", Current, [manifest_wrapper])
+				program_flow_sink.leave
+			end
+
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				ignore_result := program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			--call instrumentation end

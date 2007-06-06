@@ -237,7 +237,7 @@ feature {NONE} -- Implementation
 		require
 			message_not_void: message /= Void
 		do
-			print_debug("##ERROR: " + message)
+			print("##ERROR: " + message)
 		end
 
 	print_debug(message: STRING)

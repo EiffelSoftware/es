@@ -27,7 +27,7 @@ feature {NONE} -- Implementation
 			object_not_void: object /= Void
 		do
 			has_error := True
-			error_message := "error: EXAMPLE_CALLER cannot make calls on '" + object.generating_type + "'"
+			error_message := "error: CALLER cannot make calls on '" + object.generating_type + "'"
 		ensure
 			error_set: has_error = True
 			error_message_set: error_message /= Void
