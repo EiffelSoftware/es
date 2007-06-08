@@ -107,6 +107,7 @@ feature {NONE} -- Initialization
 			--
 		do
 			Result := Precursor {EV_TEXT_FIELD_IMP}
+			Result := 22
 		end
 
 

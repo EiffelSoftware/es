@@ -110,22 +110,22 @@ feature -- Measurement
 
 	child_offset_bottom: INTEGER
 	do
-		Result := 2
+		Result := 0
 	end
 
 	child_offset_right: INTEGER
 	do
-		Result := 2
+		Result := 0
 	end
 
 	child_offset_left: INTEGER
 	do
-		Result := 2
+		Result := 0
 	end
 
 	child_offset_top: INTEGER
 	do
-		Result := 2
+		Result := 0
 	end
 
 	calculate_minimum_sizes is

@@ -77,7 +77,7 @@ feature -- Measturement
 			i := i + 1
 		end
 		min_width := min_width + child_offset_left + child_offset_right
-		min_height := min_height + (count -1) * padding + child_offset_bottom + child_offset_top
+		min_height := min_height + (count-1) * padding + child_offset_bottom + child_offset_top
 		buffered_minimum_height := min_height.max (internal_minimum_height)
 		buffered_minimum_width := min_width.max (internal_minimum_width)
 	end
@@ -176,7 +176,7 @@ feature -- Implementation
 					if is_homogeneous then
 						a_size.set_height ( control_height )
 					elseif (old_height < min_height) then
-						a_size.set_height (( w1.minimum_height.to_double * ratio).rounded )
+						a_size.set_height (( w1.minimum_height.to_double * ratio).ceiling )
 					elseif w1.expandable  then
 						a_size.set_height ( w1.minimum_height + control_height )
 					else
@@ -184,7 +184,7 @@ feature -- Implementation
 					end
 
 					err := hiview_set_frame_external ( w1.c_object, a_rect.item )
-					last_y := (a_point.y + a_size.height + padding).rounded
+					last_y := (a_point.y + a_size.height).ceiling
 					i := i + 1
 			end
 			buffered_minimum_width := internal_minimum_width.max (min_width + child_offset_left + child_offset_right)

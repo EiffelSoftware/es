@@ -216,11 +216,12 @@ feature -- Element change
 
 			ret := hiview_set_frame_external (container, c_rect.item)
 
-
-			if item /= void then
-				c ?= item.implementation
-				if c /= void then
-					c.setup_layout
+			if c_size.width <= v_size.width or c_size.height <= v_size.height then
+				if item /= void then
+					c ?= item.implementation
+					if c /= void then
+						c.setup_layout
+					end
 				end
 			end
 		end

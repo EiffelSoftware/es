@@ -68,6 +68,7 @@ feature {NONE} -- Initialization
 
 			ret := hiscroll_view_create_external ({HIVIEW_ANON_ENUMS}.kHIScrollViewOptionsVertScroll.bit_or ({HIVIEW_ANON_ENUMS}.kHIScrollViewOptionsHorizScroll), $ptr)
 			ret := hiview_set_visible_external (ptr, 1)
+			ret := hiscroll_view_set_scroll_bar_auto_hide_external (ptr, 1)
 			set_c_object (ptr)
 			ret := hiview_set_frame_external (c_object, rect.item)
 
@@ -242,7 +243,7 @@ feature {NONE} -- Implementation
 					create point.make_shared (rect.origin)
 					ret := set_event_parameter_external (a_inevent, kEventParamViewSize, {CARBONEVENTS_ANON_ENUMS}.typehisize, size.sizeof, size.item)
 					ret := set_event_parameter_external (a_inevent, kEventParamOrigin, {CARBONEVENTS_ANON_ENUMS}.typehipoint, point.sizeof, point.item)
-					
+
 					Result := {EV_ANY_IMP}.noErr -- event handled
 				elseif event_kind = kEventScrollableScrollTo then
 					create point.make_new_unshared

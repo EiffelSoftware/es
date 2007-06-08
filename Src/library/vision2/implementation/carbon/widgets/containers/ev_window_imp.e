@@ -265,7 +265,9 @@ feature -- Element change
 	child_has_resized (a_widget_imp: EV_WIDGET_IMP; a_height, a_width: INTEGER) is
 			--
 		do
-			setup_layout
+
+				setup_layout
+
 		end
 
 
