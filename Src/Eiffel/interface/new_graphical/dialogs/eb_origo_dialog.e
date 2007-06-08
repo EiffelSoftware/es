@@ -46,9 +46,10 @@ feature -- Initialization
 			project_name_label: EV_LABEL
 			list_item: EV_LIST_ITEM
 			l_user_opts: USER_OPTIONS
+			l_checkable_list: EV_CHECKABLE_LIST
 		do
 			default_create
-			set_size (dialog_width, dialog_height)
+			set_size (dialog_width, dialog_height + 40)
 			set_title (interface_names.t_origo)
 			disable_user_resize
 
@@ -78,9 +79,37 @@ feature -- Initialization
 			if not l_user_opts.origo_project_name.is_equal (interface_names.t_no_origo_project.to_string_8) then
 				create list_item.make_with_text (l_user_opts.origo_project_name)
 				project_list.extend (list_item)
-				project_list.select_region (2, 2)
+				list_item.enable_select
 			end
 			project_list.list_shown_actions.force (agent refresh_project_list)
+
+				-- notebook tabs
+			create_upload_tab
+			create_release_tab
+
+				-- notebook
+			create file_notebook
+			file_notebook.set_minimum_height (notebook_height)
+			file_notebook.extend (upload_tab)
+			file_notebook.set_item_text (upload_tab, "Upload")
+			file_notebook.extend (release_tab)
+			file_notebook.set_item_text (release_tab, "Release")
+
+
+				-- checkable list
+			create l_checkable_list
+			create list_item.make_with_text ("moo")
+			l_checkable_list.force (list_item)
+			create list_item.make_with_text ("cow")
+			l_checkable_list.force (list_item)
+			create list_item.make_with_text ("kuh")
+			l_checkable_list.force (list_item)
+			create list_item.make_with_text ("muh")
+			l_checkable_list.force (list_item)
+			create list_item.make_with_text ("stall")
+			l_checkable_list.force (list_item)
+			l_checkable_list.set_minimum_height (40)
+
 
 				-- button box
 			create button_box
@@ -96,6 +125,9 @@ feature -- Initialization
 			add_padding_cell (vbox)
 			vbox.extend (project_name_label)
 			vbox.extend (project_list)
+--			vbox.extend (l_checkable_list)
+			vbox.extend (file_notebook)
+--			file_management.fill(vbox)
 			vbox.extend (state_label)
 			vbox.extend (button_box)
 			vbox.disable_item_expand (button_box)
@@ -114,6 +146,60 @@ feature -- Initialization
 		end
 
 feature {NONE} -- Implementation
+
+	create_upload_tab is
+			-- creates upload_tab and fills it with widgets
+		local
+			l_button_box: EV_HORIZONTAL_BOX
+			l_button: EV_BUTTON
+			l_cell: EV_CELL
+		do
+			create upload_tab
+
+			create upload_list
+			upload_tab.extend (upload_list)
+
+				-- button box
+			create l_button_box
+			upload_tab.extend (l_button_box)
+			upload_tab.disable_item_expand (l_button_box)
+
+				-- open files button
+			create l_button.make_with_text ("Open files")
+			l_button.set_minimum_width (75)
+			l_button_box.extend (l_button)
+			l_button_box.disable_item_expand (l_button)
+
+				-- upload button
+			create l_button.make_with_text ("Upload")
+			l_button.set_minimum_width (75)
+			l_button_box.extend (l_button)
+			l_button_box.disable_item_expand (l_button)
+
+				-- padding cell
+			create l_cell
+			l_button_box.extend (l_cell)
+
+
+
+
+		ensure
+			upload_tab_not_void: upload_tab /= Void
+		end
+
+	create_release_tab is
+			-- creates release_tab and fills it with widget
+		local
+			label: EV_LABEL
+		do
+			create release_tab
+
+			create label.make_with_text ("Remote tab")
+			release_tab.extend (label)
+		ensure
+			release_tab_not_void: release_tab /= Void
+		end
+
 
 	add_padding_cell (box: EV_BOX) is
 			-- add a padding cell to box
@@ -135,6 +221,7 @@ feature {NONE} -- Implementation
 			l_session: STRING
 			l_username: STRING
 			l_project_names: DS_LINKED_LIST [STRING]
+			l_current_project_name: STRING
 		do
 			create l_origo_client.make (Current)
 			state_label.set_text ("Logging in...")
@@ -157,6 +244,9 @@ feature {NONE} -- Implementation
 
 				-- project list was received
 			if l_project_names /= Void then
+
+				l_current_project_name := project_list.selected_item.text
+
 				-- initalize project list
 				project_list.wipe_out
 				create l_list_item.make_with_text (Interface_names.t_no_origo_project)
@@ -170,6 +260,11 @@ feature {NONE} -- Implementation
 				loop
 					create l_list_item.make_with_text (l_project_names.item_for_iteration)
 					project_list.force (l_list_item)
+
+					if l_current_project_name.is_equal (l_project_names.item_for_iteration) then
+						l_list_item.enable_select
+					end
+
 					l_project_names.forth
 				end
 				state_label.set_text ("")
@@ -178,14 +273,6 @@ feature {NONE} -- Implementation
 			else
 				state_label.set_text ("An error ocurred")
 			end
---			io.output.put_string (session)
---			io.output.new_line
---			io.output.put_string (preferences.origo_data.user_key)
---			io.output.new_line
---			io.output.put_string (preferences.origo_data.xml_rpc_client_path)
---			io.output.new_line
---			create l_list_item.make_with_text ("moo")
---			project_list.extend (l_list_item)
 		end
 
 	save_data is
@@ -207,11 +294,16 @@ feature {NONE} -- Implementation
 		-- widgets
 	state_label: EV_LABEL
 	project_list: EV_COMBO_BOX
+	file_notebook: EV_NOTEBOOK
+	upload_tab: EV_VERTICAL_BOX
+	release_tab: EV_VERTICAL_BOX
+	upload_list: EV_CHECKABLE_LIST
 
 		-- dialog size
-	dialog_height: INTEGER is 132
-	dialog_width: INTEGER is 190
+	dialog_height: INTEGER is 451
+	dialog_width: INTEGER is 418
 	padding: INTEGER is 10
+	notebook_height: INTEGER is 388
 
 		-- strings
 	t_project_name: STRING is "Origo Project Name"
