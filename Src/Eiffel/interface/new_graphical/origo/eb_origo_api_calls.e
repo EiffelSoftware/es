@@ -111,6 +111,48 @@ feature -- XML RPC calls
 			end
 		end
 
+	my_password (a_session: STRING): STRING is
+			-- receive your own password
+		require
+			session_attached: a_session /= Void and not a_session.is_empty
+		local
+			l_process: PROCESS
+			l_factory: PROCESS_FACTORY
+			l_command_line: STRING
+			l_error: STRING
+			l_password: STRING
+		do
+			l_password := ""
+			l_error := ""
+			l_command_line := preferences.origo_data.xml_rpc_client_path.out
+			l_command_line.append (" my_password -s ")
+			l_command_line.append (a_session)
+			create l_factory
+			l_process := l_factory.process_launcher_with_command_line (l_command_line, Void)
+			l_process.redirect_output_to_agent (agent l_password.append)
+			l_process.redirect_error_to_agent (agent l_error.append)
+			l_process.launch
+
+				-- launch process
+			if l_process.launched then
+				l_process.wait_for_exit
+
+					-- if everything went fine
+				if l_error.is_empty then
+					Result := l_password
+
+					-- an error occurred
+				else
+					l_error.insert_string ("Error during my_username:%N", 1)
+					show_warning (l_error)
+				end
+
+				-- the process could not be launched
+			else
+				show_warning ("Error during my_username:%NCommand line tool could not be launched")
+			end
+		end
+
 	project_list_of_user (session: STRING; username: STRING): DS_LINKED_LIST [STRING] is
 			-- return project list of `username'
 		require
@@ -169,6 +211,52 @@ feature -- XML RPC calls
 				show_warning ("Error during project_list_of_user:%NCommand line tool could not be launched")
 			end
 		end
+
+	upload_file (a_username: STRING; a_password: STRING; a_filename: STRING) is
+			-- upload `filename' to the origo ftp server
+		require
+			username_attacked: a_username /= Void and not a_username.is_empty
+			password_attached: a_password /= Void and not a_password.is_empty
+			filename_attached: a_filename /= Void and not a_filename.is_empty
+		local
+			l_process: PROCESS
+			l_factory: PROCESS_FACTORY
+			l_command_line: STRING
+			l_error: STRING
+		do
+			l_error := ""
+			l_command_line := preferences.origo_data.xml_rpc_client_path.out
+			l_command_line.append (" ftp_upload -u ")
+			l_command_line.append (a_username)
+			l_command_line.append (" -p ")
+			l_command_line.append (a_password)
+			l_command_line.append (" -f %"")
+			l_command_line.append (a_filename)
+			l_command_line.append ("%"")
+			create l_factory
+			l_process := l_factory.process_launcher_with_command_line (l_command_line, Void)
+			l_process.redirect_error_to_agent (agent l_error.append)
+			l_process.launch
+
+				-- launch process
+			if l_process.launched then
+				l_process.wait_for_exit
+
+					-- an error occurred
+				if not l_error.is_empty then
+					l_error.insert_string ("Error during my_username:%N", 1)
+					show_warning (l_error)
+				end
+
+				-- the process could not be launched
+			else
+				show_warning ("Error during my_username:%NCommand line tool could not be launched")
+			end
+
+		end
+
+
+
 
 
 feature {NONE} -- Implementation
