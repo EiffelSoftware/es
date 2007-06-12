@@ -42,34 +42,6 @@ feature -- Access
 	upload_list: EV_CHECKABLE_LIST
 		-- checkable list which contains files to upload
 
-feature -- Measurement
-
-feature -- Status report
-
-feature -- Status setting
-
-feature -- Cursor movement
-
-feature -- Element change
-
-feature -- Removal
-
-feature -- Resizing
-
-feature -- Transformation
-
-feature -- Conversion
-
-feature -- Duplication
-
-feature -- Miscellaneous
-
-feature -- Basic operations
-
-feature -- Obsolete
-
-feature -- Inapplicable
-
 feature {NONE} -- Implementation
 
 	initialise is
@@ -186,9 +158,9 @@ feature {NONE} -- Implementation
 					l_checked_items.forth
 				end
 
-					-- reset state label
-				parent_window.state_label.set_text ("")
-				parent_window.state_label.refresh_now
+					-- refresh file list				
+				parent_window.release_tab.refresh_release_list
+
 			end
 		end
 

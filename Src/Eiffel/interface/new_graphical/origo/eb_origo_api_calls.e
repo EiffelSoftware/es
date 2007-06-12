@@ -193,9 +193,14 @@ feature -- XML RPC calls
 						from
 							l_lines.start
 						until
-							l_lines.item = l_lines.last
+							l_lines.after
 						loop
-							Result.force_first (l_lines.item.split ('%T').i_th (2))
+							if not l_lines.item.is_equal ("") then
+								check
+									correct_line_format: l_lines.item.split ('%T').count = 3
+								end
+								Result.force_first (l_lines.item.split ('%T').i_th (2))
+							end
 							l_lines.forth
 						end
 					end
@@ -255,7 +260,67 @@ feature -- XML RPC calls
 
 		end
 
+	ftp_file_list (a_username: STRING; a_password: STRING): DS_LINKED_LIST [STRING] is
+			-- return project list of `username'
+		require
+			password_attached: a_password /= Void and not a_password.is_empty
+			username_attached: a_username /= Void and not a_username.is_empty
+		local
+			l_process: PROCESS
+			l_factory: PROCESS_FACTORY
+			l_command_line: STRING
+			l_error: STRING
+			l_file_list_string: STRING
+			l_lines: LIST [STRING]
+		do
+			l_file_list_string := ""
+			l_error := ""
+			l_command_line := preferences.origo_data.xml_rpc_client_path.out
+			l_command_line.append (" ftp_file_list -p ")
+			l_command_line.append (a_password)
+			l_command_line.append (" -u ")
+			l_command_line.append (a_username)
+			create l_factory
+			l_process := l_factory.process_launcher_with_command_line (l_command_line, Void)
+			l_process.redirect_output_to_agent (agent l_file_list_string.append)
+			l_process.redirect_error_to_agent (agent l_error.append)
+			l_process.launch
 
+				-- launch process
+			if l_process.launched then
+				l_process.wait_for_exit
+
+					-- if everything went fine
+				if l_error.is_empty then
+
+						-- parse the result and fill the Result
+					l_lines := l_file_list_string.split ('%N')
+					create Result.make
+					if l_lines.count > 0 then
+						from
+							l_lines.start
+						until
+							l_lines.after
+						loop
+							l_lines.item.prune_all ('%R') -- necessary because the process library seems to add them in windows
+							if not l_lines.item.is_equal ("") then
+								Result.force_first (l_lines.item)
+							end
+							l_lines.forth
+						end
+					end
+
+					-- an error occurred
+				else
+					l_error.insert_string ("Error during project_list_of_user:%N", 1)
+					show_warning (l_error)
+				end
+
+				-- the process could not be launched
+			else
+				show_warning ("Error during project_list_of_user:%NCommand line tool could not be launched")
+			end
+		end
 
 
 

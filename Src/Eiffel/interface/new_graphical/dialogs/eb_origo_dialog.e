@@ -166,7 +166,7 @@ feature {NONE} -- Implementation
 			end
 
 			if password /= Void then
-				state_label.set_text ("")
+				release_tab.refresh_release_list
 			else
 				destroy
 			end
@@ -228,7 +228,7 @@ feature {NONE} -- Implementation
 			l_user_factory.store (lace.user_options)
 		end
 
-feature {EB_ORIGO_UPLOAD_TAB} -- Implementation
+feature {EB_ORIGO_UPLOAD_TAB, EB_ORIGO_RELEASE_TAB} -- Implementation
 
 		-- widgets
 	state_label: EV_LABEL
