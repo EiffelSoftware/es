@@ -17,7 +17,7 @@ inherit
 			default_create, copy
 		end
 
-	EB_CONSTANTS
+	EB_DIALOG_CONSTANTS
 		export
 			{NONE} all
 		undefine
@@ -49,9 +49,7 @@ feature -- Initialization
 		do
 			default_create
 
-			set_size (dialog_width, dialog_height)
 			set_title (interface_names.t_origo)
-			disable_user_resize
 
 				-- buttons
 			create l_ok_button.make_with_text_and_action (Interface_names.b_Ok, agent
@@ -89,7 +87,7 @@ feature -- Initialization
 
 				-- notebook
 			create file_notebook
-			file_notebook.set_minimum_height (notebook_height)
+			file_notebook.set_minimum_size (notebook_width, notebook_height)
 			file_notebook.extend (upload_tab)
 			file_notebook.set_item_text (upload_tab, "Upload")
 			file_notebook.extend (release_tab)
@@ -106,20 +104,24 @@ feature -- Initialization
 
 				-- main box
 			create l_vbox
-			add_padding_cell (l_vbox)
+			add_padding_cell (l_vbox, layout_constants.default_padding_size)
 			l_vbox.extend (l_project_name_label)
+			add_padding_cell (l_vbox, tiny_padding)
 			l_vbox.extend (project_list)
+			add_padding_cell (l_vbox, small_padding)
 			l_vbox.extend (file_notebook)
+			add_padding_cell (l_vbox, small_padding)
 			l_vbox.extend (state_label)
+			add_padding_cell (l_vbox, small_padding)
 			l_vbox.extend (l_button_box)
 			l_vbox.disable_item_expand (l_button_box)
-			add_padding_cell (l_vbox)
+			add_padding_cell (l_vbox, layout_constants.default_padding_size)
 
 				-- horizontal padding box
 			create l_hbox
-			add_padding_cell (l_hbox)
+			add_padding_cell (l_hbox, layout_constants.default_padding_size)
 			l_hbox.extend (l_vbox)
-			add_padding_cell (l_hbox)
+			add_padding_cell (l_hbox, layout_constants.default_padding_size)
 
 			extend (l_hbox)
 
@@ -129,17 +131,20 @@ feature -- Initialization
 			Current.show_actions.force (agent get_origo_data)
 		end
 
-feature {NONE} -- Implementation
+feature {EB_ORIGO_UPLOAD_TAB, EB_ORIGO_RELEASE_TAB} -- Implementation
 
-	add_padding_cell (box: EV_BOX) is
+	add_padding_cell (a_box: EV_BOX; a_padding_size: INTEGER) is
 			-- add a padding cell to box
+		require
+			a_box_not_void: a_box /= Void
+			a_padding_size_positive: a_padding_size > 0
 		local
-			cell: EV_CELL
+			l_cell: EV_CELL
 		do
-			create cell
-			cell.set_minimum_size (padding, padding)
-			box.extend (cell)
-			box.disable_item_expand (cell)
+			create l_cell
+			l_cell.set_minimum_size (a_padding_size, a_padding_size)
+			a_box.extend (l_cell)
+			a_box.disable_item_expand (l_cell)
 		end
 
 	get_origo_data is
@@ -238,10 +243,8 @@ feature {EB_ORIGO_UPLOAD_TAB, EB_ORIGO_RELEASE_TAB} -- Implementation
 	release_tab: EB_ORIGO_RELEASE_TAB
 
 		-- dialog size
-	dialog_height: INTEGER is 451
-	dialog_width: INTEGER is 418
-	padding: INTEGER is 10
-	notebook_height: INTEGER is 388
+	notebook_height: INTEGER is 350
+	notebook_width: INTEGER is 350
 
 		-- strings
 	t_project_name: STRING is "Origo Project Name"

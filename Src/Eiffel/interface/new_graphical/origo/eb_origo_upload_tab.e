@@ -13,7 +13,7 @@ class
 				default_create
 			end
 
-		EB_CONSTANTS
+		EB_DIALOG_CONSTANTS
 			export {NONE}
 				all
 			undefine
@@ -51,8 +51,13 @@ feature {NONE} -- Implementation
 			l_button: EV_BUTTON
 			l_cell: EV_CELL
 		do
+
+			parent_window.add_padding_cell (Current, small_padding)
+
 			create upload_list
 			extend (upload_list)
+
+			parent_window.add_padding_cell (Current, small_padding)
 
 				-- button box
 			create l_button_box
@@ -76,6 +81,8 @@ feature {NONE} -- Implementation
 				-- padding cell
 			create l_cell
 			l_button_box.extend (l_cell)
+
+			parent_window.add_padding_cell (Current, small_padding)
 		end
 
 	open_files_button_clicked is

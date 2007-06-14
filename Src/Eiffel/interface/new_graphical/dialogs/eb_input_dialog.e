@@ -1,0 +1,207 @@
+indexing
+	description: "Objects that represent a dialog with a single textbox where the user can enter some input."
+	author: "Rafael Bischof <rafael@xanis.ch>"
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	EB_INPUT_DIALOG
+
+inherit
+	EB_DIALOG
+	export {NONE}
+		default_create
+	end
+
+	EB_DIALOG_CONSTANTS
+	export {NONE}
+		all
+	undefine
+		copy, default_create
+	end
+
+create
+	make,
+	make_with_text,
+	make_with_text_and_default_value
+
+feature -- Initialization
+
+	make is
+			-- create dialog
+		do
+			default_create
+			create main_box
+			initialize_dialog
+		end
+
+	make_with_text (a_text: STRING) is
+			-- create dialog with a label
+		require
+			a_text_not_void: a_text /= Void
+		local
+			l_label: EV_LABEL
+			l_cell: EV_CELL
+		do
+			default_create
+			create main_box
+
+			create l_label.make_with_text (a_text)
+			l_label.align_text_left
+			main_box.extend (l_label)
+			main_box.disable_item_expand (l_label)
+
+			create l_cell
+			l_cell.set_minimum_height (small_padding)
+			main_box.extend (l_cell)
+			main_box.disable_item_expand (l_cell)
+
+			initialize_dialog
+		end
+
+	make_with_text_and_default_value (a_text: STRING; a_value: STRING) is
+			-- create dialog with a label and `a_value' as default value
+		do
+			if a_text /= Void then
+				make_with_text (a_text)
+			else
+				make
+			end
+
+			textbox.set_text (a_value)
+		end
+
+
+feature -- Access
+
+	input: STRING
+		-- input entered into `textbox'
+
+feature -- Measurement
+
+feature -- Status report
+
+feature -- Status setting
+
+feature -- Cursor movement
+
+feature -- Element change
+
+feature -- Removal
+
+feature -- Resizing
+
+feature -- Transformation
+
+feature -- Conversion
+
+feature -- Duplication
+
+feature -- Miscellaneous
+
+feature -- Basic operations
+
+feature -- Obsolete
+
+feature -- Inapplicable
+
+feature {NONE} -- Implementation
+
+		-- widgets
+	textbox: EV_TEXT
+	main_box: EV_VERTICAL_BOX
+
+	initialize_dialog is
+			-- adds all widgets needed for a base version of EB_INPUT_DIALOG
+		require
+			main_box_not_void: main_box /= Void
+		local
+			l_cell: EV_CELL
+			l_button: EV_BUTTON
+			l_hbox: EV_HORIZONTAL_BOX
+		do
+			set_title ("Input")
+
+				-- add top padding cell
+			create l_cell
+			l_cell.set_minimum_height (layout_constants.default_padding_size)
+			main_box.put_front (l_cell)
+			main_box.disable_item_expand (l_cell)
+
+				-- add `textbox'
+			create textbox
+			main_box.extend (textbox)
+
+				-- padding cell between buttons and `textbox'
+			create l_cell
+			l_cell.set_minimum_height (small_padding)
+			main_box.extend (l_cell)
+			main_box.disable_item_expand (l_cell)
+
+				-- button box
+			create l_hbox
+			main_box.extend (l_hbox)
+			main_box.disable_item_expand (l_hbox)
+
+				-- cell
+			create l_cell
+			l_hbox.extend (l_cell)
+
+				-- ok button
+			create l_button.make_with_text_and_action (interface_names.b_ok, agent
+						do
+							input := textbox.text.out
+							destroy
+						end
+					)
+			layout_constants.set_default_size_for_button (l_button)
+			l_hbox.extend (l_button)
+			l_hbox.disable_item_expand (l_button)
+
+				-- padding cell between buttons
+			create l_cell
+			l_cell.set_minimum_width (layout_constants.default_padding_size)
+			l_hbox.extend (l_cell)
+			l_hbox.disable_item_expand (l_cell)
+
+				-- cancel button
+			create l_button.make_with_text_and_action (interface_names.b_cancel, agent destroy)
+			layout_constants.set_default_size_for_button (l_button)
+			l_hbox.extend (l_button)
+			l_hbox.disable_item_expand (l_button)
+
+			set_default_push_button (l_button)
+			set_default_cancel_button (l_button)
+
+				-- cell
+			create l_cell
+			l_hbox.extend (l_cell)
+
+				-- bottom padding cell
+			create l_cell
+			l_cell.set_minimum_height (layout_constants.default_padding_size)
+			main_box.extend (l_cell)
+			main_box.disable_item_expand (l_cell)
+
+				-- add left and right padding cells
+			create l_hbox
+			l_hbox.extend (main_box)
+			extend (l_hbox)
+
+				-- left padding cell
+			create l_cell
+			l_cell.set_minimum_width (layout_constants.default_padding_size)
+			l_hbox.put_front (l_cell)
+			l_hbox.disable_item_expand (l_cell)
+
+				-- right padding cell
+			create l_cell
+			l_cell.set_minimum_width (layout_constants.default_padding_size)
+			l_hbox.extend (l_cell)
+			l_hbox.disable_item_expand (l_cell)
+		end
+
+invariant
+	main_box_not_void: main_box /= Void
+	textbox_not_void: textbox /= Void
+end

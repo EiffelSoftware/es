@@ -13,7 +13,7 @@ class
 				default_create
 			end
 
-		EB_CONSTANTS
+		EB_DIALOG_CONSTANTS
 			export {NONE}
 				all
 			undefine
@@ -98,11 +98,16 @@ feature {NONE} -- Implementation
 			l_button: EV_BUTTON
 			l_list_item: EV_LIST_ITEM
 		do
+
+			parent_window.add_padding_cell (Current, small_padding)
+
 				-- top label
 			create l_label.make_with_text (t_top_label)
 			l_label.align_text_left
 			extend (l_label)
 			disable_item_expand (l_label)
+
+			parent_window.add_padding_cell (Current, small_padding)
 
 				-- `release_list'
 			create release_list
@@ -114,6 +119,8 @@ feature {NONE} -- Implementation
 			release_list.force (create {EV_LIST_ITEM}.make_with_text (t_no_platform))
 			release_list.force (create {EV_LIST_ITEM}.make_with_text (t_separator))
 
+			parent_window.add_padding_cell (Current, small_padding)
+
 				-- horizontal box
 			create l_hbox
 			extend (l_hbox)
@@ -124,10 +131,14 @@ feature {NONE} -- Implementation
 			l_hbox.extend (l_button)
 			l_hbox.disable_item_expand (l_button)
 
+			parent_window.add_padding_cell (l_hbox, small_padding)
+
 				-- release button
 			create l_button.make_with_text_and_action ("Release", agent release_button_clicked)
 			l_hbox.extend (l_button)
 			l_hbox.disable_item_expand (l_button)
+
+			parent_window.add_padding_cell (l_hbox, small_padding)
 
 				-- `platform_list'
 			create platform_list
@@ -139,10 +150,14 @@ feature {NONE} -- Implementation
 			l_list_item.enable_select
 			l_hbox.extend (platform_list)
 
+			parent_window.add_padding_cell (l_hbox, small_padding)
+
 				-- platform button
 			create l_button.make_with_text_and_action ("Add platform", agent platform_button_clicked)
 			l_hbox.extend (l_button)
 			l_hbox.disable_item_expand (l_button)
+
+			parent_window.add_padding_cell (Current, small_padding)
 		end
 
 	delete_button_clicked is
@@ -166,10 +181,17 @@ feature {NONE} -- Implementation
 	platform_button_clicked is
 			-- event handler for a click on platform button
 		local
-			l_dialog: EV_INFORMATION_DIALOG
+			l_dialog: EB_INPUT_DIALOG
+			l_list_item: EV_LIST_ITEM
 		do
-			create l_dialog.make_with_text ("Sorry, not implemented yet")
+			create l_dialog.make_with_text ("Please enter a platform")
 			l_dialog.show_modal_to_window (parent_window)
+
+			if l_dialog.input /= Void and not l_dialog.input.is_equal ("") then
+				create l_list_item.make_with_text (l_dialog.input)
+				platform_list.force (l_list_item)
+			end
+
 		end
 
 	platform_selection_changed is
