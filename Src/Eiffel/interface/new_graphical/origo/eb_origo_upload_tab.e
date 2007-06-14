@@ -102,7 +102,7 @@ feature {NONE} -- Implementation
 			until
 				l_file_list.after
 			loop
-				l_list_item := upload_list_item_with_text (l_file_list.item)
+				l_list_item := parent_window.list_has_item_with_text (upload_list, l_file_list.item)
 				if l_list_item = Void then
 					create l_list_item.make_with_text (l_file_list.item)
 					upload_list.force (l_list_item)
@@ -170,22 +170,6 @@ feature {NONE} -- Implementation
 
 			end
 		end
-
-	upload_list_item_with_text (a_text: STRING): EV_LIST_ITEM is
-			-- has `upload_list' an item with text `a_text'
-		do
-			from
-				upload_list.start
-			until
-				upload_list.after or Result /= Void
-			loop
-				if upload_list.item.text.is_equal (a_text) then
-					Result := upload_list.item
-				end
-				upload_list.forth
-			end
-		end
-
 
 feature {NONE} -- Implementation
 

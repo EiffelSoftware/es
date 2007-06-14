@@ -203,6 +203,8 @@ feature {NONE} -- Implementation
 			-- event handler for a selection on `release_list'
 		local
 			l_items: DYNAMIC_LIST [EV_LIST_ITEM]
+			l_platform: STRING
+			l_item: EV_LIST_ITEM
 		do
 			if not is_ignoring_selection_change then
 				is_ignoring_selection_change := True
@@ -219,6 +221,20 @@ feature {NONE} -- Implementation
 					end
 					l_items.forth
 				end
+
+
+				if release_list.selected_item /= Void then
+					l_platform ?= release_list.selected_item.data
+				end
+				
+				if l_platform /= Void then
+					l_item := parent_window.list_has_item_with_text (platform_list, l_platform)
+					check
+						l_item_not_void: l_item /= Void
+					end
+					l_item.enable_select
+				end
+
 				is_ignoring_selection_change := False
 			end
 		ensure
@@ -227,11 +243,14 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation
 
+
+
+feature {NONE} -- Implementation
+
 		-- strings
 	t_top_label: STRING is "Files on FTP Server"
 	t_no_platform: STRING is "No platform specified"
 	t_separator: STRING is "---------------------------------"
-
 
 		-- widgets
 	platform_list: EV_COMBO_BOX
@@ -240,8 +259,6 @@ feature {NONE} -- Implementation
 	parent_window: EB_ORIGO_DIALOG
 	is_ignoring_selection_change: BOOLEAN
 		-- states whether selection changes in `release_list' and `platform_list' should be ignored
-
-
 
 invariant
 	parent_not_void: parent_window /= Void

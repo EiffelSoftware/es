@@ -118,6 +118,7 @@ feature {NONE} -- Implementation
 		local
 			l_cell: EV_CELL
 			l_button: EV_BUTTON
+			l_cancel_button: EV_BUTTON
 			l_hbox: EV_HORIZONTAL_BOX
 		do
 			set_title ("Input")
@@ -165,13 +166,10 @@ feature {NONE} -- Implementation
 			l_hbox.disable_item_expand (l_cell)
 
 				-- cancel button
-			create l_button.make_with_text_and_action (interface_names.b_cancel, agent destroy)
-			layout_constants.set_default_size_for_button (l_button)
-			l_hbox.extend (l_button)
-			l_hbox.disable_item_expand (l_button)
-
-			set_default_push_button (l_button)
-			set_default_cancel_button (l_button)
+			create l_cancel_button.make_with_text_and_action (interface_names.b_cancel, agent destroy)
+			layout_constants.set_default_size_for_button (l_cancel_button)
+			l_hbox.extend (l_cancel_button)
+			l_hbox.disable_item_expand (l_cancel_button)
 
 				-- cell
 			create l_cell
@@ -199,6 +197,9 @@ feature {NONE} -- Implementation
 			l_cell.set_minimum_width (layout_constants.default_padding_size)
 			l_hbox.extend (l_cell)
 			l_hbox.disable_item_expand (l_cell)
+
+			set_default_push_button (l_cancel_button)
+			set_default_cancel_button (l_cancel_button)
 		end
 
 invariant

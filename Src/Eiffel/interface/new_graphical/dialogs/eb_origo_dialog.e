@@ -233,6 +233,21 @@ feature {EB_ORIGO_UPLOAD_TAB, EB_ORIGO_RELEASE_TAB} -- Implementation
 			l_user_factory.store (lace.user_options)
 		end
 
+	list_has_item_with_text (a_list: EV_LIST_ITEM_LIST;a_text: STRING): EV_LIST_ITEM is
+			-- has `upload_list' an item with text `a_text'
+		do
+			from
+				a_list.start
+			until
+				a_list.after or Result /= Void
+			loop
+				if a_list.item.text.is_equal (a_text) then
+					Result := a_list.item
+				end
+				a_list.forth
+			end
+		end
+
 feature {EB_ORIGO_UPLOAD_TAB, EB_ORIGO_RELEASE_TAB} -- Implementation
 
 		-- widgets
