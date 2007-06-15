@@ -155,7 +155,7 @@ feature {NONE} -- Implementation
 					parent_window.state_label.refresh_now
 
 						-- upload file
-					parent_window.origo_client.upload_file (parent_window.username,
+					parent_window.origo_client.ftp_upload (parent_window.username,
 															parent_window.password,
 															l_checked_items.item.text)
 

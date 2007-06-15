@@ -150,6 +150,7 @@ feature {NONE} -- Implementation
 			l_list_item.enable_select
 			l_hbox.extend (platform_list)
 
+
 			parent_window.add_padding_cell (l_hbox, small_padding)
 
 				-- platform button
@@ -163,10 +164,59 @@ feature {NONE} -- Implementation
 	delete_button_clicked is
 			-- event handler for a click on delete button
 		local
-			l_dialog: EV_INFORMATION_DIALOG
+			l_message: STRING
+			l_confirm_dialog: EB_CONFIRMATION_DIALOG
+			l_info_dialog: EB_INFORMATION_DIALOG
+			l_selected_items: DYNAMIC_LIST [EV_LIST_ITEM]
 		do
-			create l_dialog.make_with_text ("Sorry, not implemented yet")
-			l_dialog.show_modal_to_window (parent_window)
+				-- confirm deletion
+			l_message := "Do you really want to delete following files?%N"
+			from
+				l_selected_items := release_list.selected_items
+				l_selected_items.start
+			until
+				l_selected_items.after
+			loop
+				l_message.append (l_selected_items.item.text)
+				l_message.append ("%N")
+				l_selected_items.forth
+			end
+
+			if l_selected_items.count = 0 then
+				create l_info_dialog.make_with_text ("You have to select the files you want to delete")
+				l_info_dialog.show_modal_to_window (parent_window)
+			else
+				create l_confirm_dialog.make_with_text (l_message)
+				l_confirm_dialog.show_modal_to_window (parent_window)
+			end
+
+				-- delete selected files
+			if l_selected_items.count > 0 and l_confirm_dialog.is_ok_selected then
+				from
+					l_selected_items.start
+				until
+					l_selected_items.after
+				loop
+						-- update state label
+					l_message := "Deleting "
+					l_message.append (l_selected_items.item.text)
+					parent_window.state_label.set_text (l_message)
+					parent_window.state_label.refresh_now
+
+						-- delete file
+					parent_window.origo_client.ftp_delete (parent_window.username,
+															parent_window.password,
+															l_selected_items.item.text)
+
+						-- remove item from `release_list'
+					release_list.prune (l_selected_items.item)
+
+					l_selected_items.forth
+				end
+
+					-- refresh file list				
+				refresh_release_list
+			end
 		end
 
 	release_button_clicked is
@@ -187,16 +237,52 @@ feature {NONE} -- Implementation
 			create l_dialog.make_with_text ("Please enter a platform")
 			l_dialog.show_modal_to_window (parent_window)
 
-			if l_dialog.input /= Void and not l_dialog.input.is_equal ("") then
+			if
+				l_dialog.input /= Void and
+				not l_dialog.input.is_equal ("") and
+				parent_window.list_has_item_with_text (platform_list, l_dialog.input) = Void -- this platform isn't already in the list
+			then
 				create l_list_item.make_with_text (l_dialog.input)
 				platform_list.force (l_list_item)
+
+					-- add the "group"
+
+					-- empty line
+				create l_list_item.make_with_text ("")
+				release_list.force (l_list_item)
+
+					-- name
+				create l_list_item.make_with_text (l_dialog.input)
+				release_list.force (l_list_item)
+
+					-- separator
+				create l_list_item.make_with_text (t_separator)
+				release_list.force (l_list_item)
 			end
 
 		end
 
 	platform_selection_changed is
 			-- event handler for a selection on `platform_list'
+		local
+			l_list_item: EV_LIST_ITEM
+			l_items: DYNAMIC_LIST [EV_LIST_ITEM]
+			l_platform: STRING_32
+			moo: INTEGER
 		do
+			l_items := release_list.selected_items
+			from
+				l_items.start
+			until
+				l_items.after
+			loop
+				l_platform ?=  platform_list.selected_item.text
+				if l_platform /= Void then
+					create l_list_item.make_with_text (l_platform)
+					moo := release_list.index_of (l_list_item, 1)
+				end
+				l_items.forth
+			end
 		end
 
 	release_list_selection_changed is
@@ -226,7 +312,7 @@ feature {NONE} -- Implementation
 				if release_list.selected_item /= Void then
 					l_platform ?= release_list.selected_item.data
 				end
-				
+
 				if l_platform /= Void then
 					l_item := parent_window.list_has_item_with_text (platform_list, l_platform)
 					check
