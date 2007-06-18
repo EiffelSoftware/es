@@ -102,7 +102,7 @@ feature {NONE} -- Implementation
 			until
 				l_file_list.after
 			loop
-				l_list_item := parent_window.list_has_item_with_text (upload_list, l_file_list.item)
+				l_list_item := parent_window.list_item_with_text (upload_list, l_file_list.item, 1)
 				if l_list_item = Void then
 					create l_list_item.make_with_text (l_file_list.item)
 					upload_list.force (l_list_item)

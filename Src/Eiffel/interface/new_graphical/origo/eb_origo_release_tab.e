@@ -240,8 +240,9 @@ feature {NONE} -- Implementation
 			if
 				l_dialog.input /= Void and
 				not l_dialog.input.is_equal ("") and
-				parent_window.list_has_item_with_text (platform_list, l_dialog.input) = Void -- this platform isn't already in the list
+				parent_window.list_item_with_text (platform_list, l_dialog.input, 1) = Void -- this platform isn't already in the list
 			then
+					-- add platfrom to `platform_list'
 				create l_list_item.make_with_text (l_dialog.input)
 				platform_list.force (l_list_item)
 
@@ -267,21 +268,78 @@ feature {NONE} -- Implementation
 		local
 			l_list_item: EV_LIST_ITEM
 			l_items: DYNAMIC_LIST [EV_LIST_ITEM]
-			l_platform: STRING_32
-			moo: INTEGER
+			l_platform: STRING
+			i: INTEGER
+			l_index: INTEGER
+			l_item_platform: STRING
 		do
-			l_items := release_list.selected_items
-			from
-				l_items.start
-			until
-				l_items.after
-			loop
-				l_platform ?=  platform_list.selected_item.text
-				if l_platform /= Void then
-					create l_list_item.make_with_text (l_platform)
-					moo := release_list.index_of (l_list_item, 1)
+
+			l_platform ?=  platform_list.selected_item.text.out
+			if l_platform /= Void and not is_ignoring_selection_change then
+				l_list_item := parent_window.list_item_with_text (platform_list, l_platform, 1)
+				check
+					l_list_item_not_void: l_list_item /= Void
 				end
-				l_items.forth
+
+					-- because the user could have a file with the same name as the platform
+					-- you have to search the correct one
+				from
+					i := 1
+				until
+					l_list_item.data = Void
+				loop
+					i := i + 1
+					l_list_item := parent_window.list_item_with_text (platform_list, l_platform, i)
+					check
+						l_list_item_not_void: l_list_item /= Void
+					end
+				end
+
+					-- move the cursor to the group title item
+				l_index := parent_window.index_of_list_item_with_text (release_list, l_list_item.text.out, i)
+				if l_index /= 0 then
+					release_list.go_i_th (l_index)
+				else
+						-- move cursor to after if the item was not found (which happens when the dialog is opened)
+					release_list.finish
+					release_list.forth
+				end
+
+
+					-- move the cursor to the next empty line or to the end
+				from
+				until
+					release_list.after or release_list.item.text.is_empty
+				loop
+					release_list.forth
+				end
+
+					-- get the selected items and loop through them
+				l_items := release_list.selected_items
+				from
+					l_items.start
+				until
+					l_items.after
+				loop
+					l_item_platform ?= l_items.item.data
+					check
+						l_item_platform_not_void: l_item_platform /= Void
+					end
+
+						-- only handle the ones which aren't already in the correct group
+					if not l_item_platform.is_equal (l_platform) then
+							-- remove the item
+						release_list.prune (l_items.item)
+
+							-- add it before the current position
+						l_items.item.set_data (l_platform)
+						release_list.put_left (l_items.item)
+						l_items.item.enable_select
+					end
+
+					l_items.forth
+				end
+
 			end
 		end
 
@@ -314,7 +372,7 @@ feature {NONE} -- Implementation
 				end
 
 				if l_platform /= Void then
-					l_item := parent_window.list_has_item_with_text (platform_list, l_platform)
+					l_item := parent_window.list_item_with_text (platform_list, l_platform, 1)
 					check
 						l_item_not_void: l_item /= Void
 					end

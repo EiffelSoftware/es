@@ -71,39 +71,10 @@ feature -- Initialization
 			textbox.set_text (a_value)
 		end
 
-
 feature -- Access
 
 	input: STRING
 		-- input entered into `textbox'
-
-feature -- Measurement
-
-feature -- Status report
-
-feature -- Status setting
-
-feature -- Cursor movement
-
-feature -- Element change
-
-feature -- Removal
-
-feature -- Resizing
-
-feature -- Transformation
-
-feature -- Conversion
-
-feature -- Duplication
-
-feature -- Miscellaneous
-
-feature -- Basic operations
-
-feature -- Obsolete
-
-feature -- Inapplicable
 
 feature {NONE} -- Implementation
 
@@ -117,8 +88,8 @@ feature {NONE} -- Implementation
 			main_box_not_void: main_box /= Void
 		local
 			l_cell: EV_CELL
-			l_button: EV_BUTTON
 			l_cancel_button: EV_BUTTON
+			l_ok_button: EV_BUTTON
 			l_hbox: EV_HORIZONTAL_BOX
 		do
 			set_title ("Input")
@@ -149,15 +120,15 @@ feature {NONE} -- Implementation
 			l_hbox.extend (l_cell)
 
 				-- ok button
-			create l_button.make_with_text_and_action (interface_names.b_ok, agent
+			create l_ok_button.make_with_text_and_action (interface_names.b_ok, agent
 						do
 							input := textbox.text.out
 							destroy
 						end
 					)
-			layout_constants.set_default_size_for_button (l_button)
-			l_hbox.extend (l_button)
-			l_hbox.disable_item_expand (l_button)
+			layout_constants.set_default_size_for_button (l_ok_button)
+			l_hbox.extend (l_ok_button)
+			l_hbox.disable_item_expand (l_ok_button)
 
 				-- padding cell between buttons
 			create l_cell
@@ -198,7 +169,7 @@ feature {NONE} -- Implementation
 			l_hbox.extend (l_cell)
 			l_hbox.disable_item_expand (l_cell)
 
-			set_default_push_button (l_cancel_button)
+			set_default_push_button (l_ok_button)
 			set_default_cancel_button (l_cancel_button)
 		end
 

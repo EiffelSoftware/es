@@ -233,18 +233,54 @@ feature {EB_ORIGO_UPLOAD_TAB, EB_ORIGO_RELEASE_TAB} -- Implementation
 			l_user_factory.store (lace.user_options)
 		end
 
-	list_has_item_with_text (a_list: EV_LIST_ITEM_LIST;a_text: STRING): EV_LIST_ITEM is
-			-- has `upload_list' an item with text `a_text'
+	list_item_with_text (a_list: EV_LIST_ITEM_LIST; a_text: STRING; a_occurrence: INTEGER): EV_LIST_ITEM is
+			-- returns `a_occurrence'th list item in `a_list' with text `a_text'
+		require
+			a_list_not_void: a_list /= Void
+			a_text_not_void: a_text /= Void
+			a_occurrence_positive: a_occurrence > 0
+		local
+			items_found: INTEGER
+			i: INTEGER
 		do
 			from
-				a_list.start
+				i := 1
 			until
-				a_list.after or Result /= Void
+				i > a_list.count or items_found = a_occurrence
 			loop
-				if a_list.item.text.is_equal (a_text) then
-					Result := a_list.item
+				if a_list[i].text.is_equal (a_text) then
+					Result := a_list[i]
+					items_found := items_found + 1
 				end
-				a_list.forth
+				i := i + 1
+			end
+		end
+
+	index_of_list_item_with_text (a_list: EV_LIST_ITEM_LIST; a_text: STRING; a_occurrence: INTEGER): INTEGER is
+			-- returns `a_occurrence'th list item in `a_list' with text `a_text'
+		require
+			a_list_not_void: a_list /= Void
+			a_text_not_void: a_text /= Void
+			a_occurrence_positive: a_occurrence > 0
+		local
+			items_found: INTEGER
+		do
+			from
+				Result := 1
+			until
+				Result > a_list.count or items_found = a_occurrence
+			loop
+				if a_list[Result].text.is_equal (a_text) then
+					items_found := items_found + 1
+				end
+				Result := Result + 1
+			end
+
+				-- think about it, it's necessary (becaus it's increased even if the item was found)
+			Result := Result - 1
+
+			if items_found < a_occurrence then
+				Result := 0
 			end
 		end
 
