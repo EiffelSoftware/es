@@ -52,15 +52,6 @@ inherit
 			copy, is_equal, out, correct_mismatch
 		end
 
-	OBSERVABLE -- SIES
-		redefine
---			is_observed,
-			copy,
-			is_equal, --original implementation of string is ok, because it doesn't compare the object_id, too.
-			out --don't care
-		end
-
-
 create
 	make,
 	make_empty,
@@ -1737,7 +1728,7 @@ feature -- Element change
 		local
 			ignore_result: ANY
 			old_area: like area
-			int_id: INTEGER -- SIES, taken from IDENTIFIED
+			int_id: INTEGER -- SIES, behaviour taken from IDENTIFIED
 		do
 
 
@@ -1749,7 +1740,7 @@ feature -- Element change
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
-				int_id := internal_id -- SIES
+				int_id := cr_object_id -- SIES
 
 				if other /= Current then
 					old_area := area
@@ -1764,7 +1755,7 @@ feature -- Element change
 					end
 					internal_hash_code := 0
 
-				internal_id := int_id -- SIES
+					cr_set_object_id(int_id) -- SIES
 				end
 			-- <methodbody_end return_value="False">
 			end

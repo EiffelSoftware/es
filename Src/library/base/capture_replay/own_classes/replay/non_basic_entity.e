@@ -30,7 +30,7 @@ feature -- Creation
 
 feature -- Access
 
-	id: INTEGER
+	id: INTEGER_32
 		-- Object ID of the entity
 
 feature -- Basic operations

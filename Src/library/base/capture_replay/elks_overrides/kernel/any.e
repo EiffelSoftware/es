@@ -400,11 +400,11 @@ feature -- Capture/Replay
 			Result := True
 		end
 
-
-	cr_object_id: NATURAL_64 is
+	--XXX copying of objects not yet supported (object ID needs to be reset after copy.)
+	cr_object_id: INTEGER_32 is
 			--
 		local
-			obj_id: NATURAL_64
+			obj_id: INTEGER_32
 		do
 			obj_id := c_object_id($Current)
 			if  obj_id = 0 then
@@ -417,7 +417,7 @@ feature -- Capture/Replay
 			Result := obj_id
 		end
 
-	cr_set_object_id(new_id: NATURAL_64) is
+	cr_set_object_id(new_id: INTEGER_32) is
 			--
 		do
 			c_set_object_id($Current, new_id)
@@ -434,23 +434,23 @@ feature {NONE} -- Implementation
 
 	mode_proxy: STRING is "proxy"
 
-	c_object_id(object: POINTER): NATURAL_64 is
+	c_object_id(object: POINTER): INTEGER_32 is
 			--
 		external
 			"C inline use <eif_malloc.h>"
 		alias
-			"*(EIF_NATURAL_64 *)($object + (HEADER($object)->ov_size & B_SIZE) - sizeof(EIF_NATURAL_64))"
+			"*(OBJECT_ID_TYPE *)($object + (HEADER($object)->ov_size & B_SIZE) - sizeof(OBJECT_ID_TYPE))"
 		end
 
-	c_set_object_id(object: POINTER; value: NATURAL_64) is
+	c_set_object_id(object: POINTER; value: INTEGER_32) is
 			--
 		external
 			"C inline use <eif_malloc.h>"
 		alias
-			"*(EIF_NATURAL_64 *)($object + (HEADER($object)->ov_size & B_SIZE) - sizeof(EIF_NATURAL_64)) = $value"
+			"*(OBJECT_ID_TYPE *)($object + (HEADER($object)->ov_size & B_SIZE) - sizeof(OBJECT_ID_TYPE)) = $value"
 		end
 
-	cr_global_object_id: NATURAL_64_REF is
+	cr_global_object_id: INTEGER_32_REF is
 			-- The next free ID.
 		once
 			create Result

@@ -56,7 +56,7 @@ feature -- Access
 			end
 		end
 
-	register_object(object: OBSERVABLE; entity: NON_BASIC_ENTITY) is
+	register_object(object: ANY; entity: NON_BASIC_ENTITY) is
 			-- Register `object' in the object lookup table.
 		require
 			object_not_void: object /= Void
@@ -65,7 +65,7 @@ feature -- Access
 		do
 			if entities[entity.id] = Void then
 				entities[entity.id] := object
-				object.set_object_id(entity.id)
+				object.cr_set_object_id(entity.id)
 			end
 		ensure
 			entity_registered: entities[entity.id] = object
@@ -102,8 +102,7 @@ feature -- Access
 				Result := entities[non_basic.id]
 			ensure then
 				non_void_entity_resolved: (non_basic.id /= 0) implies (Result /= Void)
-				-- this  is not possible until ANY contains 'observable's' functionality
-				-- object_id_mathes: non_basic.id = Result.object_id
+				object_id_matches: non_basic.id = Result.cr_object_id
 			end
 
 	create_entity(non_basic: NON_BASIC_ENTITY)
@@ -111,18 +110,14 @@ feature -- Access
 		require
 			non_basic_not_void: non_basic /= Void
 		local
-			observable: OBSERVABLE
+			new_object: ANY
 		do
-			 observable ?= new_instance_of(dynamic_type_from_string(non_basic.type))
-			 entities[non_basic.id] := observable
-			check
-				--this is an observable, otherwise it would not be possible to have an object Id during capturing.
-				resolved_entity_is_obserable: entities[non_basic.id] /= Void
-			end
-			entities[non_basic.id].set_object_id (non_basic.id)
+			new_object := new_instance_of(dynamic_type_from_string(non_basic.type))
+			entities[non_basic.id] := new_object
+			entities[non_basic.id].cr_set_object_id (non_basic.id)
 		end
 
-	entities: ARRAY[OBSERVABLE]
+	entities: ARRAY[ANY]
 
 	represents_void(entity: ENTITY): BOOLEAN
 			-- Does `entity' represent a Void?

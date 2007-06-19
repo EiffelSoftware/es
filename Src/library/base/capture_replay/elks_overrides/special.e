@@ -413,21 +413,21 @@ feature {NONE} -- Implementation
 			"built_in"
 		end
 
-	c_object_id(object: POINTER): NATURAL_64 is
+	c_object_id(object: POINTER): INTEGER_32 is
 			--
 		external
 			"C inline use <eif_malloc.h>"
 			--"C inline use <gtk/gtk.h>"
 		alias
-			"*(EIF_NATURAL_64 *)($object + (HEADER($object)->ov_size & B_SIZE) - LNGPAD_2 - sizeof(EIF_NATURAL_64))"
+			"*(OBJECT_ID_TYPE *)($object + (HEADER($object)->ov_size & B_SIZE) - LNGPAD_2 - sizeof(OBJECT_ID_TYPE))"
 		end
 
-	c_set_object_id(object: POINTER; value: NATURAL_64) is
+	c_set_object_id(object: POINTER; value: INTEGER_32) is
 			--
 		external
 			"C inline use <eif_malloc.h>"
 		alias
-			"*(EIF_NATURAL_64 *)($object + (HEADER($object)->ov_size & B_SIZE) - LNGPAD_2 - sizeof(EIF_NATURAL_64)) = $value"
+			"*(OBJECT_ID_TYPE *)($object + (HEADER($object)->ov_size & B_SIZE) - LNGPAD_2 - sizeof(OBJECT_ID_TYPE)) = $value"
 		end
 
 

@@ -8,9 +8,6 @@ indexing
 
 class TO_SPECIAL [T]
 
-inherit
-	OBSERVABLE
-
 create
 	make_area
 

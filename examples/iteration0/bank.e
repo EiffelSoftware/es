@@ -7,9 +7,6 @@ indexing
 class
 	BANK
 
-inherit
-	OBSERVABLE
-
 create
 	make
 

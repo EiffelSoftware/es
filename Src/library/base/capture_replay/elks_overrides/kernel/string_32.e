@@ -47,12 +47,6 @@ inherit
 			copy, is_equal, out, correct_mismatch
 		end
 
-	OBSERVABLE -- SIES
-		redefine
-			copy,
-			is_equal, --original implementation of string is ok, because it doesn't compare the object_id, too.
-			out --don't care
-		end
 create
 	make,
 	make_empty,
@@ -872,7 +866,7 @@ feature -- Element change
 			old_area: like area
 			int_id: INTEGER -- SIES, taken from IDENTIFIED
 		do
-			int_id := internal_id -- SIES
+			int_id := cr_object_id -- SIES
 
 			if other /= Current then
 				old_area := area
@@ -888,7 +882,7 @@ feature -- Element change
 				internal_hash_code := 0
 			end
 
-			internal_id := int_id -- SIES
+			cr_set_object_id(int_id) -- SIES
 
 		ensure then
 			new_result_count: count = other.count

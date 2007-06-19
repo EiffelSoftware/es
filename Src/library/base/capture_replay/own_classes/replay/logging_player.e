@@ -52,7 +52,7 @@ feature -- Status setting
 		end
 
 feature -- Basic operations
-		put_feature_invocation (feature_name: STRING_8; target: OBSERVABLE; arguments: TUPLE) is
+		put_feature_invocation (feature_name: STRING_8; target: ANY; arguments: TUPLE) is
 				--
 			do
 				Precursor {PLAYER}(feature_name, target, arguments)

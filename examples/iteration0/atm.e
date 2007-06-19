@@ -8,7 +8,7 @@ class
 	ATM
 
 inherit
-	OBSERVABLE
+	ANY
 	redefine
 		is_observed
 	end

@@ -126,25 +126,15 @@ feature {NONE} -- Implementation
 
 	write_value (value: ANY)
 			-- Write a value (both basic and object types)
-		local
-			observable_object: OBSERVABLE
 		do
 			if is_basic_type (value) then
 				write_basic (value)
 			else --basic type
-				-- These cases can be merged together
-				-- as soon as we can assume that all non basic types
-				-- are observable.
-				observable_object ?= value
-				if (value = Void) or (observable_object /= Void) then --something we can handle...
-					write_non_basic (observable_object)
-				else
-					report_error ("Reference Type not observable!! Type: " + value.generating_type + " ")
-				end
+				write_non_basic (value)
 			end
 		end
 
-	write_non_basic(object: OBSERVABLE)
+	write_non_basic(object: ANY)
 			-- serialize an object
 		require
 			argument_is_non_basic_type: not is_basic_type(object)
@@ -152,7 +142,7 @@ feature {NONE} -- Implementation
 			if object = Void then
 				write (" [NON_BASIC NONE 0]")
 			else
-				write (" [NON_BASIC " + object.generating_type + " " + object.object_id.out + "]")
+				write (" [NON_BASIC " + object.generating_type + " " + object.cr_object_id.out + "]")
 			end
 		end
 

@@ -107,7 +107,6 @@ feature -- Basic operations
 		local
 			callee_observed: BOOLEAN
 			callret: RETURN_EVENT
-			observable_returnvalue: OBSERVABLE
 			non_basic_return_entity: NON_BASIC_ENTITY
 		do
 			callee_observed := observed_stack.item
@@ -123,12 +122,11 @@ feature -- Basic operations
 							callret ?= event_input.last_event
 							if callee_observed then
 								--INCALLRET
-								observable_returnvalue ?= res
 								non_basic_return_entity ?= callret.return_value
 								if non_basic_return_entity /= Void then
-									if observable_returnvalue /= Void then
+									if res /= Void then
 										-- This return value must be registered.
-										resolver.register_object (observable_returnvalue, non_basic_return_entity)
+										resolver.register_object (res, non_basic_return_entity)
 									else
 										report_and_set_error ("Received non-basic return value that is not observable")
 									end
@@ -149,7 +147,7 @@ feature -- Basic operations
 			end
 		end
 
-	put_feature_invocation (feature_name: STRING_8; target: OBSERVABLE; arguments: TUPLE) is
+	put_feature_invocation (feature_name: STRING_8; target: ANY; arguments: TUPLE) is
 			-- Notice that a feature invocation event (`target'.`feature_name'(`arguments')) occurred.
 		local
 			caller_is_observed: BOOLEAN
@@ -249,7 +247,7 @@ feature {NONE} -- Implementation
 		local
 			i: INTEGER
 			non_basic: NON_BASIC_ENTITY
-			observable: OBSERVABLE
+			actual: ANY
 		do
 			--index all arguments
 			from
@@ -258,9 +256,9 @@ feature {NONE} -- Implementation
 				i > expected_arguments.count or i > actual_arguments.count
 			loop
 				non_basic ?= expected_arguments @ i
-				observable ?= actual_arguments @ i
-				if non_basic /= Void and observable /= Void then
-					resolver.register_object(observable, non_basic)
+				actual := actual_arguments @ i
+				if non_basic /= Void and actual /= Void then
+					resolver.register_object(actual, non_basic)
 				end
 				i := i + 1
 			end

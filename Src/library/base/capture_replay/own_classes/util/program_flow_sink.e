@@ -40,7 +40,7 @@ feature -- Basic operations
 			-- Put a feature exit event with result `res' into the sink.
 		deferred end
 
-	put_feature_invocation (feature_name: STRING_8; target: OBSERVABLE; arguments: TUPLE)
+	put_feature_invocation (feature_name: STRING_8; target: ANY; arguments: TUPLE)
 			-- Put a feature invocation event (`target'.`feature_name'(`arguments')) into the sink.
 		require
 			feature_name_not_void: feature_name /= Void

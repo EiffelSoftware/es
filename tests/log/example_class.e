@@ -7,9 +7,6 @@ indexing
 class
 	EXAMPLE_CLASS
 
-inherit
-	OBSERVABLE
-
 create
 	make
 
@@ -20,9 +17,9 @@ feature -- Creation
 
 		end
 
-	test_feature(object_argument: OBSERVABLE; string_argument: STRING; real_argument: REAL; int_argument: INTEGER)
+	test_feature(object_argument: ANY; string_argument: STRING; real_argument: REAL; int_argument: INTEGER)
 		do
-			
+
 		end
 
 

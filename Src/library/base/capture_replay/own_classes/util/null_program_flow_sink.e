@@ -20,7 +20,7 @@ feature -- Basic operations
 
 		end
 
-	put_feature_invocation (feature_name: STRING_8; target: OBSERVABLE; arguments: TUPLE)
+	put_feature_invocation (feature_name: STRING_8; target: ANY; arguments: TUPLE)
 			-- Ignore event.
 		do
 

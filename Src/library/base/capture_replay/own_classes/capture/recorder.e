@@ -71,7 +71,7 @@ feature -- Basic Operations
 			Result := res
 		end
 
-	put_feature_invocation (feature_name: STRING_8; target: OBSERVABLE; arguments: TUPLE)
+	put_feature_invocation (feature_name: STRING_8; target: ANY; arguments: TUPLE)
 			-- Record a feature_invoke - event.
 		do
 			--opt print_debug ("{REC}: MethodBodyStart: " + feature_name + "%N")

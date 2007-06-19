@@ -8,7 +8,7 @@ class
 	ATM_UI
 
 inherit
-	OBSERVABLE
+	ANY
 	redefine
 		is_observed
 	end
