@@ -409,9 +409,12 @@ feature -- Capture/Replay
 			obj_id := c_object_id($Current)
 			if  obj_id = 0 then
 				--set the object ID to the next available value.
-			else
-				Result := obj_id
+				obj_id := cr_global_object_id.item
+				cr_set_object_id(obj_id)
+				cr_global_object_id.set_item(cr_global_object_id.item + 1)
 			end
+
+			Result := obj_id
 		end
 
 	cr_set_object_id(new_id: NATURAL_64) is
@@ -435,9 +438,8 @@ feature {NONE} -- Implementation
 			--
 		external
 			"C inline use <eif_malloc.h>"
-			--"C inline use <gtk/gtk.h>"
 		alias
-			"*(EIF_NATURAL_64 *)($object + HEADER($object)->ov_size - 8)"
+			"*(EIF_NATURAL_64 *)($object + (HEADER($object)->ov_size & B_SIZE) - sizeof(EIF_NATURAL_64))"
 		end
 
 	c_set_object_id(object: POINTER; value: NATURAL_64) is
@@ -445,9 +447,15 @@ feature {NONE} -- Implementation
 		external
 			"C inline use <eif_malloc.h>"
 		alias
-			"*(EIF_NATURAL_64 *)($object + HEADER($object)->ov_size - 8) = $value"
+			"*(EIF_NATURAL_64 *)($object + (HEADER($object)->ov_size & B_SIZE) - sizeof(EIF_NATURAL_64)) = $value"
 		end
 
+	cr_global_object_id: NATURAL_64_REF is
+			-- The next free ID.
+		once
+			create Result
+			Result.set_item(1)
+		end
 
 invariant
 	reflexive_equality: standard_is_equal (Current)
