@@ -399,6 +399,28 @@ feature -- Capture/Replay
 		once
 			Result := True
 		end
+
+
+	cr_object_id: NATURAL_64 is
+			--
+		local
+			obj_id: NATURAL_64
+		do
+			obj_id := c_object_id($Current)
+			if  obj_id = 0 then
+				--set the object ID to the next available value.
+			else
+				Result := obj_id
+			end
+		end
+
+	cr_set_object_id(new_id: NATURAL_64) is
+			--
+		do
+			c_set_object_id($Current, new_id)
+		end
+
+
 feature {NONE} -- Implementation
 
 	mode_replay:STRING is "replay"
@@ -408,6 +430,24 @@ feature {NONE} -- Implementation
 	mode_log_replay: STRING is "log_replay"
 
 	mode_proxy: STRING is "proxy"
+
+	c_object_id(object: POINTER): NATURAL_64 is
+			--
+		external
+			"C inline use <eif_malloc.h>"
+			--"C inline use <gtk/gtk.h>"
+		alias
+			"*(EIF_NATURAL_64 *)($object + HEADER($object)->ov_size - 8)"
+		end
+
+	c_set_object_id(object: POINTER; value: NATURAL_64) is
+			--
+		external
+			"C inline use <eif_malloc.h>"
+		alias
+			"*(EIF_NATURAL_64 *)($object + HEADER($object)->ov_size - 8) = $value"
+		end
+
 
 invariant
 	reflexive_equality: standard_is_equal (Current)

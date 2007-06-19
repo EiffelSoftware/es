@@ -691,7 +691,7 @@ rt_public EIF_REFERENCE emalloc_size(uint32 ftype, uint32 type, uint32 nbytes)
 	EIF_REFERENCE object;				/* Pointer to the freshly created object */
 	
 	//<SIES>
-	nbytes = nbytes + 8;
+	nbytes = nbytes + sizeof(EIF_NATURAL_64);
 	//</SIES>
 
 
