@@ -689,6 +689,12 @@ doc:	</routine>
 rt_public EIF_REFERENCE emalloc_size(uint32 ftype, uint32 type, uint32 nbytes)
 {
 	EIF_REFERENCE object;				/* Pointer to the freshly created object */
+	
+	//<SIES>
+	nbytes = nbytes + 8;
+	//</SIES>
+
+
 #ifdef ISE_GC
 	uint32 mod;							/* Remainder for padding */
 #endif
@@ -1094,6 +1100,7 @@ doc:	</routine>
 rt_public EIF_REFERENCE spmalloc(rt_uint_ptr nbytes, EIF_BOOLEAN atomic)
 {
 	EIF_REFERENCE object;		/* Pointer to the freshly created special object */
+	nbytes = nbytes + sizeof(EIF_NATURAL_64); //SIES, allocate space for an additional attribute.
 #ifdef ISE_GC
 	rt_uint_ptr mod;
 #endif
