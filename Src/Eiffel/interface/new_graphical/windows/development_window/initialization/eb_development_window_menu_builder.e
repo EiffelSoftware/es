@@ -847,7 +847,7 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			l_project_menu.extend (l_command_menu_item)
 
 				-- Origo
-			create l_menu_item.make_with_text (develop_window.Interface_names.m_Origo_settings)
+			create l_menu_item.make_with_text (develop_window.Interface_names.m_Origo)
 			create l_origo_cmd
 			l_menu_item.select_actions.extend (agent l_origo_cmd.execute)
 			l_project_menu.extend (l_menu_item)

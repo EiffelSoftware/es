@@ -222,10 +222,94 @@ feature {NONE} -- Implementation
 	release_button_clicked is
 			-- event handler for a click on release button
 		local
-			l_dialog: EV_INFORMATION_DIALOG
+			l_dialog: EB_ORIGO_RELEASE_DIALOG
+			l_warning_dialog: EB_WARNING_DIALOG
+			l_platform: STRING
+			l_unused_files: STRING
+			l_message: STRING
+			l_confirm_dialog: EB_CONFIRMATION_DIALOG
+			l_platform_has_files: BOOLEAN
+			l_has_unused_files: BOOLEAN
 		do
-			create l_dialog.make_with_text ("Sorry, not implemented yet")
-			l_dialog.show_modal_to_window (parent_window)
+			create l_dialog.make
+			if parent_window.project_list.selected_item.text.is_equal (interface_names.t_no_origo_project) then
+				create l_warning_dialog.make_with_text ("You have to select an Origo project")
+				l_warning_dialog.show_modal_to_window (parent_window)
+			else
+				l_dialog.show_modal_to_window (parent_window)
+			end
+
+			if l_dialog.closed_with_ok then
+					-- go through the unused files
+
+				l_message := "Do you really want to build this release?%N%N"
+				l_message.append ("Origo project name: ")
+				l_message.append (parent_window.project_list.selected_item.text.out)
+				l_message.append ("%NRelease name: ")
+				l_message.append (l_dialog.name)
+				l_message.append ("%NVersion: ")
+				l_message.append (l_dialog.version)
+				l_message.append ("%NDescription:%N")
+				l_message.append (l_dialog.description)
+				l_message.append ("%N")
+
+				from
+					l_unused_files := ""
+					release_list.start -- group header
+					release_list.forth -- group separator
+					release_list.forth -- first file
+
+				until
+					release_list.after or release_list.item.data = Void
+				loop
+					l_has_unused_files := True
+					l_unused_files.append ("%T")
+					l_unused_files.append (release_list.item.text.out)
+					l_unused_files.append ("%N")
+					release_list.forth
+				end
+
+					-- go thourgh the used files
+				from
+
+				until
+					release_list.after
+				loop
+					-- we are at an empty line
+					release_list.forth -- now we are at a group header
+					l_platform := release_list.item.text.out
+					l_platform.append (" files:%N")
+					release_list.forth -- now we are at the seperator line
+					release_list.forth -- and now at the first file
+
+					l_platform_has_files := False
+					from
+
+					until
+						release_list.after or release_list.item.data = Void
+					loop
+						l_platform.append ("%T")
+						l_platform.append (release_list.item.text.out)
+						l_platform.append ("%N")
+						l_platform_has_files := True
+						release_list.forth
+					end
+
+					if l_platform_has_files then
+						l_message.append ("%N")
+						l_message.append (l_platform)
+					end
+				end
+
+				if l_has_unused_files then
+					l_message.append ("%NFiles which are not used for this release:%N")
+					l_message.append (l_unused_files)
+				end
+
+				create l_confirm_dialog.make_with_text (l_message)
+				l_confirm_dialog.show_modal_to_window (parent_window)
+
+			end
 		end
 
 	platform_button_clicked is
@@ -238,7 +322,7 @@ feature {NONE} -- Implementation
 			l_dialog.show_modal_to_window (parent_window)
 
 			if
-				l_dialog.input /= Void and
+				l_dialog.closed_with_ok and
 				not l_dialog.input.is_equal ("") and
 				parent_window.list_item_with_text (platform_list, l_dialog.input, 1) = Void -- this platform isn't already in the list
 			then

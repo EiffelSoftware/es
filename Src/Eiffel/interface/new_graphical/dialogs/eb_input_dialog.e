@@ -68,18 +68,21 @@ feature -- Initialization
 				make
 			end
 
-			textbox.set_text (a_value)
+			text_field.set_text (a_value)
 		end
 
 feature -- Access
 
 	input: STRING
-		-- input entered into `textbox'
+		-- input entered into `text_field'
+
+	closed_with_ok: BOOLEAN
+		-- dialog was closed with pressing ok button
 
 feature {NONE} -- Implementation
 
 		-- widgets
-	textbox: EV_TEXT
+	text_field: EV_TEXT_FIELD
 	main_box: EV_VERTICAL_BOX
 
 	initialize_dialog is
@@ -100,11 +103,11 @@ feature {NONE} -- Implementation
 			main_box.put_front (l_cell)
 			main_box.disable_item_expand (l_cell)
 
-				-- add `textbox'
-			create textbox
-			main_box.extend (textbox)
+				-- add `text_field'
+			create text_field
+			main_box.extend (text_field)
 
-				-- padding cell between buttons and `textbox'
+				-- padding cell between buttons and `text_field'
 			create l_cell
 			l_cell.set_minimum_height (small_padding)
 			main_box.extend (l_cell)
@@ -122,7 +125,8 @@ feature {NONE} -- Implementation
 				-- ok button
 			create l_ok_button.make_with_text_and_action (interface_names.b_ok, agent
 						do
-							input := textbox.text.out
+							input := text_field.text.out
+							closed_with_ok := True
 							destroy
 						end
 					)
@@ -175,5 +179,5 @@ feature {NONE} -- Implementation
 
 invariant
 	main_box_not_void: main_box /= Void
-	textbox_not_void: textbox /= Void
+	text_field_not_void: text_field /= Void
 end
