@@ -17,6 +17,8 @@ inherit
 --Hint: as the Object Identifiers are written to the logfiles, too, don't allocate more
 -- objects on set_up, as it would break all solution log files (the generated ones are compared against)
 
+-- TODO: add tests for nested generics (e.g. SET[SET[ANY]])
+
 
 feature -- Test Variables:
 		serializer: TEXT_SERIALIZER
@@ -50,18 +52,16 @@ feature -- Helpers
 
 feature -- Testing the tests:
 
-	test_testing --just for experiments
-		do
-		end
-
-	test_creation
+	test_creation is
+			-- Test if serializer can be created
 		do
 			--creation already done in the set_up.
-			create serializer.make_on_textfile("test_creation.log")
-			assert("serializer created", serializer /= Void)
+			create serializer.make_on_textfile ("test_creation.log")
+			assert ("serializer created", serializer /= Void)
 		end
 
-	test_calls
+	test_calls is
+			-- Test if call events are correctly serialized
 		local
 			filename: STRING
 		do
@@ -74,22 +74,23 @@ feature -- Testing the tests:
 			assert_files_equal ("written file correct", filename, "test_serializer_calls.res")
 		end
 
-	test_special_arguments
+	test_special_arguments is
 			--test if serialization for special arguments works.
 		local
 			filename: STRING
 		do
 			filename := "test_special_arguments.log"
 			create serializer.make_on_textfile (filename)
-			serializer.write_incall("void_argument", example, [Void])
-			serializer.write_outcall("no_argument", example, [])
+			serializer.write_incall ("void_argument", example, [Void])
+			serializer.write_outcall ("no_argument", example, [])
 			serializer.close_file
 
 			assert_files_equal ("written file correct", filename, "test_serializer_special_arguments.res")
 		end
 
 
-	test_retcalls
+	test_retcalls is
+			-- Test if retcalls are serialized correctly.
 		local
 			filename: STRING
 		do
@@ -102,6 +103,23 @@ feature -- Testing the tests:
 
 			assert_files_equal ("written file correct", filename, "test_serializer_retcalls.res")
 		end
+
+	test_generics is
+			-- Test if generic entities are correctly serialized.
+		local
+			filename: STRING
+			array: ARRAY [EXAMPLE_CLASS]
+		do
+			filename := "test_generics.log"
+			create serializer.make_on_textfile(filename)
+			create array.make (0, 10)
+			serializer.write_incall ("put", array, [example,9])
+
+			serializer.write_incallret (array)
+			assert_files_equal("written file correct", filename, "test_generics.res")
+		end
+
+
 feature -- Access
 
 feature -- Measurement

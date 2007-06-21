@@ -3677,6 +3677,7 @@ free_add_ons/wex/examples/wex/Framework_example/app.ico svneol=native#unset
 free_add_ons/wex/examples/wex/MCI_Splash/APP.ICO svneol=native#unset
 free_add_ons/wex/library/wex/clib/cwex.lib svneol=native#unset
 tests/log/getest.cfg -text
+tests/log/test_generics.res -text
 tests/log/test_parser_callrets.res -text
 tests/log/test_parser_calls.res -text
 tests/log/test_serializer_calls.res -text

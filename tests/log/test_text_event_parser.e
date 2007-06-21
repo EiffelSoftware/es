@@ -107,6 +107,35 @@ feature -- Testing the tests:
 			check_callrets(event_input, outcallret_prototype)
 		end
 
+	test_generics_parsing
+			-- Test for parsing of generic entities.
+		local
+			event_input: EVENT_INPUT
+			incall: INCALL_EVENT
+			incallret: INCALLRET_EVENT
+		do
+			event_input := create_event_input("test_generics.res")
+
+			event_input.read_next_event
+			assert ("first_event_read", not event_input.has_error)
+			incall ?= event_input.last_event
+			assert ("first event is incall", incall /= Void)
+			assert_strings_equal("correct feature name", "put", incall.feature_name)
+			assert_strings_equal("correct (generic) target", "ARRAY [EXAMPLE_CLASS]", incall.target.type)
+			assert_equal("argument count correct", 2, incall.arguments.count)
+
+
+			event_input.read_next_event
+			assert ("second event read", not event_input.has_error)
+			incallret ?= event_input.last_event
+			assert ("second event is incallret", incallret /= Void)
+			assert ("incallret has return value", incallret.return_value /= Void)
+			assert_strings_equal ("return value has correct type", "ARRAY [EXAMPLE_CLASS]" ,incallret.return_value.type)
+		end
+
+
+
+
 feature -- Status report
 
 feature -- Status setting
