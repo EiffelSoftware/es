@@ -405,7 +405,39 @@ feature -- Removal
 			end
 		end
 
+
+feature -- Capture/Replay
+
+	note_direct_manipulation is
+			-- TODO: add documentation!!!!! (No, this is not trivial...)
+		local
+			ignore_result: ANY
+		do
+			--call instrumentation..
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				manifest_wrapper.set_item(Current)
+				program_flow_sink.put_feature_invocation("note_direct_manipulation", Current, [manifest_wrapper])
+				program_flow_sink.leave
+			end
+
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				ignore_result := program_flow_sink.put_feature_exit (Void)
+				program_flow_sink.leave
+			end
+			--call instrumentation end
+		end
+
+
 feature {NONE} -- Implementation
+
+
+	manifest_wrapper: MANIFEST_SPECIAL is
+			-- the standard instance of the special to basic wrapper
+		once
+			create Result
+		end
 
 	frozen element_size: INTEGER is
 			-- Size of elements.
@@ -417,7 +449,6 @@ feature {NONE} -- Implementation
 			--
 		external
 			"C inline use <eif_malloc.h>"
-			--"C inline use <gtk/gtk.h>"
 		alias
 			"*(OBJECT_ID_TYPE *)($object + (HEADER($object)->ov_size & B_SIZE) - LNGPAD_2 - sizeof(OBJECT_ID_TYPE))"
 		end

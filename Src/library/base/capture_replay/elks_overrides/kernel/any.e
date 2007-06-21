@@ -406,21 +406,21 @@ feature -- Capture/Replay
 		local
 			obj_id: INTEGER_32
 		do
-			obj_id := c_object_id($Current)
+			obj_id := c_object_id ($Current)
 			if  obj_id = 0 then
-				--set the object ID to the next available value.
+					-- Set the object ID to the next available value.
 				obj_id := cr_global_object_id.item
-				cr_set_object_id(obj_id)
-				cr_global_object_id.set_item(cr_global_object_id.item + 1)
+				cr_set_object_id (obj_id)
+				cr_global_object_id.set_item (cr_global_object_id.item + 1)
 			end
 
 			Result := obj_id
 		end
 
-	cr_set_object_id(new_id: INTEGER_32) is
+	cr_set_object_id (new_id: INTEGER_32) is
 			--
 		do
-			c_set_object_id($Current, new_id)
+			c_set_object_id ($Current, new_id)
 		end
 
 

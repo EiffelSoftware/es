@@ -27,6 +27,11 @@ feature -- Access
 			-- The number of the last treated event
 		deferred end
 
+	has_error: BOOLEAN
+			-- Did an error occur when parsing the current line?
+
+	error_message: STRING
+			-- Message for the error (only valid if `has_error')
 
 feature -- Status setting
 	set_handler(a_handler: EVENT_PARSER_HANDLER)

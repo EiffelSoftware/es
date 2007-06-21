@@ -8,7 +8,6 @@ class
 	OBSERVED_CLASS
 
 inherit
-	OBSERVABLE
 
 create
 	make

@@ -7,7 +7,7 @@ indexing
 class
 	UNOBSERVED_CLASS
 inherit
-	OBSERVABLE
+	ANY
 	redefine
 		is_observed
 	end
@@ -56,7 +56,7 @@ feature -- Access
 			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 			Result := "literal string"
-			Result.memory_copy(Result.area)
+			Result.area.note_direct_manipulation
 			-- <methodbody_end return_value="True">
 			end
 			if program_flow_sink.is_capture_replay_enabled then
@@ -78,8 +78,9 @@ feature -- Access
 			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 			file.read_line
-			 -- This would belong to the FILE class:
 			Result := file.last_string
+			-- This would belong to the FILE class:
+			Result.area.note_direct_manipulation
 			-- <methodbody_end return_value="True">
 			end
 			if program_flow_sink.is_capture_replay_enabled then

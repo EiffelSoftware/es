@@ -23,12 +23,6 @@ feature -- Access
 	event_number: INTEGER
 			-- number of currently parsed event.
 
-	has_error: BOOLEAN
-			-- Did an error occur when parsing the current line?
-
-	error_message: STRING
-			-- Message for the error (only valid if `has_error')
-
 feature -- Creation
 	make(an_input: KI_TEXT_INPUT_STREAM; a_handler: EVENT_PARSER_HANDLER)
 			-- Create the Parser with handler `a_handler', which reads from
@@ -479,4 +473,5 @@ feature {NONE} -- Implementation
 invariant
 	handler_not_void: handler /= Void -- Your invariant here
 	input_not_void: input /= Void
+	error_message_valid: has_error implies error_message /= Void
 end

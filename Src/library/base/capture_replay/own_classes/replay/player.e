@@ -35,7 +35,7 @@ feature -- Initialization
 
 
 		setup_on_text_file (filename: STRING; a_caller: CALLER)
-			--
+			-- Set the player up to the the replay of the text-log `filename'
 		require
 			filename_not_void: filename /= Void
 			a_caller_not_void: a_caller /= Void
@@ -171,7 +171,10 @@ feature -- Basic operations
 								index_arguments(call_event.arguments, arguments)
 								-- Consume event
 								event_input.read_next_event
-								simulate_unobserved_body
+								set_error_status_for_event_input (event_input)
+								if not has_error then
+									simulate_unobserved_body
+								end
 							end
 						end
 					else
@@ -390,6 +393,17 @@ feature {NONE} -- Implementation
 				report_and_set_error ("expected callret event")
 			end
 		end
+
+	set_error_status_for_event_input(input: EVENT_INPUT) is
+			-- Sets the player's status according to the status of `input'
+		require
+			input_not_void: input /= Void
+		do
+			if input.has_error then
+				report_and_set_error ("Event Input - Error: " + input.error_message)
+			end
+		end
+
 
 	handle_incall_event (incall: INCALL_EVENT) is
 			-- Execute the INCALL `incall'

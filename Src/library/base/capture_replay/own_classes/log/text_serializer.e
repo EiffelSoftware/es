@@ -77,6 +77,9 @@ feature -- Basic operations
 
 feature {NONE} -- Implementation
 
+	Manifest_special_name: STRING is "MANIFEST_SPECIAL"
+
+
 	basic_types: ARRAY[STRING]
 			-- Array of all typenames that are considered to be a basic type.
 		once
@@ -100,7 +103,7 @@ feature {NONE} -- Implementation
 			Result.put ("NATURAL_16", 17)
 			Result.put ("NATURAL_32", 18)
 			Result.put ("NATURAL_64", 19)
-			Result.put ("MANIFEST_SPECIAL", 20)
+			Result.put (Manifest_special_name, 20)
 			Result.compare_objects
 		end
 
@@ -151,8 +154,20 @@ feature {NONE} -- Implementation
 		require
 			object_not_void: value /= Void
 			argument_is_basic_type: is_basic_type(value)
+		local
+			manifest_special: MANIFEST_SPECIAL
 		do
-			write(" [BASIC " + value.generating_type + " %"" + value.out + "%"]")
+			manifest_special ?= value
+			write (" [BASIC ")
+			if manifest_special /= Void then
+					-- The manifest special should be another type during replay.
+				write(manifest_special.replay_generating_type)
+			else
+				write(value.generating_type)
+			end
+			write(" %"")
+			write(value.out)
+			write("%"]")
 		end
 
 	write_call(call_tag: STRING; feature_name: STRING; target: ANY; arguments: TUPLE)

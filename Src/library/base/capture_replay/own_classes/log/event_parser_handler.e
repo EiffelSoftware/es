@@ -24,6 +24,24 @@ feature -- Basic operations
 			parser.set_handler(Current)
 		end
 
+	has_error: BOOLEAN
+			-- Has an error occurred?
+		require
+			parser_not_void: parser /= Void
+		do
+			Result := parser.has_error
+		end
+
+	error_message: STRING is
+			-- Error message to the last error
+		require
+			has_error: has_error
+		do
+			Result := parser.error_message
+		ensure
+			result_not_void: Result /= Void
+		end
+
 	handle_incall_event(target: ENTITY; feature_name: STRING; arguments: DS_LIST[ENTITY])
 			-- Handle an incall event (`target'.`feature_name'(`arguments')).
 		deferred

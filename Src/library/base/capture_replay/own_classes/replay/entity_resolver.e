@@ -81,6 +81,11 @@ feature -- Access
 					Result := basic.value.to_integer
 				elseif basic.type.is_equal("BOOLEAN") then
 					Result := basic.value.to_boolean
+				elseif basic.type.substring_index("SPECIAL",0) = 0 then
+					Result := new_instance_of(dynamic_type_from_string(basic.type))
+					-- There's no need to register this SPECIAL, because it's only used as
+					-- manifest type --> no references will be passed beyond the border.
+				--TODO: load the values into the special.
 				else
 					check False end --not implemented yet.
 				end

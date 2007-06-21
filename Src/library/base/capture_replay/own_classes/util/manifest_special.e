@@ -32,6 +32,13 @@ feature -- Access
 			end
 		end
 
+	replay_generating_type: STRING is
+			--
+		do
+			Result := item.generating_type
+		end
+
+
 feature -- Measurement
 
 feature -- Status report

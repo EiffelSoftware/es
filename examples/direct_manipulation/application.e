@@ -7,7 +7,7 @@ class
 	APPLICATION
 
 inherit
-	OBSERVABLE
+	ANY
 	redefine
 		is_observed
 	end
