@@ -50,6 +50,7 @@ feature -- Initialization
 			default_create
 
 			set_title (interface_names.t_origo)
+			set_icon_pixmap (pixmaps.bm_origo)
 
 				-- buttons
 			create l_ok_button.make_with_text_and_action (Interface_names.b_Ok, agent
@@ -72,10 +73,12 @@ feature -- Initialization
 			project_list.align_text_left
 			project_list.disable_edit
 			create l_list_item.make_with_text (Interface_names.t_No_origo_project)
+			l_list_item.set_data (-1)
 			project_list.extend (l_list_item)
 			l_user_opts := lace.user_options
 			if not l_user_opts.origo_project_name.is_equal (interface_names.t_no_origo_project.to_string_8) then
 				create l_list_item.make_with_text (l_user_opts.origo_project_name)
+				l_list_item.set_data (l_user_opts.origo_project_id)
 				project_list.extend (l_list_item)
 				l_list_item.enable_select
 			end
@@ -129,6 +132,7 @@ feature -- Initialization
 			set_default_cancel_button (l_cancel_button)
 
 			Current.show_actions.force (agent get_origo_data)
+
 		end
 
 feature {EB_ORIGO_UPLOAD_TAB, EB_ORIGO_RELEASE_TAB} -- Implementation
@@ -181,37 +185,39 @@ feature {EB_ORIGO_UPLOAD_TAB, EB_ORIGO_RELEASE_TAB} -- Implementation
 			-- refresh content of project list combo box
 		local
 			l_list_item: EV_LIST_ITEM
-			l_project_names: DS_LINKED_LIST [STRING]
+			l_projects: DS_LINKED_LIST [TUPLE[id: INTEGER; name: STRING]]
 			l_current_project_name: STRING
 		do
 			state_label.set_text ("Receiving project list...")
 			state_label.refresh_now
-			l_project_names := origo_client.project_list_of_user (session, username)
+			l_projects := origo_client.project_list_of_user (session, username)
 
 				-- project list was received
-			if l_project_names /= Void then
+			if l_projects /= Void then
 
 				l_current_project_name := project_list.selected_item.text
 
 				-- initalize project list
 				project_list.wipe_out
 				create l_list_item.make_with_text (Interface_names.t_no_origo_project)
+				l_list_item.set_data (-1)
 				project_list.force (l_list_item)
 
 				-- fill project list
 				from
-					l_project_names.start
+					l_projects.start
 				until
-					l_project_names.after
+					l_projects.after
 				loop
-					create l_list_item.make_with_text (l_project_names.item_for_iteration)
+					create l_list_item.make_with_text (l_projects.item_for_iteration.name)
+					l_list_item.set_data (l_projects.item_for_iteration.id)
 					project_list.force (l_list_item)
 
-					if l_current_project_name.is_equal (l_project_names.item_for_iteration) then
+					if l_current_project_name.is_equal (l_projects.item_for_iteration.name) then
 						l_list_item.enable_select
 					end
 
-					l_project_names.forth
+					l_projects.forth
 				end
 				state_label.set_text ("")
 
@@ -257,7 +263,7 @@ feature {EB_ORIGO_UPLOAD_TAB, EB_ORIGO_RELEASE_TAB} -- Implementation
 		end
 
 	index_of_list_item_with_text (a_list: EV_LIST_ITEM_LIST; a_text: STRING; a_occurrence: INTEGER): INTEGER is
-			-- returns `a_occurrence'th list item in `a_list' with text `a_text'
+			-- returns index of `a_occurrence'th list item in `a_list' with text `a_text'
 		require
 			a_list_not_void: a_list /= Void
 			a_text_not_void: a_text /= Void

@@ -48,6 +48,7 @@ feature -- Initialization
 			default_create
 
 			set_title (interface_names.t_origo_release)
+			set_icon_pixmap (Pixmaps.bm_origo)
 
 			create l_vbox
 			add_padding_cell (l_vbox, layout_constants.default_padding_size)
@@ -136,7 +137,6 @@ feature -- Initialization
 
 			extend (l_hbox)
 
-			set_default_push_button (l_cancel_button)
 			set_default_cancel_button (l_cancel_button)
 		end
 

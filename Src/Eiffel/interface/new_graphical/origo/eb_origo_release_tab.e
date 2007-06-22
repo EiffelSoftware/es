@@ -49,24 +49,36 @@ feature -- Basic operations
 		local
 			l_file_list: DS_LINKED_LIST [STRING]
 			l_list_item: EV_LIST_ITEM
+			l_index: INTEGER
 		do
 			parent_window.state_label.set_text ("Refreshing FTP file list...")
 			parent_window.state_label.refresh_now
 
-				-- remove all files from `release_list'
+			l_file_list := parent_window.origo_client.ftp_file_list (parent_window.username, parent_window.password)
+			l_file_list.set_equality_tester (create {KL_STRING_EQUALITY_TESTER})
+
+				-- remove all files from `release_list' which are not in the new ftp file list
 			from
 				release_list.finish
 			until
 				release_list.before
 			loop
-					-- if the item has no data (and hence it is a platform seperator) keep it
-				if release_list.item.data /= Void then
+					-- if the item has no data (and hence it is a platform seperator) or it is in the received file list keep it
+				if release_list.item.data /= Void and then not l_file_list.has (release_list.item.text) then
 					release_list.remove
 				end
 				release_list.back
 			end
 
-			l_file_list := parent_window.origo_client.ftp_file_list (parent_window.username, parent_window.password)
+				-- go one after the end of the files with no platform
+			l_index := parent_window.index_of_list_item_with_text (release_list, "", 1)
+				-- go after the list if no empty line was found
+			if l_index = 0 then
+				release_list.finish
+				release_list.forth
+			else
+				release_list.go_i_th (l_index)
+			end
 
 			if l_file_list = Void then
 				parent_window.state_label.set_text ("An error occurred")
@@ -77,9 +89,14 @@ feature -- Basic operations
 				until
 					l_file_list.after
 				loop
-					create l_list_item.make_with_text (l_file_list.item_for_iteration)
-					release_list.force (l_list_item)
-					l_list_item.set_data (t_no_platform)
+						-- check if the file is already in the list
+					if parent_window.list_item_with_text (release_list, l_file_list.item_for_iteration, 1) = Void then
+						create l_list_item.make_with_text (l_file_list.item_for_iteration)
+						release_list.put_left (l_list_item)
+						l_list_item.set_data (t_no_platform)
+					end
+
+
 					l_file_list.forth
 				end
 
@@ -225,11 +242,16 @@ feature {NONE} -- Implementation
 			l_dialog: EB_ORIGO_RELEASE_DIALOG
 			l_warning_dialog: EB_WARNING_DIALOG
 			l_platform: STRING
+			l_current_platform: STRING
 			l_unused_files: STRING
 			l_message: STRING
 			l_confirm_dialog: EB_CONFIRMATION_DIALOG
 			l_platform_has_files: BOOLEAN
 			l_has_unused_files: BOOLEAN
+			l_file_list: DS_LINKED_LIST [TUPLE [filename: STRING; platform: STRING]]
+			l_file: TUPLE [filename: STRING; platform: STRING]
+			l_project_id: INTEGER
+
 		do
 			create l_dialog.make
 			if parent_window.project_list.selected_item.text.is_equal (interface_names.t_no_origo_project) then
@@ -270,6 +292,7 @@ feature {NONE} -- Implementation
 				end
 
 					-- go thourgh the used files
+				create l_file_list.make
 				from
 
 				until
@@ -278,6 +301,7 @@ feature {NONE} -- Implementation
 					-- we are at an empty line
 					release_list.forth -- now we are at a group header
 					l_platform := release_list.item.text.out
+					l_current_platform := release_list.item.text.out
 					l_platform.append (" files:%N")
 					release_list.forth -- now we are at the seperator line
 					release_list.forth -- and now at the first file
@@ -291,6 +315,12 @@ feature {NONE} -- Implementation
 						l_platform.append ("%T")
 						l_platform.append (release_list.item.text.out)
 						l_platform.append ("%N")
+
+						create l_file
+						l_file.filename := release_list.item.text.out
+						l_file.platform := l_current_platform.out
+						l_file_list.force_last (l_file)
+
 						l_platform_has_files := True
 						release_list.forth
 					end
@@ -306,9 +336,25 @@ feature {NONE} -- Implementation
 					l_message.append (l_unused_files)
 				end
 
-				create l_confirm_dialog.make_with_text (l_message)
-				l_confirm_dialog.show_modal_to_window (parent_window)
 
+
+					-- check if files were selected to release and show a confirmation dialog or a warning dialog
+				if not l_file_list.is_empty then
+					create l_confirm_dialog.make_with_text (l_message)
+					l_confirm_dialog.show_modal_to_window (parent_window)
+				else
+					create l_warning_dialog.make_with_text ("You have to associate at least one file with a platform")
+					l_warning_dialog.show_modal_to_window (parent_window)
+				end
+
+					-- call the release api
+				if l_confirm_dialog /= Void and then l_confirm_dialog.is_ok_selected then
+					l_project_id ?= parent_window.project_list.selected_item.data
+					parent_window.state_label.set_text ("Building release...")
+					parent_window.state_label.refresh_now
+					parent_window.origo_client.release (parent_window.session, l_project_id, l_dialog, l_file_list)
+					refresh_release_list
+				end
 			end
 		end
 
@@ -322,7 +368,7 @@ feature {NONE} -- Implementation
 			l_dialog.show_modal_to_window (parent_window)
 
 			if
-				l_dialog.closed_with_ok and
+				l_dialog.is_ok_selected and
 				not l_dialog.input.is_equal ("") and
 				parent_window.list_item_with_text (platform_list, l_dialog.input, 1) = Void -- this platform isn't already in the list
 			then

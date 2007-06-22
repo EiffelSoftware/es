@@ -76,7 +76,7 @@ feature -- Access
 	input: STRING
 		-- input entered into `text_field'
 
-	closed_with_ok: BOOLEAN
+	is_ok_selected: BOOLEAN
 		-- dialog was closed with pressing ok button
 
 feature {NONE} -- Implementation
@@ -126,7 +126,7 @@ feature {NONE} -- Implementation
 			create l_ok_button.make_with_text_and_action (interface_names.b_ok, agent
 						do
 							input := text_field.text.out
-							closed_with_ok := True
+							is_ok_selected := True
 							destroy
 						end
 					)

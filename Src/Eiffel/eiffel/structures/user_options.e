@@ -68,7 +68,10 @@ feature -- Access
 		end
 
 	origo_project_name: STRING
-			-- Name of Origo Project
+			-- Name of Origo project
+
+	origo_project_id: INTEGER
+			-- Id of Origo project
 
 feature {USER_OPTIONS, USER_OPTIONS_FACTORY} -- Implementation: Access
 

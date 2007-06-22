@@ -153,7 +153,7 @@ feature -- XML RPC calls
 			end
 		end
 
-	project_list_of_user (session: STRING; username: STRING): DS_LINKED_LIST [STRING] is
+	project_list_of_user (session: STRING; username: STRING): DS_LINKED_LIST [TUPLE [id: INTEGER; name: STRING]] is
 			-- return project list of `username'
 		require
 			session_attached: session /= Void and not session.is_empty
@@ -165,6 +165,8 @@ feature -- XML RPC calls
 			error: STRING
 			project_list_string: STRING
 			l_lines: LIST [STRING]
+			l_line_parts: LIST [STRING]
+			l_project: TUPLE [id: INTEGER; name: STRING]
 		do
 			project_list_string := ""
 			error := ""
@@ -196,10 +198,14 @@ feature -- XML RPC calls
 							l_lines.after
 						loop
 							if not l_lines.item.is_equal ("") then
+								l_line_parts := l_lines.item.split ('%T')
 								check
-									correct_line_format: l_lines.item.split ('%T').count = 3
+									correct_line_format: l_line_parts.count = 3
 								end
-								Result.force_first (l_lines.item.split ('%T').i_th (2))
+								create l_project
+								l_project.name := l_line_parts[2]
+								l_project.id := l_line_parts[1].to_integer
+								Result.force_first (l_project)
 							end
 							l_lines.forth
 						end
@@ -216,6 +222,69 @@ feature -- XML RPC calls
 				show_warning ("Error during project_list_of_user:%NCommand line tool could not be launched")
 			end
 		end
+
+	release (session: STRING; a_project_id: INTEGER; a_release_dialog: EB_ORIGO_RELEASE_DIALOG; a_file_list: DS_LINKED_LIST [TUPLE[filename: STRING; platform: STRING]]) is
+			-- build a release
+		require
+			session_attached: session /= Void and not session.is_empty
+			a_project_id_positive: a_project_id > 0
+			a_release_dialog_not_void: a_release_dialog /= Void
+			a_release_dialog_closed_with_ok: a_release_dialog.closed_with_ok
+			a_file_list_attached: a_file_list /= Void and not a_file_list.is_empty
+		local
+			l_process: PROCESS
+			l_factory: PROCESS_FACTORY
+			command_line: STRING
+			error: STRING
+			username: STRING
+		do
+			username := ""
+			error := ""
+			command_line := preferences.origo_data.xml_rpc_client_path.out
+			command_line.append (" release -s " + session)
+			command_line.append (" -pid " + a_project_id.out)
+			command_line.append (" -n %"" + a_release_dialog.name + "%"")
+			command_line.append (" -ver %"" + a_release_dialog.version + "%"")
+			if not a_release_dialog.description.is_empty then
+				command_line.append (" -d %"" + a_release_dialog.description + "%"")
+			end
+
+			command_line.append (" -fl %"")
+
+			from
+				a_file_list.start
+			until
+				a_file_list.after
+			loop
+				command_line.append (a_file_list.item_for_iteration.filename + ":" + a_file_list.item_for_iteration.platform + ";")
+				a_file_list.forth
+			end
+
+			command_line.prune_all_trailing (';')
+			command_line.append ("%"")
+
+			create l_factory
+			l_process := l_factory.process_launcher_with_command_line (command_line, Void)
+			l_process.redirect_output_to_agent (agent username.append)
+			l_process.redirect_error_to_agent (agent error.append)
+			l_process.launch
+
+				-- launch process
+			if l_process.launched then
+				l_process.wait_for_exit
+
+					-- an error occurred
+				if not error.is_empty then
+					error.insert_string ("Error during release:%N", 1)
+					show_warning (error)
+				end
+
+				-- the process could not be launched
+			else
+				show_warning ("Error during release:%NCommand line tool could not be launched")
+			end
+		end
+
 
 feature -- FTP functions
 
