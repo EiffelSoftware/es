@@ -109,6 +109,8 @@ feature -- Testing the tests:
 		local
 			filename: STRING
 			array: ARRAY [EXAMPLE_CLASS]
+			list: ARRAYED_LIST [ARRAY [EXAMPLE_CLASS]]
+			a_tuple: TUPLE [ARRAYED_LIST [ARRAY [EXAMPLE_CLASS]], INTEGER]
 		do
 			filename := "test_generics.log"
 			create serializer.make_on_textfile(filename)
@@ -116,9 +118,18 @@ feature -- Testing the tests:
 			serializer.write_incall ("put", array, [example,9])
 
 			serializer.write_incallret (array)
+
+			-- Test nested generics
+			create list.make (10)
+			serializer.write_incall ("put", list, [array, 9])
+			serializer.write_incallret (list)
+
+			-- Test generic with more than one generic type
+			create a_tuple
+			serializer.write_incallret(a_tuple)
+			
 			assert_files_equal("written file correct", filename, "test_generics.res")
 		end
-
 
 feature -- Access
 

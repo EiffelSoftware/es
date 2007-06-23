@@ -48,6 +48,6 @@ feature -- Inapplicable
 feature {NONE} -- Implementation
 
 invariant
-	invariant_clause: True -- Your invariant here
+	type_not_void: type /= Void
 
 end

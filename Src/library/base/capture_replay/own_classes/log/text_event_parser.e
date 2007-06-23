@@ -230,7 +230,7 @@ feature {NONE} -- Implementation
 		do
 			last_entity := Void
 
-			parse_identifier
+			parse_type
 			if not  has_error then
 				typename := last_string
 
@@ -261,7 +261,7 @@ feature {NONE} -- Implementation
 			typename: STRING
 			value: STRING
 		do
-			parse_identifier
+			parse_type
 			if not has_error then
 				typename := last_string
 --				if typename.has_substring (Manifest_special_prefix) then
@@ -296,6 +296,41 @@ feature {NONE} -- Implementation
 
 --		end
 
+	parse_type
+			-- Parse the type (according to the ECMA standard) at `position' and provide
+			-- the Result in `last_string'
+		require
+		local
+			type_name: STRING
+		do
+			--read typename
+			parse_identifier
+			type_name := last_string
+
+				-- If the type is a generic, parse the generics type list, too
+			if item = '[' then
+				type_name.append (" [")
+				forth
+				from
+					parse_type
+					type_name.append (last_string)
+				until
+					item /= ',' or has_error
+				loop
+					type_name.append (", ")
+					forth
+					parse_type
+					type_name.append(last_string)
+				end
+				if item = ']' then
+					type_name.append("]")
+					forth
+				else
+					report_error ("]")
+				end
+			end
+			last_string := type_name
+		end
 
 	parse_identifier
 			-- Parse the identifier at `position' and provide
@@ -304,6 +339,7 @@ feature {NONE} -- Implementation
 			last_line_read: last_line /= Void
 			no_error: not has_error
 		do
+			consume_whitespaces
 			parse_regex(Identifier_regex, "identifier") --\w means alphanumeric incl '_'
 		ensure
 			identifier_parsed: has_error or matches_regex(last_string, Identifier_regex)
@@ -316,6 +352,7 @@ feature {NONE} -- Implementation
 			last_line_read: last_line /= Void
 			no_error: not has_error
 		do
+			consume_whitespaces
 			parse_regex(Integer_regex, "integer")
 			if not has_error then
 				last_integer := last_string.to_integer
@@ -447,7 +484,8 @@ feature {NONE} -- Implementation
 			-- Reports an error to the 'user'.
 		do
 			has_error := True
-			error_message := "parse error. expected: '" + expected_token + "' but got '" + last_line.substring (position, last_line.count) + "'"
+			error_message := "parse error on line " + event_number.out + " character " + position.out
+			error_message.append (" expected '" + expected_token + "' but got '" +  last_line.substring (position, last_line.count) + "'")
 		end
 
 	Incall_keyword: STRING is "INCALL"

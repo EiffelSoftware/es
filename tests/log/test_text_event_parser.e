@@ -64,17 +64,22 @@ feature -- Testing the tests:
 			event_input := create_event_input("test_parser_calls.res")
 
 			event_input.read_next_event
+			assert_false ("event 1 read", event_input.has_error)
 			assert_true("correct event-type", event_input.last_event.conforms_to (incall_prototype))
 			event_input.read_next_event
+			assert_false ("event 2 read", event_input.has_error)
 			assert_true("correct event-type", event_input.last_event.conforms_to(incall_prototype))
 			event_input.read_next_event
+			assert_false ("event 3 read", event_input.has_error)
 			assert_true("correct event-type", event_input.last_event.conforms_to(incall_prototype))
-
 			event_input.read_next_event
+			assert_false ("event 4 read", event_input.has_error)
 			assert_true("correct event-type", event_input.last_event.conforms_to(outcall_prototype))
 			event_input.read_next_event
+			assert_false ("event 5 read", event_input.has_error)
 			assert_true("correct event-type", event_input.last_event.conforms_to(outcall_prototype))
 			event_input.read_next_event
+			assert_false ("event 6 read", event_input.has_error)
 			assert_true("correct event-type", event_input.last_event.conforms_to(outcall_prototype))
 		end
 
@@ -117,20 +122,42 @@ feature -- Testing the tests:
 			event_input := create_event_input("test_generics.res")
 
 			event_input.read_next_event
-			assert ("first_event_read", not event_input.has_error)
+			assert ("event 1 read", not event_input.has_error)
 			incall ?= event_input.last_event
-			assert ("first event is incall", incall /= Void)
+			assert ("event 1 is incall", incall /= Void)
 			assert_strings_equal("correct feature name", "put", incall.feature_name)
 			assert_strings_equal("correct (generic) target", "ARRAY [EXAMPLE_CLASS]", incall.target.type)
 			assert_equal("argument count correct", 2, incall.arguments.count)
 
 
 			event_input.read_next_event
-			assert ("second event read", not event_input.has_error)
+			assert ("event 2 read", not event_input.has_error)
 			incallret ?= event_input.last_event
-			assert ("second event is incallret", incallret /= Void)
+			assert ("event 2 is incallret", incallret /= Void)
 			assert ("incallret has return value", incallret.return_value /= Void)
 			assert_strings_equal ("return value has correct type", "ARRAY [EXAMPLE_CLASS]" ,incallret.return_value.type)
+
+			event_input.read_next_event
+			assert ("event 3 read", not event_input.has_error)
+			incall ?= event_input.last_event
+			assert ("event 3 is incall", incall /= Void)
+			assert_strings_equal("correct feature name", "put", incall.feature_name)
+			assert_strings_equal("correct (generic) target", "ARRAYED_LIST [ARRAY [EXAMPLE_CLASS]]", incall.target.type)
+			assert_equal("argument count correct", 2, incall.arguments.count)
+
+			event_input.read_next_event
+			assert ("event 4 read", not event_input.has_error)
+			incallret ?= event_input.last_event
+			assert ("event 4 is incallret", incallret /= Void)
+			assert ("incallret has return value", incallret.return_value /= Void)
+			assert_strings_equal ("return value has correct type", "ARRAYED_LIST [ARRAY [EXAMPLE_CLASS]]" ,incallret.return_value.type)
+
+			event_input.read_next_event
+			assert ("event 5 read", not event_input.has_error)
+			incallret ?= event_input.last_event
+			assert ("event 5 is incallret", incallret /= Void)
+			assert ("incallret has return value", incallret.return_value /= Void)
+			assert_strings_equal ("return value has correct type", "TUPLE [ARRAYED_LIST [ARRAY [EXAMPLE_CLASS]], INTEGER_32]" ,incallret.return_value.type)
 		end
 
 

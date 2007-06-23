@@ -138,7 +138,7 @@ feature -- Basic operations
 									Result := resolver.resolve_entity(callret.return_value)
 								end
 							end
-							event_input.read_next_event
+							consume_event
 						end
 					end
 				else
@@ -163,15 +163,13 @@ feature -- Basic operations
 						if not has_error then
 							if target.is_observed then
 								-- INCALL
-								event_input.read_next_event
+								consume_event
 							else
 								call_event ?= event_input.last_event
 								--OUTCALL
 								resolver.register_object (target, call_event.target)
 								index_arguments(call_event.arguments, arguments)
-								-- Consume event
-								event_input.read_next_event
-								set_error_status_for_event_input (event_input)
+								consume_event
 								if not has_error then
 									simulate_unobserved_body
 								end
@@ -217,8 +215,10 @@ feature -- Basic operations
 		do
 			enter
 			--grab first event...
-			event_input.read_next_event
-			simulate_unobserved_body
+			consume_event
+			if not has_error then
+				simulate_unobserved_body
+			end
 			leave
 		end
 
@@ -394,15 +394,20 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	set_error_status_for_event_input(input: EVENT_INPUT) is
-			-- Sets the player's status according to the status of `input'
+	consume_event is
+			-- Go to the next event
 		require
-			input_not_void: input /= Void
+			no_error: not has_error
+			not_end_of_input: not event_input.end_of_input
 		do
-			if input.has_error then
-				report_and_set_error ("Event Input - Error: " + input.error_message)
+			event_input.read_next_event
+			if event_input.has_error then
+				report_and_set_error ("Event Input - Error: " + event_input.error_message)
 			end
+		ensure
+			event_read: not has_error implies old event_input.event_number > event_input.event_number
 		end
+
 
 
 	handle_incall_event (incall: INCALL_EVENT) is
