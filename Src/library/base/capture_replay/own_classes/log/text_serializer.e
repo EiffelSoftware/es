@@ -103,7 +103,6 @@ feature {NONE} -- Implementation
 			Result.put ("NATURAL_16", 17)
 			Result.put ("NATURAL_32", 18)
 			Result.put ("NATURAL_64", 19)
-			Result.put (Manifest_special_name, 20)
 			Result.compare_objects
 		end
 
@@ -123,7 +122,7 @@ feature {NONE} -- Implementation
 				Result := False
 			else
 				type_name := value.generating_type
-				Result := basic_types.has (type_name)
+				Result := basic_types.has (type_name) or type_name.substring_index ("MANIFEST_SPECIAL", 1)=1
 			end
 		end
 
@@ -154,17 +153,9 @@ feature {NONE} -- Implementation
 		require
 			object_not_void: value /= Void
 			argument_is_basic_type: is_basic_type(value)
-		local
-			manifest_special: MANIFEST_SPECIAL
 		do
-			manifest_special ?= value
 			write (" [BASIC ")
-			if manifest_special /= Void then
-					-- The manifest special should be another type during replay.
-				write(manifest_special.replay_generating_type)
-			else
-				write(value.generating_type)
-			end
+			write(value.generating_type)
 			write(" %"")
 			write(value.out)
 			write("%"]")

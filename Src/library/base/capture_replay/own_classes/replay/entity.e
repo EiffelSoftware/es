@@ -19,6 +19,9 @@ feature -- Basic operations
 			-- Accept visitor for entity resolution.
 		deferred end
 
+	represents_void: BOOLEAN
+			-- Does `entity' represent a Void?
+		deferred end
 invariant
 	invariant_clause: True -- Your invariant here
 

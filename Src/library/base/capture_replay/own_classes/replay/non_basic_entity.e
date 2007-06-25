@@ -33,6 +33,15 @@ feature -- Access
 	id: INTEGER_32
 		-- Object ID of the entity
 
+
+	represents_void: BOOLEAN
+			-- Does `Current' represent a Void?
+		local
+			non_basic: NON_BASIC_ENTITY
+		do
+			Result := non_basic.id = 0
+		end
+
 feature -- Basic operations
 
 	accept(resolver: ENTITY_VISITOR): ANY is

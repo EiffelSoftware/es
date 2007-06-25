@@ -43,6 +43,7 @@ feature -- Basic operations
 			make_arg1: INTEGER
 			set_count_arg1: INTEGER
 			resize_arg1: INTEGER
+			a_character: CHARACTER
 			ignore_result: ANY
 		do
 			if feature_name.is_equal("make") then
@@ -75,6 +76,11 @@ feature -- Basic operations
 			elseif feature_name.is_equal("get_area") then
 				program_flow_sink.leave
 				ignore_result := string.get_area
+				program_flow_sink.enter
+			elseif feature_name.is_equal("append_character") then
+				a_character ?= arguments @ 1
+				program_flow_sink.leave
+				string.append_character (a_character)
 				program_flow_sink.enter
 			else
 				report_and_set_feature_error(string, feature_name)

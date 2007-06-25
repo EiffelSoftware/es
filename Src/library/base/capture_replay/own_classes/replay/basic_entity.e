@@ -29,6 +29,8 @@ feature -- Access
 
 	value: STRING
 
+	represents_void: BOOLEAN is False
+
 feature -- Basic operations
 
 	resolve(resolver: ENTITY_VISITOR): ANY is

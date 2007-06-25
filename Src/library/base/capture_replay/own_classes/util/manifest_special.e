@@ -5,16 +5,42 @@ indexing
 	revision: "$Revision$"
 
 class
-	MANIFEST_SPECIAL
+	MANIFEST_SPECIAL [T]
 inherit
 	ANY
 	redefine
 		out
 	end
 
+creation
+	make_empty,
+	restore
+
+feature -- Initialization
+
+	make_empty is
+			-- Create an empty instance.
+		do
+		end
+
+
+	restore (from_value: STRING) is
+			--
+		require
+			from_value_not_void: from_value /= Void
+		local
+			special_size: INTEGER
+		do
+			special_size := from_value.occurrences (',') + 1
+			create item.make (special_size)
+			load_value (from_value)
+		ensure
+			item_not_void: item /= Void
+		end
+
 
 feature -- Access
-	item: SPECIAL[ANY]
+	item: SPECIAL[T]
 
 	is_character_special: BOOLEAN
 
@@ -32,19 +58,12 @@ feature -- Access
 			end
 		end
 
-	replay_generating_type: STRING is
-			--
-		do
-			Result := item.generating_type
-		end
-
-
 feature -- Measurement
 
 feature -- Status report
 
 feature -- Status setting
-	set_item(new_item: SPECIAL[ANY]) is
+	set_item(new_item: SPECIAL[T]) is
 			-- set `item' to `new_item'
 		require
 			new_item_not_void: new_item /= Void
@@ -53,6 +72,7 @@ feature -- Status setting
 		ensure
 			item_set: item = new_item
 		end
+
 
 feature -- Cursor movement
 
@@ -129,6 +149,46 @@ feature {NONE} -- Implementation
 				i := i + 1
 			end
 		end
+
+	load_value (a_value: STRING) is
+			--
+		do
+			--TODO: implement.
+		end
+
+--	create_special_entity(basic: BASIC_ENTITY): SPECIAL[ANY] is
+--			--
+--		local
+--			type:STRING
+--			dtype: INTEGER
+--			special_size: INTEGER
+--			item_type: STRING
+--			item_dtype: INTEGER
+--		do
+--			dtype := dynamic_type_from_string(basic.type)
+
+--			if is_special_type(dtype) then
+--				special_size := basic.value.occurrences (',') + 1
+
+--				if is_special_any_type(dtype) then
+--					Result := new_special_any_instance (dtype, special_size)
+--				else
+--					type := basic.type
+--						-- It's safe to assume that there's only 1 pair of '[]', because the item type is a basic type.
+--					item_type := type.substring (type.index_of ('[', 1) + 1, type.index_of(']',1) -1)
+--					item_dtype := dynamic_type_from_string(item_type)
+--					inspect item_dtype
+--					when character_8_type then
+--						Result := create {SPECIAL [CHARACTER_8]}.make (special_size)
+--					else
+--						-- XXX implement this for all basic types.
+--					end
+--				end
+--			else
+--				-- TODO: report error
+--			end
+--		end
+
 
 invariant
 	item_not_void: item /= Void
