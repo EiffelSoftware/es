@@ -11,7 +11,7 @@ feature_start_action=\
 's/.*-- <methodbody_start name=\(\"[^\"]*\"\) args=\"\([^\"]*\)\".*\n\([^\n]*\)/\t\t\t-- <methodbody_start name=\1 args=\"\2\">\
 \t\t\tif program_flow_sink.is_capture_replay_enabled then\
 \t\t\t\tprogram_flow_sink.enter\
-\t\t\t\tprogram_flow_sink.put_feature_invocation\(\1, Current, \2)\
+\t\t\t\tprogram_flow_sink.put_feature_invocation\ (\1, Current, \2)\
 \t\t\t\tprogram_flow_sink.leave\
 \t\t\tend\
 \t\t\tif (not program_flow_sink.is_replay_phase) or is_observed then\
@@ -22,7 +22,7 @@ feature_end_res_tag2='-- <\/methodbody_end'
 feature_end_res_content='\t\t\tend\
 \t\t\tif program_flow_sink.is_capture_replay_enabled then\
 \t\t\t\tprogram_flow_sink.enter\
-\t\t\t\tResult ?= program_flow_sink.put_feature_exit\(Result)\
+\t\t\t\tResult ?= program_flow_sink.put_feature_exit\ (Result)\
 \t\t\t\tprogram_flow_sink.leave\
 \t\t\tend'
 
@@ -31,7 +31,7 @@ feature_end_no_res_tag2='-- <\/methodbody_end'
 feature_end_no_res_content='\t\t\tend\
 \t\t\tif program_flow_sink.is_capture_replay_enabled then\
 \t\t\t\tprogram_flow_sink.enter\
-\t\t\t\tignore_result ?= program_flow_sink.put_feature_exit\(Void)\
+\t\t\t\tignore_result ?= program_flow_sink.put_feature_exit\ (Void)\
 \t\t\t\tprogram_flow_sink.leave\
 \t\t\tend'
 

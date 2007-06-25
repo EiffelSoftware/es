@@ -36,10 +36,8 @@ feature -- Access
 
 	represents_void: BOOLEAN
 			-- Does `Current' represent a Void?
-		local
-			non_basic: NON_BASIC_ENTITY
 		do
-			Result := non_basic.id = 0
+			Result := id = 0
 		end
 
 feature -- Basic operations

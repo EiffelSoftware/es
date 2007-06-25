@@ -25,7 +25,7 @@ feature -- Initialization
 
 
 	restore (from_value: STRING) is
-			--
+			-- Restore `item' from the element sequence `from_value'
 		require
 			from_value_not_void: from_value /= Void
 		local
@@ -45,7 +45,7 @@ feature -- Access
 	is_character_special: BOOLEAN
 
 	out: STRING is
-			--
+			-- Serialize `item'.
 		local
 			char_special: SPECIAL[CHARACTER]
 		do
@@ -58,13 +58,9 @@ feature -- Access
 			end
 		end
 
-feature -- Measurement
-
-feature -- Status report
-
 feature -- Status setting
 	set_item(new_item: SPECIAL[T]) is
-			-- set `item' to `new_item'
+			-- Set `item' to `new_item'
 		require
 			new_item_not_void: new_item /= Void
 		do
@@ -72,29 +68,6 @@ feature -- Status setting
 		ensure
 			item_set: item = new_item
 		end
-
-
-feature -- Cursor movement
-
-feature -- Element change
-
-feature -- Removal
-
-feature -- Resizing
-
-feature -- Transformation
-
-feature -- Conversion
-
-feature -- Duplication
-
-feature -- Miscellaneous
-
-feature -- Basic operations
-
-feature -- Obsolete
-
-feature -- Inapplicable
 
 feature {NONE} -- Implementation
 
@@ -124,41 +97,42 @@ feature {NONE} -- Implementation
 		end
 
 	any_out(any_special: SPECIAL[ANY]): STRING is
-			--
+			-- Serialize a SPECIAL with elements of any type.
+			-- note: XXX works correctly only for SPECIALs that contain basic types.
 				local
 			i: INTEGER
 		do
 			create Result.make(0)
 			if any_special.count >= 1 then
-				Result.append(any_special.out)
+				Result.append (any_special.out)
 			end
 			from
 				i := any_special.lower
 			until
 				i >= any_special.upper
 			loop
-				Result.append(",")
-				Result.append(any_special[i].out)
+				Result.append (",")
+				Result.append (any_special[i].out)
 				i := i + 1
 			end
 		end
 
 	character_out(char_special: SPECIAL[CHARACTER]): STRING is
-			--
+			-- Serialize `character_special' and escape the characters if necessary.
 		local
 			i: INTEGER
 		do
 			create Result.make(char_special.upper)
 			if char_special.upper >= 1 then
-				Result.append(escape_character(char_special[i]))
+				Result.append (escape_character(char_special[i]))
 			end
 			from
 				i := char_special.lower + 1
 			until
 				i >= char_special.upper
 			loop
-				Result.append(",")
-				Result.append(escape_character(char_special[i]))
+				Result.append (",")
+				Result.append(escape_character (char_special[i]))
 				i := i + 1
 			end
 		end
@@ -182,14 +156,14 @@ feature {NONE} -- Implementation
 					next_position := a_value_list.count + 1
 				end
 				value := a_value_list.substring (position, next_position - 1)
-				load_value(value, i)
+				load_value (value, i)
 				i := i + 1
 				position := next_position + 1
 			end
 		end
 
-	load_value(a_value: STRING; index: INTEGER) is
-			--
+	load_value (a_value: STRING; index: INTEGER) is
+			-- Load `a_value' into item at position `index'
 		require
 			valid_index: item.valid_index (index)
 		local

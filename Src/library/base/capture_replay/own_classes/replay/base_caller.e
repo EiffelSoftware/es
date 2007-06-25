@@ -12,30 +12,6 @@ inherit
 
 	STRING_HANDLER --necessary to call {STRING}.set_count
 
-feature -- Access
-
-feature -- Measurement
-
-feature -- Status report
-
-feature -- Status setting
-
-feature -- Cursor movement
-
-feature -- Element change
-
-feature -- Removal
-
-feature -- Resizing
-
-feature -- Transformation
-
-feature -- Conversion
-
-feature -- Duplication
-
-feature -- Miscellaneous
-
 feature -- Basic operations
 	call_string_8(string: STRING_8; feature_name: STRING; arguments: DS_LIST[ANY]) is
 			-- Call features of STRING_8
@@ -89,24 +65,29 @@ feature -- Basic operations
 
 	call_special (special: SPECIAL [ANY]; feature_name: STRING; arguments: DS_LIST[ANY]) is
 			-- Call features of SPECIAL-type
+			-- note: XXX call to 'note_direct_manipulation' only works for specials that contain elements of character type.
 		local
 			special_char: SPECIAL [CHARACTER]
 			manifest_special_char: MANIFEST_SPECIAL [CHARACTER]
+			message: STRING
 		do
+
 			if feature_name.is_equal("note_direct_manipulation") then
 				manifest_special_char ?= arguments @ 1
-				special_char := manifest_special_char.item
-				program_flow_sink.leave
-				special.note_direct_manipulation(special_char)
-				program_flow_sink.enter
+				if manifest_special_char /= Void then
+					special_char := manifest_special_char.item
+					program_flow_sink.leave
+					special.note_direct_manipulation(special_char)
+					program_flow_sink.enter
+				else
+					message := "feature {SPECIAL}.note_direct_manipulation only supported for calls that "
+					message.append ("have a MANIFEST_SPECIAL [CHAR] as argument.")
+					report_and_set_error (message)
+				end
 			else
 				report_and_set_feature_error(special, feature_name)
 			end
 		end
-
-feature -- Obsolete
-
-feature -- Inapplicable
 
 feature {NONE} -- Implementation
 

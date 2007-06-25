@@ -51,8 +51,8 @@ feature -- Initialization
 
 			caller := a_caller
 
-			set_capture_replay_enabled(True)
-			set_replay_phase(True)
+			set_capture_replay_enabled (True)
+			set_replay_phase (True)
 		ensure
 			capture_replay_enabled: is_capture_replay_enabled
 			replay_phase_enabled: is_replay_phase
@@ -78,13 +78,13 @@ feature -- Access
 
 feature -- Status setting
 
-	set_event_input(a_factory: EVENT_INPUT) is
+	set_event_input (a_factory: EVENT_INPUT) is
 			-- Set `event_input'
 		do
 			event_input := a_factory
 		end
 
-	set_caller(a_caller: CALLER) is
+	set_caller (a_caller: CALLER) is
 			-- Set `caller'
 		require
 			a_caller_not_void: a_caller /= Void
@@ -92,7 +92,7 @@ feature -- Status setting
 			caller := a_caller
 		end
 
-	set_resolver(a_resolver: ENTITY_RESOLVER)
+	set_resolver (a_resolver: ENTITY_RESOLVER)
 			-- Set `resolver' to `a_resolver'
 		require
 			resolver_not_void: a_resolver /= Void
@@ -135,7 +135,7 @@ feature -- Basic operations
 							else
 								--OUTCALLRET
 								if callret.return_value /= Void then
-									Result := resolver.resolve_entity(callret.return_value)
+									Result := resolver.resolve_entity (callret.return_value)
 								end
 							end
 							consume_event
@@ -155,7 +155,7 @@ feature -- Basic operations
 		do
 			if not has_error then
 				caller_is_observed := observed_stack.item
-				observed_stack.put(target.is_observed)
+				observed_stack.put (target.is_observed)
 				if target.is_observed /= caller_is_observed then
 					--boundary cross
 					if not event_input.end_of_input then
@@ -168,7 +168,7 @@ feature -- Basic operations
 								call_event ?= event_input.last_event
 								--OUTCALL
 								resolver.register_object (target, call_event.target)
-								index_arguments(call_event.arguments, arguments)
+								index_arguments (call_event.arguments, arguments)
 								consume_event
 								if not has_error then
 									simulate_unobserved_body
@@ -182,7 +182,7 @@ feature -- Basic operations
 			end
 		end
 
-	simulate_unobserved_body
+	simulate_unobserved_body is
 			-- Handle all consecuting incalls from the event_input.
 		require
 			event_input_not_void: event_input /= Void
@@ -197,7 +197,7 @@ feature -- Basic operations
 			until
 				has_error or (incall_event = Void)
 			loop
-				handle_incall_event(incall_event)
+				handle_incall_event (incall_event)
 				-- the next event will be read by the triggered methodbody_start and
 				-- methodbody_end...
 				if not event_input.end_of_input then
@@ -209,17 +209,17 @@ feature -- Basic operations
 			end
 		end
 
-	put_special_modification(target: SPECIAL[ANY]; size: INTEGER)
+	put_special_modification (target: SPECIAL[ANY]; size: INTEGER) is
 			-- Record a special modification event.
 		do
-			print("special modification!!! target: " + target.generating_type + "%N")
+			print ("special modification!!! target: " + target.generating_type + "%N")
 		end
 
 	play is
 			-- Replay the captured events from the event_input
 		do
 			enter
-			--grab first event...
+				-- Grab first event...
 			consume_event
 			if not has_error then
 				simulate_unobserved_body
@@ -269,7 +269,7 @@ feature {NONE} -- Implementation
 				non_basic ?= expected_arguments @ i
 				actual := actual_arguments @ i
 				if non_basic /= Void and actual /= Void then
-					resolver.register_object(actual, non_basic)
+					resolver.register_object (actual, non_basic)
 				end
 				i := i + 1
 			end
@@ -295,13 +295,13 @@ feature {NONE} -- Implementation
 			incall ?= event
 			if call /= Void then
 				if target.is_observed implies (incall /= Void) then
-					if feature_name.is_equal(call.feature_name) then
+					if feature_name.is_equal (call.feature_name) then
 						set_error_status_for_arguments (call.arguments, arguments)
 					else
 						report_and_set_error ("Expected call on feature '" + feature_name + "' but got '" + call.feature_name + "' instead")
 					end
 				else
-					report_and_set_error("Expected incall event")
+					report_and_set_error ("Expected incall event")
 				end
 			else
 				report_and_set_error ("Expected call event")
@@ -312,7 +312,7 @@ feature {NONE} -- Implementation
 			is_outcall_event_if_target_is_unobserved: has_error or ((not target.is_observed) implies is_instance_of(event, outcall_type_id))
 		end
 
-	set_error_status_for_arguments(expected_arguments: DS_LIST[ENTITY]; actual_arguments: TUPLE) is
+	set_error_status_for_arguments (expected_arguments: DS_LIST[ENTITY]; actual_arguments: TUPLE) is
 			-- Check if the actual arguments match the expected ones and set `has_error' accordingly.
 		require
 			no_error: not has_error
@@ -328,7 +328,7 @@ feature {NONE} -- Implementation
 				until
 					has_error or i > actual_arguments.count
 				loop
-					set_error_status_for_object(expected_arguments.item(i),actual_arguments[i])
+					set_error_status_for_object (expected_arguments.item(i),actual_arguments[i])
 					i := i + 1
 				end
 			end
@@ -358,7 +358,7 @@ feature {NONE} -- Implementation
 				expected_type := expected_entity.type
 				actual_type := object.generating_type
 				if not expected_type.is_equal (actual_type) then
-					report_and_set_error("Mismatching argument Type. Expected '" +expected_type + "'but got '" + actual_type + "'")
+					report_and_set_error ("Mismatching argument Type. Expected '" +expected_type + "'but got '" + actual_type + "'")
 				end
 			end
 		end
@@ -402,6 +402,15 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	set_error_status_for_resolver (a_resolver: ENTITY_RESOLVER) is
+			-- Sets and reports an error according to resolvers status.
+		do
+			if resolver.has_error then
+				report_and_set_error ("error in entity resolver: " + a_resolver.error_message)
+			end
+		end
+
+
 	consume_event is
 			-- Go to the next event
 		require
@@ -422,10 +431,21 @@ feature {NONE} -- Implementation
 			-- Execute the INCALL `incall'
 		require
 			incall_not_void: incall /= Void
+		local
+			target: ANY
+			arguments: DS_LIST [ANY]
 		do
-			caller.call (resolver.resolve_entity(incall.target), incall.feature_name, resolver.resolve_entities(incall.arguments))
-			if caller.has_error then
-				report_and_set_error("error in caller: " + caller.error_message)
+			target := resolver.resolve_entity(incall.target)
+			set_error_status_for_resolver(resolver)
+			if not has_error then
+				arguments := resolver.resolve_entities(incall.arguments)
+				set_error_status_for_resolver(resolver)
+				if not has_error then
+					caller.call (target, incall.feature_name, arguments)
+					if caller.has_error then
+					report_and_set_error ("error in caller: " + caller.error_message)
+					end
+				end
 			end
 		end
 
@@ -446,7 +466,7 @@ feature {NONE}  -- Prototypes used for type comparison:
 	outcall_type_id: INTEGER is
 			-- Type_id of OUTCALL_EVENT
 		once
-			Result := dynamic_type_from_string("OUTCALL_EVENT")
+			Result := dynamic_type_from_string ("OUTCALL_EVENT")
 		end
 
 invariant

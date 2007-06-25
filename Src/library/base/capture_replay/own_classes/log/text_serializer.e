@@ -84,7 +84,7 @@ feature {NONE} -- Implementation
 			-- Array of all typenames that are considered to be a basic type.
 		once
 			create 	Result.make (1, 20)
-			Result.put ("NONE", 1) --does this type belong here?
+			Result.put ("NONE", 1)
 			Result.put ("POINTER", 2)
 			Result.put ("CHARACTER_8", 3)
 			Result.put ("BOOLEAN", 4)
@@ -103,6 +103,7 @@ feature {NONE} -- Implementation
 			Result.put ("NATURAL_16", 17)
 			Result.put ("NATURAL_32", 18)
 			Result.put ("NATURAL_64", 19)
+				-- Simplify comparison with other strings:
 			Result.compare_objects
 		end
 
@@ -117,16 +118,18 @@ feature {NONE} -- Implementation
 			-- Is `value' of a reference type (and not of a basic type)?
 		local
 			type_name: STRING
+			is_manifest_special: BOOLEAN
 		do
 			if value = Void then
 				Result := False
 			else
 				type_name := value.generating_type
-				Result := basic_types.has (type_name) or type_name.substring_index ("MANIFEST_SPECIAL", 1)=1
+				is_manifest_special :=  type_name.substring_index ("MANIFEST_SPECIAL", 1) = 1
+				Result := basic_types.has (type_name) or is_manifest_special
 			end
 		end
 
-	write_value (value: ANY)
+	write_object (value: ANY)
 			-- Write a value (both basic and object types)
 		do
 			if is_basic_type (value) then
@@ -139,7 +142,7 @@ feature {NONE} -- Implementation
 	write_non_basic(object: ANY)
 			-- serialize an object
 		require
-			argument_is_non_basic_type: not is_basic_type(object)
+			argument_is_non_basic_type: not is_basic_type (object)
 		do
 			if object = Void then
 				write (" [NON_BASIC NONE 0]")
@@ -149,29 +152,30 @@ feature {NONE} -- Implementation
 		end
 
 	write_basic(value: ANY)
-			-- serialize a basic value
+			-- Serialize a basic value
 		require
 			object_not_void: value /= Void
-			argument_is_basic_type: is_basic_type(value)
+			argument_is_basic_type: is_basic_type (value)
 		do
 			write (" [BASIC ")
-			write(value.generating_type)
-			write(" %"")
-			write(value.out)
-			write("%"]")
+			write (value.generating_type)
+			write (" %"")
+			write (value.out)
+			write ("%"]")
 		end
 
 	write_call(call_tag: STRING; feature_name: STRING; target: ANY; arguments: TUPLE)
+			-- Serialize a call of type `call_tag' to `target'.`feature_name'(`arguments')
 		require
 			call_tag_not_void: call_tag /= Void
 			feature_name_not_void: feature_name /= Void
 			target_not_void: target /= Void
 			arguments_not_void: arguments /= Void
 		do
-			write(call_tag)
-			write_value(target) -- would be non basic, but we need to catch the non-observable objects.
-			write(" " + feature_name)
-			write_arguments(arguments)
+			write (call_tag)
+			write_object (target)
+			write (" " + feature_name)
+			write_arguments (arguments)
 			write_endline
 		end
 
@@ -183,7 +187,7 @@ feature {NONE} -- Implementation
 		do
 			write(return_tag)
 			if return_value /= Void then
-				write_value(return_value)
+				write_object(return_value)
 			end
 			write_endline
 		end
@@ -200,7 +204,7 @@ feature {NONE} -- Implementation
 			until
 				i > arguments.count
 			loop
-				write_value(arguments.item(i))
+				write_object(arguments.item(i))
 				i := i+1
 			end
 		end

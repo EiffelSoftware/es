@@ -5165,7 +5165,7 @@ feature -- Capture/replay
 			-- <methodbody_start name="set_count" args="[number]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("get_area", Current, [])
+				program_flow_sink.put_feature_invocation ("get_area", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -5175,7 +5175,7 @@ feature -- Capture/replay
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(area)
+				Result ?= program_flow_sink.put_feature_exit (area)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>

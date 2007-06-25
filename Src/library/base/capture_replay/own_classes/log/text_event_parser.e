@@ -282,16 +282,6 @@ feature {NONE} -- Implementation
 			entity_parsed: has_error or last_entity /= Void
 		end
 
---	parse_manifest_special(typename: STRING) is
---			--
---		require
---			no_error: not has_error
---		local
-
---		do
-
---		end
-
 	parse_type
 			-- Parse the type (according to the ECMA standard) at `position' and provide
 			-- the Result in `last_string'
@@ -316,10 +306,10 @@ feature {NONE} -- Implementation
 					type_name.append (", ")
 					forth
 					parse_type
-					type_name.append(last_string)
+					type_name.append (last_string)
 				end
 				if item = ']' then
-					type_name.append("]")
+					type_name.append ("]")
 					forth
 				else
 					report_error ("]")
@@ -349,7 +339,7 @@ feature {NONE} -- Implementation
 			no_error: not has_error
 		do
 			consume_whitespaces
-			parse_regex(Integer_regex, "integer")
+			parse_regex (Integer_regex, "integer")
 			if not has_error then
 				last_integer := last_string.to_integer
 			end
@@ -363,14 +353,14 @@ feature {NONE} -- Implementation
 			no_error: not has_error
 		do
 			consume_whitespaces
-			parse_regex(Value_regex, "value")
+			parse_regex (Value_regex, "value")
 
 			if not has_error then
 				-- remove the double quotes
 				last_string := last_string.substring (2, last_string.count -1)
 			end
 		ensure
-			value_parsed: has_error or matches_regex("%""+last_string+"%"", Value_regex)
+			value_parsed: has_error or matches_regex ("%""+last_string+"%"", Value_regex)
 		end
 
 	parse_regex(regex_string: STRING; expected_token: STRING)
@@ -384,20 +374,20 @@ feature {NONE} -- Implementation
 			regex: RX_PCRE_REGULAR_EXPRESSION
 		do
 			create regex.make
-			regex.compile(regex_string)
-			regex.match_substring(last_line, position, last_line.count)
+			regex.compile (regex_string)
+			regex.match_substring (last_line, position, last_line.count)
 			if regex.has_matched then
 				last_string := regex.captured_substring(0)
 				position := position + regex.captured_substring(0).count
 				consume_whitespaces
 			else
-				report_error(expected_token)
+				report_error (expected_token)
 			end
 		ensure
 			regex_parsed: has_error or matches_regex (last_string, regex_string)
 		end
 
-	matches_regex(a_string, regex_string: STRING): BOOLEAN is
+	matches_regex (a_string, regex_string: STRING): BOOLEAN is
 			-- Does `a_string' match to the regular expression
 			-- `regex_string'?
 		require
@@ -407,8 +397,8 @@ feature {NONE} -- Implementation
 			regex: RX_PCRE_REGULAR_EXPRESSION
 		do
 			create regex.make
-			regex.compile(regex_string)
-			Result := regex.matches(a_string)
+			regex.compile (regex_string)
+			Result := regex.matches (a_string)
 		end
 
 

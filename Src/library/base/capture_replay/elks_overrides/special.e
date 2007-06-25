@@ -409,36 +409,39 @@ feature -- Removal
 feature -- Capture/Replay
 
 	note_direct_manipulation (new_content: SPECIAL [T]) is
-			-- TODO: add documentation!!!!! (No, this is not trivial...)
+			-- Note that a direct manipulation occurred.
+			-- Note: This function doesn't behave like a normal one during capture/replay.
+			-- 		- In capture phase the call event is captured using a MANIFEST_SPECIAL
+			--		  to make sure that the values of the special are captured, too
+			--		- In replay phase, `new_content' is loaded into `Current' to make sure that
+			--		  the direct manipulation will be replayed as well.
 		local
 			ignore_result: ANY
 			manifest_wrapper: MANIFEST_SPECIAL [T]
+			called_from_unobserved_space: BOOLEAN
+			simulation_necessary: BOOLEAN
 		do
-			-- Call instrumentation..
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-					-- Compensate mismatch between capture and replay:
-				if not program_flow_sink.is_replay_phase then
-					create manifest_wrapper.make_empty
-					manifest_wrapper.set_item (Current)
-					program_flow_sink.put_feature_invocation ("note_direct_manipulation", Current, [manifest_wrapper])
+				called_from_unobserved_space := program_flow_sink.observed_stack.item
+				create manifest_wrapper.make_empty
+				manifest_wrapper.set_item (Current)
+				program_flow_sink.put_feature_invocation ("note_direct_manipulation", Current, [manifest_wrapper])
+				
+					-- Simulate the manipulation of the data, if necessary:
+				simulation_necessary := program_flow_sink.is_replay_phase and called_from_unobserved_space and (not is_observed)
+				if simulation_necessary then
+					program_flow_sink.enter
+					copy_data (new_content, 0, 0, new_content.count)
 				end
 				program_flow_sink.leave
 			end
-			if program_flow_sink.is_replay_phase then
-				program_flow_sink.enter
-				copy_data (new_content, 0, 0, new_content.count)
-				program_flow_sink.leave
-			end
-
-
 
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
 				ignore_result := program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
-			--call instrumentation end
 		end
 
 

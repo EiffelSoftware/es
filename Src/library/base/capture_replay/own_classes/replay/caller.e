@@ -23,13 +23,25 @@ feature -- Basic operations
 		deferred end
 
 feature {NONE} -- Implementation
-	report_and_set_type_error(object: ANY) is
+	report_and_set_error (message: STRING) is
+			-- Report the error `message'
+		require
+			message_not_void: message /= Void
+		do
+			has_error := True
+			error_message := message
+		ensure
+			error_set: has_error = True
+			error_message_set: error_message /= Void
+		end
+
+
+	report_and_set_type_error (object: ANY) is
 			-- Report that an unknown class was provided as argument
 		require
 			object_not_void: object /= Void
 		do
-			has_error := True
-			error_message := "error: CALLER cannot make calls on '" + object.generating_type + "'"
+			report_and_set_error ("error: CALLER cannot make calls on '" + object.generating_type + "'")
 		ensure
 			error_set: has_error = True
 			error_message_set: error_message /= Void
@@ -41,8 +53,7 @@ feature {NONE} -- Implementation
 			target_not_void: target /= Void
 			feature_name_not_void: feature_name /= Void
 		do
-			has_error := True
-			error_message := "feature '" + feature_name + "' is not known for type '" + target.generating_type + "'"
+			report_and_set_error ("feature '" + feature_name + "' is not known for type '" + target.generating_type + "'")
 		ensure
 			error_set: has_error = True
 			error_message_set: error_message /= Void
