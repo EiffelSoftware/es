@@ -408,16 +408,21 @@ feature -- Removal
 
 feature -- Capture/Replay
 
-	note_direct_manipulation is
+	note_direct_manipulation (new_content: SPECIAL [T]) is
 			-- TODO: add documentation!!!!! (No, this is not trivial...)
 		local
 			ignore_result: ANY
 		do
-			--call instrumentation..
+			-- Call instrumentation..
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				manifest_wrapper.set_item(Current)
-				program_flow_sink.put_feature_invocation("note_direct_manipulation", Current, [manifest_wrapper])
+					-- Compensate mismatch between capture and replay:
+				if program_flow_sink.is_replay_phase then
+					manifest_wrapper.set_item (Current)
+					program_flow_sink.put_feature_invocation ("note_direct_manipulation", Current, [manifest_wrapper])
+				else
+					program_flow_sink.put_feature_invocation ("note_direct_manipulation", Current, [new_content])
+				end
 				program_flow_sink.leave
 			end
 

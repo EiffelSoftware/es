@@ -72,8 +72,27 @@ feature -- Basic operations
 				program_flow_sink.leave
 				ignore_result := string.to_c
 				program_flow_sink.enter
+			elseif feature_name.is_equal("get_area") then
+				program_flow_sink.leave
+				ignore_result := string.get_area
+				program_flow_sink.enter
 			else
 				report_and_set_feature_error(string, feature_name)
+			end
+		end
+
+	call_special (special: SPECIAL [ANY]; feature_name: STRING; arguments: DS_LIST[ANY]) is
+			-- Call features of SPECIAL-type
+		local
+			special_char: SPECIAL [CHARACTER]
+		do
+			if feature_name.is_equal("note_direct_manipulation") then
+				program_flow_sink.leave
+				special_char ?= arguments @ 1
+				special.note_direct_manipulation(special_char)
+				program_flow_sink.leave
+			else
+				report_and_set_feature_error(special, feature_name)
 			end
 		end
 

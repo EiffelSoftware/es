@@ -41,6 +41,7 @@ feature -- Basic operations
 		local
 			observed: OBSERVED_CLASS
 			string: STRING_8
+			special: SPECIAL [ANY]
 		do
 			-- Discriminate by target type first, to speed things up.
 			if target.generating_type.is_equal("OBSERVED_CLASS") then
@@ -49,6 +50,9 @@ feature -- Basic operations
 			elseif target.generating_type.is_equal("STRING_8") then
 				string ?= target
 				call_string_8 (string, feature_name, arguments)
+			elseif target.generating_type.substring_index ("SPECIAL", 1)=1 then
+				special ?= target
+				call_special (special, feature_name, arguments)
 			else
 				report_and_set_type_error(target)
 			end

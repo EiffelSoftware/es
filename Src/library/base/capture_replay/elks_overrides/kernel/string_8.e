@@ -5156,6 +5156,31 @@ feature {NONE} -- Implementation
 --			empty_area_not_void: Result /= Void
 		end
 
+feature -- Capture/replay
+	-- Routines for the c/r prototype implementation, to be removed at a later stage.
+
+	get_area: SPECIAL [CHARACTER] is
+			-- getter for area
+		do
+			-- <methodbody_start name="set_count" args="[number]">
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				program_flow_sink.put_feature_invocation("get_area", Current, [])
+				program_flow_sink.leave
+			end
+			if (not program_flow_sink.is_replay_phase) or is_observed then
+			-- </methodbody_start>
+				Result := area
+			-- <methodbody_end return_value="True">
+			end
+			if program_flow_sink.is_capture_replay_enabled then
+				program_flow_sink.enter
+				Result ?= program_flow_sink.put_feature_exit(area)
+				program_flow_sink.leave
+			end
+			-- </methodbody_end>
+		end
+
 invariant
 	extendible: extendible
 	compare_character: not object_comparison

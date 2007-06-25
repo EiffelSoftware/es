@@ -18,6 +18,8 @@ feature -- Access
 feature -- Basic operations
 	call (target: ANY; feature_name: STRING; arguments: DS_LIST[ANY]) is
 			-- Call `target'.`feature_name'(`arguments')
+		require
+			target_not_void: target /= Void
 		deferred end
 
 feature {NONE} -- Implementation

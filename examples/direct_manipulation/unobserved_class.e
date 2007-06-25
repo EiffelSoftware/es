@@ -56,7 +56,7 @@ feature -- Access
 			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 			Result := "literal string"
-			Result.area.note_direct_manipulation
+			Result.get_area.note_direct_manipulation(Result.get_area)
 			-- <methodbody_end return_value="True">
 			end
 			if program_flow_sink.is_capture_replay_enabled then
@@ -80,7 +80,7 @@ feature -- Access
 			file.read_line
 			Result := file.last_string
 			-- This would belong to the FILE class:
-			Result.area.note_direct_manipulation
+			Result.get_area.note_direct_manipulation(Result.get_area)
 			-- <methodbody_end return_value="True">
 			end
 			if program_flow_sink.is_capture_replay_enabled then

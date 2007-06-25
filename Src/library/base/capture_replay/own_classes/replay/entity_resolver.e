@@ -73,6 +73,8 @@ feature -- Access
 
 	visit_basic_entity(basic: BASIC_ENTITY): ANY is
 				-- Resolve `basic' to an object representing a basic type.
+			local
+				special_size: INTEGER
 			do
 				--hmm... do some magic ;)
 				if basic.type.is_equal ("REAL_32") then
@@ -81,10 +83,10 @@ feature -- Access
 					Result := basic.value.to_integer
 				elseif basic.type.is_equal("BOOLEAN") then
 					Result := basic.value.to_boolean
-				elseif basic.type.substring_index("SPECIAL",0) = 0 then
-					Result := new_instance_of(dynamic_type_from_string(basic.type))
+				elseif basic.type.substring_index("SPECIAL",1) = 1 then
 					-- There's no need to register this SPECIAL, because it's only used as
 					-- manifest type --> no references will be passed beyond the border.
+					Result := create_special_entity (basic)
 				--TODO: load the values into the special.
 				else
 					check False end --not implemented yet.
@@ -116,10 +118,23 @@ feature -- Access
 			non_basic_not_void: non_basic /= Void
 		local
 			new_object: ANY
+			dtype: INTEGER
+			special_element_count: INTEGER
 		do
-			new_object := new_instance_of(dynamic_type_from_string(non_basic.type))
-			entities[non_basic.id] := new_object
-			entities[non_basic.id].cr_set_object_id (non_basic.id)
+			dtype := dynamic_type_from_string(non_basic.type)
+			if not is_special_type (dtype) then
+				new_object := new_instance_of(dtype)
+				entities[non_basic.id] := new_object
+				entities[non_basic.id].cr_set_object_id (non_basic.id)
+			else
+				-- XXX not implemented yet. how can the size of the special
+				-- be determined???
+--				special_element_count =
+--				new_special_any_instance (dtype, count: INTEGER_32)
+			end
+		ensure
+			entity_created: entities[non_basic.id] /= Void
+			correct_type_created: entities[non_basic.id].generating_type.is_equal (non_basic.type)
 		end
 
 	entities: ARRAY[ANY]
@@ -136,6 +151,41 @@ feature -- Access
 				Result := non_basic.id = 0
 			else
 				Result := False
+			end
+		end
+
+feature -- Internal (this routines _should_ belong to the INTERNAL class)
+
+	create_special_entity(basic: BASIC_ENTITY): SPECIAL[ANY] is
+			--
+		local
+			type:STRING
+			dtype: INTEGER
+			special_size: INTEGER
+			item_type: STRING
+			item_dtype: INTEGER
+		do
+			dtype := dynamic_type_from_string(basic.type)
+
+			if is_special_type(dtype) then
+				special_size := basic.value.occurrences (',') + 1
+
+				if is_special_any_type(dtype) then
+					Result := new_special_any_instance (dtype, special_size)
+				else
+					type := basic.type
+						-- It's safe to assume that there's only 1 pair of '[]', because the item type is a basic type.
+					item_type := type.substring (type.index_of ('[', 1) + 1, type.index_of(']',1) -1)
+					item_dtype := dynamic_type_from_string(item_type)
+					inspect item_dtype
+					when character_8_type then
+						Result := create {SPECIAL [CHARACTER_8]}.make (special_size)
+					else
+						-- XXX implement this for all basic types.
+					end
+				end
+			else
+				-- TODO: report error
 			end
 		end
 

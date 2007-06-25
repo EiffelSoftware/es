@@ -234,9 +234,12 @@ feature {NONE} -- Implementation
 			-- Report that an out of sync error has occurred.
 		require
 			no_consecuting_errors: not has_error
+			message_not_void: message /= Void
 		do
 			has_error := True
 			print("replay error on event " + event_input.event_number.out + ": "+ message + "%N")
+		ensure
+			error_message_not_void: error_message /= Void
 		end
 
 	index_arguments (expected_arguments: DS_LIST[ENTITY]; actual_arguments: TUPLE) is

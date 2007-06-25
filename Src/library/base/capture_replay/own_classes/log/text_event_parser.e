@@ -15,10 +15,6 @@ inherit
 create
 	make
 
--- QUESTIONS:
---	-should the targets be reset in case of an error (e.g. last_string)?
-
-
 feature -- Access
 	event_number: INTEGER
 			-- number of currently parsed event.
@@ -366,6 +362,7 @@ feature {NONE} -- Implementation
 			last_line_read: last_line /= Void
 			no_error: not has_error
 		do
+			consume_whitespaces
 			parse_regex(Value_regex, "value")
 
 			if not has_error then
