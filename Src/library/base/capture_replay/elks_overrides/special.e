@@ -425,6 +425,13 @@ feature -- Capture/Replay
 				end
 				program_flow_sink.leave
 			end
+			if program_flow_sink.is_replay_phase then
+				program_flow_sink.enter
+				copy_data (new_content, 0, 0, new_content.count)
+				program_flow_sink.leave
+			end
+
+
 
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter

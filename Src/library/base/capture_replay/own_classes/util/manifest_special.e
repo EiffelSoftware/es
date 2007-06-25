@@ -33,7 +33,7 @@ feature -- Initialization
 		do
 			special_size := from_value.occurrences (',') + 1
 			create item.make (special_size)
-			load_value (from_value)
+			load_values (from_value)
 		ensure
 			item_not_void: item /= Void
 		end
@@ -98,15 +98,28 @@ feature -- Inapplicable
 
 feature {NONE} -- Implementation
 
-	escape_character(c: CHARACTER): CHARACTER is
+
+	-- TODO: add 'real' escaping logic
+
+	escape_character(c: CHARACTER): STRING is
 			-- replace a character by a corresponding escape sequence.
 		do
 			if c.is_equal ('"') then
-				Result := '#'
+				Result := "#"
 			elseif c.is_equal(',') then
-				Result := '#'
+				Result := "#"
 			else
-				Result := c
+				create Result.make_filled (c, 1)
+			end
+		end
+
+	character_from_escaped_string (escaped_sequence: STRING): CHARACTER is
+			-- Restore a character from a escaped string
+		do
+			if escaped_sequence.count = 1 then
+				Result := escaped_sequence.item (1)
+			else
+				Result := '#'
 			end
 		end
 
@@ -137,7 +150,7 @@ feature {NONE} -- Implementation
 		do
 			create Result.make(char_special.upper)
 			if char_special.upper >= 1 then
-				Result.append_character(escape_character(char_special[i]))
+				Result.append(escape_character(char_special[i]))
 			end
 			from
 				i := char_special.lower + 1
@@ -145,50 +158,48 @@ feature {NONE} -- Implementation
 				i >= char_special.upper
 			loop
 				Result.append(",")
-				Result.append_character(escape_character(char_special[i]))
+				Result.append(escape_character(char_special[i]))
 				i := i + 1
 			end
 		end
 
-	load_value (a_value: STRING) is
-			--
+	load_values (a_value_list: STRING) is
+			-- Load the values from a value - STRING into `item'
+		local
+			position: INTEGER
+			next_position: INTEGER
+			value: STRING
+			i: INTEGER
 		do
-			--TODO: implement.
+			from
+				position := 1
+				i := 0
+			until
+				position > a_value_list.count
+			loop
+				next_position := a_value_list.index_of (',', position)
+				if next_position = 0 then
+					next_position := a_value_list.count + 1
+				end
+				value := a_value_list.substring (position, next_position - 1)
+				load_value(value, i)
+				i := i + 1
+				position := next_position + 1
+			end
 		end
 
---	create_special_entity(basic: BASIC_ENTITY): SPECIAL[ANY] is
---			--
---		local
---			type:STRING
---			dtype: INTEGER
---			special_size: INTEGER
---			item_type: STRING
---			item_dtype: INTEGER
---		do
---			dtype := dynamic_type_from_string(basic.type)
-
---			if is_special_type(dtype) then
---				special_size := basic.value.occurrences (',') + 1
-
---				if is_special_any_type(dtype) then
---					Result := new_special_any_instance (dtype, special_size)
---				else
---					type := basic.type
---						-- It's safe to assume that there's only 1 pair of '[]', because the item type is a basic type.
---					item_type := type.substring (type.index_of ('[', 1) + 1, type.index_of(']',1) -1)
---					item_dtype := dynamic_type_from_string(item_type)
---					inspect item_dtype
---					when character_8_type then
---						Result := create {SPECIAL [CHARACTER_8]}.make (special_size)
---					else
---						-- XXX implement this for all basic types.
---					end
---				end
---			else
---				-- TODO: report error
---			end
---		end
-
+	load_value(a_value: STRING; index: INTEGER) is
+			--
+		require
+			valid_index: item.valid_index (index)
+		local
+			character_special: SPECIAL [CHARACTER]
+		do
+			character_special ?= item
+			if character_special /= Void then
+				character_special.put (character_from_escaped_string(a_value), index)
+			end
+		end
 
 invariant
 	item_not_void: item /= Void

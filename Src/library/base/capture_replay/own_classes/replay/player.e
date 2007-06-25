@@ -109,9 +109,9 @@ feature -- Basic operations
 			callret: RETURN_EVENT
 			non_basic_return_entity: NON_BASIC_ENTITY
 		do
-			callee_observed := observed_stack.item
-			observed_stack.remove
 			if not has_error then
+				callee_observed := observed_stack.item
+				observed_stack.remove
 				if callee_observed /= observed_stack.item then
 					-- boundary cross
 					if event_input.end_of_input then
@@ -187,20 +187,25 @@ feature -- Basic operations
 		require
 			event_input_not_void: event_input /= Void
 			no_error: not has_error
+			not_end_of_input: not event_input.end_of_input
 		local
 			incall_event: INCALL_EVENT
 		do
 			--Handle all following incall events...
-			incall_event ?= event_input.last_event
 			from
 				incall_event ?= event_input.last_event
 			until
-				has_error or event_input.end_of_input or (incall_event = Void)
+				has_error or (incall_event = Void)
 			loop
 				handle_incall_event(incall_event)
-				incall_event ?= event_input.last_event
 				-- the next event will be read by the triggered methodbody_start and
 				-- methodbody_end...
+				if not event_input.end_of_input then
+					incall_event ?= event_input.last_event
+				else
+					incall_event := Void
+				end
+
 			end
 		end
 

@@ -91,12 +91,14 @@ feature -- Basic operations
 			-- Call features of SPECIAL-type
 		local
 			special_char: SPECIAL [CHARACTER]
+			manifest_special_char: MANIFEST_SPECIAL [CHARACTER]
 		do
 			if feature_name.is_equal("note_direct_manipulation") then
+				manifest_special_char ?= arguments @ 1
+				special_char := manifest_special_char.item
 				program_flow_sink.leave
-				special_char ?= arguments @ 1
 				special.note_direct_manipulation(special_char)
-				program_flow_sink.leave
+				program_flow_sink.enter
 			else
 				report_and_set_feature_error(special, feature_name)
 			end
