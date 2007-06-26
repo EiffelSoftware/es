@@ -420,18 +420,19 @@ feature -- Capture/Replay
 			manifest_wrapper: MANIFEST_SPECIAL [T]
 			called_from_unobserved_space: BOOLEAN
 			simulation_necessary: BOOLEAN
+			replay_phase: BOOLEAN
 		do
 			if program_flow_sink.is_capture_replay_enabled then
+				replay_phase := program_flow_sink.is_replay_phase
 				program_flow_sink.enter
-				called_from_unobserved_space := program_flow_sink.observed_stack.item
+				called_from_unobserved_space := not program_flow_sink.observed_stack.item
 				create manifest_wrapper.make_empty
 				manifest_wrapper.set_item (Current)
 				program_flow_sink.put_feature_invocation ("note_direct_manipulation", Current, [manifest_wrapper])
-				
+
 					-- Simulate the manipulation of the data, if necessary:
-				simulation_necessary := program_flow_sink.is_replay_phase and called_from_unobserved_space and (not is_observed)
+				simulation_necessary := replay_phase and called_from_unobserved_space and is_observed
 				if simulation_necessary then
-					program_flow_sink.enter
 					copy_data (new_content, 0, 0, new_content.count)
 				end
 				program_flow_sink.leave

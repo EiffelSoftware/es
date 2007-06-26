@@ -67,21 +67,21 @@ feature {NONE} -- Implementation
 
 		call_observed(observed: OBSERVED_CLASS; feature_name: STRING; arguments: DS_LIST[ANY]) is
 			-- Call features of UNOBSERVED_CLASS
-		local
-			ignored_result: ANY
 		do
 			if feature_name.is_equal("make") then
 				program_flow_sink.leave
 				observed.make
 				program_flow_sink.enter
-			elseif feature_name.is_equal ("is_literal_string_correct") then
+			elseif feature_name.is_equal ("check_literal_string_from_unobserved") then
 				program_flow_sink.leave
-				ignored_result := observed.is_literal_string_correct
+				observed.check_literal_string_from_unobserved
 				program_flow_sink.enter
-			elseif feature_name.is_equal ("is_string_from_file_correct") then
+			elseif feature_name.is_equal ("check_string_from_file") then
 				program_flow_sink.leave
-				ignored_result := observed.is_string_from_file_correct
+				observed.check_string_from_file
 				program_flow_sink.enter
+			else
+				report_and_set_feature_error (observed, feature_name)
 			end
 		end
 invariant

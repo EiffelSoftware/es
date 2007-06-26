@@ -55,8 +55,9 @@ feature -- Basic operations
 		put_feature_invocation (feature_name: STRING_8; target: ANY; arguments: TUPLE) is
 				--
 			do
-				Precursor {PLAYER}(feature_name, target, arguments)
+				-- XXX invoking the recorder at this position leads to incorrect object ID's
 				recorder.put_feature_invocation(feature_name,target,arguments)
+				Precursor {PLAYER}(feature_name, target, arguments)
 			end
 
 		put_feature_exit (res: ANY): ANY is
@@ -65,6 +66,8 @@ feature -- Basic operations
 				ignore_result: ANY
 			do
 				Result := Precursor {PLAYER}(res)
+					-- Invoking the recorder after the player is safe, because the player
+					-- doesn't simulate any further feature calls.
 				ignore_result := recorder.put_feature_exit(Result)
 			end
 
@@ -76,5 +79,4 @@ feature -- Basic operations
 
 invariant
 	invariant_clause: True -- Your invariant here
-
 end

@@ -298,13 +298,13 @@ feature {NONE} -- Implementation
 					if feature_name.is_equal (call.feature_name) then
 						set_error_status_for_arguments (call.arguments, arguments)
 					else
-						report_and_set_error ("Expected call on feature '" + feature_name + "' but got '" + call.feature_name + "' instead")
+						report_and_set_error ("Got call on feature '" + feature_name + "' but log has call to '" + call.feature_name + "' instead")
 					end
 				else
-					report_and_set_error ("Expected incall event")
+					report_and_set_error ("Got incall event, but current log entry is an outcall event")
 				end
 			else
-				report_and_set_error ("Expected call event")
+				report_and_set_error ("Got call event, but current log entry is a different event")
 			end
 		ensure
 			is_call_event: has_error or is_instance_of (event, call_type_id)

@@ -40,51 +40,57 @@ feature -- Initialization
 
 
 feature -- Basic operations
-	is_literal_string_correct: BOOLEAN is
+	check_literal_string_from_unobserved is
 			-- test a literal string received from an unobserved object.
 		local
 			string: STRING
+			ignored_result: ANY
 		do
-			-- <methodbody_start name="is_literal_string_correct" args="[]">
+			-- <methodbody_start name="check_literal_string_from_unobserved" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("is_literal_string_correct", Current, [])
+				program_flow_sink.put_feature_invocation("check_literal_string_from_unobserved", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 			string := unobserved_object.read_literal_string
-			Result := string.is_equal ("literal string")
-			-- <methodbody_end return_value="True">
+			if not string.is_equal ("literal string") then
+				exceptions.raise ("literal string from UNOBSERVED_CLASS incorrect")
+			end
+			-- <methodbody_end return_value="False">
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				ignored_result := program_flow_sink.put_feature_exit(Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
 		end
 
-	is_string_from_file_correct: BOOLEAN is
+	check_string_from_file is
 			-- test reading of a string from a file through an unobserved object.
 		local
 			string: STRING
+			ignored_result: ANY
 		do
-			-- <methodbody_start name="is_string_from_file_correct" args="[]">
+			-- <methodbody_start name="check_string_from_file" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("is_string_from_file_correct", Current, [])
+				program_flow_sink.put_feature_invocation("check_string_from_file", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 			string := unobserved_object.read_from_file
-			Result := string.is_equal ("this is a line from the input file.")
+			if not string.is_equal ("this is a line from the input file.") then
+				exceptions.raise("string from file (via UNOBSERVED_CLASS) incorrect.")
+			end
 			-- <methodbody_end return_value="True">
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				ignored_result := program_flow_sink.put_feature_exit(Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -97,6 +103,11 @@ feature -- Inapplicable
 
 feature {NONE} -- Implementation
 	unobserved_object: UNOBSERVED_CLASS
+
+	exceptions: EXCEPTIONS is
+	 once
+	 	create Result
+	 end
 
 invariant
 	invariant_clause: True -- Your invariant here

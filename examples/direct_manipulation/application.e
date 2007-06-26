@@ -45,12 +45,10 @@ feature -- Initialization
 			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
 				create observed_object.make
-				if not observed_object.is_literal_string_correct then
-					report_error("literal string incorrect")
-				end
-				if not observed_object.is_string_from_file_correct then
-					report_error("string from file incorrect")
-				end
+				observed_object.check_literal_string_from_unobserved
+
+				observed_object.check_string_from_file
+
 			-- <methodbody_end return_value="False">
 			end
 			if program_flow_sink.is_capture_replay_enabled then
@@ -62,19 +60,5 @@ feature -- Initialization
 		end
 
 feature {NONE} -- Implementation
-	report_error(message: STRING) is
-			-- Report an Error with message `message'
-		do
-			exceptions.raise(message)
-		end
-
-
-	exceptions: EXCEPTIONS is
-			-- standard EXCEPTIONS instance
-		once
-			create Result
-		ensure
-			result_not_void: Result /= Void
-		end
 
 end -- class APPLICATION
