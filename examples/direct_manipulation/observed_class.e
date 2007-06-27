@@ -41,7 +41,7 @@ feature -- Initialization
 
 feature -- Basic operations
 	check_literal_string_from_unobserved is
-			-- test a literal string received from an unobserved object.
+			-- Test a literal string received from an unobserved object.
 		local
 			string: STRING
 			ignored_result: ANY
