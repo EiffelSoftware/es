@@ -237,7 +237,7 @@ feature {NONE} -- Initialization
 			toolbarable_commands.extend (exception_handler_cmd)
 
 			create assertion_checking_handler_cmd.make
-			assertion_checking_handler_cmd.enable_sensitive
+			assertion_checking_handler_cmd.disable_sensitive
 			toolbarable_commands.extend (assertion_checking_handler_cmd)
 
 			create force_debug_mode_cmd.make (Current)
@@ -866,7 +866,7 @@ feature -- Output
 
 	debugger_warning_message (m: STRING_GENERAL) is
 		local
-			w_dlg: EV_WARNING_DIALOG
+			w_dlg: EB_WARNING_DIALOG
 		do
 			if ev_application = Void then
 				Precursor {DEBUGGER_MANAGER} (m)

@@ -199,6 +199,7 @@ Delivery/scripts/windows/install/interface/DialogExitSuccess.wxs -text
 Delivery/scripts/windows/install/interface/DialogFatalError.wxs -text
 Delivery/scripts/windows/install/interface/DialogFilesInUse.wxs -text
 Delivery/scripts/windows/install/interface/DialogMissingMsCompiler.wxs -text
+Delivery/scripts/windows/install/interface/DialogMissingMsCompilerWarning.wxs -text
 Delivery/scripts/windows/install/interface/DialogProgress.wxs -text
 Delivery/scripts/windows/install/interface/DialogRegister.wxs -text
 Delivery/scripts/windows/install/interface/DialogSelectFolder.wxs -text
@@ -215,6 +216,7 @@ Delivery/scripts/windows/install/interface/PromptOutOfDiskSpace.wxs -text
 Delivery/scripts/windows/install/interface/PromptOutOfRollbackDiskSpace.wxs -text
 Delivery/scripts/windows/install/interface/PromptViewLicenseAgreement.wxs -text
 Delivery/scripts/windows/install/interface/eiffelstudio/DialogCCompilerChoice.wxs -text
+Delivery/scripts/windows/install/interface/eiffelstudio/DialogChooseLanguage.wxs -text
 Delivery/scripts/windows/install/interface/eiffelstudio/DialogMissingFx.wxs -text
 Delivery/scripts/windows/install/interface/eiffelstudio/DialogPrecompileChoice.wxs -text
 Delivery/scripts/windows/install/interface/eiffelstudio/DialogSelectProjectFolder.wxs -text
@@ -227,6 +229,7 @@ Delivery/scripts/windows/install/package.sln -text
 Delivery/scripts/windows/install/package.wixproj -text
 Delivery/scripts/windows/install/redist/Redist.wxs -text
 Delivery/scripts/windows/install/redist/redist.wixproj -text
+Delivery/scripts/windows/svn_command.bat -text
 Delivery/studio/bitmaps/png/10x10.ini -text
 Delivery/studio/bitmaps/png/10x10.png -text
 Delivery/studio/bitmaps/png/12x12.ini -text
@@ -272,12 +275,14 @@ Delivery/studio/config/windows/bcb/appl.ico -text
 Delivery/studio/config/windows/gnu/gnu.ico -text
 Delivery/studio/config/windows/msc/appl.ico -text
 Delivery/studio/help/errors/ECMA-VHPR -text
+Delivery/studio/help/errors/VIIN -text
 Delivery/studio/help/errors/VPIR -text
 Delivery/studio/help/errors/VSRP -text
 Delivery/studio/help/errors/VSRT -text
 Delivery/studio/help/errors/VTGC -text
 Delivery/studio/help/errors/VTGD -text
 Delivery/studio/help/errors/VTMC -text
+Delivery/studio/help/errors/short/VIIN -text
 Delivery/studio/help/errors/short/VQUI2 -text
 Delivery/studio/help/errors/short/VTGC1 -text
 Delivery/studio/help/errors/short/VTGC2 -text
@@ -287,15 +292,17 @@ Delivery/studio/help/errors/short/VTGD2 -text
 Delivery/studio/help/errors/short/VTGD3 -text
 Delivery/studio/help/errors/short/VTMC1 -text
 Delivery/studio/help/errors/short/VTMC2 -text
+Delivery/studio/help/errors/short/VTMC3 -text
+Delivery/studio/help/errors/short/VTMC4 -text
 Delivery/studio/help/errors/short/catcall -text
-Delivery/studio/lang/mo_files/de.mo -text
-Delivery/studio/lang/mo_files/en.mo -text
-Delivery/studio/lang/mo_files/fr.mo -text
+Delivery/studio/lang/mo_files/de_DE.mo -text
+Delivery/studio/lang/mo_files/en_US.mo -text
+Delivery/studio/lang/mo_files/fr_FR.mo -text
 Delivery/studio/lang/mo_files/ru_RU.mo -text
 Delivery/studio/lang/mo_files/zh_CN.mo -text
-Delivery/studio/lang/po_files/de.po -text
-Delivery/studio/lang/po_files/en.po -text
-Delivery/studio/lang/po_files/ru_RU.po -text
+Delivery/studio/lang/po_files/de_DE.po -text
+Delivery/studio/lang/po_files/en_US.po -text
+Delivery/studio/lang/po_files/ru_RU.po svneol=LF#text/plain%3B+charset%3Dutf-8 eol=lf
 Delivery/studio/lang/po_files/zh_CN.po -text
 Delivery/studio/metrics/predefined_metrics.xml -text
 Delivery/studio/wizards/new_projects/dotnet/pixmaps/Eiffel_tower.png -text
@@ -1515,6 +1522,7 @@ Documentation/xmldoc/tools/eiffelstudio/how_to_s/60_designing_a_project/20_alter
 Documentation/xmldoc/tools/eiffelstudio/how_to_s/60_designing_a_project/20_altering_the_system/32_refactoring_class_rename.xml -text
 Documentation/xmldoc/tools/eiffelstudio/how_to_s/60_designing_a_project/20_altering_the_system/34_refactoring_feature_rename.xml -text
 Documentation/xmldoc/tools/eiffelstudio/how_to_s/60_designing_a_project/20_altering_the_system/36_refactoring_feature_pull.xml -text
+Documentation/xmldoc/tools/eiffelstudio/reference/02_what_s_new/Eiffel60.xml -text
 Documentation/xmldoc/tools/eiffelstudio/reference/25_project_settings/010_system.xml -text
 Documentation/xmldoc/tools/eiffelstudio/reference/25_project_settings/020_target_general.xml -text
 Documentation/xmldoc/tools/eiffelstudio/reference/25_project_settings/030_target_assertions.xml -text
@@ -1526,8 +1534,10 @@ Documentation/xmldoc/tools/eiffelstudio/reference/25_project_settings/080_advanc
 Documentation/xmldoc/tools/eiffelstudio/reference/25_project_settings/090_advanced_tasks.xml -text
 Documentation/xmldoc/tools/eiffelstudio/reference/25_project_settings/100_advanced_variables.xml -text
 Documentation/xmldoc/tools/eiffelstudio/reference/25_project_settings/110_advanced_mapping.xml -text
+Documentation/xmldoc/tools/eiffelstudio/reference/30_compiler/60_version_history/08_60_release/index.xml -text
 Documentation/xmldoc/tools/eiffelstudio/reference/40_debugger/55_threads_tool.xml -text
 Documentation/xmldoc/tools/eiffelstudio/reference/40_debugger/57_exception_handling_tool.xml -text
+Documentation/xmldoc/tools/eiffelstudio/reference/40_debugger/80_version_history/Eiffel60.xml -text
 Documentation/xmldoc/tools/eiffelstudio/reference/60_metric_tool/20_definitions/55_selection_criteria.xml -text
 Documentation/xmldoc/tools/eiffelstudio/reference/60_metric_tool/20_definitions/80_domains.xml -text
 Documentation/xmldoc/tools/eiffelstudio/reference/60_metric_tool/20_definitions/95_under_the_hood.xml -text
@@ -1714,6 +1724,8 @@ Src/examples/docking/simple/images/smart_docking_icon_matrix_8_16_horizontal.png
 Src/examples/docking/simple/images/up.png -text
 Src/examples/docking/simple/images/up_light.png -text
 Src/examples/docking/simple/snapshot.PNG -text
+Src/examples/dotnet/sdk/assemblies/searchpath/eiffel/math/app.config -text
+Src/examples/dotnet/sdk/samples.txt -text
 Src/examples/dotnet/winforms/applications/world_calc/math.dll -text
 Src/examples/dotnet/winforms/applications/world_calc/parserutils.dll -text
 Src/examples/dotnet/winforms/control_reference/tree_view_ctl/clsdfold.bmp -text
@@ -1809,6 +1821,7 @@ Src/examples/vision2/rich_text/right_alignment.png -text
 Src/examples/vision2/rich_text/strike.png -text
 Src/examples/vision2/rich_text/underline.png -text
 Src/examples/vision2/viewport/bm_About.png -text
+Src/examples/vision2/widget_test/svn_command.bat -text
 Src/examples/vision2/widgets/bm_About.png -text
 Src/examples/vision2/widgets/icon_wizard_blank_project.png -text
 Src/examples/wel/bmpview/bmpview_demo.ico -text
@@ -1998,6 +2011,7 @@ Src/library/diff/diff_line.e -text
 Src/library/diff/diff_line_add.e -text
 Src/library/diff/diff_line_del.e -text
 Src/library/diff/diff_text.e -text
+Src/library/docking/implementation/docking/sd_docker_mediator.e svneol=native#unset
 Src/library/editor/bitmaps/copy_selection.png -text
 Src/library/editor/bitmaps/cut_selection.png -text
 Src/library/editor/bitmaps/icon_close_color.png -text
@@ -2096,6 +2110,7 @@ Src/library/vision2/implementation/carbon/testing/HRidges.png -text
 Src/library/vision2/implementation/carbon/testing/HSplitter.png -text
 Src/library/vision2/implementation/carbon/testing/VRidges.png -text
 Src/library/vision2/implementation/carbon/testing/VSplitter.png -text
+Src/library/vision2/implementation/carbon/widgets/dialogs/.DS_Store -text
 Src/library/vision2/implementation/carbon/wrapper/carbon_c_eiffel_glue_library_ise_gcc.a -text
 Src/library/vision2/implementation/carbon/wrapper/config.ewg -text
 Src/library/vision2/implementation/carbon/wrapper/generated_wrapper/eiffel/abstraction/.DS_Store -text
@@ -2128,6 +2143,7 @@ Src/tools/copyright_tool/build_project.bpr -text
 Src/tools/copyright_tool/eiffel_copyright.exe.manifest -text
 Src/tools/copyright_tool/eiffel_icon.png -text
 Src/tools/copyright_tool/system_interface.xml -text
+Src/tools/copyright_tool/texts/Microsoft_Fx_SDK.cpr -text
 Src/tools/doc_builder/Assemblies_10/AxShDocVw.dll -text
 Src/tools/doc_builder/Assemblies_10/SHDocVw.dll -text
 Src/tools/doc_builder/Assemblies_11/AxSHDocVw.dll -text
@@ -2380,6 +2396,9 @@ eweasel/tests/ccomp048/notes -text
 eweasel/tests/ccomp050/notes -text
 eweasel/tests/ccomp051/notes -text
 eweasel/tests/ccomp052/notes -text
+eweasel/tests/ccomp063/output11 -text
+eweasel/tests/ccomp064/Ace-mt -text
+eweasel/tests/ccomp065/Ace -text
 eweasel/tests/dotnet018/cas.cs -text
 eweasel/tests/dotnet018/cas.dll -text
 eweasel/tests/dotnet018/notes -text
@@ -2900,6 +2919,7 @@ eweasel/tests/fixed114/notes -text
 eweasel/tests/fixed119/notes -text
 eweasel/tests/fixed120/notes -text
 eweasel/tests/fixed126/test.e-rev1 -text
+eweasel/tests/fixed133/Ace -text
 eweasel/tests/freez001/notes -text
 eweasel/tests/freez002/notes -text
 eweasel/tests/freez003/notes -text
@@ -3314,6 +3334,10 @@ eweasel/tests/multicon037/Ace -text
 eweasel/tests/multicon038/Ace -text
 eweasel/tests/multicon041/Ace -text
 eweasel/tests/multicon042/Ace -text
+eweasel/tests/multicon046/Ace -text
+eweasel/tests/multicon047/Ace -text
+eweasel/tests/multicon048/Ace -text
+eweasel/tests/multicon049/Ace -text
 eweasel/tests/rdtp002/test -text
 eweasel/tests/store001/notes -text
 eweasel/tests/store002/bad_file -text
@@ -3491,6 +3515,7 @@ eweasel/tests/term129/notes -text
 eweasel/tests/term130/notes -text
 eweasel/tests/term134/notes -text
 eweasel/tests/term137/notes -text
+eweasel/tests/term148/Ace -text
 eweasel/tests/valid001/notes -text
 eweasel/tests/valid002/notes -text
 eweasel/tests/valid003/notes -text
@@ -3664,6 +3689,7 @@ eweasel/tests/valid212/Ace -text
 eweasel/tests/valid213/Ace -text
 eweasel/tests/valid214/Ace -text
 eweasel/tests/valid215/Ace -text
+eweasel/tests/valid216/Ace -text
 eweasel/tests/vd01001/file -text
 eweasel/tests/vd10001/weasel -text
 eweasel/tests/vd13001/weasel -text

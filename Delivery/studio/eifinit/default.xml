@@ -23,7 +23,7 @@
 	<PREF NAME="debugger.max_slice" HIDDEN="true" DESCRIPTION="Largest number of items displayed in list data."><INTEGER>50</INTEGER></PREF>
 	<PREF NAME="debugger.min_slice" HIDDEN="true" DESCRIPTION="Smallest number of items displayed in list data."><INTEGER>0</INTEGER></PREF>
 	<PREF NAME="debugger.number_of_watch_tools" HIDDEN="true" DESCRIPTION="Default number of watch tools."><INTEGER>1</INTEGER></PREF>
-	<PREF NAME="debugger.project_toolbar_layout" HIDDEN="true" DESCRIPTION="Debug toolbar items and layout information."><LIST>System_tool__visible;Melt_project__visible;Open_help_tool__visible;System_info__visible;Separator;Enable_bkpt__visible;Disable_bkpt__visible;Clear_bkpt__visible;Bkpt_info__visible;Separator;Assertion_checking_handler__hidden;Force_debug_mode__visible;Exec_step__visible;Exec_into__visible;Exec_out__visible;Exec_no_stop__visible;Exec_debug__visible;Separator;Exec_restart_debug__visible;Exec_stop__visible;Exec_quit__visible;Run_final__hidden;Freeze_project__hidden;Finalize_project__hidden;Override_scan__hidden;Discover_melt__hidden</LIST></PREF>
+	<PREF NAME="debugger.project_toolbar_layout" HIDDEN="true" DESCRIPTION="Project toolbar items and layout information."><LIST>System_tool__visible;Melt_project__visible;Open_help_tool__visible;System_info__visible;Separator;Enable_bkpt__visible;Disable_bkpt__visible;Clear_bkpt__visible;Bkpt_info__visible;Separator;Assertion_checking_handler__hidden;Force_debug_mode__visible;Exec_step__visible;Exec_into__visible;Exec_out__visible;Exec_no_stop__visible;Exec_debug__visible;Separator;Exec_restart_debug__visible;Exec_stop__visible;Exec_quit__visible;Run_final__hidden;Freeze_project__hidden;Finalize_project__hidden;Override_scan__hidden;Discover_melt__hidden</LIST></PREF>
 	<PREF NAME="debugger.proportion" HIDDEN="true"  DESCRIPTION="Proportion of the local/arguments part of the `Objects' tab in the Debugging tool."><INTEGER>0.5</INTEGER></PREF>
 	<PREF NAME="debugger.right_debug_layout" HIDDEN="true" DESCRIPTION="Items/tools shown on editor side when in debug mode."><LIST>Search;closed;0;0;0;0;Editor;minimized;0;0;0;0;Context;visible;0;0;0;171;Debugging;visible;0;0;0;218</LIST></PREF>
 	<PREF NAME="debugger.row_highlight_background_color" DESCRIPTION="Highlight background color"><COLOR>255;255;170</COLOR></PREF>
@@ -414,7 +414,7 @@
 	<PREF NAME="editor.eiffel.autocomplete.control_structure_keywords.then.custom_then_space_later" DESCRIPTION="Customized autocomplete (Space, other cases)"><STRING> $cursor$</STRING></PREF>
 	<PREF NAME="editor.eiffel.autocomplete.control_structure_keywords.then.custom_then_return_later" DESCRIPTION="Customized autocomplete (Return, other cases)"><STRING>%N$indent$%T$cursor$</STRING></PREF>
 
-	<PREF NAME="editor.eiffel.autocomplete.control_structure_keywords.elseif.autocomplete_elseif" DESCRIPTION="Autocomplete else if?"><BOOLEAN>True</BOOLEAN></PREF>
+	<PREF NAME="editor.eiffel.autocomplete.control_structure_keywords.elseif.autocomplete_elseif" DESCRIPTION="Autocomplete elseif?"><BOOLEAN>True</BOOLEAN></PREF>
 	<PREF NAME="editor.eiffel.autocomplete.control_structure_keywords.elseif.use_default_elseif" DESCRIPTION="Use default autocomplete?"><BOOLEAN>True</BOOLEAN></PREF>
 	<PREF NAME="editor.eiffel.autocomplete.control_structure_keywords.elseif.custom_elseif_space" DESCRIPTION="Customized autocomplete (Space after keyword was typed)"><STRING> $cursor$ then%N$indent$%T</STRING></PREF>
 	<PREF NAME="editor.eiffel.autocomplete.control_structure_keywords.elseif.custom_elseif_return" DESCRIPTION="Customized autocomplete (Return after keyword was typed)"><STRING>%N$indent$%T$cursor$%N$indent$then%N$indent$%T</STRING></PREF>
@@ -456,14 +456,14 @@
 	<PREF NAME="editor.eiffel.autocomplete.control_structure_keywords.variant.custom_variant_space_later" DESCRIPTION="Customized autocomplete (Space, other cases)"><STRING> $cursor$</STRING></PREF>
 	<PREF NAME="editor.eiffel.autocomplete.control_structure_keywords.variant.custom_variant_return_later" DESCRIPTION="Customized autocomplete (Return, other cases)"><STRING>%N$indent$%T$cursor$</STRING></PREF>
 
-	<PREF NAME="editor.eiffel.autocomplete.control_structure_keywords.until.autocomplete_until" DESCRIPTION="Autocomplete then?"><BOOLEAN>True</BOOLEAN></PREF>
+	<PREF NAME="editor.eiffel.autocomplete.control_structure_keywords.until.autocomplete_until" DESCRIPTION="Autocomplete until?"><BOOLEAN>True</BOOLEAN></PREF>
 	<PREF NAME="editor.eiffel.autocomplete.control_structure_keywords.until.use_default_until" DESCRIPTION="Use default autocomplete?"><BOOLEAN>True</BOOLEAN></PREF>
 	<PREF NAME="editor.eiffel.autocomplete.control_structure_keywords.until.custom_until_space" DESCRIPTION="Customized autocomplete (Space after keyword was typed)"><STRING> $cursor$</STRING></PREF>
 	<PREF NAME="editor.eiffel.autocomplete.control_structure_keywords.until.custom_until_return" DESCRIPTION="Customized autocomplete (Return after keyword was typed)"><STRING>%N$indent$%T$cursor$</STRING></PREF>
 	<PREF NAME="editor.eiffel.autocomplete.control_structure_keywords.until.custom_until_space_later" DESCRIPTION="Customized autocomplete (Space, other cases)"><STRING> $cursor$</STRING></PREF>
 	<PREF NAME="editor.eiffel.autocomplete.control_structure_keywords.until.custom_until_return_later" DESCRIPTION="Customized autocomplete (Return, other cases)"><STRING>%N$indent$%T$cursor$</STRING></PREF>
 
-	<PREF NAME="editor.eiffel.autocomplete.control_structure_keywords.loop.autocomplete_loop" DESCRIPTION="Autocomplete then?"><BOOLEAN>True</BOOLEAN></PREF>
+	<PREF NAME="editor.eiffel.autocomplete.control_structure_keywords.loop.autocomplete_loop" DESCRIPTION="Autocomplete loop?"><BOOLEAN>True</BOOLEAN></PREF>
 	<PREF NAME="editor.eiffel.autocomplete.control_structure_keywords.loop.use_default_loop" DESCRIPTION="Use default autocomplete?"><BOOLEAN>True</BOOLEAN></PREF>
 	<PREF NAME="editor.eiffel.autocomplete.control_structure_keywords.loop.custom_loop_space" DESCRIPTION="Customized autocomplete (Space after keyword was typed)"><STRING> $cursor$</STRING></PREF>
 	<PREF NAME="editor.eiffel.autocomplete.control_structure_keywords.loop.custom_loop_return" DESCRIPTION="Customized autocomplete (Return after keyword was typed)"><STRING>%N$indent$%T$cursor$</STRING></PREF>
@@ -519,7 +519,7 @@
 	<PREF NAME="editor.eiffel.autocomplete.inherit_clauses_keywords.export.custom_export_space_later" DESCRIPTION="Customized autocomplete (Space, other cases)"><STRING> $cursor$</STRING></PREF>
 	<PREF NAME="editor.eiffel.autocomplete.inherit_clauses_keywords.export.custom_export_return_later" DESCRIPTION="Customized autocomplete (Return, other cases)"><STRING>%N$indent$%T$cursor$</STRING></PREF>
 
-	<PREF NAME="editor.eiffel.autocomplete.other_keywords.precursor.autocomplete_precursor" DESCRIPTION="Autocomplete Precursor?"><BOOLEAN>True</BOOLEAN></PREF>
+	<PREF NAME="editor.eiffel.autocomplete.other_keywords.precursor.autocomplete_precursor" DESCRIPTION="Autocomplete precursor?"><BOOLEAN>True</BOOLEAN></PREF>
 	<PREF NAME="editor.eiffel.autocomplete.other_keywords.precursor.use_default_precursor" DESCRIPTION="Use default autocomplete?"><BOOLEAN>True</BOOLEAN></PREF>
 	<PREF NAME="editor.eiffel.autocomplete.other_keywords.precursor.custom_precursor_space" DESCRIPTION="Customized autocomplete (Space after keyword was typed)"><STRING> {$cursor$}</STRING></PREF>
 	<PREF NAME="editor.eiffel.autocomplete.other_keywords.precursor.custom_precursor_return" DESCRIPTION="Customized autocomplete (Return after keyword was typed)"><STRING>%N$indent$$cursor$</STRING></PREF>
@@ -611,10 +611,10 @@
 
 	<PREF NAME="general.dynamic_library_window_width" DESCRIPTION="Height of dynamic library window." HIDDEN="True"><INTEGER>450</INTEGER></PREF>
 	<PREF NAME="general.dynamic_library_window_height" DESCRIPTION="Width of dynamic library window." HIDDEN="True"><INTEGER>300</INTEGER></PREF>
-	<PREF NAME="general.preference_window_width" DESCRIPTION="Height of preferences window." HIDDEN="True"><INTEGER>450</INTEGER></PREF>
-	<PREF NAME="general.preference_window_height" DESCRIPTION="Width of preferences window." HIDDEN="True"><INTEGER>300</INTEGER></PREF>
+	<PREF NAME="general.preference_window_width" DESCRIPTION="Height of preferences window." HIDDEN="True"><INTEGER>800</INTEGER></PREF>
+	<PREF NAME="general.preference_window_height" DESCRIPTION="Width of preferences window." HIDDEN="True"><INTEGER>600</INTEGER></PREF>
 	<PREF NAME="general.show_hidden_preferences" DESCRIPTION="Show hidden preferences in preference window?" HIDDEN="True"><BOOLEAN>False</BOOLEAN></PREF>
-	<PREF NAME="general.locale" DESCRIPTION="Locale current system uses. (Restart to take effect)" HIDDEN="False"><LIST>[en_US]</LIST></PREF>
+	<PREF NAME="general.locale" DESCRIPTION="Locale current system uses. (Restart to take effect)" HIDDEN="False"><LIST>[Unselected]</LIST></PREF>
 	<PREF NAME="general.pnd_mode" DESCRIPTION="Use Pick and Drop mode? Contextual mode if false." HIDDEN="False"><BOOLEAN>False</BOOLEAN></PREF>
 
 	<PREF NAME="tools.search_tool.init_incremental" DESCRIPTION="Initial status of incremental search."><BOOLEAN>True</BOOLEAN></PREF>

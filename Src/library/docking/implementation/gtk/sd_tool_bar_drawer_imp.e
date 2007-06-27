@@ -55,7 +55,9 @@ feature -- Redefine
 				end
 				l_items.forth
 			end
-			tool_bar.clear_rectangle (l_rect.left, l_rect.top, l_rect.width, l_rect.height)
+			if not tool_bar.is_destroyed then
+				tool_bar.clear_rectangle (l_rect.left, l_rect.top, l_rect.width, l_rect.height)
+			end
 		end
 
 	end_draw is
@@ -74,26 +76,28 @@ feature -- Redefine
 			l_rect: EV_RECTANGLE
 			l_button: SD_TOOL_BAR_BUTTON
 		do
-			l_tool_bar_imp ?= a_arguments.tool_bar.implementation
-			check not_void: l_tool_bar_imp /= Void end
-			l_rect := a_arguments.item.rectangle
-			l_button ?= a_arguments.item
-			if l_button /= Void then
-				-- Paint background
-				if a_arguments.item.state /= {SD_TOOL_BAR_ITEM_STATE}.normal then
-					c_gtk_paint_box (button_style, l_tool_bar_imp.c_object, to_gtk_state (a_arguments.item.state), gtk_shadow_type (a_arguments.item.state), l_rect.x, l_rect.y, l_rect.width, l_rect.height, True)
-				end
+			if not tool_bar.is_destroyed then
+				l_tool_bar_imp ?= a_arguments.tool_bar.implementation
+				check not_void: l_tool_bar_imp /= Void end
+				l_rect := a_arguments.item.rectangle
+				l_button ?= a_arguments.item
+				if l_button /= Void then
+					-- Paint background
+					if a_arguments.item.state /= {SD_TOOL_BAR_ITEM_STATE}.normal then
+						c_gtk_paint_box (button_style, l_tool_bar_imp.c_object, to_gtk_state (a_arguments.item.state), gtk_shadow_type (a_arguments.item.state), l_rect.x, l_rect.y, l_rect.width, l_rect.height, True)
+					end
 
-				-- Paint pixmap
-				draw_pixmap (a_arguments, l_tool_bar_imp.c_object)
+					-- Paint pixmap
+					draw_pixmap (a_arguments, l_tool_bar_imp.c_object)
 
-				-- Paint text
-				draw_text (a_arguments, l_tool_bar_imp.c_object)
-			else
-				if a_arguments.item.is_wrap then
-					c_gtk_paint_line (l_tool_bar_imp.c_object, l_rect.left, l_rect.right, l_rect.top + a_arguments.item.width // 2, False)
+					-- Paint text
+					draw_text (a_arguments, l_tool_bar_imp.c_object)
 				else
-					c_gtk_paint_line (l_tool_bar_imp.c_object, l_rect.top, l_rect.bottom, l_rect.left + a_arguments.item.width // 2, True)
+					if a_arguments.item.is_wrap then
+						c_gtk_paint_line (l_tool_bar_imp.c_object, l_rect.left, l_rect.right, l_rect.top + a_arguments.item.width // 2, False)
+					else
+						c_gtk_paint_line (l_tool_bar_imp.c_object, l_rect.top, l_rect.bottom, l_rect.left + a_arguments.item.width // 2, True)
+					end
 				end
 			end
 		end
@@ -236,6 +240,7 @@ feature {NONE} -- Implementation
 			l_button ?= a_arguments.item
 			l_width_button ?= a_arguments.item
 			l_font_button ?= a_arguments.item
+
 			if l_font_button /= Void and then l_font_button.text /= Void and l_font_button.font /= Void and a_arguments.tool_bar /= Void then
 				l_tool_bar := a_arguments.tool_bar
 				l_orignal_font := l_tool_bar.font
@@ -246,7 +251,7 @@ feature {NONE} -- Implementation
 			elseif l_width_button /= Void and then l_width_button.text /= Void and a_arguments.tool_bar /= Void then
 				l_text_rect := l_width_button.text_rectangle
 				a_arguments.tool_bar.draw_ellipsed_text_top_left (l_text_rect.x, l_text_rect.y, l_width_button.text, l_text_rect.width)
-			elseif l_button /= Void and then l_button.text /= Void then
+			elseif l_button /= Void and then l_button.tool_bar /= Void and then l_button.text /= Void then
 				create l_env
 				l_app_imp ?= l_env.application.implementation
 				check not_void: l_app_imp /= Void end
@@ -265,9 +270,6 @@ feature {NONE} -- Implementation
 			end
 
 		end
-
-	tool_bar: SD_TOOL_BAR
-			-- Tool bar which to draw.
 
 	desaturation (a_pixmap: EV_PIXMAP; a_k: REAL) is
 			-- Do nothing on Linux.

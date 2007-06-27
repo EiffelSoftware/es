@@ -51,6 +51,9 @@ feature -- Open inner container data.
 			l_data: SD_INNER_CONTAINER_DATA
 			l_split_area: EV_SPLIT_AREA
 		do
+			-- We have to set all zones to normal state, otherwise we can't find the editor parent.
+			internal_docking_manager.command.recover_normal_state
+
 			internal_docking_manager.command.resize (True)
 			internal_docking_manager.property.set_is_opening_config (True)
 
@@ -108,6 +111,15 @@ feature -- Open inner container data.
 			l_config_data: SD_CONFIG_DATA
 			l_env: EV_ENVIRONMENT
 		do
+			-- We have to set all zones to normal state, otherwise we can't find the editor parent.
+			internal_docking_manager.command.recover_normal_state
+
+			-- We have to open unminimized editor data here. Because after the following codes which will INSERT `l_temp_split' to the docking tree
+			-- when editor top parent is SD_MULTI_DOCK_AREA, the docking logic tree is not a full two fork tree. Then there will be problems
+			-- in `update_middle_container' which called by `recover_normal_size_from_minimize' from SD_UPPER_ZONE. See bug#12427.
+			l_config_data := config_data_from_file (a_file)
+			open_editor_minimized_data_unminimized (l_config_data)
+
 			if not internal_docking_manager.has_content (internal_docking_manager.zones.place_holder_content) then
 				top_container := internal_docking_manager.query.inner_container_main.editor_parent
 				if top_container = internal_docking_manager.query.inner_container_main then
@@ -126,9 +138,6 @@ feature -- Open inner container data.
 			else
 				l_has_place_holder := True
 			end
-
-			l_config_data := config_data_from_file (a_file)
-			open_editor_minimized_data_unminimized (l_config_data)
 
 			-- Different from normal `open_config', we don't clear editors related things.
 			Result := open_all_config (a_file)
@@ -267,7 +276,7 @@ feature {NONE} -- Implementation
 						internal_docking_manager.tool_bar_manager.unlock
 					end
 
-					open_tool_bar_datas (l_config_data.tool_bar_datas)
+					open_tool_bar_data (l_config_data.tool_bar_datas)
 
 					check not internal_docking_manager.query.inner_container_main.full end
 					open_all_inner_containers_data (l_config_data)
@@ -347,7 +356,9 @@ feature {NONE} -- Implementation
 						l_old_split_position := l_top_split_area.split_position
 						l_top_split_area.prune (l_temp_item)
 						l_top_split_area.extend (l_temp_split_area)
-						l_top_split_area.set_split_position (l_old_split_position)
+						if l_old_split_position >= l_top_split_area.minimum_split_position and l_old_split_position <= l_top_split_area.maximum_split_position then
+							l_top_split_area.set_split_position (l_old_split_position)
+						end
 						Result := l_temp_split_area
 					else
 					-- If top parent both side only have editors zones
@@ -654,7 +665,7 @@ feature {NONE} -- Implementation
 		end
 
 	open_inner_container_data (a_config_data: SD_INNER_CONTAINER_DATA; a_container: EV_CONTAINER) is
-			-- Preorder recursive. (Postorder is hard to think about....)
+			-- Preorder recursive.
 		require
 			a_config_data_not_void: a_config_data /= Void
 			a_container_not_void: a_container /= Void
@@ -836,7 +847,7 @@ feature {NONE} -- Implementation
 			l_panel.update_tab_group
 		end
 
-	open_tool_bar_datas (a_tool_bar_datas: ARRAYED_LIST [SD_TOOL_BAR_DATA]) is
+	open_tool_bar_data (a_tool_bar_datas: ARRAYED_LIST [SD_TOOL_BAR_DATA]) is
 			-- Open four area tool bar datas.
 		require
 			a_tool_bar_datas_not_void: a_tool_bar_datas /= Void
@@ -959,6 +970,7 @@ feature {NONE} -- Implementation
 					check not_void: l_string /= Void end
 					l_content := internal_docking_manager.tool_bar_manager.content_by_title (l_string)
 					check l_content_not_void: l_content /= Void end
+					l_content.set_visible (True)
 					create l_tool_bar_zone.make (False, internal_docking_manager, False)
 
 					l_state ?= l_row_item.state

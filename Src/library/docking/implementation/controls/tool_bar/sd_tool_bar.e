@@ -260,26 +260,13 @@ feature -- Query
 			Result := internal_items.has (a_item)
 		end
 
-	border_width: INTEGER is
-			-- Border width.
-		local
-			l_platform: PLATFORM
-		once
-			Result := (internal_shared.tool_bar_font.height / 2).floor
-
-			create l_platform
-			if l_platform.is_windows then
-				Result := Result + 1
-			end
-		end
-
 	padding_width: INTEGER is 4
 			-- Padding width.
 
 	standard_height: INTEGER is
 			-- Standard tool bar height.
 		once
-			Result := internal_shared.tool_bar_font.height + 2 * border_width
+			Result := internal_shared.tool_bar_size
 		end
 
 	row_height: INTEGER is
@@ -649,7 +636,9 @@ feature {NONE} -- Agents
 				loop
 					l_item := l_items.item
 					l_item.on_pointer_release (a_x, a_y)
-					if l_item.is_need_redraw then
+					if l_item.is_displayed and then l_item.is_need_redraw and then l_item.tool_bar /= Void and then not l_item.tool_bar.is_destroyed then
+						--| FIXME According to LarryL, if l_item.is_displayed is False, then the toolbar is Void, this appears to not be the case in
+						--| some circumstances so the protection has been added.
 						drawer.start_draw (l_item.rectangle)
 						redraw_item (l_item)
 						drawer.end_draw

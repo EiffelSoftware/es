@@ -45,6 +45,26 @@ feature {NONE} -- Initialization
 			buffer_size_set: buffer_size = a_buffer.count
 		end
 
+feature -- Access
+
+	data: MANAGED_POINTER is
+			-- Copy of `buffer' containing ONLY the serialized/deserialized data.
+		do
+			create Result.make_from_pointer (buffer.item, count)
+		ensure
+			data_not_void: Result /= Void
+			valid_data_size: Result.count = count
+		end
+
+feature {NONE} -- Implementation: Status report
+
+	buffer_position: INTEGER is
+			-- Equivalent to `count'.
+		obsolete "Use `count' instead."
+		do
+			Result := count
+		end
+
 feature {NONE} -- Buffer update
 
 	check_buffer (n: INTEGER) is

@@ -41,9 +41,18 @@ feature {NONE} -- Initialization
 
 	init_right_click_menu is
 			-- Initialize right click menu.
+		local
+			l_platform: PLATFORM
 		do
 			application_right_click_agent := agent on_menu_area_click
-			ev_application.pointer_button_press_actions.extend (application_right_click_agent)
+
+			create l_platform
+			-- We will use pointe release actions only in the future. Larry 2007-6-7
+			if l_platform.is_windows then
+				ev_application.pointer_button_press_actions.extend (application_right_click_agent)
+			else
+				ev_application.pointer_button_release_actions.extend (application_right_click_agent)
+			end
 		end
 
 feature -- Query
@@ -124,7 +133,18 @@ feature -- Command
 
 	destroy is
 			-- Release hooks.
+		local
+			l_floating_tool_bars: like floating_tool_bars
 		do
+			from
+				l_floating_tool_bars := floating_tool_bars
+				l_floating_tool_bars.start
+			until
+				l_floating_tool_bars.after
+			loop
+				l_floating_tool_bars.item.destroy
+				l_floating_tool_bars.forth
+			end
 			ev_application.pointer_button_press_actions.prune_all (application_right_click_agent)
 			contents.wipe_out
 		end
@@ -221,7 +241,8 @@ feature {SD_DOCKING_MANAGER_AGENTS, SD_OPEN_CONFIG_MEDIATOR, SD_TOOL_BAR_ZONE_AS
 		end
 
 feature {SD_DOCKING_MANAGER_AGENTS, SD_OPEN_CONFIG_MEDIATOR, SD_SAVE_CONFIG_MEDIATOR,
-			SD_TOOL_BAR_ZONE_ASSISTANT,	SD_TOOL_BAR_ZONE, SD_DEBUG_ACCESS, SD_TOOL_BAR} -- Internal querys
+			SD_TOOL_BAR_ZONE_ASSISTANT,	SD_TOOL_BAR_ZONE, SD_DEBUG_ACCESS, SD_TOOL_BAR,
+			SD_TOOL_BAR_CONTENT} -- Internal querys
 
 	tool_bar_container (a_direction: INTEGER): EV_BOX is
 			-- Tool bar container base on `a_direction'.
@@ -328,13 +349,17 @@ feature {NONE} -- Agents
 
 	on_menu_area_click (a_widget: EV_WIDGET; a_button, a_screen_x, a_screen_y: INTEGER) is
 			-- Handle menu area right click.
+		local
+			l_combo_box: EV_COMBO_BOX
 		do
 			-- End user not dragging a tool bar.
 			if internal_shared.tool_bar_docker_mediator_cell.item = Void then
+				l_combo_box ?= a_widget
 				if is_at_menu_area (a_widget) and a_button = {EV_POINTER_CONSTANTS}.right
 					and then not has_pointer_actions (a_screen_x, a_screen_y)
 					and then not has_pebble_function (a_screen_x, a_screen_y)
-					and then not has_drop_function (a_screen_x, a_screen_y) then
+					and then not has_drop_function (a_screen_x, a_screen_y)
+					and then l_combo_box = Void then
 					-- We query if a button `has_drop_function' before showing the menu, because if a
 					-- pick action starts from a widget which is same as the widget receive the drop
 					-- action, then there will be an additional pointer click actions called after drop
@@ -511,7 +536,6 @@ feature {NONE} -- Implementation
 
 		end
 
-
 	application_right_click_agent: PROCEDURE [ANY, TUPLE [EV_WIDGET, INTEGER_32, INTEGER_32, INTEGER_32]]
 			-- Pointer button right click hander instance.
 
@@ -525,6 +549,7 @@ invariant
 	not_void: internal_shared /= Void
 	not_void: contents /= Void
 	not_void: floating_tool_bars /= Void
+	items_not_void: contents.for_all (agent (v: SD_TOOL_BAR_CONTENT): BOOLEAN do Result := v /= Void end)
 
 indexing
 	library:	"SmartDocking: Library of reusable components for Eiffel."

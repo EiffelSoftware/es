@@ -829,8 +829,8 @@ feature -- Resource Update
 		local
 			l_commands: ARRAYED_LIST [EB_GRAPHICAL_COMMAND]
 		do
-			l_commands := commands.editor_commands
-			if editors_manager.editors.count = 0 then
+			if editors_manager.editors.is_empty then
+				l_commands := commands.editor_commands
 				from
 					l_commands.start
 				until
@@ -839,6 +839,7 @@ feature -- Resource Update
 					l_commands.item.disable_sensitive
 					l_commands.forth
 				end
+				commands.print_cmd.disable_sensitive
 			end
 		end
 
@@ -1086,8 +1087,10 @@ feature -- Window management
 			menus.update_menu_lock_items
 			menus.update_show_tool_bar_items
 		rescue
-			retried := True
-			retry
+			if not retried then
+				retried := True
+				retry
+			end
 		end
 
 	close_all_tools is
@@ -1096,7 +1099,7 @@ feature -- Window management
 			l_tools: ARRAYED_LIST [SD_CONTENT]
 		do
 			from
-				l_tools := docking_manager.contents
+				l_tools := docking_manager.contents.twin
 				l_tools.start
 			until
 				l_tools.after
@@ -2113,17 +2116,23 @@ feature {EB_ON_SELECTION_COMMAND} -- Commands
 
 	cut_selection is
 			-- Cut the selection in the current editor.
+		local
+			l_editor: EB_CLICKABLE_EDITOR
 		do
-			if ui.current_editor /= Void then
-				ui.current_editor.cut_selection
+			l_editor := ui.current_editor
+			if l_editor /= Void and then not l_editor.is_recycled and then l_editor.number_of_lines /= 0 then
+				l_editor.run_if_editable (agent l_editor.cut_selection)
 			end
 		end
 
 	copy_selection is
 			-- Cut the selection in the current editor.
+		local
+			l_editor: EB_CLICKABLE_EDITOR
 		do
-			if ui.current_editor /= Void then
-				ui.current_editor.copy_selection
+			l_editor := ui.current_editor
+			if l_editor /= Void and then not l_editor.is_recycled and then l_editor.number_of_lines /= 0 then
+				l_editor.copy_selection
 			end
 		end
 

@@ -75,7 +75,7 @@ feature -- Query
 	rectangle: EV_RECTANGLE is
 			--  Button rectangle area
 		do
-			if tool_bar /= Void then
+			if tool_bar /= Void and then tool_bar.has (Current) then
 				create Result.make (tool_bar.item_x (Current), tool_bar.item_y (Current), width, tool_bar.row_height)
 			else
 				-- Current is hidden when current line is not enough horizontal space.
@@ -183,6 +183,7 @@ feature -- Properties
 
 	name: STRING_GENERAL
 			-- Name which is used for store configuration
+			-- This name should be fixed in all locales.
 
 	set_name (a_name: STRING_GENERAL) is
 			-- Set `name'
@@ -236,7 +237,7 @@ feature {SD_NOTEBOOK_TAB_AREA} -- Implementation
 			-- Redraw Current
 		do
 			is_need_redraw := True
-			if tool_bar /= Void then
+			if tool_bar /= Void and then not tool_bar.is_destroyed then
 				tool_bar.update
 			end
 		end

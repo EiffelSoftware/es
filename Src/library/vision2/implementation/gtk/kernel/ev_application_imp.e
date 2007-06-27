@@ -495,7 +495,8 @@ feature {EV_ANY_I} -- Implementation
 							if l_gtk_widget_ptr /= default_pointer then
 								if not is_in_transport then
 									l_pnd_imp ?= eif_object_from_gtk_object (l_gtk_widget_ptr)
-									if l_pnd_imp /= Void then
+									if l_pnd_imp /= Void and then l_pnd_imp.c_object = l_gtk_widget_ptr then
+											-- We only want the pointer events for the backing widget.
 										l_top_level_window_imp := l_pnd_imp.top_level_window_imp
 										if l_top_level_window_imp = Void or else not l_top_level_window_imp.has_modal_window then
 											l_widget_imp ?= l_pnd_imp
@@ -794,7 +795,8 @@ feature -- Basic operation
 				l_ignore_event :=
 					l_popup_parent /= Void and then l_text_component_imp /= Void and then {EV_GTK_EXTERNALS}.gdk_event_button_struct_button (a_gdk_event) = 3 and then (l_pnd_item.pebble = Void and l_pnd_item.pebble_function = Void) or else
 					not {EV_GTK_EXTERNALS}.gtk_widget_is_sensitive (l_pnd_item.c_object) or else
-					l_top_level_window_imp /= Void and then l_top_level_window_imp.has_modal_window
+					l_top_level_window_imp /= Void and then l_top_level_window_imp.has_modal_window and then captured_widget = Void
+						-- If a widget has capture then we don't want to ignore the event.
 			end
 
 				-- Handle popup window focusing.
@@ -1304,9 +1306,9 @@ feature {NONE} -- External implementation
 	internal_set_debug_mode (a_debug_mode: INTEGER) is
 			-- Set `debug_mode' to `a_debug_mode'.
 		external
-			"C inline use %"ev_any_imp.h%""
+			"C inline use %"eif_main.h%""
 		alias
-			"debug_mode = $a_debug_mode"
+			"set_debug_mode ($a_debug_mode);"
 		end
 
 	saved_debug_mode: INTEGER
@@ -1315,9 +1317,9 @@ feature {NONE} -- External implementation
 	debug_mode: INTEGER is
 			-- State of debugger.
 		external
-			"C inline use %"ev_any_imp.h%""
+			"C inline use %"eif_main.h%""
 		alias
-			"debug_mode"
+			"return is_debug_mode();"
 		end
 
 	enable_ev_gtk_log (a_mode: INTEGER) is

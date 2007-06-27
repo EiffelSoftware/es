@@ -198,14 +198,14 @@ feature {SD_TOOL_BAR, SD_TOOL_BAR_DRAWER, SD_TOOL_BAR_DRAWER_IMP} -- Internal is
 				l_left := text_left
 				l_width := text_width
 
-				l_top := tool_bar.item_y (Current) + tool_bar.border_width - 1
+				l_top := tool_bar.item_y (Current) + internal_shared.tool_bar_border_width - 1
 
 				create l_platform
 				if l_platform.is_windows then
 					l_top := l_top - internal_shared.tool_bar_font.height // 3 + 1
 				end
 
-				l_height := tool_bar.row_height - tool_bar.border_width
+				l_height := tool_bar.row_height - internal_shared.tool_bar_border_width
 
 				create Result.make (l_left, l_top, l_width, l_height)
 
@@ -229,19 +229,23 @@ feature {SD_TOOL_BAR} -- Agents
 	on_pointer_motion (a_relative_x, a_relative_y: INTEGER) is
 			-- Redefine
 		do
-			if has_position (a_relative_x, a_relative_y) and is_sensitive then
-				if state = {SD_TOOL_BAR_ITEM_STATE}.normal then
-					state := {SD_TOOL_BAR_ITEM_STATE}.hot
-					is_need_redraw := True
+			-- Tool bar maybe void when CPU is busy on GTK.
+			-- See bug#13102.
+			if tool_bar /= Void then
+				if has_position (a_relative_x, a_relative_y) and is_sensitive then
+					if state = {SD_TOOL_BAR_ITEM_STATE}.normal then
+						state := {SD_TOOL_BAR_ITEM_STATE}.hot
+						is_need_redraw := True
+					else
+						is_need_redraw := False
+					end
 				else
-					is_need_redraw := False
-				end
-			else
-				if state /= {SD_TOOL_BAR_ITEM_STATE}.normal then
-					state := {SD_TOOL_BAR_ITEM_STATE}.normal
-					is_need_redraw := True
-				else
-					is_need_redraw := False
+					if state /= {SD_TOOL_BAR_ITEM_STATE}.normal then
+						state := {SD_TOOL_BAR_ITEM_STATE}.normal
+						is_need_redraw := True
+					else
+						is_need_redraw := False
+					end
 				end
 			end
 		end
@@ -249,11 +253,15 @@ feature {SD_TOOL_BAR} -- Agents
 	on_pointer_motion_for_tooltip (a_relative_x, a_relative_y: INTEGER) is
 			-- Redefine
 		do
-			if has_position (a_relative_x, a_relative_y) then
-				if tooltip /= Void and not tooltip.as_string_32.is_equal (tool_bar.tooltip.as_string_32) then
-					tool_bar.set_tooltip (tooltip)
-				elseif tooltip = Void then
-					tool_bar.remove_tooltip
+			-- Tool bar maybe void when CPU is busy on GTK.
+			-- See bug#13102.
+			if tool_bar /= Void then
+				if has_position (a_relative_x, a_relative_y) then
+					if tooltip /= Void and not tooltip.as_string_32.is_equal (tool_bar.tooltip.as_string_32) then
+						tool_bar.set_tooltip (tooltip)
+					elseif tooltip = Void then
+						tool_bar.remove_tooltip
+					end
 				end
 			end
 		end

@@ -18,8 +18,6 @@ inherit
 
 	SHARED_BENCH_NAMES
 
-	EB_SHARED_MANAGERS
-
 create
 	make
 
@@ -318,26 +316,32 @@ feature -- Metrics tool
 			-- Metrics domain selector context menu
 		local
 			l_unit: QL_METRIC_UNIT
-			l_basic: EB_METRIC_BASIC
+			l_metric: EB_METRIC
+			l_basic_metric: EB_METRIC_BASIC
 		do
 			if menu_displayable (a_pebble) then
 				build_name (a_pebble)
 				setup_pick_item (a_menu, a_pebble)
 				extend_separator (a_menu)
 				l_unit ?= a_pebble
-				l_basic ?= a_pebble
+				l_metric ?= a_pebble
+				l_basic_metric ?= a_pebble
 				if l_unit /= Void then
 					extend_metric_selector_move_up_and_down (a_menu, a_selector, l_unit)
-				elseif l_basic /= Void then
-					extend_metric_clone_metric (a_menu, l_basic)
-					extend_metric_quick_metric (a_menu, l_basic)
+				elseif l_metric /= Void then
+-- Does not work at the moment. See bug#13214					
+--					extend_metric_clone_metric (a_menu, l_metric)
+						-- Only basic metric can be used as a template for quick metrics
+					if l_basic_metric /= Void then
+						extend_metric_quick_metric (a_menu, l_basic_metric)
+					end
 					extend_separator (a_menu)
 					extend_new_metric (a_menu)
 					extend_reload_metrics (a_menu)
 					extend_metric_open_user_metric (a_menu)
 					extend_import_metric_from_file (a_menu)
 					extend_separator (a_menu)
-					extend_metric_delete (a_menu, l_basic)
+					extend_metric_delete (a_menu, l_metric)
 				end
 			end
 		end
@@ -364,12 +368,13 @@ feature -- Call stack menu
 			end
 		end
 
-feature -- Object and Watch tool menus
+feature -- Object tool, Object Viewer and Watch tool menus
 
-	object_tool_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY) is
+	object_tool_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY; a_objects_tool: ES_OBJECTS_TOOL) is
 			-- Object tool menu
 		local
 			l_object_stone: OBJECT_STONE
+			m: EV_MENU
 		do
 			if menu_displayable (a_pebble) then
 				build_name (a_pebble)
@@ -381,6 +386,15 @@ feature -- Object and Watch tool menus
 					extend_separator (a_menu)
 					extend_expanded_object_view (a_menu, a_pebble)
 					extend_property_menu (a_menu, a_pebble)
+				end
+				if a_objects_tool /= Void then
+					m := a_objects_tool.tool_menu (False)
+					if m /= Void then
+						if l_object_stone /= Void then
+							extend_separator (a_menu)
+						end
+						a_menu.extend (m)
+					end
 				end
 			end
 		end
@@ -409,6 +423,17 @@ feature -- Object and Watch tool menus
 					extend_delete_expression (a_menu, a_pebble, a_watch_tool)
 				end
 				extend_property_menu (a_menu, a_pebble)
+			end
+		end
+
+	object_viewer_browser_view_menu (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY) is
+			-- Object viewer browser view menu.
+		do
+			if menu_displayable (a_pebble) then
+				build_name (a_pebble)
+				setup_pick_item (a_menu, a_pebble)
+				extend_separator (a_menu)
+				extend_standard_compiler_item_menu (a_menu, a_pebble)
 			end
 		end
 
@@ -1034,20 +1059,23 @@ feature {NONE} -- Menu section, Granularity 1.
 				l_menu.last.select_actions.extend (agent favorite_manager.add_stone (a_pebble))
 			end
 
-			create l_menu2.make_with_text (names.m_input_domain)
-			l_menu.extend (l_menu2)
-			l_menu2.extend (new_menu_item (metric_names.t_evaluation_tab))
-			l_menu2.last.select_actions.extend (
-				agent (a_stone: STONE) do
-					dev_window.tools.metric_tool.metric_evaluation_panel.force_drop_stone (a_stone)
-				end (a_pebble)
-			)
-			l_menu2.extend (new_menu_item (metric_names.t_archive_tab))
-			l_menu2.last.select_actions.extend (
-				agent (a_stone: STONE) do
-					dev_window.tools.metric_tool.metric_archive_panel.force_drop_stone (a_stone)
-				end (a_pebble)
-			)
+			if dev_window.tools.metric_tool.is_ready then
+			   create l_menu2.make_with_text (names.m_input_domain)
+			   l_menu.extend (l_menu2)
+			   l_menu2.extend (new_menu_item (metric_names.t_evaluation_tab))
+			   l_menu2.last.select_actions.extend (
+			    agent (a_stone: STONE) do
+			     dev_window.tools.metric_tool.metric_evaluation_panel.force_drop_stone (a_stone)
+			    end (a_pebble)
+			   )
+			   l_menu2.extend (new_menu_item (metric_names.t_archive_tab))
+			   l_menu2.last.select_actions.extend (
+			    agent (a_stone: STONE) do
+			     dev_window.tools.metric_tool.metric_archive_panel.force_drop_stone (a_stone)
+			    end (a_pebble)
+			   )
+			end
+
 				-- Added to Watch tool, if possible.
 			l_class_stone ?= a_pebble
 			if l_class_stone /= Void then
@@ -1513,7 +1541,7 @@ feature {NONE} -- Debug tool menu section, Granularity 1.
 
 feature {NONE} -- Metrics tool section, Granularity 1.
 
-	extend_metric_delete (a_menu: EV_MENU; a_basic: EB_METRIC_BASIC) is
+	extend_metric_delete (a_menu: EV_MENU; a_basic: EB_METRIC) is
 			-- Extend metric Delete.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1545,7 +1573,7 @@ feature {NONE} -- Metrics tool section, Granularity 1.
 			a_menu.last.select_actions.extend (agent l_metric_panel.on_create_quick_metric (a_basic))
 		end
 
-	extend_metric_clone_metric (a_menu: EV_MENU; a_basic: EB_METRIC_BASIC) is
+	extend_metric_clone_metric (a_menu: EV_MENU; a_basic: EB_METRIC) is
 			-- Extend Open user defined metrics externally.
 		require
 			a_menu_not_void: a_menu /= Void
@@ -1657,8 +1685,11 @@ feature {NONE} -- Implementation
 			if a_menu.count > 0 then
 				if last_type /= Void and then last_name /= Void then
 					l_text := names.m_context_menu_pick (last_type, last_name)
-					a_menu.first.set_text (l_text)
+				else
+						-- Reset "Pick" text so that it is translatable.
+					l_text := names.m_pick
 				end
+				a_menu.first.set_text (l_text)
 			end
 		end
 

@@ -171,7 +171,7 @@ feature {EB_ARGUMENT_DIALOG} -- Retrieval
 			l_profs := l_user_opts.profiles
 			if l_profs /= Void then
 				sp := selected_profile
-				if sp /= Void then
+				if sp /= Void and then sp.title /= Void then
 					from
 						l_profs.start
 					until
@@ -179,7 +179,8 @@ feature {EB_ARGUMENT_DIALOG} -- Retrieval
 					loop
 						p := l_profs.item
 						if
-							p.title.is_case_insensitive_equal (sp.title)
+							p.title /= Void
+							and then p.title.is_case_insensitive_equal (sp.title)
 						then
 							--| Let's consider it as same profile.
 						else
@@ -201,21 +202,38 @@ feature {EB_ARGUMENT_DIALOG} -- Retrieval
 			l_user_factory: USER_OPTIONS_FACTORY
 			r: INTEGER
 			t: like profile_from_row
+			toprows: LINKED_LIST [EV_GRID_ROW]
 			lrow: EV_GRID_ROW
 		do
-			l_user_opts := lace.user_options.target
-			create l_profs.make (profiles_grid.row_count)
+				--| Find the top rows (containing the profile data)
 			from
+				create toprows.make
 				r := 1
 			until
 				r > profiles_grid.row_count
 			loop
-				t := profile_from_row (profiles_grid.row (r))
+				lrow := profiles_grid.row (r)
+				check lrow.parent_row_root = lrow end
+				toprows.extend (lrow)
+				r := r + lrow.subrow_count_recursive + 1
+			end
+
+				--| Fill the profiles data
+			from
+				toprows.start
+				create l_profs.make (toprows.count)
+			until
+				toprows.after
+			loop
+				t := profile_from_row (toprows.item)
 				if t /= Void then
 					l_profs.extend (t)
 				end
-				r := r + 1
+				toprows.forth
 			end
+
+				--| Set profiles
+			l_user_opts := lace.user_options.target
 			l_user_opts.set_profiles (l_profs)
 
 			t := selected_profile

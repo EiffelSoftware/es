@@ -911,7 +911,7 @@ feature {NONE} -- Actions
 			l_system: CONF_SYSTEM
 			l_window: CONFIGURATION_WINDOW
 			l_wd: EB_WARNING_DIALOG
-			l_ed: EV_ERROR_DIALOG
+			l_ed: EB_ERROR_DIALOG
 			l_row: like last_selected_row
 		do
 			create l_fact
@@ -1101,7 +1101,9 @@ feature {NONE} -- Actions
 	on_action_selected is
 			-- Update interface when action changed.
 		do
-			update_project (projects_list.selected_rows.first, False, False, True)
+			if not is_empty and has_selected_item then
+				update_project (projects_list.selected_rows.first, False, False, True)
+			end
 		end
 
 	on_target_selected (a_row: EV_GRID_ROW) is

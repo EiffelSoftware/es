@@ -2016,7 +2016,7 @@ end
 			end
 		ensure
 			Result_not_void: Result /= Void
-			Result_is_named_but_not_formal:  Result.is_named_type and not Result.is_formal
+			Result_is_named_but_not_formal:  (Result.is_none or Result.is_named_type) and not Result.is_formal
 		end
 
 	constrained_types (a_formal_position: INTEGER): TYPE_SET_A
@@ -2178,7 +2178,7 @@ end
 				-- If the $ operator is used in the class,
 				-- an encapsulation of the feature must be generated
 			if System.address_table.class_has_dollar_operator (class_id) then
-				System.set_freeze
+				System.request_freeze
 			end
 				-- Mark the class `changed4' because there is a new type
 			changed4 := True
@@ -2497,15 +2497,16 @@ feature -- Dead code removal
 
 feature -- Cecil
 
-	generate_cecil is
+	generate_cecil (generated_wrappers: DS_HASH_SET [STRING]) is
 			-- Generate cecil table for a class having visible features
 		require
 			has_visible: has_visible
+			generated_wrappers_attached: generated_wrappers /= Void
 		do
 				-- Reset hash-table size which will be computed during
 				-- generation.
 			set_visible_table_size (0)
-			visible_level.generate_cecil_table (Current)
+			visible_level.generate_cecil_table (Current, generated_wrappers)
 		end
 
 feature -- Invariant feature
@@ -3507,6 +3508,14 @@ feature {COMPILER_EXPORTER} -- Setting
 		end
 
 feature -- Genericity
+
+	invalidate_caches_related_to_generics
+			-- Invalidates the cache which stores computed renamings
+		do
+			constraint_cache := Void
+		ensure
+			constraint_cache_void: constraint_cache = Void
+		end
 
 	formal_at_position (n: INTEGER): TYPE_FEATURE_I is
 			-- Find first TYPE_FEATURE_I in `generic_features' that

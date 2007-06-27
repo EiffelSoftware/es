@@ -84,8 +84,6 @@ remtrace esbuilder
 exprt %DEFAULT_ORIGO_SVN/Delivery/esbuilder esbuilder
 remtrace vision2 tour
 exprt %DEFAULT_ORIGO_SVN/Delivery/vision2_demo vision2_demo
-remtrace .NET libraries
-exprt %DEFAULT_ORIGO_SVN/Src/library.net library.net
 remtrace examples
 exprt %DEFAULT_ORIGO_SVN/Src/examples examples
 cd examples
@@ -135,8 +133,6 @@ exprt %DEFAULT_ORIGO_SVN/Src/C_library C_library
 fullrd C_library\.libs
 remtrace Free add ons
 exprt %DEFAULT_ORIGO_SVN/free_add_ons free_add_ons
-remtrace .NET assemblies
-exprt %DEFAULT_ORIGO_SVN/Delivery/dotnet %ISE_PLATFORM-dotnet
 remtrace root
 exprt -N %DEFAULT_ORIGO_SVN/Delivery Delivery
 move Delivery\*.* . >>& %INSTALL_LOG

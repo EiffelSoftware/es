@@ -333,6 +333,7 @@ test	wrong-vgcc		valid212 tcf pass validity
 test	named-tuple-convert-conformance					valid213 tcf fail validity
 test	nested-generics-creation-readiness				valid214 tcf valid
 test	static-comparison-test							valid215 tcf fail validity
+test	generic-creation-constraint						valid216 tcf fail validity
 
 
 -- System validity tests
@@ -1061,7 +1062,7 @@ test	expanded-creation-semantics	exec273 tcf pass execution expanded creation at
 test	agent-for-expanded-derivation	exec274 tcf pass execution expanded generic agent
 test	merging-feature-with-formal	exec275 tcf pass execution expanded generic merging
 test	entry-point-defined	exec276 tcf pass execution expanded generic merging
-
+test	derivation-reverse-attachment	exec277 tcf pass execution expanded generic attachment
 
 
 -- Compiler termination (exception trace, panic, etc.)
@@ -1204,6 +1205,7 @@ test	inspect-using-static-procedure	term144 tcf pass termination
 test	constraint-type-comparison	term145 tcf pass termination generic
 test	missing-actual-generic-crash	term146 tcf pass termination generic
 test	actual-generic-none-crash	term147 tcf pass termination generic
+test	complex-generics-crash		term148 tcf fail termination generic
 
 -- Config
 
@@ -1296,6 +1298,8 @@ test	last-reverse-assignment-to-expanded	ccomp060 tcf pass c_compilation expande
 test	adding-removing-classes-c-compile-error	ccomp061 tcf pass c_compilation expanded
 test	once-manifest-string-in-cpp-file	ccomp062 tcf pass c_compilation
 test	feature-call-via-cecil			ccomp063 tcf pass c_compilation
+test	deferred-to-string-constant	ccomp064 tcf pass finalizing
+test	built-in-unary-plus	ccomp065 tcf fail c_compilation
 
 -- Storable tests
 
@@ -1610,6 +1614,8 @@ test	elseif-with-compound		fixed129 tcf pass fixed
 test	attribute-in-inherited-assertion	fixed130 tcf pass fixed
 test	external-inline-boolean	fixed131 tcf pass fixed
 test	class-name-in-multiline-string	fixed132 tcf pass fixed
+test	generic-constraint-to-none	fixed133 tcf pass fixed
+
 
 test	roundtrip-test rdtp001 tcf pass fixed
 test	roundtrip-number-denoted-character rdtp002 tcf pass fixed
@@ -1655,16 +1661,22 @@ test	multi-constraint-nested-calls					multicon035 tcf pass multiconstraint
 test	multi-constraint-vtmc4							multicon036 tcf pass multiconstraint
 test	multi-constraint-tuples							multicon037 tcf pass multiconstraint
 test	multi-constraint-tuples2						multicon038 tcf pass multiconstraint
-test	multi-constraint-rename-alias							multicon039 tcf pass multiconstraint
+test	multi-constraint-rename-alias					multicon039 tcf pass multiconstraint
 test	multi-constraint-assigner						multicon040 tcf pass multiconstraint
 test	multi-constraint-recursive-generic				multicon041 tcf pass multiconstraint manual
 test	multi-constraint-rename-clause-crash			multicon042 tcf pass multiconstraint
 test	multi-constraint-order-affects-semantic			multicon043 tcf pass multiconstraint
 test	multi-constraint-rename-to-infix				multicon044 tcf pass multiconstraint
-test	multi-constraint-alias						multicon045 tcf pass multiconstraint
+test	multi-constraint-alias							multicon045 tcf pass multiconstraint
+test	multi-constraint-constrained-twice				multicon046 tcf pass multiconstraint
+test	multi-constraint-renaming-to-existing-feature	multicon047 tcf pass multiconstraint
+test	multi-constraint-any-numeric-crash				multicon048 tcf pass multiconstraint
+test	multi-constraint-parallel-renaming				multicon049 tcf pass multiconstraint
+--test					multicon050 tcf pass multiconstraint
+--test					multicon051 tcf pass multiconstraint
+--test					multicon052 tcf pass multiconstraint
 
---test					multicon047 tcf pass multiconstraint
---test					multicon048 tcf pass multiconstraint
+
 
 -- tests for expanded types
 test	expanded-array-attached-reference-array			expanded001 tcf pass expanded

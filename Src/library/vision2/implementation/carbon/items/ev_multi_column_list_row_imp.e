@@ -137,7 +137,7 @@ feature -- PND
 	start_transport (
         	a_x, a_y, a_button: INTEGER; a_press: BOOLEAN;
         	a_x_tilt, a_y_tilt, a_pressure: DOUBLE;
-        	a_screen_x, a_screen_y: INTEGER) is
+        	a_screen_x, a_screen_y: INTEGER; a_menu_only: BOOLEAN) is
 		do
 			check
 				do_not_call: False
@@ -323,7 +323,7 @@ feature {EV_ANY_I} -- Implementation
 			-- (starting from 1).
 		do
 			-- The `ev_children' array has to contain
-			-- the same rows in the same order than in the gtk
+			-- the same rows in the same order than in the g.t.k.
 			-- part.
 			Result := parent_imp.ev_children.index_of (Current, 1)
 		end

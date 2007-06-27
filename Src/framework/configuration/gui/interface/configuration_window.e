@@ -195,7 +195,6 @@ feature {NONE}-- Initialization
 			hb.disable_item_expand (l_btn)
 			set_default_cancel_button (l_btn)
 
-			close_request_actions.extend (agent on_cancel)
 			show_actions.extend (agent section_tree.set_focus)
 
 				-- add accelerator for opening the context menu
@@ -284,8 +283,9 @@ feature {NONE} -- Agents
 	on_ok is
 			-- Quit with saving
 		do
-			conf_system.store
-			conf_system.set_file_date
+			if conf_system /= Void then
+				commit_changes
+			end
 			hide_actions.call (Void)
 			hide
 		end
@@ -968,6 +968,15 @@ feature {CONFIGURATION_SECTION} -- Section tree selection agents
 
 feature {NONE} -- Implementation
 
+	commit_changes is
+			-- Commits configuration changes
+		require
+			conf_system_attached: conf_system /= Void
+		do
+			conf_system.store
+			conf_system.set_file_date
+		end
+
 	group_section_expanded_status: HASH_TABLE [BOOLEAN, STRING_GENERAL] is
 			-- Expanded status of sections of groups.
 		once
@@ -1022,6 +1031,10 @@ feature {NONE} -- Implementation
 		do
 			l_cmd_string := external_editor_command.item ([conf_system.file_name, 1])
 			if l_cmd_string /= Void and then not l_cmd_string.is_empty then
+					-- Commit changes
+				if conf_system /= Void then
+					commit_changes
+				end
 				create l_env
 				l_env.launch (l_cmd_string)
 			end

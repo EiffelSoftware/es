@@ -149,7 +149,11 @@ feature {NONE} -- Refresh implementation
 			evaluation_requested
 		do
 			evaluation_requested := False
-			expression.evaluate
+			if is_auto_expression then
+				expression.evaluate_as_auto_expression
+			else
+				expression.evaluate
+			end
 			refresh
 		ensure
 			not evaluation_requested
@@ -183,16 +187,7 @@ feature -- Settings
 			is_auto_expression := b
 		end
 
-	set_read_only (b: like is_readonly) is
-			-- Set current line Readonly
-		do
-			is_readonly := b
-		end
-
 feature -- Properties
-
-	is_readonly: BOOLEAN
-			-- Is read only line ?
 
 	is_auto_expression: BOOLEAN
 			-- Is auto expression line ?
@@ -290,7 +285,7 @@ feature -- Graphical changes
 			l_feature_as: FEATURE_AS
 		do
 			title := v
-			if is_readonly then
+			if is_read_only then
 				glab ?= cell (Col_expression_index)
 				if glab = Void then
 					glab := new_cell_name
@@ -389,7 +384,7 @@ feature -- Graphical changes
 			grid_cell_set_pixmap (gi, v)
 		end
 
-	show_error_dialog (txt: STRING_32) is
+	show_error_dialog (txt: STRING_GENERAL) is
 		local
 			dlg: EB_DEBUGGER_EXCEPTION_DIALOG
 			l_tag: STRING_32
@@ -417,7 +412,7 @@ feature -- Graphical changes
 			r: EV_GRID_ROW
 		do
 			if
-				not is_readonly
+				not is_read_only
 				and then abutton = 1
 				and not ev_application.ctrl_pressed
 				and not ev_application.shift_pressed
@@ -435,8 +430,9 @@ feature -- Graphical changes
 
 	compute_grid_display is
 		local
-			l_error_message: STRING
-			l_error_tag: STRING
+			l_error_message: STRING_32
+			l_error_tag: STRING_32
+			s32: STRING_32
 			l_tooltip: STRING_32
 			glab: EV_GRID_LABEL_ITEM
 			add,typ: STRING
@@ -487,19 +483,21 @@ feature -- Graphical changes
 						end
 						if expression_evaluator.error_occurred then
 							l_error_message := expression_evaluator.text_from_error_messages
-							l_error_tag := expression_evaluator.short_text_from_error_messages
 
 							if l_error_message /= Void then
 								l_tooltip.prepend_string ("%N%N")
-								l_tooltip.prepend_string (l_error_message.as_string_32)
+								l_tooltip.prepend_string (l_error_message)
 							end
-							l_tooltip.prepend_string (interface_names.l_error_occurred)
+							l_tooltip.prepend_string (interface_names.l_error_occurred.as_string_32)
+							l_error_tag := expression_evaluator.short_text_from_error_messages
 							if l_error_tag /= Void then
-								l_error_tag := "[" + l_error_tag + "] "
+								s32 := "["
+								s32.append_string (l_error_tag)
+								s32.append_string ("] ")
 							else
-								l_error_tag := ""
+								s32 := ""
 							end
-							set_expression_info (l_error_tag)
+							set_expression_info (s32)
 
 							create glab
 							grid_cell_set_text (glab, interface_names.l_error_occurred_click)
