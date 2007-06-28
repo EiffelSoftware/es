@@ -1085,6 +1085,16 @@ feature {APPLICATION_EXECUTION} -- specific implementation
 
 	implementation: DEBUGGER_MANAGER_IMP;
 
+feature -- Implementation
+
+	cdd_manager: CDD_MANAGER is
+			-- Instance of cdd manager
+			-- NOTE: not sure yet where it is the best place to initiate this manager
+		once
+			create Result.make
+		end
+
+
 invariant
 
 	implementation /= Void
