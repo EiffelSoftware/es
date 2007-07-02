@@ -1,0 +1,107 @@
+system
+	"codedom_serializer"
+
+root
+	ECDS_APPLICATION: make_and_launch
+
+default
+	precompiled ("$EIFFEL_SRC\dotnet\codedom_provider_2.0\test\serializer\provider")
+	msil_use_optimized_precompile (yes)
+	assertion (no)
+	msil_generation (yes)
+	disabled_debug (yes)
+	debug (no)
+	line_generation (no)
+	profile (no)
+	trace (no)
+	il_verifiable (yes)
+	cls_compliant (yes)
+	dotnet_naming_convention (yes)
+	use_cluster_name_as_namespace (yes)
+	use_all_cluster_name_as_namespace (yes)
+	msil_generation_type ("exe")
+	msil_key_file_name ("$EIFFEL_SRC\dotnet\helpers\isekey.snk")
+	msil_clr_version ("v2.0.50727")
+	msil_assembly_compatibility ("None")
+	check_vape (yes)
+	console_application (no)
+	syntax_warning (no)
+	address_expression (no)
+	array_optimization (no)
+	dead_code_removal (yes)
+	dynamic_runtime (no)
+	exception_trace (no)
+	inlining (no)
+	multithreaded (no)
+
+
+-- The application
+-- WEL
+
+cluster
+	all root_cluster:		"$EIFFEL_SRC\dotnet\codedom_provider_2.0\test\serializer\gui"
+		exclude
+			"CVS"; "EIFGEN"; 
+		end
+
+	library "base":		"$EIFFEL_SRC\library\base"
+		exclude
+			"CVS"; "classic"; "desc"; "table_eiffel3"; 
+		default
+			assertion (no)
+			assertion (require)
+		end
+
+	library "base_net":		"$EIFFEL_SRC\library.net\base"
+		exclude
+			"CVS"; 
+		default
+			assertion (no)
+			assertion (require)
+		end
+
+	library wel:		"$EIFFEL_SRC\library\wel"
+		exclude
+			"spec"; "clib"; "classic"; "CVS"; 
+		default
+			assertion (no)
+			assertion (require)
+		end
+
+	library wel_net:		"$EIFFEL_SRC\library.net\wel"
+		exclude
+			"CVS"; 
+		default
+			assertion (no)
+			assertion (require)
+		end
+
+	library vision2:		"$EIFFEL_SRC\library\vision2"
+		exclude
+			"Clib"; "gtk"; "gtk2"; "assign_attempt.e"; "ev_pixmap_imp_loader.e"; "ev_pixmap_imp_delegate.e"; "CVS"; 
+		default
+			assertion (no)
+			assertion (require)
+		end
+
+	library vision2_net:		"$EIFFEL_SRC\library.net\vision2"
+		exclude
+			"CVS"; 
+		default
+			assertion (no)
+			assertion (require)
+		end
+
+external
+
+	include_path:
+		"$(ISE_EIFFEL)\library\wel\spec\windows\include",
+		"$(ISE_EIFFEL)\library\vision2\spec\include"
+
+	object:
+		"$(ISE_EIFFEL)\library\wel\spec\$(ISE_C_COMPILER)\lib\ilwel.lib",
+		"$(ISE_EIFFEL)\library\vision2\spec\$(ISE_C_COMPILER)\lib\ilvision2.lib",
+		"$(ISE_EIFFEL)\library\vision2\spec\$(ISE_C_COMPILER)\lib\zlib.lib",
+		"$(ISE_EIFFEL)\library\vision2\spec\$(ISE_C_COMPILER)\lib\libpng.lib"
+
+end
