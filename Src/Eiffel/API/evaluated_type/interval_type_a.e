@@ -16,7 +16,9 @@ inherit
 	TYPE_A
 		redefine
 			instantiated_in, instantiation_in,
-			has_associated_class
+			has_associated_class,
+			generics,
+			meta_type
 		end
 
 	SHARED_TEXT_ITEMS
@@ -91,6 +93,18 @@ feature {COMPILER_EXPORTER} -- Access
 			-- C type
 		do
 			Result := lower.type_i
+		end
+
+	meta_type: TYPE_I is
+			-- Meta type
+		do
+			Result := lower.meta_type
+		end
+
+	generics: ARRAY [TYPE_A] is
+			-- Actual generic types
+		do
+			Result := lower.generics
 		end
 
 	create_info: CREATE_INFO is

@@ -246,8 +246,23 @@ feature {NONE} -- Visitor implementation
 		end
 
 	process_none_type_as (l_as: NONE_TYPE_AS) is
+		local
+			l_actual_generics: ARRAY [TYPE_A]
+			l_none_type: NONE_A
 		do
-			last_type := none_type
+			if l_as.generics = Void then
+				last_type := none_type
+			else
+				l_actual_generics := process_generics (l_as.generics)
+				if l_actual_generics = Void then
+					check failure_enabled: is_failure_enabled end
+					last_type := Void
+				else
+					l_none_type := none_type.twin
+					l_none_type.set_generics (l_actual_generics)
+					last_type := l_none_type
+				end
+			end
 		end
 
 	process_bits_as (l_as: BITS_AS) is
@@ -258,6 +273,32 @@ feature {NONE} -- Visitor implementation
 	process_bits_symbol_as (l_as: BITS_SYMBOL_AS) is
 		do
 			create {UNEVALUATED_BITS_SYMBOL_A} last_type.make (l_as.bits_symbol.name)
+		end
+
+feature {NONE} -- Implementation
+
+	process_generics (l_as: TYPE_LIST_AS): ARRAY [TYPE_A] is
+		local
+			i, count: INTEGER
+			l_has_error: BOOLEAN
+		do
+			from
+				i := 1
+				count := l_as.count
+				create Result.make (1, count)
+			until
+				i > count or l_has_error
+			loop
+				l_as.i_th (i).process (Current)
+				l_has_error := last_type = Void
+				Result.put (last_type, i)
+				i := i + 1
+			end
+			if l_has_error then
+				check failure_enabled: is_failure_enabled end
+				Result := Void
+			end
+			last_type := Void
 		end
 
 indexing

@@ -1809,6 +1809,29 @@ feature -- Convenience features
 			Result := lace_class.is_cat_call_detection
 		end
 
+	record_descendants (classes: LIST [CLASS_C]) is
+			-- Record the descendants of `Current' to `classes'.
+		require
+			valid_classes: classes /= Void
+		local
+			descendant: CLASS_C
+			i, l_count: INTEGER
+		do
+			classes.extend (Current)
+			from
+				i := 1
+				l_count := descendants.count
+			until
+				i > l_count
+			loop
+				descendant := descendants.i_th (i)
+				if not classes.has (descendant) then
+					descendant.record_descendants (classes)
+				end
+				i := i + 1
+			end
+		end
+
 feature -- Actual class type
 
 	constraint_actual_type: CL_TYPE_A is

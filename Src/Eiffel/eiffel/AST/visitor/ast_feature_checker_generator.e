@@ -8059,12 +8059,13 @@ feature {NONE} -- Implementation: catcall check
 			l_formal: FORMAL_A
 --			l_generics: ARRAY [TYPE_A]
 		do
+			l_descendants := descendant_list
+			l_descendants.wipe_out
 			if a_type.is_formal then
 				l_formal ?= a_type
 				if l_formal.is_multi_constrained (context.current_class) then
 						-- Type is a multi constrained formal. Loop through all associated classes of
 						-- constraints and collect their descendants
-					create l_descendants.make (10)
 					l_formal.to_type_set.constraining_types (context.current_class).associated_classes.do_all (
 						agent (a_class: CLASS_C; a_list: LIST [CLASS_C])
 								-- Append descendants of `a_class' to `a_list'.
@@ -8072,17 +8073,17 @@ feature {NONE} -- Implementation: catcall check
 								a_class_not_void: a_class /= Void
 								a_list_not_void: a_list /= Void
 							do
-								a_list.append (a_class.descendants)
+								a_class.record_descendants (a_list)
 							end
 						(?, l_descendants)
 					)
 				else
 						-- Type is formal. Take descendants from associated class of constraint
-					l_descendants := l_formal.constrained_type (context.current_class).associated_class.descendants
+					l_formal.constrained_type (context.current_class).associated_class.record_descendants (l_descendants)
 				end
 			else
 					-- Normal type. Take descenants from associated class
-				l_descendants := a_type.associated_class.descendants
+				a_type.associated_class.record_descendants (l_descendants)
 			end
 				-- Go through descendants and remove the ones which don't conform
 				-- This can happen with non-conforming inheritance or restrict types
@@ -8124,6 +8125,12 @@ feature {NONE} -- Implementation: catcall check
 --			end
 		ensure
 			possible_descendants_not_void: Result /= Void
+		end
+
+	descendant_list: ARRAYED_LIST [CLASS_C]	is
+			-- List to store current descendants for catcall check
+		once
+			create Result.make (10)
 		end
 
 indexing
