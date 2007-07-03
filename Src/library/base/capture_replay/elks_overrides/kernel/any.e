@@ -370,6 +370,7 @@ feature -- Capture/Replay
 			environment: EXECUTION_ENVIRONMENT
 			mode: STRING
 		once
+			-- Disable capture-replay for the time we're in this routine...
 			create {NULL_PROGRAM_FLOW_SINK}Result
 			create environment
 			mode := environment.get("CR_MODE")
@@ -431,8 +432,6 @@ feature {NONE} -- Implementation
 	mode_capture: STRING is "capture"
 
 	mode_log_replay: STRING is "log_replay"
-
-	mode_proxy: STRING is "proxy"
 
 	c_object_id(object: POINTER): INTEGER_32 is
 			--

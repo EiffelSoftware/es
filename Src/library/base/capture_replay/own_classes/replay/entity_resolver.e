@@ -60,17 +60,29 @@ feature -- Access
 			end
 		end
 
-	register_object (object: ANY; entity: NON_BASIC_ENTITY) is
+	associate_object_to_object_id (object: ANY; id: INTEGER) is
+			-- Register `object' for `id' in the object lookup table.
+		require
+			object_not_void: object /= Void
+			entity_not_void: id /= Void
+			no_different_object_for_same_id: entities[id] /= Void implies object = entities[id]
+		do
+			if entities[id] = Void then
+				entities[id] := object
+				object.cr_set_object_id (id)
+			end
+		ensure
+			entity_registered: entities[id] = object
+		end
+
+	associate_object_to_entity (object: ANY; entity: NON_BASIC_ENTITY) is
 			-- Register `object' in the object lookup table.
 		require
 			object_not_void: object /= Void
 			entity_not_void: entity /= Void
 			no_different_object_for_same_id: entities[entity.id] /= Void implies object = entities[entity.id]
 		do
-			if entities[entity.id] = Void then
-				entities[entity.id] := object
-				object.cr_set_object_id (entity.id)
-			end
+			associate_object_to_object_id (object, entity.id)
 		ensure
 			entity_registered: entities[entity.id] = object
 		end
@@ -137,7 +149,7 @@ feature -- Access
 			if not is_special_type (dtype) then
 				new_object := new_instance_of (dtype)
 
-				register_object (new_object, non_basic)
+				associate_object_to_entity (new_object, non_basic)
 			else
 				report_and_set_error("creation of SPECIALs not implemented yet.")
 				-- XXX not implemented yet. how can the size of the special
@@ -162,5 +174,4 @@ feature -- Implementation
 
 invariant
 	invariant_clause: True -- Your invariant here
-
 end

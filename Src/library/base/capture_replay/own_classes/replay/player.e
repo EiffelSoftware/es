@@ -34,7 +34,7 @@ create
 feature -- Initialization
 
 
-		setup_on_text_file (filename: STRING; a_caller: CALLER)
+	setup_on_text_file (filename: STRING; a_caller: CALLER)
 			-- Set the player up to the the replay of the text-log `filename'
 		require
 			filename_not_void: filename /= Void
@@ -57,6 +57,19 @@ feature -- Initialization
 			capture_replay_enabled: is_capture_replay_enabled
 			replay_phase_enabled: is_replay_phase
 		end
+
+	setup_on_string(log: STRING; a_caller:CALLER)
+			-- Set the player up to replay the log from `log'
+		require
+			log_not_void: log /= Void
+			a_caller_not_void: a_caller /= Void
+		local
+			parser: TEXT_EVENT_PARSER
+
+		do
+
+		end
+
 
 feature -- Access
 
@@ -126,7 +139,7 @@ feature -- Basic operations
 								if non_basic_return_entity /= Void then
 									if res /= Void then
 										-- This return value must be registered.
-										resolver.register_object (res, non_basic_return_entity)
+										resolver.associate_object_to_entity (res, non_basic_return_entity)
 									else
 										report_and_set_error ("Received non-basic return value that is not observable")
 									end
@@ -167,7 +180,7 @@ feature -- Basic operations
 							else
 								call_event ?= event_input.last_event
 								--OUTCALL
-								resolver.register_object (target, call_event.target)
+								resolver.associate_object_to_entity (target, call_event.target)
 								index_arguments (call_event.arguments, arguments)
 								consume_event
 								if not has_error then
@@ -269,7 +282,7 @@ feature {NONE} -- Implementation
 				non_basic ?= expected_arguments @ i
 				actual := actual_arguments @ i
 				if non_basic /= Void and actual /= Void then
-					resolver.register_object (actual, non_basic)
+					resolver.associate_object_to_entity (actual, non_basic)
 				end
 				i := i + 1
 			end

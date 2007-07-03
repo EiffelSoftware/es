@@ -7,7 +7,7 @@ class
 	ROOT_CLASS
 
 inherit
-	OBSERVABLE
+	ANY
 	redefine
 		is_observed
 	end
