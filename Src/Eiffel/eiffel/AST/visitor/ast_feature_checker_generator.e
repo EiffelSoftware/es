@@ -5622,6 +5622,12 @@ feature -- Implementation
 			end
 		end
 
+	process_interval_type_as (l_as: INTERVAL_TYPE_AS) is
+			-- Process `l_as'.
+		do
+			check false end
+		end
+
 	process_index_as (l_as: INDEX_AS) is
 		do
 			l_as.index_list.process (Current)

@@ -1508,6 +1508,14 @@ Class_or_tuple_type: Class_type
 			{ $$ := $1 }
 	| Tuple_type
 			{ $$ := $1 }
+	| Class_type TE_DOTDOT Class_type
+			{ $$ := ast_factory.new_interval_type_as ($1, $3, $2) }
+	| Tuple_type TE_DOTDOT Tuple_type
+			{ $$ := ast_factory.new_interval_type_as ($1, $3, $2) }
+	| Class_type TE_DOTDOT Tuple_type
+			{ $$ := ast_factory.new_interval_type_as ($1, $3, $2) }
+	| Tuple_type TE_DOTDOT Class_type
+			{ $$ := ast_factory.new_interval_type_as ($1, $3, $2) }
 	;
 
 Class_type: Class_identifier Generics_opt

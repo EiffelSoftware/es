@@ -116,6 +116,15 @@ feature {TYPE_A}
 		deferred
 		end
 
+	process_interval_type_a (a_type: INTERVAL_TYPE_A) is
+			-- Process `a_type'.
+		require
+			is_valid: is_valid
+			a_type_not_void: a_type /= Void
+			a_type_valid: is_type_valid (a_type)
+		deferred
+		end
+
 	process_like_argument (a_type: LIKE_ARGUMENT) is
 			-- Process `a_type'.
 		require

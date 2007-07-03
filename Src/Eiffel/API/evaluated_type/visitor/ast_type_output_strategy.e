@@ -169,6 +169,16 @@ feature {TYPE_A} -- Visitors
 			process_cl_type_a (a_type)
 		end
 
+	process_interval_type_a (a_type: INTERVAL_TYPE_A) is
+			-- Process `a_type'.
+		do
+			a_type.lower.process (Current)
+			text_formatter.add_space
+			text_formatter.process_symbol_text (ti_dotdot)
+			text_formatter.add_space
+			a_type.upper.process (Current)
+		end
+
 	process_like_argument (a_type: LIKE_ARGUMENT) is
 			-- Process `a_type'.
 		do

@@ -704,6 +704,14 @@ feature {NONE} -- Implementation
 			safe_process (l_as.upper)
 		end
 
+	process_interval_type_as (l_as: INTERVAL_TYPE_AS) is
+			-- Process `l_as'.
+		do
+			l_as.lower.process (Current)
+			l_as.dotdot_symbol.process (Current)
+			l_as.upper.process (Current)
+		end
+
 	process_index_as (l_as: INDEX_AS) is
 		do
 			l_as.index_list.process (Current)

@@ -980,6 +980,13 @@ feature {AST_EIFFEL} -- Instructions visitors
 		deferred
 		end
 
+	process_interval_type_as (l_as: INTERVAL_TYPE_AS) is
+			-- Process `l_as'.
+		require
+			non_void_as: l_as /= Void
+		deferred
+		end
+
 	process_loop_as (l_as: LOOP_AS) is
 			-- Process `l_as'.
 		require

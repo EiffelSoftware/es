@@ -1392,6 +1392,16 @@ feature{NONE} -- Implementation
 			end
 		end
 
+	process_interval_type_as (l_as: INTERVAL_TYPE_AS)
+		do
+			if not is_matching_finished then
+				match_ast (interval_type)
+				safe_process (l_as.lower)
+				safe_process (l_as.dotdot_symbol)
+				safe_process (l_as.upper)
+			end
+		end
+
 	process_index_as (l_as: INDEX_AS)
 		do
 			if not is_matching_finished then

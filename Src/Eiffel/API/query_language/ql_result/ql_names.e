@@ -392,6 +392,7 @@ feature -- AST node index
 	select_clause: INTEGER is 143
 	formal_generic_list: INTEGER is 144
 	constraining_type:  INTEGER is 145
+	interval_type: INTEGER is 146
 
 feature -- AST node match
 

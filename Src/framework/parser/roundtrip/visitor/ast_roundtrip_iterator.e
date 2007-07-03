@@ -1051,6 +1051,13 @@ feature
 			safe_process (l_as.upper)
 		end
 
+	process_interval_type_as (l_as: INTERVAL_TYPE_AS) is
+		do
+			safe_process (l_as.lower)
+			safe_process (l_as.dotdot_symbol)
+			safe_process (l_as.upper)
+		end
+
 	process_index_as (l_as: INDEX_AS) is
 		do
 			safe_process (l_as.tag)

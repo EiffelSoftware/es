@@ -3075,6 +3075,17 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	process_interval_type_as (l_as: INTERVAL_TYPE_AS) is
+			-- Process `l_as'.
+		do
+			l_as.lower.process (Current)
+			if not expr_type_visiting then
+				text_formatter_decorator.set_without_tabs
+				text_formatter_decorator.process_symbol_text (ti_dotdot)
+			end
+			l_as.upper.process (Current)
+		end
+
 	process_index_as (l_as: INDEX_AS) is
 		do
 			check

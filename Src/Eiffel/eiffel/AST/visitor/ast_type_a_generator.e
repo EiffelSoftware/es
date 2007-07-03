@@ -14,7 +14,8 @@ inherit
 			process_like_id_as, process_like_cur_as,
 			process_formal_as, process_class_type_as, process_none_type_as,
 			process_bits_as, process_bits_symbol_as,
-			process_named_tuple_type_as, process_type_dec_as
+			process_named_tuple_type_as, process_type_dec_as,
+			process_interval_type_as
 		end
 
 	COMPILER_EXPORTER
@@ -160,6 +161,28 @@ feature {NONE} -- Visitor implementation
 			else
 				check failure_enabled: is_failure_enabled end
 				last_type := Void
+			end
+		end
+
+	process_interval_type_as (l_as: INTERVAL_TYPE_AS) is
+		local
+			l_upper: TYPE_A
+			l_lower: TYPE_A
+			l_interval_type: INTERVAL_TYPE_A
+		do
+			l_as.lower.process (Current)
+			l_lower := last_type
+			if last_type = Void then
+				check failure_enabled: is_failure_enabled end
+			else
+				l_as.upper.process (Current)
+				l_upper := last_type
+				if last_type = Void then
+					check failure_enabled: is_failure_enabled end
+				else
+					create l_interval_type.make (l_lower, l_upper)
+					last_type := l_interval_type
+				end
 			end
 		end
 

@@ -1443,6 +1443,12 @@ feature -- Access
 			end
 		end
 
+	new_interval_type_as (l, u: TYPE_AS; d_as: SYMBOL_AS): INTERVAL_TYPE_AS is
+			-- New INTERVAL_TYPE AST node
+		do
+			create Result.initialize (l, u, d_as)
+		end
+
 	new_invariant_as (a: EIFFEL_LIST [TAGGED_AS]; once_manifest_string_count: INTEGER; i_as: KEYWORD_AS): INVARIANT_AS is
 			-- New INVARIANT AST node
 		require

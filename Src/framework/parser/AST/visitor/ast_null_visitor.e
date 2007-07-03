@@ -520,6 +520,10 @@ feature -- Implementation
 		do
 		end
 
+	process_interval_type_as (l_as: INTERVAL_TYPE_AS) is
+		do
+		end
+
 	process_index_as (l_as: INDEX_AS) is
 		do
 		end
