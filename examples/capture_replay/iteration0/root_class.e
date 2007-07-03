@@ -22,6 +22,7 @@ feature -- Initialization
 		local
 			player: PLAYER
 			caller: EXAMPLE_CALLER
+			erl_caller: ERL_CALLER
 			config: CONFIGURATION_HELPER
 
 			bank: BANK

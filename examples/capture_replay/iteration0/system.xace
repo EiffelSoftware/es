@@ -19,16 +19,22 @@
 	<cluster name="additional_base_classes" location="../../../Src/library/base/capture_replay/own_classes/">
 		<option name="recursive" value="true" />
 	</cluster>
-<!--
-   **Ace doesn't support overrides. So there's no need to use them in the xace (this triggers a duplicate class exception).
 
-	<cluster name="elks_kernel_overrides" location="../../../Src/library/base/capture_replay/elks_overrides/kernel">
-		<option name="read_only" value="False" />
-	</cluster>
+	<cluster name="erl_g" location="${ERL_G}/library/runtime/"/>
 
-	<option name="override_cluster" value="elks_kernel_overrides" />	 
--->
-<!-- use the whole gobo library: -->
-	<mount location="${GOBO}/library/library.xace"/>
-	<mount location="${GOBO}/library/kernel.xace"/> 
+	<mount location="${ISE_LIBRARY}/library/gobo/svn/library/kernel.xace"/>
+
+	<mount location="${GOBO}/library/argument/library.xace"/>
+	<mount location="${GOBO}/library/kernel/library.xace"/>
+	<mount location="${GOBO}/library/lexical/library.xace"/>
+	<mount location="${GOBO}/library/math/library.xace"/>
+	<mount location="${GOBO}/library/parse/library.xace"/>
+	<mount location="${GOBO}/library/pattern/library.xace"/>
+	<mount location="${GOBO}/library/regexp/library.xace"/>
+	<mount location="${GOBO}/library/string/library.xace"/>
+	<mount location="${GOBO}/library/structure/library.xace"/>
+	<mount location="${GOBO}/library/time/library.xace"/>
+	<mount location="${GOBO}/library/tools/library.xace"/>
+	<mount location="${GOBO}/library/utility/library.xace"/>
+	<mount location="${GOBO}/library/xml/library.xace"/>
 </system>
