@@ -9,6 +9,9 @@ class
 
 inherit
 	EB_TOOL
+		redefine
+			pixmap
+		end
 
 create
 	make
@@ -31,6 +34,14 @@ feature -- Access
 			Result := "Origo workitem display"
 		ensure then
 			Result_not_void: Result /= Void
+		end
+
+	pixmap: EV_PIXMAP is
+			-- redefine
+		do
+			Result := pixmaps.bm_origo
+		ensure then
+			not_void: Result /= Void
 		end
 
 feature {NONE} -- Implementation
