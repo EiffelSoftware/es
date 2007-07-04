@@ -563,6 +563,7 @@ feature -- Command
 			build_properties_tool
 			build_windows_tool
 			build_search_and_report_tool
+			build_origo_workitem_tool
 			build_customized_tools
 
 			create l_editors_manager.make (develop_window)
@@ -1017,6 +1018,17 @@ feature{NONE} -- Implementation
 			develop_window.tools.set_windows_tool (l_windows_tool)
 			setup_tool (l_windows_tool, "show_windows_tool")
 		end
+
+	build_origo_workitem_tool is
+			-- Build Origo workitem tool
+		local
+			l_tool: EB_ORIGO_WORKITEM_TOOL
+		do
+			create l_tool.make (develop_window)
+			develop_window.tools.set_origo_workitem_tool (l_tool)
+			setup_tool (l_tool, "show_origo_workitem_tool");
+		end
+
 
 	build_customized_tools is
 			-- Build customized tools.

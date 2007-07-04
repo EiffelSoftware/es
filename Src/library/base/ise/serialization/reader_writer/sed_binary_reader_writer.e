@@ -378,7 +378,7 @@ feature {NONE} -- Implementation: Access
 			-- Fake medium to avoid polymorphic attribute
 			-- access.
 
-feature {NONE} -- Implementation: Status report
+feature {ANY} -- Implementation: Status report
 
 	buffer_size: INTEGER
 			-- Size for `buffer' to reduce access to medium

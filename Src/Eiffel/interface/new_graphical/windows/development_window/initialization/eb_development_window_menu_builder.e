@@ -1031,6 +1031,8 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			fill_show_menu_for_tool (Result, develop_window.tools.favorites_tool)
 			Result.extend (create {EV_MENU_SEPARATOR})
 			fill_show_menu_for_tool (Result, develop_window.tools.breakpoints_tool)
+			Result.extend (create {EV_MENU_SEPARATOR})
+			fill_show_menu_for_tool (Result, develop_window.tools.origo_workitem_tool)
 
 			l_customized_tools := develop_window.tools.customized_tools
 			if not l_customized_tools.is_empty then
