@@ -250,19 +250,7 @@ feature {NONE} -- Visitor implementation
 			l_actual_generics: ARRAY [TYPE_A]
 			l_none_type: NONE_A
 		do
-			if l_as.generics = Void then
-				last_type := none_type
-			else
-				l_actual_generics := process_generics (l_as.generics)
-				if l_actual_generics = Void then
-					check failure_enabled: is_failure_enabled end
-					last_type := Void
-				else
-					l_none_type := none_type.twin
-					l_none_type.set_generics (l_actual_generics)
-					last_type := l_none_type
-				end
-			end
+			last_type := none_type
 		end
 
 	process_bits_as (l_as: BITS_AS) is
