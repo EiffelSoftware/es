@@ -320,7 +320,7 @@ feature {TYPE_A} -- Visitors
 		local
 			i, count: INTEGER
 		do
-			text_formatter.add ("NIL")
+			text_formatter.add (names_heap.item (names_heap.super_none_class_name_id))
 			count := a_type.generics.count
 			if count > 0 then
 				text_formatter.add_space

@@ -61,7 +61,7 @@ feature -- Status report
 			if has_a_nil_error_occurred then
 				has_a_nil_error_occurred := False
 				create l_vtmc3
-				l_vtmc3.set_message ("NIL not part of upper type in interval type!")
+				l_vtmc3.set_message (system.names.item (system.names.super_none_class_name_id) + " not part of upper type in interval type!")
 				l_vtmc3.set_class (system.current_class)
 				l_vtmc3.set_type (a_type)
 				error_handler.insert_error (l_vtmc3)
@@ -89,7 +89,7 @@ feature -- Status report
 			if has_a_nil_error_occurred  then
 				has_a_nil_error_occurred := False
 				create l_vtmc3
-				l_vtmc3.set_message ("NIL not part of upper type in interval type!")
+				l_vtmc3.set_message (system.names.item (system.names.super_none_class_name_id) + " not part of upper type in interval type!")
 				l_vtmc3.set_class (system.current_class)
 				l_vtmc3.set_type (a_type)
 				error_handler.insert_error (l_vtmc3)

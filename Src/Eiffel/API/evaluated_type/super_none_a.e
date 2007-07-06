@@ -8,7 +8,7 @@ indexing
 class SUPER_NONE_A
 
 inherit
-	
+
 	TYPE_A
 		redefine
 			format, valid_expanded_creation, expanded_deferred,
@@ -152,7 +152,7 @@ feature -- Output
 			i, count: INTEGER
 			class_name: STRING
 		do
-			Result := "NIL"
+			Result := names_heap.item (names_heap.super_none_class_name_id)
 			if generics /= Void then
 
 				count := generics.count
@@ -182,7 +182,7 @@ feature -- Output
 		local
 			i, count: INTEGER
 		do
-			st.add ("NIL")
+			st.add (names_heap.item (names_heap.super_none_class_name_id))
 
 			count := generics.count
 				-- TUPLE may have zero generic parameters
@@ -716,7 +716,7 @@ feature -- Status report
 		local
 			i, count: INTEGER
 		do
-			ctxt.add ("NIL")
+			ctxt.add (names_heap.item (names_heap.super_none_class_name_id))
 			count := generics.count
 
 				-- SUPER_NONE may have zero generic parameters
