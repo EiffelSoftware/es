@@ -1809,6 +1809,12 @@ feature -- Convenience features
 			Result := lace_class.is_cat_call_detection
 		end
 
+	is_interval_type_system_active: BOOLEAN is
+			-- Is the interval type system enabled?
+		do
+			Result := lace_class.is_cat_call_detection
+		end
+
 	record_descendants (classes: LIST [CLASS_C]) is
 			-- Record the descendants of `Current' to `classes'.
 		require

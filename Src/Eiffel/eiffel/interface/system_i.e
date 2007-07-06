@@ -1247,7 +1247,7 @@ end
 			l_vd20: VD20
 		do
 			if root_class.is_compiled then
-				root_type ?= type_a_generator.evaluate_type_if_possible (root_class_type_as, root_class.compiled_class)
+				root_type ?= type_a_generator.evaluate_type_if_possible (root_class_type_as, root_class.compiled_class).lower_type
 			else
 						create l_vd20
 						l_vd20.set_class_name (root_class.name.as_upper)

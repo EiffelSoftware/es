@@ -21,7 +21,7 @@ inherit
 			has_like, has_like_argument, duplicate,
 			is_equivalent,
 			actual_argument_type, update_dependance,
-			evaluated_type_in_descendant
+			evaluated_type_in_descendant, is_super_none
 		end
 
 	HASHABLE
@@ -75,7 +75,7 @@ feature -- Comparison
 				if other.is_tuple then
 					Result := l_generics_count < l_other_generics.count
 				else
-					Result := l_generics_count = l_other_generics.count
+					Result := l_generics_count = l_other_generics.count or l_generics_count = 0
 				end
 			else
 				Result := l_generics_count = 0
@@ -322,6 +322,12 @@ feature {COMPILER_EXPORTER} -- Primitives
 		end
 
 feature -- Status report
+
+	is_super_none: BOOLEAN is
+			-- Is the current actual type a super-none type ?
+		do
+			Result := True
+		end
 
 	has_like: BOOLEAN is
 			-- Has the type anchored type in its definition ?

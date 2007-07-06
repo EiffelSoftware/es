@@ -14,11 +14,15 @@ inherit
 	COMPILER_EXPORTER
 
 	TYPE_A
+		rename
+			lower_type as lower
 		redefine
 			instantiated_in, instantiation_in,
+			check_constraints,
 			has_associated_class,
 			generics,
-			meta_type
+			meta_type,
+			lower
 		end
 
 	SHARED_TEXT_ITEMS
@@ -67,8 +71,11 @@ feature {COMPILER_EXPORTER} -- Access
 		do
 			other_interval ?= other
 			if other_interval = Void then
+					-- Depending on how the default behaviour is for a single type one has to do changes here.
+					-- Currently we have the default that A <=> A..NONE
 --				Result := lower.same_as (upper) and then lower.same_as (other)
-				Result := lower.conform_to (other) and then other.conform_to (upper)
+				Result := lower.conform_to (other)
+				-- and then other.conform_to (upper)
 			else
 				Result := lower.conform_to (other_interval.lower) and then other_interval.upper.conform_to (upper)
 			end
@@ -111,6 +118,16 @@ feature {COMPILER_EXPORTER} -- Access
 			-- Byte code information for entity type creation
 		do
 			Result := lower.create_info
+		end
+feature {COMPILER_EXPORTER} -- Validity checks
+
+ check_constraints (a_type_context: CLASS_C; a_context_feature: FEATURE_I; a_check_creation_readiness: BOOLEAN) is
+			-- Check the constained genericity validity rule and leave
+			-- error info in `constraint_error_list'
+		do
+			lower.check_constraints (a_type_context, a_context_feature, a_check_creation_readiness)
+				-- The upper type does not have to be creation ready.
+			upper.check_constraints (a_type_context, a_context_feature, false)
 		end
 
 feature -- Comparison

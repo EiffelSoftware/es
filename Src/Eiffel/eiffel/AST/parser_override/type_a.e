@@ -85,6 +85,11 @@ feature -- Properties
 								is_formal or else is_none or else is_type_set)
 		end
 
+	lower_type: TYPE_A
+		do
+			Result := Current
+		end
+
 	generics: ARRAY [TYPE_A] is
 			-- Actual generic types
 		do
@@ -207,6 +212,12 @@ feature -- Properties
 
 	is_none: BOOLEAN is
 			-- Is the current actual type a none type ?
+		do
+			-- Do nothing
+		end
+
+	is_super_none: BOOLEAN is
+			-- Is the current actual type a super-none type ?
 		do
 			-- Do nothing
 		end
@@ -551,7 +562,8 @@ feature {COMPILER_EXPORTER} -- Access
 			-- Current ?
 		require
 			type_not_void: type /= Void
-			conforming_type: type.associated_class.conform_to (associated_class)
+				-- I want to be able to ask whether generic lists conform no matther what the base type is!
+	--		conforming_type: type.associated_class.conform_to (associated_class)
 		do
 		end
 

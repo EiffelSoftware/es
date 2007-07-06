@@ -25,8 +25,9 @@ feature {NONE} -- Initialization
 			-- Create a new INTERVAL AST node.
 		require
 			l_not_void: l /= Void
-			r_not_void: l /= Void
-			d_as_not_void: d_as /= Void
+			-- TODO: Sometimes we get called with Void. 
+		--	r_not_void: u /= Void
+		--	d_as_not_void: d_as /= Void
 		do
 			lower := l
 			upper := u

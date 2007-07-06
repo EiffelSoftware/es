@@ -338,7 +338,12 @@ feature {COMPILER_EXPORTER} -- Conformance
 			elseif l_other_type_set /= Void then
 				Result := to_type_set.conform_to (l_other_type_set.twin)
 			elseif l_other_interval /= Void then
-				Result := conform_to (l_other_interval.lower) and then l_other_interval.upper.conform_to (Current)
+					-- This is the case where we check the following: B .. C := A
+					-- We check that:
+					-- * A conforms to B
+					-- * C has to conform to the upper bound of A which is NIL default,
+					--   therefore C has to be NIL itself (with an empty generic list)
+				Result := conform_to (l_other_interval.lower) and then l_other_interval.upper.is_super_none and then l_other_interval.upper.generics.is_empty
 			end
 		end
 
