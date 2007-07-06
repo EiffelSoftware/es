@@ -315,6 +315,32 @@ feature {TYPE_A} -- Visitors
 			end
 		end
 
+	process_super_none_a (a_type: SUPER_NONE_A) is
+			-- Process `a_type'.
+		local
+			i, count: INTEGER
+		do
+			text_formatter.add ("NIL")
+			count := a_type.generics.count
+			if count > 0 then
+				text_formatter.add_space
+				text_formatter.process_symbol_text (ti_l_bracket)
+				from
+					i := 1
+				until
+					i > count
+				loop
+					a_type.generics.item (i).process (Current)
+					if i /= count then
+						text_formatter.process_symbol_text (ti_comma)
+						text_formatter.add_space
+					end
+					i := i + 1
+				end
+				text_formatter.process_symbol_text (ti_r_bracket)
+			end
+		end
+
 	process_tuple_type_a (a_type: TUPLE_TYPE_A) is
 			-- Process `a_type'.
 		do

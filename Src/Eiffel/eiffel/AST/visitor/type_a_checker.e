@@ -659,6 +659,37 @@ feature {TYPE_A} -- Visitors
 			last_type := a_type
 		end
 
+	process_super_none_a (a_type: SUPER_NONE_A) is
+			-- Process `a_type'.
+		local
+			l_generics: ARRAY [TYPE_A]
+			i, nb: INTEGER
+			l_has_error: BOOLEAN
+		do
+			l_generics := a_type.generics
+			nb := l_generics.count
+			if nb > 0 then
+				from
+					i := l_generics.lower
+					nb := l_generics.upper
+				until
+					i > nb
+				loop
+					l_generics.item (i).process (Current)
+					l_has_error := l_has_error or else last_type = Void
+					if not l_has_error then
+						l_generics.put (last_type, i)
+					end
+					i := i + 1
+				end
+			end
+			if not l_has_error then
+				last_type := a_type
+			else
+				last_type := Void
+			end
+		end
+
 	process_tuple_type_a (a_type: TUPLE_TYPE_A) is
 			-- Process `a_type'.
 		do

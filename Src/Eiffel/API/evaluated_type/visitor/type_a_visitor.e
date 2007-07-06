@@ -206,6 +206,15 @@ feature {TYPE_A}
 		deferred
 		end
 
+	process_super_none_a (a_type: SUPER_NONE_A) is
+			-- Process `a_type'.
+		require
+			is_valid: is_valid
+			a_type_not_void: a_type /= Void
+			a_type_valid: is_type_valid (a_type)
+		deferred
+		end
+
 	process_open_type_a (a_type: OPEN_TYPE_A) is
 			-- Process `a_type'.
 		require

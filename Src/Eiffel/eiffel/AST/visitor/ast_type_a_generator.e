@@ -33,6 +33,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_ERROR_HANDLER
+		export
+			{NONE} all
+		end
+
 	REFACTORING_HELPER
 		export
 			{NONE} all
@@ -45,11 +50,23 @@ feature -- Status report
 		require
 			a_type_not_void: a_type /= Void
 			a_context_class_not_void: a_context_class /= Void
+		local
+			l_vtmc3: VTMC3
 		do
+			check not has_a_nil_error_occurred end
 			is_failure_enabled := True
 			current_class := a_context_class
 			a_type.process (Current)
 			Result := last_type
+			if has_a_nil_error_occurred then
+				has_a_nil_error_occurred := False
+				create l_vtmc3
+				l_vtmc3.set_message ("NIL not part of upper type in interval type!")
+				l_vtmc3.set_class (system.current_class)
+				l_vtmc3.set_type (a_type)
+				error_handler.insert_error (l_vtmc3)
+				error_handler.checksum
+			end
 			current_class := Void
 			last_type := Void
 		end
@@ -60,11 +77,24 @@ feature -- Status report
 			a_type_not_void: a_type /= Void
 			a_context_class_not_void: a_context_class /= Void
 			a_type_is_in_universe: True -- All class identifiers of `a_type' are in the universe.
+		local
+			l_vtmc3: VTMC3
 		do
+			check not has_a_nil_error_occurred end
 			is_failure_enabled := False
 			current_class := a_context_class
+
 			a_type.process (Current)
 			Result := last_type
+			if has_a_nil_error_occurred  then
+				has_a_nil_error_occurred := False
+				create l_vtmc3
+				l_vtmc3.set_message ("NIL not part of upper type in interval type!")
+				l_vtmc3.set_class (system.current_class)
+				l_vtmc3.set_type (a_type)
+				error_handler.insert_error (l_vtmc3)
+				error_handler.checksum
+			end
 			current_class := Void
 			last_type := Void
 		ensure
@@ -129,38 +159,42 @@ feature {NONE} -- Visitor implementation
 			l_has_error: BOOLEAN
 			l_type: TYPE_A
 		do
-				-- Lookup class in universe, it should be present.
-			l_class_i := universe.class_named (l_as.class_name.name, current_class.group)
-			if l_class_i /= Void and then l_class_i.is_compiled then
-				l_class_c := l_class_i.compiled_class
-				if l_as.generics /= Void then
-					from
-						i := 1
-						count := l_as.generics.count
-						create l_actual_generic.make (1, count)
-						l_type := l_class_c.partial_actual_type (l_actual_generic, l_as.is_expanded,
-							l_as.is_separate)
-					until
-						i > count or l_has_error
-					loop
-						l_as.generics.i_th (i).process (Current)
-						l_has_error := last_type = Void
-						l_actual_generic.put (last_type, i)
-						i := i + 1
-					end
-					if l_has_error then
-						check failure_enabled: is_failure_enabled end
-						last_type := Void
+			if l_as.class_name.name_id = {PREDEFINED_NAMES}.super_none_class_name_id then
+				process_super_none_type (l_as)
+			else
+					-- Lookup class in universe, it should be present.
+				l_class_i := universe.class_named (l_as.class_name.name, current_class.group)
+				if l_class_i /= Void and then l_class_i.is_compiled then
+					l_class_c := l_class_i.compiled_class
+					if l_as.generics /= Void then
+						from
+							i := 1
+							count := l_as.generics.count
+							create l_actual_generic.make (1, count)
+							l_type := l_class_c.partial_actual_type (l_actual_generic, l_as.is_expanded,
+								l_as.is_separate)
+						until
+							i > count or l_has_error
+						loop
+							l_as.generics.i_th (i).process (Current)
+							l_has_error := last_type = Void
+							l_actual_generic.put (last_type, i)
+							i := i + 1
+						end
+						if l_has_error then
+							check failure_enabled: is_failure_enabled end
+							last_type := Void
+						else
+							last_type := l_type
+						end
 					else
+						l_type := l_class_c.partial_actual_type (Void, l_as.is_expanded, l_as.is_separate)
 						last_type := l_type
 					end
 				else
-					l_type := l_class_c.partial_actual_type (Void, l_as.is_expanded, l_as.is_separate)
-					last_type := l_type
+					check failure_enabled: is_failure_enabled end
+					last_type := Void
 				end
-			else
-				check failure_enabled: is_failure_enabled end
-				last_type := Void
 			end
 		end
 
@@ -175,7 +209,9 @@ feature {NONE} -- Visitor implementation
 			if last_type = Void then
 				check failure_enabled: is_failure_enabled end
 			else
+				is_upper_of_interval := True
 				l_as.upper.process (Current)
+				is_upper_of_interval := False
 				l_upper := last_type
 				if last_type = Void then
 					check failure_enabled: is_failure_enabled end
@@ -287,6 +323,55 @@ feature {NONE} -- Implementation
 				Result := Void
 			end
 			last_type := Void
+		end
+
+	is_upper_of_interval: BOOLEAN
+			-- Is generating upper type of an interval?
+			--| Set to true if we generate the upper type of an interval type.
+
+	has_a_nil_error_occurred: BOOLEAN
+			-- Has a nil error occurred?
+			--| True is nil is not part of a upper bound of an interval type.
+
+	process_super_none_type (l_as: CLASS_TYPE_AS)
+			-- Process super none type.
+			--| Part of new CAT call prevention.
+		local
+			l_super_none: SUPER_NONE_A
+			l_class_i: CLASS_I
+			l_class_c: CLASS_C
+			l_actual_generic: ARRAY [TYPE_A]
+			i, count: INTEGER
+			l_has_error: BOOLEAN
+			l_type: TYPE_A
+		do
+			if not is_upper_of_interval then
+				has_a_nil_error_occurred := True
+			end
+
+			if l_as.generics /= Void then
+				from
+					i := 1
+					count := l_as.generics.count
+					create l_actual_generic.make (1, count)
+					create {SUPER_NONE_A} l_type.make (l_actual_generic)
+				until
+					i > count or l_has_error
+				loop
+					l_as.generics.i_th (i).process (Current)
+					l_has_error := last_type = Void
+					l_actual_generic.put (last_type, i)
+					i := i + 1
+				end
+				if l_has_error then
+					check failure_enabled: is_failure_enabled end
+					last_type := Void
+				else
+					last_type := l_type
+				end
+			else
+				create {SUPER_NONE_A} last_type.make (l_actual_generic)
+			end
 		end
 
 indexing

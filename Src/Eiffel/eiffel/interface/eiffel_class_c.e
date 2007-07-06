@@ -1909,7 +1909,7 @@ feature -- Supplier checking
 				-- 2.	Check if the supplier class is a new class
 				--		for the system.
 			supplier_class := Universe.class_named (cl_name, cluster)
-			if supplier_class /= Void and then not cl_name.is_equal ("NONE") then
+			if supplier_class /= Void and then not (cl_name.is_equal ("NONE") or cl_name.is_equal ("NIL")) then
 					-- The supplier class is in the universe associated
 					-- to `cluster'.
 				if not a_light_supplier then
@@ -1942,14 +1942,16 @@ feature -- Supplier checking
 					end
 				end
 			elseif a_light_supplier then
-				if not cl_name.is_equal ("NONE") then
+				if not (cl_name.is_equal ("NONE") or cl_name.is_equal ("NIL")) then
 					system.record_potential_vtcm_warning (Current, cl_name)
 				end
 			else
 					-- We could not find class of name `cl_name', but it does not mean
 					-- that we actually need the class, as maybe, at the end of
 					-- the compilation, Current might not be needed anymore.
-				system.record_potential_vtct_error (Current, cl_name)
+				if not cl_name.is_equal ("NIL") then
+					system.record_potential_vtct_error (Current, cl_name)
+				end
 			end
 		end
 

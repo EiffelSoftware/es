@@ -186,6 +186,7 @@ feature -- Constants
 	floor_real_32_name_id: INTEGER is 173
 	floor_real_64_name_id: INTEGER is 174
 	is_deep_equal_name_id: INTEGER is 175
+	super_none_class_name_id: INTEGER is 176
 
 feature -- Classification
 
