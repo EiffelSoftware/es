@@ -25,7 +25,7 @@ feature -- Access
 	type: INTEGER
 		-- workitem type
 
-	creation_time: DATE
+	creation_time: DATE_TIME
 		-- date of workitem creation
 
 	project_id: INTEGER

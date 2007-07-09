@@ -153,6 +153,8 @@ feature {EB_ORIGO_UPLOAD_TAB, EB_ORIGO_RELEASE_TAB} -- Implementation
 
 	get_origo_data is
 			-- get username, password and session form origo
+		local
+			l_warning_dialog: EB_WARNING_DIALOG
 		do
 			create origo_client.make (Current)
 
@@ -160,11 +162,18 @@ feature {EB_ORIGO_UPLOAD_TAB, EB_ORIGO_RELEASE_TAB} -- Implementation
 			state_label.refresh_now
 			session := origo_client.login
 
+				-- login failed
+			if session = Void then
+				create l_warning_dialog.make_with_text (origo_client.last_error)
+
 				-- login was successful
-			if session /= Void then
+			else
 				state_label.set_text ("Receiving username...")
 				state_label.refresh_now
 				username := origo_client.my_username (session)
+				if username = Void then
+					create l_warning_dialog.make_with_text (origo_client.last_error)
+				end
 			end
 
 				-- username was received
@@ -172,11 +181,15 @@ feature {EB_ORIGO_UPLOAD_TAB, EB_ORIGO_RELEASE_TAB} -- Implementation
 				state_label.set_text ("Receiving password...")
 				state_label.refresh_now
 				password := origo_client.my_password (session)
+				if password = Void then
+					create l_warning_dialog.make_with_text (origo_client.last_error)
+				end
 			end
 
 			if password /= Void then
 				release_tab.refresh_release_list
 			else
+				l_warning_dialog.show_modal_to_window (Current)
 				destroy
 			end
 		end
@@ -187,6 +200,7 @@ feature {EB_ORIGO_UPLOAD_TAB, EB_ORIGO_RELEASE_TAB} -- Implementation
 			l_list_item: EV_LIST_ITEM
 			l_projects: DS_LINKED_LIST [TUPLE[id: INTEGER; name: STRING]]
 			l_current_project_name: STRING
+			l_warning_dialog: EB_WARNING_DIALOG
 		do
 			state_label.set_text ("Receiving project list...")
 			state_label.refresh_now
@@ -223,6 +237,8 @@ feature {EB_ORIGO_UPLOAD_TAB, EB_ORIGO_RELEASE_TAB} -- Implementation
 
 				-- something went wrong
 			else
+				create l_warning_dialog.make_with_text (origo_client.last_error)
+				l_warning_dialog.show_modal_to_window (Current)
 				state_label.set_text ("An error ocurred")
 			end
 		end

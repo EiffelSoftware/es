@@ -38,15 +38,39 @@ feature {EB_SHARED_PREFERENCES, EB_DEVELOPMENT_WINDOW_MAIN_BUILDER} -- Value
 			Result := user_key_preference.value
 		end
 
+	maximum_workitem_age: INTEGER is
+			-- maximum age of workitems in days
+		do
+			Result := maximum_workitem_age_preference.value
+		end
+
+	workitem_refresh_interval: INTEGER is
+			-- interval in which to refresh the workitem list in minutes
+		do
+			Result := workitem_refresh_interval_preference.value
+		end
+
+	show_unread_only: BOOLEAN is
+			-- show only unread workitems?
+		do
+			Result := show_unread_only_preference.value
+		end
+		
 feature {EB_SHARED_PREFERENCES} -- Preference
 
 	xml_rpc_client_path_preference: STRING_PREFERENCE
 	user_key_preference: STRING_PREFERENCE
+	maximum_workitem_age_preference: INTEGER_PREFERENCE
+	workitem_refresh_interval_preference: INTEGER_PREFERENCE
+	show_unread_only_preference: BOOLEAN_PREFERENCE
 
 feature {NONE} -- Preference Strings
 
 	xml_rpc_client_path_string: STRING is "tools.origo.xml_rpc_client_path"
 	user_key_string: STRING is "tools.origo.user_key"
+	maximum_workitem_age_string: STRING is "tools.origo.maximum_workitem_age"
+	workitem_refresh_interval_string: STRING is "tools.origo.workitem_refresh_interval"
+	show_unread_only_string: STRING is "tools.origo.show_unread_only"
 
 feature {NONE} -- Implementation
 
@@ -58,6 +82,9 @@ feature {NONE} -- Implementation
 			create l_manager.make (preferences, "origo")
 			xml_rpc_client_path_preference := l_manager.new_string_preference_value (l_manager, xml_rpc_client_path_string, "")
 			user_key_preference := l_manager.new_string_preference_value (l_manager, user_key_string, "")
+			maximum_workitem_age_preference := l_manager.new_integer_preference_value (l_manager, maximum_workitem_age_string, 7)
+			workitem_refresh_interval_preference := l_manager.new_integer_preference_value (l_manager, workitem_refresh_interval_string, 60)
+			show_unread_only_preference := l_manager.new_boolean_preference_value (l_manager, show_unread_only_string, False)
 		end
 
 	preferences: PREFERENCES

@@ -13,17 +13,25 @@ inherit
 			{NONE} all
 		end
 
+	EB_ORIGO_CONSTANTS
+		export
+			{NONE} all
+		end
+
 create
 	make
 
 feature -- Initialisation
 
 	make (a_parent_window: EV_WINDOW) is
-		require
-			a_parent_window_not_void: a_parent_window /= Void
 		do
 			parent_window := a_parent_window
 		end
+
+feature -- Access
+
+	last_error: STRING
+		-- last error message
 
 feature -- XML RPC calls
 
@@ -143,13 +151,13 @@ feature -- XML RPC calls
 
 					-- an error occurred
 				else
-					l_error.insert_string ("Error during my_username:%N", 1)
+					l_error.insert_string ("Error during my_password:%N", 1)
 					show_warning (l_error)
 				end
 
 				-- the process could not be launched
 			else
-				show_warning ("Error during my_username:%NCommand line tool could not be launched")
+				show_warning ("Error during my_password:%NCommand line tool could not be launched")
 			end
 		end
 
@@ -282,6 +290,88 @@ feature -- XML RPC calls
 				-- the process could not be launched
 			else
 				show_warning ("Error during release:%NCommand line tool could not be launched")
+			end
+		end
+
+	workitem_list (a_session: STRING; a_days: INTEGER; a_unread_only: BOOLEAN): DS_LINKED_LIST [EB_ORIGO_WORKITEM] is
+			-- receive workitem list
+		require
+			session_attached: a_session /= Void and not a_session.is_empty
+			a_days_positive: a_days > 0
+		local
+			l_process: PROCESS
+			l_factory: PROCESS_FACTORY
+			l_command_line: STRING
+			l_error: STRING
+			l_workitem_list_string: STRING
+			l_workitem: EB_ORIGO_WORKITEM
+			l_line: STRING
+			l_type: INTEGER
+		do
+			l_error := ""
+			l_workitem_list_string := ""
+			l_command_line := preferences.origo_data.xml_rpc_client_path.out
+			l_command_line.append (" workitem_list -s ")
+			l_command_line.append (a_session)
+			l_command_line.append (" -d " + a_days.out)
+			if a_unread_only then
+				l_command_line.append (" -uro")
+			end
+			create l_factory
+			l_process := l_factory.process_launcher_with_command_line (l_command_line, Void)
+			l_process.redirect_output_to_agent (agent l_workitem_list_string.append)
+			l_process.redirect_error_to_agent (agent l_error.append)
+			l_process.launch
+
+				-- launch process
+			if l_process.launched then
+				l_process.wait_for_exit
+
+					-- if everything went fine
+				if l_error.is_empty then
+					from
+						create Result.make
+					until
+						l_workitem_list_string.is_empty
+					loop
+						l_line := read_line_from_string (l_workitem_list_string)
+						l_type := l_line.to_integer
+
+						inspect
+							l_type
+						when workitem_type_issue then
+							l_workitem := read_issue_workitem (l_workitem_list_string)
+						when workitem_type_release then
+							l_workitem := read_release_workitem (l_workitem_list_string)
+						when workitem_type_commit then
+							l_workitem := read_commit_workitem (l_workitem_list_string)
+						when workitem_type_wiki then
+							l_workitem := read_wiki_workitem (l_workitem_list_string)
+						when workitem_type_blog then
+							l_workitem := read_blog_workitem (l_workitem_list_string)
+						else
+							create l_workitem
+							l_workitem.set_type (l_type)
+							fill_general_workitem (l_workitem, l_workitem_list_string)
+						end
+
+						Result.force_last (l_workitem)
+
+							-- skip the empty line between workitems
+						l_line := read_line_from_string (l_workitem_list_string)
+					end
+
+
+
+					-- an error occurred
+				else
+					l_error.insert_string ("Error during workitem_list:%N", 1)
+					show_warning (l_error)
+				end
+
+				-- the process could not be launched
+			else
+				show_warning ("Error during workitem_list:%NCommand line tool could not be launched")
 			end
 		end
 
@@ -443,24 +533,161 @@ feature {NONE} -- Implementation
 		local
 			warning_dialog: EV_WARNING_DIALOG
 		do
-			create warning_dialog.make_with_text (warning)
-			if parent_window = Void then
-				warning_dialog.show
-			else
-				warning_dialog.show_modal_to_window (parent_window)
-			end
+--			create warning_dialog.make_with_text (warning)
+--			if parent_window = Void then
+--				warning_dialog.show
+--			else
+--				warning_dialog.show_modal_to_window (parent_window)
+--			end
+			warning.prune_all ('%R')
+			last_error := warning.out
 		end
-
 
 feature {NONE} -- Implementation
 
---	session: STRING
---		-- session string
+	read_line_from_string (a_string: STRING): STRING is
+			-- removes everything from the start of `a_string' until the first '%N' is encountred and returns it
+			-- if there is a '%N' just before the '%N' it will not be part of the returned string
+		require
+			a_string_not_void: a_string /= Void
+		local
+			l_index: INTEGER
+		do
+			Result := read_head_from_string (a_string, '%N')
+			if Result.count > 0 and Result.item (Result.count) = '%R' then
+				Result.remove_tail (1)
+			end
+		ensure
+			set: 		Result /= Void
+			was_start: 	(old a_string.out).is_equal (Result + "%N" + a_string) or
+						(old a_string.out).is_equal (Result + "%R%N" + a_string)
+		end
+
+	read_head_from_string (a_string: STRING; a_seperator: CHARACTER): STRING is
+			--  removes everything from the start of `a_string' until the first `a_seperator' is encountred and returns it
+		require
+			a_string_not_void: a_string /= Void
+		local
+			l_index: INTEGER
+		do
+			l_index := a_string.index_of (a_seperator, 1)
+
+				-- if it was the first sign the result is an empty string
+			if l_index = 1 then
+				Result := ""
+
+				-- if `a_seperator' was not found, remove the whole string		
+			elseif l_index = 0 then
+				l_index := a_string.count
+				Result := a_string.out
+			else
+				Result := a_string.substring (1, l_index - 1)
+			end
+			a_string.remove_head (l_index)
+		ensure
+			set: Result /= Void
+			was_start: (old a_string.out).is_equal (Result + a_seperator.out + a_string)
+		end
+
+
+	read_issue_workitem (a_string: STRING): EB_ORIGO_ISSUE_WORKITEM is
+			-- read `a_string' and convert the data into an issue workitem
+			-- the processed part of `a_string' will be removed from it
+		local
+			l_line: STRING
+		do
+			create Result.make
+			fill_general_workitem (Result, a_string)
+
+		end
+
+	read_release_workitem (a_string: STRING): EB_ORIGO_RELEASE_WORKITEM is
+			-- read `a_string' and convert the data into a release workitem
+			-- the processed part of `a_string' will be removed from it
+		local
+			l_line: STRING
+		do
+			create Result.make
+			fill_general_workitem (Result, a_string)
+
+		end
+
+	read_commit_workitem (a_string: STRING): EB_ORIGO_COMMIT_WORKITEM is
+			-- read `a_string' and convert the data into a commit workitem
+			-- the processed part of `a_string' will be removed from it
+		local
+			l_line: STRING
+			l_length: INTEGER
+		do
+			create Result.make
+			fill_general_workitem (Result, a_string)
+			l_line := read_line_from_string (a_string)
+			Result.set_revision (l_line.to_integer)
+
+				-- the next part of `a_string' is the log. because a log can contain new line signs
+				-- the length of the log is the start of it, terminated by a ':'
+			l_line := read_head_from_string (a_string, ':')
+			check
+				is_integer: l_line.is_integer
+				is_not_too_long: l_line.to_integer <= a_string.count
+			end
+			l_length := l_line.to_integer
+			Result.set_log (a_string.substring (1, l_length))
+			a_string.remove_head (l_length)
+
+				-- read the new line sign at the end
+			l_line := read_line_from_string (a_string)
+			check
+				l_line_empty: l_line.is_empty
+			end
+		end
+
+	read_wiki_workitem (a_string: STRING): EB_ORIGO_WIKI_WORKITEM is
+			-- read `a_string' and convert the data into a wiki workitem
+			-- the processed part of `a_string' will be removed from it
+		local
+			l_line: STRING
+		do
+			create Result.make
+			fill_general_workitem (Result, a_string)
+		end
+
+	read_blog_workitem (a_string: STRING): EB_ORIGO_BLOG_WORKITEM is
+			-- read `a_string' and convert the data into a blog workitem
+			-- the processed part of `a_string' will be removed from it
+		local
+			l_line: STRING
+		do
+			create Result.make
+			fill_general_workitem (Result, a_string)
+		end
+
+	fill_general_workitem (a_workitem: EB_ORIGO_WORKITEM; a_string: STRING) is
+			-- process `a_string' and fill it's data into `a_workitem'
+			-- the processed part of `a_string' will be removed from it
+		local
+			l_line: STRING
+			l_date: DATE_TIME
+		do
+			l_line := read_line_from_string (a_string)
+			a_workitem.set_workitem_id (l_line.to_integer)
+			l_line := read_line_from_string (a_string)
+			create l_date.make (1970, 1, 1, 0, 0, 0)
+			l_date.second_add (l_line.to_integer)
+			a_workitem.set_creation_time (l_date)
+			l_line := read_line_from_string (a_string)
+			a_workitem.set_project_id (l_line.to_integer)
+			l_line := read_line_from_string (a_string)
+			a_workitem.set_project (l_line)
+			l_line := read_line_from_string (a_string)
+			a_workitem.set_user (l_line)
+		end
+
+feature {NONE} -- Implementation
 
 	parent_window: EV_WINDOW
 		-- window which causes the calls
 
 	application_key: STRING is "KEYFORTHEEIFFELSTUDIOINTEGRATION"
-
 
 end

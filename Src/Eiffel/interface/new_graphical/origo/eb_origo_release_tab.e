@@ -50,6 +50,7 @@ feature -- Basic operations
 			l_file_list: DS_LINKED_LIST [STRING]
 			l_list_item: EV_LIST_ITEM
 			l_index: INTEGER
+			l_warning_dialog: EB_WARNING_DIALOG
 		do
 			parent_window.state_label.set_text ("Refreshing FTP file list...")
 			parent_window.state_label.refresh_now
@@ -81,6 +82,8 @@ feature -- Basic operations
 			end
 
 			if l_file_list = Void then
+				create l_warning_dialog.make_with_text (parent_window.origo_client.last_error)
+				l_warning_dialog.show_modal_to_window (parent_window)
 				parent_window.state_label.set_text ("An error occurred")
 				parent_window.state_label.refresh_now
 			else
