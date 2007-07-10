@@ -1,60 +1,50 @@
 indexing
-	description: "Common routines used throughout the Wizard"
+	description: "Property helper"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
+	date: "$Date$"
+	revision: "$Revision$"
 
 class
-	WIZARD_ROUTINES
+	PROPERTY_HELPER
 
 inherit
-	WIZARD_WRITER_DICTIONARY
-		export
-			{NONE} all
-		end
+	CONF_INTERFACE_CONSTANTS
 
-feature -- Access
+feature -- Property builder
 
-	Temporary_input_file_name: STRING is "Input_File"
-			-- Input file
-
-feature -- Basic Operations
-
-	c_to_obj (a_file_name: STRING): STRING is
-			-- Change file name extension from ".c" or ".cpp" to ".obj".
+	new_boolean_property (a_name: STRING_GENERAL; a_value: BOOLEAN): BOOLEAN_PROPERTY is
+			-- Create new boolean property with translated strings.
 		require
-			non_void_file_name: a_file_name /= Void
-			valid_file_name: is_c_file (a_file_name)
-		local
-			dot_index: INTEGER
+			a_name_not_void: a_name /= Void
 		do
-			Result := a_file_name.twin
-			dot_index := Result.index_of ('.', 1)
-			Result.keep_head (dot_index - 1)
-			Result.append (".obj")
+			create Result.make_with_value (a_name, a_value)
+			Result.set_display_agent (agent displayed_boolean)
+			Result.set_convert_to_data_agent (agent convert_boolean_value)
 		ensure
-			changed: Result.substring (Result.count - 3, Result.count).is_equal (".obj")
+			Result_not_void: Result /= Void
 		end
 
-	is_c_file (a_file_name: STRING): BOOLEAN is
-			-- Is `a_file_name' a valid c/c++ file name?
+feature {NONE} -- Implementation
+
+	displayed_boolean (a_value: BOOLEAN): STRING_32 is
+			-- Displayed boolean value
 		do
-			Result := a_file_name.substring (a_file_name.count - 1, a_file_name.count).is_equal (C_file_extension) or
-						a_file_name.substring (a_file_name.count - 3, a_file_name.count).is_equal (Cpp_file_extension)
+			if a_value then
+				Result := conf_interface_names.boolean_true
+			else
+				Result := conf_interface_names.boolean_false
+			end
+		ensure
+			Result_not_void: Result /= Void
 		end
 
-	is_object_file (a_file: STRING): BOOLEAN is
-			-- Is `a_file' an object (.obj) file?
+	convert_boolean_value (a_string: STRING_32): BOOLEAN is
+			-- Convert `a_string' to a boolean value.
+		require
+			a_string_not_void: a_string /= Void
 		do
-			Result := a_file.substring (a_file.count - 3, a_file.count).is_equal (Object_file_extension)
-		end
-
-	is_valid_folder_name (a_folder_name: STRING): BOOLEAN is
-			-- Is `a_folder_name' a valid folder name?
-		local
-			a_directory: DIRECTORY
-		do
-			create a_directory.make (a_folder_name)
-			Result := a_directory.exists
+			Result := conf_interface_names.boolean_values.item (a_string)
 		end
 
 indexing
@@ -88,5 +78,5 @@ indexing
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com
 		]"
-end -- class WIZARD_ROUTINES
 
+end

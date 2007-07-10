@@ -45,6 +45,7 @@ feature {NONE} -- Initialization
 		ensure
 			set: is_vertical = a_vertical
 			set: docking_manager = a_docking_manager
+			tool_bar_not_void: tool_bar /= Void
 		end
 
 	init_drag_area is
@@ -170,6 +171,8 @@ feature -- Command
 
 	float (a_screen_x, a_screen_y: INTEGER; a_visible: BOOLEAN) is
 			-- Float to `a_screen_x' and `a_screen_y'.
+		local
+			l_platform: PLATFORM
 		do
 			destroy_parent_containers
 
@@ -195,6 +198,14 @@ feature -- Command
 			end
 			if a_visible then
 				floating_tool_bar.show
+			end
+
+			-- We have to set position again after showing on Solaris. Otherwise it will cause bug#12873.
+			-- The vertical position problem only happens on Solaris JDS. Not happens on Windows, Ubuntu (both GNome and KDE) and
+			-- Solaris CDE. Maybe it's a bug of JDS.
+			create l_platform
+			if l_platform.is_unix then
+				floating_tool_bar.set_position (a_screen_x, a_screen_y)
 			end
 
 			docking_manager.tool_bar_manager.floating_tool_bars.extend (floating_tool_bar)
@@ -244,6 +255,7 @@ feature -- Command
 			l_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 		do
 			content := a_content
+			tool_bar.set_content (a_content)
 			a_content.set_zone (Current)
 			l_items := a_content.items.twin
 			from
@@ -612,6 +624,7 @@ invariant
 
 	not_void: internal_shared /= Void
 	not_void: assistant /= Void
+	tool_bar_not_void: tool_bar /= Void
 
 indexing
 	library:	"SmartDocking: Library of reusable components for Eiffel."
