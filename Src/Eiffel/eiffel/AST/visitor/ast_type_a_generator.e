@@ -370,14 +370,6 @@ feature {NONE} -- Implementation
 			last_type := Void
 		end
 
-	super_none_type: SUPER_NONE_A
-			-- Super-none instance
-		once
-			create Result.make (Void)
-		ensure
-			Result_not_void: Result /= Void
-		end
-
 	generic_super_none_type (a_generics: ARRAY [TYPE_A]): SUPER_NONE_A
 			-- Super-none instance
 		require
@@ -394,7 +386,7 @@ feature {NONE} -- Implementation
 			--| This is true when the parent is not an interval type and
 			--| the interval type system is enabled.
 		do
---			Result := not is_parent_an_interval and then current_class.is_interval_type_system_active
+		--	Result := not is_parent_an_interval and then current_class.is_interval_type_system_active
 			Result := True
 		end
 

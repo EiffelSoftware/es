@@ -2,7 +2,7 @@ indexing
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 class SHARED_TYPES
-	
+
 feature {NONE}
 
 	natural_8_type: NATURAL_A is
@@ -94,11 +94,19 @@ feature {NONE}
 		once
 			create Result
 		end
-		
+
 	None_type: NONE_A is
 			-- Actual NONE type
 		once
 			create Result
+		end
+
+	Super_none_type: SUPER_NONE_A is
+			-- Actual NONE type
+		once
+			create Result.make (Void)
+		ensure
+			Result_not_void: Result /= Void
 		end
 
 indexing
