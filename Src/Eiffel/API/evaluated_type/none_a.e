@@ -75,7 +75,7 @@ feature {COMPILER_EXPORTER}
 			Result := None_c_type
 		end
 
-	conform_to (other: TYPE_A): BOOLEAN is
+	is_conforming_descendant (other: TYPE_A): BOOLEAN is
 			-- Does Current conform to `other'?
 		local
 			l_type: TYPE_A

@@ -39,8 +39,17 @@ feature {COMPILER_EXPORTER}
 
 	instantiation_in (type: TYPE_A; written_id: INTEGER): TYPE_A is
 			-- Instantiated type in the context of `type'
+		local
+			l_type: TYPE_A
 		do
 			Result := Current
+			if internal_upper /= Void then
+				l_type := upper.instantiation_in (type, written_id)
+				if l_type /= upper then
+					Result := Current.twin
+					Result.set_upper (l_type)
+				end
+			end
 		end
 
 	instantiation_of (type: TYPE_A; a_class_id: INTEGER): TYPE_A is

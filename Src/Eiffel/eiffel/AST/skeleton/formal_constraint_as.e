@@ -310,13 +310,18 @@ feature {NONE} -- Access
 			-- Default constraint actual type
 		once
 			create Result.make (create {CL_TYPE_A}.make(System.any_id),Void)
+			Result.set_upper (create {SUPER_NONE_A}.make (Void))
 		end
 
 	Constraint_types_containing_any: TYPE_SET_A is
 			-- Default constraint actual type
+		local
+			l_type: TYPE_A
 		once
 			create Result.make(1)
-			Result.extend(create {RENAMED_TYPE_A [TYPE_A]}.make (create {CL_TYPE_A}.make (System.any_id), Void))
+			l_type := create {CL_TYPE_A}.make (System.any_id)
+			l_type.set_upper (create {SUPER_NONE_A}.make (Void))
+			Result.extend (create {RENAMED_TYPE_A [TYPE_A]}.make (l_type, Void))
 		end
 
 feature -- Output

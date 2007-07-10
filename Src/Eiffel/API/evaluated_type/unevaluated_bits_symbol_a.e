@@ -103,7 +103,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Not applicable
 
-	conform_to (other: TYPE_A): BOOLEAN is
+	is_conforming_descendant (other: TYPE_A): BOOLEAN is
 		do
 		end
 

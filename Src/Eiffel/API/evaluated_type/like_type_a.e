@@ -27,7 +27,10 @@ inherit
 			is_none,
 			is_reference,
 			is_valid,
-			meta_type
+			meta_type,
+			lower,
+			upper,
+			set_upper
 		end
 
 feature -- Properties
@@ -108,6 +111,22 @@ feature -- Access
 			Result := actual_type.associated_class
 		end
 
+	lower: TYPE_A is
+			-- Lower boundary of interval type
+		do
+			Result := conformance_type.lower
+		end
+
+	upper: TYPE_A is
+			-- Upper boundary of interval type
+		do
+			Result := conformance_type.upper
+		end
+	set_upper (a_type: TYPE_A)
+			-- Should not be called in this context
+		do
+--			check false end
+		end
 feature -- Primitives
 
 	set_actual_type (a: TYPE_A) is
@@ -134,10 +153,10 @@ feature -- Primitives
 			Result := t
 		end
 
-	conform_to (other: TYPE_A): BOOLEAN is
+	is_conforming_descendant (other: TYPE_A): BOOLEAN is
 			-- Does `actual_type' conform to `other'?
 		do
-			Result := actual_type.conform_to (other.conformance_type)
+			Result := actual_type.is_conforming_descendant (other.conformance_type)
 		end
 
 	convert_to (a_context_class: CLASS_C; a_target_type: TYPE_A): BOOLEAN is
@@ -167,6 +186,9 @@ feature -- Primitives
 		do
 			Result := actual_type.meta_type
 		end
+
+invariant
+	True
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

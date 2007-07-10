@@ -552,14 +552,6 @@ feature {TYPE_A} -- Visitors
 			last_type := a_type
 		end
 
-	process_interval_type_a (a_type: INTERVAL_TYPE_A) is
-			-- Process `a_type'.
-		do
-			a_type.lower.process (Current)
-			a_type.upper.process (Current)
-			last_type := a_type
-		end
-
 	process_like_argument (a_type: LIKE_ARGUMENT) is
 			-- Process `a_type'.
 		do

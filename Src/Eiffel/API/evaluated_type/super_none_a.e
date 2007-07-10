@@ -61,7 +61,7 @@ feature -- Visitor
 
 feature -- Comparison
 
-	conform_to (other: TYPE_A): BOOLEAN is
+	is_conforming_descendant (other: TYPE_A): BOOLEAN is
 			-- Is `Current' conform to `other'?
 		local
 			l_generics, l_other_generics: like generics
@@ -70,25 +70,30 @@ feature -- Comparison
 			l_generics := generics
 				-- Generic count matches
 			l_generics_count := generics.count
-			if other.has_generics then
-				l_other_generics := other.generics
-				if other.is_tuple then
-					Result := l_generics_count < l_other_generics.count
-				else
-					Result := l_generics_count = l_other_generics.count or l_generics_count = 0
-				end
+				-- TODO DIRTY HACK
+			if other.is_super_none then
+				Result := True
 			else
-				Result := l_generics_count = 0
-			end
+				if other.has_generics then
+					l_other_generics := other.generics
+					if other.is_tuple then
+						Result := l_generics_count < l_other_generics.count
+					else
+						Result := l_generics_count = l_other_generics.count or l_generics_count = 0
+					end
+				else
+					Result := l_generics_count = 0
+				end
 
-			if Result and then l_generics_count > 0 then
-				from
-					i := 1
-				until
-					i > l_generics_count or not Result
-				loop
-					Result := l_generics.item (i).conform_to (l_other_generics.item (i))
-					i := i + 1
+				if Result and then l_generics_count > 0 then
+					from
+						i := 1
+					until
+						i > l_generics_count or not Result
+					loop
+						Result := l_generics.item (i).conform_to (l_other_generics.item (i))
+						i := i + 1
+					end
 				end
 			end
 		end

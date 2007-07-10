@@ -12,7 +12,7 @@ inherit
 	LIKE_TYPE_A
 		redefine
 			is_like_current, has_associated_class,
-			type_i, associated_class, conform_to, is_valid,
+			type_i, associated_class, is_conforming_descendant, is_valid,
 			evaluated_type_in_descendant, instantiated_in
 		end
 
@@ -124,7 +124,7 @@ feature {NONE} -- Implementation
 		do
 		end
 
-	conform_to (other: TYPE_A): BOOLEAN is
+	is_conforming_descendant (other: TYPE_A): BOOLEAN is
 			-- Does Current conform to `other' in `a_context_class'?
 		do
 		end

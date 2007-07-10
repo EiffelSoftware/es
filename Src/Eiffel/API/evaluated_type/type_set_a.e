@@ -17,7 +17,7 @@ inherit
 
 	TYPE_A
 		rename
-			conform_to as conform_to_type
+			is_conforming_descendant as conform_to_type
 		undefine
 			copy, is_equal
 		redefine
@@ -32,7 +32,9 @@ inherit
 
 	ARRAYED_LIST [RENAMED_TYPE_A [TYPE_A]]
 		rename
-			duplicate as list_duplicate
+			duplicate as list_duplicate,
+			lower as lower_index,
+			upper as upper_index
 		end
 
 	COMPILER_EXPORTER
@@ -449,7 +451,7 @@ feature -- Access
 		do
 			Result := e_feature_state_by_name_id (names_heap.id_of (a_name))
 		ensure
-			feature_i_relation: feature_i_state_by_name_id (names_heap.id_of (a_name)).features_found_count = Result.features_found_count 
+			feature_i_relation: feature_i_state_by_name_id (names_heap.id_of (a_name)).features_found_count = Result.features_found_count
 		end
 
 	e_feature_state_by_name_id (a_name_id: INTEGER): TUPLE [feature_item: E_FEATURE; class_type_of_feature: CL_TYPE_A; features_found_count: INTEGER; constraint_position: INTEGER]  is
@@ -851,14 +853,14 @@ feature -- Conversion
 
 feature -- Comparison
 
-	conform_to (a_other: like Current): BOOLEAN is
+	is_conforming_descendant (a_other: like Current): BOOLEAN is
 			-- Is `Current' conform to `a_other'?
 			-- `a_other' will be modified. Elements will be removed.
 			-- So pass a copy if you still need it after this call.
 		require
 			a_other_not_void: a_other /= Void
 		do
-			-- Each element in `Current' must be conform to each other element in `a_other'
+				-- Each element in `Current' must be conform to each other element in `a_other'
 			from
 				start
 			until
@@ -869,7 +871,7 @@ feature -- Comparison
 				until
 					a_other.after
 				loop
-					if item.type.conform_to (a_other.item.type) then
+					if item.type.is_conforming_descendant (a_other.item.type) then
 						a_other.remove
 					elseif not a_other.after then
 						a_other.forth
@@ -892,7 +894,7 @@ feature -- Comparison
 		do
 			l_type_set ?= a_type
 			if l_type_set /= Void then
-				Result := conform_to (l_type_set.twin)
+				Result := is_conforming_descendant (l_type_set.twin)
 			else
 					-- If at least one element of `Current' conforms to `a_type' then the type set conforms to the type.
 				Result := False
@@ -901,7 +903,7 @@ feature -- Comparison
 				until
 					after or Result
 				loop
-					Result := item.type.conform_to (a_type.conformance_type)
+					Result := item.type.is_conforming_descendant (a_type.conformance_type)
 					last_type_checked := item
 					forth
 				end

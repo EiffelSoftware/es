@@ -22,7 +22,8 @@ inherit
 		redefine
 			renaming, is_renamed_type, has_renaming, instantiated_in,
 			instantiation_in, has_associated_class,
-			to_type_set, conformance_type
+			to_type_set, conformance_type,
+			upper, set_upper
 		end
 
 create
@@ -60,6 +61,20 @@ feature -- Access
 	renaming: RENAMING_A
 			-- Renaming of features of type `type'.
 
+	upper: TYPE_A
+			-- Upper boundary of interval type
+		do
+			Result := type.upper
+		end
+
+feature -- Element change
+
+	set_upper (a_type: TYPE_A) is
+			-- Set `upper' to `a_type'.
+		do
+			type.set_upper (a_type)
+		end
+
 feature {COMPILER_EXPORTER} -- Access
 
 	associated_class: CLASS_C is
@@ -68,10 +83,10 @@ feature {COMPILER_EXPORTER} -- Access
 			Result := type.associated_class
 		end
 
-	conform_to (other: TYPE_A): BOOLEAN is
+	is_conforming_descendant (other: TYPE_A): BOOLEAN is
 			-- Does Current conform to `other' ?		
 		do
-			Result := type.conform_to (other)
+			Result := type.is_conforming_descendant (other)
 		end
 
 	--| Martins 1/23/07: instantiation*
@@ -202,6 +217,7 @@ feature -- Output
 		end
 
 invariant
+	type_not_void: type /= Void
 	type_is_not_a_type_set: not type.is_type_set
 	no_nested_renamed_types: not type.is_renamed_type
 

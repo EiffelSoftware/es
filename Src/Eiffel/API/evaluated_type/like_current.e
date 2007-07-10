@@ -11,7 +11,7 @@ class
 inherit
 	LIKE_TYPE_A
 		redefine
-			actual_type, associated_class, conform_to, conformance_type, convert_to,
+			actual_type, associated_class, is_conforming_descendant, conformance_type, convert_to,
 			generics, has_associated_class, instantiated_in,
 			is_basic, is_expanded, is_external, is_like_current, is_none, is_reference,
 			meta_type, set_actual_type, type_i, evaluated_type_in_descendant
@@ -153,15 +153,23 @@ feature {COMPILER_EXPORTER} -- Primitives
 				-- i16 := (0x00FF).to_integer_16 & i8
 				-- or
 				-- i16 := (0x00FF & i8).to_integer_16
-			Result := type.intrinsic_type
+			Result := type.intrinsic_type.duplicate
+			Result.set_upper (upper.instantiation_in (type, written_id))
 		end
 
 	instantiated_in (class_type: TYPE_A): TYPE_A is
 			-- Instantiation of Current in the context of `class_type'
 			-- assuming that Current is written in the associated class
 			-- of `class_type'.
+		local
+			l_type: TYPE_A
 		do
-			Result := class_type
+			Result := class_type.duplicate
+			if not Result.is_like_current  then
+				Result.set_upper (upper.instantiated_in (class_type))
+			end
+
+
 		end
 
 	evaluated_type_in_descendant (a_ancestor, a_descendant: CLASS_C; a_feature: FEATURE_I): LIKE_CURRENT is
@@ -180,10 +188,10 @@ feature {COMPILER_EXPORTER} -- Primitives
 			create Result
 		end
 
-	conform_to (other: TYPE_A): BOOLEAN is
+	is_conforming_descendant (other: TYPE_A): BOOLEAN is
 			-- Does `Current' conform to `other'?
 		do
-			Result := other.is_like_current or else conformance_type.conform_to (other.conformance_type)
+			Result := other.is_like_current or else conformance_type.is_conforming_descendant (other.conformance_type)
 		end
 
 	convert_to (a_context_class: CLASS_C; a_target_type: TYPE_A): BOOLEAN is

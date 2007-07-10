@@ -85,11 +85,6 @@ feature -- Properties
 								is_formal or else is_none or else is_type_set)
 		end
 
-	lower_type: TYPE_A
-		do
-			Result := Current
-		end
-
 	generics: ARRAY [TYPE_A] is
 			-- Actual generic types
 		do
@@ -311,6 +306,16 @@ feature -- Properties
 			-- Do nothing
 		end
 
+	is_monomorph: BOOLEAN is
+			-- Is the current type monomorph?
+			--| This is the case if 'upper' is the same type.
+		do
+			Result := internal_upper = Void
+			if not Result then
+				Result := equivalent (Current, internal_upper)
+			end
+		end
+
 feature -- Comparison
 
 	frozen is_safe_equivalent (other: TYPE_A): BOOLEAN is
@@ -449,6 +454,40 @@ feature -- Conversion
 			to_type_set_not_void: Result /= Void
 		end
 
+feature -- Interval types
+
+	lower: TYPE_A is
+			-- Lower boundary of interval type
+		do
+			Result := Current
+		end
+
+	upper: TYPE_A is
+			-- Upper boundary of interval type
+		do
+			if internal_upper = Void then
+				Result := Current
+			else
+				Result := internal_upper
+			end
+		end
+
+feature {COMPILER_EXPORTER} -- Interval types
+
+	set_upper (a_type: like upper) is
+			-- Set `upper' to `a_type'.
+		require
+			a_type_not_void: a_type /= Void
+		do
+			internal_upper := a_type
+		ensure
+--			upper_set: upper = a_type
+		end
+
+feature {TYPE_A} -- Implementation
+
+	internal_upper: TYPE_A
+
 feature {COMPILER_EXPORTER} -- Access
 
 	has_expanded: BOOLEAN is
@@ -524,7 +563,30 @@ feature {COMPILER_EXPORTER} -- Access
 		end
 
 	conform_to (other: TYPE_A): BOOLEAN is
-			-- Does Current conform to `other' ?
+			-- Does Current conform to `other' using interval conformance rules?
+		require
+			is_valid: is_valid
+			other_not_void: other /= Void
+			other_is_valid: other.is_valid
+		local
+			l_warning: INTERVAL_CONFORMANCE_WARNING
+		do
+			if context.current_class.is_interval_type_system_active then
+				Result := is_conforming_descendant (other)
+				if Result xor lower.is_conforming_descendant (other.lower) and then other.upper.is_conforming_descendant (upper) then
+					check not Result end
+					create l_warning.make (context.current_class, context.current_feature)
+					l_warning.set_result (Result, not Result)
+					l_warning.set_types (Current, other)
+					error_handler.insert_warning (l_warning)
+				end
+			else
+				Result := is_conforming_descendant (other)
+			end
+		end
+
+	is_conforming_descendant (other: TYPE_A): BOOLEAN is
+			-- Is Current type a conforming descendant of `other'?
 		require
 			is_valid: is_valid
 			other_not_void: other /= Void
@@ -581,8 +643,21 @@ feature {COMPILER_EXPORTER} -- Access
 		require
 			good_argument: type /= Void
 			positive_id: written_id > 0
+		local
+			l_type: TYPE_A
 		do
-			Result := Current
+			if is_monomorph then
+				Result := Current
+			else
+				l_type := upper.instantiation_in (type, written_id)
+				if l_type /= upper then
+					Result := duplicate
+					Result.set_upper (l_type)
+				else
+					Result := Current
+				end
+			end
+
 		end
 
 	instantiated_in (class_type: TYPE_A): TYPE_A is
@@ -591,8 +666,20 @@ feature {COMPILER_EXPORTER} -- Access
 			-- of `class_type'.
 		require
 			good_argument: class_type /= Void
+		local
+			l_type: TYPE_A
 		do
-			Result := Current
+			if is_monomorph then
+				Result := Current
+			else
+				l_type := upper.instantiated_in (class_type)
+				if l_type /= upper then
+					Result := duplicate
+					Result.set_upper (l_type)
+				else
+					Result := Current
+				end
+			end
 		end
 
 	evaluated_type_in_descendant (a_ancestor, a_descendant: CLASS_C; a_feature: FEATURE_I): TYPE_A is
@@ -834,6 +921,8 @@ invariant
 		-- A generic type should at least have one generic parameter.
 		-- A tuple however is an eception and can have no generic parameter.
 	generics_not_void_implies_generics_not_empty_or_tuple: (generics /= Void implies (not generics.is_empty or is_tuple))
+	upper_is_strict_monomorph: upper.internal_upper = Void
+	lower_upper_consistent: lower.upper = upper
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

@@ -447,6 +447,9 @@ Src/help/wizards/wizard.ico -text
 Src/library/Eiffel2Java/README.txt -text
 Src/library/GIF/Clib/gd_lib/gd.lib svneol=native#unset
 Src/library/base_extension/base_extension.ecf -text
+Src/library/base_interval/elks/forum.txt -text
+Src/library/base_interval/elks/roadmap.txt -text
+Src/library/base_interval/elks/style.txt -text
 Src/library/diff/diff.e -text
 Src/library/diff/diff_index_link.e -text
 Src/library/diff/diff_line.e -text

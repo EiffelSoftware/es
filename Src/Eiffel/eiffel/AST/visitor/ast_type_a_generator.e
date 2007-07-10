@@ -111,7 +111,7 @@ feature -- Status report
 			is_failure_enabled := False
 			current_class := a_context_class
 			a_class_type.process (Current)
-			Result ?= last_type.lower_type
+			Result ?= last_type
 			current_class := Void
 			last_type := Void
 		ensure
@@ -138,10 +138,13 @@ feature {NONE} -- Visitor implementation
 
 	process_like_cur_as (l_as: LIKE_CUR_AS) is
 		local
+			l_actual_type: TYPE_A
 			l_cur: LIKE_CURRENT
 		do
+			l_actual_type := current_class.actual_type
+			l_actual_type.set_upper (super_none_type)
 			create l_cur
-			l_cur.set_actual_type (current_class.actual_type)
+			l_cur.set_actual_type (l_actual_type)
 			last_type := l_cur
 		end
 
@@ -149,7 +152,7 @@ feature {NONE} -- Visitor implementation
 		do
 			create {FORMAL_A} last_type.make (l_as.is_reference, l_as.is_expanded, l_as.position)
 			if need_to_create_interval_type then
-				create {INTERVAL_TYPE_A} last_type.make (last_type, super_none_type)
+				last_type.set_upper (super_none_type)
 			end
 			is_parent_an_interval := False
 		end
@@ -207,11 +210,10 @@ feature {NONE} -- Visitor implementation
 			end
 			if l_need_to_create_interval and then last_type /= Void then
 				if l_actual_generic /= Void then
-					create {INTERVAL_TYPE_A} last_type.make (last_type, generic_super_none_type (l_actual_generic))
+					last_type.set_upper (generic_super_none_type (l_actual_generic))
 				else
-					create {INTERVAL_TYPE_A} last_type.make (last_type, super_none_type)
+					last_type.set_upper (super_none_type)
 				end
-
 			end
 		end
 
@@ -219,7 +221,6 @@ feature {NONE} -- Visitor implementation
 		local
 			l_upper: TYPE_A
 			l_lower: TYPE_A
-			l_interval_type: INTERVAL_TYPE_A
 		do
 			is_parent_an_interval := True
 			is_upper_of_interval := False
@@ -238,8 +239,8 @@ feature {NONE} -- Visitor implementation
 				if last_type = Void then
 					check failure_enabled: is_failure_enabled end
 				else
-					create l_interval_type.make (l_lower, l_upper)
-					last_type := l_interval_type
+					l_lower.set_upper (l_upper)
+					last_type := l_lower
 				end
 			end
 		end
@@ -301,11 +302,10 @@ feature {NONE} -- Visitor implementation
 			end
 			if l_need_to_create_interval and then last_type /= Void then
 				if l_actual_generic /= Void then
-					create {INTERVAL_TYPE_A} last_type.make (last_type, generic_super_none_type (l_actual_generic))
+					last_type.set_upper (generic_super_none_type (l_actual_generic))
 				else
-					create {INTERVAL_TYPE_A} last_type.make (last_type, super_none_type)
+					last_type.set_upper (super_none_type)
 				end
-
 			end
 		end
 
@@ -321,7 +321,7 @@ feature {NONE} -- Visitor implementation
 		do
 			last_type := none_type
 			if need_to_create_interval_type then
-				create {INTERVAL_TYPE_A} last_type.make (last_type, super_none_type)
+				last_type.set_upper (super_none_type)
 			end
 			is_parent_an_interval := False
 		end
@@ -330,7 +330,7 @@ feature {NONE} -- Visitor implementation
 		do
 			create {BITS_A} last_type.make (l_as.bits_value.integer_32_value)
 			if need_to_create_interval_type then
-				create {INTERVAL_TYPE_A} last_type.make (last_type, super_none_type)
+				last_type.set_upper (super_none_type)
 			end
 			is_parent_an_interval := False
 		end
@@ -339,7 +339,7 @@ feature {NONE} -- Visitor implementation
 		do
 			create {UNEVALUATED_BITS_SYMBOL_A} last_type.make (l_as.bits_symbol.name)
 			if need_to_create_interval_type then
-				create {INTERVAL_TYPE_A} last_type.make (last_type, super_none_type)
+				last_type.set_upper (super_none_type)
 			end
 			is_parent_an_interval := False
 		end
@@ -394,7 +394,8 @@ feature {NONE} -- Implementation
 			--| This is true when the parent is not an interval type and
 			--| the interval type system is enabled.
 		do
-			Result := not is_parent_an_interval and then current_class.is_interval_type_system_active
+--			Result := not is_parent_an_interval and then current_class.is_interval_type_system_active
+			Result := True
 		end
 
 	is_parent_an_interval: BOOLEAN

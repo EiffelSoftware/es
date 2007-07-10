@@ -301,7 +301,7 @@ feature {COMPILER_EXPORTER}
 	is_loose: BOOLEAN is True
 			-- Does type depend on formal generic parameters and/or anchors?
 
-	conform_to (other: TYPE_A): BOOLEAN is
+	is_conforming_descendant (other: TYPE_A): BOOLEAN is
 			-- Does Current conform to `other'?
 		local
 			l_constraints: TYPE_SET_A

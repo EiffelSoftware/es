@@ -15,14 +15,14 @@ inherit
 
 	TYPE_A
 		rename
-			lower_type as lower
+			lower as type_a_lower,
+			upper as type_a_upper
 		redefine
 			instantiated_in, instantiation_in,
 			check_constraints,
 			has_associated_class,
 			generics,
-			meta_type,
-			lower
+			meta_type
 		end
 
 	SHARED_TEXT_ITEMS
@@ -64,7 +64,7 @@ feature {COMPILER_EXPORTER} -- Access
 			Result := lower.associated_class
 		end
 
-	conform_to (other: TYPE_A): BOOLEAN is
+	is_conforming_descendant (other: TYPE_A): BOOLEAN is
 			-- Does Current conform to `other' ?
 		local
 			other_interval: INTERVAL_TYPE_A
@@ -143,7 +143,7 @@ feature -- Visitor
 	process (v: TYPE_A_VISITOR) is
 			-- Process current element.
 		do
-			v.process_interval_type_a (Current)
+--			v.process_interval_type_a (Current)
 		end
 
 feature -- Status

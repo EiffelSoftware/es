@@ -11,7 +11,7 @@ inherit
 	GEN_TYPE_A
 		redefine
 			good_generics, error_generics, check_constraints,
-			is_tuple, conform_to, type_i, process, valid_generic
+			is_tuple, is_conforming_descendant, type_i, process, valid_generic
 		end
 
 create
@@ -56,7 +56,7 @@ feature {COMPILER_EXPORTER} -- Primitives
 			end
 		end
 
-	conform_to (other: TYPE_A): BOOLEAN is
+	is_conforming_descendant (other: TYPE_A): BOOLEAN is
 			-- Does Current conform to `other'?
 		local
 			tuple_type: TUPLE_TYPE_A

@@ -183,6 +183,10 @@ feature -- Comparison
 				feature_name_id = other.feature_name_id
 		end
 
+invariant
+	is_monomorph: is_monomorph
+	is_strict_monomorph: internal_upper = Void
+	
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

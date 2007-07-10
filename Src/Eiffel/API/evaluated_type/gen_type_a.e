@@ -403,6 +403,7 @@ feature {COMPILER_EXPORTER} -- Primitives
 			new_generics: like generics
 			old_type: TYPE_A
 			new_type: TYPE_A
+			l_new_upper: TYPE_A
 		do
 			Result := Current
 			from
@@ -423,6 +424,16 @@ feature {COMPILER_EXPORTER} -- Primitives
 					new_generics.put (new_type, i)
 				end
 				i := i - 1
+			end
+				-- Computation for upper type
+			if internal_upper /= Void then
+				l_new_upper := upper.instantiation_in (type, written_id)
+				if upper /= l_new_upper then
+					if Result = Current then
+						Result := Result.duplicate
+					end
+					Result.set_upper (l_new_upper)
+				end
 			end
 		end
 
@@ -446,6 +457,7 @@ feature {COMPILER_EXPORTER} -- Primitives
 					(generics.item (i).instantiated_in (class_type), i)
 				i := i + 1
 			end
+			Result.set_upper (upper.instantiated_in (class_type))
 		end
 
 	evaluated_type_in_descendant (a_ancestor, a_descendant: CLASS_C; a_feature: FEATURE_I): like Current is

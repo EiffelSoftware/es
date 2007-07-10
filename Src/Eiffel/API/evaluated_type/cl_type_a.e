@@ -302,16 +302,16 @@ feature {COMPILER_EXPORTER} -- Conformance
 			end
 		end
 
-	conform_to (other: TYPE_A): BOOLEAN is
+	is_conforming_descendant (other: TYPE_A): BOOLEAN is
 			-- Does Current conform to `other'?
 		local
 			other_class_type: CL_TYPE_A
 			l_other_type_set: TYPE_SET_A
-			l_other_interval: INTERVAL_TYPE_A
+--			l_other_interval: INTERVAL_TYPE_A
 		do
 			other_class_type ?= other.conformance_type
 			l_other_type_set ?= other
-			l_other_interval ?= other
+--			l_other_interval ?= other
 			if other_class_type /= Void then
 				if other_class_type.is_expanded then
 						-- It should be the exact same base class for expanded.
@@ -336,14 +336,14 @@ feature {COMPILER_EXPORTER} -- Conformance
 					end
 				end
 			elseif l_other_type_set /= Void then
-				Result := to_type_set.conform_to (l_other_type_set.twin)
-			elseif l_other_interval /= Void then
-					-- This is the case where we check the following: B .. C := A
-					-- We check that:
-					-- * A conforms to B
-					-- * C has to conform to the upper bound of A which is NIL default,
-					--   therefore C has to be NIL itself (with an empty generic list)
-				Result := conform_to (l_other_interval.lower) and then l_other_interval.upper.is_super_none and then l_other_interval.upper.generics.is_empty
+				Result := to_type_set.is_conforming_descendant (l_other_type_set.twin)
+--			elseif l_other_interval /= Void then
+--					-- This is the case where we check the following: B .. C := A
+--					-- We check that:
+--					-- * A conforms to B
+--					-- * C has to conform to the upper bound of A which is NIL default,
+--					--   therefore C has to be NIL itself (with an empty generic list)
+--				Result := conform_to (l_other_interval.lower) and then l_other_interval.upper.is_super_none and then l_other_interval.upper.generics.is_empty
 			end
 		end
 
