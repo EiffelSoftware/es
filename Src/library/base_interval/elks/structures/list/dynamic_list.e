@@ -72,7 +72,7 @@ feature -- Element change
 		deferred
 		end
 
-	merge_left (other: DYNAMIC_LIST [G] .. NONE) is
+	merge_left (other: DYNAMIC_LIST [G]) is
 			-- Merge `other' into current structure before cursor
 			-- position. Do not move cursor. Empty `other'.
 		do
@@ -86,7 +86,7 @@ feature -- Element change
 			end
 		end
 
-	merge_right (other: DYNAMIC_LIST [G] .. NONE) is
+	merge_right (other: DYNAMIC_LIST [G]) is
 			-- Merge `other' into current structure after cursor
 			-- position. Do not move cursor. Empty `other'.
 		do

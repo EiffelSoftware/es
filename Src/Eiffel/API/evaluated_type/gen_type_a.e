@@ -435,6 +435,9 @@ feature {COMPILER_EXPORTER} -- Primitives
 					Result.set_upper (l_new_upper)
 				end
 			end
+			check
+				not Result.has_formal_generic implies not Result.upper.has_formal_generic
+			end
 		end
 
 	instantiated_in (class_type: TYPE_A): TYPE_A is
@@ -458,6 +461,9 @@ feature {COMPILER_EXPORTER} -- Primitives
 				i := i + 1
 			end
 			Result.set_upper (upper.instantiated_in (class_type))
+			check
+				not Result.has_formal_generic implies not Result.upper.has_formal_generic
+			end
 		end
 
 	evaluated_type_in_descendant (a_ancestor, a_descendant: CLASS_C; a_feature: FEATURE_I): like Current is

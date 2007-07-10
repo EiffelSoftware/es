@@ -152,7 +152,7 @@ feature {NONE} -- Visitor implementation
 		do
 			create {FORMAL_A} last_type.make (l_as.is_reference, l_as.is_expanded, l_as.position)
 			if need_to_create_interval_type then
-				last_type.set_upper (super_none_type)
+--				last_type.set_upper (super_none_type)
 			end
 			is_parent_an_interval := False
 		end

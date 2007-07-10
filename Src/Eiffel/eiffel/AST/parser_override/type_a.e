@@ -425,7 +425,9 @@ feature -- Output
 	frozen append_to (a_text_formatter: TEXT_FORMATTER) is
 			-- Append `Current' to `text'.
 		do
-			ext_append_to (a_text_formatter, Void)
+			lower.ext_append_to (a_text_formatter, Void)
+			a_text_formatter.add (" .. ")
+			upper.ext_append_to (a_text_formatter, Void)
 		end
 
 	dump: STRING is
@@ -466,10 +468,21 @@ feature -- Interval types
 			-- Upper boundary of interval type
 		do
 			if internal_upper = Void then
-				Result := Current
+				if has_generics then
+					create {SUPER_NONE_A} internal_upper.make (generics.twin)
+					Result := internal_upper
+				else
+					Result := super_none
+				end
+--				Result := Current
 			else
 				Result := internal_upper
 			end
+		end
+
+	super_none: SUPER_NONE_A is
+		once
+			create Result.make (Void)
 		end
 
 feature {COMPILER_EXPORTER} -- Interval types
@@ -570,11 +583,22 @@ feature {COMPILER_EXPORTER} -- Access
 			other_is_valid: other.is_valid
 		local
 			l_warning: INTERVAL_CONFORMANCE_WARNING
+			l_interval_lower: BOOLEAN
+			l_interval_upper: BOOLEAN
+			l_interval_result: BOOLEAN
 		do
 			if context.current_class.is_interval_type_system_active then
 				Result := is_conforming_descendant (other)
-				if Result xor lower.is_conforming_descendant (other.lower) and then other.upper.is_conforming_descendant (upper) then
-					check not Result end
+				l_interval_lower := lower.is_conforming_descendant (other.lower)
+				if not is_none then
+					l_interval_upper := other.upper.is_conforming_descendant (upper)
+				else
+						-- Void is the only entity of type NONE.
+						-- It does not need the check of the upper boundary.
+					l_interval_upper := True
+				end
+				l_interval_result := l_interval_lower and l_interval_upper
+				if Result xor l_interval_result then
 					create l_warning.make (context.current_class, context.current_feature)
 					l_warning.set_result (Result, not Result)
 					l_warning.set_types (Current, other)
@@ -921,8 +945,8 @@ invariant
 		-- A generic type should at least have one generic parameter.
 		-- A tuple however is an eception and can have no generic parameter.
 	generics_not_void_implies_generics_not_empty_or_tuple: (generics /= Void implies (not generics.is_empty or is_tuple))
-	upper_is_strict_monomorph: upper.internal_upper = Void
-	lower_upper_consistent: lower.upper = upper
+--	upper_is_strict_monomorph: upper.internal_upper = Void
+--	lower_upper_consistent: lower.upper = upper
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

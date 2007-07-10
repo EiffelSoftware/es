@@ -26,6 +26,8 @@ inherit
 
 	HASHABLE
 
+	DEBUG_OUTPUT
+
 	SHARED_NAMES_HEAP
 		export
 			{NONE} all
@@ -71,7 +73,7 @@ feature -- Comparison
 				-- Generic count matches
 			l_generics_count := generics.count
 				-- TODO DIRTY HACK
-			if other.is_super_none then
+			if other.is_super_none and False then
 				Result := True
 			else
 				if other.has_generics then
@@ -747,6 +749,16 @@ feature -- Status report
 					i := i + 1
 				end
 				ctxt.process_symbol_text (ti_R_bracket)
+			end
+		end
+
+	debug_output: STRING is
+			-- Display name of associated class.
+		do
+			if is_valid then
+				Result := dump
+			else
+				Result := "Class not in system anymore"
 			end
 		end
 

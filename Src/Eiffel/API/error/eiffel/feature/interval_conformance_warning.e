@@ -117,15 +117,28 @@ feature -- Output
 			a_text_formatter.add_new_line
 
 			a_text_formatter.add ("Source type: ")
-			source_type.lower.append_to (a_text_formatter)
-			a_text_formatter.add (" .. ")
-			source_type.upper.append_to (a_text_formatter)
+			source_type.append_to (a_text_formatter)
 
 			a_text_formatter.add_new_line
 			a_text_formatter.add ("Target type: ")
 			target_type.append_to (a_text_formatter)
-			a_text_formatter.add (" .. ")
-			target_type.upper.append_to (a_text_formatter)
+
+			a_text_formatter.add_new_line
+			a_text_formatter.add_new_line
+
+			if original_result then
+				a_text_formatter.add ("Conformance without interval types: True")
+			else
+				a_text_formatter.add ("Conformance without interval types: False")
+			end
+			a_text_formatter.add_new_line
+			if interval_result then
+				a_text_formatter.add ("Conformance with interval types:    True")
+			else
+				a_text_formatter.add ("Conformance with interval types:    False")
+			end
+			a_text_formatter.add_new_line
+			a_text_formatter.add_new_line
 
 			update_statistics
 			print_statistics (a_text_formatter)
@@ -135,18 +148,32 @@ feature {NONE} -- Implementation
 
 	statistics: TUPLE [
 		total: INTEGER;
+		formal_generic: INTEGER;
+		anchored: INTEGER;
+		like_current: INTEGER;
+		monomorph: INTEGER
 		other: INTEGER] is
 			-- Statistics of catcalls in system
 		once
-			Result := [0, 0]
+			Result := [0, 0, 0, 0, 0, 0]
 		end
 
 	update_statistics is
 			-- Update statistics with catcall of current warning
-		local
-			l_feature_name: INTEGER
 		do
-
+			statistics.total := statistics.total + 1
+			if source_type.is_formal or target_type.is_formal then
+				statistics.formal_generic := statistics.formal_generic + 1
+			end
+			if source_type.is_like or target_type.is_like then
+				statistics.anchored := statistics.anchored + 1
+			end
+			if source_type.is_like_current or target_type.is_like_current then
+				statistics.like_current := statistics.like_current + 1
+			end
+			if source_type.is_monomorph or target_type.is_monomorph then
+				statistics.monomorph := statistics.monomorph + 1
+			end
 		end
 
 	print_statistics (a_text_formatter: TEXT_FORMATTER) is
@@ -154,6 +181,10 @@ feature {NONE} -- Implementation
 		do
 			a_text_formatter.add ("STAT (")
 			a_text_formatter.add ("total: " + statistics.total.out + "%T")
+			a_text_formatter.add ("formal: " + statistics.formal_generic.out + "%T")
+			a_text_formatter.add ("anchored: " + statistics.anchored.out + "%T")
+			a_text_formatter.add ("like current: " + statistics.like_current.out + "%T")
+			a_text_formatter.add ("monomorph: " + statistics.monomorph.out + "%T")
 			a_text_formatter.add (")")
 			a_text_formatter.add_new_line
 		end
