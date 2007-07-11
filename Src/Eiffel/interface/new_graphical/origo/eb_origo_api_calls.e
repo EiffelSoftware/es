@@ -331,6 +331,7 @@ feature -- XML RPC calls
 				if l_error.is_empty then
 					from
 						create Result.make
+						l_workitem_list_string.prune_all ('%R')
 					until
 						l_workitem_list_string.is_empty
 					loop
@@ -554,13 +555,9 @@ feature {NONE} -- Implementation
 			l_index: INTEGER
 		do
 			Result := read_head_from_string (a_string, '%N')
-			if Result.count > 0 and Result.item (Result.count) = '%R' then
-				Result.remove_tail (1)
-			end
 		ensure
 			set: 		Result /= Void
-			was_start: 	(old a_string.out).is_equal (Result + "%N" + a_string) or
-						(old a_string.out).is_equal (Result + "%R%N" + a_string)
+			was_start: 	(old a_string.out).is_equal (Result + "%N" + a_string)
 		end
 
 	read_head_from_string (a_string: STRING; a_seperator: CHARACTER): STRING is

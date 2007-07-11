@@ -18,6 +18,11 @@ inherit
 			{NONE} all
 		end
 
+	EB_ORIGO_CONSTANTS
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -27,40 +32,42 @@ feature{NONE} -- Initialisation
 			-- redefine
 		local
 			l_cell: EV_CELL
-			l_rw: EV_GRID_ROW
+			l_button_box: EV_HORIZONTAL_BOX
 		do
 
 			create widget
 
-			create refresh_button.make_with_text_and_action ("Refresh", agent refresh_workitem_list)
-			widget.extend (refresh_button)
-			widget.disable_item_expand (refresh_button)
-			layout_constants.set_default_size_for_button (refresh_button)
-
 			create l_cell
-			l_cell.set_minimum_size (layout_constants.small_padding_size, layout_constants.small_padding_size)
+			l_cell.set_minimum_size (layout_constants.tiny_padding_size, layout_constants.tiny_padding_size)
 			widget.extend (l_cell)
 			widget.disable_item_expand (l_cell)
 
-			create information_label.make_with_text ("Reading workitem list...")
+				-- button box with refresh button
+			create l_button_box
+			widget.extend (l_button_box)
+			widget.disable_item_expand (l_button_box)
+
+			create l_cell
+			l_button_box.extend (l_cell)
+
+			create refresh_button.make_with_text_and_action ("Refresh", agent refresh_workitem_list)
+			layout_constants.set_default_size_for_button (refresh_button)
+			l_button_box.extend (refresh_button)
+			l_button_box.disable_item_expand (refresh_button)
+
+
+
+			create information_label.make_with_text ("")
 			information_label.align_text_center
 
 			create workitem_grid
+			workitem_grid.enable_single_row_selection
 			workitem_grid.set_column_count_to (5)
-			workitem_grid.column (1).set_title ("Date")
-			workitem_grid.column (2).set_title ("Project")
-			workitem_grid.column (3).set_title ("User")
-			workitem_grid.column (4).set_title ("Type")
-			workitem_grid.column (5).set_title ("Text")
-			workitem_grid.set_row_count_to (7)
-
-			l_rw := workitem_grid.row (1)
-			l_rw.set_background_color(create {EV_COLOR}.make_with_8_bit_rgb (120, 120, 120))
-			l_rw.set_item (1, create {EV_GRID_TEXT_ITEM}.make_with_text ("in 2 weeks"))
-			l_rw.set_item (2, create {EV_GRID_TEXT_ITEM}.make_with_text ("brick-breaker"))
-			l_rw.set_item (3, create {EV_GRID_TEXT_ITEM}.make_with_text ("bischora"))
-			l_rw.set_item (4, create {EV_GRID_TEXT_ITEM}.make_with_text ("commit"))
-			l_rw.set_item (5, create {EV_GRID_TEXT_ITEM}.make_with_text ("moo"))
+			workitem_grid.column (Column_index_date).set_title ("Date")
+			workitem_grid.column (Column_index_project).set_title ("Project")
+			workitem_grid.column (Column_index_user).set_title ("User")
+			workitem_grid.column (Column_index_type).set_title ("Type")
+			workitem_grid.column (Column_index_text).set_title ("Text")
 
 			show_information_label
 
@@ -114,7 +121,7 @@ feature -- Status setting
 		do
 			if widget.has (information_label) then
 				widget.prune (information_label)
-				widget.extend (workitem_grid)
+				widget.put_front (workitem_grid)
 				widget.enable_item_expand (workitem_grid)
 			end
 		ensure
@@ -127,7 +134,7 @@ feature -- Status setting
 		do
 			if not widget.has (information_label) then
 				widget.prune (workitem_grid)
-				widget.extend (information_label)
+				widget.put_front (information_label)
 				widget.enable_item_expand (information_label)
 			end
 		ensure
@@ -136,7 +143,7 @@ feature -- Status setting
 		end
 
 	set_information_label_text (a_text: STRING) is
-			-- set text of information labewl
+			-- set text of information label
 		require
 			a_text_set: a_text /= Void and not a_text.is_empty
 		do
@@ -155,12 +162,17 @@ feature {NONE} -- Implementation
 			l_api_calls: EB_ORIGO_API_CALLS
 			l_session: STRING
 		do
+			set_information_label_text ("Refreshing workitem list:%NLogging in...")
+			show_information_label
+
 			create l_api_calls.make (Void)
 			l_session := l_api_calls.login
 			if l_session = Void then
 				set_information_label_text (l_api_calls.last_error)
 				show_information_label
 			else
+				set_information_label_text ("Refreshing workitem list:%NReceiving workitem list...")
+
 				l_workitem_list := l_api_calls.workitem_list (l_session, preferences.origo_data.maximum_workitem_age, preferences.origo_data.show_unread_only)
 
 				if l_workitem_list = Void then
@@ -174,7 +186,60 @@ feature {NONE} -- Implementation
 
 	fill_workitem_grid (a_workitem_list: DS_LINKED_LIST [EB_ORIGO_WORKITEM]) is
 			-- fill `workitem_grid' with tate in `a_workitem_list'
+		local
+			l_row: EV_GRID_ROW
+			i: INTEGER
+			l_workitem: EB_ORIGO_WORKITEM
 		do
+			set_information_label_text ("Refreshing workitem list:%NProcessing data...")
+			show_information_label
+
+			workitem_grid.clear
+			workitem_grid.set_row_count_to (a_workitem_list.count)
+
+			from
+				i := 1
+				a_workitem_list.start
+			until
+				a_workitem_list.after
+			loop
+				l_workitem := a_workitem_list.item_for_iteration
+				l_row := workitem_grid.row (i)
+				l_row.set_item (column_index_date, create {EV_GRID_TEXT_ITEM}.make_with_text (l_workitem.creation_time.out))
+				l_row.set_item (column_index_project, create {EV_GRID_TEXT_ITEM}.make_with_text (l_workitem.project))
+				l_row.set_item (column_index_user, create {EV_GRID_TEXT_ITEM}.make_with_text (l_workitem.user))
+				l_row.set_item (column_index_type, create {EV_GRID_TEXT_ITEM}.make_with_text (l_workitem.type_name))
+				l_row.set_item (column_index_text, create {EV_GRID_TEXT_ITEM}.make_with_text (l_workitem.out_short))
+				if (i \\ 2) = 0 then
+					l_row.set_background_color (color2)
+				else
+					l_row.set_background_color (color1)
+				end
+
+				i := i + 1
+				a_workitem_list.forth
+			end
+
+			from
+				i := 1
+			until
+				i > workitem_grid.column_count
+			loop
+				workitem_grid.resize_column_to_content (workitem_grid.column (1), true, false)
+				i := i + 1
+			end
+
+
+--			workitem_grid.set_item (a_column, a_row: INTEGER_32, a_item: EV_GRID_ITEM)
+
+--			l_rw := workitem_grid.row (1)
+--			l_rw.set_background_color(create {EV_COLOR}.make_with_8_bit_rgb (120, 120, 120))
+--			l_rw.set_item (1, create {EV_GRID_TEXT_ITEM}.make_with_text ("in 2 weeks"))
+--			l_rw.set_item (2, create {EV_GRID_TEXT_ITEM}.make_with_text ("brick-breaker"))
+--			l_rw.set_item (3, create {EV_GRID_TEXT_ITEM}.make_with_text ("bischora"))
+--			l_rw.set_item (4, create {EV_GRID_TEXT_ITEM}.make_with_text ("commit"))
+--			l_rw.set_item (5, create {EV_GRID_TEXT_ITEM}.make_with_text ("moo"))
+
 			hide_information_label
 		end
 
@@ -195,16 +260,16 @@ feature {NONE} -- Implementation
 	refresh_button: EV_BUTTON
 			-- refresh button
 
-	color_dark: EV_COLOR is
+	color1: EV_COLOR is
 			-- dark color for row background
 		once
-			create Result.make_with_8_bit_rgb (120, 120, 120)
+			create Result.make_with_8_bit_rgb (220, 220, 220)
 		end
 
-	color_light: EV_COLOR is
+	color2: EV_COLOR is
 			-- light color for row background
 		once
-			create Result.make_with_8_bit_rgb (60, 60, 60)
+			create Result.make_with_8_bit_rgb (240, 240, 240)
 		end
 
 
