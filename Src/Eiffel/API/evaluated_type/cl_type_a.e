@@ -11,7 +11,7 @@ inherit
 	NAMED_TYPE_A
 		redefine
 			is_expanded, is_reference, is_separate, instantiation_in, valid_generic,
-			duplicate, meta_type, same_as, good_generics, error_generics,
+			meta_type, same_as, good_generics, error_generics,
 			has_expanded, is_valid, format, convert_to,
 			is_full_named_type, is_external, is_enum, is_conformant_to
 		end
@@ -513,12 +513,6 @@ feature {COMPILER_EXPORTER} -- Instantiation of a type in the context of a desce
 				end
 				i := i + 1
 			end
-		end
-
-	duplicate: like Current is
-			-- Duplication
-		do
-			Result := twin
 		end
 
 	reference_type: CL_TYPE_A is

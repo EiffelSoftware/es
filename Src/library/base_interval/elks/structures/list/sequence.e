@@ -52,7 +52,7 @@ feature -- Element change
 			item_inserted: has (v)
 		end
 
-	append (s: SEQUENCE [G] .. NONE) is
+	append (s: SEQUENCE [G]) is
 			-- Append a copy of `s'.
 		require
 			argument_not_void: s /= Void

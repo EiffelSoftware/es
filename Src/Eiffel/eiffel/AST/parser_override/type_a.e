@@ -587,7 +587,15 @@ feature {COMPILER_EXPORTER} -- Access
 			l_interval_upper: BOOLEAN
 			l_interval_result: BOOLEAN
 		do
-			if context.current_class.is_interval_type_system_active then
+			if system.current_class.is_interval_type_system_active then
+
+					-- Warning once per check of generics
+				conformance_check.level := conformance_check.level + 1
+				if conformance_check.level = 1 then
+					conformance_check.interval_result := True
+				end
+
+					-- Conformance check
 				Result := is_conforming_descendant (other)
 				l_interval_lower := lower.is_conforming_descendant (other.lower)
 				if not is_none then
@@ -598,15 +606,28 @@ feature {COMPILER_EXPORTER} -- Access
 					l_interval_upper := True
 				end
 				l_interval_result := l_interval_lower and l_interval_upper
+
+					-- Warning once per check of generics
 				if Result xor l_interval_result then
+					conformance_check.interval_result := False
+				end
+
+					-- Warning once per check of generics
+				if conformance_check.level = 1 and not conformance_check.interval_result then
 					create l_warning.make (context.current_class, context.current_feature)
 					l_warning.set_result (Result, not Result)
 					l_warning.set_types (Current, other)
 					error_handler.insert_warning (l_warning)
 				end
+				conformance_check.level := conformance_check.level - 1
 			else
 				Result := is_conforming_descendant (other)
 			end
+		end
+
+	conformance_check: TUPLE [level: INTEGER; interval_result: BOOLEAN]
+		once
+			Result := [0, True]
 		end
 
 	is_conforming_descendant (other: TYPE_A): BOOLEAN is
@@ -736,6 +757,9 @@ feature {COMPILER_EXPORTER} -- Access
 			-- Duplication
 		do
 			Result := twin
+			if internal_upper /= Void then
+				Result.set_upper (internal_upper.duplicate)
+			end
 		end
 
 	good_generics: BOOLEAN is

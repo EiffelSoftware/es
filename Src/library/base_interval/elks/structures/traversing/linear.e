@@ -260,7 +260,7 @@ feature -- Iteration
 			end
 		end
 
-	for_all (test: FUNCTION [ANY, TUPLE [G], BOOLEAN]): BOOLEAN is
+	for_all (test: FUNCTION [ANY, TUPLE [G], BOOLEAN]..NIL [NIL, TUPLE [G], BOOLEAN]): BOOLEAN is
 			-- Is `test' true for all items?
 			-- Semantics not guaranteed if `test' changes the structure;
 			-- in such a case, apply iterator to clone of structure instead.

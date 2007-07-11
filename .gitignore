@@ -305,6 +305,7 @@ Src/framework/configuration/*.wb
 Src/framework/configuration/EIFGENs
 Src/framework/parser/parser/output.txt
 Src/free_add_ons
+Src/library/base_interval/EIFGENs
 Src/library/com/spec/msc
 Src/library/event/spec
 Src/library/gobo

@@ -178,7 +178,7 @@ feature -- Output
 				until
 					i > count
 				loop
-					generics.item (i).ext_append_to (st, c)
+					generics.item (i).append_to (st, c)
 					if i /= count then
 						st.process_symbol_text (ti_Comma)
 						st.add_space
@@ -561,8 +561,7 @@ feature {COMPILER_EXPORTER} -- Primitives
 				Result := l_like_type
 			elseif type.has_generics then
 					-- Instantiation of the generic parameter of `type'
-				gen_type ?= type
-				Result := gen_type.duplicate
+				Result := type.duplicate
 				from
 					i := 1
 					gen_type_generics := Result.generics
@@ -576,6 +575,9 @@ feature {COMPILER_EXPORTER} -- Primitives
 				end
 			else
 				Result := type
+			end
+			if type.internal_upper /= Void then
+				Result.set_upper (instantiate (type.internal_upper))
 			end
 		end
 
@@ -629,6 +631,9 @@ feature {COMPILER_EXPORTER} -- Primitives
 			end
 			Result := twin
 			Result.set_generics (duplicate_generics)
+			if internal_upper /= Void then
+				Result.set_upper (internal_upper.duplicate)
+			end
 		end
 
 	good_generics: BOOLEAN is

@@ -159,7 +159,7 @@ feature -- Output
 			i, count: INTEGER
 			class_name: STRING
 		do
-			Result := names_heap.item (names_heap.super_none_class_name_id)
+			Result := names_heap.item (names_heap.super_none_class_name_id).twin
 			if generics /= Void then
 
 				count := generics.count
@@ -552,6 +552,9 @@ feature -- Status report
 			end
 			Result := twin
 			Result.set_generics (duplicate_generics)
+			if internal_upper /= Void then
+				Result.set_upper (internal_upper.duplicate)
+			end
 		end
 
 	has_like_argument: BOOLEAN is
