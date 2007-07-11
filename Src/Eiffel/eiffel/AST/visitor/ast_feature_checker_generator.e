@@ -2652,7 +2652,9 @@ feature -- Implementation
 			l_needs_byte_node: BOOLEAN
 		do
 			l_needs_byte_node := is_byte_node_enabled
-
+--SIES
+			add_capture_replay_instrumentation(l_as)
+--/SIES	
 				-- Check local variables
 			if l_as.locals /= Void then
 				check_locals (l_as)
@@ -5938,6 +5940,71 @@ feature {NONE} -- Predefined types
 		end
 
 feature {NONE} -- Implementation
+
+	add_capture_replay_instrumentation(routine: ROUTINE_AS) is
+			-- Adds the necessary code instrumentation for capture/replay
+		require
+			routine_not_void: routine /= Void
+		local
+			do_as: DO_AS
+
+			call_instr: INSTR_CALL_AS
+			ac_id: ACCESS_ID_AS
+			str: STRING_AS
+			str_replacement: STRING_AS
+			str_content: STRING_8
+
+			--- for the generated statements
+			do_replacement: DO_AS
+			replacement_body: EIFFEL_LIST [INSTRUCTION_AS]
+			entrance_code: IF_AS
+			capture_replay_condition: EXPR_CALL_AS
+			capture_replay_enabled_call: NESTED_AS
+			current_target: ACCESS_ID_AS --Todo: rename to something meaningful
+			program_flow_sink_feature: ID_AS
+			is_capture_replay_enabled_message: ACCESS_FEAT_AS
+			is_capture_replay_enabled_feature_name: ID_AS
+			if_keyword: KEYWORD_AS
+			then_keyword: KEYWORD_AS
+			end_keyword: KEYWORD_AS
+			do_keyword: KEYWORD_AS
+		do
+			do_as ?= routine.routine_body
+			call_instr ?= do_as.compound[1]
+--			if call_instr /= Void then
+----				ac_id ?= call_instr.call
+----				str ?= ac_id.internal_parameters.parameters[1]
+----				str_content := "hurray!"
+----				create str_replacement.initialize (str_content, str.line, str.column,str.position, str_content.count)
+----				ac_id.internal_parameters.parameters[1] := str_replacement
+--			end
+
+
+
+
+			create if_keyword.make ({EIFFEL_TOKENS}.te_if, "if", 0, 0, 0, 0)
+			create then_keyword.make ({EIFFEL_TOKENS}.te_else, "else", 0, 0, 0, 0)
+			create end_keyword.make ({EIFFEL_TOKENS}.te_end, "end", 0, 0, 0, 0)
+			create do_keyword.make ({EIFFEL_TOKENS}.te_do, "do", 0, 0, 0, 0)
+			create is_capture_replay_enabled_feature_name.initialize ("is_capture_replay_enabled")
+			create is_capture_replay_enabled_message.initialize (is_capture_replay_enabled_feature_name, Void)
+			create program_flow_sink_feature.initialize ("program_flow_sink")
+			create current_target.initialize (program_flow_sink_feature, Void)
+			create capture_replay_enabled_call.initialize (current_target, is_capture_replay_enabled_message, Void)
+			create capture_replay_condition.initialize (capture_replay_enabled_call)
+			create entrance_code.initialize (capture_replay_condition, do_as.compound, Void, Void, end_keyword, if_keyword, then_keyword, Void)
+
+
+			create replacement_body.make (1)
+			replacement_body.start
+			replacement_body.put_left (entrance_code)
+			create do_replacement.make (replacement_body, do_keyword)
+			routine.set_routine_body (do_replacement)
+		end
+
+
+
+
 
 	process_inherited_assertions (a_feature: FEATURE_I; process_preconditions: BOOLEAN) is
 			-- Process assertions inherited by `a_feature'.
