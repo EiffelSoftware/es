@@ -12,7 +12,7 @@ inherit
 		out
 	end
 
-creation
+create
 	make_empty,
 	restore
 

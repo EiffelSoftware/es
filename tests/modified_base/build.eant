@@ -14,15 +14,15 @@
 		<parent location="${GOBO}/misc/test.eant">
 			<redefine target="init_system"/>
 			<redefine target="other_clean"/>
-			<redefine target="other_install"/>
 		</parent>
 	</inherit>
 
 
 <!-- Implementation -->
+
 	<target name="init_system">
-		<set name="system" value="xsystem"/>
-		<set name="library" value="system"/>
+		<set name="system" value="modified_base"/>
+		<set name="library" value="modified_base"/>
 		<set name="system_dir" value="."/>
 	</target>
 
@@ -32,15 +32,6 @@
 			<fileset include="*.log" />
 		</delete>
 		<delete directory="EIFGENs" />
-	</target>
-
-	<target name="other_install">
-		<geant file="build.eant" dir="../../examples/capture_replay/iteration0/" target="install"/>
-		<exec executable="getest --ise"/>
-	</target>
-
-	<target name="compile_application">
-		<ise ace="application.ecf" system="application" finalize="false" finish_freezing="true"/> 
 	</target>
 
 </project>

@@ -53,8 +53,14 @@ feature -- Basic Operations
 	start_replay is
 			-- Start the replay of the given log.
 		require
+			no_error: not has_error
 			is_prepared_for_replay: is_prepared_for_replay
+			is_in_replay_mode: program_flow_sink.is_replay_phase
+		local
+			erl_caller: ERL_CALLER
 		do
+			create erl_caller
+			player.setup_on_string (log, erl_caller)
 			check False end --TODO implement
 		end
 

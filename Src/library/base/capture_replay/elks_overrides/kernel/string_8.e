@@ -5044,10 +5044,8 @@ feature -- Output
 --			same_items: same_type ("") implies Result.same_string (Current)
 		end
 
-feature {STRING_HANDLER} -- Implementation
-
---	Set_count_feature_name: STRING is "set_count"
--- assume that this is only called from inside...
+feature -- Implementation
+	-- was exported only to STRING_HANDLER, but we need this feature for capture/replay
 
 	frozen set_count (number: INTEGER) is
 			-- Set `count' to `number' of characters.

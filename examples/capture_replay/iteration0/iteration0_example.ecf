@@ -14,7 +14,7 @@
 				<assertions/>
 			</option>
 		</cluster>
-		<cluster name="erl_g" location="$ERL_G\library\runtime\" recursive="true"/>
+		<cluster name="erl_g" location="$ERL_G\library\runtime\"/>
 		<cluster name="root_cluster" location=".\" recursive="true">
 			<option>
 				<assertions/>

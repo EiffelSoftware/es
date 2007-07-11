@@ -459,7 +459,7 @@ feature {NONE} -- Implementation
 		external
 			"C inline use <eif_malloc.h>"
 		alias
-			"*(OBJECT_ID_TYPE *)($object + (HEADER($object)->ov_size & B_SIZE) - LNGPAD_2 - sizeof(OBJECT_ID_TYPE))"
+			"*(OBJECT_ID_TYPE *)($object + (HEADER($object)->ov_size & B_SIZE) - LNGPAD(3))"
 		end
 
 	c_set_object_id(object: POINTER; value: INTEGER_32) is
@@ -467,7 +467,8 @@ feature {NONE} -- Implementation
 		external
 			"C inline use <eif_malloc.h>"
 		alias
-			"*(OBJECT_ID_TYPE *)($object + (HEADER($object)->ov_size & B_SIZE) - LNGPAD_2 - sizeof(OBJECT_ID_TYPE)) = $value"
+
+			"*(OBJECT_ID_TYPE *)($object + (HEADER($object)->ov_size & B_SIZE) - LNGPAD(3)) = $value"
 		end
 
 

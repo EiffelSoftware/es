@@ -6,16 +6,37 @@
 			<assertions precondition="true"/>
 		</option>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
-		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
-		<cluster name="additional_base_classes" location="..\..\Src\library\base\capture_replay\own_classes\" recursive="true"/>
+		<library name="gobo" location="$ISE_LIBRARY\library\gobo_vanilla.ecf"/>
+		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
+		<cluster name="additional_base_classes" location="..\..\Src\library\base\capture_replay\own_classes\" recursive="true">
+			<option>
+				<assertions/>
+			</option>
+		</cluster>
 		<cluster name="application" location=".\" recursive="true">
+			<option>
+				<assertions/>
+			</option>
 			<file_rule>
 				<exclude>/EIFGENs$</exclude>
 				<exclude>/.svn$</exclude>
 				<exclude>/CVS$</exclude>
 			</file_rule>
 		</cluster>
-		<cluster name="example_application" location="..\..\examples\iteration0\" recursive="true"/>
-		<override name="elks_overrides" location="..\..\Src\library\base\capture_replay\elks_overrides\" recursive="true"/>
+		<cluster name="erl_g_runtime" location="$ERL_G\library\runtime\">
+			<option>
+				<assertions/>
+			</option>
+		</cluster>
+		<cluster name="example_application" location="..\..\examples\capture_replay\iteration0\" recursive="true">
+			<option>
+				<assertions/>
+			</option>
+		</cluster>
+		<override name="elks_overrides" location="..\..\Src\library\base\capture_replay\elks_overrides\" recursive="true">
+			<option>
+				<assertions/>
+			</option>
+		</override>
 	</target>
 </system>

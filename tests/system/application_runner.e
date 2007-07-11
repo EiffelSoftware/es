@@ -23,30 +23,28 @@ feature -- Initialization
 			caller: EXAMPLE_CALLER
 		do
 			create caller
-			create config.make(caller)
+			create config.make
 			config.configure_program_flow_sink (program_flow_sink)
+			program_flow_sink.enter
 			player ?= program_flow_sink
-			if player /= Void then
+			recorder ?= program_flow_sink
+            if recorder /= Void then
+                             print("APPLICATION_RUNNER: Record phase detected.")
+                             recorder.leave
+                             create bank.make
+                             atm := bank.atm
+                             create {PERFORMANCE_TESTER_ATM_UI} ui.make (atm)
+                             atm.set_ui (ui)
+                             ui.run
+			elseif player /= Void then
+				print("APPLICATION_RUNNER: replay phase detected.")
+				player.leave
 				player.play
 				player.enter
 				if player.has_error then
 					exceptions.raise("Replay finished with error.")
 				end
 			end
---			if recorder /= Void then
---				print("APPLICATION_RUNNER: Record phase detected.")
---				recorder.setup_on_text_serializer ("run.log")
---				create bank.make
---				atm := bank.atm
---				create {PERFORMANCE_TESTER_ATM_UI} ui.make (atm)
---				atm.set_ui (ui)
---				ui.run
---			elseif log_player /= Void then
---				print("APPLICATION_RUNNER: Replay phase detected.")
---				create caller
---				log_player.setup_on_text_files ("run.log", "replay_run.log",caller)
---				log_player.play
---			end
 		end
 
 feature {NONE}

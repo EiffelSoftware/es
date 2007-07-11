@@ -65,8 +65,11 @@ feature -- Access
 		require
 			object_not_void: object /= Void
 			entity_not_void: id /= Void
-			no_different_object_for_same_id: entities[id] /= Void implies object = entities[id]
+			no_different_object_for_same_id: (entities.upper>id and then entities[id] /= Void) implies object = entities[id]
 		do
+			if id > entities.upper then
+				entities.grow (id*2)
+			end
 			if entities[id] = Void then
 				entities[id] := object
 				object.cr_set_object_id (id)
@@ -80,7 +83,7 @@ feature -- Access
 		require
 			object_not_void: object /= Void
 			entity_not_void: entity /= Void
-			no_different_object_for_same_id: entities[entity.id] /= Void implies object = entities[entity.id]
+			no_different_object_for_same_id: (entities.upper>entity.id and then entities[entity.id] /= Void) implies object = entities[entity.id]
 		do
 			associate_object_to_object_id (object, entity.id)
 		ensure
@@ -106,12 +109,14 @@ feature -- Access
 				elseif basic.type.substring_index ("MANIFEST_SPECIAL",1) = 1 then
 					-- Although this is no basic type, there's no need to register this object, because
 					-- it's only used as manifest type --> no references will be passed beyond the border.
+					-- NOTE: Manifest specials are only used for capturing phase. During replay they're
+					-- restored as SPECIAL's.
 					manifest_special ?= new_instance_of (dynamic_type_from_string(basic.type))
 					check
 						instance_of_manifest_special_created: manifest_special /= Void
 					end
 					manifest_special.restore (basic.value)
-					Result := manifest_special
+					Result := manifest_special.item
 				else
 					report_and_set_error ("unable to instanciate basic entity of type " + basic.type)
 				end
@@ -123,7 +128,7 @@ feature -- Access
 			-- Resolve `non_basic' to an object representing a non basic type.
 			do
 				if entities.upper < non_basic.id then
-					entities.resize (0, non_basic.id * 2)
+					entities.grow (non_basic.id * 2)
 				end
 
 				if entities[non_basic.id] = Void then

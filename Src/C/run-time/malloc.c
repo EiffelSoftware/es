@@ -690,9 +690,9 @@ rt_public EIF_REFERENCE emalloc_size(uint32 ftype, uint32 type, uint32 nbytes)
 {
 	EIF_REFERENCE object;				/* Pointer to the freshly created object */
 	
-	//<SIES>
+#ifdef CAPTURE_REPLAY
 	nbytes = nbytes + sizeof(OBJECT_ID_TYPE);
-	//</SIES>
+#endif
 
 
 #ifdef ISE_GC
@@ -1100,7 +1100,9 @@ doc:	</routine>
 rt_public EIF_REFERENCE spmalloc(rt_uint_ptr nbytes, EIF_BOOLEAN atomic)
 {
 	EIF_REFERENCE object;		/* Pointer to the freshly created special object */
-	nbytes = nbytes + sizeof(OBJECT_ID_TYPE); //SIES, allocate space for an additional attribute.
+#ifdef CAPTURE_REPLAY
+	nbytes = nbytes + sizeof(OBJECT_ID_TYPE); //allocate space for an additional attribute.
+#endif
 #ifdef ISE_GC
 	rt_uint_ptr mod;
 #endif
