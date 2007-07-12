@@ -178,7 +178,7 @@ feature -- Output
 				until
 					i > count
 				loop
-					generics.item (i).append_to (st, c)
+					generics.item (i).append_to (st)
 					if i /= count then
 						st.process_symbol_text (ti_Comma)
 						st.add_space

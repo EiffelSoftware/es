@@ -614,7 +614,7 @@ feature {COMPILER_EXPORTER} -- Access
 
 					-- Warning once per check of generics
 				if conformance_check.level = 1 and not conformance_check.interval_result then
-					create l_warning.make (context.current_class, context.current_feature)
+					create l_warning.make (system.current_class, Void)
 					l_warning.set_result (Result, not Result)
 					l_warning.set_types (Current, other)
 					error_handler.insert_warning (l_warning)

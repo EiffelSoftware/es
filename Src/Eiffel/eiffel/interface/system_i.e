@@ -136,6 +136,10 @@ feature {NONE} -- Initialization
 
 				-- Real removed classes
 			create real_removed_classes.make (10)
+
+				-- Routine redefinition flags
+			create routine_redefinition_flags.make (500)
+			create routine_covariance_flags.make (500)
 		end
 
 feature -- Counters
@@ -5279,6 +5283,56 @@ feature {NONE} -- External features
 		alias
 			"time"
 		end
+
+feature -- Covariance / Redefined features table
+
+	is_routine_redefined (routine_id: INTEGER): BOOLEAN is
+			-- Is routine with routine id `routine_id' redefined in the system?
+		do
+			Result := routine_redefinition_flags.item (routine_id)
+		end
+
+	is_routine_covariantly_redefined (routine_id: INTEGER): BOOLEAN is
+			-- Is routine with routine id `routine_id' redefined covariantly in the system?
+		do
+			Result := routine_covariance_flags.item (routine_id)
+		end
+
+	set_routine_redefined (routine_id: INTEGER; flag: BOOLEAN) is
+			-- Set routine redefinition flag of `routine_id' to `flag'.
+		do
+			routine_redefinition_flags.force (flag, routine_id)
+		ensure
+			flag_set: is_routine_redefined (routine_id) = flag
+		end
+
+	set_routine_covariantly_redefined (routine_id_set: ROUT_ID_SET; flag: BOOLEAN) is
+			-- Set routine covariantly redefined flag of `routine_id' to `flag'.
+		local
+			i, l_count: INTEGER
+		do
+			from
+				i := 1
+				l_count := routine_id_set.count
+			until
+				i > l_count
+			loop
+				routine_covariance_flags.force (flag, routine_id_set.item (i))
+				i := i + 1
+			end
+		ensure
+			flag_set: is_routine_covariantly_redefined (routine_id_set.first) = flag
+		end
+
+feature {NONE} -- Implementation
+
+	routine_redefinition_flags: PACKED_BOOLEANS
+			-- List of redefined routines indexed by routine id
+
+	routine_covariance_flags: PACKED_BOOLEANS
+			-- List of covariantly redefined routines indexed by routine id
+
+invariant
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

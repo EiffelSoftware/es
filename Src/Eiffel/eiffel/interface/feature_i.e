@@ -1845,7 +1845,7 @@ end
 			old_feature_not_void: old_feature /= Void
 			tbl_not_void: tbl /= Void
 		local
-			old_type, new_type: TYPE_A
+			old_type, new_type, l_old_conformance_type, l_new_conformance_type: TYPE_A
 			i, arg_count: INTEGER
 			old_arguments: like arguments
 			current_class: CLASS_C
@@ -1970,6 +1970,33 @@ end
 						ve02a.set_argument_number (i)
 						Error_handler.insert_error (ve02a)
 					end
+
+						-- Check if it is a covariant redeclaration
+					l_old_conformance_type := old_type.conformance_type
+					l_new_conformance_type := new_type.conformance_type
+					if
+						old_type.is_formal or else
+						new_type.is_formal or else
+						old_type.is_like_current or else
+						new_type.is_like_current or else
+						not l_old_conformance_type.same_as (l_new_conformance_type)
+					then
+						system.set_routine_covariantly_redefined (rout_id_set, True)
+					end
+
+--					if
+--						old_type.is_like or else
+--						new_type.is_like or else
+--						old_type.is_formal or else
+--						new_type.is_formal or else
+--						not new_type.is_equivalent (old_type)
+--							-- TODO: check normal like features if their actual type changed covariantly
+--					then
+--						if old_type.is_formal or new_type.is_formal then
+--							system.set_routine_covariantly_redefined (rout_id_set, True)
+--						else
+--						end
+--					end
 
 					i := i + 1
 				end

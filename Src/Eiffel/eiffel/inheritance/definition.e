@@ -70,7 +70,7 @@ feature -- Checking
 
 	check_list (feats: LINKED_LIST [INHERIT_INFO]; tbl: FEATURE_TABLE) is
 			-- Check signature conformance of the redefinition of the
-			-- features contained into `features' into `new_feature'.
+			-- features contained in `feats' into `new_feature'.
 		require
 			good_argument: feats /= Void
 			not_empty: not feats.is_empty
@@ -85,7 +85,7 @@ feature -- Checking
 				feature_i := feats.item.a_feature
 
 					-- Evaluates signature of the old feature in the
-					-- context of `feat_tbl' and take care of possible
+					-- context of `tbl' and take care of possible
 					-- redeclarations of anchored types.
 				feature_i.solve_types (tbl)
 

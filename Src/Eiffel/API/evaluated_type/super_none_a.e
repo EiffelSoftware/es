@@ -61,6 +61,39 @@ feature -- Visitor
 			v.process_super_none_a (Current)
 		end
 
+feature -- Elment change
+
+	substitute (new_generics: ARRAY [TYPE_A]) is
+			-- Take the arguments from `new_generics' to create an
+			-- effective representation of the current GEN_TYPE
+		require
+			new_generics_not_void: new_generics /= Void
+		local
+			i, count, pos: INTEGER
+			constraint_type: TYPE_A
+			formal_type: FORMAL_A
+			gen_type: GEN_TYPE_A
+		do
+			from
+				i := 1
+				count := generics.count
+			until
+				i > count
+			loop
+				constraint_type := generics.item (i)
+
+				if constraint_type.is_formal then
+					formal_type ?= constraint_type
+					pos := formal_type.position
+					generics.force (new_generics.item (pos), i)
+				elseif constraint_type.generics /= Void then
+					gen_type ?= constraint_type
+					gen_type.substitute (new_generics)
+				end
+				i := i + 1
+			end
+		end
+
 feature -- Comparison
 
 	is_conforming_descendant (other: TYPE_A): BOOLEAN is
