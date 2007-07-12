@@ -1673,7 +1673,7 @@ feature -- Implementation
 							if system.is_routine_covariantly_redefined (l_feature.rout_id_set.first) then
 									-- Cat call detection is enabled: Test if this feature call is valid
 									-- in all subtypes of the current class.
-								check_cat_call (l_last_type, l_feature, is_qualified, l_arg_types, l_feature_name, l_last_id)
+								check_cat_call (l_last_type.conformance_type, l_feature, is_qualified, l_arg_types, l_feature_name, l_last_id)
 								cat_call_check_count := cat_call_check_count + 1
 							else
 								check_omitted_count := check_omitted_count + 1
@@ -8042,6 +8042,11 @@ feature {NONE} -- Implementation: catcall check
 						if l_upper_generics.valid_index (l_formal_generic.position) then
 							l_formal_argument := l_upper_generics.item (l_formal_generic.position)
 						else
+							if l_cat_call_warning = Void then
+								create l_cat_call_warning.make (context.current_class, context.current_feature, a_location)
+								l_cat_call_warning.set_called_feature (a_feature)
+								error_handler.insert_warning (l_cat_call_warning)
+							end
 								-- Throw error: feature call invalid
 							l_cat_call_warning.add_covariant_argument_violation (l_upper, a_feature, l_actual_argument, l_argument_index)
 						end
@@ -8062,9 +8067,14 @@ feature {NONE} -- Implementation: catcall check
 						-- Once this is done, then type checking is done on the real
 						-- type of the routine, not the anchor.			
 					if
-						not l_actual_argument.conform_to (l_formal_argument)-- and then
+						not l_actual_argument.interval_conform_to (l_formal_argument)-- and then
 --						not l_actual_argument.convert_to (context.current_class, l_formal_argument)
 					then
+						if l_cat_call_warning = Void then
+							create l_cat_call_warning.make (context.current_class, context.current_feature, a_location)
+							l_cat_call_warning.set_called_feature (a_feature)
+							error_handler.insert_warning (l_cat_call_warning)
+						end
 						l_cat_call_warning.add_covariant_argument_violation (l_upper, a_feature, l_actual_argument, l_argument_index)
 					end
 					l_argument_index := l_argument_index + 1
@@ -8098,10 +8108,10 @@ feature {NONE} -- Implementation: catcall check
 							-- Check if actual parameter conforms to the possible type of the descendant feature
 							-- Todo: look at the convert check again and simplify it
 						if
-							not l_actual_argument.conform_to (l_descendant_argument) and
+							not l_actual_argument.interval_conform_to (l_descendant_argument) and
 							not (
 								l_actual_argument.convert_to (context.current_class, a_feature.arguments.i_th (l_argument_index)) and then
-								a_feature.arguments.i_th (l_argument_index).conform_to (l_descendant_argument)
+								a_feature.arguments.i_th (l_argument_index).interval_conform_to (l_descendant_argument)
 							)
 						then
 								-- Conformance is violated. Add notice to warning.
@@ -8145,7 +8155,7 @@ feature {NONE} -- Implementation: catcall check
 --			l_generics: ARRAY [TYPE_A]
 		do
 				-- Only check if no generics are in type
-			if not a_type.has_generics or else not a_type.generics.is_empty then
+			if not a_type.has_generics or else a_type.generics.is_empty then
 				l_descendants := descendant_list
 				l_descendants.wipe_out
 				if a_type.is_formal then
@@ -8188,7 +8198,7 @@ feature {NONE} -- Implementation: catcall check
 					else
 						l_type := l_descendants.item.actual_type
 					end
-					if l_type.conform_to (a_type) then
+					if l_type.interval_conform_to (a_type) then
 						Result.extend (l_type)
 					end
 					l_descendants.forth

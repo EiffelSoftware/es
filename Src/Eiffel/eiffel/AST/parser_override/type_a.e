@@ -437,7 +437,7 @@ feature -- Output
 
 	ext_append_to (a_text_formatter: TEXT_FORMATTER; c: CLASS_C) is
 			-- Append `Current' to `text'.
-			-- `f' is used to retreive the generic type or argument name as string.
+			-- `c' is used to retreive the generic type or argument name as string.
 			-- This replaces the old "G#2" or "arg#1" texts in feature signature views.
 			-- Actually used in FORMAL_A and LIKE_ARGUMENT.
 		require
@@ -576,7 +576,8 @@ feature {COMPILER_EXPORTER} -- Access
 		end
 
 	conform_to (other: TYPE_A): BOOLEAN is
-			-- Does Current conform to `other' using interval conformance rules?
+			-- Does Current conform to `other' using the old conformance rules?
+			-- Produces a warning if interval conformance result differs.
 		require
 			is_valid: is_valid
 			other_not_void: other /= Void
@@ -624,6 +625,43 @@ feature {COMPILER_EXPORTER} -- Access
 				Result := is_conforming_descendant (other)
 			end
 		end
+
+	interval_conform_to (other: TYPE_A): BOOLEAN is
+			-- Does Current conform to `other' using interval conformance rules?
+		require
+			is_valid: is_valid
+			other_not_void: other /= Void
+			other_is_valid: other.is_valid
+		local
+			l_warning: INTERVAL_CONFORMANCE_WARNING
+			l_interval_lower: BOOLEAN
+			l_interval_upper: BOOLEAN
+			l_interval_result: BOOLEAN
+		do
+			if system.current_class.is_interval_type_system_active then
+
+					-- Warning once per check of generics
+				conformance_check.level := conformance_check.level + 1
+				if conformance_check.level = 1 then
+					conformance_check.interval_result := True
+				end
+
+					-- Conformance check
+				l_interval_lower := lower.is_conforming_descendant (other.lower)
+				if not is_none then
+					l_interval_upper := other.upper.is_conforming_descendant (upper)
+				else
+						-- Void is the only entity of type NONE.
+						-- It does not need the check of the upper boundary.
+					l_interval_upper := True
+				end
+				Result := l_interval_lower and l_interval_upper
+				conformance_check.level := conformance_check.level - 1
+			else
+				Result := is_conforming_descendant (other)
+			end
+		end
+
 
 	conformance_check: TUPLE [level: INTEGER; interval_result: BOOLEAN]
 		once
