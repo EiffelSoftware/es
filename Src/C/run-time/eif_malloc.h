@@ -69,7 +69,7 @@ extern "C" {
 #define B_SIZE		0x07ffffff			/* Get the size of the block */
 #define B_BUSY		0x80000000			/* Block is not free */
 #define B_C			0x40000000			/* Block is a C block */
-define B_LAST		0x20000000			/* Block is the last one in chunk */
+#define B_LAST		0x20000000			/* Block is the last one in chunk */
 #define B_FWD		0x10000000			/* Forwarded Eiffel object */
 #define B_CTYPE		0x08000000			/* Block belongs to a C type chunk */
 #endif
