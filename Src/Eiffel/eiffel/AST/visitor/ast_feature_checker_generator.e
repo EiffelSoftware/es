@@ -5955,6 +5955,7 @@ feature {NONE} -- Implementation
 			str_content: STRING_8
 
 			--- for the generated statements
+			original_do_keyword: KEYWORD_AS
 			do_replacement: DO_AS
 			replacement_body: EIFFEL_LIST [INSTRUCTION_AS]
 			entrance_code: IF_AS
@@ -5970,7 +5971,6 @@ feature {NONE} -- Implementation
 			do_keyword: KEYWORD_AS
 		do
 			do_as ?= routine.routine_body
-			call_instr ?= do_as.compound[1]
 --			if call_instr /= Void then
 ----				ac_id ?= call_instr.call
 ----				str ?= ac_id.internal_parameters.parameters[1]
@@ -5979,29 +5979,148 @@ feature {NONE} -- Implementation
 ----				ac_id.internal_parameters.parameters[1] := str_replacement
 --			end
 
+			if do_as /= Void then
+				original_do_keyword := do_as.do_keyword
+				create if_keyword.make ({EIFFEL_TOKENS}.te_if, "if", 0, 0, 0, 0)
+				create then_keyword.make ({EIFFEL_TOKENS}.te_else, "else", 0, 0, 0, 0)
+				create end_keyword.make ({EIFFEL_TOKENS}.te_end, "end", 0, 0, 0, 0)
+--				create do_keyword.make ({EIFFEL_TOKENS}.te_do, "do", original_do_keyword.line, original_do_keyword.column, original_do_keyword.position, original_do_keyword.location_count)
+
+				capture_replay_enabled_call := cr_create_call("program_flow_sink", "is_capture_replay_enabled", Void)
+				create capture_replay_condition.initialize (capture_replay_enabled_call)
+				create entrance_code.initialize (capture_replay_condition, do_as.compound, Void, Void, end_keyword, if_keyword, then_keyword, Void)
 
 
+				create replacement_body.make (2)
+				replacement_body.start
+				replacement_body.put_left (cr_create_capture_replay_invocation_block ("fooo")) --XXX
+				replacement_body.put_left (entrance_code)
+				-- It's necessary to reuse the original do_keyword, because otherwise
+				-- the do-keyword isn't registered correctly in the match-list.
+				create do_replacement.make (replacement_body, original_do_keyword)
+				routine.set_routine_body (do_replacement)
+			end
+		end
 
+
+	cr_create_call(target_name: STRING; feature_name: STRING; parameters: PARAMETER_LIST_AS): NESTED_AS is
+			-- Create a NESTED_AS object representing a call to `target_name'.`feature_name'
+		require
+			target_name_not_void: target_name /= Void
+			feature_name_not_void: feature_name /= Void
+		local
+			feature_id: ID_AS
+			feature_message: ACCESS_FEAT_AS
+			target_id: ID_AS
+			target: ACCESS_ID_AS
+			dot_symbol: SYMBOL_AS
+		do
+			create feature_id.initialize (feature_name)
+			create feature_message.initialize (feature_id, parameters)
+			create feature_id.initialize (target_name)
+			create target.initialize (feature_id, Void)
+			create dot_symbol.make ({EIFFEL_TOKENS}.te_dot, 0, 0, 0, 0)
+			create Result.initialize (target, feature_message, dot_symbol)
+		ensure
+			result_not_void: Result /= Void
+		end
+
+	cr_create_capture_replay_only_block (compound: EIFFEL_LIST [INSTRUCTION_AS]): IF_AS is
+			-- Creates an if-block where compound is only executed if capture_replay is enabled:
+			-- Corresponding Eiffel-Code:
+			-- if program_flow_sink.capture_replay_enabled then
+			--       [Compound statements]
+			-- end
+		require
+			compound_not_void: compound /= Void
+		local
+			if_keyword: KEYWORD_AS
+			then_keyword: KEYWORD_AS
+			end_keyword: KEYWORD_AS
+			capture_replay_condition: EXPR_CALL_AS
+		do
 			create if_keyword.make ({EIFFEL_TOKENS}.te_if, "if", 0, 0, 0, 0)
 			create then_keyword.make ({EIFFEL_TOKENS}.te_else, "else", 0, 0, 0, 0)
 			create end_keyword.make ({EIFFEL_TOKENS}.te_end, "end", 0, 0, 0, 0)
-			create do_keyword.make ({EIFFEL_TOKENS}.te_do, "do", 0, 0, 0, 0)
-			create is_capture_replay_enabled_feature_name.initialize ("is_capture_replay_enabled")
-			create is_capture_replay_enabled_message.initialize (is_capture_replay_enabled_feature_name, Void)
-			create program_flow_sink_feature.initialize ("program_flow_sink")
-			create current_target.initialize (program_flow_sink_feature, Void)
-			create capture_replay_enabled_call.initialize (current_target, is_capture_replay_enabled_message, Void)
-			create capture_replay_condition.initialize (capture_replay_enabled_call)
-			create entrance_code.initialize (capture_replay_condition, do_as.compound, Void, Void, end_keyword, if_keyword, then_keyword, Void)
 
-
-			create replacement_body.make (1)
-			replacement_body.start
-			replacement_body.put_left (entrance_code)
-			create do_replacement.make (replacement_body, do_keyword)
-			routine.set_routine_body (do_replacement)
+			create capture_replay_condition.initialize (cr_create_call("program_flow_sink", "is_capture_replay_enabled", Void))
+			create Result.initialize (capture_replay_condition, compound, Void, Void, end_keyword, if_keyword, then_keyword, Void)
+		ensure
+			result_not_void: Result /= Void
 		end
 
+	cr_create_capture_replay_invocation_block (feature_name: STRING): INSTRUCTION_AS is
+			-- Create the method invocation block for the capture/replay instrumentation.
+		require
+			feature_name_not_void: feature_name /= Void
+		local
+			target_argument: STRING_AS
+			current_argument: EXPR_CALL_AS
+			current_argument_content: CURRENT_AS
+			tuple_lbrack: SYMBOL_AS
+			tuple_rbrack: SYMBOL_AS
+			tuple_expressions: EIFFEL_LIST [EXPR_AS]
+			feature_arguments_tuple_argument: TUPLE_AS
+			parameters: EIFFEL_LIST [EXPR_AS]
+			parameters_lparan: SYMBOL_AS
+			parameters_rparan: SYMBOL_AS
+-- XXX Problems with the parameters list: it seems not to be possible to attach this list to
+--     the parameters list!?
+--			parameters_separator: SYMBOL_AS
+--			parameters_separator_list: CONSTRUCT_LIST [AST_EIFFEL]
+			parameters_list: PARAMETER_LIST_AS
+
+			invocation_call: INSTR_CALL_AS
+			compound: EIFFEL_LIST [INSTRUCTION_AS]
+		do
+			-- Create `invocation call
+			-- It corresponds to "program_flow_sink.put_feature_invocation("feature_name", Current, [argument1,argument2,...])
+			create target_argument.initialize (feature_name, 0, 0, 0, 0)
+			create current_argument_content.make_with_location (0, 0, 0, 0)
+			create current_argument.initialize (current_argument_content)
+			create tuple_lbrack.make ({EIFFEL_TOKENS}.te_lsqure, 0, 0, 0, 0)
+			create tuple_rbrack.make ({EIFFEL_TOKENS}.te_rsqure, 0, 0, 0, 0)
+			create tuple_expressions.make(0)
+			create feature_arguments_tuple_argument.initialize (tuple_expressions, tuple_lbrack, tuple_rbrack)
+			create parameters.make(3)
+			parameters.put_front (feature_arguments_tuple_argument)
+			parameters.put_front (current_argument)
+			parameters.put_front (target_argument)
+			create parameters_lparan.make ({EIFFEL_TOKENS}.te_lparan, 0, 0, 0, 0)
+			create parameters_rparan.make ({EIFFEL_TOKENS}.te_rparan, 0, 0, 0, 0)
+--			create parameters_separator.make ({EIFFEL_TOKENS}.te_comma, 0, 0, 0, 0)
+--			create parameters_separator_list.make (2)
+--			parameters_separator_list.put_front (parameters_separator)
+--			parameters_separator_list.put_front (parameters_separator)
+			create parameters_list.initialize (parameters, parameters_lparan, parameters_rparan)
+			create invocation_call.initialize (cr_create_call ("program_flow_sink", "put_feature_invocation", parameters_list))
+			create compound.make (1)
+			compound.put_front (invocation_call)
+			Result := cr_create_wrapping_block (compound)
+		ensure
+			result_not_void: Result /= Void
+		end
+
+	cr_create_wrapping_block (instructions: EIFFEL_LIST [INSTRUCTION_AS]) : INSTRUCTION_AS is
+			--
+		require
+			instructions_not_void: instructions /= Void
+		local
+			entry_call: INSTR_CALL_AS
+			invocation_call: INSTR_CALL_AS
+			leave_call: INSTR_CALL_AS
+			compound: EIFFEL_LIST [INSTRUCTION_AS]
+		do
+			create entry_call.initialize (cr_create_call ("program_flow_sink", "enter", Void))
+			create leave_call.initialize (cr_create_call ("program_flow_sink", "leave", Void))
+			create compound.make (2 + instructions.count)
+			compound.put_front (entry_call)
+			compound.fill (instructions)
+			compound.put_front (leave_call)
+			Result := cr_create_capture_replay_only_block (compound)
+		ensure
+			result_not_void: Result /= Void
+		end
 
 
 
