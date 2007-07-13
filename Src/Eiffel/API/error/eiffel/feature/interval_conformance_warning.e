@@ -199,7 +199,9 @@ feature
 				system.statistics.conformance_tuple := system.statistics.conformance_tuple + 1
 			else
 				l_tuple_type ?= target_type
-				system.statistics.conformance_tuple := system.statistics.conformance_tuple + 1
+				if l_tuple_type /= Void then
+					system.statistics.conformance_tuple := system.statistics.conformance_tuple + 1
+				end
 			end
 		end
 
