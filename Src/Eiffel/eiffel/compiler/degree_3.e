@@ -71,12 +71,6 @@ feature -- Processing
 
 			System.set_current_class (Void)
 			Degree_output.put_end_degree
-
-
-			io.put_string ("Total checks: " + (create {SHARED_STATELESS_VISITOR}).feature_checker.total_check_count.out + "%N")
-			io.put_string ("Checks done: " + (create {SHARED_STATELESS_VISITOR}).feature_checker.cat_call_check_count.out + "%N")
-			io.put_string ("Checks omitted: " + (create {SHARED_STATELESS_VISITOR}).feature_checker.check_omitted_count.out + "%N")
-
 		end
 
 feature {NONE} -- Processing

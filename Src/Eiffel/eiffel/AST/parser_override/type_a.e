@@ -588,9 +588,12 @@ feature {COMPILER_EXPORTER} -- Access
 			l_interval_upper: BOOLEAN
 			l_interval_result: BOOLEAN
 		do
-			if system.current_class.is_interval_type_system_active then
-
-					-- Warning once per check of generics
+			if
+				system.current_class.is_interval_type_system_active and
+				system.is_interval_conformance_checking_enabled
+			then
+					-- Increase check level. This tells us when we are on the lowest
+					-- level of checking a generic class so we emit the warning only once
 				conformance_check.level := conformance_check.level + 1
 				if conformance_check.level = 1 then
 					conformance_check.interval_result := True
@@ -608,17 +611,20 @@ feature {COMPILER_EXPORTER} -- Access
 				end
 				l_interval_result := l_interval_lower and l_interval_upper
 
-					-- Warning once per check of generics
+					-- Remember if result of interval conformance check is
+					-- not the same as the old conformance
 				if Result xor l_interval_result then
 					conformance_check.interval_result := False
 				end
-
-					-- Warning once per check of generics
+					-- If result is not the same (in any of the checks, even recursively for generics)
+					-- and it's the first level (i.e. the base class for a generic)
+					-- then we emit a warning
 				if conformance_check.level = 1 and not conformance_check.interval_result then
 					create l_warning.make (system.current_class, Void)
 					l_warning.set_result (Result, not Result)
 					l_warning.set_types (Current, other)
 					error_handler.insert_warning (l_warning)
+					l_warning.update_statistics
 				end
 				conformance_check.level := conformance_check.level - 1
 			else
@@ -686,7 +692,7 @@ feature {COMPILER_EXPORTER} -- Access
 			other_not_void: other /= Void
 			other_is_valid: other.is_valid
 		do
-			Result := conform_to (other)
+			Result := is_conforming_descendant (other)
 		end
 
 	convert_to (a_context_class: CLASS_C; a_target_type: TYPE_A): BOOLEAN is

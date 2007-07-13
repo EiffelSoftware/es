@@ -140,6 +140,9 @@ feature {NONE} -- Initialization
 				-- Routine redefinition flags
 			create routine_redefinition_flags.make (500)
 			create routine_covariance_flags.make (500)
+
+				-- Interval conformance checking
+			is_interval_conformance_checking_enabled := True
 		end
 
 feature -- Counters
@@ -1650,6 +1653,9 @@ feature -- Recompilation
 			d1, d2: DATE_TIME
 			l_il_env: IL_ENVIRONMENT
 		do
+				-- Statistics about compilation
+			reset_statistics
+
 				-- create new backup subdir
 			if automatic_backup then
 				workbench.create_backup_directory
@@ -1935,6 +1941,9 @@ end
 			private_melt := False
 			first_compilation := False
 			il_quick_finalization := False
+
+				-- Print statistics of compilation
+			print_statistics
 		end
 
 	process_degree_5 is
@@ -5331,6 +5340,137 @@ feature {NONE} -- Implementation
 
 	routine_covariance_flags: PACKED_BOOLEANS
 			-- List of covariantly redefined routines indexed by routine id
+
+feature -- Interval conformance checking properties
+
+	is_interval_conformance_checking_enabled: BOOLEAN
+			-- Is interval conformance checking enabled?
+
+	disable_interval_conformance_checking
+			-- Disable interval conformance checking.
+		do
+			is_interval_conformance_checking_enabled := False
+		ensure
+			interval_conformance_checking_disabled: not is_interval_conformance_checking_enabled
+		end
+
+	enable_interval_conformance_checking
+			-- Enable interval conformance checking.
+		do
+			is_interval_conformance_checking_enabled := True
+		ensure
+			interval_conformance_checking_enabled: is_interval_conformance_checking_enabled
+		end
+feature -- Statistics
+
+	statistics: TUPLE [
+				-- Number of argument checks
+			argument_checks: INTEGER  -- Number of times arguments should be checked against signature for descendant features
+			argument_check_done: INTEGER   -- Number of times the argument check is actually done
+
+				-- Catcalls found
+			catcall_total: INTEGER
+
+			catcall_export_violation: INTEGER
+			catcall_covariant_violation: INTEGER
+			catcall_generic_violation: INTEGER
+
+			catcall_any_features: INTEGER
+			catcall_like_current_features: INTEGER
+			catcall_generic_features: INTEGER
+			catcall_other: INTEGER
+
+			catcall_call_feature: INTEGER
+
+				-- Conformance checks
+			conformance_total: INTEGER
+
+			conformance_formal_generic: INTEGER
+			conformance_anchored: INTEGER
+			conformance_like_current: INTEGER
+			conformance_monomorph: INTEGER
+
+			conformance_tuple: INTEGER
+			conformance_agents: INTEGER
+		]
+			-- Information about current compilation run
+
+	reset_statistics
+			-- Reset statistics to zero
+		do
+			statistics := [
+					0, 0,
+					0, 0, 0, 0, 0, 0, 0, 0,
+					0, 0, 0, 0, 0, 0, 0, 0
+				]
+		end
+
+	print_statistics
+			-- Print statistics to standard output
+		do
+			print ("STATISTICS%N")
+			print ("----------%N%N")
+
+				-- Argument checks
+			print ("Argument checks%N")
+			print_line ("Total", statistics.argument_checks)
+			print_line_percentage ("Checks done", statistics.argument_check_done, statistics.argument_checks)
+			print_line_percentage ("Checks omitted", statistics.argument_checks - statistics.argument_check_done, statistics.argument_checks)
+
+			print ("%N")
+
+				-- Catcalls found
+			print ("Catcalls found%N")
+			print_line ("Total", statistics.catcall_total)
+			print ("Percentage of checked / total: " + percentage (statistics.catcall_total, statistics.argument_check_done) + "%% / " + percentage (statistics.catcall_total, statistics.argument_checks) + "%%%N")
+			print_line_percentage ("Export violation", statistics.catcall_export_violation, statistics.catcall_total)
+			print_line_percentage ("Covariant violation", statistics.catcall_covariant_violation, statistics.catcall_total)
+			print_line ("ANY features", statistics.catcall_any_features)
+			print_line ("like Current features", statistics.catcall_like_current_features)
+			print_line ("Formal generic features", statistics.catcall_generic_features)
+
+			print ("%N")
+
+				-- Conformance checks
+			print ("Interval conformance check mismatches%N")
+			print_line ("Total", statistics.conformance_total)
+			print_line_percentage ("Formal generic", statistics.conformance_formal_generic, statistics.conformance_total)
+			print_line_percentage ("Anchored", statistics.conformance_anchored, statistics.conformance_total)
+			print_line_percentage ("like Current", statistics.conformance_like_current, statistics.conformance_total)
+			print_line_percentage ("Monomorph", statistics.conformance_monomorph, statistics.conformance_total)
+			print_line_percentage ("Agents", statistics.conformance_agents, statistics.conformance_total)
+			print_line_percentage ("Tuple", statistics.conformance_tuple, statistics.conformance_total)
+
+		end
+
+	print_line (a_name: STRING; a_count: INTEGER)
+			-- Print statistics line.
+		do
+			print (a_name)
+			print (": ")
+			print (a_count)
+			print ("%N")
+		end
+
+	print_line_percentage (a_name: STRING; a_count, a_total: INTEGER)
+			-- Print statistics line with percentage.
+		do
+			print (a_name)
+			print (": ")
+			print (a_count)
+			print (" (")
+			print (percentage (a_count, a_total))
+			print ("%%)%N")
+		end
+
+	percentage (a_count, a_total: INTEGER): STRING
+			-- Percentage of `a_count' / `a_total' as a string
+		local
+			l_fraction: REAL_64
+		do
+			l_fraction := a_count / a_total
+			Result := (l_fraction * 100.0).truncated_to_integer.out
+		end
 
 invariant
 

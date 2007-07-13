@@ -17,6 +17,8 @@ inherit
 
 	SHARED_NAMES_HEAP
 
+	SHARED_WORKBENCH
+
 create
 	make
 
@@ -140,39 +142,64 @@ feature -- Output
 			a_text_formatter.add_new_line
 			a_text_formatter.add_new_line
 
-			update_statistics
 			print_statistics (a_text_formatter)
 		end
 
-feature {NONE} -- Implementation
-
-	statistics: TUPLE [
-		total: INTEGER;
-		formal_generic: INTEGER;
-		anchored: INTEGER;
-		like_current: INTEGER;
-		monomorph: INTEGER
-		other: INTEGER] is
-			-- Statistics of catcalls in system
-		once
-			Result := [0, 0, 0, 0, 0, 0]
-		end
+feature
 
 	update_statistics is
 			-- Update statistics with catcall of current warning
+		local
+			l_gen_type: GEN_TYPE_A
+			l_tuple_type: TUPLE_TYPE_A
 		do
-			statistics.total := statistics.total + 1
+			system.statistics.conformance_total := system.statistics.conformance_total + 1
 			if source_type.is_formal or target_type.is_formal then
-				statistics.formal_generic := statistics.formal_generic + 1
+				system.statistics.conformance_formal_generic := system.statistics.conformance_formal_generic + 1
 			end
 			if source_type.is_like or target_type.is_like then
-				statistics.anchored := statistics.anchored + 1
+				system.statistics.conformance_anchored := system.statistics.conformance_anchored + 1
 			end
 			if source_type.is_like_current or target_type.is_like_current then
-				statistics.like_current := statistics.like_current + 1
+				system.statistics.conformance_like_current := system.statistics.conformance_like_current + 1
 			end
 			if source_type.is_monomorph or target_type.is_monomorph then
-				statistics.monomorph := statistics.monomorph + 1
+				system.statistics.conformance_monomorph := system.statistics.conformance_monomorph + 1
+			end
+			l_gen_type ?= source_type
+			if
+				l_gen_type /= Void and then
+				l_gen_type.has_associated_class and then
+				(
+					l_gen_type.associated_class.name_in_upper.is_equal ("PROCEDURE") or else
+					l_gen_type.associated_class.name_in_upper.is_equal ("FUNCTION") or else
+					l_gen_type.associated_class.name_in_upper.is_equal ("ROUTINE") or else
+					l_gen_type.associated_class.name_in_upper.is_equal ("PREDICATE")
+				)
+			then
+				system.statistics.conformance_agents := system.statistics.conformance_agents + 1
+			else
+				l_gen_type ?= target_type
+				if
+					l_gen_type /= Void and then
+					l_gen_type.has_associated_class and then
+					(
+						l_gen_type.associated_class.name_in_upper.is_equal ("PROCEDURE") or else
+						l_gen_type.associated_class.name_in_upper.is_equal ("FUNCTION") or else
+						l_gen_type.associated_class.name_in_upper.is_equal ("ROUTINE") or else
+						l_gen_type.associated_class.name_in_upper.is_equal ("PREDICATE")
+					)
+				then
+					system.statistics.conformance_agents := system.statistics.conformance_agents + 1
+				end
+			end
+
+			l_tuple_type ?= source_type
+			if l_tuple_type /= Void then
+				system.statistics.conformance_tuple := system.statistics.conformance_tuple + 1
+			else
+				l_tuple_type ?= target_type
+				system.statistics.conformance_tuple := system.statistics.conformance_tuple + 1
 			end
 		end
 
@@ -180,11 +207,11 @@ feature {NONE} -- Implementation
 			--
 		do
 			a_text_formatter.add ("STAT (")
-			a_text_formatter.add ("total: " + statistics.total.out + "%T")
-			a_text_formatter.add ("formal: " + statistics.formal_generic.out + "%T")
-			a_text_formatter.add ("anchored: " + statistics.anchored.out + "%T")
-			a_text_formatter.add ("like current: " + statistics.like_current.out + "%T")
-			a_text_formatter.add ("monomorph: " + statistics.monomorph.out + "%T")
+			a_text_formatter.add ("total: " + system.statistics.conformance_total.out + "%T")
+			a_text_formatter.add ("formal: " + system.statistics.conformance_formal_generic.out + "%T")
+			a_text_formatter.add ("anchored: " + system.statistics.conformance_anchored.out + "%T")
+			a_text_formatter.add ("like current: " + system.statistics.conformance_like_current.out + "%T")
+			a_text_formatter.add ("monomorph: " + system.statistics.conformance_monomorph.out + "%T")
 			a_text_formatter.add (")")
 			a_text_formatter.add_new_line
 		end

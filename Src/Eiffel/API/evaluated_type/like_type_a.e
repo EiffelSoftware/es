@@ -33,6 +33,8 @@ inherit
 			set_upper
 		end
 
+	DEBUG_OUTPUT
+
 feature -- Properties
 
 	actual_type: TYPE_A
@@ -187,8 +189,17 @@ feature -- Primitives
 			Result := actual_type.meta_type
 		end
 
-invariant
-	True
+feature -- Debugging
+
+	debug_output: STRING is
+			-- Display name of associated class.
+		do
+			if is_valid then
+				Result := dump
+			else
+				Result := "like type is invalid"
+			end
+		end
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

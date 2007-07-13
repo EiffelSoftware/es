@@ -1073,7 +1073,7 @@ feature -- Implementation
 			a_name_not_void: a_feature = Void implies a_name /= Void
 		local
 			l_arg_nodes: BYTE_LIST [EXPR_B]
-			l_arg_types: like last_expressions_type
+			l_arg_types, l_conformance_arg_types: like last_expressions_type
 			l_formal_arg_type, l_like_arg_type: TYPE_A
 			l_like_argument: LIKE_ARGUMENT
 			l_cl_type_a: CL_TYPE_A
@@ -1459,6 +1459,13 @@ feature -- Implementation
 									if l_conv_info.has_depend_unit then
 										context.supplier_ids.extend (l_conv_info.depend_unit)
 									end
+
+										-- Store conversion info for catcall check later on
+									if l_conformance_arg_types = Void then
+										l_conformance_arg_types := l_arg_types.twin
+									end
+									l_conformance_arg_types [i] := l_formal_arg_type
+
 										-- Generate conversion byte node only if we are not checking
 										-- a custom attribute. Indeed in that case, we do not want those
 										-- conversion routines, we will use the attachment type to figure
@@ -1673,13 +1680,22 @@ feature -- Implementation
 							if system.is_routine_covariantly_redefined (l_feature.rout_id_set.first) then
 									-- Cat call detection is enabled: Test if this feature call is valid
 									-- in all subtypes of the current class.
-								check_cat_call (l_last_type.conformance_type, l_feature, is_qualified, l_arg_types, l_feature_name, l_last_id)
-								cat_call_check_count := cat_call_check_count + 1
+
+									-- If conversion took place, they are stored in l_conformance_arg_types.
+									-- If it is void, no conversion took place, so we can use the original argument types
+								if l_conformance_arg_types = Void then
+									l_conformance_arg_types := l_arg_types
+								end
+								check_cat_call (l_last_type.conformance_type, l_feature, is_qualified, l_conformance_arg_types, l_feature_name, l_last_id)
+
+									-- Statistics
+								system.statistics.argument_check_done := system.statistics.argument_check_done + 1
 							else
-								check_omitted_count := check_omitted_count + 1
+								-- Check omitted
 							end
-							total_check_count := total_check_count + 1
 						end
+							-- Statistics
+						system.statistics.argument_checks := system.statistics.argument_checks + 1
 					end
 
 					last_type := l_result_type
@@ -7975,7 +7991,7 @@ feature {NONE} -- Implementation: catcall check
 			-- `a_callee_type': Type on which the call happens
 			-- `a_feature': Feature which is called on callee
 			-- `a_qualified': Flag to indicate if feature call is qualified or not
-			-- `a_params': Parameters of call, already evaluated to their types
+			-- `a_params': Parameters of call, already evaluated to their types. Converts are already done
 			-- `a_location': Location where warning will be linked to
 		require
 			a_callee_type_not_void: a_callee_type /= Void
@@ -8067,8 +8083,7 @@ feature {NONE} -- Implementation: catcall check
 						-- Once this is done, then type checking is done on the real
 						-- type of the routine, not the anchor.			
 					if
-						not l_actual_argument.interval_conform_to (l_formal_argument)-- and then
---						not l_actual_argument.convert_to (context.current_class, l_formal_argument)
+						not l_actual_argument.interval_conform_to (l_formal_argument)
 					then
 						if l_cat_call_warning = Void then
 							create l_cat_call_warning.make (context.current_class, context.current_feature, a_location)
@@ -8106,14 +8121,7 @@ feature {NONE} -- Implementation: catcall check
 							l_descendant_argument := l_descendant_type.generics.item (l_descendant_formal.position)
 						end
 							-- Check if actual parameter conforms to the possible type of the descendant feature
-							-- Todo: look at the convert check again and simplify it
-						if
-							not l_actual_argument.interval_conform_to (l_descendant_argument) and
-							not (
-								l_actual_argument.convert_to (context.current_class, a_feature.arguments.i_th (l_argument_index)) and then
-								a_feature.arguments.i_th (l_argument_index).interval_conform_to (l_descendant_argument)
-							)
-						then
+						if not l_actual_argument.interval_conform_to (l_descendant_argument) then
 								-- Conformance is violated. Add notice to warning.
 							if l_cat_call_warning = Void then
 								create l_cat_call_warning.make (context.current_class, context.current_feature, a_location)
@@ -8141,6 +8149,9 @@ feature {NONE} -- Implementation: catcall check
 
 					l_descendant_index := l_descendant_index + 1
 				end
+			end
+			if l_cat_call_warning /= Void then
+				l_cat_call_warning.update_statistics
 			end
 		end
 
@@ -8235,16 +8246,6 @@ feature {NONE} -- Implementation: catcall check
 		once
 			create Result.make (10)
 		end
-
-feature
-
-	cat_call_check_count: INTEGER
-
-	check_omitted_count: INTEGER
-
-	total_check_count: INTEGER
-
-invariant
 
 indexing
 	copyright:	"Copyright (c) 1984-2007, Eiffel Software"

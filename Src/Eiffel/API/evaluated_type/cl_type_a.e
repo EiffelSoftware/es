@@ -373,7 +373,9 @@ feature {COMPILER_EXPORTER} -- Conformance
 					l_other_class_type.set_reference_mark
 				end
 
+				system.disable_interval_conformance_checking
 				Result := conform_to (other)
+				system.enable_interval_conformance_checking
 
 				if l_is_exp then
 					set_mark (current_mark)
