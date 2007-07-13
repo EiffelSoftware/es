@@ -602,14 +602,19 @@ feature {COMPILER_EXPORTER} -- Access
 					-- Conformance check
 				Result := is_conforming_descendant (other)
 				l_interval_lower := lower.is_conforming_descendant (other.lower)
-				if not is_none then
-					l_interval_upper := other.upper.is_conforming_descendant (upper)
+				if l_interval_lower then
+					if not is_none then
+						l_interval_upper := other.upper.is_conforming_descendant (upper)
+					else
+							-- Void is the only entity of type NONE.
+							-- It does not need the check of the upper boundary.
+						l_interval_upper := True
+					end
+					l_interval_result := l_interval_upper
 				else
-						-- Void is the only entity of type NONE.
-						-- It does not need the check of the upper boundary.
-					l_interval_upper := True
+						-- Default initialisation takes care of this
+					--l_interval_result := False
 				end
-				l_interval_result := l_interval_lower and l_interval_upper
 
 					-- Remember if result of interval conformance check is
 					-- not the same as the old conformance
