@@ -9,8 +9,11 @@ indexing
 class
 	EV_SHADOW_DIALOG
 
+obsolete
+	"Use EV_POPUP_WINDOW instead"
+
 inherit
-	EV_UNTITLED_DIALOG
+	EV_WINDOW
 		redefine
 			create_implementation
 		end
