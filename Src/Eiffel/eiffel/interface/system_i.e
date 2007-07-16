@@ -1858,6 +1858,11 @@ end
 					create d1.make_now
 				end
 
+
+				-- Print statistics of compilation
+			print_statistics
+
+
 					-- Melt the changed features
 				melt
 
@@ -1942,8 +1947,6 @@ end
 			first_compilation := False
 			il_quick_finalization := False
 
-				-- Print statistics of compilation
-			print_statistics
 		end
 
 	process_degree_5 is
@@ -5364,9 +5367,10 @@ feature -- Interval conformance checking properties
 feature -- Statistics
 
 	statistics: TUPLE [
-				-- Number of argument checks
-			argument_checks: INTEGER  -- Number of times arguments should be checked against signature for descendant features
-			argument_check_done: INTEGER   -- Number of times the argument check is actually done
+				-- Number of feature calls processed
+			feature_calls: INTEGER        -- Number of feature calls in system
+			feature_arguments: INTEGER    -- Number of feature calls which have arguments
+			feature_check_done: INTEGER   -- Number of times the argument check is actually done
 
 				-- Catcalls found
 			catcall_total: INTEGER
@@ -5399,7 +5403,7 @@ feature -- Statistics
 			-- Reset statistics to zero
 		do
 			statistics := [
-					0, 0,
+					0, 0, 0, 0,
 					0, 0, 0, 0, 0, 0, 0, 0,
 					0, 0, 0, 0, 0, 0, 0, 0
 				]
@@ -5412,22 +5416,24 @@ feature -- Statistics
 			print ("----------%N%N")
 
 				-- Argument checks
-			print ("Argument checks%N")
-			print_line ("Total", statistics.argument_checks)
-			print_line_percentage ("Checks done", statistics.argument_check_done, statistics.argument_checks)
-			print_line_percentage ("Checks omitted", statistics.argument_checks - statistics.argument_check_done, statistics.argument_checks)
+			print ("Feature calls%N")
+			print_line ("Total", statistics.feature_calls)
+			print_line_percentage ("Calls with arguments", statistics.feature_arguments, statistics.feature_calls)
+			print_line_percentage ("Calls without arguments", (statistics.feature_calls - statistics.feature_arguments), statistics.feature_calls)
+			print_line_percentage ("Calls checked", statistics.feature_check_done, statistics.feature_calls)
+			print_line_percentage ("Calls omitted", statistics.feature_calls - statistics.feature_check_done, statistics.feature_calls)
 
 			print ("%N")
 
 				-- Catcalls found
 			print ("Catcalls found%N")
 			print_line ("Total", statistics.catcall_total)
-			print ("Percentage of checked / total: " + percentage (statistics.catcall_total, statistics.argument_check_done) + "%% / " + percentage (statistics.catcall_total, statistics.argument_checks) + "%%%N")
+			print ("Percentage of checked / total: " + percentage (statistics.catcall_total, statistics.feature_check_done) + "%% / " + percentage (statistics.catcall_total, statistics.feature_calls) + "%%%N")
 			print_line_percentage ("Export violation", statistics.catcall_export_violation, statistics.catcall_total)
 			print_line_percentage ("Covariant violation", statistics.catcall_covariant_violation, statistics.catcall_total)
-			print_line ("ANY features", statistics.catcall_any_features)
-			print_line ("like Current features", statistics.catcall_like_current_features)
-			print_line ("Formal generic features", statistics.catcall_generic_features)
+			print_line_percentage ("ANY features", statistics.catcall_any_features, statistics.catcall_total)
+			print_line_percentage ("like Current features", statistics.catcall_like_current_features, statistics.catcall_total)
+			print_line_percentage ("Formal generic features", statistics.catcall_generic_features, statistics.catcall_total)
 
 			print ("%N")
 
@@ -5469,7 +5475,13 @@ feature -- Statistics
 			l_fraction: REAL_64
 		do
 			l_fraction := a_count / a_total
-			Result := (l_fraction * 100.0).truncated_to_integer.out
+			Result := fraction_formatter.formatted (l_fraction * 100.0)
+		end
+
+	fraction_formatter: FORMAT_DOUBLE
+			-- Formatter to output fractions
+		once
+			create Result.make (5, 2)
 		end
 
 invariant

@@ -1674,28 +1674,33 @@ feature -- Implementation
 						-- Check if cat-call detection is enabled for current context class
 					if context.current_class.is_cat_call_detection then
 							-- Inline agents have no descendants, so they don't need to be checked anyway
-							-- Static calls don't need to be checked since they can't have a descendant either
-						if not l_feature.is_inline_agent and not is_static then
-								-- Only features which are covariantly redefined need to be checked
-							if system.is_routine_covariantly_redefined (l_feature.rout_id_set.first) then
-									-- Cat call detection is enabled: Test if this feature call is valid
-									-- in all subtypes of the current class.
+							-- Static calls or frozen features don't need to be checked since they can't 
+							-- have a descendant either.
+							-- Only features which are covariantly redefined need to be checked
+						if
+							not l_feature.is_inline_agent and
+							not is_static and
+							not l_feature.is_frozen and
+							system.is_routine_covariantly_redefined (l_feature.rout_id_set.first)
+						then
+								-- Cat call detection is enabled: Test if this feature call is valid
+								-- in all subtypes of the current class.
 
-									-- If conversion took place, they are stored in l_conformance_arg_types.
-									-- If it is void, no conversion took place, so we can use the original argument types
-								if l_conformance_arg_types = Void then
-									l_conformance_arg_types := l_arg_types
-								end
-								check_cat_call (l_last_type.conformance_type, l_feature, is_qualified, l_conformance_arg_types, l_feature_name, l_last_id)
-
-									-- Statistics
-								system.statistics.argument_check_done := system.statistics.argument_check_done + 1
-							else
-								-- Check omitted
+								-- If conversion took place, they are stored in l_conformance_arg_types.
+								-- If it is void, no conversion took place, so we can use the original argument types
+							if l_conformance_arg_types = Void then
+								l_conformance_arg_types := l_arg_types
 							end
+							check_cat_call (l_last_type.conformance_type, l_feature, is_qualified, l_conformance_arg_types, l_feature_name, l_last_id)
+
+								-- Statistics
+							system.statistics.feature_check_done := system.statistics.feature_check_done + 1
 						end
 							-- Statistics
-						system.statistics.argument_checks := system.statistics.argument_checks + 1
+						system.statistics.feature_calls := system.statistics.feature_calls + 1
+						if l_feature.argument_count > 0 then
+							system.statistics.feature_arguments := system.statistics.feature_arguments + 1
+						end
 					end
 
 					last_type := l_result_type
@@ -7991,7 +7996,7 @@ feature {NONE} -- Implementation: catcall check
 			-- `a_callee_type': Type on which the call happens
 			-- `a_feature': Feature which is called on callee
 			-- `a_qualified': Flag to indicate if feature call is qualified or not
-			-- `a_params': Parameters of call, already evaluated to their types. Converts are already done
+			-- `a_params': Parameters of call, already evaluated to their types. If conversion took place, the type in the array is the converted one
 			-- `a_location': Location where warning will be linked to
 		require
 			a_callee_type_not_void: a_callee_type /= Void
@@ -8043,48 +8048,20 @@ feature {NONE} -- Implementation: catcall check
 					if l_formal_argument.is_like_argument then
 							-- Instantiate: This code is similar to code in `process_call'.						
 							-- Take care of anchoring to argument
-						l_like_arg_type := l_formal_argument.actual_argument_type (l_args)
-						l_formal_argument :=
-							l_like_arg_type.instantiation_in (a_callee_type, a_last_id).actual_type
+						l_formal_argument := l_formal_argument.actual_argument_type (l_args)
+						if l_formal_argument.is_like_argument then
+							l_formal_argument := l_formal_argument.actual_argument_type (l_args)
+						end
+						l_formal_argument := l_formal_argument.conformance_type
 					elseif l_formal_argument.is_like then
-						l_formal_argument := l_formal_argument.actual_type
+						l_formal_argument := l_formal_argument.conformance_type
 					end
 
 						-- Then proceed with formals: Replace them all by actual parameters.
-					if l_formal_argument.is_formal then
-							-- Ok, we have a formal: Replace it with the generic of the upper interval
-						l_formal_generic ?= l_formal_argument
-						check l_formal_generic /= Void end
-						if l_upper_generics.valid_index (l_formal_generic.position) then
-							l_formal_argument := l_upper_generics.item (l_formal_generic.position)
-						else
-							if l_cat_call_warning = Void then
-								create l_cat_call_warning.make (context.current_class, context.current_feature, a_location)
-								l_cat_call_warning.set_called_feature (a_feature)
-								error_handler.insert_warning (l_cat_call_warning)
-							end
-								-- Throw error: feature call invalid
-							l_cat_call_warning.add_covariant_argument_violation (l_upper, a_feature, l_actual_argument, l_argument_index)
-						end
-					elseif l_formal_argument.has_formal_generic then
-							-- TODO: Check further that amount (count) of generics match.
-						l_formal_argument := l_formal_argument.duplicate
-						l_gen_type ?= l_formal_argument
-						l_super_none ?= l_formal_argument
-						if l_gen_type /= Void then
-							l_gen_type.substitute (l_upper_generics)
-						elseif l_super_none /= Void then
-							l_super_none.substitute (l_upper_generics)
-						else
-							check this_should_never_happen: false end
-						end
-					end
-						-- Check that `l_arg_type' is compatible to its `like argument'.
-						-- Once this is done, then type checking is done on the real
-						-- type of the routine, not the anchor.			
-					if
-						not l_actual_argument.interval_conform_to (l_formal_argument)
-					then
+					l_formal_argument := l_formal_argument.instantiated_in (a_callee_type.upper)
+
+						-- Check if actual argument conforms to formal argument
+					if not l_actual_argument.interval_conform_to (l_formal_argument) then
 						if l_cat_call_warning = Void then
 							create l_cat_call_warning.make (context.current_class, context.current_feature, a_location)
 							l_cat_call_warning.set_called_feature (a_feature)
@@ -8092,6 +8069,7 @@ feature {NONE} -- Implementation: catcall check
 						end
 						l_cat_call_warning.add_covariant_argument_violation (l_upper, a_feature, l_actual_argument, l_argument_index)
 					end
+
 					l_argument_index := l_argument_index + 1
 				end
 			else
