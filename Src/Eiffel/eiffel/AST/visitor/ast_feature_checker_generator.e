@@ -8024,53 +8024,63 @@ feature {NONE} -- Implementation: catcall check
 			l_upper: TYPE_A
 		do
 			if a_feature.has_formal then
+					-- If a feature as formal generics we want to instantite the signature with the
+					-- one given by the upper type and check whether it conforms to the actual parameter/argument.
 
 				check a_callee_type.has_generics end
 				l_upper := a_callee_type.upper
 					-- Get generics if we have generics.
-				if l_upper.has_generics and then not l_upper.generics.is_empty then
-					l_upper_generics := l_upper.generics
+				if not l_upper.has_generics or else l_upper.generics.is_empty then
+						-- This is the case for code like the following: LIST [A] .. NONE
+						-- A call to `put' us not allowed.
+						-- Throw error, break out of execution
+					create l_cat_call_warning.make (context.current_class, context.current_feature, a_location)
+					l_cat_call_warning.set_called_feature (a_feature)
+					error_handler.insert_warning (l_cat_call_warning)
+						-- Simply report it for the first argument.
+					l_cat_call_warning.add_covariant_argument_violation (l_upper, a_feature,  a_params[1], 1)
 				else
-					 -- Throw error, break out of execution
-				end
 
-				from
-					l_args := a_feature.arguments
-					l_argument_index := 1
-					l_count := a_feature.argument_count
-				until
-					l_argument_index > l_count
-				loop
-					l_formal_argument := l_args.i_th (l_argument_index)
-					l_actual_argument := a_params[l_argument_index]
+					l_upper_generics := l_upper.generics
 
-						-- First instantiated like argument
-					if l_formal_argument.is_like_argument then
-							-- Instantiate: This code is similar to code in `process_call'.						
-							-- Take care of anchoring to argument
-						l_formal_argument := l_formal_argument.actual_argument_type (l_args)
+					from
+						l_args := a_feature.arguments
+						l_argument_index := 1
+						l_count := a_feature.argument_count
+					until
+						l_argument_index > l_count
+					loop
+						l_formal_argument := l_args.i_th (l_argument_index)
+						l_actual_argument := a_params[l_argument_index]
+
+							-- First instantiate like argument
 						if l_formal_argument.is_like_argument then
+								-- Instantiate: This code is similar to code in `process_call'.						
+								-- Take care of anchoring to argument
 							l_formal_argument := l_formal_argument.actual_argument_type (l_args)
+							if l_formal_argument.is_like_argument then
+								l_formal_argument := l_formal_argument.actual_argument_type (l_args)
+							end
+							l_formal_argument := l_formal_argument.conformance_type
+						elseif l_formal_argument.is_like then
+							l_formal_argument := l_formal_argument.conformance_type
 						end
-						l_formal_argument := l_formal_argument.conformance_type
-					elseif l_formal_argument.is_like then
-						l_formal_argument := l_formal_argument.conformance_type
-					end
 
-						-- Then proceed with formals: Replace them all by actual parameters.
-					l_formal_argument := l_formal_argument.instantiated_in (a_callee_type.upper)
+							-- Then proceed with formals: Replace them all by actual parameters.
+						l_formal_argument := l_formal_argument.instantiated_in (l_upper)
 
-						-- Check if actual argument conforms to formal argument
-					if not l_actual_argument.interval_conform_to (l_formal_argument) then
-						if l_cat_call_warning = Void then
-							create l_cat_call_warning.make (context.current_class, context.current_feature, a_location)
-							l_cat_call_warning.set_called_feature (a_feature)
-							error_handler.insert_warning (l_cat_call_warning)
+							-- Check if actual argument conforms to formal argument
+						if not l_actual_argument.interval_conform_to (l_formal_argument) then
+							if l_cat_call_warning = Void then
+								create l_cat_call_warning.make (context.current_class, context.current_feature, a_location)
+								l_cat_call_warning.set_called_feature (a_feature)
+								error_handler.insert_warning (l_cat_call_warning)
+							end
+							l_cat_call_warning.add_covariant_argument_violation (l_upper, a_feature, l_actual_argument, l_argument_index)
 						end
-						l_cat_call_warning.add_covariant_argument_violation (l_upper, a_feature, l_actual_argument, l_argument_index)
-					end
 
-					l_argument_index := l_argument_index + 1
+						l_argument_index := l_argument_index + 1
+					end
 				end
 			else
 				l_descendants := conforming_descendants (a_callee_type)
