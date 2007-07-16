@@ -2034,7 +2034,17 @@ feature -- Implementation
 		end
 
 	process_body_as (l_as: BODY_AS) is
+		local
+			class_name: STRING
 		do
+
+			class_name := context.current_class.name
+			--SIES
+			--XXX outsorce decisions about what to instrument into another class...
+			if not cr_instrumentation_exclusion_list.has (class_name) then
+				add_capture_replay_instrumentation(l_as)
+			end
+			--/SIES	
 			safe_process (l_as.content)
 		end
 
@@ -2046,6 +2056,7 @@ feature -- Implementation
 			l_feature_as: FEATURE_AS
 			l_feature_checker: AST_FEATURE_CHECKER_GENERATOR
 		do
+
 			if is_byte_node_enabled then
 				l_external ?= current_feature
 					-- If associated feature is not an external anymore, it means that it was interpreted
@@ -2652,9 +2663,6 @@ feature -- Implementation
 			l_needs_byte_node: BOOLEAN
 		do
 			l_needs_byte_node := is_byte_node_enabled
---SIES
-			add_capture_replay_instrumentation(l_as)
---/SIES	
 				-- Check local variables
 			if l_as.locals /= Void then
 				check_locals (l_as)
@@ -5941,67 +5949,54 @@ feature {NONE} -- Predefined types
 
 feature {NONE} -- Implementation
 
-	add_capture_replay_instrumentation(routine: ROUTINE_AS) is
+
+	cr_instrumentation_exclusion_list: ARRAY [STRING] is
+			--
+		once
+			create Result.make(0,1)
+			Result.compare_objects
+			Result[0] := "ANY"
+--			Result[1] := "BOOLEAN_REF"
+--			Result[2] := "BOOLEAN"
+--			Result[3] := "POINTER"
+--			Result [4] := "POINTER_REF"
+--			Result [5] := "STRING_8" -- hm... doesn't prevent the error with string...
+--			Result [6] := "TUPLE" -- only experimental...
+			Result [1] := "TUPLE" -- only experimental...
+			--AND POINTER_REF???
+		end
+
+
+	add_capture_replay_instrumentation(body: BODY_AS) is
 			-- Adds the necessary code instrumentation for capture/replay
 		require
-			routine_not_void: routine /= Void
+			body_not_void: body /= Void
 		local
+			routine: ROUTINE_AS
 			do_as: DO_AS
-
-			call_instr: INSTR_CALL_AS
-			ac_id: ACCESS_ID_AS
-			str: STRING_AS
-			str_replacement: STRING_AS
-			str_content: STRING_8
 
 			--- for the generated statements
 			original_do_keyword: KEYWORD_AS
 			do_replacement: DO_AS
 			replacement_body: EIFFEL_LIST [INSTRUCTION_AS]
-			entrance_code: IF_AS
-			capture_replay_condition: EXPR_CALL_AS
-			capture_replay_enabled_call: NESTED_AS
-			current_target: ACCESS_ID_AS --Todo: rename to something meaningful
-			program_flow_sink_feature: ID_AS
-			is_capture_replay_enabled_message: ACCESS_FEAT_AS
-			is_capture_replay_enabled_feature_name: ID_AS
-			if_keyword: KEYWORD_AS
-			then_keyword: KEYWORD_AS
-			end_keyword: KEYWORD_AS
-			do_keyword: KEYWORD_AS
 		do
-			do_as ?= routine.routine_body
---			if call_instr /= Void then
-----				ac_id ?= call_instr.call
-----				str ?= ac_id.internal_parameters.parameters[1]
-----				str_content := "hurray!"
-----				create str_replacement.initialize (str_content, str.line, str.column,str.position, str_content.count)
-----				ac_id.internal_parameters.parameters[1] := str_replacement
---			end
+			routine ?= body.content
+			if routine /= Void then
+				do_as ?= routine.routine_body
+			end
 
 			if do_as /= Void then
 				original_do_keyword := do_as.do_keyword
-				create if_keyword.make ({EIFFEL_TOKENS}.te_if, "if", 0, 0, 0, 0)
-				create then_keyword.make ({EIFFEL_TOKENS}.te_else, "else", 0, 0, 0, 0)
-				create end_keyword.make ({EIFFEL_TOKENS}.te_end, "end", 0, 0, 0, 0)
---				create do_keyword.make ({EIFFEL_TOKENS}.te_do, "do", original_do_keyword.line, original_do_keyword.column, original_do_keyword.position, original_do_keyword.location_count)
-
-				capture_replay_enabled_call := cr_create_call("program_flow_sink", "is_capture_replay_enabled", Void)
-				create capture_replay_condition.initialize (capture_replay_enabled_call)
-				create entrance_code.initialize (capture_replay_condition, do_as.compound, Void, Void, end_keyword, if_keyword, then_keyword, Void)
-
 
 				create replacement_body.make (2)
-				replacement_body.start
-				replacement_body.put_left (cr_create_capture_replay_invocation_block ("fooo")) --XXX
-				replacement_body.put_left (entrance_code)
+				replacement_body.put_front (cr_create_capture_replay_invocation_block (current_feature.feature_name, body.arguments)) --XXX
+--				replacement_body.fill (do_as.compound)
 				-- It's necessary to reuse the original do_keyword, because otherwise
 				-- the do-keyword isn't registered correctly in the match-list.
 				create do_replacement.make (replacement_body, original_do_keyword)
 				routine.set_routine_body (do_replacement)
 			end
 		end
-
 
 	cr_create_call(target_name: STRING; feature_name: STRING; parameters: PARAMETER_LIST_AS): NESTED_AS is
 			-- Create a NESTED_AS object representing a call to `target_name'.`feature_name'
@@ -6049,7 +6044,75 @@ feature {NONE} -- Implementation
 			result_not_void: Result /= Void
 		end
 
-	cr_create_capture_replay_invocation_block (feature_name: STRING): INSTRUCTION_AS is
+
+--XXX tuple not 100% correct, there's no separator list (!)
+	cr_arguments_to_tuple(arguments:EIFFEL_LIST [TYPE_DEC_AS]): TUPLE_AS is
+			--
+		local
+			tuple_lbrack: SYMBOL_AS
+			tuple_rbrack: SYMBOL_AS
+			tuple_expressions: EIFFEL_LIST [EXPR_AS]
+
+			group_i, arg_i: INTEGER
+			argument_name: STRING
+		do
+			-- Create empty tuple
+			create tuple_lbrack.make ({EIFFEL_TOKENS}.te_lsqure, 0, 0, 0, 0)
+			create tuple_rbrack.make ({EIFFEL_TOKENS}.te_rsqure, 0, 0, 0, 0)
+			create tuple_expressions.make(0) --XXX determine in advance, how many arguments will be needed (?)
+			-- Fill tuple if necessary
+			if arguments /= Void then
+				from
+					group_i := 1
+					tuple_expressions.start
+				until
+					group_i > arguments.count
+				loop
+					from
+						arg_i := 1
+					until
+						arg_i > arguments.i_th(group_i).id_list.count
+					loop
+						--add one entry to the tuple
+						argument_name := arguments.i_th (group_i).item_name (arg_i)
+						tuple_expressions.put_left (cr_create_expr_call_as(argument_name))
+						arg_i := arg_i + 1
+					end
+					group_i := group_i + 1
+				end
+
+--				--XXX only for testing...
+--				-- To find out whether the type checking problem is caused
+--				-- by multiple expressions in a tuple...
+--				if arguments.count > 0 then
+--					if arguments.i_th(1).id_list.count > 0 then
+--						argument_name := arguments.i_th (1).item_name (1)
+--						tuple_expressions.start
+--						tuple_expressions.put_left (cr_create_expr_call_as(argument_name))
+--						arg_i := arg_i + 1
+--					end
+--				end
+			end
+			create Result.initialize (tuple_expressions, tuple_lbrack, tuple_rbrack)
+		ensure
+			result_not_void: Result /= Void
+		end
+
+	cr_create_expr_call_as (feature_name: STRING): EXPR_CALL_AS
+		require
+			feature_name /= Void
+		local
+			copied_feature_name: STRING --make sure, that there are no unwanted aliases...
+			access_id: ACCESS_ID_AS
+			id: ID_AS
+		do
+			create copied_feature_name.make_from_string (feature_name)
+			create id.initialize (copied_feature_name)
+			create access_id.initialize (id, Void)
+			create Result.initialize(access_id)
+		end
+
+	cr_create_capture_replay_invocation_block (feature_name: STRING; arguments: EIFFEL_LIST [TYPE_DEC_AS]): INSTRUCTION_AS is
 			-- Create the method invocation block for the capture/replay instrumentation.
 		require
 			feature_name_not_void: feature_name /= Void
@@ -6057,10 +6120,8 @@ feature {NONE} -- Implementation
 			target_argument: STRING_AS
 			current_argument: EXPR_CALL_AS
 			current_argument_content: CURRENT_AS
-			tuple_lbrack: SYMBOL_AS
-			tuple_rbrack: SYMBOL_AS
-			tuple_expressions: EIFFEL_LIST [EXPR_AS]
-			feature_arguments_tuple_argument: TUPLE_AS
+
+
 			parameters: EIFFEL_LIST [EXPR_AS]
 			parameters_lparan: SYMBOL_AS
 			parameters_rparan: SYMBOL_AS
@@ -6078,12 +6139,9 @@ feature {NONE} -- Implementation
 			create target_argument.initialize (feature_name, 0, 0, 0, 0)
 			create current_argument_content.make_with_location (0, 0, 0, 0)
 			create current_argument.initialize (current_argument_content)
-			create tuple_lbrack.make ({EIFFEL_TOKENS}.te_lsqure, 0, 0, 0, 0)
-			create tuple_rbrack.make ({EIFFEL_TOKENS}.te_rsqure, 0, 0, 0, 0)
-			create tuple_expressions.make(0)
-			create feature_arguments_tuple_argument.initialize (tuple_expressions, tuple_lbrack, tuple_rbrack)
+
 			create parameters.make(3)
-			parameters.put_front (feature_arguments_tuple_argument)
+			parameters.put_front (cr_arguments_to_tuple(arguments))
 			parameters.put_front (current_argument)
 			parameters.put_front (target_argument)
 			create parameters_lparan.make ({EIFFEL_TOKENS}.te_lparan, 0, 0, 0, 0)
@@ -6114,9 +6172,9 @@ feature {NONE} -- Implementation
 			create entry_call.initialize (cr_create_call ("program_flow_sink", "enter", Void))
 			create leave_call.initialize (cr_create_call ("program_flow_sink", "leave", Void))
 			create compound.make (2 + instructions.count)
-			compound.put_front (entry_call)
-			compound.fill (instructions)
 			compound.put_front (leave_call)
+			compound.fill (instructions)
+			compound.put_front (entry_call)
 			Result := cr_create_capture_replay_only_block (compound)
 		ensure
 			result_not_void: Result /= Void
