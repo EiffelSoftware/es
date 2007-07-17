@@ -5956,14 +5956,7 @@ feature {NONE} -- Implementation
 			create Result.make(0,1)
 			Result.compare_objects
 			Result[0] := "ANY"
---			Result[1] := "BOOLEAN_REF"
---			Result[2] := "BOOLEAN"
---			Result[3] := "POINTER"
---			Result [4] := "POINTER_REF"
---			Result [5] := "STRING_8" -- hm... doesn't prevent the error with string...
---			Result [6] := "TUPLE" -- only experimental...
-			Result [1] := "TUPLE" -- only experimental...
-			--AND POINTER_REF???
+			Result [1] := "TUPLE"
 		end
 
 
@@ -5988,8 +5981,9 @@ feature {NONE} -- Implementation
 			if do_as /= Void then
 				original_do_keyword := do_as.do_keyword
 
-				create replacement_body.make (2)
-				replacement_body.put_front (cr_create_capture_replay_invocation_block (current_feature.feature_name, body.arguments)) --XXX
+				create replacement_body.make (0)
+				replacement_body.extend (cr_create_capture_replay_invocation_block (current_feature.feature_name, body.arguments)) --XXX
+				replacement_body.extend (cr_create_methodbody_wrapper (do_as.compound))
 --				replacement_body.fill (do_as.compound)
 				-- It's necessary to reuse the original do_keyword, because otherwise
 				-- the do-keyword isn't registered correctly in the match-list.
@@ -6020,6 +6014,23 @@ feature {NONE} -- Implementation
 			result_not_void: Result /= Void
 		end
 
+	cr_create_if_block (condition: EXPR_AS; compound: EIFFEL_LIST [INSTRUCTION_AS]): IF_AS
+		require
+			condition_not_void: condition /= Void
+			compound_not_void: compound /= Void
+		local
+			if_keyword: KEYWORD_AS
+			then_keyword: KEYWORD_AS
+			end_keyword: KEYWORD_AS
+		do
+			create if_keyword.make ({EIFFEL_TOKENS}.te_if, "if", 0, 0, 0, 0)
+			create then_keyword.make ({EIFFEL_TOKENS}.te_else, "else", 0, 0, 0, 0)
+			create end_keyword.make ({EIFFEL_TOKENS}.te_end, "end", 0, 0, 0, 0)
+
+			create Result.initialize (condition, compound, Void, Void, end_keyword, if_keyword, then_keyword, Void)
+		end
+
+
 	cr_create_capture_replay_only_block (compound: EIFFEL_LIST [INSTRUCTION_AS]): IF_AS is
 			-- Creates an if-block where compound is only executed if capture_replay is enabled:
 			-- Corresponding Eiffel-Code:
@@ -6029,17 +6040,10 @@ feature {NONE} -- Implementation
 		require
 			compound_not_void: compound /= Void
 		local
-			if_keyword: KEYWORD_AS
-			then_keyword: KEYWORD_AS
-			end_keyword: KEYWORD_AS
 			capture_replay_condition: EXPR_CALL_AS
 		do
-			create if_keyword.make ({EIFFEL_TOKENS}.te_if, "if", 0, 0, 0, 0)
-			create then_keyword.make ({EIFFEL_TOKENS}.te_else, "else", 0, 0, 0, 0)
-			create end_keyword.make ({EIFFEL_TOKENS}.te_end, "end", 0, 0, 0, 0)
-
 			create capture_replay_condition.initialize (cr_create_call("program_flow_sink", "is_capture_replay_enabled", Void))
-			create Result.initialize (capture_replay_condition, compound, Void, Void, end_keyword, if_keyword, then_keyword, Void)
+			Result := cr_create_if_block (capture_replay_condition, compound)
 		ensure
 			result_not_void: Result /= Void
 		end
@@ -6080,18 +6084,6 @@ feature {NONE} -- Implementation
 					end
 					group_i := group_i + 1
 				end
-
---				--XXX only for testing...
---				-- To find out whether the type checking problem is caused
---				-- by multiple expressions in a tuple...
---				if arguments.count > 0 then
---					if arguments.i_th(1).id_list.count > 0 then
---						argument_name := arguments.i_th (1).item_name (1)
---						tuple_expressions.start
---						tuple_expressions.put_left (cr_create_expr_call_as(argument_name))
---						arg_i := arg_i + 1
---					end
---				end
 			end
 			create Result.initialize (tuple_expressions, tuple_lbrack, tuple_rbrack)
 		ensure
@@ -6159,6 +6151,36 @@ feature {NONE} -- Implementation
 			result_not_void: Result /= Void
 		end
 
+	cr_create_methodbody_wrapper (original_methodbody: EIFFEL_LIST [INSTRUCTION_AS]): INSTRUCTION_AS is
+			-- ...
+		require
+			original_methodbody_not_void: original_methodbody /= Void
+		local
+			condition: BIN_OR_AS
+			condition_operator: KEYWORD_AS
+			condition_lhs: PARAN_AS
+			condition_lhs_not: UN_NOT_AS
+			condition_lhs_not_expression: EXPR_CALL_AS
+			condition_lhs_not_operator: KEYWORD_AS
+			condition_lhs_lparan: SYMBOL_AS
+			condition_lhs_rparan: SYMBOL_AS
+			condition_rhs: EXPR_CALL_AS
+		do
+			create condition_lhs_lparan.make ({EIFFEL_TOKENS}.te_lparan, 0, 0, 0, 0)
+			create condition_lhs_rparan.make ({EIFFEL_TOKENS}.te_rparan, 0, 0, 0, 0)
+			create condition_lhs_not_operator.make ({EIFFEL_TOKENS}.te_not, "not", 0, 0, 0, 0)
+			create condition_operator.make ({EIFFEL_TOKENS}.te_or, "or", 0, 0, 0, 0)
+			create condition_lhs_not_expression.initialize (
+							cr_create_call ("program_flow_sink", "is_replay_phase", Void))
+			create condition_lhs_not.initialize (condition_lhs_not_expression, condition_lhs_not_operator)
+			create condition_lhs.initialize (condition_lhs_not, condition_lhs_lparan, condition_lhs_rparan)
+			condition_rhs := cr_create_expr_call_as ("is_observed")
+
+			create condition.initialize (condition_lhs, condition_rhs, condition_operator)
+			Result := cr_create_if_block (condition, original_methodbody)
+		end
+
+
 	cr_create_wrapping_block (instructions: EIFFEL_LIST [INSTRUCTION_AS]) : INSTRUCTION_AS is
 			--
 		require
@@ -6172,9 +6194,10 @@ feature {NONE} -- Implementation
 			create entry_call.initialize (cr_create_call ("program_flow_sink", "enter", Void))
 			create leave_call.initialize (cr_create_call ("program_flow_sink", "leave", Void))
 			create compound.make (2 + instructions.count)
-			compound.put_front (leave_call)
-			compound.fill (instructions)
 			compound.put_front (entry_call)
+			compound.fill (instructions)
+--			compound.finish
+			compound.extend (leave_call)
 			Result := cr_create_capture_replay_only_block (compound)
 		ensure
 			result_not_void: Result /= Void
