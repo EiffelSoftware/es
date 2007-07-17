@@ -5984,7 +5984,8 @@ feature {NONE} -- Implementation
 				create replacement_body.make (0)
 				replacement_body.extend (cr_create_capture_replay_invocation_block (current_feature.feature_name, body.arguments)) --XXX
 				replacement_body.extend (cr_create_methodbody_wrapper (do_as.compound))
---				replacement_body.fill (do_as.compound)
+				replacement_body.extend (cr_create_feature_exit_block (current_feature.has_return_value))
+
 				-- It's necessary to reuse the original do_keyword, because otherwise
 				-- the do-keyword isn't registered correctly in the match-list.
 				create do_replacement.make (replacement_body, original_do_keyword)
@@ -6179,6 +6180,51 @@ feature {NONE} -- Implementation
 			create condition.initialize (condition_lhs, condition_rhs, condition_operator)
 			Result := cr_create_if_block (condition, original_methodbody)
 		end
+
+	cr_create_feature_exit_block (feature_has_return_value: BOOLEAN): INSTRUCTION_AS is
+			--
+		local
+			exit_block_instructions: EIFFEL_LIST [INSTRUCTION_AS]
+			put_exit_call: INSTR_CALL_AS
+			void_result: VOID_AS
+			result_expression: EXPR_CALL_AS
+			lpar, rpar: SYMBOL_AS
+			exit_call_parameters: EIFFEL_LIST [EXPR_AS]
+			exit_call_parameter_list: PARAMETER_LIST_AS
+
+			last_result: EXPR_CALL_AS
+			assignment_attempt_symbol: SYMBOL_AS
+			result_assignment_instr: REVERSE_AS
+		do
+
+			create exit_call_parameters.make (1)
+			create lpar.make ({EIFFEL_TOKENS}.te_lparan, 0, 0, 0, 0)
+			create rpar.make ({EIFFEL_TOKENS}.te_rparan, 0, 0, 0, 0)
+			if feature_has_return_value then
+				create result_expression.initialize (create {RESULT_AS}.make_with_location (0, 0, 0, 0))
+				exit_call_parameters.extend(result_expression)
+			else
+				create void_result.make_with_location (0, 0, 0, 0)
+				exit_call_parameters.extend (void_result)
+			end
+
+			create exit_call_parameter_list.initialize (exit_call_parameters, lpar, rpar)
+			create put_exit_call.initialize (cr_create_call ("program_flow_sink", "put_feature_exit", exit_call_parameter_list))
+
+			create exit_block_instructions.make (1)
+			exit_block_instructions.extend (put_exit_call)
+
+			if feature_has_return_value then
+				create last_result.initialize (cr_create_call ("program_flow_sink", "last_result", Void))
+				create assignment_attempt_symbol.make ({EIFFEL_TOKENS}.te_accept, 0, 0, 0, 0)
+				create result_assignment_instr.initialize (create {RESULT_AS}.make_with_location (0, 0, 0, 0),
+							 last_result, assignment_attempt_symbol)
+				exit_block_instructions.extend(result_assignment_instr)
+			end
+
+			Result := cr_create_wrapping_block(exit_block_instructions)
+		end
+
 
 
 	cr_create_wrapping_block (instructions: EIFFEL_LIST [INSTRUCTION_AS]) : INSTRUCTION_AS is
