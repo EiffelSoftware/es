@@ -221,6 +221,7 @@ feature {NONE} -- Visitor implementation
 		local
 			l_upper: TYPE_A
 			l_lower: TYPE_A
+			l_vtmc3: VTMC3
 		do
 			is_parent_an_interval := True
 			is_upper_of_interval := False
@@ -241,6 +242,13 @@ feature {NONE} -- Visitor implementation
 				else
 					l_lower.set_upper (l_upper)
 					last_type := l_lower
+					if not l_upper.is_conforming_descendant (l_lower) then
+						create l_vtmc3
+						l_vtmc3.set_message ("Upper type does not conform to lower type of interval!")
+						l_vtmc3.set_class (system.current_class)
+						l_vtmc3.set_type (l_as)
+						error_handler.insert_error (l_vtmc3)
+					end
 				end
 			end
 		end

@@ -583,10 +583,12 @@ feature {COMPILER_EXPORTER} -- Access
 			other_not_void: other /= Void
 			other_is_valid: other.is_valid
 		local
+			l_other_upper: TYPE_A
 			l_warning: INTERVAL_CONFORMANCE_WARNING
 			l_interval_lower: BOOLEAN
 			l_interval_upper: BOOLEAN
 			l_interval_result: BOOLEAN
+			l_other_super_none_a: SUPER_NONE_A
 		do
 			if
 				system.current_class.is_interval_type_system_active and
@@ -603,12 +605,25 @@ feature {COMPILER_EXPORTER} -- Access
 				Result := is_conforming_descendant (other)
 				l_interval_lower := lower.is_conforming_descendant (other.lower)
 				if l_interval_lower then
-					if not is_none then
-						l_interval_upper := other.upper.is_conforming_descendant (upper)
-					else
+					if is_none then
 							-- Void is the only entity of type NONE.
 							-- It does not need the check of the upper boundary.
 						l_interval_upper := True
+					else
+							-- Now here starts some special stuff:
+							-- Because of the the way we express polymoprhism on the base type of a generic
+							-- we have to give additional context information to the conformance check
+							-- which is currently per default _not_ available in `is_conforming_descendant'
+							-- The same goes for tuple conformance.
+						l_other_upper := other.upper
+						l_other_super_none_a ?= l_other_upper
+						if l_other_super_none_a /= Void and then not l_other_super_none_a.generics.is_empty then
+							check lower_has_same_generic_count:	other.lower.generics.count = l_other_super_none_a.generics.count end
+							l_interval_upper := l_other_super_none_a.special_is_conforming_descendant (other, lower)
+						else
+							l_interval_upper := l_other_upper.is_conforming_descendant (upper)
+						end
+
 					end
 					l_interval_result := l_interval_upper
 				else

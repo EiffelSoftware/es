@@ -102,34 +102,97 @@ feature -- Comparison
 			l_generics, l_other_generics: like generics
 			i, l_generics_count: INTEGER
 		do
+			check false end
 			l_generics := generics
 				-- Generic count matches
 			l_generics_count := generics.count
-				-- TODO DIRTY HACK
-			if other.is_super_none and False then
-				Result := True
-			else
-				if other.has_generics then
-					l_other_generics := other.generics
-					if other.is_tuple then
-						Result := l_generics_count < l_other_generics.count
-					else
-						Result := l_generics_count = l_other_generics.count or l_generics_count = 0
-					end
+			if other.has_generics then
+				l_other_generics := other.generics
+				if other.is_tuple then
+					Result := l_generics_count < l_other_generics.count
 				else
-					Result := l_generics_count = 0
+					Result := l_generics_count = l_other_generics.count or l_generics_count = 0
 				end
+			else
+				Result := l_generics_count = 0
+			end
 
-				if Result and then l_generics_count > 0 then
-					from
-						i := 1
-					until
-						i > l_generics_count or not Result
-					loop
-						Result := l_generics.item (i).conform_to (l_other_generics.item (i))
-						i := i + 1
-					end
+			if Result and then l_generics_count > 0 then
+				from
+					i := 1
+				until
+					i > l_generics_count or not Result
+				loop
+					Result := l_generics.item (i).conform_to (l_other_generics.item (i))
+					i := i + 1
 				end
+			end
+		end
+
+	special_is_conforming_descendant (a_other, a_lower: TYPE_A): BOOLEAN is
+			-- Special conformance rule in order to allow polymorphism on base-type of generics
+			--| The question is:
+			--| Does (`lower' .. `Current') conform to ()
+		require
+			a_lower_sane: a_lower /= Void and then a_lower.has_generics
+			a_lower_as_same_generic_count: a_lower.generics.count = generics.count
+			a_other_is_not_like_argument: not a_other.lower.is_like_argument and not a_other.upper.is_like_argument
+			a_lower_has_associated_class: a_lower.has_associated_class
+			a_other_has_associated_class: a_other.lower.has_associated_class or else a_other.upper.has_associated_class
+		local
+			l_other_upper: TYPE_A
+			l_other_lower: TYPE_A
+			l_map_type: TYPE_A
+			l_map_class: CLASS_C
+			i, l_count: INTEGER
+			l_lower_class: CLASS_C
+			l_type_in_descendant: TYPE_A
+			l_formal, l_formal_probe: FORMAL_A
+			l_generics: like generics
+		do
+			Result := True
+			l_generics := generics
+				-- What are we doing here:
+				-- Example: Does (FILE .. NIL) conform to (SEQUENCE [CHARACTER] .. NONE [CHARACTER])
+				-- Yes, but we have to find out wheter FILE indeed instantiated the formal of SEQUENCE with `CHARACTER'
+				-- This and the same for more complicated examples is what we do here.
+			l_other_upper := a_other.upper
+			l_other_lower := a_other.lower
+			if l_other_upper.is_super_none then
+					-- We have to find the new formal positions in order to compare the right ones.
+					-- As the other upper is SUPER_NONE too, we take the lower type to compute the mapping.
+				l_map_class := l_other_lower.associated_class
+					-- `l_other_upper.generics' cannot return `Void' as `SUPER_NONE_A' ensures that it is attached.
+				Result := l_other_lower.has_generics implies (l_other_lower.generics.count = l_other_upper.generics.count)
+			else
+					-- We use the upper to compute the mapping
+				l_map_class := l_other_upper.associated_class
+			end
+
+			from
+				i := 1
+				l_count := a_lower.generics.count
+				l_lower_class ?= a_lower.associated_class
+
+			until
+				i > l_count or not Result
+			loop
+				create l_formal_probe.make (false, false,i)
+				l_type_in_descendant := l_formal_probe.evaluated_type_in_descendant (l_lower_class, l_map_class, Void).conformance_type
+				if l_type_in_descendant.is_formal then
+					l_formal ?= l_type_in_descendant
+					check
+						l_formal_not_void: l_formal /= Void
+							-- If upper is NIL, then it has to have the same amount of generic parameters as `l_other_lower'
+							-- If its base-type is a class type then violating this check points to a bug in `feature_of_rout_id' and the
+							-- way formals are tracked.
+						l_other_upper.has_generics and then
+						l_other_upper.generics.valid_index (l_formal.position)
+					end
+					l_type_in_descendant := l_other_upper.generics [l_formal.position]
+				end
+				Result := l_generics.item (i).conform_to (l_type_in_descendant)
+				i := i + 1
 			end
 		end
 

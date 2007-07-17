@@ -231,19 +231,28 @@ feature -- Access
 			if type.type_i.is_formal then
 				Result := True
 			else
-				a := arguments
-				if a /= Void then
-					from
-						a.start
-					until
-						a.after
-					loop
-						if a.item.type_i.is_formal then
-							Result := True
-							a.finish
-						end
-						a.forth
+				Result := has_formal_argument
+			end
+		end
+
+	has_formal_argument: BOOLEAN is
+			-- Is formal type present in the feature argument signature at the top level?
+			-- (Formals used as parameters of generic class types do not count.)
+		local
+			a: like arguments
+		do
+			a := arguments
+			if a /= Void then
+				from
+					a.start
+				until
+					a.after
+				loop
+					if a.item.type_i.is_formal then
+						Result := True
+						a.finish
 					end
+					a.forth
 				end
 			end
 		end

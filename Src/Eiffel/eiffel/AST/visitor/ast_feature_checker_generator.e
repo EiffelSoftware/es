@@ -8023,7 +8023,7 @@ feature {NONE} -- Implementation: catcall check
 			l_like_arg_type: TYPE_A
 			l_upper: TYPE_A
 		do
-			if a_feature.has_formal then
+			if a_feature.has_formal_argument then
 					-- If a feature as formal generics we want to instantite the signature with the
 					-- one given by the upper type and check whether it conforms to the actual parameter/argument.
 
@@ -8031,7 +8031,7 @@ feature {NONE} -- Implementation: catcall check
 				l_upper := a_callee_type.upper
 					-- Get generics if we have generics.
 				if not l_upper.has_generics or else l_upper.generics.is_empty then
-						-- This is the case for code like the following: LIST [A] .. NONE
+						-- This is the case for code like the following: LIST [A] .. NONE/NIL
 						-- A call to `put' us not allowed.
 						-- Throw error, break out of execution
 					create l_cat_call_warning.make (context.current_class, context.current_feature, a_location)
@@ -8067,7 +8067,12 @@ feature {NONE} -- Implementation: catcall check
 						end
 
 							-- Then proceed with formals: Replace them all by actual parameters.
-						l_formal_argument := l_formal_argument.instantiated_in (l_upper)
+						if l_upper.is_super_none then
+							l_formal_argument := l_formal_argument.instantiated_in (l_upper)
+						else
+							l_formal_argument := l_formal_argument.instantiation_in (l_upper, a_callee_type.associated_class.class_id)
+						end
+
 
 							-- Check if actual argument conforms to formal argument
 						if not l_actual_argument.interval_conform_to (l_formal_argument) then
