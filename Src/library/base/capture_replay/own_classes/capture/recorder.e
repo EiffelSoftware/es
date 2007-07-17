@@ -54,7 +54,7 @@ feature -- Status change
 
 feature -- Basic Operations
 
-	put_feature_exit (res: ANY): ANY
+	put_feature_exit (res: ANY)
 			-- Record a feature_exit - event
 		local
 			current_observed: BOOLEAN
@@ -68,7 +68,7 @@ feature -- Basic Operations
 					serializer.write_outcallret (res)
 				end
 			end
-			Result := res
+			last_result := res
 		end
 
 	put_feature_invocation (feature_name: STRING_8; target: ANY; arguments: TUPLE)

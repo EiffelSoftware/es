@@ -416,7 +416,6 @@ feature -- Capture/Replay
 			--		- In replay phase, `new_content' is loaded into `Current' to make sure that
 			--		  the direct manipulation will be replayed as well.
 		local
-			ignore_result: ANY
 			manifest_wrapper: MANIFEST_SPECIAL [T]
 			called_from_unobserved_space: BOOLEAN
 			simulation_necessary: BOOLEAN
@@ -440,7 +439,7 @@ feature -- Capture/Replay
 
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result := program_flow_sink.put_feature_exit (Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 		end

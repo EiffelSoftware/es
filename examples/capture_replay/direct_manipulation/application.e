@@ -27,10 +27,10 @@ feature -- Initialization
 			configurator: CONFIGURATION_HELPER
 			player: PLAYER
 			caller: APPLICATION_CALLER
-			ignore_result: ANY
 		do
 			create caller
-			create configurator.make(caller)
+			create configurator.make
+			configurator.set_caller (caller)
 			configurator.configure_program_flow_sink (program_flow_sink)
 			player ?= program_flow_sink
 			if player /= Void then
@@ -53,7 +53,7 @@ feature -- Initialization
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit(Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>

@@ -18,8 +18,6 @@ create
 feature -- Initialization
 	make is
 			-- Create an object of UNOBSERVED_CLASS
-		local
-			ignore_result: ANY
 		do
 			-- <methodbody_start name="make" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
@@ -35,7 +33,7 @@ feature -- Initialization
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit(Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -61,7 +59,8 @@ feature -- Access
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit(Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -85,7 +84,8 @@ feature -- Access
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit(Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>

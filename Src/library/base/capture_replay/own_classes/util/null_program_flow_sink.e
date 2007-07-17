@@ -14,10 +14,10 @@ feature -- Access
 
 feature -- Basic operations
 
-	put_feature_exit (res: ANY): ANY is
+	put_feature_exit (res: ANY) is
 			-- Ignore event.
 		do
-
+			last_result := res
 		end
 
 	put_feature_invocation (feature_name: STRING_8; target: ANY; arguments: TUPLE)

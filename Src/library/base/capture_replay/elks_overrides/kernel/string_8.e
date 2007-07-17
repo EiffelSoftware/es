@@ -81,7 +81,7 @@ feature -- Initialization
 			-- <methodbody_start name="make" args="[n]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("make", Current, [n])
+				program_flow_sink.put_feature_invocation ("make", Current, [n])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -95,7 +95,7 @@ feature -- Initialization
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -114,7 +114,7 @@ feature -- Initialization
 			-- <methodbody_start name="make_empty" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("make_empty", Current, [])
+				program_flow_sink.put_feature_invocation ("make_empty", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -124,7 +124,7 @@ feature -- Initialization
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -145,7 +145,7 @@ feature -- Initialization
 			-- <methodbody_start name="make_filled" args="[c,n]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("make_filled", Current, [c,n])
+				program_flow_sink.put_feature_invocation ("make_filled", Current, [c,n])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -156,7 +156,7 @@ feature -- Initialization
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -180,7 +180,7 @@ feature -- Initialization
 			-- <methodbody_start name="make_from_string" args="[s]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("make_from_string", Current, [s])
+				program_flow_sink.put_feature_invocation ("make_from_string", Current, [s])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -194,7 +194,7 @@ feature -- Initialization
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -217,7 +217,7 @@ feature -- Initialization
 			-- <methodbody_start name="make_from_c" args="[c_string]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("make_from_c", Current, [c_string])
+				program_flow_sink.put_feature_invocation ("make_from_c", Current, [c_string])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -236,7 +236,7 @@ feature -- Initialization
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -255,7 +255,7 @@ feature -- Initialization
 			-- <methodbody_start name="make_from_cil" args="[a_system_string]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("make_from_cil", Current, [a_system_string])
+				program_flow_sink.put_feature_invocation ("make_from_cil", Current, [a_system_string])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -273,7 +273,7 @@ feature -- Initialization
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -293,7 +293,7 @@ feature -- Initialization
 			-- <methodbody_start name="from_c" args="[c_string]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("from_c", Current, [c_string])
+				program_flow_sink.put_feature_invocation ("from_c", Current, [c_string])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -309,7 +309,7 @@ feature -- Initialization
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -337,7 +337,7 @@ feature -- Initialization
 			-- <methodbody_start name="from_c_substring" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("from_c_substring", Current, [])
+				program_flow_sink.put_feature_invocation ("from_c_substring", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -353,7 +353,7 @@ feature -- Initialization
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -372,7 +372,7 @@ feature -- Initialization
 			-- <methodbody_start name="adapt" args="[s]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("adapt", Current, [s])
+				program_flow_sink.put_feature_invocation ("adapt", Current, [s])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -383,7 +383,8 @@ feature -- Initialization
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -406,7 +407,7 @@ feature -- Initialization
 			-- <methodbody_start name="remake" args="[n]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("remake", Current, [n])
+				program_flow_sink.put_feature_invocation ("remake", Current, [n])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -416,7 +417,7 @@ feature -- Initialization
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -437,7 +438,7 @@ feature -- Access
 			-- <methodbody_start name="item" args="[i]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("item", Current, [i])
+				program_flow_sink.put_feature_invocation ("item", Current, [i])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -447,7 +448,8 @@ feature -- Access
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -464,7 +466,7 @@ feature -- Access
 			-- <methodbody_start name="code" args="[i]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("code", Current, [i])
+				program_flow_sink.put_feature_invocation ("code", Current, [i])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -474,7 +476,8 @@ feature -- Access
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -493,7 +496,7 @@ feature -- Access
 			-- <methodbody_start name="item_code" args="[i]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("item_code", Current, [i])
+				program_flow_sink.put_feature_invocation ("item_code", Current, [i])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -504,7 +507,8 @@ feature -- Access
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -522,7 +526,7 @@ feature -- Access
 			-- <methodbody_start name="hash_code" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("hash_code", Current, [])
+				program_flow_sink.put_feature_invocation ("hash_code", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -548,7 +552,8 @@ feature -- Access
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -568,7 +573,7 @@ feature -- Access
 			-- <methodbody_start name="shared_with" args="[other]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("shared_with", Current, [other])
+				program_flow_sink.put_feature_invocation ("shared_with", Current, [other])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -579,7 +584,8 @@ feature -- Access
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -600,7 +606,7 @@ feature -- Access
 			-- <methodbody_start name="index_of" args="[c,start_index]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("index_of", Current, [c,start_index])
+				program_flow_sink.put_feature_invocation ("index_of", Current, [c,start_index])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -625,7 +631,8 @@ feature -- Access
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -652,7 +659,7 @@ feature -- Access
 			-- <methodbody_start name="last_index_of" args="[c,start_index_from_end]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("last_index_of", Current, [c,start_index_from_end])
+				program_flow_sink.put_feature_invocation ("last_index_of", Current, [c,start_index_from_end])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -672,7 +679,8 @@ feature -- Access
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -699,7 +707,7 @@ feature -- Access
 			-- <methodbody_start name="substring_index_in_bounds" args="[other,start_pos,end_pos]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("substring_index_in_bounds", Current, [other,start_pos,end_pos])
+				program_flow_sink.put_feature_invocation ("substring_index_in_bounds", Current, [other,start_pos,end_pos])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -709,7 +717,8 @@ feature -- Access
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -728,7 +737,7 @@ feature -- Access
 			-- <methodbody_start name="string" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("string", Current, [])
+				program_flow_sink.put_feature_invocation ("string", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -738,7 +747,8 @@ feature -- Access
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -758,7 +768,7 @@ feature -- Access
 			-- <methodbody_start name="string_representation" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("string_representation", Current, [])
+				program_flow_sink.put_feature_invocation ("string_representation", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -773,7 +783,8 @@ feature -- Access
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -797,7 +808,7 @@ feature -- Access
 			-- <methodbody_start name="substring_index" args="[other,start_index]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("substring_index", Current, [other,start_index])
+				program_flow_sink.put_feature_invocation ("substring_index", Current, [other,start_index])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -807,7 +818,8 @@ feature -- Access
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -838,7 +850,7 @@ feature -- Access
 			-- <methodbody_start name="fuzzy_index" args="[other,start,fuzz]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("fuzzy_index", Current, [other,start,fuzz])
+				program_flow_sink.put_feature_invocation ("fuzzy_index", Current, [other,start,fuzz])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -848,7 +860,8 @@ feature -- Access
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -867,7 +880,7 @@ feature -- Measurement
 			-- <methodbody_start name="capacity" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("capacity", Current, [])
+				program_flow_sink.put_feature_invocation ("capacity", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -877,7 +890,8 @@ feature -- Measurement
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -897,7 +911,7 @@ feature -- Measurement
 			-- <methodbody_start name="occurences" args="[c]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("occurences", Current, [c])
+				program_flow_sink.put_feature_invocation ("occurences", Current, [c])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -917,7 +931,8 @@ feature -- Measurement
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -939,7 +954,7 @@ feature -- Measurement
 			-- <methodbody_start name="index_set" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("index_set", Current, [])
+				program_flow_sink.put_feature_invocation ("index_set", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -949,7 +964,8 @@ feature -- Measurement
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -970,7 +986,7 @@ feature -- Comparison
 			-- <methodbody_start name="is_equal" args="[other]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("is_equal", Current, [other])
+				program_flow_sink.put_feature_invocation ("is_equal", Current, [other])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -987,7 +1003,8 @@ feature -- Comparison
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1007,7 +1024,7 @@ feature -- Comparison
 			-- <methodbody_start name="is_case_insensitive_equal" args="[other]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("is_case_insensitive_equal", Current, [other])
+				program_flow_sink.put_feature_invocation ("is_case_insensitive_equal", Current, [other])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1036,7 +1053,8 @@ feature -- Comparison
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1059,7 +1077,7 @@ feature -- Comparison
 			-- <methodbody_start name="same_string" args="[other]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("same_string", Current, [other])
+				program_flow_sink.put_feature_invocation ("same_string", Current, [other])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1103,7 +1121,8 @@ feature -- Comparison
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1122,7 +1141,7 @@ feature -- Comparison
 			-- <methodbody_start name="infix_st" args="[other]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("infix_st", Current, [other])
+				program_flow_sink.put_feature_invocation ("infix_st", Current, [other])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1144,7 +1163,8 @@ feature -- Comparison
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1172,7 +1192,7 @@ feature -- Status report
 			-- <methodbody_start name="has" args="[c]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("has", Current, [c])
+				program_flow_sink.put_feature_invocation ("has", Current, [c])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1192,7 +1212,8 @@ feature -- Status report
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1213,7 +1234,7 @@ feature -- Status report
 			-- <methodbody_start name="has_substring" args="[other]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("has_substring", Current, [other])
+				program_flow_sink.put_feature_invocation ("has_substring", Current, [other])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1227,7 +1248,8 @@ feature -- Status report
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1251,7 +1273,7 @@ feature -- Status report
 			-- <methodbody_start name="prunable" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("prunable", Current, [])
+				program_flow_sink.put_feature_invocation ("prunable", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1261,7 +1283,8 @@ feature -- Status report
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1275,7 +1298,7 @@ feature -- Status report
 			-- <methodbody_start name="valid_index" args="[i]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("valid_index", Current, [i])
+				program_flow_sink.put_feature_invocation ("valid_index", Current, [i])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1285,7 +1308,8 @@ feature -- Status report
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1299,7 +1323,7 @@ feature -- Status report
 			-- <methodbody_start name="valid_code" args="[v]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("valid_code", Current, [v])
+				program_flow_sink.put_feature_invocation ("valid_code", Current, [v])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1309,7 +1333,8 @@ feature -- Status report
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1325,7 +1350,7 @@ feature -- Status report
 			-- <methodbody_start name="is_number_sequence" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("is_number_sequence", Current, [])
+				program_flow_sink.put_feature_invocation ("is_number_sequence", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1335,7 +1360,8 @@ feature -- Status report
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1362,7 +1388,7 @@ feature -- Status report
 			-- <methodbody_start name="is_real" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("is_real", Current, [])
+				program_flow_sink.put_feature_invocation ("is_real", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1372,7 +1398,8 @@ feature -- Status report
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1408,7 +1435,7 @@ feature -- Status report
 			-- <methodbody_start name="is_double" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("is_double", Current, [])
+				program_flow_sink.put_feature_invocation ("is_double", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1419,7 +1446,8 @@ feature -- Status report
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1458,7 +1486,7 @@ feature -- Status report
 			-- <methodbody_start name="is_boolean" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("is_boolean", Current, [])
+				program_flow_sink.put_feature_invocation ("is_boolean", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1484,7 +1512,8 @@ feature -- Status report
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1500,7 +1529,7 @@ feature -- Status report
 			-- <methodbody_start name="is_integer_8" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("is_integer_8", Current, [])
+				program_flow_sink.put_feature_invocation ("is_integer_8", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1510,7 +1539,8 @@ feature -- Status report
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1524,7 +1554,7 @@ feature -- Status report
 			-- <methodbody_start name="is_integer_16" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("is_integer_16", Current, [])
+				program_flow_sink.put_feature_invocation ("is_integer_16", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1534,7 +1564,8 @@ feature -- Status report
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1548,7 +1579,7 @@ feature -- Status report
 			-- <methodbody_start name="is_integer" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("is_integer", Current, [])
+				program_flow_sink.put_feature_invocation ("is_integer", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1558,7 +1589,8 @@ feature -- Status report
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1572,7 +1604,7 @@ feature -- Status report
 			-- <methodbody_start name="is_integer_64" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("is_integer_64", Current, [])
+				program_flow_sink.put_feature_invocation ("is_integer_64", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1582,7 +1614,8 @@ feature -- Status report
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1596,7 +1629,7 @@ feature -- Status report
 			-- <methodbody_start name="is_natural_8" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("is_natural_8", Current, [])
+				program_flow_sink.put_feature_invocation ("is_natural_8", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1606,7 +1639,8 @@ feature -- Status report
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1621,7 +1655,7 @@ feature -- Status report
 			-- <methodbody_start name="is_natural_16" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("is_natural_16", Current, [])
+				program_flow_sink.put_feature_invocation ("is_natural_16", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1631,7 +1665,8 @@ feature -- Status report
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1645,7 +1680,7 @@ feature -- Status report
 			-- <methodbody_start name="is_natural" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("is_natural", Current, [])
+				program_flow_sink.put_feature_invocation ("is_natural", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1655,7 +1690,8 @@ feature -- Status report
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1669,7 +1705,7 @@ feature -- Status report
 			-- <methodbody_start name="is_natural_64" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("is_natural_64", Current, [])
+				program_flow_sink.put_feature_invocation ("is_natural_64", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1679,7 +1715,8 @@ feature -- Status report
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1701,7 +1738,7 @@ feature -- Element change
 			-- <methodbody_start name="set" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("set", Current, [])
+				program_flow_sink.put_feature_invocation ("set", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1714,7 +1751,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1735,7 +1772,7 @@ feature -- Element change
 			-- <methodbody_start name="copy" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("copy", Current, [])
+				program_flow_sink.put_feature_invocation ("copy", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1761,7 +1798,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1789,7 +1826,7 @@ feature -- Element change
 			-- <methodbody_start name="subcopy" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("subcopy", Current, [])
+				program_flow_sink.put_feature_invocation ("subcopy", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1810,7 +1847,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1842,7 +1879,7 @@ feature -- Element change
 			-- <methodbody_start name="replace_substring" args="[s,start_index,end_index]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("replace_substring", Current, [s,start_index,end_index])
+				program_flow_sink.put_feature_invocation ("replace_substring", Current, [s,start_index,end_index])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1870,7 +1907,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -1900,7 +1937,7 @@ feature -- Element change
 			-- <methodbody_start name="replace_substring_all" args="[original,new]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("replace_substring_all", Current, [original,new])
+				program_flow_sink.put_feature_invocation ("replace_substring_all", Current, [original,new])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -1985,7 +2022,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2001,7 +2038,7 @@ feature -- Element change
 			-- <methodbody_start name="replace_blank" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("replace_blank", Current, [])
+				program_flow_sink.put_feature_invocation ("replace_blank", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2011,7 +2048,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2030,7 +2067,7 @@ feature -- Element change
 			-- <methodbody_start name="fill_blank" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("fill_blank", Current, [])
+				program_flow_sink.put_feature_invocation ("fill_blank", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2040,7 +2077,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2061,7 +2098,7 @@ feature -- Element change
 			-- <methodbody_start name="fill_with" args="[c]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("fill_with", Current, [c])
+				program_flow_sink.put_feature_invocation ("fill_with", Current, [c])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2075,7 +2112,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2096,7 +2133,7 @@ feature -- Element change
 			-- <methodbody_start name="replace_character" args="[c]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("replace_character", Current, [c])
+				program_flow_sink.put_feature_invocation ("replace_character", Current, [c])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2106,7 +2143,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2126,7 +2163,7 @@ feature -- Element change
 			-- <methodbody_start name="fill_character" args="[c]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("fill_character", Current, [c])
+				program_flow_sink.put_feature_invocation ("fill_character", Current, [c])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2141,7 +2178,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2166,7 +2203,7 @@ feature -- Element change
 			-- <methodbody_start name="head" args="[n]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("head", Current, [n])
+				program_flow_sink.put_feature_invocation ("head", Current, [n])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2176,7 +2213,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2198,7 +2235,7 @@ feature -- Element change
 			-- <methodbody_start name="keep_head" args="[n]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("keep_head", Current, [n])
+				program_flow_sink.put_feature_invocation ("keep_head", Current, [n])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2211,7 +2248,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2235,7 +2272,7 @@ feature -- Element change
 			-- <methodbody_start name="tail" args="[n]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("tail", Current, [n])
+				program_flow_sink.put_feature_invocation ("tail", Current, [n])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2245,7 +2282,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2268,7 +2305,7 @@ feature -- Element change
 			-- <methodbody_start name="keep_tail" args="[n]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("keep_tail", Current, [n])
+				program_flow_sink.put_feature_invocation ("keep_tail", Current, [n])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2283,7 +2320,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2304,7 +2341,7 @@ feature -- Element change
 			-- <methodbody_start name="left_adjust" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("left_adjust", Current, [])
+				program_flow_sink.put_feature_invocation ("left_adjust", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2332,7 +2369,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2355,7 +2392,7 @@ feature -- Element change
 			-- <methodbody_start name="right_adjust" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("right_adjust", Current, [])
+				program_flow_sink.put_feature_invocation ("right_adjust", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2381,7 +2418,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2409,7 +2446,7 @@ feature -- Element change
 			-- <methodbody_start name="other" args="[other]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("other", Current, [other])
+				program_flow_sink.put_feature_invocation ("other", Current, [other])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2421,7 +2458,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2440,7 +2477,7 @@ feature -- Element change
 			-- <methodbody_start name="put" args="[c,i]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("put", Current, [c,i])
+				program_flow_sink.put_feature_invocation ("put", Current, [c,i])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2451,7 +2488,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2471,7 +2508,7 @@ feature -- Element change
 			-- <methodbody_start name="put_code" args="[v,i]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("put_code", Current, [v,i])
+				program_flow_sink.put_feature_invocation ("put_code", Current, [v,i])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2482,7 +2519,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2499,7 +2536,7 @@ feature -- Element change
 			-- <methodbody_start name="precede" args="[c]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("precede", Current, [c])
+				program_flow_sink.put_feature_invocation ("precede", Current, [c])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2516,7 +2553,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2536,7 +2573,7 @@ feature -- Element change
 			-- <methodbody_start name="prepend" args="[s]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("prepend", Current, [s])
+				program_flow_sink.put_feature_invocation ("prepend", Current, [s])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2546,7 +2583,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2565,7 +2602,7 @@ feature -- Element change
 			-- <methodbody_start name="prepend_boolean" args="[b]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("prepend_boolean", Current, [b])
+				program_flow_sink.put_feature_invocation ("prepend_boolean", Current, [b])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2575,7 +2612,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2591,7 +2628,7 @@ feature -- Element change
 			-- <methodbody_start name="prepend_double" args="[d]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("prepend_double", Current, [d])
+				program_flow_sink.put_feature_invocation ("prepend_double", Current, [d])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2601,7 +2638,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2617,7 +2654,7 @@ feature -- Element change
 			-- <methodbody_start name="prepend_integer" args="[i]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("prepend_integer", Current, [i])
+				program_flow_sink.put_feature_invocation ("prepend_integer", Current, [i])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2627,7 +2664,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2643,7 +2680,7 @@ feature -- Element change
 			-- <methodbody_start name="prepend_real" args="[r]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("prepend_real", Current, [r])
+				program_flow_sink.put_feature_invocation ("prepend_real", Current, [r])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2653,7 +2690,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2669,7 +2706,7 @@ feature -- Element change
 			-- <methodbody_start name="prepend_string" args="[s]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("prepend_string", Current, [s])
+				program_flow_sink.put_feature_invocation ("prepend_string", Current, [s])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2681,7 +2718,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2698,7 +2735,7 @@ feature -- Element change
 			-- <methodbody_start name="append_string_general" args="[s]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("append_string_general", Current, [s])
+				program_flow_sink.put_feature_invocation ("append_string_general", Current, [s])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2713,7 +2750,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2732,7 +2769,7 @@ feature -- Element change
 			-- <methodbody_start name="append" args="[s]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("append", Current, [s])
+				program_flow_sink.put_feature_invocation ("append", Current, [s])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2752,7 +2789,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2774,7 +2811,7 @@ feature -- Element change
 			-- <methodbody_start name="infix_plus" args="[s]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("infix_plus", Current, [s])
+				program_flow_sink.put_feature_invocation ("infix_plus", Current, [s])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2786,7 +2823,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2807,7 +2844,7 @@ feature -- Element change
 			-- <methodbody_start name="append_string" args="[s]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("append_string", Current, [s])
+				program_flow_sink.put_feature_invocation ("append_string", Current, [s])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2819,7 +2856,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2842,7 +2879,7 @@ feature -- Element change
 			-- <methodbody_start name="append_integer" args="[i]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("append_integer", Current, [i])
+				program_flow_sink.put_feature_invocation ("append_integer", Current, [i])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2892,7 +2929,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2912,7 +2949,7 @@ feature -- Element change
 			-- <methodbody_start name="append_integer_8" args="[i]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("append_integer_8", Current, [i])
+				program_flow_sink.put_feature_invocation ("append_integer_8", Current, [i])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -2962,7 +2999,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -2982,7 +3019,7 @@ feature -- Element change
 			-- <methodbody_start name="append_integer_16" args="[i]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("append_integer_16", Current, [i])
+				program_flow_sink.put_feature_invocation ("append_integer_16", Current, [i])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -3032,7 +3069,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -3052,7 +3089,7 @@ feature -- Element change
 			-- <methodbody_start name="append_integer_64" args="[i]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("append_integer_64", Current, [i])
+				program_flow_sink.put_feature_invocation ("append_integer_64", Current, [i])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -3102,7 +3139,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -3122,7 +3159,7 @@ feature -- Element change
 			-- <methodbody_start name="append_natural_8" args="[i]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("append_natural_8", Current, [i])
+				program_flow_sink.put_feature_invocation ("append_natural_8", Current, [i])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -3160,7 +3197,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -3180,7 +3217,7 @@ feature -- Element change
 			-- <methodbody_start name="append_natural_16" args="[i]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("append_natural_16", Current, [i])
+				program_flow_sink.put_feature_invocation ("append_natural_16", Current, [i])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -3217,7 +3254,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -3237,7 +3274,7 @@ feature -- Element change
 			-- <methodbody_start name="append_natural_32" args="[i]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("append_natural_32", Current, [i])
+				program_flow_sink.put_feature_invocation ("append_natural_32", Current, [i])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -3275,7 +3312,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -3295,7 +3332,7 @@ feature -- Element change
 			-- <methodbody_start name="append_natural_64" args="[i]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("append_natural_64", Current, [i])
+				program_flow_sink.put_feature_invocation ("append_natural_64", Current, [i])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -3332,7 +3369,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -3348,7 +3385,7 @@ feature -- Element change
 			-- <methodbody_start name="append_real" args="[r]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("append_real", Current, [r])
+				program_flow_sink.put_feature_invocation ("append_real", Current, [r])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -3358,7 +3395,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -3374,7 +3411,7 @@ feature -- Element change
 			-- <methodbody_start name="append_double" args="[d]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("append_double", Current, [d])
+				program_flow_sink.put_feature_invocation ("append_double", Current, [d])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -3384,7 +3421,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -3401,7 +3438,7 @@ feature -- Element change
 			-- <methodbody_start name="append_character" args="[c]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("append_character", Current, [c])
+				program_flow_sink.put_feature_invocation ("append_character", Current, [c])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -3417,7 +3454,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -3437,7 +3474,7 @@ feature -- Element change
 			-- <methodbody_start name="append_boolean" args="[b]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("append_boolean", Current, [b])
+				program_flow_sink.put_feature_invocation ("append_boolean", Current, [b])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -3447,7 +3484,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -3469,7 +3506,7 @@ feature -- Element change
 			-- <methodbody_start name="insert" args="[s,i]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("insert", Current, [s,i])
+				program_flow_sink.put_feature_invocation ("insert", Current, [s,i])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -3479,7 +3516,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -3505,7 +3542,7 @@ feature -- Element change
 			-- <methodbody_start name="insert_string" args="[s,i]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("insert_string", Current, [s,i])
+				program_flow_sink.put_feature_invocation ("insert_string", Current, [s,i])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -3536,7 +3573,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -3560,7 +3597,7 @@ feature -- Element change
 			-- <methodbody_start name="insert_character" args="[c,i]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("insert_character", Current, [c,i])
+				program_flow_sink.put_feature_invocation ("insert_character", Current, [c,i])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -3587,7 +3624,7 @@ feature -- Element change
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -3611,7 +3648,7 @@ feature -- Removal
 			-- <methodbody_start name="remove" args="[i]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("remove", Current, [i])
+				program_flow_sink.put_feature_invocation ("remove", Current, [i])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -3626,7 +3663,7 @@ feature -- Removal
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -3645,7 +3682,7 @@ feature -- Removal
 			-- <methodbody_start name="remove_head" args="[n]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("remove_head", Current, [n])
+				program_flow_sink.put_feature_invocation ("remove_head", Current, [n])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -3660,7 +3697,7 @@ feature -- Removal
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -3684,7 +3721,7 @@ feature -- Removal
 			-- <methodbody_start name="remove_substring" args="[start_index,end_index]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("remove_substring", Current, [start_index,end_index])
+				program_flow_sink.put_feature_invocation ("remove_substring", Current, [start_index,end_index])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -3699,7 +3736,7 @@ feature -- Removal
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -3722,7 +3759,7 @@ feature -- Removal
 			-- <methodbody_start name="remove_tail" args="[n]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("remove_tail", Current, [n])
+				program_flow_sink.put_feature_invocation ("remove_tail", Current, [n])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -3738,7 +3775,7 @@ feature -- Removal
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -3759,7 +3796,7 @@ feature -- Removal
 			-- <methodbody_start name="prune" args="[c]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("prune", Current, [c])
+				program_flow_sink.put_feature_invocation ("prune", Current, [c])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -3778,7 +3815,7 @@ feature -- Removal
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -3799,7 +3836,7 @@ feature -- Removal
 			-- <methodbody_start name="prune_all" args="[c]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("prune_all", Current, [c])
+				program_flow_sink.put_feature_invocation ("prune_all", Current, [c])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -3825,7 +3862,7 @@ feature -- Removal
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -3844,7 +3881,7 @@ feature -- Removal
 			-- <methodbody_start name="prune_all_leading" args="[c]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("prune_all_leading", Current, [c])
+				program_flow_sink.put_feature_invocation ("prune_all_leading", Current, [c])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -3859,7 +3896,7 @@ feature -- Removal
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -3875,7 +3912,7 @@ feature -- Removal
 			-- <methodbody_start name="prune_all_trailing" args="[c]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("prune_all_trailing", Current, [c])
+				program_flow_sink.put_feature_invocation ("prune_all_trailing", Current, [c])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -3890,7 +3927,7 @@ feature -- Removal
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -3906,7 +3943,7 @@ feature -- Removal
 			-- <methodbody_start name="wipe_out" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("wipe_out", Current, [])
+				program_flow_sink.put_feature_invocation ("wipe_out", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -3918,7 +3955,7 @@ feature -- Removal
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -3937,7 +3974,7 @@ feature -- Removal
 			-- <methodbody_start name="clear_all" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("clear_all", Current, [])
+				program_flow_sink.put_feature_invocation ("clear_all", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -3948,7 +3985,7 @@ feature -- Removal
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -3969,7 +4006,7 @@ feature -- Resizing
 			-- <methodbody_start name="adapt_size" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("adapt_size", Current, [])
+				program_flow_sink.put_feature_invocation ("adapt_size", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -3979,7 +4016,7 @@ feature -- Resizing
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -3998,7 +4035,7 @@ feature -- Resizing
 			-- <methodbody_start name="resize" args="[newsize]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("resize", Current, [newsize])
+				program_flow_sink.put_feature_invocation ("resize", Current, [newsize])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4011,7 +4048,7 @@ feature -- Resizing
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4027,7 +4064,7 @@ feature -- Resizing
 			-- <methodbody_start name="grow" args="[newsize]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("grow", Current, [newsize])
+				program_flow_sink.put_feature_invocation ("grow", Current, [newsize])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4039,7 +4076,7 @@ feature -- Resizing
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4057,7 +4094,7 @@ feature -- Conversion
 			-- <methodbody_start name="as_lower" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("as_lower", Current, [])
+				program_flow_sink.put_feature_invocation ("as_lower", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4068,7 +4105,8 @@ feature -- Conversion
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4088,7 +4126,7 @@ feature -- Conversion
 			-- <methodbody_start name="as_upper" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("as_upper", Current, [])
+				program_flow_sink.put_feature_invocation ("as_upper", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4099,7 +4137,8 @@ feature -- Conversion
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4122,7 +4161,7 @@ feature -- Conversion
 			-- <methodbody_start name="left_justify" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("left_justify", Current, [])
+				program_flow_sink.put_feature_invocation ("left_justify", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4152,7 +4191,7 @@ feature -- Conversion
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4171,7 +4210,7 @@ feature -- Conversion
 			-- <methodbody_start name="center_justify" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("center_justify", Current, [])
+				program_flow_sink.put_feature_invocation ("center_justify", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4226,7 +4265,7 @@ feature -- Conversion
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4245,7 +4284,7 @@ feature -- Conversion
 			-- <methodbody_start name="right_justify" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("right_justify", Current, [])
+				program_flow_sink.put_feature_invocation ("right_justify", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4285,7 +4324,7 @@ feature -- Conversion
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4314,7 +4353,7 @@ feature -- Conversion
 			-- <methodbody_start name="character_justify" args="[pivot,position]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("character_justify", Current, [pivot,position])
+				program_flow_sink.put_feature_invocation ("character_justify", Current, [pivot,position])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4342,7 +4381,7 @@ feature -- Conversion
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4360,7 +4399,7 @@ feature -- Conversion
 			-- <methodbody_start name="to_lower" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("to_lower", Current, [])
+				program_flow_sink.put_feature_invocation ("to_lower", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4379,7 +4418,7 @@ feature -- Conversion
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4399,7 +4438,7 @@ feature -- Conversion
 			-- <methodbody_start name="to_upper" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("to_upper", Current, [])
+				program_flow_sink.put_feature_invocation ("to_upper", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4418,7 +4457,7 @@ feature -- Conversion
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4436,7 +4475,7 @@ feature -- Conversion
 			-- <methodbody_start name="to_integer_8" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("to_integer_8", Current, [])
+				program_flow_sink.put_feature_invocation ("to_integer_8", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4447,7 +4486,8 @@ feature -- Conversion
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4463,7 +4503,7 @@ feature -- Conversion
 			-- <methodbody_start name="to_integer_16" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("to_integer_16", Current, [])
+				program_flow_sink.put_feature_invocation ("to_integer_16", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4474,7 +4514,8 @@ feature -- Conversion
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4490,7 +4531,7 @@ feature -- Conversion
 			-- <methodbody_start name="to_integer" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("to_integer", Current, [])
+				program_flow_sink.put_feature_invocation ("to_integer", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4501,7 +4542,8 @@ feature -- Conversion
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4517,7 +4559,7 @@ feature -- Conversion
 			-- <methodbody_start name="to_integer_64" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("to_integer_64", Current, [])
+				program_flow_sink.put_feature_invocation ("to_integer_64", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4528,7 +4570,8 @@ feature -- Conversion
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4544,7 +4587,7 @@ feature -- Conversion
 			-- <methodbody_start name="to_natural_8" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("to_natural_8", Current, [])
+				program_flow_sink.put_feature_invocation ("to_natural_8", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4555,7 +4598,8 @@ feature -- Conversion
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4571,7 +4615,7 @@ feature -- Conversion
 			-- <methodbody_start name="to_natural_16" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("to_natural_16", Current, [])
+				program_flow_sink.put_feature_invocation ("to_natural_16", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4582,7 +4626,8 @@ feature -- Conversion
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4598,7 +4643,7 @@ feature -- Conversion
 			-- <methodbody_start name="to_natural" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("to_natural", Current, [])
+				program_flow_sink.put_feature_invocation ("to_natural", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4609,7 +4654,8 @@ feature -- Conversion
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4625,7 +4671,7 @@ feature -- Conversion
 			-- <methodbody_start name="to_natural_64" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("to_natural_64", Current, [])
+				program_flow_sink.put_feature_invocation ("to_natural_64", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4636,7 +4682,8 @@ feature -- Conversion
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4655,7 +4702,7 @@ feature -- Conversion
 			-- <methodbody_start name="to_real" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("to_real", Current, [])
+				program_flow_sink.put_feature_invocation ("to_real", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4665,7 +4712,8 @@ feature -- Conversion
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4682,7 +4730,7 @@ feature -- Conversion
 			-- <methodbody_start name="to_double" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("to_double", Current, [])
+				program_flow_sink.put_feature_invocation ("to_double", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4693,7 +4741,8 @@ feature -- Conversion
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4711,7 +4760,7 @@ feature -- Conversion
 			-- <methodbody_start name="to_boolean" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("to_boolean", Current, [])
+				program_flow_sink.put_feature_invocation ("to_boolean", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4724,7 +4773,8 @@ feature -- Conversion
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4744,7 +4794,7 @@ feature -- Conversion
 			-- <methodbody_start name="linear_representation" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("linear_representation", Current, [])
+				program_flow_sink.put_feature_invocation ("linear_representation", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4763,7 +4813,8 @@ feature -- Conversion
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4781,7 +4832,7 @@ feature -- Conversion
 			-- <methodbody_start name="split" args="[a_separator]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("split", Current, [a_separator])
+				program_flow_sink.put_feature_invocation ("split", Current, [a_separator])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4825,7 +4876,8 @@ feature -- Conversion
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4846,7 +4898,7 @@ feature -- Conversion
 			-- <methodbody_start name="to_c" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("to_c", Current, [])
+				program_flow_sink.put_feature_invocation ("to_c", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4858,7 +4910,8 @@ feature -- Conversion
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4873,7 +4926,7 @@ feature -- Conversion
 			-- <methodbody_start name="mirrored" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("mirrored", Current, [])
+				program_flow_sink.put_feature_invocation ("mirrored", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4886,7 +4939,8 @@ feature -- Conversion
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4909,7 +4963,7 @@ feature -- Conversion
 			-- <methodbody_start name="mirror" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("mirror", Current, [])
+				program_flow_sink.put_feature_invocation ("mirror", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4933,7 +4987,7 @@ feature -- Conversion
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4953,7 +5007,7 @@ feature -- Duplication
 			-- <methodbody_start name="substring" args="[start_index,end_index]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("substring", Current, [start_index,end_index])
+				program_flow_sink.put_feature_invocation ("substring", Current, [start_index,end_index])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -4969,7 +5023,8 @@ feature -- Duplication
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -4990,7 +5045,7 @@ feature -- Duplication
 			-- <methodbody_start name="multiply" args="[n]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("multiply", Current, [n])
+				program_flow_sink.put_feature_invocation ("multiply", Current, [n])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -5009,7 +5064,7 @@ feature -- Duplication
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -5024,7 +5079,7 @@ feature -- Output
 			-- <methodbody_start name="out" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("out", Current, [])
+				program_flow_sink.put_feature_invocation ("out", Current, [])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -5035,7 +5090,8 @@ feature -- Output
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit(Result)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -5056,7 +5112,7 @@ feature -- Implementation
 			-- <methodbody_start name="set_count" args="[number]">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				program_flow_sink.put_feature_invocation("set_count", Current, [number])
+				program_flow_sink.put_feature_invocation ("set_count", Current, [number])
 				program_flow_sink.leave
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
@@ -5067,7 +5123,7 @@ feature -- Implementation
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -5160,7 +5216,7 @@ feature -- Capture/replay
 	get_area: SPECIAL [CHARACTER] is
 			-- getter for area
 		do
-			-- <methodbody_start name="set_count" args="[number]">
+			-- <methodbody_start name="get_area" args="">
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
 				program_flow_sink.put_feature_invocation ("get_area", Current, [])
@@ -5173,7 +5229,8 @@ feature -- Capture/replay
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				Result ?= program_flow_sink.put_feature_exit (area)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>

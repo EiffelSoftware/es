@@ -126,7 +126,7 @@ feature -- Status setting
 
 feature -- Basic operations
 
-	put_feature_exit (res: ANY): ANY is
+	put_feature_exit (res: ANY) is
 			-- Notice that a feature exit event with result `res' occurred.
 		local
 			callee_observed: BOOLEAN
@@ -155,18 +155,18 @@ feature -- Basic operations
 										report_and_set_error ("Received non-basic return value that is not observable")
 									end
 								end
-								Result := res --don't change the return value.
+								last_result := res --don't change the return value.
 							else
 								--OUTCALLRET
 								if callret.return_value /= Void then
-									Result := resolver.resolve_entity (callret.return_value)
+									last_result := resolver.resolve_entity (callret.return_value)
 								end
 							end
 							consume_event
 						end
 					end
 				else
-					Result := res
+					last_result := res
 				end
 			end
 		end

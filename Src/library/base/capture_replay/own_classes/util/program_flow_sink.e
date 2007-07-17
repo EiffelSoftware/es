@@ -36,7 +36,10 @@ feature -- Status setting
 
 feature -- Basic operations
 
-	put_feature_exit (res: ANY): ANY is
+	last_result: ANY
+			-- Last result that was obtained during `put_feature_exit'
+
+	put_feature_exit (res: ANY) is
 			-- Put a feature exit event with result `res' into the sink.
 		deferred end
 

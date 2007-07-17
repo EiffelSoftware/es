@@ -16,8 +16,6 @@ feature -- Initialization
 
 	make is
 			-- create an observed object.
-		local
-			ignore_result: ANY
 		do
 			-- <methodbody_start name="make" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
@@ -32,7 +30,7 @@ feature -- Initialization
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignore_result ?= program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit(Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -44,7 +42,6 @@ feature -- Basic operations
 			-- Test a literal string received from an unobserved object.
 		local
 			string: STRING
-			ignored_result: ANY
 		do
 			-- <methodbody_start name="check_literal_string_from_unobserved" args="[]">
 			if program_flow_sink.is_capture_replay_enabled then
@@ -62,7 +59,7 @@ feature -- Basic operations
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignored_result := program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit(Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>
@@ -90,7 +87,7 @@ feature -- Basic operations
 			end
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
-				ignored_result := program_flow_sink.put_feature_exit(Void)
+				program_flow_sink.put_feature_exit(Void)
 				program_flow_sink.leave
 			end
 			-- </methodbody_end>

@@ -60,15 +60,13 @@ feature -- Basic operations
 				Precursor {PLAYER}(feature_name, target, arguments)
 			end
 
-		put_feature_exit (res: ANY): ANY is
+		put_feature_exit (res: ANY) is
 				--
-			local
-				ignore_result: ANY
 			do
-				Result := Precursor {PLAYER}(res)
+				Precursor {PLAYER}(res)
 					-- Invoking the recorder after the player is safe, because the player
 					-- doesn't simulate any further feature calls.
-				ignore_result := recorder.put_feature_exit(Result)
+				recorder.put_feature_exit(last_result)
 			end
 
 	accept(visitor: PROGRAM_FLOW_SINK_VISITOR) is

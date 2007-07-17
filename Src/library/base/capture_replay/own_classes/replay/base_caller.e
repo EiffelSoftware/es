@@ -68,20 +68,18 @@ feature -- Basic operations
 			-- note: XXX call to 'note_direct_manipulation' only works for specials that contain elements of character type.
 		local
 			special_char: SPECIAL [CHARACTER]
-			manifest_special_char: MANIFEST_SPECIAL [CHARACTER]
 			message: STRING
 		do
 
 			if feature_name.is_equal("note_direct_manipulation") then
-				manifest_special_char ?= arguments @ 1
-				if manifest_special_char /= Void then
-					special_char := manifest_special_char.item
+				special_char ?= arguments @ 1
+				if special_char /= Void then
 					program_flow_sink.leave
 					special.note_direct_manipulation(special_char)
 					program_flow_sink.enter
 				else
 					message := "feature {SPECIAL}.note_direct_manipulation only supported for calls that "
-					message.append ("have a MANIFEST_SPECIAL [CHAR] as argument.")
+					message.append ("have a SPECIAL [CHAR] as argument.")
 					report_and_set_error (message)
 				end
 			else

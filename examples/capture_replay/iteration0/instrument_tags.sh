@@ -1,6 +1,6 @@
 #!/bin/bash
 # create the content for the methodstart & methodbodyend- tags.
-#arg1: file where the starttags should be instrumented.
+#arg1: file where the tags should be instrumented.
 file_step1=$1_1
 file_step2=$1_2
 file_step3=$1_3
@@ -22,7 +22,8 @@ feature_end_res_tag2='-- <\/methodbody_end'
 feature_end_res_content='\t\t\tend\
 \t\t\tif program_flow_sink.is_capture_replay_enabled then\
 \t\t\t\tprogram_flow_sink.enter\
-\t\t\t\tResult ?= program_flow_sink.put_feature_exit\ (Result)\
+\t\t\t\tprogram_flow_sink.put_feature_exit\ (Result)\
+\t\t\t\tResult ?= program_flow_sink.last_result\
 \t\t\t\tprogram_flow_sink.leave\
 \t\t\tend'
 
@@ -31,7 +32,7 @@ feature_end_no_res_tag2='-- <\/methodbody_end'
 feature_end_no_res_content='\t\t\tend\
 \t\t\tif program_flow_sink.is_capture_replay_enabled then\
 \t\t\t\tprogram_flow_sink.enter\
-\t\t\t\tignore_result ?= program_flow_sink.put_feature_exit\ (Void)\
+\t\t\t\tprogram_flow_sink.put_feature_exit\ (Void)\
 \t\t\t\tprogram_flow_sink.leave\
 \t\t\tend'
 
