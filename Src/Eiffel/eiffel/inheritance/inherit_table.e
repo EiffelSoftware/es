@@ -1430,8 +1430,10 @@ end;
 						l_args.after
 					loop
 						l_type := l_args.item
-						if l_type.is_like_current or l_type.is_formal then
+						if l_type.is_like_current then
 							system.set_routine_covariantly_redefined (f.rout_id_set, True)
+						elseif l_type.is_formal or else l_type.conformance_type.is_formal then
+							system.set_routine_has_formal (f.rout_id_set, True)
 						elseif l_type.is_like then
 
 						end

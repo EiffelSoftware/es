@@ -1986,6 +1986,12 @@ end
 					if
 						old_type.is_formal or else
 						new_type.is_formal or else
+						l_old_conformance_type.is_formal or else
+						l_new_conformance_type.is_formal
+					then
+						system.set_routine_has_formal (rout_id_set, True)
+					end
+					if
 						old_type.is_like_current or else
 						new_type.is_like_current or else
 						not l_old_conformance_type.same_as (l_new_conformance_type)

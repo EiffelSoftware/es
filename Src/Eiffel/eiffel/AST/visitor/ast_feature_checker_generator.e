@@ -1676,12 +1676,13 @@ feature -- Implementation
 							-- Inline agents have no descendants, so they don't need to be checked anyway
 							-- Static calls or frozen features don't need to be checked since they can't 
 							-- have a descendant either.
-							-- Only features which are covariantly redefined need to be checked
+							-- Only features which are covariantly redefined or have formal arguments need to be checked
 						if
 							not l_feature.is_inline_agent and
 							not is_static and
 							not l_feature.is_frozen and
-							system.is_routine_covariantly_redefined (l_feature.rout_id_set.first)
+							(system.is_routine_covariantly_redefined (l_feature.rout_id_set.first) or else
+							 system.is_routine_with_formal_arguments (l_feature.rout_id_set.first))
 						then
 								-- Cat call detection is enabled: Test if this feature call is valid
 								-- in all subtypes of the current class.
@@ -1691,7 +1692,9 @@ feature -- Implementation
 							if l_conformance_arg_types = Void then
 								l_conformance_arg_types := l_arg_types
 							end
-							check_cat_call (l_last_type.conformance_type, l_feature, is_qualified, l_conformance_arg_types, l_feature_name, l_last_id)
+
+							check not l_last_constrained.is_formal end
+							check_cat_call (l_last_constrained.conformance_type, l_feature, is_qualified, l_conformance_arg_types, l_feature_name, l_last_id)
 
 								-- Statistics
 							system.statistics.feature_check_done := system.statistics.feature_check_done + 1
@@ -8000,6 +8003,8 @@ feature {NONE} -- Implementation: catcall check
 			-- `a_location': Location where warning will be linked to
 		require
 			a_callee_type_not_void: a_callee_type /= Void
+			a_callee_type_not_formal: not a_callee_type.is_formal
+			a_callee_type_not_like: not a_callee_type.is_like
 			a_feature_not_void: a_feature /= Void
 			a_params_not_void: a_feature.argument_count > 0 implies a_params /= Void
 			same_number_of_params: a_feature.argument_count > 0 implies a_feature.argument_count = a_params.count
@@ -8022,9 +8027,40 @@ feature {NONE} -- Implementation: catcall check
 			l_super_none: SUPER_NONE_A
 			l_like_arg_type: TYPE_A
 			l_upper: TYPE_A
+
+--			l_formal: FORMAL_A
+--			l_callee_type: TYPE_A
+--			l_callee_types: ARRAYED_LIST [TYPE_A]
 		do
+--			if a_callee_type.is_formal then
+--					-- Replace with constraints
+--				l_formal ?= a_callee_type
+--				l_callee_types := context.current_class.constrained_types (l_formal.position)
+--			else
+--				create l_callee_types.make (1)
+--				l_callee_types.extend (a_callee_type)
+--			end
+
+--				-- Loop over callee types and check feature call
+--			from
+--				l_callee_types.start
+--			until
+--				l_callee_types.after
+--			loop
+--				l_callee_type := l_callee_types.item
+--				check not l_callee_type.is_formal end
+--				if a_feature.has_formal then
+--					check l_callee_type.has_generics end
+
+--				else
+
+--				end
+--				l_callee_types.forth
+--			end
+
+
 			if a_feature.has_formal_argument then
-					-- If a feature as formal generics we want to instantite the signature with the
+					-- If a feature has formal generics we want to instantite the signature with the
 					-- one given by the upper type and check whether it conforms to the actual parameter/argument.
 
 				check a_callee_type.has_generics end
@@ -8127,18 +8163,18 @@ feature {NONE} -- Implementation: catcall check
 					end
 
 						-- Check export status validity for descendant feature
-					if
-						not context.is_ignoring_export and a_qualified and
-						not l_descendant_feature.is_exported_for (context.current_class)
-					then
-							-- Export status violated. Add notice to warning.
-						if l_cat_call_warning = Void then
-							create l_cat_call_warning.make (context.current_class, context.current_feature, a_location)
-							l_cat_call_warning.set_called_feature (a_feature)
-							error_handler.insert_warning (l_cat_call_warning)
-						end
-						l_cat_call_warning.add_export_status_violation (l_descendant_class, l_descendant_feature)
-					end
+--					if
+--						not context.is_ignoring_export and a_qualified and
+--						not l_descendant_feature.is_exported_for (context.current_class)
+--					then
+--							-- Export status violated. Add notice to warning.
+--						if l_cat_call_warning = Void then
+--							create l_cat_call_warning.make (context.current_class, context.current_feature, a_location)
+--							l_cat_call_warning.set_called_feature (a_feature)
+--							error_handler.insert_warning (l_cat_call_warning)
+--						end
+--						l_cat_call_warning.add_export_status_violation (l_descendant_class, l_descendant_feature)
+--					end
 
 					l_descendant_index := l_descendant_index + 1
 				end
@@ -8152,86 +8188,45 @@ feature {NONE} -- Implementation: catcall check
 			-- List of all descendants of the type `a_type'.
 		require
 			a_type_not_void: a_type /= Void
+			a_type_not_formal: not a_type.is_formal
 		local
 			l_descendants: ARRAYED_LIST [CLASS_C]
 			l_type: TYPE_A
-			l_formal: FORMAL_A
---			l_generics: ARRAY [TYPE_A]
 		do
 				-- Only check if no generics are in type
 			if not a_type.has_generics or else a_type.generics.is_empty then
 				l_descendants := descendant_list
 				l_descendants.wipe_out
-				if a_type.is_formal then
-					l_formal ?= a_type
-					if l_formal.is_multi_constrained (context.current_class) then
-							-- Type is a multi constrained formal. Loop through all associated classes of
-							-- constraints and collect their descendants
-						l_formal.to_type_set.constraining_types (context.current_class).associated_classes.do_all (
-							agent (a_class: CLASS_C; a_list: LIST [CLASS_C])
-									-- Append descendants of `a_class' to `a_list'.
-								require
-									a_class_not_void: a_class /= Void
-									a_list_not_void: a_list /= Void
-								do
-									a_class.record_descendants (a_list)
-								end
-							(?, l_descendants)
-						)
-					else
-							-- Type is formal. Take descendants from associated class of constraint
-						l_formal.constrained_type (context.current_class).associated_class.record_descendants (l_descendants)
-					end
-				else
-						-- Normal type. Take descenants from associated class
-					a_type.associated_class.record_descendants (l_descendants)
-				end
+
+					-- Normal type. Take descenants from associated class
+				a_type.associated_class.record_descendants (l_descendants)
+
 					-- Go through descendants and remove the ones which don't conform
-					-- This can happen with non-conforming inheritance or restrict types
+					-- This can happen with non-conforming inheritance or interval types
 				from
 					l_descendants.start
 					create Result.make (l_descendants.count)
 				until
 					l_descendants.after
 				loop
-						-- If type is generic, instantiate subtype with same generics
-					if a_type.has_generics then
--- does not work correctly as a descendant can have more formal generics than a_type
---						l_type := l_descendants.item.partial_actual_type (a_type.generics, a_type.is_expanded, a_type.is_separate)
-						l_type := super_none_type
-					else
-						l_type := l_descendants.item.actual_type
-					end
+					l_type := l_descendants.item.actual_type
 					if l_type.interval_conform_to (a_type) then
 						Result.extend (l_type)
 					end
 					l_descendants.forth
 				end
 			else
-				create Result.make (0)
+					-- Todo: Martin has to instantiate the descendants in some fancy way. I (Julian) have no idea what he is up to... But I'm sure that I have to fix his bugs, as always!!!
+				Result := empty_type_list
 			end
-
--- generic check is not working correctly at the moment
--- juliant, 15.05.07
---			if a_type.has_generics and then not a_type.generics.is_empty then
---					-- Try to construct a new subtype by substituting the generic arguments
---				if not a_type.generics.item (1).has_generics then
---						-- Only use subclasses of normal class types, generics can have infinite subclasses otherwise
---					l_type := a_type.generics.item (1).actual_type
---					if not l_type.is_formal then
---						l_descendants := l_type.associated_class.descendants
---						if l_descendants.count > 0 then
---								-- Copy generics
---							l_generics := a_type.generics.twin
---							l_generics.item (1) := l_descendants.first.actual_type
---								-- Replace generic with a subclass
---							Result.extend (a_type.associated_class.partial_actual_type (l_generics, a_type.is_expanded, a_type.is_separate))
---						end
---					end
---				end
---			end
 		ensure
 			possible_descendants_not_void: Result /= Void
+		end
+
+	empty_type_list: ARRAYED_LIST [TYPE_A] is
+			-- Empty type list
+		once
+			create Result.make (0)
 		end
 
 	descendant_list: ARRAYED_LIST [CLASS_C]	is
