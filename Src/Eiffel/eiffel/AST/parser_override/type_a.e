@@ -458,6 +458,14 @@ feature -- Conversion
 
 feature -- Interval types
 
+	is_valid_interval: BOOLEAN
+			-- Does `upper' conform to `lower'?
+		do
+			conformance_check.level := 1
+			Result := upper.is_conforming_descendant (lower)
+			conformance_check.level := 0
+		end
+
 	lower: TYPE_A is
 			-- Lower boundary of interval type
 		do
@@ -491,6 +499,7 @@ feature {COMPILER_EXPORTER} -- Interval types
 			-- Set `upper' to `a_type'.
 		require
 			a_type_not_void: a_type /= Void
+			a_type_not_current: a_type /= Current
 		do
 			internal_upper := a_type
 		ensure
@@ -619,7 +628,7 @@ feature {COMPILER_EXPORTER} -- Access
 						l_other_super_none_a ?= l_other_upper
 						if l_other_super_none_a /= Void and then not l_other_super_none_a.generics.is_empty then
 							check lower_has_same_generic_count:	other.lower.generics.count = l_other_super_none_a.generics.count end
-							l_interval_upper := l_other_super_none_a.special_is_conforming_descendant (other, lower)
+							l_interval_upper := l_other_super_none_a.special_is_conforming_descendant (Current, other.lower)
 						else
 							l_interval_upper := l_other_upper.is_conforming_descendant (upper)
 						end

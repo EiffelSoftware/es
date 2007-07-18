@@ -102,7 +102,7 @@ feature -- Comparison
 			l_generics, l_other_generics: like generics
 			i, l_generics_count: INTEGER
 		do
-			check false end
+			-- TODO? check false end
 			l_generics := generics
 				-- Generic count matches
 			l_generics_count := generics.count
@@ -132,7 +132,8 @@ feature -- Comparison
 	special_is_conforming_descendant (a_other, a_lower: TYPE_A): BOOLEAN is
 			-- Special conformance rule in order to allow polymorphism on base-type of generics
 			--| The question is:
-			--| Does (`lower' .. `Current') conform to ()
+			--| Does (a_other.lower .. a_other..upper) conform to (`lower' .. `Current')
+			--| This feature checks the upper boundary where `Current' (oviously) is a SUPER_NONE_A.
 		require
 			a_lower_sane: a_lower /= Void and then a_lower.has_generics
 			a_lower_as_same_generic_count: a_lower.generics.count = generics.count
@@ -154,20 +155,22 @@ feature -- Comparison
 			l_generics := generics
 				-- What are we doing here:
 				-- Example: Does (FILE .. NIL) conform to (SEQUENCE [CHARACTER] .. NONE [CHARACTER])
-				-- Yes, but we have to find out wheter FILE indeed instantiated the formal of SEQUENCE with `CHARACTER'
+				-- Yes, but we have to find out whether FILE indeed instantiated the formal of SEQUENCE with `CHARACTER'
 				-- This and the same for more complicated examples is what we do here.
 			l_other_upper := a_other.upper
 			l_other_lower := a_other.lower
 			if l_other_upper.is_super_none then
 					-- We have to find the new formal positions in order to compare the right ones.
 					-- As the other upper is SUPER_NONE too, we take the lower type to compute the mapping.
-				l_map_class := l_other_lower.associated_class
+				l_map_type := l_other_lower
 					-- `l_other_upper.generics' cannot return `Void' as `SUPER_NONE_A' ensures that it is attached.
 				Result := l_other_lower.has_generics implies (l_other_lower.generics.count = l_other_upper.generics.count)
 			else
 					-- We use the upper to compute the mapping
-				l_map_class := l_other_upper.associated_class
+				l_map_type := l_other_upper
 			end
+
+			l_map_class := l_map_type.associated_class
 
 			from
 				i := 1
@@ -178,7 +181,11 @@ feature -- Comparison
 				i > l_count or not Result
 			loop
 				create l_formal_probe.make (false, false,i)
-				l_type_in_descendant := l_formal_probe.evaluated_type_in_descendant (l_lower_class, l_map_class, Void).conformance_type
+					-- What happens here for the FILE example is taht we get back CHARACTER for G#1 as this is
+					-- how FILE derives the SEQUENCE.
+				l_type_in_descendant := l_formal_probe.instantiation_in (l_map_type, l_lower_class.class_id)
+					-- Not working because there is no feature table, but this code would be superior:
+				-- l_formal_probe.evaluated_type_in_descendant (l_lower_class, l_map_class, Void).conformance_type
 				if l_type_in_descendant.is_formal then
 					l_formal ?= l_type_in_descendant
 					check

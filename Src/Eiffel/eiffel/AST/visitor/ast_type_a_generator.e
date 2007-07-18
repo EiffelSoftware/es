@@ -231,18 +231,29 @@ feature {NONE} -- Visitor implementation
 				check failure_enabled: is_failure_enabled end
 			elseif need_to_create_interval_type then
 				l_lower := last_type
+					-- This is a hack which allowes us to keep one copy for most basic types.
+					-- But if we have a real interval we twin. (That is to say we are in this procedure ;-)
+				if l_lower.is_basic then
+					l_lower := l_lower.twin
+				end
 				is_upper_of_interval := True
 				is_parent_an_interval := True
 				l_as.upper.process (Current)
 				is_upper_of_interval := False
 				check is_parent_an_interval_false: is_parent_an_interval = false end
 				l_upper := last_type
+					-- This is a hack which allowes us to keep one copy for most basic types.
+					-- But if we have a real interval we twin. (That is to say we are in this procedure ;-)
+				if l_upper.is_basic then
+					l_upper := l_upper.twin
+				end
+
 				if last_type = Void then
 					check failure_enabled: is_failure_enabled end
 				else
 					l_lower.set_upper (l_upper)
 					last_type := l_lower
-					if not l_upper.is_conforming_descendant (l_lower) then
+					if not last_type.is_valid_interval then
 						create l_vtmc3
 						l_vtmc3.set_message ("Upper type does not conform to lower type of interval!")
 						l_vtmc3.set_class (system.current_class)
