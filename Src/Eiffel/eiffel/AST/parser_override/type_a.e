@@ -614,7 +614,7 @@ feature {COMPILER_EXPORTER} -- Access
 				Result := is_conforming_descendant (other)
 				l_interval_lower := lower.is_conforming_descendant (other.lower)
 				if l_interval_lower then
-					if is_none then
+					if is_none or else (is_super_none and then generics.is_empty) then
 							-- Void is the only entity of type NONE.
 							-- It does not need the check of the upper boundary.
 						l_interval_upper := True

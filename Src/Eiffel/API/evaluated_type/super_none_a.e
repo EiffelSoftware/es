@@ -144,7 +144,6 @@ feature -- Comparison
 			l_other_upper: TYPE_A
 			l_other_lower: TYPE_A
 			l_map_type: TYPE_A
-			l_map_class: CLASS_C
 			i, l_count: INTEGER
 			l_lower_class: CLASS_C
 			l_type_in_descendant: TYPE_A
@@ -162,15 +161,15 @@ feature -- Comparison
 			if l_other_upper.is_super_none then
 					-- We have to find the new formal positions in order to compare the right ones.
 					-- As the other upper is SUPER_NONE too, we take the lower type to compute the mapping.
-				l_map_type := l_other_lower
+					-- We call assocaited_class.actual_type because we want to loose any actual derivation.
+					-- To find out the actual type to check against we later take the one specified in the generics of NIL [...].
+				l_map_type := l_other_lower.associated_class.actual_type
 					-- `l_other_upper.generics' cannot return `Void' as `SUPER_NONE_A' ensures that it is attached.
 				Result := l_other_lower.has_generics implies (l_other_lower.generics.count = l_other_upper.generics.count)
 			else
 					-- We use the upper to compute the mapping
 				l_map_type := l_other_upper
 			end
-
-			l_map_class := l_map_type.associated_class
 
 			from
 				i := 1
@@ -187,6 +186,7 @@ feature -- Comparison
 					-- Not working because there is no feature table, but this code would be superior:
 				-- l_formal_probe.evaluated_type_in_descendant (l_lower_class, l_map_class, Void).conformance_type
 				if l_type_in_descendant.is_formal then
+						-- We know now the position and look the actual type up in the generics of other.upper (which is a SUPER_NONE_TYPE_A)
 					l_formal ?= l_type_in_descendant
 					check
 						l_formal_not_void: l_formal /= Void
