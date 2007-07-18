@@ -8209,7 +8209,12 @@ feature {NONE} -- Implementation: catcall check
 				until
 					l_descendants.after
 				loop
+						-- Make a monomorphic type of the descendant to allow a check against an interval type
 					l_type := l_descendants.item.actual_type
+					if l_type.is_basic then
+						l_type := l_type.twin
+					end
+					l_type.set_upper (l_type.twin)
 					if l_type.interval_conform_to (a_type) then
 						Result.extend (l_type)
 					end
