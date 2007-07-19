@@ -19,6 +19,8 @@ inherit
 			dump,
 			type_i,
 			good_generics,
+			conform_to,
+			interval_conform_to,
 			is_conforming_descendant,
 			format
 		end
@@ -98,10 +100,25 @@ feature {COMPILER_EXPORTER}
 
 feature {COMPILER_EXPORTER} -- Conformance
 
+	conform_to (other: TYPE_A): BOOLEAN is
+			-- Does Current conform to `other' using the old conformance rules?
+			-- Produces a warning if interval conformance result differs.
+		do
+				-- An open type can be replaced by anything
+			Result := True
+		end
+
+	interval_conform_to (other: TYPE_A): BOOLEAN is
+			-- Does Current conform to `other' using interval conformance rules?
+		do
+				-- An open type can be replaced by anything
+			Result := True
+		end
+
 	is_conforming_descendant (other: TYPE_A): BOOLEAN is
 			-- Does Current conform to `other'?
 		do
-			-- An open type can be replaced by anything
+				-- An open type can be replaced by anything
 			Result := True
 		end
 
