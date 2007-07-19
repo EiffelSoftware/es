@@ -82,8 +82,9 @@ feature -- Initialization
 			-- </methodbody_start>
 				count := 0
 				internal_hash_code := 0
-				make_area (n + 1)
-			else
+-- XXX before, it was necessary to execute 'make_area' if
+--     STRING_8 was unobserved, but this should be fixed
+--     with the instrumentation of all classes.
 				make_area (n + 1)
 			-- <methodbody_end return_value="False">
 
