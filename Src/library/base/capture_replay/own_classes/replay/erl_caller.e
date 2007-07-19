@@ -42,9 +42,12 @@ feature -- Basic operations
 			-- Call `target'.`feature_name'(`arguments')
 		local
 			target_class: ERL_CLASS
+			a_feature: ROUTINE [ANY, TUPLE]
 		do
 			target_class := universe.class_by_object (target)
-			target_class.invoke_feature (feature_name, target, arguments.to_array)
+			a_feature := target_class.feature_(feature_name)
+			a_feature.call_from_cr_management_code (target_class.operands(feature_name, target, arguments.to_array))
+--			target_class.invoke_feature (feature_name, target, arguments.to_array)
 		end
 
 feature -- Obsolete
