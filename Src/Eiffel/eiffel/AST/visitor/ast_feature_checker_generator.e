@@ -2034,17 +2034,7 @@ feature -- Implementation
 		end
 
 	process_body_as (l_as: BODY_AS) is
-		local
-			class_name: STRING
 		do
-
-			class_name := context.current_class.name
-			--SIES
-			--XXX outsorce decisions about what to instrument into another class...
-			if not cr_instrumentation_exclusion_list.has (class_name) then
-				add_capture_replay_instrumentation(l_as)
-			end
-			--/SIES	
 			safe_process (l_as.content)
 		end
 
@@ -2662,6 +2652,8 @@ feature -- Implementation
 			l_list: BYTE_LIST [BYTE_NODE]
 			l_needs_byte_node: BOOLEAN
 		do
+			add_capture_replay_instrumentation (l_as) -- SIES
+
 			l_needs_byte_node := is_byte_node_enabled
 				-- Check local variables
 			if l_as.locals /= Void then
@@ -5947,46 +5939,78 @@ feature {NONE} -- Predefined types
 			create Result.make (system.array_id, generics)
 		end
 
-feature {NONE} -- Implementation
+feature {NONE} -- Capture/Replay Instrumentation
 
-
-	cr_instrumentation_exclusion_list: ARRAY [STRING] is
+	cr_instrumentation_class_exclusion_list: ARRAY [STRING] is
 			-- Array of classes that shouldn't be instrumented.
 		once
-			create Result.make(0,1)
+			create Result.make(1,30)
 			Result.compare_objects
-			Result[0] := "ANY"
-			Result [1] := "TUPLE"
+			Result[1] := "ANY"  -- Otherwise, the compiler will crash.
+			Result [2] := "TUPLE" -- Otherwise, the compiler will crash.
+
+			-- No instrumentation for PROGRAM_FLOW_SINK and its descendents,
+			-- avoid recursion due to instrumentation in the code that should
+			-- handle the events from the instrumentation.
+			Result [3] := "PROGRAM_FLOW_SINK"
+			Result [4] := "RECORDER"
+			Result [5] := "NULL_PROGRAM_FLOW_SINK"
+			Result [6] := "PLAYER"
+			Result [7] := "LOGGING_PLAYER"
+			Result [8] := "CONFIGURATION_HELPER"
+			Result [9] := "REPLAY_BUILDER"
+
+			-- For the other parts of the capture/replay management
+			-- Code, the instrumentation is optional, because capture/replay
+			-- is disabled inside the management code (reentrance is only a problem
+			-- at the positions where the normal program flow enters into the management code.
 		end
 
+	cr_instrumentation_feature_exclusion_list: ARRAY [STRING] is
+			--
+		once
+			create Result.make (1,1)
+			Result.compare_objects
+			Result [1] := "SPECIAL.note_direct_manipulation"
+		end
+
+
 --XXX tuple and parameters not 100% correct, there's no separator list (!)
-	add_capture_replay_instrumentation(body: BODY_AS) is
+	add_capture_replay_instrumentation(routine: ROUTINE_AS) is
 			-- Adds the necessary code instrumentation for capture/replay
 		require
-			body_not_void: body /= Void
+			routine_not_void: routine /= Void
 		local
-			routine: ROUTINE_AS
 			do_as: DO_AS
-
+			class_name: STRING
+			full_feature_name: STRING
 			--- for the generated statements
 			do_replacement: DO_AS
 			replacement_body: EIFFEL_LIST [INSTRUCTION_AS]
 		do
-			routine ?= body.content
-			if routine /= Void then
-				do_as ?= routine.routine_body
-			end
-			if do_as /= Void then
-				create replacement_body.make (0)
-				replacement_body.extend (cr_create_feature_invocation_block (current_feature.feature_name, current_feature.arguments)) --XXX
-				replacement_body.extend (cr_create_methodbody_wrapper (do_as.compound))
-				replacement_body.extend (cr_create_feature_exit_block (current_feature.has_return_value))
+			do_as ?= routine.routine_body
 
-				-- It's necessary to reuse the original do_keyword, because otherwise
-				-- the do-keyword isn't registered correctly in the match-list.
-				create do_replacement.make (replacement_body,  do_as.do_keyword)
-				routine.set_routine_body (do_replacement)
-			end
+
+			--XXX outsorce decisions about what to instrument into another class...
+			if do_as /= Void then
+
+
+				class_name := context.current_class.name
+				full_feature_name := class_name + "." + current_feature.feature_name
+				if (not cr_instrumentation_class_exclusion_list.has (context.current_class.name))
+					and then (not cr_instrumentation_feature_exclusion_list.has (full_feature_name)) then
+
+					create replacement_body.make (0)
+					replacement_body.extend (cr_create_feature_invocation_block (current_feature.feature_name, current_feature.arguments)) --XXX
+					replacement_body.extend (cr_create_methodbody_wrapper (do_as.compound))
+					replacement_body.extend (cr_create_feature_exit_block (current_feature.has_return_value))
+
+					-- It's necessary to reuse the original do_keyword, because otherwise
+					-- the do-keyword isn't registered correctly in the match-list.
+					create do_replacement.make (replacement_body,  do_as.do_keyword)
+					routine.set_routine_body (do_replacement)
+				end
+				end
 		end
 
 	cr_create_call(target_name: STRING; feature_name: STRING; parameters: EIFFEL_LIST [EXPR_AS]): NESTED_AS is
@@ -6254,6 +6278,8 @@ feature {NONE} -- Implementation
 		ensure
 			result_not_void: Result /= Void
 		end
+
+feature {NONE} -- Implementation
 
 	process_inherited_assertions (a_feature: FEATURE_I; process_preconditions: BOOLEAN) is
 			-- Process assertions inherited by `a_feature'.
