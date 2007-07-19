@@ -21,7 +21,7 @@ feature -- Initialization
 			-- Creation procedure.
 		local
 			player: PLAYER
-			caller: EXAMPLE_CALLER
+			--caller: EXAMPLE_CALLER
 			erl_caller: ERL_CALLER
 			config: CONFIGURATION_HELPER
 
@@ -32,7 +32,7 @@ feature -- Initialization
 			ignore_result: ANY
 		do
 			--Initialize the rest of the PROGRAM_FLOW_SINK:
-			create caller
+--			create caller
 			create config.make
 --no. use erl_g to call...			config.set_caller(caller)
 			config.configure_program_flow_sink (program_flow_sink)

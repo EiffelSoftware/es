@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-2-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-2-0 http://www.eiffel.com/developers/xml/configuration-1-2-0.xsd" name="iteration0_example" uuid="9D47B610-776E-419C-A11C-E3938B1EB625">
-	<target name="iteration0_example">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-2-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-2-0 http://www.eiffel.com/developers/xml/configuration-1-2-0.xsd" name="iteration1_example" uuid="9D47B610-776E-419C-A11C-E3938B1EB625">
+	<target name="iteration1_example">
 		<root class="ROOT_CLASS" feature="make"/>
 		<option profile="false" warning="true">
 			<assertions/>
@@ -31,7 +31,7 @@
 			</option>
 		</override>
 	</target>
-	<target name="iteration0_example_dotnet" extends="iteration0_example">
+	<target name="iteration1_example_dotnet" extends="iteration1_example">
 		<setting name="msil_generation" value="true"/>
 	</target>
 </system>
