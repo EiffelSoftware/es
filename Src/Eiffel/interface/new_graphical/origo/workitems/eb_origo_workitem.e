@@ -17,6 +17,20 @@ inherit
 			out
 		end
 
+create
+	make
+
+feature -- Initialisation
+
+	make is
+			-- creation feature
+		do
+			create creation_time.make (0, 1, 1, 0, 0, 0)
+			project := "Not set"
+			user := "Not set"
+		end
+
+
 feature -- Access
 
 	workitem_id: INTEGER
@@ -65,6 +79,8 @@ feature -- Element change
 
 	set_creation_time (a_date: like creation_time) is
 			-- set `creation_time'
+		require
+			not_void: creation_time /= Void
 		do
 			creation_time := a_date
 		ensure
@@ -81,28 +97,22 @@ feature -- Element change
 
 	set_project (a_project: like project) is
 			-- set `project'
+		require
+			not_void: a_project /= Void
 		do
-			if a_project = Void then
-				project := Void
-			else
-				project := a_project.out
-			end
+			project := a_project.out
 		ensure
-			set_if_void: a_project = Void implies project = Void
-			set_if_not_void: a_project /= Void implies project.is_equal (a_project)
+			set: project.is_equal (a_project)
 		end
 
 	set_user (a_user: like user) is
 			-- set `user'
+		require
+			not_void: a_user /= Void
 		do
-			if a_user = Void then
-				user := Void
-			else
-				user := a_user.out
-			end
+			user := a_user.out
 		ensure
-			set_if_void: a_user = Void implies user = void
-			set_if_not_void: a_user /= Void implies user.is_equal (a_user)
+			set: user.is_equal (a_user)
 		end
 
 feature -- Output
@@ -128,4 +138,9 @@ feature -- Output
 
 feature {NONE} -- Implementation
 
+
+invariant
+	creation_time_not_void: creation_time /= Void
+	user_not_void: user /= Void
+	project_not_void: project /= Void
 end

@@ -10,7 +10,7 @@ class
 inherit
 	EB_ORIGO_WORKITEM
 		redefine
-			out, out_short, type_name
+			out, out_short, type_name, make
 		end
 
 create
@@ -21,7 +21,9 @@ feature -- Initialisation
 	make is
 			-- create commit workitem
 		do
+			precursor
 			type := Workitem_type_commit
+			log := ""
 		end
 
 feature -- Access
@@ -50,11 +52,12 @@ feature -- Element change
 
 	set_log (a_log: STRING)
 			-- set `log'
+		require
+			a_log_not_void: a_log /= Void
 		do
 			log := a_log
 		ensure
-			set_if_void: a_log = Void implies log = Void
-			set_if_not_void: a_log /= Void implies log.is_equal (a_log)
+			set: log.is_equal (a_log)
 		end
 
 feature -- Output		
@@ -77,4 +80,7 @@ feature -- Output
 			Result.append ("Log:%N")
 			Result.append (log)
 		end
+
+invariant
+	log_not_void: log /= Void
 end

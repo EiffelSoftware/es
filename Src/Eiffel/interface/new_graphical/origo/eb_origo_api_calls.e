@@ -351,7 +351,7 @@ feature -- XML RPC calls
 						when workitem_type_blog then
 							l_workitem := read_blog_workitem (l_workitem_list_string)
 						else
-							create l_workitem
+							create l_workitem.make
 							l_workitem.set_type (l_type)
 							fill_general_workitem (l_workitem, l_workitem_list_string)
 						end
@@ -361,8 +361,6 @@ feature -- XML RPC calls
 							-- skip the empty line between workitems
 						l_line := read_line_from_string (l_workitem_list_string)
 					end
-
-
 
 					-- an error occurred
 				else
@@ -586,6 +584,34 @@ feature {NONE} -- Implementation
 			was_start: (old a_string.out).is_equal (Result + a_seperator.out + a_string)
 		end
 
+	read_text_block_from_string (a_string: STRING): STRING is
+			-- reads a text block which starts with length + ":" and then the text and terminates with a %N
+		require
+			not_void: a_string /= Void
+		local
+			l_line: STRING
+			l_length: INTEGER
+		do
+				-- the next part of `a_string' is a text block. because a text block can contain new line signs
+				-- the length of the text block is the start of it, terminated by a ':'
+			l_line := read_head_from_string (a_string, ':')
+			check
+				is_integer: l_line.is_integer
+				is_not_too_long: l_line.to_integer <= a_string.count
+			end
+			l_length := l_line.to_integer
+			Result := (a_string.substring (1, l_length))
+			a_string.remove_head (l_length)
+
+				-- read the new line sign at the end
+			l_line := read_line_from_string (a_string)
+			check
+				l_line_empty: l_line.is_empty
+			end
+
+		ensure
+			set: Result /= Void
+		end
 
 	read_issue_workitem (a_string: STRING): EB_ORIGO_ISSUE_WORKITEM is
 			-- read `a_string' and convert the data into an issue workitem
@@ -606,7 +632,9 @@ feature {NONE} -- Implementation
 		do
 			create Result.make
 			fill_general_workitem (Result, a_string)
-
+			Result.set_name (read_line_from_string (a_string))
+			Result.set_version (read_line_from_string (a_string))
+			Result.set_description (read_text_block_from_string (a_string))
 		end
 
 	read_commit_workitem (a_string: STRING): EB_ORIGO_COMMIT_WORKITEM is
@@ -620,23 +648,7 @@ feature {NONE} -- Implementation
 			fill_general_workitem (Result, a_string)
 			l_line := read_line_from_string (a_string)
 			Result.set_revision (l_line.to_integer)
-
-				-- the next part of `a_string' is the log. because a log can contain new line signs
-				-- the length of the log is the start of it, terminated by a ':'
-			l_line := read_head_from_string (a_string, ':')
-			check
-				is_integer: l_line.is_integer
-				is_not_too_long: l_line.to_integer <= a_string.count
-			end
-			l_length := l_line.to_integer
-			Result.set_log (a_string.substring (1, l_length))
-			a_string.remove_head (l_length)
-
-				-- read the new line sign at the end
-			l_line := read_line_from_string (a_string)
-			check
-				l_line_empty: l_line.is_empty
-			end
+			Result.set_log (read_text_block_from_string (a_string))
 		end
 
 	read_wiki_workitem (a_string: STRING): EB_ORIGO_WIKI_WORKITEM is
@@ -647,6 +659,7 @@ feature {NONE} -- Implementation
 		do
 			create Result.make
 			fill_general_workitem (Result, a_string)
+			Result.set_title (read_line_from_string (a_string))
 		end
 
 	read_blog_workitem (a_string: STRING): EB_ORIGO_BLOG_WORKITEM is
@@ -657,6 +670,7 @@ feature {NONE} -- Implementation
 		do
 			create Result.make
 			fill_general_workitem (Result, a_string)
+			Result.set_title (read_line_from_string (a_string))
 		end
 
 	fill_general_workitem (a_workitem: EB_ORIGO_WORKITEM; a_string: STRING) is

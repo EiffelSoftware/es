@@ -10,7 +10,7 @@ class
 inherit
 	EB_ORIGO_WORKITEM
 		redefine
-			out, out_short, type_name
+			out, out_short, type_name, make
 		end
 
 create
@@ -21,6 +21,7 @@ feature -- Initialisation
 	make is
 			-- create commit workitem
 		do
+			precursor
 			type := Workitem_type_issue
 		end
 
