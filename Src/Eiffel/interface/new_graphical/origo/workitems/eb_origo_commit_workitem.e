@@ -10,7 +10,7 @@ class
 inherit
 	EB_ORIGO_WORKITEM
 		redefine
-			out, out_short, type_name, make
+			out, type_name, make, label_text, text_field_text
 		end
 
 create
@@ -24,6 +24,7 @@ feature -- Initialisation
 			precursor
 			type := Workitem_type_commit
 			log := ""
+			diff := ""
 		end
 
 feature -- Access
@@ -39,6 +40,9 @@ feature -- Access
 
 	log: STRING
 			-- commit log
+
+	diff: STRING
+			-- commit diff
 
 feature -- Element change
 
@@ -60,9 +64,19 @@ feature -- Element change
 			set: log.is_equal (a_log)
 		end
 
+	set_diff (a_diff: like diff) is
+			-- set `diff'
+		require
+			not_void: a_diff /= Void
+		do
+			diff := a_diff.out
+		ensure
+			set:  diff.is_equal (a_diff)
+		end
+
 feature -- Output		
 
-	out_short: STRING is
+	out: STRING is
 			-- redefine
 		do
 			Result := "r: " + revision.out
@@ -72,15 +86,22 @@ feature -- Output
 			Result.replace_substring_all ("%N", ";")
 		end
 
-	out: STRING is
+	label_text: STRING is
 			-- redefine
 		do
-			Result := Precursor + "%N"
+			Result := precursor + "%N%N"
 			Result.append ("Revision: " + revision.out + "%N")
-			Result.append ("Log:%N")
-			Result.append (log)
+			Result.append ("Log:%N" + log + "%N")
+			Result.append ("%NDiff:")
+		end
+
+	text_field_text: STRING is
+			-- redefine
+		do
+			Result := diff.out
 		end
 
 invariant
 	log_not_void: log /= Void
+	diff_not_void: diff /= Void
 end

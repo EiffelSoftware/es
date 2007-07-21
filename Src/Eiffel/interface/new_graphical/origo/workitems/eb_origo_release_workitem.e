@@ -10,7 +10,7 @@ class
 inherit
 	EB_ORIGO_WORKITEM
 		redefine
-			out, out_short, type_name, make
+			out, type_name, make, label_text, text_field_text
 		end
 
 create
@@ -26,6 +26,7 @@ feature -- Initialisation
 			name := ""
 			version := ""
 			description := ""
+			create files.make_default
 		end
 
 feature -- Access
@@ -44,6 +45,9 @@ feature -- Access
 
 	description: STRING
 			-- release description
+
+	files: DS_HASH_TABLE[DS_LINKED_LIST[STRING], STRING]
+			-- file list (list of filenames as value and platform as key)
 
 feature -- Element change
 
@@ -73,7 +77,7 @@ feature -- Element change
 
 feature -- Output		
 
-	out_short: STRING is
+	out: STRING is
 			-- redefine
 		do
 			Result := project
@@ -84,14 +88,47 @@ feature -- Output
 			Result.replace_substring_all ("\n", " ")
 		end
 
-	out: STRING is
+	label_text: STRING is
 			-- redefine
 		do
-			Result := Precursor
+			Result := precursor + "%N%N"
+			Result.append ("Release Name: " + name + "%N")
+			Result.append ("Program Version: " + version + "%N")
+			Result.append ("%NDescription and Files:")
+		end
+
+	text_field_text: STRING is
+			-- redefine
+		local
+			file_list: DS_LINKED_LIST [STRING]
+		do
+			Result := description.out + "%N%N"
+			Result.append ("Files:%N")
+
+			from
+				files.start
+			until
+				files.after
+			loop
+				Result.append ("%N" + files.key_for_iteration + ":%N")
+				file_list := files.item_for_iteration
+
+				from
+					file_list.start
+				until
+					file_list.after
+				loop
+					Result.append (file_list.item_for_iteration + "%N")
+					file_list.forth
+				end
+
+				files.forth
+			end
 		end
 
 invariant
 	name_not_void: name /= Void
 	version_not_void: version /= Void
 	description_not_void: description /= Void
+	files_not_void: files /= Void
 end

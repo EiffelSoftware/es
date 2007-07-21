@@ -209,7 +209,7 @@ feature {NONE} -- Implementation
 				l_row.set_item (column_index_project, create {EV_GRID_TEXT_ITEM}.make_with_text (l_workitem.project))
 				l_row.set_item (column_index_user, create {EV_GRID_TEXT_ITEM}.make_with_text (l_workitem.user))
 				l_row.set_item (column_index_type, create {EV_GRID_TEXT_ITEM}.make_with_text (l_workitem.type_name))
-				l_row.set_item (column_index_text, create {EV_GRID_TEXT_ITEM}.make_with_text (l_workitem.out_short))
+				l_row.set_item (column_index_text, create {EV_GRID_TEXT_ITEM}.make_with_text (l_workitem.out))
 				if (i \\ 2) = 0 then
 					l_row.set_background_color (color2)
 				else

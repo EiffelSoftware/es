@@ -117,24 +117,32 @@ feature -- Element change
 
 feature -- Output
 
-	out_short: STRING is
+	out: STRING is
 			-- short string representation
 		do
-			Result := "Unknown type"
-		ensure
-			set: Result /= Void
+			Result := "Unknown type: " + type.out
 		end
 
-	out: STRING is
-			-- redefine
+	label_text: STRING is
+			-- text for detail label
 		do
-			Result := "Type: " + type_name + "%N"
+			Result := "Type: " + type_name + " (ID: " + type.out + ")%N"
 			Result.append ("Workitem ID: " + workitem_id.out + "%N")
-			Result.append ("Project ID: " + project_id.out + "%N")
-			Result.append ("Project: " + project + "%N")
-			Result.append ("User: " + user + "%N")
-			Result.append ("Creation Time: " + creation_time.out)
+			Result.append ("Creation time: " + creation_time.out + "%N")
+			Result.append ("Project: " + project + " (ID: " + project_id.out + "%N")
+			Result.append ("User: " + user)
+		ensure
+			not_void: Result /= Void
 		end
+
+	text_field_text: STRING	is
+			-- text of detail text field
+		do
+			Result := ""
+		ensure
+			not_void: Result /= Void
+		end
+
 
 feature {NONE} -- Implementation
 

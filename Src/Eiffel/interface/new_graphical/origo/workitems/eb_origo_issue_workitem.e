@@ -10,7 +10,7 @@ class
 inherit
 	EB_ORIGO_WORKITEM
 		redefine
-			out, out_short, type_name, make
+			out, type_name, make
 		end
 
 create
@@ -35,15 +35,9 @@ feature -- Access
 
 feature -- Output		
 
-	out_short: STRING is
-			-- redefine
-		do
-			Result := "Issue Workitem"
-		end
-
 	out: STRING is
 			-- redefine
 		do
-			Result := Precursor
+			Result := "Issue Workitem"
 		end
 end

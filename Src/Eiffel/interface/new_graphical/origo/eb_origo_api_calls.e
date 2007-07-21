@@ -341,15 +341,15 @@ feature -- XML RPC calls
 						inspect
 							l_type
 						when workitem_type_issue then
-							l_workitem := read_issue_workitem (l_workitem_list_string)
+							l_workitem := read_issue_workitem (l_workitem_list_string, False)
 						when workitem_type_release then
-							l_workitem := read_release_workitem (l_workitem_list_string)
+							l_workitem := read_release_workitem (l_workitem_list_string, False)
 						when workitem_type_commit then
-							l_workitem := read_commit_workitem (l_workitem_list_string)
+							l_workitem := read_commit_workitem (l_workitem_list_string, False)
 						when workitem_type_wiki then
-							l_workitem := read_wiki_workitem (l_workitem_list_string)
+							l_workitem := read_wiki_workitem (l_workitem_list_string, False)
 						when workitem_type_blog then
-							l_workitem := read_blog_workitem (l_workitem_list_string)
+							l_workitem := read_blog_workitem (l_workitem_list_string, False)
 						else
 							create l_workitem.make
 							l_workitem.set_type (l_type)
@@ -613,7 +613,7 @@ feature {NONE} -- Implementation
 			set: Result /= Void
 		end
 
-	read_issue_workitem (a_string: STRING): EB_ORIGO_ISSUE_WORKITEM is
+	read_issue_workitem (a_string: STRING; read_details: BOOLEAN): EB_ORIGO_ISSUE_WORKITEM is
 			-- read `a_string' and convert the data into an issue workitem
 			-- the processed part of `a_string' will be removed from it
 		local
@@ -624,7 +624,7 @@ feature {NONE} -- Implementation
 
 		end
 
-	read_release_workitem (a_string: STRING): EB_ORIGO_RELEASE_WORKITEM is
+	read_release_workitem (a_string: STRING; read_details: BOOLEAN): EB_ORIGO_RELEASE_WORKITEM is
 			-- read `a_string' and convert the data into a release workitem
 			-- the processed part of `a_string' will be removed from it
 		local
@@ -637,7 +637,7 @@ feature {NONE} -- Implementation
 			Result.set_description (read_text_block_from_string (a_string))
 		end
 
-	read_commit_workitem (a_string: STRING): EB_ORIGO_COMMIT_WORKITEM is
+	read_commit_workitem (a_string: STRING; read_details: BOOLEAN): EB_ORIGO_COMMIT_WORKITEM is
 			-- read `a_string' and convert the data into a commit workitem
 			-- the processed part of `a_string' will be removed from it
 		local
@@ -651,7 +651,7 @@ feature {NONE} -- Implementation
 			Result.set_log (read_text_block_from_string (a_string))
 		end
 
-	read_wiki_workitem (a_string: STRING): EB_ORIGO_WIKI_WORKITEM is
+	read_wiki_workitem (a_string: STRING; read_details: BOOLEAN): EB_ORIGO_WIKI_WORKITEM is
 			-- read `a_string' and convert the data into a wiki workitem
 			-- the processed part of `a_string' will be removed from it
 		local
@@ -662,7 +662,7 @@ feature {NONE} -- Implementation
 			Result.set_title (read_line_from_string (a_string))
 		end
 
-	read_blog_workitem (a_string: STRING): EB_ORIGO_BLOG_WORKITEM is
+	read_blog_workitem (a_string: STRING; read_details: BOOLEAN): EB_ORIGO_BLOG_WORKITEM is
 			-- read `a_string' and convert the data into a blog workitem
 			-- the processed part of `a_string' will be removed from it
 		local
