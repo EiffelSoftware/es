@@ -13,7 +13,7 @@ feature --Initialization
 		local
 			ctrl: like Current
 		do
-			create observed_stack.make(200)
+			create observed_stack.make(1000)
 			observed_stack.put (False)
 		end
 

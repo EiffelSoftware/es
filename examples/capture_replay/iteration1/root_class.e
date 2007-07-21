@@ -39,6 +39,7 @@ feature -- Initialization
 			player ?= program_flow_sink
 			if player /= Void then
 				player.play
+				program_flow_sink.enter --avoid unnecessary events at the end of replay...
 			else
 				test_performance := False
 			-- <methodbody_start name="make" args="[]">
