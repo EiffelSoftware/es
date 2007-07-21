@@ -148,18 +148,17 @@ feature -- Basic operations
 								--INCALLRET
 								non_basic_return_entity ?= callret.return_value
 								if non_basic_return_entity /= Void then
-									if res /= Void then
-										-- This return value must be registered.
-										resolver.associate_object_to_entity (res, non_basic_return_entity)
-									else
-										report_and_set_error ("Received non-basic return value that is not observable")
-									end
+									check res /= Void end --already checked in` set_error_status_for_callret'
+									-- This return value must be registered.
+									resolver.associate_object_to_entity (res, non_basic_return_entity)
 								end
 								last_result := res --don't change the return value.
 							else
 								--OUTCALLRET
 								if callret.return_value /= Void then
 									last_result := resolver.resolve_entity (callret.return_value)
+								else
+									last_result := Void
 								end
 							end
 							consume_event
