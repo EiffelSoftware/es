@@ -34,7 +34,7 @@ feature {NONE}  -- Initlization
 			not_void: a_hidden_items /= Void
 			not_void: a_tool_bar /= Void
 		do
-			default_create
+			make_with_shadow
 			disable_user_resize
 			disable_border
 			create internal_vertical_box
@@ -146,6 +146,9 @@ feature {SD_TOOL_BAR_MANAGER} -- Command
 			l_dialog: SD_TOOL_BAR_CUSTOMIZE_DIALOG
 			l_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 			l_parent_window: EV_WINDOW
+			l_vertical_docking: BOOLEAN
+			l_docking_manager: SD_DOCKING_MANAGER
+			l_assit: SD_TOOL_BAR_ZONE_ASSISTANT
 		do
 			if parent_tool_bar.customize_dialog /= Void and then not parent_tool_bar.customize_dialog.is_destroyed then
 				parent_tool_bar.customize_dialog.set_focus
@@ -164,14 +167,26 @@ feature {SD_TOOL_BAR_MANAGER} -- Command
 				l_dialog.customize_toolbar (l_parent_window, True, True, l_items)
 				parent_tool_bar.set_customize_dialog (Void)
 				if l_dialog.valid_data then
-					save_items_layout (l_dialog.final_toolbar)
+					l_assit := parent_tool_bar.assistant
+					l_assit.save_items_layout (l_dialog.final_toolbar)
 
-					parent_tool_bar.assistant.open_items_layout
+					l_vertical_docking := parent_tool_bar.content.is_docking and then parent_tool_bar.is_vertical
+					if l_vertical_docking then
+						l_docking_manager := parent_tool_bar.docking_manager
+						l_docking_manager.command.lock_update (Void, True)
+					end
+
+					l_assit.open_items_layout
 
 					if not parent_tool_bar.is_floating then
 						parent_tool_bar.extend_one_item (parent_tool_bar.tail_indicator)
 					end
-					save_items_layout (l_dialog.final_toolbar)
+					if l_vertical_docking then
+						parent_tool_bar.change_direction (False)
+						l_docking_manager.command.resize (True)
+						l_docking_manager.command.unlock_update
+					end
+					
 					parent_tool_bar.compute_minmum_size
 				end
 			end
