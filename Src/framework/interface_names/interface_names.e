@@ -1687,6 +1687,7 @@ feature -- Title part
 	t_Organize_favorites: STRING_GENERAL is				do Result := locale.translation("Organize Favorites")	end
 	t_Origo: STRING_GENERAL is							do Result := locale.translation("Origo") end
 	t_Origo_release: STRING_GENERAL is					do Result := locale.translation ("Origo release") end
+	t_Origo_workitem_details: STRING_GENERAL is			do Result := locale.translation ("Origo workitem details") end
 	t_No_origo_project: STRING_GENERAL					do Result := locale.translation ("-- none --") end
 	t_Profile_query_window: STRING_GENERAL is			do Result := locale.translation("Profile Query Window")	end
 	t_Profiler_wizard: STRING_GENERAL is				do Result := locale.translation("Profiler Wizard")	end

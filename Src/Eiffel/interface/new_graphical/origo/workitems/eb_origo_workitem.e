@@ -51,6 +51,9 @@ feature -- Access
 	user: STRING
 		-- user who created workitem
 
+	detailed: BOOLEAN
+		-- is the detail data provided?
+
 	type_name: STRING is
 			-- returns string representation of `type'
 		do
@@ -115,6 +118,15 @@ feature -- Element change
 			set: user.is_equal (a_user)
 		end
 
+	set_detailed (a_boolean: like detailed) is
+			--  set `detailed'
+		do
+			detailed := a_boolean
+		ensure
+			set: detailed = a_boolean
+		end
+
+
 feature -- Output
 
 	out: STRING is
@@ -129,7 +141,7 @@ feature -- Output
 			Result := "Type: " + type_name + " (ID: " + type.out + ")%N"
 			Result.append ("Workitem ID: " + workitem_id.out + "%N")
 			Result.append ("Creation time: " + creation_time.out + "%N")
-			Result.append ("Project: " + project + " (ID: " + project_id.out + "%N")
+			Result.append ("Project: " + project + " (ID: " + project_id.out + ")%N")
 			Result.append ("User: " + user)
 		ensure
 			not_void: Result /= Void

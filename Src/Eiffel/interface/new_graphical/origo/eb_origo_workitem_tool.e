@@ -55,8 +55,6 @@ feature{NONE} -- Initialisation
 			l_button_box.extend (refresh_button)
 			l_button_box.disable_item_expand (refresh_button)
 
-
-
 			create information_label.make_with_text ("")
 			information_label.align_text_center
 
@@ -70,29 +68,6 @@ feature{NONE} -- Initialisation
 			workitem_grid.column (Column_index_text).set_title ("Text")
 
 			show_information_label
-
---			refresh_workitem_list
-
-
-
-
-
---			create workitem_list			
---			workitem_list.set_column_title ("Date", 1)
---			workitem_list.set_column_title ("Project", 2)
---			workitem_list.set_column_title ("User", 3)
---			workitem_list.set_column_title ("Text", 4)
-
-
---			create l_row
---			l_row.force ("2 Weeks ago")
---			l_row.force ("Brick breaker")
---			l_row.force ("bischora")
---			l_row.force ("mooooo%Ncow")
---			workitem_list.force (l_row)
-
-
-
 		end
 
 
@@ -161,11 +136,15 @@ feature {NONE} -- Implementation
 			l_workitem_list: DS_LINKED_LIST [EB_ORIGO_WORKITEM]
 			l_api_calls: EB_ORIGO_API_CALLS
 			l_session: STRING
+			l_old_pointer_style: EV_POINTER_STYLE
 		do
+			l_old_pointer_style := develop_window.window.pointer_style
+			develop_window.window.set_pointer_style (create {EV_POINTER_STYLE}.make_predefined ({EV_POINTER_STYLE_CONSTANTS}.wait_cursor))
+
 			set_information_label_text ("Refreshing workitem list:%NLogging in...")
 			show_information_label
 
-			create l_api_calls.make (Void)
+			create l_api_calls.make (develop_window.window)
 			l_session := l_api_calls.login
 			if l_session = Void then
 				set_information_label_text (l_api_calls.last_error)
@@ -182,6 +161,8 @@ feature {NONE} -- Implementation
 					fill_workitem_grid (l_workitem_list)
 				end
 			end
+
+			develop_window.window.set_pointer_style (l_old_pointer_style)
 		end
 
 	fill_workitem_grid (a_workitem_list: DS_LINKED_LIST [EB_ORIGO_WORKITEM]) is
@@ -206,10 +187,15 @@ feature {NONE} -- Implementation
 				l_workitem := a_workitem_list.item_for_iteration
 				l_row := workitem_grid.row (i)
 				l_row.set_item (column_index_date, create {EV_GRID_TEXT_ITEM}.make_with_text (l_workitem.creation_time.out))
+				l_row.item (column_index_date).pointer_double_press_actions.force_extend (agent display_workitem_details (l_workitem.workitem_id))
 				l_row.set_item (column_index_project, create {EV_GRID_TEXT_ITEM}.make_with_text (l_workitem.project))
+				l_row.item (column_index_project).pointer_double_press_actions.force_extend (agent display_workitem_details (l_workitem.workitem_id))
 				l_row.set_item (column_index_user, create {EV_GRID_TEXT_ITEM}.make_with_text (l_workitem.user))
+				l_row.item (column_index_user).pointer_double_press_actions.force_extend (agent display_workitem_details (l_workitem.workitem_id))
 				l_row.set_item (column_index_type, create {EV_GRID_TEXT_ITEM}.make_with_text (l_workitem.type_name))
+				l_row.item (column_index_type).pointer_double_press_actions.force_extend (agent display_workitem_details (l_workitem.workitem_id))
 				l_row.set_item (column_index_text, create {EV_GRID_TEXT_ITEM}.make_with_text (l_workitem.out))
+				l_row.item (column_index_text).pointer_double_press_actions.force_extend (agent display_workitem_details (l_workitem.workitem_id))
 				if (i \\ 2) = 0 then
 					l_row.set_background_color (color2)
 				else
@@ -243,6 +229,42 @@ feature {NONE} -- Implementation
 			hide_information_label
 		end
 
+	display_workitem_details (a_workitem_id: INTEGER) is
+			-- display the workitem details
+		require
+			positive: a_workitem_id > 0
+		local
+			l_dialog: EB_ORIGO_WORKITEM_DETAIL_DIALOG
+			l_workitem: EB_ORIGO_WORKITEM
+			l_api_calls: EB_ORIGO_API_CALLS
+			l_session: STRING
+			l_warning_dialog: EB_WARNING_DIALOG
+			l_old_pointer_style: EV_POINTER_STYLE
+		do
+			l_old_pointer_style := develop_window.window.pointer_style
+			develop_window.window.set_pointer_style (create {EV_POINTER_STYLE}.make_predefined ({EV_POINTER_STYLE_CONSTANTS}.wait_cursor))
+
+			create l_api_calls.make (develop_window.window)
+			l_session := l_api_calls.login
+
+			if l_session /= Void then
+				l_workitem := l_api_calls.workitem_details (l_session, a_workitem_id)
+			end
+
+			develop_window.window.set_pointer_style (l_old_pointer_style)
+
+			if l_workitem = Void then
+				create l_warning_dialog.make_with_text (l_api_calls.last_error)
+				l_warning_dialog.show_modal_to_window (develop_window.window)
+			elseif not l_workitem.detailed then
+				create l_warning_dialog.make_with_text ("No details available for this workitem.")
+				l_warning_dialog.show_modal_to_window (develop_window.window)
+			else
+				create l_dialog.make (l_workitem.label_text, l_workitem.text_field_text)
+				l_dialog.show_modal_to_window (develop_window.window)
+			end
+		end
+
 feature {NONE} -- Implementation
 
 	title_for_pre: STRING is "Origo workitems"
@@ -271,7 +293,6 @@ feature {NONE} -- Implementation
 		once
 			create Result.make_with_8_bit_rgb (240, 240, 240)
 		end
-
 
 invariant
 	informatation_label_not_void: information_label /= Void

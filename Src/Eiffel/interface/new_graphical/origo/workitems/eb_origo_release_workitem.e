@@ -27,6 +27,7 @@ feature -- Initialisation
 			version := ""
 			description := ""
 			create files.make_default
+			files.set_key_equality_tester (create {KL_STRING_EQUALITY_TESTER})
 		end
 
 feature -- Access
@@ -102,7 +103,7 @@ feature -- Output
 		local
 			file_list: DS_LINKED_LIST [STRING]
 		do
-			Result := description.out + "%N%N"
+			Result := description.out + "%N%N%N"
 			Result.append ("Files:%N")
 
 			from

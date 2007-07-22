@@ -374,6 +374,76 @@ feature -- XML RPC calls
 			end
 		end
 
+	workitem_details (a_session: STRING; a_workitem_id: INTEGER):EB_ORIGO_WORKITEM is
+			-- receive a detailed workitem
+		require
+			session_attached: a_session /= Void and not a_session.is_empty
+			a_workitem_id_positive: a_workitem_id > 0
+		local
+			l_process: PROCESS
+			l_factory: PROCESS_FACTORY
+			l_command_line: STRING
+			l_error: STRING
+			l_workitem_string: STRING
+			l_line: STRING
+			l_type: INTEGER
+		do
+			l_error := ""
+			l_workitem_string := ""
+			l_command_line := preferences.origo_data.xml_rpc_client_path.out
+			l_command_line.append (" workitem -s ")
+			l_command_line.append (a_session)
+			l_command_line.append (" -w " + a_workitem_id.out)
+			create l_factory
+			l_process := l_factory.process_launcher_with_command_line (l_command_line, Void)
+			l_process.redirect_output_to_agent (agent l_workitem_string.append)
+			l_process.redirect_error_to_agent (agent l_error.append)
+			l_process.launch
+
+				-- launch process
+			if l_process.launched then
+				l_process.wait_for_exit
+
+					-- if everything went fine
+				if l_error.is_empty then
+					l_workitem_string.prune_all ('%R')
+					l_line := read_line_from_string (l_workitem_string)
+					l_type := l_line.to_integer
+
+					inspect
+						l_type
+					when workitem_type_issue then
+						Result := read_issue_workitem (l_workitem_string, True)
+					when workitem_type_release then
+						Result := read_release_workitem (l_workitem_string, True)
+					when workitem_type_commit then
+						Result := read_commit_workitem (l_workitem_string, True)
+					when workitem_type_wiki then
+						Result := read_wiki_workitem (l_workitem_string, True)
+					when workitem_type_blog then
+						Result := read_blog_workitem (l_workitem_string, True)
+					else
+						create Result.make
+						Result.set_type (l_type)
+						fill_general_workitem (Result, l_workitem_string)
+					end
+
+					check
+						l_workitem_string_is_empty: l_workitem_string.is_empty
+					end
+
+					-- an error occurred
+				else
+					l_error.insert_string ("Error during workitem_details:%N", 1)
+					show_warning (l_error)
+				end
+
+				-- the process could not be launched
+			else
+				show_warning ("Error during workitem_details:%NCommand line tool could not be launched")
+			end
+		end
+
 
 feature -- FTP functions
 
@@ -629,12 +699,42 @@ feature {NONE} -- Implementation
 			-- the processed part of `a_string' will be removed from it
 		local
 			l_line: STRING
+			l_file_count: INTEGER
+			i: INTEGER
+			l_strings: LIST [STRING]
 		do
 			create Result.make
 			fill_general_workitem (Result, a_string)
 			Result.set_name (read_line_from_string (a_string))
 			Result.set_version (read_line_from_string (a_string))
 			Result.set_description (read_text_block_from_string (a_string))
+
+			if read_details then
+				Result.set_detailed (True)
+				l_file_count := read_line_from_string (a_string).to_integer
+				Result.files.wipe_out
+
+				from
+					i := 1
+				until
+					i > l_file_count
+				loop
+						-- a file line looks like this: "<file_name>:<platform>"
+					l_strings := read_line_from_string (a_string).split (':')
+					check
+						correct_length: l_strings.count = 2
+					end
+
+						-- add the platform if it doesn't exist
+					if not Result.files.has (l_strings[2]) then
+						Result.files.force (create {DS_LINKED_LIST [STRING]}.make, l_strings[2].out)
+					end
+
+					Result.files.item (l_strings[2]).force_last (l_strings[1])
+
+					i := i + 1
+				end
+			end
 		end
 
 	read_commit_workitem (a_string: STRING; read_details: BOOLEAN): EB_ORIGO_COMMIT_WORKITEM is
@@ -649,6 +749,11 @@ feature {NONE} -- Implementation
 			l_line := read_line_from_string (a_string)
 			Result.set_revision (l_line.to_integer)
 			Result.set_log (read_text_block_from_string (a_string))
+
+			if read_details then
+				Result.set_detailed (True)
+				Result.set_diff (read_text_block_from_string (a_string))
+			end
 		end
 
 	read_wiki_workitem (a_string: STRING; read_details: BOOLEAN): EB_ORIGO_WIKI_WORKITEM is
@@ -660,6 +765,13 @@ feature {NONE} -- Implementation
 			create Result.make
 			fill_general_workitem (Result, a_string)
 			Result.set_title (read_line_from_string (a_string))
+
+			if read_details then
+				Result.set_detailed (True)
+				Result.set_revision (read_line_from_string (a_string).to_integer)
+				Result.set_old_revision (read_line_from_string (a_string).to_integer)
+				Result.set_diff (read_text_block_from_string (a_string))
+			end
 		end
 
 	read_blog_workitem (a_string: STRING; read_details: BOOLEAN): EB_ORIGO_BLOG_WORKITEM is
@@ -671,6 +783,13 @@ feature {NONE} -- Implementation
 			create Result.make
 			fill_general_workitem (Result, a_string)
 			Result.set_title (read_line_from_string (a_string))
+
+			if read_details then
+				Result.set_detailed (True)
+				Result.set_revision (read_line_from_string (a_string).to_integer)
+				Result.set_old_revision (read_line_from_string (a_string).to_integer)
+				Result.set_diff (read_text_block_from_string (a_string))
+			end
 		end
 
 	fill_general_workitem (a_workitem: EB_ORIGO_WORKITEM; a_string: STRING) is
