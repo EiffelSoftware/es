@@ -5944,9 +5944,9 @@ feature {NONE} -- Capture/Replay Instrumentation
 	cr_instrumentation_class_exclusion_list: ARRAY [STRING] is
 			-- Array of classes that shouldn't be instrumented.
 		once
-			create Result.make(1,30)
+			create Result.make (1,9)
 			Result.compare_objects
-			Result[1] := "ANY"  -- Otherwise, the compiler will crash.
+			Result [1] := "ANY"  -- Otherwise, the compiler will crash.
 			Result [2] := "TUPLE" -- Otherwise, the compiler will crash.
 
 			-- No instrumentation for PROGRAM_FLOW_SINK and its descendents,
@@ -5962,8 +5962,9 @@ feature {NONE} -- Capture/Replay Instrumentation
 
 			-- For the other parts of the capture/replay management
 			-- Code, the instrumentation is optional, because capture/replay
-			-- is disabled inside the management code (reentrance is only a problem
-			-- at the positions where the normal program flow enters into the management code.
+			-- is disabled inside the management code. Capturing of management code
+			-- is thus only a problem at the positions where the normal program
+			-- flow enters into the management code.
 		end
 
 	cr_instrumentation_feature_exclusion_list: ARRAY [STRING] is
@@ -5974,10 +5975,11 @@ feature {NONE} -- Capture/Replay Instrumentation
 			Result [1] := "SPECIAL.note_direct_manipulation"
 		end
 
-
---XXX tuple and parameters not 100% correct, there's no separator list (!)
 	add_capture_replay_instrumentation(routine: ROUTINE_AS) is
 			-- Adds the necessary code instrumentation for capture/replay
+			-- XXX: tuple and parameters of the instrumentation code
+			--      are not 100% correct, there's no separator list, but
+			--      it seems to work anyway.
 		require
 			routine_not_void: routine /= Void
 		local
@@ -5990,23 +5992,20 @@ feature {NONE} -- Capture/Replay Instrumentation
 		do
 			do_as ?= routine.routine_body
 
-
-			--XXX outsorce decisions about what to instrument into another class...
 			if do_as /= Void then
-
-
 				class_name := context.current_class.name
 				full_feature_name := class_name + "." + current_feature.feature_name
 				if (not cr_instrumentation_class_exclusion_list.has (context.current_class.name))
 					and then (not cr_instrumentation_feature_exclusion_list.has (full_feature_name)) then
 
 					create replacement_body.make (0)
-					replacement_body.extend (cr_create_feature_invocation_block (current_feature.feature_name, current_feature.arguments)) --XXX
+					replacement_body.extend (cr_create_feature_invocation_block (current_feature.feature_name, current_feature.arguments))
 					replacement_body.extend (cr_create_methodbody_wrapper (do_as.compound))
 					replacement_body.extend (cr_create_feature_exit_block (current_feature.has_return_value))
 
 					-- It's necessary to reuse the original do_keyword, because otherwise
-					-- the do-keyword isn't registered correctly in the match-list.
+					-- the do-keyword isn't registered correctly in the match-list, which
+					-- would lead to problems in the flat view.
 					create do_replacement.make (replacement_body,  do_as.do_keyword)
 					routine.set_routine_body (do_replacement)
 				end
@@ -6040,7 +6039,7 @@ feature {NONE} -- Capture/Replay Instrumentation
 			target_name_not_void: target_name /= Void
 			feature_name_not_void: feature_name /= Void
 		do
-			create Result.initialize(cr_create_call(target_name, feature_name, parameters))
+			create Result.initialize (cr_create_call(target_name, feature_name, parameters))
 		ensure
 			result_not_void: Result /= Void
 		end
@@ -6081,15 +6080,15 @@ feature {NONE} -- Capture/Replay Instrumentation
 			-- Create empty tuple
 			tuple_lbrack := cr_create_symbol ({EIFFEL_TOKENS}.te_lsqure)
 			tuple_rbrack := cr_create_symbol ({EIFFEL_TOKENS}.te_rsqure)
-			create tuple_expressions.make(0)
-			-- go through all arguments and fill the tuple with them.
+			create tuple_expressions.make (0)
+			-- Go through all arguments and fill the tuple with them.
 			if arguments /= Void then
 				from
 					i := 1
 				until
 					i > arguments.count
 				loop
-					tuple_expressions.extend(cr_create_expr_call_as (arguments.item_name(i)))
+					tuple_expressions.extend (cr_create_expr_call_as (arguments.item_name(i)))
 					i := i + 1
 				end
 			end
@@ -6129,7 +6128,7 @@ feature {NONE} -- Capture/Replay Instrumentation
 		require
 			feature_name /= Void
 		local
-			copied_feature_name: STRING --make sure, that there are no unwanted aliases...
+			copied_feature_name: STRING --make sure, that there are no unwanted aliases XXX: really necessary??
 			access_id: ACCESS_ID_AS
 			id: ID_AS
 		do
@@ -6158,7 +6157,7 @@ feature {NONE} -- Capture/Replay Instrumentation
 			invocation_call: INSTR_CALL_AS
 			compound: EIFFEL_LIST [INSTRUCTION_AS]
 		do
-			-- Create `invocation call
+			-- Create the invocation call
 			-- It corresponds to "program_flow_sink.put_feature_invocation("feature_name", Current, [argument1,argument2,...])
 			create target_argument.initialize (feature_name, 0, 0, 0, 0)
 			create current_argument.initialize (create {CURRENT_AS}.make_with_location(0, 0, 0, 0))
@@ -6242,12 +6241,12 @@ feature {NONE} -- Capture/Replay Instrumentation
 			-- Create the instruction 'Result ?= program_flow_sink.last_result' if necessary.
 			if feature_has_return_value then
 				create last_result.initialize (cr_create_call ("program_flow_sink", "last_result", Void))
-				assignment_attempt_symbol := cr_create_symbol({EIFFEL_TOKENS}.te_accept)
+				assignment_attempt_symbol := cr_create_symbol ({EIFFEL_TOKENS}.te_accept)
 				create result_assignment_instr.initialize (create {RESULT_AS}.make_with_location (0, 0, 0, 0),
 							 last_result, assignment_attempt_symbol)
-				exit_block_instructions.extend(result_assignment_instr)
+				exit_block_instructions.extend (result_assignment_instr)
 			end
-			Result := cr_wrap_management_instructions(exit_block_instructions)
+			Result := cr_wrap_management_instructions (exit_block_instructions)
 		end
 
 	cr_wrap_management_instructions (instructions: EIFFEL_LIST [INSTRUCTION_AS]) : INSTRUCTION_AS is
@@ -6269,11 +6268,11 @@ feature {NONE} -- Capture/Replay Instrumentation
 			create entry_call.initialize (cr_create_call ("program_flow_sink", "enter", Void))
 			create leave_call.initialize (cr_create_call ("program_flow_sink", "leave", Void))
 			create compound.make (2 + instructions.count)
-			compound.extend (cr_create_call_instr("program_flow_sink", "enter", Void))
+			compound.extend (cr_create_call_instr ("program_flow_sink", "enter", Void))
 			compound.fill (instructions)
-			compound.extend (cr_create_call_instr("program_flow_sink", "leave", Void))
+			compound.extend (cr_create_call_instr ("program_flow_sink", "leave", Void))
 
-			create capture_replay_condition.initialize (cr_create_call("program_flow_sink", "is_capture_replay_enabled", Void))
+			create capture_replay_condition.initialize (cr_create_call ("program_flow_sink", "is_capture_replay_enabled", Void))
 			Result := cr_create_if_block (capture_replay_condition, compound)
 		ensure
 			result_not_void: Result /= Void

@@ -53,15 +53,16 @@ feature -- Status setting
 
 feature -- Basic operations
 		put_feature_invocation (feature_name: STRING_8; target: ANY; arguments: TUPLE) is
-				--
 			do
 				-- XXX invoking the recorder at this position leads to incorrect object ID's
+                                -- But it's necessary to record before the player is invoked to make sure that
+                                -- Nested calls are correctly recorded.
+
 				recorder.put_feature_invocation(feature_name,target,arguments)
 				Precursor {PLAYER}(feature_name, target, arguments)
 			end
 
 		put_feature_exit (res: ANY) is
-				--
 			do
 				Precursor {PLAYER}(res)
 					-- Invoking the recorder after the player is safe, because the player
