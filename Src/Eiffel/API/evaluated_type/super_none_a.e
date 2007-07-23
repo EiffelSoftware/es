@@ -131,6 +131,9 @@ feature -- Comparison
 
 	special_is_conforming_descendant (a_other, a_lower: TYPE_A): BOOLEAN is
 			-- Special conformance rule in order to allow polymorphism on base-type of generics
+			--
+			-- `a_other' is the type for which we determine whether it conforms to `Current' .. `lower'
+			-- `a_lower' is the lower bound of the interval
 			--| The question is:
 			--| Does (a_other.lower .. a_other..upper) conform to (`lower' .. `Current')
 			--| This feature checks the upper boundary where `Current' (oviously) is a SUPER_NONE_A.
@@ -180,7 +183,7 @@ feature -- Comparison
 				i > l_count or not Result
 			loop
 				create l_formal_probe.make (false, false,i)
-					-- What happens here for the FILE example is taht we get back CHARACTER for G#1 as this is
+					-- What happens here for the FILE example is that we get back CHARACTER for G#1 as this is
 					-- how FILE derives the SEQUENCE.
 				l_type_in_descendant := l_formal_probe.instantiation_in (l_map_type, l_lower_class.class_id)
 					-- Not working because there is no feature table, but this code would be superior:
