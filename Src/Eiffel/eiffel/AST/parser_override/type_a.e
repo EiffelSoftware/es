@@ -614,9 +614,13 @@ feature {COMPILER_EXPORTER} -- Access
 				Result := is_conforming_descendant (other)
 				l_interval_lower := lower.is_conforming_descendant (other.lower)
 				if l_interval_lower then
-					if is_none or else (is_super_none and then generics.is_empty) then
+					if is_none or else (is_super_none and then generics.is_empty) or else lower.is_formal or else other.lower.is_formal then
 							-- Void is the only entity of type NONE.
 							-- It does not need the check of the upper boundary.
+
+							-- Formals are not allowed to have an interval,
+							-- they are not checked on the upper bound if the lower conforms.
+
 						l_interval_upper := True
 					else
 							-- Now here starts some special stuff:
