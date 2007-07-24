@@ -40,6 +40,11 @@ feature -- Basic operations
 		deferred
 		end
 
+	write_outread (attribute_name: STRING; target: ANY; value: ANY)
+			-- Write the OUTREAD event for `target'.`attribute'
+		deferred
+		end
+
 	close_file
 			-- Close `file'
 		require

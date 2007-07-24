@@ -26,8 +26,8 @@ feature -- Basic operations
 
 		end
 
-	put_special_modification(target: SPECIAL[ANY]; size: INTEGER)
-			-- ignore event.
+	put_attribute_access (attribute_name: STRING_8; target, value: ANY) is
+			-- ignore event
 		do
 
 		end

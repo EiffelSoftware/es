@@ -81,14 +81,16 @@ feature {NONE} -- Implementation
 			-- Test first for incallret/outcallret,
 			-- because the have as prefix INCALL/OUTCALL
 			-- which could be mistaken for incall/outcall
-			if matches (incallret_keyword) then
+			if matches (Incallret_keyword) then
 				parse_incallret
-			elseif matches (outcallret_keyword) then
+			elseif matches (Outcallret_keyword) then
 				parse_outcallret
-			elseif matches(incall_keyword) then
+			elseif matches (Incall_keyword) then
 				parse_incall
-			elseif matches(outcall_keyword) then
+			elseif matches (Outcall_keyword) then
 				parse_outcall
+			elseif matches (Outread_keyword) then
+
 			else
 					report_error ("INCALL, OUTCALL, INCALLRET or OUTCALLRET")
 			end
@@ -99,9 +101,9 @@ feature {NONE} -- Implementation
 			-- Parse an INCALL event - line; call the handler
 			-- when finished
 		require
-			matches(incall_keyword)
+			matches (Incall_keyword)
 		do
-			consume(incall_keyword)
+			consume (Incall_keyword)
 			parse_call(agent handler.handle_incall_event)
 		end
 
@@ -109,9 +111,9 @@ feature {NONE} -- Implementation
 			-- Parse an OUTCALL event - line; call the handler
 			-- when finished
 		require
-			previous_keyword_ok: matches(outcall_keyword)
+			previous_keyword_ok: matches (Outcall_keyword)
 		do
-			consume(outcall_keyword)
+			consume (Outcall_keyword)
 
 			parse_call(agent handler.handle_outcall_event)
 		end
@@ -155,21 +157,33 @@ feature {NONE} -- Implementation
 			-- Parse an INCALLRET event - line; call the handler
 			-- when finished or set `has_error' if an error occured.
 		require
-			previous_keyword_ok: matches(incallret_keyword)
+			previous_keyword_ok: matches (Incallret_keyword)
 		do
-			consume(incallret_keyword)
-			parse_ret(agent handler.handle_incallret_event)
+			consume (Incallret_keyword)
+			parse_ret (agent handler.handle_incallret_event)
 		end
 
 	parse_outcallret is
 			-- Parse an OUTCALLRET event - line; call the handler
 			-- when finished or set `has_error' if an error occurred.
 		require
-			previous_keyword_ok: matches(outcallret_keyword)
+			previous_keyword_ok: matches (Outcallret_keyword)
 		do
-			consume(outcallret_keyword)
-			parse_ret(agent handler.handle_outcallret_event)
+			consume (Outcallret_keyword)
+			parse_ret (agent handler.handle_outcallret_event)
 		end
+
+	parse_outread is
+			-- Parse an OUTREAD event - line; call the corresponding handler
+			-- when finished or set `has_error' if an error occurred.
+		require
+			previous_keyword_ok: matches (Outread_keyword)
+		do
+			consume (Outread_keyword)
+
+		end
+
+
 
 	parse_ret(handler_feature: PROCEDURE [ANY, TUPLE[ENTITY]])
 			-- Parse the common part of INCALLRET and OUTCALLRET;
@@ -482,6 +496,8 @@ feature {NONE} -- Implementation
 	Incallret_keyword: STRING is "INCALLRET"
 
 	Outcallret_keyword: STRING is "OUTCALLRET"
+
+	Outread_keyword: STRING is "OUTREAD"
 
 	Basic_keyword: STRING is "BASIC"
 

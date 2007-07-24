@@ -14,6 +14,7 @@ inherit
 	redefine
 		put_feature_exit,
 		put_feature_invocation,
+		put_attribute_access,
 		accept
 	end
 
@@ -52,23 +53,29 @@ feature -- Status setting
 		end
 
 feature -- Basic operations
-		put_feature_invocation (feature_name: STRING_8; target: ANY; arguments: TUPLE) is
-			do
+	put_feature_invocation (feature_name: STRING_8; target: ANY; arguments: TUPLE) is
+		do
 				-- XXX invoking the recorder at this position leads to incorrect object ID's
-                                -- But it's necessary to record before the player is invoked to make sure that
-                                -- Nested calls are correctly recorded.
+	            -- But it's necessary to record before the player is invoked to make sure that
+	            -- Nested calls are correctly recorded.
 
-				recorder.put_feature_invocation(feature_name,target,arguments)
-				Precursor {PLAYER}(feature_name, target, arguments)
-			end
+			recorder.put_feature_invocation(feature_name,target,arguments)
+			Precursor {PLAYER}(feature_name, target, arguments)
+		end
 
-		put_feature_exit (res: ANY) is
-			do
-				Precursor {PLAYER}(res)
-					-- Invoking the recorder after the player is safe, because the player
-					-- doesn't simulate any further feature calls.
-				recorder.put_feature_exit(last_result)
-			end
+	put_feature_exit (res: ANY) is
+		do
+			Precursor {PLAYER}(res)
+				-- Invoking the recorder after the player is safe, because the player
+				-- doesn't simulate any further feature calls.
+			recorder.put_feature_exit(last_result)
+		end
+
+	put_attribute_access (attribute_name: STRING_8; target, value: ANY) is
+		do
+			Precursor {PLAYER} (attribute_name, target, value)
+			recorder.put_attribute_access (attribute_name, target, value)
+		end
 
 	accept(visitor: PROGRAM_FLOW_SINK_VISITOR) is
 			-- Accept a visitor.

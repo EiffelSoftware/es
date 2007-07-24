@@ -205,6 +205,11 @@ feature -- Basic operations
 			end
 		end
 
+	put_attribute_access (attribute_name: STRING_8; target, value: ANY) is
+		do
+			-- TODO: implement
+		end
+
 	simulate_unobserved_body is
 			-- Handle all consecuting incalls from the event_input.
 		require
@@ -230,12 +235,6 @@ feature -- Basic operations
 				end
 
 			end
-		end
-
-	put_special_modification (target: SPECIAL[ANY]; size: INTEGER) is
-			-- Record a special modification event.
-		do
-			print ("special modification!!! target: " + target.generating_type + "%N")
 		end
 
 	play is

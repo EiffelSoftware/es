@@ -85,21 +85,9 @@ feature -- Basic Operations
 			observed_stack.put (target.is_observed)
 		end
 
-	put_special_modification(target: SPECIAL[CHARACTER_8]; size: INTEGER) is
-			-- Record a special modification event.
-		local
-			i: INTEGER
+	put_attribute_access (attribute_name: STRING_8; target, value: ANY) is
 		do
-			print("special modification!!! target: " + target.generating_type + "%N")
-			from
-				i := 0
-			until
-				i >= size
-			loop
-				print(target[i].out)
-				i := i + 1
-			end
-			print("%N")
+			-- TODO: implement
 		end
 
 	set_serializer(a_serializer: CAPTURE_SERIALIZER)

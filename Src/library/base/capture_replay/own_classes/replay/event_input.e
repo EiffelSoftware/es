@@ -72,6 +72,12 @@ feature -- Basic operations
 			create {OUTCALLRET_EVENT}internal_last_event.make(return_value)
 		end
 
+	handle_outread_event (target: NON_BASIC_ENTITY; attribute_name: STRING; value: ENTITY)
+			-- Create an outread event
+		do
+			create {OUTREAD_EVENT}internal_last_event.make (target, attribute_name, value)
+		end
+
 feature {NONE} -- Implementation
 	internal_last_event: EVENT
 invariant

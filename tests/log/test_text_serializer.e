@@ -113,7 +113,7 @@ feature -- Testing the tests:
 			a_tuple: TUPLE [ARRAYED_LIST [ARRAY [EXAMPLE_CLASS]], INTEGER]
 		do
 			filename := "test_generics.log"
-			create serializer.make_on_textfile(filename)
+			create serializer.make_on_textfile (filename)
 			create array.make (0, 10)
 			serializer.write_incall ("put", array, [example,9])
 
@@ -126,10 +126,26 @@ feature -- Testing the tests:
 
 			-- Test generic with more than one generic type
 			create a_tuple
-			serializer.write_incallret(a_tuple)
-			
-			assert_files_equal("written file correct", filename, "test_generics.res")
+			serializer.write_incallret (a_tuple)
+
+			assert_files_equal ("written file correct", filename, "test_generics.res")
 		end
+
+	test_outreads is
+			-- Test if OUTREAD events are correctly serialized
+		local
+			filename: STRING
+		do
+			filename := "test_outreads.log"
+			create serializer.make_on_textfile (filename)
+			serializer.write_outread ("test_attribute_basic", example, int_arg)
+			serializer.write_outread ("test_attribute_non_basic", example, string_arg)
+			serializer.write_outread ("test_attribute_non_basic", example, Void)
+
+			assert_files_equal  ("written file correct", filename, "test_serializer_outreads.res")
+		end
+
+
 
 feature -- Access
 

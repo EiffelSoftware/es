@@ -17,13 +17,28 @@ feature -- Creation
 
 		end
 
+feature -- Basic operations
+
 	test_feature(object_argument: ANY; string_argument: STRING; real_argument: REAL; int_argument: INTEGER)
 		do
 
 		end
 
+	set_test_attribute_basic (new_value: INTEGER) is
+		do
+			test_attribute_basic := new_value
+		end
+
+	set_test_attribute_non_basic (new_value: STRING) is
+		do
+			test_attribute_non_basic := new_value
+		end
 
 feature -- Access
+
+	test_attribute_basic: INTEGER
+
+	test_attribute_non_basic: STRING
 
 feature -- Measurement
 

@@ -51,11 +51,14 @@ feature -- Basic operations
 			arguments_not_void: arguments /= Void
 		deferred end
 
-	put_special_modification(target: SPECIAL[ANY]; size: INTEGER)
-			-- Put a special modification event.
+	put_attribute_access (attribute_name: STRING_8; target, value: ANY) is
+			-- Put an attribute access event (`target'.`field_name') with the result `value'
+			-- into the sink.
 		require
+			attribute_name_not_void: attribute_name /= Void
 			target_not_void: target /= Void
-		deferred end
+		deferred
+		end
 
 	observed_stack: DS_ARRAYED_STACK [BOOLEAN]
 			--Stack of the is_observed Values

@@ -43,27 +43,33 @@ feature -- Status change
 feature -- Basic operations
 
 	write_incall (feature_name: STRING; target: ANY; arguments: TUPLE)
-			-- Log an INCALL event for `target'.`feature'(`arguments').
 		do
 			write_call ("INCALL", feature_name, target, arguments)
 		end
 
 	write_incallret (the_result: ANY)
-			-- Write the INCALLRET event for result `the_result'.
 		do
 			write_return ("INCALLRET", the_result)
 		end
 
 	write_outcall(feature_name: STRING; target: ANY; arguments: TUPLE)
-			-- Write the OUTCALL event for `target'.`feature'(`arguments').
 		do
 			write_call ("OUTCALL", feature_name, target, arguments)
 		end
 
 	write_outcallret(the_result: ANY)
-			-- Write the OUTCALLRET event for result `the_result'
 		do
 			write_return ("OUTCALLRET", the_result)
+		end
+
+	write_outread (attribute_name: STRING; target: ANY; value: ANY)
+		do
+			write ("OUTREAD")
+			write_non_basic (target) --XXX then we must require that it's a non_basic...
+			write (" ")
+			write (attribute_name)
+			write_object (value)
+			write_endline
 		end
 
 	close_file
