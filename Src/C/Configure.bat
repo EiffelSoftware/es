@@ -43,6 +43,14 @@ set remove_desc=1
 goto process
 :process
 
+rem A workaround for getting MSYS tools run on all x64 Windows platform.
+rem See http://www.mingw.org/MinGWiki/index.php/MsysShell for more details.
+rem Only needed when executing: sh, mv, sed
+set OLD_COMSPEC=%COMSPEC%
+if "%PROCESSOR_ARCHITECTURE%" == "AMD64" (
+	SET COMSPEC=%WINDIR%\SysWOW64\cmd.exe
+)
+
 if .%3. == .dll. (
 	shell\bin\sed -e "s/\-W3/\-DEIF_MAKE_DLL\ \-W3/g" config.sh >> config.sh.modif
 	shell\bin\mv config.sh.modif config.sh
@@ -50,9 +58,9 @@ if .%3. == .dll. (
 	shell\bin\mv config.sh.modif config.sh
 )
 
-shell\bin\sh.exe eif_config_h.SH
+"%COMSPEC%" /c shell\bin\sh.exe eif_config_h.SH
 cd run-time
-..\shell\bin\sh.exe eif_size_h.SH
+"%COMSPEC%" /c ..\shell\bin\sh.exe eif_size_h.SH
 cd ..
 
 rem Get the actual make name
@@ -233,5 +241,6 @@ if exist eif_size.h del eif_size.h
 
 :end
 set PATH=%OLD_PATH%
+set COMSPEC=%OLD_COMSPEC%
 set remove_desc=
 echo Make completed
