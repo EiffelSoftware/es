@@ -81,10 +81,11 @@ feature {CLASS_TYPE_AS} -- Actual class type
 			elseif is_sep then
 				Result.set_separate_mark
 			end
+			if is_mono then
+				Result.set_monomorph_mark
+			end
 			if is_expanded then
 				Result.set_expanded_class_mark
-			elseif is_mono then
-				Result.set_monomorph_mark
 			end
 		end
 

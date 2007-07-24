@@ -375,53 +375,57 @@ feature -- Status
 	has_expanded_mark: BOOLEAN is
 			-- Is class type explicitly marked as expanded?
 		do
-			Result := declaration_mark = {CL_TYPE_A}.expanded_mark
+			Result := declaration_mark.bit_and ({CL_TYPE_A}.expanded_mark) /= 0
 		ensure
-			definition: Result = (declaration_mark = {CL_TYPE_A}.expanded_mark)
+			definition: Result = (declaration_mark.bit_and ({CL_TYPE_A}.expanded_mark) /= 0)
 		end
 
 	has_reference_mark: BOOLEAN is
 			-- Is class type explicitly marked as reference?
 		do
-			Result := declaration_mark = {CL_TYPE_A}.reference_mark
+			Result := declaration_mark.bit_and ({CL_TYPE_A}.reference_mark) /= 0
 		ensure
-			definition: Result = (declaration_mark = {CL_TYPE_A}.reference_mark)
+			definition: Result = (declaration_mark.bit_and ({CL_TYPE_A}.reference_mark) /= 0)
 		end
 
 	has_separate_mark: BOOLEAN is
 			-- Is class type explicitly marked as reference?
 		do
-			Result := declaration_mark = {CL_TYPE_A}.separate_mark
+			Result := declaration_mark.bit_and ({CL_TYPE_A}.separate_mark) /= 0
 		ensure
-			definition: Result = (declaration_mark = {CL_TYPE_A}.separate_mark)
+			definition: Result = (declaration_mark.bit_and ({CL_TYPE_A}.separate_mark) /= 0)
 		end
 
 	has_monomorph_mark: BOOLEAN is
 			-- Is class type explicitly marked as monomorph?
 		do
-			Result := declaration_mark = {CL_TYPE_A}.monomorph_mark
+			Result := declaration_mark.bit_and ({CL_TYPE_A}.monomorph_mark) /= 0
 		ensure
-			definition: Result = (declaration_mark = {CL_TYPE_A}.monomorph_mark)
+			definition: Result = (declaration_mark.bit_and ({CL_TYPE_A}.monomorph_mark) /= 0)
 		end
 
 	is_expanded: BOOLEAN is
 			-- Is the type expanded?
 		do
-				-- Do not check for `has_separate_mark' because a separate class cannot be expanded.
-			Result := has_expanded_mark or else ((has_no_mark or has_monomorph_mark) and then base_class.is_expanded)
+			Result := has_expanded_mark or else (not has_reference_mark and then base_class.is_expanded)
 		end
 
-		is_reference: BOOLEAN is
+	is_reference: BOOLEAN is
 			-- Is the type a reference type?
 		do
-			Result := has_reference_mark or else
-				((has_no_mark or has_separate_mark or has_monomorph_mark) and then not base_class.is_expanded)
+			Result := has_reference_mark or else (not has_expanded_mark and then not base_class.is_expanded)
 		end
 
 	is_separate: BOOLEAN is
 			-- Is the type separate?
 		do
 			Result := has_separate_mark
+		end
+
+	is_monomorph: BOOLEAN is
+			-- Is the type monomorph?
+		do
+			Result := has_monomorph_mark or else is_expanded or else is_frozen
 		end
 
 	is_enum: BOOLEAN is
@@ -768,10 +772,10 @@ feature {CL_TYPE_A, TUPLE_CLASS_B} -- Implementation: class type declaration mar
 	set_mark (mark: like declaration_mark) is
 			-- Set `declaration_mark' to the given value `mark'.
 		require
-			valid_declaration_mark:
-				mark = {CL_TYPE_A}.no_mark or mark = {CL_TYPE_A}.expanded_mark or
-				mark = {CL_TYPE_A}.reference_mark or mark = {CL_TYPE_A}.separate_mark or
-				mark = {CL_TYPE_A}.monomorph_mark
+--			valid_declaration_mark:
+--				mark = {CL_TYPE_A}.no_mark or mark = {CL_TYPE_A}.expanded_mark or
+--				mark = {CL_TYPE_A}.reference_mark or mark = {CL_TYPE_A}.separate_mark or
+--				mark = {CL_TYPE_A}.monomorph_mark
 		do
 			declaration_mark := mark
 		ensure
@@ -780,12 +784,13 @@ feature {CL_TYPE_A, TUPLE_CLASS_B} -- Implementation: class type declaration mar
 
 invariant
 	class_id_positive: class_id > 0
-	valid_declaration_mark:
-		declaration_mark = {CL_TYPE_A}.no_mark or
-		declaration_mark = {CL_TYPE_A}.expanded_mark or
-		declaration_mark = {CL_TYPE_A}.reference_mark or
-		declaration_mark = {CL_TYPE_A}.separate_mark or
-		declaration_mark = {CL_TYPE_A}.monomorph_mark
+-- Todo: new invariant for mark using bit-mask
+--	valid_declaration_mark:
+--		declaration_mark = {CL_TYPE_A}.no_mark or
+--		declaration_mark = {CL_TYPE_A}.expanded_mark or
+--		declaration_mark = {CL_TYPE_A}.reference_mark or
+--		declaration_mark = {CL_TYPE_A}.separate_mark or
+--		declaration_mark = {CL_TYPE_A}.monomorph_mark
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

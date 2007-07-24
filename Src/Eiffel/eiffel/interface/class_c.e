@@ -1888,10 +1888,11 @@ feature {TYPE_AS, AST_TYPE_A_GENERATOR, AST_FEATURE_CHECKER_GENERATOR} -- Actual
 			elseif is_sep then
 				Result.set_separate_mark
 			end
+			if is_mono then
+				Result.set_monomorph_mark
+			end
 			if is_expanded then
 				Result.set_expanded_class_mark
-			elseif is_mono then
-				Result.set_monomorph_mark
 			end
 		ensure
 			actual_type_not_void: Result /= Void

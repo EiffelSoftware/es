@@ -54,51 +54,57 @@ feature -- Properties
 	has_expanded_mark: BOOLEAN is
 			-- Is class type explicitly marked as expanded?
 		do
-			Result := declaration_mark = expanded_mark
+			Result := declaration_mark.bit_and (expanded_mark) /= 0
 		ensure
-			definition: Result = (declaration_mark = expanded_mark)
+			definition: Result = (declaration_mark.bit_and (expanded_mark) /= 0)
 		end
 
 	has_reference_mark: BOOLEAN is
 			-- Is class type explicitly marked as reference?
 		do
-			Result := declaration_mark = reference_mark
+			Result := declaration_mark.bit_and (reference_mark) /= 0
 		ensure
-			definition: Result = (declaration_mark = reference_mark)
+			definition: Result = (declaration_mark.bit_and (reference_mark) /= 0)
 		end
 
 	has_separate_mark: BOOLEAN is
 			-- Is class type explicitly marked as reference?
 		do
-			Result := declaration_mark = separate_mark
+			Result := declaration_mark.bit_and (separate_mark) /= 0
 		ensure
-			definition: Result = (declaration_mark = separate_mark)
+			definition: Result = (declaration_mark.bit_and (separate_mark) /= 0)
 		end
 
 	has_monomorph_mark: BOOLEAN is
 			-- Is class type explicitly marked as monomorph?
 		do
-			Result := declaration_mark = monomorph_mark
+			Result := declaration_mark.bit_and (monomorph_mark) /= 0
 		ensure
-			definition: Result = (declaration_mark = monomorph_mark)
+			definition: Result = (declaration_mark.bit_and (monomorph_mark) /= 0)
 		end
 
 	is_expanded: BOOLEAN is
 			-- Is the type expanded?
 		do
-			Result := has_expanded_mark or else ((has_no_mark or has_monomorph_mark) and then associated_class.is_expanded)
+			Result := has_expanded_mark or else (not has_reference_mark and then associated_class.is_expanded)
 		end
 
 	is_reference: BOOLEAN is
 			-- Is the type a reference type?
 		do
-			Result := has_reference_mark or else ((has_no_mark or has_monomorph_mark or has_separate_mark) and then not associated_class.is_expanded)
+			Result := has_reference_mark or else (not has_expanded_mark and then not associated_class.is_expanded)
 		end
 
 	is_separate: BOOLEAN is
 			-- Is the type separate?
 		do
 			Result := has_separate_mark
+		end
+
+	is_monomorph: BOOLEAN is
+			-- Is the current type monomorph?
+		do
+			Result := has_monomorph_mark or is_expanded or associated_class.is_frozen
 		end
 
 	is_valid: BOOLEAN is
@@ -144,12 +150,6 @@ feature -- Properties
 			l_system := system
 			Result := l_class_id = l_system.system_object_class.compiled_class.class_id or
 				l_class_id = l_system.any_class.compiled_class.class_id
-		end
-
-	is_monomorph: BOOLEAN is
-			-- Is the current type monomorph?
-		do
-			Result := has_monomorph_mark or is_expanded or associated_class.is_frozen
 		end
 
 feature -- Comparison
@@ -247,7 +247,7 @@ feature {COMPILER_EXPORTER} -- Settings
 	set_expanded_mark is
 			-- Set class type declaration as expanded.
 		do
-			declaration_mark := expanded_mark
+			declaration_mark := declaration_mark.bit_or (expanded_mark)
 		ensure
 			has_expanded_mark: has_expanded_mark
 		end
@@ -255,7 +255,7 @@ feature {COMPILER_EXPORTER} -- Settings
 	set_reference_mark is
 			-- Set class type declaration as reference.
 		do
-			declaration_mark := reference_mark
+			declaration_mark := declaration_mark.bit_or (reference_mark)
 		ensure
 			has_reference_mark: has_reference_mark
 		end
@@ -263,7 +263,7 @@ feature {COMPILER_EXPORTER} -- Settings
 	set_separate_mark is
 			-- Set class type declaration as separate.
 		do
-			declaration_mark := separate_mark
+			declaration_mark := declaration_mark.bit_or (separate_mark)
 		ensure
 			has_separate_mark: has_separate_mark
 		end
@@ -271,14 +271,9 @@ feature {COMPILER_EXPORTER} -- Settings
 	set_monomorph_mark is
 			-- Set class type declaration as monomorph.
 		do
-			if has_no_mark then
-				declaration_mark := monomorph_mark
-			else
-				check is_expanded end
-			end
+			declaration_mark := declaration_mark.bit_or (monomorph_mark)
 		ensure
-			has_monomorph_mark: old has_no_mark implies has_monomorph_mark
-			is_monomorph: is_monomorph
+			has_monomorph_mark: has_monomorph_mark
 		end
 
 	type_i: CL_TYPE_I is
@@ -593,10 +588,10 @@ feature {CL_TYPE_A, CL_TYPE_I, TUPLE_CLASS_B} -- Implementation: class type decl
 	set_mark (mark: like declaration_mark) is
 			-- Set `declaration_mark' to the given value `mark'.
 		require
-			valid_declaration_mark:
-				mark = no_mark or mark = expanded_mark or
-				mark = reference_mark or mark = separate_mark or
-				mark = monomorph_mark
+--			valid_declaration_mark:
+--				mark = no_mark or mark = expanded_mark or
+--				mark = reference_mark or mark = separate_mark or
+--				mark = monomorph_mark
 		do
 			declaration_mark := mark
 		ensure
@@ -606,29 +601,30 @@ feature {CL_TYPE_A, CL_TYPE_I, TUPLE_CLASS_B} -- Implementation: class type decl
 	no_mark: NATURAL_8 is 0
 			-- Empty declaration mark
 
-	expanded_mark: NATURAL_8 is 1
+	expanded_mark: NATURAL_8 is 0x01
 			-- Expanded declaration mark
 
-	reference_mark: NATURAL_8 is 2
+	reference_mark: NATURAL_8 is 0x02
 			-- Reference declaration mark
 
-	separate_mark: NATURAL_8 is 3
+	separate_mark: NATURAL_8 is 0x04
 			-- Separate declaration mark
 
-	monomorph_mark: NATURAL_8 is 4
+	monomorph_mark: NATURAL_8 is 0x08
 			-- Monomorph declaration mark
 
 invariant
 	class_id_positive: class_id > 0
-	valid_declaration_mark: declaration_mark = no_mark or declaration_mark = expanded_mark or
-		declaration_mark = reference_mark or declaration_mark = separate_mark or
-		declaration_mark = monomorph_mark
-	valid_class_declaration_mark:
-		class_declaration_mark = no_mark or
-		class_declaration_mark = expanded_mark or
-		class_declaration_mark = reference_mark or
-		class_declaration_mark = separate_mark or
-		class_declaration_mark = monomorph_mark
+-- Todo: new invariant for mark using bit-mask
+--	valid_declaration_mark: declaration_mark = no_mark or declaration_mark = expanded_mark or
+--		declaration_mark = reference_mark or declaration_mark = separate_mark or
+--		declaration_mark = monomorph_mark
+--	valid_class_declaration_mark:
+--		class_declaration_mark = no_mark or
+--		class_declaration_mark = expanded_mark or
+--		class_declaration_mark = reference_mark or
+--		class_declaration_mark = separate_mark or
+--		class_declaration_mark = monomorph_mark
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
