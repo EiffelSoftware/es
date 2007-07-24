@@ -14,7 +14,8 @@ inherit
 			actual_type, associated_class, conform_to, conformance_type, convert_to,
 			generics, has_associated_class, instantiated_in,
 			is_basic, is_expanded, is_external, is_like_current, is_none, is_reference,
-			meta_type, set_actual_type, type_i, evaluated_type_in_descendant
+			meta_type, set_actual_type, type_i, evaluated_type_in_descendant,
+			is_monomorph
 		end
 
 feature -- Visitor
@@ -74,6 +75,10 @@ feature -- Properties
 		do
 			Result := other.is_like_current
 		end
+
+	is_monomorph: BOOLEAN is True
+			-- Is the current type monomorph?
+			--| like Current types are always monomorph
 
 feature -- Access
 

@@ -1868,7 +1868,7 @@ feature -- Actual class type
 
 feature {TYPE_AS, AST_TYPE_A_GENERATOR, AST_FEATURE_CHECKER_GENERATOR} -- Actual class type
 
-	partial_actual_type (gen: ARRAY [TYPE_A]; is_exp, is_sep: BOOLEAN): CL_TYPE_A is
+	partial_actual_type (gen: ARRAY [TYPE_A]; is_exp, is_sep, is_mono: BOOLEAN): CL_TYPE_A is
 			-- Actual type of `current depending on the context in which it is declared
 			-- in CLASS_TYPE_AS. That is to say, it could have generics `gen' but not
 			-- be a generic class. It simplifies creation of `CL_TYPE_A' instances in
@@ -1890,6 +1890,8 @@ feature {TYPE_AS, AST_TYPE_A_GENERATOR, AST_FEATURE_CHECKER_GENERATOR} -- Actual
 			end
 			if is_expanded then
 				Result.set_expanded_class_mark
+			elseif is_mono then
+				Result.set_monomorph_mark
 			end
 		ensure
 			actual_type_not_void: Result /= Void

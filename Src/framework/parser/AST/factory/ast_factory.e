@@ -872,6 +872,19 @@ feature -- Access
 			end
 		end
 
+	set_monomorph_type (a_type: TYPE_AS; is_monomorphic: BOOLEAN; s_as: KEYWORD_AS) is
+			-- Set monomorphic status of `a_type' if it is an instance of CLASS_TYPE_AS.
+		local
+			l_class_type: CLASS_TYPE_AS
+		do
+			if is_monomorphic then
+				l_class_type ?= a_type
+				if l_class_type /= Void then
+					l_class_type.set_is_monomorph (True, s_as)
+				end
+			end
+		end
+
 	new_named_tuple_type_as (n: ID_AS; p: FORMAL_ARGU_DEC_LIST_AS): NAMED_TUPLE_TYPE_AS is
 			-- New TUPLE_TYPE AST node
 		do

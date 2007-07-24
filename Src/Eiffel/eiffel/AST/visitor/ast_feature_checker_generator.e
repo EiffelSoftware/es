@@ -8105,7 +8105,7 @@ feature {NONE} -- Implementation: catcall check
 			loop
 					-- If type is generic, instantiate subtype with same generics
 				if a_type.has_generics then
-					l_type := l_descendants.item.partial_actual_type (a_type.generics, a_type.is_expanded, a_type.is_separate)
+					l_type := l_descendants.item.partial_actual_type (a_type.generics, a_type.is_expanded, a_type.is_separate, a_type.is_monomorph)
 				else
 					l_type := l_descendants.item.actual_type
 				end

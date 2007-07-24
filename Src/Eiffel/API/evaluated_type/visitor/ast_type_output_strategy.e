@@ -115,6 +115,8 @@ feature {TYPE_A} -- Visitors
 			elseif a_type.has_separate_mark then
 				text_formatter.process_keyword_text (ti_separate_keyword, Void)
 				text_formatter.add_space
+			elseif a_type.has_monomorph_mark then
+				text_formatter.process_keyword_text (ti_frozen_keyword, Void)
 			end
 			l_class := a_type.associated_class
 			if l_class /= Void  then

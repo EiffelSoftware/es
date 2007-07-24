@@ -69,6 +69,9 @@ feature -- Attributes
 	is_separate: BOOLEAN
 			-- Is current type used with `separate' keyword?
 
+	is_monomorph: BOOLEAN
+			-- Is current type marked as monomorph?
+
 feature -- Roundtrip
 
 	expanded_keyword: KEYWORD_AS
@@ -76,6 +79,9 @@ feature -- Roundtrip
 
 	separate_keyword: KEYWORD_AS
 			-- Keyword "separate" associated with this structure.	
+
+	monomorph_keyword: KEYWORD_AS
+			-- Keyword which marks type as monomorph
 
 	internal_generics: like generics
 			-- Internal possible generical parameters
@@ -93,6 +99,8 @@ feature -- Roundtrip/Token
 						Result := expanded_keyword.first_token (a_list)
 					elseif separate_keyword /= Void then
 						Result := separate_keyword.first_token (a_list)
+					elseif monomorph_keyword /= Void then
+						Result := monomorph_keyword.first_token (a_list)
 					else
 						Result := class_name.first_token (a_list)
 					end
@@ -127,7 +135,8 @@ feature -- Comparison
 		do
 			Result := equivalent (class_name, other.class_name) and then
 				equivalent (generics, other.generics) and then
-				is_expanded = other.is_expanded
+				is_expanded = other.is_expanded and then
+				is_monomorph = other.is_monomorph
 		end
 
 feature {AST_FACTORY, COMPILER_EXPORTER} -- Conveniences
@@ -150,6 +159,16 @@ feature {AST_FACTORY, COMPILER_EXPORTER} -- Conveniences
 		ensure
 			is_separate_set: is_separate = i
 			separate_keyword_set: separate_keyword = s_as
+		end
+
+	set_is_monomorph (i: like is_monomorph; s_as: like monomorph_keyword) is
+			-- Set `is_monomorph' to `i'.
+		do
+			is_monomorph := i
+			monomorph_keyword := s_as
+		ensure
+			is_monomorph_set: is_monomorph = i
+			monomorph_keyword_set: monomorph_keyword = s_as
 		end
 
 	set_class_name (s: like class_name) is

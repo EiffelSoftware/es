@@ -27,6 +27,7 @@ inherit
 			is_none,
 			is_reference,
 			is_valid,
+			is_monomorph,
 			meta_type
 		end
 
@@ -93,6 +94,16 @@ feature -- Properties
 			-- Is current type valid?
 		do
 			Result := actual_type /= Void
+		end
+
+	is_monomorph: BOOLEAN is
+			-- Is the current type monomorph?
+		do
+			if actual_type.is_like then
+				Result := conformance_type.is_monomorph
+			else
+				Result := actual_type.is_monomorph
+			end
 		end
 
 	same_as (other: TYPE_A): BOOLEAN is

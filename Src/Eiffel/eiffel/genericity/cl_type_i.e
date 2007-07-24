@@ -396,6 +396,14 @@ feature -- Status
 			definition: Result = (declaration_mark = {CL_TYPE_A}.separate_mark)
 		end
 
+	has_monomorph_mark: BOOLEAN is
+			-- Is class type explicitly marked as monomorph?
+		do
+			Result := declaration_mark = {CL_TYPE_A}.monomorph_mark
+		ensure
+			definition: Result = (declaration_mark = {CL_TYPE_A}.monomorph_mark)
+		end
+
 	is_expanded: BOOLEAN is
 			-- Is the type expanded?
 		do
@@ -527,6 +535,14 @@ feature -- Setting
 			declaration_mark := {CL_TYPE_A}.separate_mark
 		ensure
 			has_separate_mark: has_separate_mark
+		end
+
+	set_monomorph_mark is
+			-- Set class type declaration as monomorph.
+		do
+			declaration_mark := {CL_TYPE_A}.monomorph_mark
+		ensure
+			has_monomorph_mark: has_monomorph_mark
 		end
 
 	set_cr_info (cinfo : CREATE_INFO) is
@@ -754,7 +770,8 @@ feature {CL_TYPE_A, TUPLE_CLASS_B} -- Implementation: class type declaration mar
 		require
 			valid_declaration_mark:
 				mark = {CL_TYPE_A}.no_mark or mark = {CL_TYPE_A}.expanded_mark or
-				mark = {CL_TYPE_A}.reference_mark or mark = {CL_TYPE_A}.separate_mark
+				mark = {CL_TYPE_A}.reference_mark or mark = {CL_TYPE_A}.separate_mark or
+				mark = {CL_TYPE_A}.monomorph_mark
 		do
 			declaration_mark := mark
 		ensure
@@ -767,7 +784,8 @@ invariant
 		declaration_mark = {CL_TYPE_A}.no_mark or
 		declaration_mark = {CL_TYPE_A}.expanded_mark or
 		declaration_mark = {CL_TYPE_A}.reference_mark or
-		declaration_mark = {CL_TYPE_A}.separate_mark
+		declaration_mark = {CL_TYPE_A}.separate_mark or
+		declaration_mark = {CL_TYPE_A}.monomorph_mark
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

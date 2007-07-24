@@ -300,6 +300,12 @@ feature -- Properties
 			-- Do nothing
 		end
 
+	is_monomorph: BOOLEAN is
+			-- Is the current type monomorph?
+		do
+			-- Do nothing
+		end
+
 feature -- Comparison
 
 	frozen is_safe_equivalent (other: TYPE_A): BOOLEAN is

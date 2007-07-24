@@ -13,7 +13,8 @@ inherit
 			is_expanded, is_reference, is_separate, instantiation_in, valid_generic,
 			duplicate, meta_type, same_as, good_generics, error_generics,
 			has_expanded, is_valid, format, convert_to,
-			is_full_named_type, is_external, is_enum, is_conformant_to
+			is_full_named_type, is_external, is_enum, is_conformant_to,
+			is_monomorph
 		end
 
 	DEBUG_OUTPUT
@@ -72,6 +73,14 @@ feature -- Properties
 			Result := declaration_mark = separate_mark
 		ensure
 			definition: Result = (declaration_mark = separate_mark)
+		end
+
+	has_monomorph_mark: BOOLEAN is
+			-- Is class type explicitly marked as monomorph?
+		do
+			Result := declaration_mark = monomorph_mark
+		ensure
+			definition: Result = (declaration_mark = monomorph_mark)
 		end
 
 	is_expanded: BOOLEAN is
@@ -137,6 +146,12 @@ feature -- Properties
 				l_class_id = l_system.any_class.compiled_class.class_id
 		end
 
+	is_monomorph: BOOLEAN is
+			-- Is the current type monomorph?
+		do
+			Result := has_monomorph_mark or is_expanded or associated_class.is_frozen
+		end
+
 feature -- Comparison
 
 	is_equivalent (other: like Current): BOOLEAN is
@@ -188,6 +203,9 @@ feature -- Output
 			elseif has_separate_mark then
 				st.process_keyword_text (ti_separate_keyword, Void)
 				st.add_space
+			elseif has_monomorph_mark then
+				st.process_keyword_text (ti_frozen_keyword, Void)
+				st.add_space
 			end
 			associated_class.append_name (st)
 		end
@@ -207,6 +225,9 @@ feature -- Output
 			elseif has_separate_mark then
 				create Result.make (class_name.count + 9)
 				Result.append ("separate ")
+			elseif has_monomorph_mark then
+				create Result.make (class_name.count + 7)
+				Result.append ("frozen ")
 			else
 				create Result.make (class_name.count)
 			end
@@ -245,6 +266,14 @@ feature {COMPILER_EXPORTER} -- Settings
 			declaration_mark := separate_mark
 		ensure
 			has_separate_mark: has_separate_mark
+		end
+
+	set_monomorph_mark is
+			-- Set class type declaration as monomorph.
+		do
+			declaration_mark := monomorph_mark
+		ensure
+			has_monomorph_mark: has_monomorph_mark
 		end
 
 	type_i: CL_TYPE_I is
@@ -335,6 +364,11 @@ feature {COMPILER_EXPORTER} -- Conformance
 				end
 			elseif l_other_type_set /= Void then
 				Result := to_type_set.conform_to (l_other_type_set.twin)
+			end
+			if context.current_class.is_cat_call_detection then
+				if Result and other.is_monomorph then
+					Result := is_monomorph and then other.conform_to (Current)
+				end
 			end
 		end
 
@@ -556,7 +590,8 @@ feature {CL_TYPE_A, CL_TYPE_I, TUPLE_CLASS_B} -- Implementation: class type decl
 		require
 			valid_declaration_mark:
 				mark = no_mark or mark = expanded_mark or
-				mark = reference_mark or mark = separate_mark
+				mark = reference_mark or mark = separate_mark or
+				mark = monomorph_mark
 		do
 			declaration_mark := mark
 		ensure
@@ -575,15 +610,20 @@ feature {CL_TYPE_A, CL_TYPE_I, TUPLE_CLASS_B} -- Implementation: class type decl
 	separate_mark: NATURAL_8 is 3
 			-- Separate declaration mark
 
+	monomorph_mark: NATURAL_8 is 4
+			-- Monomorph declaration mark
+
 invariant
 	class_id_positive: class_id > 0
 	valid_declaration_mark: declaration_mark = no_mark or declaration_mark = expanded_mark or
-		declaration_mark = reference_mark or declaration_mark = separate_mark
+		declaration_mark = reference_mark or declaration_mark = separate_mark or
+		declaration_mark = monomorph_mark
 	valid_class_declaration_mark:
 		class_declaration_mark = no_mark or
 		class_declaration_mark = expanded_mark or
 		class_declaration_mark = reference_mark or
-		class_declaration_mark = separate_mark
+		class_declaration_mark = separate_mark or
+		class_declaration_mark = monomorph_mark
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

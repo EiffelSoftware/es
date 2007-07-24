@@ -1462,6 +1462,16 @@ Assertion_clause: Expression ASemi
 
 Type: Class_or_tuple_type
 			{ $$ := $1 }
+	| TE_INVARIANT Class_or_tuple_type
+			{
+				$$ := $2 
+				ast_factory.set_monomorph_type ($$, True, $1)
+			}
+	| TE_FROZEN Class_or_tuple_type
+			{
+				$$ := $2 
+				ast_factory.set_monomorph_type ($$, True, $1)
+			}
 	|	Non_class_type
 			{ $$ := $1 }
 	;
