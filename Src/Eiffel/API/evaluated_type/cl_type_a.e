@@ -86,13 +86,13 @@ feature -- Properties
 	is_expanded: BOOLEAN is
 			-- Is the type expanded?
 		do
-			Result := has_expanded_mark or else has_no_mark and then associated_class.is_expanded
+			Result := has_expanded_mark or else ((has_no_mark or has_monomorph_mark) and then associated_class.is_expanded)
 		end
 
 	is_reference: BOOLEAN is
 			-- Is the type a reference type?
 		do
-			Result := has_reference_mark or else has_no_mark and then not associated_class.is_expanded
+			Result := has_reference_mark or else ((has_no_mark or has_monomorph_mark or has_separate_mark) and then not associated_class.is_expanded)
 		end
 
 	is_separate: BOOLEAN is
@@ -271,9 +271,14 @@ feature {COMPILER_EXPORTER} -- Settings
 	set_monomorph_mark is
 			-- Set class type declaration as monomorph.
 		do
-			declaration_mark := monomorph_mark
+			if has_no_mark then
+				declaration_mark := monomorph_mark
+			else
+				check is_expanded end
+			end
 		ensure
-			has_monomorph_mark: has_monomorph_mark
+			has_monomorph_mark: old has_no_mark implies has_monomorph_mark
+			is_monomorph: is_monomorph
 		end
 
 	type_i: CL_TYPE_I is
@@ -367,7 +372,7 @@ feature {COMPILER_EXPORTER} -- Conformance
 			end
 			if context.current_class.is_cat_call_detection then
 				if Result and other.is_monomorph then
-					Result := is_monomorph and then other.conform_to (Current)
+					Result := is_monomorph and then equivalent (Current, other)
 				end
 			end
 		end

@@ -5111,6 +5111,7 @@ feature -- Implementation
 			l_call_access: CALL_ACCESS_B
 			l_creation_expr: CREATION_EXPR_B
 			l_creation_type: TYPE_A
+			l_class_type: CL_TYPE_A
 			l_create_info: CREATE_INFO
 			l_vgcc3: VGCC3
 			l_needs_byte_node: BOOLEAN
@@ -5120,6 +5121,14 @@ feature -- Implementation
 
 			l_as.type.process (Current)
 			l_creation_type := last_type
+
+				-- Set created type to be monomorphic
+			l_class_type ?= l_creation_type
+			if l_class_type /= Void then
+				l_class_type.set_monomorph_mark
+			end
+			check l_creation_type.is_monomorph end
+
 			if l_creation_type.is_none then
 					-- Cannot create instance of NONE.
 				create l_vgcc3
@@ -5935,7 +5944,8 @@ feature {NONE} -- Predefined types
 	string_type: CL_TYPE_A is
 			-- Actual string type
 		once
-			Result := system.string_8_class.compiled_class.actual_type
+			Result := system.string_8_class.compiled_class.actual_type.twin
+			Result.set_monomorph_mark
 		end
 
 	strip_type: GEN_TYPE_A is
