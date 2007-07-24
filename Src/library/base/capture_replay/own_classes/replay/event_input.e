@@ -48,12 +48,14 @@ feature -- Basic operations
 				parser.parse_event
 		end
 
+	--XXX change target to ENTITY. requires changes in call_event, player et al, too.
 	handle_incall_event(target: NON_BASIC_ENTITY; feature_name: STRING; arguments: DS_LIST[ENTITY])
 			-- Create an incall event.
 		do
 			create {INCALL_EVENT}internal_last_event.make(target,feature_name,arguments)
 		end
 
+	--XXX change target to ENTITY
 	handle_outcall_event(target: NON_BASIC_ENTITY; feature_name: STRING; arguments: DS_LIST[ENTITY])
 			-- Create an outcall event.
 		do

@@ -2652,7 +2652,7 @@ feature -- Implementation
 			l_list: BYTE_LIST [BYTE_NODE]
 			l_needs_byte_node: BOOLEAN
 		do
-			add_capture_replay_instrumentation (l_as) -- SIES
+			cr_add_instrumentation (l_as) -- SIES
 
 			l_needs_byte_node := is_byte_node_enabled
 				-- Check local variables
@@ -5942,7 +5942,7 @@ feature {NONE} -- Predefined types
 feature {NONE} -- Capture/Replay Instrumentation
 
 	cr_instrumentation_class_exclusion_list: ARRAY [STRING] is
-			-- Array of classes that shouldn't be instrumented.
+			-- Array of classes that shouldn't be instrumented
 		once
 			create Result.make (1,9)
 			Result.compare_objects
@@ -5968,16 +5968,16 @@ feature {NONE} -- Capture/Replay Instrumentation
 		end
 
 	cr_instrumentation_feature_exclusion_list: ARRAY [STRING] is
-			--
+			-- Features that need to remain uninstrumented
 		once
 			create Result.make (1,1)
 			Result.compare_objects
 			Result [1] := "SPECIAL.note_direct_manipulation"
 		end
 
-	add_capture_replay_instrumentation(routine: ROUTINE_AS) is
+	cr_add_instrumentation(routine: ROUTINE_AS) is
 			-- Adds the necessary code instrumentation for capture/replay
-			-- XXX: tuple and parameters of the instrumentation code
+			-- Note: tuple and arguments of the instrumentation code
 			--      are not 100% correct, there's no separator list, but
 			--      it seems to work anyway.
 		require
@@ -5999,9 +5999,9 @@ feature {NONE} -- Capture/Replay Instrumentation
 					and then (not cr_instrumentation_feature_exclusion_list.has (full_feature_name)) then
 
 					create replacement_body.make (0)
-					replacement_body.extend (cr_create_feature_invocation_block (current_feature.feature_name, current_feature.arguments))
-					replacement_body.extend (cr_create_methodbody_wrapper (do_as.compound))
-					replacement_body.extend (cr_create_feature_exit_block (current_feature.has_return_value))
+					replacement_body.extend (cr_feature_invocation_block (current_feature.feature_name, current_feature.arguments))
+					replacement_body.extend (cr_methodbody_wrapper (do_as.compound))
+					replacement_body.extend (cr_feature_exit_block (current_feature.has_return_value))
 
 					-- It's necessary to reuse the original do_keyword, because otherwise
 					-- the do-keyword isn't registered correctly in the match-list, which
@@ -6012,8 +6012,8 @@ feature {NONE} -- Capture/Replay Instrumentation
 				end
 		end
 
-	cr_create_call(target_name: STRING; feature_name: STRING; parameters: EIFFEL_LIST [EXPR_AS]): NESTED_AS is
-			-- Create a NESTED_AS object representing a call to `target_name'.`feature_name'(`parameters')
+	cr_call (target_name: STRING; feature_name: STRING; parameters: EIFFEL_LIST [EXPR_AS]): NESTED_AS is
+			-- NESTED_AS object representing a call to `target_name'.`feature_name'(`parameters')
 		require
 			target_name_not_void: target_name /= Void
 			feature_name_not_void: feature_name /= Void
@@ -6024,7 +6024,7 @@ feature {NONE} -- Capture/Replay Instrumentation
 			dot_symbol: SYMBOL_AS
 		do
 			create feature_id.initialize (feature_name)
-			create feature_message.initialize (feature_id, cr_create_parameter_list(parameters))
+			create feature_message.initialize (feature_id, cr_parameter_list(parameters))
 			create feature_id.initialize (target_name)
 			create target.initialize (feature_id, Void)
 			create dot_symbol.make ({EIFFEL_TOKENS}.te_dot, 0, 0, 0, 0)
@@ -6033,20 +6033,20 @@ feature {NONE} -- Capture/Replay Instrumentation
 			result_not_void: Result /= Void
 		end
 
-	cr_create_call_instr(target_name: STRING; feature_name: STRING; parameters: EIFFEL_LIST [EXPR_AS]): INSTR_CALL_AS is
-			-- Create a INSTR_CALL_AS object representing a call to `target_name'.`feature_name'(`parameters')
+	cr_call_instr(target_name: STRING; feature_name: STRING; parameters: EIFFEL_LIST [EXPR_AS]): INSTR_CALL_AS is
+			-- INSTR_CALL_AS object representing a call to `target_name'.`feature_name'(`parameters')
 		require
 			target_name_not_void: target_name /= Void
 			feature_name_not_void: feature_name /= Void
 		do
-			create Result.initialize (cr_create_call(target_name, feature_name, parameters))
+			create Result.initialize (cr_call(target_name, feature_name, parameters))
 		ensure
 			result_not_void: Result /= Void
 		end
 
 
-	cr_create_if_block (condition: EXPR_AS; compound: EIFFEL_LIST [INSTRUCTION_AS]): IF_AS
-			-- Create an IF_AS representing the eiffel code:
+	cr_if_block (condition: EXPR_AS; compound: EIFFEL_LIST [INSTRUCTION_AS]): IF_AS
+			-- IF_AS representing the eiffel code:
 			--     if `condition' then
 			--		`compound'
 			--		end
@@ -6068,8 +6068,8 @@ feature {NONE} -- Capture/Replay Instrumentation
 		end
 
 
-	cr_create_arguments_tuple(arguments:FEAT_ARG): TUPLE_AS is
-			-- Create a tuple that contains all `arguments' in the correct order.
+	cr_arguments_tuple(arguments:FEAT_ARG): TUPLE_AS is
+			-- Tuple that contains all `arguments' in the correct order
 		local
 			tuple_lbrack: SYMBOL_AS
 			tuple_rbrack: SYMBOL_AS
@@ -6078,8 +6078,8 @@ feature {NONE} -- Capture/Replay Instrumentation
 			i: INTEGER
 		do
 			-- Create empty tuple
-			tuple_lbrack := cr_create_symbol ({EIFFEL_TOKENS}.te_lsqure)
-			tuple_rbrack := cr_create_symbol ({EIFFEL_TOKENS}.te_rsqure)
+			tuple_lbrack := cr_symbol ({EIFFEL_TOKENS}.te_lsqure)
+			tuple_rbrack := cr_symbol ({EIFFEL_TOKENS}.te_rsqure)
 			create tuple_expressions.make (0)
 			-- Go through all arguments and fill the tuple with them.
 			if arguments /= Void then
@@ -6088,7 +6088,7 @@ feature {NONE} -- Capture/Replay Instrumentation
 				until
 					i > arguments.count
 				loop
-					tuple_expressions.extend (cr_create_expr_call_as (arguments.item_name(i)))
+					tuple_expressions.extend (cr_expr_call (arguments.item_name(i)))
 					i := i + 1
 				end
 			end
@@ -6097,16 +6097,16 @@ feature {NONE} -- Capture/Replay Instrumentation
 			result_not_void: Result /= Void
 		end
 
-	cr_create_parameter_list (content: EIFFEL_LIST [EXPR_AS]) : PARAMETER_LIST_AS is
-			-- Create a PARAMETER_LIST_AS with expressions `content'
+	cr_parameter_list (content: EIFFEL_LIST [EXPR_AS]) : PARAMETER_LIST_AS is
+			-- PARAMETER_LIST_AS with expressions `content'
 		require
 			content_not_void: content /= Void
 		local
 			lparan: SYMBOL_AS
 			rparan: SYMBOL_AS
 		do
-			lparan := cr_create_symbol ({EIFFEL_TOKENS}.te_lparan)
-			rparan := cr_create_symbol ({EIFFEL_TOKENS}.te_rparan)
+			lparan := cr_symbol ({EIFFEL_TOKENS}.te_lparan)
+			rparan := cr_symbol ({EIFFEL_TOKENS}.te_rparan)
 			create Result.initialize (content, lparan, rparan)
 		ensure
 			result_not_void: Result /= Void
@@ -6114,8 +6114,8 @@ feature {NONE} -- Capture/Replay Instrumentation
 
 
 
-	cr_create_symbol(code: INTEGER): SYMBOL_AS is
-			-- Create a SYMBOL_AS with `code'
+	cr_symbol(code: INTEGER): SYMBOL_AS is
+			-- SYMBOL_AS with `code'
 		do
 			create Result.make (code, 0, 0, 0, 0)
 		ensure
@@ -6123,8 +6123,8 @@ feature {NONE} -- Capture/Replay Instrumentation
 		end
 
 
-	cr_create_expr_call_as (feature_name: STRING): EXPR_CALL_AS
-			-- Create an EXPR_CALL_AS to the feature `feature_name'
+	cr_expr_call (feature_name: STRING): EXPR_CALL_AS
+			-- EXPR_CALL_AS to the feature `feature_name'
 		require
 			feature_name /= Void
 		local
@@ -6140,8 +6140,8 @@ feature {NONE} -- Capture/Replay Instrumentation
 			result_not_void: Result /= Void
 		end
 
-	cr_create_feature_invocation_block (feature_name: STRING; arguments: FEAT_ARG): INSTRUCTION_AS is
-			-- Create the method invocation block for the capture/replay instrumentation.
+	cr_feature_invocation_block (feature_name: STRING; arguments: FEAT_ARG): INSTRUCTION_AS is
+			-- Method invocation block for the capture/replay instrumentation
 			-- Note: creates the AST for this Eiffel code:
 			--          if program_flow_sink.is_capture_replay_enabled then
 			-- 				program_flow_sink.enter
@@ -6164,18 +6164,18 @@ feature {NONE} -- Capture/Replay Instrumentation
 			create parameters.make (3)
 			parameters.extend (target_argument)
 			parameters.extend (current_argument)
-			parameters.extend (cr_create_arguments_tuple (arguments))
-			invocation_call := cr_create_call_instr ("program_flow_sink", "put_feature_invocation", parameters)
+			parameters.extend (cr_arguments_tuple (arguments))
+			invocation_call := cr_call_instr ("program_flow_sink", "put_feature_invocation", parameters)
 			create compound.make (1)
 			compound.extend (invocation_call)
 			-- Put the rest around this statement.
-			Result := cr_wrap_management_instructions (compound)
+			Result := cr_wrapped_management_instructions (compound)
 		ensure
 			result_not_void: Result /= Void
 		end
 
-	cr_create_methodbody_wrapper (original_methodbody: EIFFEL_LIST [INSTRUCTION_AS]): INSTRUCTION_AS is
-			-- Instrument the method body for capture replay.
+	cr_methodbody_wrapper (original_methodbody: EIFFEL_LIST [INSTRUCTION_AS]): INSTRUCTION_AS is
+			-- Methodbody wrapped for capture/replay
 			-- Note: generates AST for this Eiffel code:
 			--		if (not program_flow_sink.is_replay_phase) or is_observed then
 			--			[`original_methodbody']
@@ -6193,22 +6193,21 @@ feature {NONE} -- Capture/Replay Instrumentation
 			condition_lhs_rparan: SYMBOL_AS
 			condition_rhs: EXPR_CALL_AS
 		do
-			condition_lhs_lparan := cr_create_symbol ({EIFFEL_TOKENS}.te_lparan)
-			condition_lhs_rparan := cr_create_symbol ({EIFFEL_TOKENS}.te_rparan)
+			condition_lhs_lparan := cr_symbol ({EIFFEL_TOKENS}.te_lparan)
+			condition_lhs_rparan := cr_symbol ({EIFFEL_TOKENS}.te_rparan)
 			create condition_lhs_not_operator.make ({EIFFEL_TOKENS}.te_not, "not", 0, 0, 0, 0)
 			create condition_operator.make ({EIFFEL_TOKENS}.te_or, "or", 0, 0, 0, 0)
 			create condition_lhs_not_expression.initialize (
-							cr_create_call ("program_flow_sink", "is_replay_phase", Void))
+							cr_call ("program_flow_sink", "is_replay_phase", Void))
 			create condition_lhs_not.initialize (condition_lhs_not_expression, condition_lhs_not_operator)
 			create condition_lhs.initialize (condition_lhs_not, condition_lhs_lparan, condition_lhs_rparan)
-			condition_rhs := cr_create_expr_call_as ("is_observed")
+			condition_rhs := cr_expr_call ("is_observed")
 			create condition.initialize (condition_lhs, condition_rhs, condition_operator)
-			Result := cr_create_if_block (condition, original_methodbody)
+			Result := cr_if_block (condition, original_methodbody)
 		end
 
-	cr_create_feature_exit_block (feature_has_return_value: BOOLEAN): INSTRUCTION_AS is
-			-- Create the capture-replay instrumentation that is necessary at
-			-- the end of routines.
+	cr_feature_exit_block (feature_has_return_value: BOOLEAN): INSTRUCTION_AS is
+			-- Capture-replay instrumentation for the end of routines.
 			-- Note: Generates AST-Nodes for this Eiffel code:
 			--			if program_flow_sink.capture_replay_enabled then
 			--				program_flow_sink.enter
@@ -6235,22 +6234,22 @@ feature {NONE} -- Capture/Replay Instrumentation
 				create void_result.make_with_location (0, 0, 0, 0)
 				exit_call_parameters.extend (void_result)
 			end
-			put_exit_call := cr_create_call_instr ("program_flow_sink", "put_feature_exit", exit_call_parameters)
+			put_exit_call := cr_call_instr ("program_flow_sink", "put_feature_exit", exit_call_parameters)
 			create exit_block_instructions.make (1)
 			exit_block_instructions.extend (put_exit_call)
 			-- Create the instruction 'Result ?= program_flow_sink.last_result' if necessary.
 			if feature_has_return_value then
-				create last_result.initialize (cr_create_call ("program_flow_sink", "last_result", Void))
-				assignment_attempt_symbol := cr_create_symbol ({EIFFEL_TOKENS}.te_accept)
+				create last_result.initialize (cr_call ("program_flow_sink", "last_result", Void))
+				assignment_attempt_symbol := cr_symbol ({EIFFEL_TOKENS}.te_accept)
 				create result_assignment_instr.initialize (create {RESULT_AS}.make_with_location (0, 0, 0, 0),
 							 last_result, assignment_attempt_symbol)
 				exit_block_instructions.extend (result_assignment_instr)
 			end
-			Result := cr_wrap_management_instructions (exit_block_instructions)
+			Result := cr_wrapped_management_instructions (exit_block_instructions)
 		end
 
-	cr_wrap_management_instructions (instructions: EIFFEL_LIST [INSTRUCTION_AS]) : INSTRUCTION_AS is
-			-- Wrap capture/replay management code.
+	cr_wrapped_management_instructions (instructions: EIFFEL_LIST [INSTRUCTION_AS]) : INSTRUCTION_AS is
+			-- Wrapped capture/replay management code
 			-- Note: Generates AST for these constructs:
 			-- 			if program_flow_sink.capture_replay_enabled then
 			--				program_flow_sink.enter
@@ -6265,15 +6264,15 @@ feature {NONE} -- Capture/Replay Instrumentation
 			compound: EIFFEL_LIST [INSTRUCTION_AS]
 			capture_replay_condition: EXPR_CALL_AS
 		do
-			create entry_call.initialize (cr_create_call ("program_flow_sink", "enter", Void))
-			create leave_call.initialize (cr_create_call ("program_flow_sink", "leave", Void))
+			create entry_call.initialize (cr_call ("program_flow_sink", "enter", Void))
+			create leave_call.initialize (cr_call ("program_flow_sink", "leave", Void))
 			create compound.make (2 + instructions.count)
-			compound.extend (cr_create_call_instr ("program_flow_sink", "enter", Void))
+			compound.extend (cr_call_instr ("program_flow_sink", "enter", Void))
 			compound.fill (instructions)
-			compound.extend (cr_create_call_instr ("program_flow_sink", "leave", Void))
+			compound.extend (cr_call_instr ("program_flow_sink", "leave", Void))
 
-			create capture_replay_condition.initialize (cr_create_call ("program_flow_sink", "is_capture_replay_enabled", Void))
-			Result := cr_create_if_block (capture_replay_condition, compound)
+			create capture_replay_condition.initialize (cr_call ("program_flow_sink", "is_capture_replay_enabled", Void))
+			Result := cr_if_block (capture_replay_condition, compound)
 		ensure
 			result_not_void: Result /= Void
 		end

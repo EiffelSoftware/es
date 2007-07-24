@@ -160,7 +160,22 @@ feature -- Testing the tests:
 			assert_strings_equal ("return value has correct type", "TUPLE [ARRAYED_LIST [ARRAY [EXAMPLE_CLASS]], INTEGER_32]" ,incallret.return_value.type)
 		end
 
+	test_outread_parsing
+			-- Test to see, if the OUTREAD events are parsed correctly
+		local
+			event_input: EVENT_INPUT
+		do
+			event_input := create_event_input ("test_serializer_outreads.res")
 
+			checked_read_next (event_input)
+			check_outread (event_input.last_event, "test_attribute_basic", True)
+
+			checked_read_next (event_input)
+			check_outread (event_input.last_event, "test_attribute_non_basic", False)
+
+			checked_read_next (event_input)
+			check_outread (event_input.last_event, "test_attribute_non_basic", False)
+		end
 
 
 feature -- Status report
@@ -318,6 +333,32 @@ feature {NONE} -- Implementation
 				assert_equal(tag + ": correct Type", expected_type, basic.type)
 				assert_equal(tag + ": correct value", expected_value, basic.value)
 		end
+
+	check_outread (event: EVENT; attribute_name: STRING; has_basic_value: BOOLEAN)
+		local
+			outread: OUTREAD_EVENT
+			basic: BASIC_ENTITY
+		do
+			assert_true ("event not void", event /=Void)
+			outread ?= event
+			assert_true ("event is outread", outread /= Void)
+			assert_equal ("correct attribute_name", attribute_name, outread.attribute_name)
+			assert_true ("outread has value", outread.value /= Void)
+			basic ?= outread.value
+			assert_equal ("basic type when expected", has_basic_value, basic /= Void)
+			assert_true ("outread target not void", outread.target /= Void)
+		end
+
+	checked_read_next (event_input: EVENT_INPUT)
+			-- Checks if an EVENT_INPUT is in the state it should be after
+			-- parsing an event.
+		do
+			assert_true ("event input not void", event_input /= Void)
+			event_input.read_next_event
+			assert_false ("event input has no error", event_input.has_error)
+			assert_true ("event input's last event not void", event_input.last_event /= Void)
+		end
+
 
 invariant
 	invariant_clause: True -- Your invariant here

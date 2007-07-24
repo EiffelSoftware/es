@@ -90,7 +90,7 @@ feature {NONE} -- Implementation
 			elseif matches (Outcall_keyword) then
 				parse_outcall
 			elseif matches (Outread_keyword) then
-
+				parse_outread
 			else
 					report_error ("INCALL, OUTCALL, INCALLRET or OUTCALLRET")
 			end
@@ -178,9 +178,29 @@ feature {NONE} -- Implementation
 			-- when finished or set `has_error' if an error occurred.
 		require
 			previous_keyword_ok: matches (Outread_keyword)
+		local
+			target: NON_BASIC_ENTITY
+			attribute_name: STRING
+			value: ENTITY
 		do
 			consume (Outread_keyword)
-
+			parse_entity
+			if not has_error then
+				target ?= last_entity
+				if target = Void then
+					report_error ("NON_BASIC")
+				else
+					parse_identifier
+					if not has_error then
+						attribute_name := last_string
+						parse_entity
+						if not has_error then
+							value := last_entity
+							handler.handle_outread_event (target, attribute_name, value)
+						end
+					end
+				end
+			end
 		end
 
 
@@ -192,7 +212,7 @@ feature {NONE} -- Implementation
 			handler_feature_not_void: handler_feature /= Void
 			no_error: not has_error
 		do
-			if(end_of_line) then
+			if end_of_line then
 				--no return value
 				handler_feature.call([Void])
 			else

@@ -419,10 +419,7 @@ feature -- Capture/Replay
 				-- Don't reenable c/r if it was disabled before
 				program_flow_sink.leave
 			end
-
 		end
-
-
 
 	cr_unobserved_table: HASH_TABLE [BOOLEAN, STRING] is
 			-- Contains one entry for each class that is not observable.
@@ -458,7 +455,6 @@ feature -- Capture/Replay
 		do
 			c_set_object_id ($Current, new_id)
 		end
-
 
 feature {NONE} -- Implementation
 
