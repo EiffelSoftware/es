@@ -1846,6 +1846,7 @@ end
 			tbl_not_void: tbl /= Void
 		local
 			old_type, new_type: TYPE_A
+			l_old_conformance_type, l_new_conformance_type: TYPE_A
 			i, arg_count: INTEGER
 			old_arguments: like arguments
 			current_class: CLASS_C

@@ -1402,6 +1402,8 @@ end;
 			-- validity of joins; check assigner command validity.
 		local
 			f: FEATURE_I
+			l_args: FEAT_ARG
+			l_type: TYPE_A
 		do
 			from
 				adaptations.start
