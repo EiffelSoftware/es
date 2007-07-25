@@ -1,0 +1,12 @@
+<document output="studio" title="Parse Sample">
+	<meta_data/>
+	<paragraph>
+		<list ordered="false">
+			<item>
+				<link>
+					<url>polynomial/index.xml</url>
+					<label>Eiffel polynomial parser</label>
+				</link>
+			</item>
+		</list>
+	</paragraph></document>
