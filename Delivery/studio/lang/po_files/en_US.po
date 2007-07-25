@@ -5,7 +5,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "MIME-Version: 1.0\n"
-"Last-Translator: YOUR NAME HERE\n"
+"Last-Translator: Eiffel Software\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2007-06-13 09:47-0800\n"
 
 #. Source code: default_quick_melt_the_system: STRING_GENERAL is			do Result := locale.translation ("%Tdefault (no option): quick melt the system.%N%N") end
 #: ewb_names.e:45
@@ -325,9 +328,7 @@ msgstr ""
 
 #. Source code: l_formatter_placeholder: STRING_GENERAL do Result := locale.translation ("%"$target%" serves as a placeholder which will be replaced by the input to current formatter.") end
 #: interface_names.e:659
-msgid ""
-"\"$target\" serves as a placeholder which will be replaced by the input to "
-"current formatter."
+msgid "\"$target\" serves as a placeholder which will be replaced by the input to current formatter."
 msgstr ""
 
 #. Source code: Result := locale.formatted_string (locale.translation ("$1%Nis not a directory."), [dir_name])
@@ -1273,8 +1274,7 @@ msgstr ""
 
 #. Source code: arrow_please_enter_an_operator_index: STRING_GENERAL is 	do Result := locale.translation ("--> Please enter an operator index followed by an operator ('and' or 'or'): ") end
 #: ewb_names.e:24
-msgid ""
-"--> Please enter an operator index followed by an operator ('and' or 'or'): "
+msgid "--> Please enter an operator index followed by an operator ('and' or 'or'): "
 msgstr ""
 
 #. Source code: arrow_profile_infomation_file_name: STRING_GENERAL is 		do Result := locale.translation ("--> Profile information file name (default: `profinfo'): ") end
@@ -1439,8 +1439,7 @@ msgstr ""
 #: interface_names.e:68
 msgid ""
 "A Frame-Based Application uses a main window, or \"frame\", which can have \n"
-"menus, subwindows, etc. (EiffelStudio is an example of Frame-Based "
-"Application.)\n"
+"menus, subwindows, etc. (EiffelStudio is an example of Frame-Based Application.)\n"
 "\n"
 "A Dialog-Based Application uses a sequence of dialogs.\n"
 "(This wizard is an example of Dialog-Based Application.)"
@@ -1474,11 +1473,9 @@ msgstr ""
 msgid ""
 "A subquery has the following form: attribute operator value\n"
 "\n"
-"attribute is one of: featurename, calls, total, self, descendants, "
-"percentage\n"
+"attribute is one of: featurename, calls, total, self, descendants, percentage\n"
 "operator is one of: < > <= >= = /= in\n"
-"value is one of: integer (for calls), string_with_wildcards (for "
-"featurename)\n"
+"value is one of: integer (for calls), string_with_wildcards (for featurename)\n"
 "\t\t real (for other attributes) or a bounded_value\n"
 "\t\t\tA string_with_wildcards is a string containing\n"
 "\t\t\t'*' or '?'\n"
@@ -1495,8 +1492,7 @@ msgstr ""
 #. Source code: Result := locale.translation ("A valid metric name is a non-empty string which doesn't start with space, enter or tab, and doesn't end with space, enter or tab.%NMake sure specified metric name is valid.")
 #: eb_metric_names.e:1146
 msgid ""
-"A valid metric name is a non-empty string which doesn't start with space, "
-"enter or tab, and doesn't end with space, enter or tab.\n"
+"A valid metric name is a non-empty string which doesn't start with space, enter or tab, and doesn't end with space, enter or tab.\n"
 "Make sure specified metric name is valid."
 msgstr ""
 
@@ -1561,7 +1557,7 @@ msgstr ""
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="general.acrobat_reader" DESCRIPTION="Command to read Adobe Acrobat files."><STRING>acrobat</STRING></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="general.acrobat_reader" DESCRIPTION="Command to read Adobe Acrobat files."><STRING>acroread</STRING></PREF>	
+#. 	<PREF NAME="general.acrobat_reader" DESCRIPTION="Command to read Adobe Acrobat files."><STRING>acroread</STRING></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:609
 #: $EIFFEL_SRC/Delivery/studio/eifinit/spec/unix/default.xml:5
 msgid "Acrobat reader"
@@ -1746,9 +1742,7 @@ msgstr ""
 
 #. Source code: l_add_a_valuable: STRING_GENERAL is				do Result := locale.translation("Add a variable (double click or Enter); Use an existing variable (right click or Ctrl+Enter)")	end
 #: interface_names.e:835
-msgid ""
-"Add a variable (double click or Enter); Use an existing variable (right "
-"click or Ctrl+Enter)"
+msgid "Add a variable (double click or Enter); Use an existing variable (right click or Ctrl+Enter)"
 msgstr ""
 
 #. Source code: b_Add_all: STRING_GENERAL is				do Result := locale.translation ("Add all ->") end
@@ -2121,8 +2115,7 @@ msgstr ""
 #: warning_messages.e:900
 msgid ""
 "An error occurred while loading the configuration for your profiler.\n"
-"Please check with your system administrator whether your profiler is "
-"supported.\n"
+"Please check with your system administrator whether your profiler is supported.\n"
 msgstr ""
 
 #. Source code: w_Could_not_parse_ace: STRING_GENERAL is do Result := locale.translation ("An error occurred while parsing the configuration file.%N%
@@ -2449,8 +2442,7 @@ msgstr ""
 #: interface_names.e:2158
 msgid ""
 "Are you sure you want to redo the refactoring?\n"
-" If classes have been modified since the undo of the refactoring this can "
-"lead to corrupt classes and lost information!"
+" If classes have been modified since the undo of the refactoring this can lead to corrupt classes and lost information!"
 msgstr ""
 
 #. Source code: Result := locale.formatted_string (locale.translation ("Are you sure you want to remove $1 and any children of it?"), [a_group])
@@ -2472,8 +2464,7 @@ msgstr ""
 #: interface_names.e:2157
 msgid ""
 "Are you sure you want to undo the refactoring?\n"
-" If classes have been modified since the refactoring this can lead to "
-"corrupt classes and lost information!"
+" If classes have been modified since the refactoring this can lead to corrupt classes and lost information!"
 msgstr ""
 
 #. Source code: l_argument_unit: STRING_GENERAL is do Result := locale.translation("Argument") end
@@ -2486,7 +2477,7 @@ msgstr ""
 msgid "Argument background color"
 msgstr ""
 
-#. 	<PREF NAME="editor.eiffel.colors.argument_text_color" DESCRIPTION="Argument text color"><COLOR>145;86;84</COLOR></PREF> 
+#. 	<PREF NAME="editor.eiffel.colors.argument_text_color" DESCRIPTION="Argument text color"><COLOR>145;86;84</COLOR></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:280
 msgid "Argument text color"
 msgstr ""
@@ -3978,11 +3969,9 @@ msgstr ""
 msgid "Background Workbench C Compilation Terminated"
 msgstr ""
 
-#. 	<PREF NAME="tools.metric_tool.warning_background_color" DESCRIPTION="Background color for archive items whose recent calculated value violates pre-defined value criterion."><COLOR>253;209;199</COLOR></PREF>	
+#. 	<PREF NAME="tools.metric_tool.warning_background_color" DESCRIPTION="Background color for archive items whose recent calculated value violates pre-defined value criterion."><COLOR>253;209;199</COLOR></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:115
-msgid ""
-"Background color for archive items whose recent calculated value violates "
-"pre-defined value criterion."
+msgid "Background color for archive items whose recent calculated value violates pre-defined value criterion."
 msgstr ""
 
 #. 	<PREF NAME="editor.eiffel.colors.assertion_tag_background_color" DESCRIPTION="Background color for assertion tags."><COLOR>auto</COLOR></PREF>
@@ -4007,9 +3996,7 @@ msgstr ""
 
 #. 	<PREF NAME="debugger.expanded_display_background_color" DESCRIPTION="Background color for expanded display view (default is white, change it to better see white space at end of lines in displayed text)."><COLOR>255;255;255</COLOR></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:12
-msgid ""
-"Background color for expanded display view (default is white, change it to "
-"better see white space at end of lines in displayed text)."
+msgid "Background color for expanded display view (default is white, change it to better see white space at end of lines in displayed text)."
 msgstr ""
 
 #. 	<PREF NAME="editor.eiffel.colors.feature_background_color" DESCRIPTION="Background color for features."><COLOR>255;255;255</COLOR></PREF>
@@ -4182,8 +4169,7 @@ msgstr ""
 
 #. Source code: Result := locale.translation ("Base value %"$1%" of a value tester is invalid. A real number is expected.")
 #: eb_metric_names.e:1034
-msgid ""
-"Base value \"$1\" of a value tester is invalid. A real number is expected."
+msgid "Base value \"$1\" of a value tester is invalid. A real number is expected."
 msgstr ""
 
 #. Source code: err_base_value_missing: STRING_GENERAL is do Result := locale.translation ("Base value of a value tester is missing.") end
@@ -4210,7 +4196,8 @@ msgstr ""
 #. Source code: l_Basic_text: STRING_GENERAL is				do Result := locale.translation("Basic text view")	end
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="shortcuts.view.basic_text_view" DESCRIPTION="Shortcut to display basic text view."><SHORTCUT Ctrl="True" Shift="True">T</SHORTCUT></PREF>
-#: interface_names.e:850 $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:718
+#: interface_names.e:850
+#: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:718
 msgid "Basic text view"
 msgstr ""
 
@@ -4697,7 +4684,8 @@ msgstr ""
 #. Source code: Result := locale.translation ("Cancel")
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="shortcuts.project.cancel" DESCRIPTION="Shortcut to cancel compilation."><SHORTCUT Ctrl="True">Pause</SHORTCUT></PREF>
-#: docking_names.e:170 $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:729
+#: docking_names.e:170
+#: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:729
 msgid "Cancel"
 msgstr ""
 
@@ -4923,12 +4911,12 @@ msgstr ""
 msgid "Check VAPE"
 msgstr ""
 
-#. 	<PREF NAME="tools.metric_tool.check_defined_warning" DESCRIPTION="Check defined value warning when metric archive is recalculated?"><BOOLEAN>False</BOOLEAN></PREF>	
+#. 	<PREF NAME="tools.metric_tool.check_defined_warning" DESCRIPTION="Check defined value warning when metric archive is recalculated?"><BOOLEAN>False</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:113
 msgid "Check defined value warning when metric archive is recalculated?"
 msgstr ""
 
-#. 	<PREF NAME="tools.metric_tool.check_defined_warning" DESCRIPTION="Check defined value warning when metric archive is recalculated?"><BOOLEAN>False</BOOLEAN></PREF>	
+#. 	<PREF NAME="tools.metric_tool.check_defined_warning" DESCRIPTION="Check defined value warning when metric archive is recalculated?"><BOOLEAN>False</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:113
 msgid "Check defined warning"
 msgstr ""
@@ -5156,7 +5144,7 @@ msgstr ""
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="tools.class_browser.expand_referencer_class" HIDDEN="false" DESCRIPTION="Should referencer classes in dependency view be expanded by default?"><BOOLEAN>False</BOOLEAN></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="tools.class_browser.expand_categorized_folder_level" HIDDEN="false" DESCRIPTION="Should categorized folder level in dependency view be expanded by default?"><BOOLEAN>False</BOOLEAN></PREF>	
+#. 	<PREF NAME="tools.class_browser.expand_categorized_folder_level" HIDDEN="false" DESCRIPTION="Should categorized folder level in dependency view be expanded by default?"><BOOLEAN>False</BOOLEAN></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="tools.class_browser.inheritance_classes" HIDDEN="false" DESCRIPTION="Should inheritance classes be displayed?"><BOOLEAN>False</BOOLEAN></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
@@ -5638,9 +5626,7 @@ msgstr ""
 
 #. 	<PREF NAME="debugger.classic_debugger.close_dbg_daemon_on_end_of_debugging" DESCRIPTION="Close the Eiffel debugger daemon (classic) after each debug session (recommended)"><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:15
-msgid ""
-"Close the Eiffel debugger daemon (classic) after each debug session "
-"(recommended)"
+msgid "Close the Eiffel debugger daemon (classic) after each debug session (recommended)"
 msgstr ""
 
 #. Source code: fs_close_window: STRING_GENERAL is				do Result := locale.translation ("Close window") end
@@ -5788,29 +5774,22 @@ msgstr ""
 
 #. Source code: Result := locale.formatted_string (locale.translation ("Coefficient %"$1%" for denominator metric is invalid. A real number is expected."), [a_value])
 #: eb_metric_names.e:952
-msgid ""
-"Coefficient \"$1\" for denominator metric is invalid. A real number is "
-"expected."
+msgid "Coefficient \"$1\" for denominator metric is invalid. A real number is expected."
 msgstr ""
 
 #. Source code: Result := locale.formatted_string (locale.translation ("Coefficient %"$1%" for numerator metric is invalid. A real number is expected."), [a_value])
 #: eb_metric_names.e:942
-msgid ""
-"Coefficient \"$1\" for numerator metric is invalid. A real number is "
-"expected."
+msgid "Coefficient \"$1\" for numerator metric is invalid. A real number is expected."
 msgstr ""
 
 #. Source code: Result := locale.formatted_string (locale.translation ("Coefficient %"$1%" of variable metric is invalid. A real number is expected."), [a_coefficient])
 #: eb_metric_names.e:572
-msgid ""
-"Coefficient \"$1\" of variable metric is invalid. A real number is expected."
+msgid "Coefficient \"$1\" of variable metric is invalid. A real number is expected."
 msgstr ""
 
 #. Source code: err_denominator_coefficient_is_zero: STRING_GENERAL is do Result := locale.translation ("Coefficient for denominator metric is zero. A non-zero real number is expected.") end
 #: eb_metric_names.e:957
-msgid ""
-"Coefficient for denominator metric is zero. A non-zero real number is "
-"expected."
+msgid "Coefficient for denominator metric is zero. A non-zero real number is expected."
 msgstr ""
 
 #. Source code: Result := locale.translation ("Coefficient of variable metric is missing.")
@@ -6052,7 +6031,7 @@ msgstr ""
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="editor.eiffel.colors.argument_background_color" DESCRIPTION="Background color of argument text."><COLOR>255;255;255</COLOR></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="editor.eiffel.colors.argument_text_color" DESCRIPTION="Argument text color"><COLOR>145;86;84</COLOR></PREF> 
+#. 	<PREF NAME="editor.eiffel.colors.argument_text_color" DESCRIPTION="Argument text color"><COLOR>145;86;84</COLOR></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="editor.eiffel.colors.warning_text_color" DESCRIPTION="Warning text color"><COLOR>200;64;0</COLOR></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
@@ -6251,7 +6230,7 @@ msgstr ""
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="general.acrobat_reader" DESCRIPTION="Command to read Adobe Acrobat files."><STRING>acrobat</STRING></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="general.acrobat_reader" DESCRIPTION="Command to read Adobe Acrobat files."><STRING>acroread</STRING></PREF>	
+#. 	<PREF NAME="general.acrobat_reader" DESCRIPTION="Command to read Adobe Acrobat files."><STRING>acroread</STRING></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:609
 #: $EIFFEL_SRC/Delivery/studio/eifinit/spec/unix/default.xml:5
 msgid "Command to read Adobe Acrobat files."
@@ -6349,7 +6328,8 @@ msgstr ""
 #. Source code: b_Compile: STRING_GENERAL is						do Result := locale.translation("Compile")	end
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="shortcuts.project.compile" DESCRIPTION="Shortcut to compile current project."><SHORTCUT>F7</SHORTCUT></PREF>
-#: interface_names.e:114 $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:724
+#: interface_names.e:114
+#: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:724
 msgid "Compile"
 msgstr ""
 
@@ -6522,8 +6502,7 @@ msgstr ""
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:35
 msgid ""
 "Configuration of the stack objects grid.\n"
-" This should be a list of 5 sequences: nature_id;is_shown;is_auto_resized;"
-"width;header_name; \n"
+" This should be a list of 5 sequences: nature_id;is_shown;is_auto_resized;width;header_name; \n"
 "The position in the list indicate the column.\n"
 "The nature_id are: 1:name; 2:value; 3:type; 4:address; 5:context..."
 msgstr ""
@@ -7125,7 +7104,8 @@ msgstr ""
 #. 	<PREF NAME="editor.eiffel.autocomplete.other_keywords.create.custom_create_space_later" DESCRIPTION="Customized autocomplete (Space, other cases)"><STRING> $cursor$</STRING></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="editor.eiffel.autocomplete.other_keywords.create.custom_create_return_later" DESCRIPTION="Customized autocomplete (Return, other cases)"><STRING>%N$indent$$cursor$</STRING></PREF>
-#: interface_names.e:57 $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:529
+#: interface_names.e:57
+#: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:529
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:530
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:531
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:532
@@ -8857,7 +8837,7 @@ msgstr ""
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="shortcuts.debug.show_object_viewer_tool" DESCRIPTION="Shortcut to display Object Viewer tool."><SHORTCUT Ctrl="True" Alt="True">L</SHORTCUT></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="shortcuts.debug.show_watch_tool" DESCRIPTION="Shortcut to display Watch tool."><SHORTCUT Ctrl="True" Alt="True">H</SHORTCUT></PREF>	
+#. 	<PREF NAME="shortcuts.debug.show_watch_tool" DESCRIPTION="Shortcut to display Watch tool."><SHORTCUT Ctrl="True" Alt="True">H</SHORTCUT></PREF>
 #: conf_interface_names.e:35
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:473
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:474
@@ -9104,23 +9084,17 @@ msgstr ""
 
 #. 	<PREF NAME="debugger.default_maximum_stack_depth" DESCRIPTION="Default number of call stack elements shown in Call Stack tool (-1 to show all of them)." RESTART="True"><INTEGER>100</INTEGER></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:8
-msgid ""
-"Default number of call stack elements shown in Call Stack tool (-1 to show "
-"all of them)."
+msgid "Default number of call stack elements shown in Call Stack tool (-1 to show all of them)."
 msgstr ""
 
 #. 	<PREF NAME="debugger.default_expanded_view_size" DESCRIPTION="Default number of displayed characters in the expanded view (increasing this value might slow down debugging)."><INTEGER>500</INTEGER></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:7
-msgid ""
-"Default number of displayed characters in the expanded view (increasing this "
-"value might slow down debugging)."
+msgid "Default number of displayed characters in the expanded view (increasing this value might slow down debugging)."
 msgstr ""
 
 #. 	<PREF NAME="debugger.default_displayed_string_size"  DESCRIPTION="Default number of displayed characters of a STRING (increasing this value might slow down debugging)."><INTEGER>50</INTEGER></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:6
-msgid ""
-"Default number of displayed characters of a STRING (increasing this value "
-"might slow down debugging)."
+msgid "Default number of displayed characters of a STRING (increasing this value might slow down debugging)."
 msgstr ""
 
 #. 	<PREF NAME="debugger.number_of_watch_tools" HIDDEN="true" DESCRIPTION="Default number of watch tools."><INTEGER>1</INTEGER></PREF>
@@ -9181,10 +9155,7 @@ msgstr ""
 
 #. 	<PREF NAME="debugger.delay_before_cleaning_objects_grid" DESCRIPTION="Delay (in milliseconds) before clearing the stacks and objects grid.  By tuning this value, you can reduce the potential flickering of the related grid."><INTEGER>500</INTEGER></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:9
-msgid ""
-"Delay (in milliseconds) before clearing the stacks and objects grid.  By "
-"tuning this value, you can reduce the potential flickering of the related "
-"grid."
+msgid "Delay (in milliseconds) before clearing the stacks and objects grid.  By tuning this value, you can reduce the potential flickering of the related grid."
 msgstr ""
 
 #. 	<PREF NAME="debugger.delay_before_cleaning_objects_grid" DESCRIPTION="Delay (in milliseconds) before clearing the stacks and objects grid.  By tuning this value, you can reduce the potential flickering of the related grid."><INTEGER>500</INTEGER></PREF>
@@ -10038,9 +10009,7 @@ msgstr ""
 
 #. 	<PREF NAME="debugger.debug_output_evaluation"  DESCRIPTION="Display DEBUG_OUTPUT.debug_output for objects whose base class inherits from DEBUG_OUTPUT."><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:5
-msgid ""
-"Display DEBUG_OUTPUT.debug_output for objects whose base class inherits from "
-"DEBUG_OUTPUT."
+msgid "Display DEBUG_OUTPUT.debug_output for objects whose base class inherits from DEBUG_OUTPUT."
 msgstr ""
 
 #. Source code: b_Display_Exception_Trace: STRING_GENERAL is		do Result := locale.translation("Display Exception Trace")	end
@@ -10130,27 +10099,22 @@ msgstr ""
 
 #. 	<PREF NAME="interface.dialogs.confirm_on_terminate_process" DESCRIPTION="Display confirmation dialog for terminating an ongoing C compilation while exiting EiffelStudio."><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:148
-msgid ""
-"Display confirmation dialog for terminating an ongoing C compilation while "
-"exiting EiffelStudio."
+msgid "Display confirmation dialog for terminating an ongoing C compilation while exiting EiffelStudio."
 msgstr ""
 
 #. 	<PREF NAME="interface.dialogs.confirm_on_terminate_finalizing" DESCRIPTION="Display confirmation dialog for terminating the C compilation of a finalize."><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:147
-msgid ""
-"Display confirmation dialog for terminating the C compilation of a finalize."
+msgid "Display confirmation dialog for terminating the C compilation of a finalize."
 msgstr ""
 
 #. 	<PREF NAME="interface.dialogs.confirm_on_terminate_freezing" DESCRIPTION="Display confirmation dialog for terminating the C compilation of a freeze."><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:146
-msgid ""
-"Display confirmation dialog for terminating the C compilation of a freeze."
+msgid "Display confirmation dialog for terminating the C compilation of a freeze."
 msgstr ""
 
 #. 	<PREF NAME="interface.dialogs.discard_target_scope_customized_formatter" DESCRIPTION="Display confirmation dialog of discarding target scope customized formatter."><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:182
-msgid ""
-"Display confirmation dialog of discarding target scope customized formatter."
+msgid "Display confirmation dialog of discarding target scope customized formatter."
 msgstr ""
 
 #. 	<PREF NAME="interface.dialogs.confirm_clear_breakpoints" DESCRIPTION="Display confirmation dialog on clearing breakpoints."><BOOLEAN>True</BOOLEAN></PREF>
@@ -10160,9 +10124,7 @@ msgstr ""
 
 #. 	<PREF NAME="interface.dialogs.confirm_save_before_compile" DESCRIPTION="Display confirmation dialog on compilation when some files have not been saved."><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:138
-msgid ""
-"Display confirmation dialog on compilation when some files have not been "
-"saved."
+msgid "Display confirmation dialog on compilation when some files have not been saved."
 msgstr ""
 
 #. 	<PREF NAME="interface.dialogs.confirm_always_compile_before_executing" DESCRIPTION="Display confirmation dialog on execution."><BOOLEAN>True</BOOLEAN></PREF>
@@ -10187,16 +10149,12 @@ msgstr ""
 
 #. 	<PREF NAME="interface.dialogs.confirm_ignore_all_breakpoints" DESCRIPTION="Display confirmation dialog when starting the application without stopping at breakpoints."><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:141
-msgid ""
-"Display confirmation dialog when starting the application without stopping "
-"at breakpoints."
+msgid "Display confirmation dialog when starting the application without stopping at breakpoints."
 msgstr ""
 
 #. 	<PREF NAME="interface.dialogs.confirm_kill_and_restart" DESCRIPTION="Display dialog before killing a debugged application and restarting a new one."><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:155
-msgid ""
-"Display dialog before killing a debugged application and restarting a new "
-"one."
+msgid "Display dialog before killing a debugged application and restarting a new one."
 msgstr ""
 
 #. 	<PREF NAME="interface.dialogs.confirm_kill" DESCRIPTION="Display dialog before killing a debugged application."><BOOLEAN>True</BOOLEAN></PREF>
@@ -10221,15 +10179,12 @@ msgstr ""
 
 #. 	<PREF NAME="interface.dialogs.acknowledge_not_loaded" DESCRIPTION="Display dialog that warns that text is being loaded and is not editable or clickable."><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:144
-msgid ""
-"Display dialog that warns that text is being loaded and is not editable or "
-"clickable."
+msgid "Display dialog that warns that text is being loaded and is not editable or clickable."
 msgstr ""
 
 #. 	<PREF NAME="interface.dialogs.stop_execution_when_compiling" DESCRIPTION="Display dialog when an application is running and a compilation is launched."><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:153
-msgid ""
-"Display dialog when an application is running and a compilation is launched."
+msgid "Display dialog when an application is running and a compilation is launched."
 msgstr ""
 
 #. 	<PREF NAME="interface.dialogs.already_editing_class" DESCRIPTION="Display dialog when editing the same class in two development windows."><BOOLEAN>True</BOOLEAN></PREF>
@@ -10304,17 +10259,12 @@ msgstr ""
 
 #. 	<PREF NAME="debugger.generating_type_evaluation"  DESCRIPTION="Display the base type of an object if enabled, otherwise just the base class (disabling it might speed up debugging). e.g: might display ARRAY [STRING] if True but will just display ARRAY if False."><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:13
-msgid ""
-"Display the base type of an object if enabled, otherwise just the base class "
-"(disabling it might speed up debugging). e.g: might display ARRAY [STRING] "
-"if True but will just display ARRAY if False."
+msgid "Display the base type of an object if enabled, otherwise just the base class (disabling it might speed up debugging). e.g: might display ARRAY [STRING] if True but will just display ARRAY if False."
 msgstr ""
 
 #. 	<PREF NAME="interface.dialogs.confirm_resource_change_needs_restart" DESCRIPTION="Display warning dialog when changing resources that require you to restart EiffeStudio before they become effective." HIDDEN="True"><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:151
-msgid ""
-"Display warning dialog when changing resources that require you to restart "
-"EiffeStudio before they become effective."
+msgid "Display warning dialog when changing resources that require you to restart EiffeStudio before they become effective."
 msgstr ""
 
 #. Source code: l_display: STRING_GENERAL is do Result := locale.translation ("Display?") end
@@ -10380,9 +10330,7 @@ msgstr ""
 
 #. Source code: l_discard_cancel_c_compilation_and_external_command: STRING_GENERAL is do Result := locale.translation("Do not ask again, and always cancel C compilation, terminate external command when exiting.")	end
 #: interface_names.e:1008
-msgid ""
-"Do not ask again, and always cancel C compilation, terminate external "
-"command when exiting."
+msgid "Do not ask again, and always cancel C compilation, terminate external command when exiting."
 msgstr ""
 
 #. Source code: l_Discard_freeze_dialog: STRING_GENERAL is	do Result := locale.translation("Do not ask again, and always compile C code")	end
@@ -10452,9 +10400,7 @@ msgstr ""
 
 #. 	<PREF NAME="debugger.always_compile_before_debug" DESCRIPTION="Do not show the dialog that asks if a compilation should be started before running the debug if there where changes in classes."><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:18
-msgid ""
-"Do not show the dialog that asks if a compilation should be started before "
-"running the debug if there where changes in classes."
+msgid "Do not show the dialog that asks if a compilation should be started before running the debug if there where changes in classes."
 msgstr ""
 
 #. Source code: b_do_nothing: STRING_GENERAL is 					do Result := locale.translation("Do nothing")	end
@@ -10506,9 +10452,7 @@ msgstr ""
 
 #. 	<PREF NAME="editor.eiffel.once_and_constant_in_upper" DESCRIPTION="Does completion change the first character of onces and constants with an upper case character?"><BOOLEAN>False</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:244
-msgid ""
-"Does completion change the first character of onces and constants with an "
-"upper case character?"
+msgid "Does completion change the first character of onces and constants with an upper case character?"
 msgstr ""
 
 #. 	<PREF NAME="editor.eiffel.show_completion_disambiguated_name" DESCRIPTION="Does completion list show disambiguated name?"><BOOLEAN>False</BOOLEAN></PREF>
@@ -10528,9 +10472,7 @@ msgstr ""
 
 #. 	<PREF NAME="editor.general.mouse_wheel_scroll_full_page" DESCRIPTION="Does mouse wheel scroll documents a page at a time (If True, it overrides Mouse Wheel Scroll Size)?"><BOOLEAN>False</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:564
-msgid ""
-"Does mouse wheel scroll documents a page at a time (If True, it overrides "
-"Mouse Wheel Scroll Size)?"
+msgid "Does mouse wheel scroll documents a page at a time (If True, it overrides Mouse Wheel Scroll Size)?"
 msgstr ""
 
 #. 	<PREF NAME="editor.general.blinking_cursor" DESCRIPTION="Does text cursor blink?"><BOOLEAN>True</BOOLEAN></PREF>
@@ -10540,8 +10482,7 @@ msgstr ""
 
 #. Source code: task_succeed_description: STRING_GENERAL is do Result := locale.translation ("Does this task have to finish successful for the compilation to continue?")	end
 #: conf_interface_names.e:197
-msgid ""
-"Does this task have to finish successful for the compilation to continue?"
+msgid "Does this task have to finish successful for the compilation to continue?"
 msgstr ""
 
 #. Source code: err_domain_missing: STRING_GENERAL is do Result := locale.translation ("Domain is missing.") end
@@ -10628,9 +10569,7 @@ msgstr ""
 
 #. Source code: e_open_c_file: STRING_GENERAL is do Result := locale.translation ("Drop a class/feature here to open its corresponding C file/function in external editor.") end
 #: interface_names.e:2142
-msgid ""
-"Drop a class/feature here to open its corresponding C file/function in "
-"external editor."
+msgid "Drop a class/feature here to open its corresponding C file/function in external editor."
 msgstr ""
 
 #. Source code: t_drop_program_elements: STRING_GENERAL is do Result := locale.translation ("Drop target/group/class/feature here") end
@@ -10927,7 +10866,7 @@ msgstr ""
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="editor.eiffel.colors.argument_background_color" DESCRIPTION="Background color of argument text."><COLOR>255;255;255</COLOR></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="editor.eiffel.colors.argument_text_color" DESCRIPTION="Argument text color"><COLOR>145;86;84</COLOR></PREF> 
+#. 	<PREF NAME="editor.eiffel.colors.argument_text_color" DESCRIPTION="Argument text color"><COLOR>145;86;84</COLOR></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="editor.eiffel.colors.warning_text_color" DESCRIPTION="Warning text color"><COLOR>200;64;0</COLOR></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
@@ -11521,9 +11460,9 @@ msgstr ""
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="shortcuts.editor.embed_debug_clause" DESCRIPTION="Embed current line in debug clause"><SHORTCUT Ctrl="True">D</SHORTCUT></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="editor.eiffel.text_mode_is_windows" DESCRIPTION="Format to use when saving class text. True means using Windows text format, False means using Unix text format."><BOOLEAN>True</BOOLEAN></PREF>	
+#. 	<PREF NAME="editor.eiffel.text_mode_is_windows" DESCRIPTION="Format to use when saving class text. True means using Windows text format, False means using Unix text format."><BOOLEAN>True</BOOLEAN></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="editor.eiffel.text_mode_is_windows" DESCRIPTION="Format to use when saving class text. True means using Windows text format, False means using Unix text format."><BOOLEAN>False</BOOLEAN></PREF>	
+#. 	<PREF NAME="editor.eiffel.text_mode_is_windows" DESCRIPTION="Format to use when saving class text. True means using Windows text format, False means using Unix text format."><BOOLEAN>False</BOOLEAN></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="editor.general.editor_font" DESCRIPTION="All-purpose editor font."><FONT>Monospace-r-regular-9-sans</FONT></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
@@ -12001,7 +11940,7 @@ msgstr ""
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="editor.eiffel.colors.argument_background_color" DESCRIPTION="Background color of argument text."><COLOR>255;255;255</COLOR></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="editor.eiffel.colors.argument_text_color" DESCRIPTION="Argument text color"><COLOR>145;86;84</COLOR></PREF> 
+#. 	<PREF NAME="editor.eiffel.colors.argument_text_color" DESCRIPTION="Argument text color"><COLOR>145;86;84</COLOR></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="editor.eiffel.colors.warning_text_color" DESCRIPTION="Warning text color"><COLOR>200;64;0</COLOR></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
@@ -12475,9 +12414,9 @@ msgstr ""
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="editor.eiffel.autocomplete.other_keywords.end.custom_end_return_later" DESCRIPTION="Customized autocomplete (Return, other cases)"><STRING>%N$indent$$cursor$</STRING></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="editor.eiffel.text_mode_is_windows" DESCRIPTION="Format to use when saving class text. True means using Windows text format, False means using Unix text format."><BOOLEAN>True</BOOLEAN></PREF>	
+#. 	<PREF NAME="editor.eiffel.text_mode_is_windows" DESCRIPTION="Format to use when saving class text. True means using Windows text format, False means using Unix text format."><BOOLEAN>True</BOOLEAN></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="editor.eiffel.text_mode_is_windows" DESCRIPTION="Format to use when saving class text. True means using Windows text format, False means using Unix text format."><BOOLEAN>False</BOOLEAN></PREF>	
+#. 	<PREF NAME="editor.eiffel.text_mode_is_windows" DESCRIPTION="Format to use when saving class text. True means using Windows text format, False means using Unix text format."><BOOLEAN>False</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:231
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:232
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:233
@@ -12815,8 +12754,7 @@ msgstr ""
 #. Source code: do Result := locale.translation ("Either the root class name or the creation routine name (or both of them) that you have specified%N%
 #: interface_names.e:102
 msgid ""
-"Either the root class name or the creation routine name (or both of them) "
-"that you have specified\n"
+"Either the root class name or the creation routine name (or both of them) that you have specified\n"
 "does not conform the lace specification.\n"
 "\n"
 "A valid Eiffel name is not empty and only contains letters,\n"
@@ -12952,23 +12890,17 @@ msgstr ""
 
 #. 	<PREF NAME="debugger.debugged_grid_layout_managed" HIDDEN="true" DESCRIPTION="Enable/Disable the layout management for the debugged values (keep value expanded or not, and highlight difference)."><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:33
-msgid ""
-"Enable/Disable the layout management for the debugged values (keep value "
-"expanded or not, and highlight difference)."
+msgid "Enable/Disable the layout management for the debugged values (keep value expanded or not, and highlight difference)."
 msgstr ""
 
 #. 	<PREF NAME="debugger.stack_grid_layout_managed" HIDDEN="true" DESCRIPTION="Enable/Disable the layout management for the stack values (keep value expanded or not, and highlight difference)."><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:32
-msgid ""
-"Enable/Disable the layout management for the stack values (keep value "
-"expanded or not, and highlight difference)."
+msgid "Enable/Disable the layout management for the stack values (keep value expanded or not, and highlight difference)."
 msgstr ""
 
 #. 	<PREF NAME="debugger.watches_grids_layout_managed" HIDDEN="true" DESCRIPTION="Enable/Disable the layout management for the watches expressions (keep value expanded or not, and highlight difference)."><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:34
-msgid ""
-"Enable/Disable the layout management for the watches expressions (keep value "
-"expanded or not, and highlight difference)."
+msgid "Enable/Disable the layout management for the watches expressions (keep value expanded or not, and highlight difference)."
 msgstr ""
 
 #. Source code: option_debug_name: STRING_GENERAL is do Result := locale.translation ("Enabled")	end
@@ -13520,7 +13452,7 @@ msgstr ""
 msgid "Expand an Object"
 msgstr ""
 
-#. 	<PREF NAME="tools.class_browser.expand_categorized_folder_level" HIDDEN="false" DESCRIPTION="Should categorized folder level in dependency view be expanded by default?"><BOOLEAN>False</BOOLEAN></PREF>	
+#. 	<PREF NAME="tools.class_browser.expand_categorized_folder_level" HIDDEN="false" DESCRIPTION="Should categorized folder level in dependency view be expanded by default?"><BOOLEAN>False</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:121
 msgid "Expand categorized folder level"
 msgstr ""
@@ -13925,7 +13857,8 @@ msgstr ""
 #. 	<PREF NAME="editor.eiffel.autocomplete.class_structure_keywords.feature.custom_feature_space_later" DESCRIPTION="Customized autocomplete (Space, other cases)"><STRING> $cursor$</STRING></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="editor.eiffel.autocomplete.class_structure_keywords.feature.custom_feature_return_later" DESCRIPTION="Customized autocomplete (Return, other cases)"><STRING>%N$indent$$cursor$</STRING></PREF>
-#: eb_metric_names.e:294 $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:312
+#: eb_metric_names.e:294
+#: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:312
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:313
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:314
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:315
@@ -14514,7 +14447,8 @@ msgstr ""
 #. Source code: b_Finalize: STRING_GENERAL is						do Result := locale.translation("Finalize")	end
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="shortcuts.project.finalize" DESCRIPTION="Shortcut to finalize current project."><SHORTCUT Ctrl="True" Shift="True">F7</SHORTCUT></PREF>
-#: interface_names.e:118 $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:728
+#: interface_names.e:118
+#: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:728
 msgid "Finalize"
 msgstr ""
 
@@ -14875,15 +14809,13 @@ msgstr ""
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="editor.eiffel.text_mode_is_windows" DESCRIPTION="Format to use when saving class text. True means using Windows text format, False means using Unix text format."><BOOLEAN>True</BOOLEAN></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="editor.eiffel.text_mode_is_windows" DESCRIPTION="Format to use when saving class text. True means using Windows text format, False means using Unix text format."><BOOLEAN>True</BOOLEAN></PREF>	
+#. 	<PREF NAME="editor.eiffel.text_mode_is_windows" DESCRIPTION="Format to use when saving class text. True means using Windows text format, False means using Unix text format."><BOOLEAN>True</BOOLEAN></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="editor.eiffel.text_mode_is_windows" DESCRIPTION="Format to use when saving class text. True means using Windows text format, False means using Unix text format."><BOOLEAN>False</BOOLEAN></PREF>	
+#. 	<PREF NAME="editor.eiffel.text_mode_is_windows" DESCRIPTION="Format to use when saving class text. True means using Windows text format, False means using Unix text format."><BOOLEAN>False</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:250
 #: $EIFFEL_SRC/Delivery/studio/eifinit/spec/windows/default.xml:2
 #: $EIFFEL_SRC/Delivery/studio/eifinit/spec/unix/default.xml:2
-msgid ""
-"Format to use when saving class text. True means using Windows text format, "
-"False means using Unix text format."
+msgid "Format to use when saving class text. True means using Windows text format, False means using Unix text format."
 msgstr ""
 
 #. Source code: l_formatter: STRING_GENERAL is do Result := locale.translation ("Formatter") end
@@ -14930,7 +14862,8 @@ msgstr ""
 #. Source code: b_Freeze: STRING_GENERAL is							do Result := locale.translation("Freeze")	end
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="shortcuts.project.freeze" DESCRIPTION="Shortcut to freeze current project."><SHORTCUT Ctrl="True">F7</SHORTCUT></PREF>
-#: interface_names.e:119 $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:727
+#: interface_names.e:119
+#: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:727
 msgid "Freeze"
 msgstr ""
 
@@ -15213,7 +15146,7 @@ msgstr ""
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="general.external_editor_command" DESCRIPTION="Command used to launch  an external editor."><STRING>xterm -geometry 100x40 -e vi +$line $target</STRING></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="general.acrobat_reader" DESCRIPTION="Command to read Adobe Acrobat files."><STRING>acroread</STRING></PREF>	
+#. 	<PREF NAME="general.acrobat_reader" DESCRIPTION="Command to read Adobe Acrobat files."><STRING>acroread</STRING></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="general.internet_browser" DESCRIPTION="Internet browser."><STRING>firefox $url</STRING></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
@@ -15464,7 +15397,8 @@ msgstr ""
 #. Source code: f_History_back: STRING_GENERAL is			do Result := locale.translation("Go back")	end
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="shortcuts.view.go_back" DESCRIPTION="Shortcut to go back in the history."><SHORTCUT Alt="True">Left</SHORTCUT></PREF>
-#: interface_names.e:465 $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:713
+#: interface_names.e:465
+#: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:713
 msgid "Go back"
 msgstr ""
 
@@ -15472,7 +15406,8 @@ msgstr ""
 #. Source code: f_History_forth: STRING_GENERAL is			do Result := locale.translation("Go forth")	end
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="shortcuts.view.go_forth" DESCRIPTION="Shortcut to go forth in the history."><SHORTCUT Alt="True">Right</SHORTCUT></PREF>
-#: interface_names.e:464 $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:714
+#: interface_names.e:464
+#: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:714
 msgid "Go forth"
 msgstr ""
 
@@ -15483,16 +15418,12 @@ msgstr ""
 
 #. Source code: e_go_to_f_code_dir: STRING_GENERAL is do Result := locale.translation("Go to F_code directory of this system, or right click to open F_code in specified file browser")	end
 #: interface_names.e:2141
-msgid ""
-"Go to F_code directory of this system, or right click to open F_code in "
-"specified file browser"
+msgid "Go to F_code directory of this system, or right click to open F_code in specified file browser"
 msgstr ""
 
 #. Source code: e_go_to_w_code_dir: STRING_GENERAL is do Result := locale.translation("Go to W_code directory of this system, or right click to open W_code in specified file browser")	end
 #: interface_names.e:2140
-msgid ""
-"Go to W_code directory of this system, or right click to open W_code in "
-"specified file browser"
+msgid "Go to W_code directory of this system, or right click to open W_code in specified file browser"
 msgstr ""
 
 #. Source code: f_go_to_definition: STRING_GENERAL is do Result := locale.translation ("Go to definition") end
@@ -15507,9 +15438,7 @@ msgstr ""
 
 #. Source code: e_go_to_project_dir: STRING_GENERAL is do Result := locale.translation ("Go to project directory of this system, or right click to open that directory in specified file browser") end
 #: interface_names.e:2143
-msgid ""
-"Go to project directory of this system, or right click to open that "
-"directory in specified file browser"
+msgid "Go to project directory of this system, or right click to open that directory in specified file browser"
 msgstr ""
 
 #. 	<PREF NAME="interface.development_window.graphical_output_disabled" DESCRIPTION="Disable graphical output."><BOOLEAN>False</BOOLEAN></PREF>
@@ -15663,9 +15592,7 @@ msgstr ""
 
 #. 	<PREF NAME="interface.development_window.completion_list_height" DESCRIPTION="Height of completion list.  Used if 'remember_completion_list_size' is set to True." HIDDEN="true"><INTEGER>320</INTEGER></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:225
-msgid ""
-"Height of completion list.  Used if 'remember_completion_list_size' is set "
-"to True."
+msgid "Height of completion list.  Used if 'remember_completion_list_size' is set to True."
 msgstr ""
 
 #. 	<PREF NAME="interface.development_window.height" DESCRIPTION="Height of development window." HIDDEN="true"><INTEGER>700</INTEGER></PREF>
@@ -15786,9 +15713,9 @@ msgstr ""
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="debugger.row_highlight_background_color" DESCRIPTION="Highlight background color"><COLOR>255;255;170</COLOR></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="tools.metric_tool.highlight_background_color" DESCRIPTION="Highlight background color"><COLOR>255;255;170</COLOR></PREF>	
+#. 	<PREF NAME="tools.metric_tool.highlight_background_color" DESCRIPTION="Highlight background color"><COLOR>255;255;170</COLOR></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="tools.metric_tool.highlight_background_color" DESCRIPTION="Highlight background color"><COLOR>255;255;170</COLOR></PREF>	
+#. 	<PREF NAME="tools.metric_tool.highlight_background_color" DESCRIPTION="Highlight background color"><COLOR>255;255;170</COLOR></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:29
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:116
 msgid "Highlight background color"
@@ -15993,10 +15920,8 @@ msgstr ""
 #. Source code: recursive_definition_to_do: STRING_GENERAL is do Result := locale.translation ("In linear metric, make sure that every variable metric doesn't involve recursive metric.%NIn ratio metric, make sure that numerator metric or denominator metric doesn't involve recursive metric.") end
 #: eb_metric_names.e:1138
 msgid ""
-"In linear metric, make sure that every variable metric doesn't involve "
-"recursive metric.\n"
-"In ratio metric, make sure that numerator metric or denominator metric "
-"doesn't involve recursive metric."
+"In linear metric, make sure that every variable metric doesn't involve recursive metric.\n"
+"In ratio metric, make sure that numerator metric or denominator metric doesn't involve recursive metric."
 msgstr ""
 
 #. Source code: l_formatter_displayed_in_help: STRING_GENERAL do Result := locale.translation ("In which tool(s) will this formatter be displayed") end
@@ -16177,17 +16102,12 @@ msgstr ""
 
 #. 	<PREF NAME="editor.general.use_buffered_line" DESCRIPTION="Indicates if editor line drawing is first buffered and then drawn, or just drawn directly to the screen.  If set to True, content will not flicker, but drawing performance will be reduced."><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:593
-msgid ""
-"Indicates if editor line drawing is first buffered and then drawn, or just "
-"drawn directly to the screen.  If set to True, content will not flicker, but "
-"drawing performance will be reduced."
+msgid "Indicates if editor line drawing is first buffered and then drawn, or just drawn directly to the screen.  If set to True, content will not flicker, but drawing performance will be reduced."
 msgstr ""
 
 #. 	<PREF NAME="editor.general.smart_home" DESCRIPTION="Indicates if editor should go to the beginning on the first non-whitespace character, on a line, when the HOME key is pressed."><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:595
-msgid ""
-"Indicates if editor should go to the beginning on the first non-whitespace "
-"character, on a line, when the HOME key is pressed."
+msgid "Indicates if editor should go to the beginning on the first non-whitespace character, on a line, when the HOME key is pressed."
 msgstr ""
 
 #. Source code: Result.force (locale.translation ("Indonesian"), "id")
@@ -16960,9 +16880,7 @@ msgstr ""
 
 #. 	<PREF NAME="editor.eiffel.syntax_complete_enabled" DESCRIPTION="Is completion of keywords enabled? The completion of keywords can be changed in Editor->Eiffel->Autocomplete."><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:249
-msgid ""
-"Is completion of keywords enabled? The completion of keywords can be changed "
-"in Editor->Eiffel->Autocomplete."
+msgid "Is completion of keywords enabled? The completion of keywords can be changed in Editor->Eiffel->Autocomplete."
 msgstr ""
 
 #. 	<PREF NAME="tools.class_browser.show_self_dependency" HIDDEN="false" DESCRIPTION="Is dependency on self shown?"><BOOLEAN>False</BOOLEAN></PREF>
@@ -17024,9 +16942,7 @@ msgstr ""
 
 #. Source code: cluster_hidden_description: STRING_GENERAL is do Result := locale.translation ("Is this a hidden cluster that can not be used if the system is used as a library?")	end
 #: conf_interface_names.e:249
-msgid ""
-"Is this a hidden cluster that can not be used if the system is used as a "
-"library?"
+msgid "Is this a hidden cluster that can not be used if the system is used as a library?"
 msgstr ""
 
 #. Source code: target_abstract_description: STRING_GENERAL is do Result := locale.translation ("Is this an abstract target that cannot be used to compile?")	end
@@ -17200,8 +17116,7 @@ msgstr ""
 #: eb_metric_names.e:148
 msgid ""
 "Keep detailed result when recalculating archive?\n"
-"If yes, detailed result will be available by double clicking the icon in "
-"\"Result\" column in history result area after recalculation."
+"If yes, detailed result will be available by double clicking the icon in \"Result\" column in history result area after recalculation."
 msgstr ""
 
 #. Source code: m_keep_grid_layout: STRING_GENERAL is					do Result := locale.translation("Keep grid layout")	end
@@ -17232,8 +17147,7 @@ msgstr ""
 #. Source code: target_msil_key_file_name_description: STRING_GENERAL is do Result := locale.translation ("Key to be able to add the generated binary to the Global Assembly Cache (GAC). %NChose a new, non existing filename to create a new key file.")	end
 #: conf_interface_names.e:136
 msgid ""
-"Key to be able to add the generated binary to the Global Assembly Cache "
-"(GAC). \n"
+"Key to be able to add the generated binary to the Global Assembly Cache (GAC). \n"
 "Chose a new, non existing filename to create a new key file."
 msgstr ""
 
@@ -17621,9 +17535,7 @@ msgstr ""
 
 #. 	<PREF NAME="interface.development_window.link_tools" DESCRIPTION="Link tools? True means that a tool propagates stone to other tools if possible."><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:218
-msgid ""
-"Link tools? True means that a tool propagates stone to other tools if "
-"possible."
+msgid "Link tools? True means that a tool propagates stone to other tools if possible."
 msgstr ""
 
 #. Source code: do Result := locale.translation ("List breakpoints") end
@@ -17690,7 +17602,8 @@ msgstr ""
 #. 	<PREF NAME="editor.eiffel.autocomplete.feature_structure_keywords.local.custom_local_space_later" DESCRIPTION="Customized autocomplete (Space, other cases)"><STRING> $cursor$</STRING></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="editor.eiffel.autocomplete.feature_structure_keywords.local.custom_local_return_later" DESCRIPTION="Customized autocomplete (Return, other cases)"><STRING>%N$indent$%T$cursor$</STRING></PREF>
-#: eb_metric_names.e:300 $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:340
+#: eb_metric_names.e:300
+#: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:340
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:341
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:342
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:343
@@ -17746,10 +17659,7 @@ msgstr ""
 
 #. 	<PREF NAME="debugger.objects_tool_layout" HIDDEN="true" DESCRIPTION="Location of main objects tool's items &lt;&lt;'Current object', 'Stack information', 'Argument(s)', 'Local(s)', 'Result', 'Dropped references'&gt;&gt;. The left grid is represented by '#1' and the right grid by '#2'"><LIST>#1;1;2;3;4;5;6;#2</LIST></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:38
-msgid ""
-"Location of main objects tool's items <<'Current object', 'Stack "
-"information', 'Argument(s)', 'Local(s)', 'Result', 'Dropped references'>>. "
-"The left grid is represented by '#1' and the right grid by '#2'"
+msgid "Location of main objects tool's items <<'Current object', 'Stack information', 'Argument(s)', 'Local(s)', 'Result', 'Dropped references'>>. The left grid is represented by '#1' and the right grid by '#2'"
 msgstr ""
 
 #. Source code: system_file_description: STRING_GENERAL is do Result := locale.translation ("Location of the configuration file.")	end
@@ -17863,15 +17773,12 @@ msgstr ""
 
 #. Source code: unit_in_basic_metric_not_same_to_do: STRING_GENERAL is do Result := locale.translation ("Make sure every (recursive) criterion in basic metric is of the same unit with that basic metric.") end
 #: eb_metric_names.e:1126
-msgid ""
-"Make sure every (recursive) criterion in basic metric is of the same unit "
-"with that basic metric."
+msgid "Make sure every (recursive) criterion in basic metric is of the same unit with that basic metric."
 msgstr ""
 
 #. Source code: Result := linear_metric_info.as_string_32 + locale.translation ("Make sure every variable metric referenced by a linear metric is defined.")
 #: eb_metric_names.e:1107
-msgid ""
-"Make sure every variable metric referenced by a linear metric is defined."
+msgid "Make sure every variable metric referenced by a linear metric is defined."
 msgstr ""
 
 #. Source code: Result := metric_name_info.as_string_32 + locale.translation ("Make sure metric name is not empty and contains valid charactors.")
@@ -17881,15 +17788,12 @@ msgstr ""
 
 #. Source code: Result := linear_metric_info.as_string_32 + locale.translation ("Make sure that at lease one variable metric is listed in a linear metric definition.")
 #: eb_metric_names.e:1100
-msgid ""
-"Make sure that at lease one variable metric is listed in a linear metric "
-"definition."
+msgid "Make sure that at lease one variable metric is listed in a linear metric definition."
 msgstr ""
 
 #. Source code: domain_item_not_exists_to_do: STRING_GENERAL is do Result := locale.translation ("Make sure that at least one domain item is listed in a domain criterion.") end
 #: eb_metric_names.e:1128
-msgid ""
-"Make sure that at least one domain item is listed in a domain criterion."
+msgid "Make sure that at least one domain item is listed in a domain criterion."
 msgstr ""
 
 #. Source code: no_value_tester_specified_to_do: STRING_GENERAL is do Result := locale.translation ("Make sure that at least one value tester is specified.") end
@@ -17903,15 +17807,12 @@ msgid ""
 "Make sure that every item specified in a domain is valid.\n"
 "Following are some reasons which can cause a domain item invalid:\n"
 " * Domain item ID is damaged or incorrect.\n"
-" * Domain item doesn't exist (Maybe due to removal/rename of a folder, "
-"group, class or feature).\n"
+" * Domain item doesn't exist (Maybe due to removal/rename of a folder, group, class or feature).\n"
 msgstr ""
 
 #. Source code: Result := ratio_metric_info.as_string_32 + locale.translation ("Make sure that numerator and denominator metric referenced by ratio metric are defined.")
 #: eb_metric_names.e:1121
-msgid ""
-"Make sure that numerator and denominator metric referenced by ratio metric "
-"are defined."
+msgid "Make sure that numerator and denominator metric referenced by ratio metric are defined."
 msgstr ""
 
 #. Source code: Result := locale.translation ("Make sure that referenced metric exists and is valid.")
@@ -17931,8 +17832,7 @@ msgstr ""
 
 #. Source code: Result := linear_metric_info.as_string_32 + locale.translation ("Make sure unit of every variable metric is same as that of the linear metric.")
 #: eb_metric_names.e:1114
-msgid ""
-"Make sure unit of every variable metric is same as that of the linear metric."
+msgid "Make sure unit of every variable metric is same as that of the linear metric."
 msgstr ""
 
 #. Source code: external_make: STRING_GENERAL is do Result := locale.translation ("Makefile")	end
@@ -18067,8 +17967,7 @@ msgstr ""
 
 #. Source code: target_inlining_size_description: STRING_GENERAL is do Result := locale.translation ("Maximal number of instructions in a feature for the feature to be inlined.")	end
 #: conf_interface_names.e:124
-msgid ""
-"Maximal number of instructions in a feature for the feature to be inlined."
+msgid "Maximal number of instructions in a feature for the feature to be inlined."
 msgstr ""
 
 #. Source code: Result :=  locale.translation ("Maximize")
@@ -18076,12 +17975,12 @@ msgstr ""
 msgid "Maximize"
 msgstr ""
 
-#. 	<PREF NAME="tools.metric_tool.maximize_metric_result_area" DESCRIPTION="Maximize metric result area?"><BOOLEAN>False</BOOLEAN></PREF>	
+#. 	<PREF NAME="tools.metric_tool.maximize_metric_result_area" DESCRIPTION="Maximize metric result area?"><BOOLEAN>False</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:114
 msgid "Maximize metric result area"
 msgstr ""
 
-#. 	<PREF NAME="tools.metric_tool.maximize_metric_result_area" DESCRIPTION="Maximize metric result area?"><BOOLEAN>False</BOOLEAN></PREF>	
+#. 	<PREF NAME="tools.metric_tool.maximize_metric_result_area" DESCRIPTION="Maximize metric result area?"><BOOLEAN>False</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:114
 msgid "Maximize metric result area?"
 msgstr ""
@@ -18098,9 +17997,7 @@ msgstr ""
 
 #. 	<PREF NAME="debugger.max_evaluation_duration" DESCRIPTION="Maximum evaluation duration before cancelling evaluation. (this is only applicable for a .NET system)"><INTEGER>5</INTEGER></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:22
-msgid ""
-"Maximum evaluation duration before cancelling evaluation. (this is only "
-"applicable for a .NET system)"
+msgid "Maximum evaluation duration before cancelling evaluation. (this is only applicable for a .NET system)"
 msgstr ""
 
 #. 	<PREF NAME="interface.development_window.maximum_history_size" DESCRIPTION="Maximum number of items displayed in the history combo boxes."><INTEGER>20</INTEGER></PREF>
@@ -18130,16 +18027,12 @@ msgstr ""
 
 #. Source code: l_formatter_header_help: STRING_GENERAL do Result := locale.translation ("Message that will be displayed in the formatter view when calculation has finished.") end
 #: interface_names.e:658
-msgid ""
-"Message that will be displayed in the formatter view when calculation has "
-"finished."
+msgid "Message that will be displayed in the formatter view when calculation has finished."
 msgstr ""
 
 #. Source code: l_formatter_temp_header_help: STRING_GENERAL do Result := locale.translation ("Message that will be displayed in the formatter view when calculation is going on.") end
 #: interface_names.e:660
-msgid ""
-"Message that will be displayed in the formatter view when calculation is "
-"going on."
+msgid "Message that will be displayed in the formatter view when calculation is going on."
 msgstr ""
 
 #. Source code: target_metadata_cache_path_name: STRING_GENERAL is do Result := locale.translation ("Metadata Cache Path")	end
@@ -18283,13 +18176,13 @@ msgstr ""
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="tools.metric_tool.keep_archive_detailed_result" DESCRIPTION="Keep archive detailed result?"><BOOLEAN>False</BOOLEAN></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="tools.metric_tool.check_defined_warning" DESCRIPTION="Check defined value warning when metric archive is recalculated?"><BOOLEAN>False</BOOLEAN></PREF>	
+#. 	<PREF NAME="tools.metric_tool.check_defined_warning" DESCRIPTION="Check defined value warning when metric archive is recalculated?"><BOOLEAN>False</BOOLEAN></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="tools.metric_tool.maximize_metric_result_area" DESCRIPTION="Maximize metric result area?"><BOOLEAN>False</BOOLEAN></PREF>	
+#. 	<PREF NAME="tools.metric_tool.maximize_metric_result_area" DESCRIPTION="Maximize metric result area?"><BOOLEAN>False</BOOLEAN></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="tools.metric_tool.warning_background_color" DESCRIPTION="Background color for archive items whose recent calculated value violates pre-defined value criterion."><COLOR>253;209;199</COLOR></PREF>	
+#. 	<PREF NAME="tools.metric_tool.warning_background_color" DESCRIPTION="Background color for archive items whose recent calculated value violates pre-defined value criterion."><COLOR>253;209;199</COLOR></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="tools.metric_tool.highlight_background_color" DESCRIPTION="Highlight background color"><COLOR>255;255;170</COLOR></PREF>	
+#. 	<PREF NAME="tools.metric_tool.highlight_background_color" DESCRIPTION="Highlight background color"><COLOR>255;255;170</COLOR></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:103
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:104
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:105
@@ -18759,7 +18652,8 @@ msgstr ""
 #. Source code: c_new_window: STRING_GENERAL is 		do Result := locale.translation ("New window") end
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="shortcuts.file.new_window" DESCRIPTION="Shortcut to create a new development window."><SHORTCUT Ctrl="True">N</SHORTCUT></PREF>
-#: interface_names.e:200 $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:691
+#: interface_names.e:200
+#: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:691
 msgid "New window"
 msgstr ""
 
@@ -18855,9 +18749,7 @@ msgstr ""
 
 #. Source code: Result := locale.translation ("No domain item defined. At least one domain item should be defined in a relation criterion.")
 #: eb_metric_names.e:821
-msgid ""
-"No domain item defined. At least one domain item should be defined in a "
-"relation criterion."
+msgid "No domain item defined. At least one domain item should be defined in a relation criterion."
 msgstr ""
 
 #. Source code: do Result := locale.translation ("No errors were found.") end
@@ -19064,17 +18956,12 @@ msgstr ""
 
 #. Source code: target_msil_classes_per_module_description: STRING_GENERAL is do Result := locale.translation ("Number of classes generated per .NET module during incremental compilation. Increasing this value will slow down the incremental recompilation, but speed up the time to load the assembly while debugging in workbench mode.")	end
 #: conf_interface_names.e:130
-msgid ""
-"Number of classes generated per .NET module during incremental compilation. "
-"Increasing this value will slow down the incremental recompilation, but "
-"speed up the time to load the assembly while debugging in workbench mode."
+msgid "Number of classes generated per .NET module during incremental compilation. Increasing this value will slow down the incremental recompilation, but speed up the time to load the assembly while debugging in workbench mode."
 msgstr ""
 
 #. 	<PREF NAME="debugger.interrupt_every_N_instructions" DESCRIPTION="Number of instructions that will be executed before interrupting the execution."><INTEGER>1</INTEGER></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:14
-msgid ""
-"Number of instructions that will be executed before interrupting the "
-"execution."
+msgid "Number of instructions that will be executed before interrupting the execution."
 msgstr ""
 
 #. 	<PREF NAME="editor.general.mouse_wheel_scroll_size" DESCRIPTION="Number of lines scrolled using the mouse wheel."><INTEGER>3</INTEGER></PREF>
@@ -19084,9 +18971,7 @@ msgstr ""
 
 #. 	<PREF NAME="editor.general.scrolling_common_line_count" DESCRIPTION="Number of lines that will stay visible when you perform a page down or a page up operation."><INTEGER>1</INTEGER></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:563
-msgid ""
-"Number of lines that will stay visible when you perform a page down or a "
-"page up operation."
+msgid "Number of lines that will stay visible when you perform a page down or a page up operation."
 msgstr ""
 
 #. 	<PREF NAME="recent_projects.keep_n_projects" DESCRIPTION="Number of recent projects to keep in the list."><INTEGER>10</INTEGER></PREF>
@@ -19485,9 +19370,7 @@ msgstr ""
 
 #. Source code: Result := locale.formatted_string (locale.translation ("Operator %"$1%" is invalid. One of the following operators is expected: %"=%", %"/=%", %"<%", %"<=%", %">%", %">=%""), [a_operator])
 #: eb_metric_names.e:1009
-msgid ""
-"Operator \"$1\" is invalid. One of the following operators is expected: \"="
-"\", \"/=\", \"<\", \"<=\", \">\", \">=\""
+msgid "Operator \"$1\" is invalid. One of the following operators is expected: \"=\", \"/=\", \"<\", \"<=\", \">\", \">=\""
 msgstr ""
 
 #. 	<PREF NAME="editor.general.colors.operator_background_color" DESCRIPTION="Background color of operator text."><COLOR>auto</COLOR></PREF>
@@ -19532,9 +19415,7 @@ msgstr ""
 
 #. Source code: f_rearrange_unit: STRING_GENERAL is do Result := locale.translation ("Or you can pick a metric unit and drop it on another metric to rearrange their order.") end
 #: eb_metric_names.e:285
-msgid ""
-"Or you can pick a metric unit and drop it on another metric to rearrange "
-"their order."
+msgid "Or you can pick a metric unit and drop it on another metric to rearrange their order."
 msgstr ""
 
 #. 	<PREF NAME="interface.development_window.feature_clause_order" DESCRIPTION="Order used to sort feature clauses in formatted texts."><LIST>Initialization;Access;Measurement;Comparison;Status report;Status setting;Cursor movement;Element change;Removal;Resizing;Transformation;Conversion;Duplication;Miscellaneous;Basic operations;Obsolete;Inapplicable;Implementation;*</LIST></PREF>
@@ -19772,9 +19653,7 @@ msgstr ""
 
 #. 	<PREF NAME="debugger.classic_debugger.debugger_location" DESCRIPTION="Path to the Eiffel debugger daemon (classic). Leave it empty to use the default environment value."><STRING></STRING></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:17
-msgid ""
-"Path to the Eiffel debugger daemon (classic). Leave it empty to use the "
-"default environment value."
+msgid "Path to the Eiffel debugger daemon (classic). Leave it empty to use the default environment value."
 msgstr ""
 
 #. Source code: b_Bkpt_stop_in_hole: STRING_GENERAL is				do Result := locale.translation("Pause")	end
@@ -19786,7 +19665,8 @@ msgstr ""
 #. Source code: do Result := locale.translation ("Pause application") end
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="shortcuts.debug.pause_application" DESCRIPTION="Shortcut to pause debugged application."><SHORTCUT Ctrl="True" Shift="True">F5</SHORTCUT></PREF>
-#: debugger_names.e:202 $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:736
+#: debugger_names.e:202
+#: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:736
 msgid "Pause application"
 msgstr ""
 
@@ -19852,9 +19732,7 @@ msgstr ""
 
 #. Source code: please_check_with_your_system_administator: STRING_GENERAL is do Result := locale.translation ("Please check with your system administrator whether your profiler is supported.") end
 #: ewb_names.e:62
-msgid ""
-"Please check with your system administrator whether your profiler is "
-"supported."
+msgid "Please check with your system administrator whether your profiler is supported."
 msgstr ""
 
 #. Source code: t_choose_directory: STRING_GENERAL is do Result := locale.translation ("Please choose a folder.") end
@@ -20460,9 +20338,7 @@ msgstr ""
 
 #. 	<PREF NAME="debugger.proportion" HIDDEN="true"  DESCRIPTION="Proportion of the local/arguments part of the `Objects' tab in the Debugging tool."><INTEGER>0.5</INTEGER></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:27
-msgid ""
-"Proportion of the local/arguments part of the `Objects' tab in the Debugging "
-"tool."
+msgid "Proportion of the local/arguments part of the `Objects' tab in the Debugging tool."
 msgstr ""
 
 #. Source code: l_Public_key: STRING_GENERAL is 			do Result := locale.translation ("Public Key") end
@@ -20763,9 +20639,7 @@ msgstr ""
 
 #. Source code: f_refactoring_redo: STRING_GENERAL is		do Result := locale.translation("Redo Last Refactoring (only works as long as no file that was refactored has been changed by hand)")	end
 #: interface_names.e:520
-msgid ""
-"Redo Last Refactoring (only works as long as no file that was refactored has "
-"been changed by hand)"
+msgid "Redo Last Refactoring (only works as long as no file that was refactored has been changed by hand)"
 msgstr ""
 
 #. Source code: b_refactoring_redo: STRING_GENERAL is		do Result := locale.translation("Redo Refactoring")	end
@@ -21124,7 +20998,8 @@ msgstr ""
 #. 	<PREF NAME="editor.eiffel.autocomplete.inherit_clauses_keywords.rename.custom_rename_space_later" DESCRIPTION="Customized autocomplete (Space, other cases)"><STRING> $cursor$</STRING></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="editor.eiffel.autocomplete.inherit_clauses_keywords.rename.custom_rename_return_later" DESCRIPTION="Customized autocomplete (Return, other cases)"><STRING>%N$indent$$cursor$</STRING></PREF>
-#: interface_names.e:103 $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:487
+#: interface_names.e:103
+#: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:487
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:488
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:489
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:490
@@ -21595,7 +21470,8 @@ msgstr ""
 #. Source code: b_run: STRING_GENERAL is							do Result := locale.translation("Run")	end
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="shortcuts.debug.run" DESCRIPTION="Shortcut to run debugged application."><SHORTCUT>F5</SHORTCUT></PREF>
-#: interface_names.e:160 $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:734
+#: interface_names.e:160
+#: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:734
 msgid "Run"
 msgstr ""
 
@@ -21765,7 +21641,8 @@ msgstr ""
 #. Source code: f_save: STRING_GENERAL is do Result := locale.translation ("Save") end
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="shortcuts.file.save" DESCRIPTION="Shortcut to save current editing file."><SHORTCUT Ctrl="True">S</SHORTCUT></PREF>
-#: eb_metric_names.e:261 $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:692
+#: eb_metric_names.e:261
+#: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:692
 msgid "Save"
 msgstr ""
 
@@ -22301,9 +22178,7 @@ msgstr ""
 
 #. Source code: w_read_only_cluster: STRING_GENERAL is do Result := locale.translation ("Selected cluster is read only. Please select a writable cluster for class creation.") end
 #: warning_messages.e:911
-msgid ""
-"Selected cluster is read only. Please select a writable cluster for class "
-"creation."
+msgid "Selected cluster is read only. Please select a writable cluster for class creation."
 msgstr ""
 
 #. Source code: t_selected_metric: STRING_GENERAL is do Result := locale.translation ("Selected metric") end
@@ -22653,9 +22528,7 @@ msgstr ""
 
 #. Source code: l_shortcut_modification_denied: STRING_GENERAL is do Result := locale.translation ("Shortcut modification failed. It is either used by a fixed shortcut or reserved by the system.") end
 #: interface_names.e:1663
-msgid ""
-"Shortcut modification failed. It is either used by a fixed shortcut or "
-"reserved by the system."
+msgid "Shortcut modification failed. It is either used by a fixed shortcut or reserved by the system."
 msgstr ""
 
 #. 	<PREF NAME="shortcuts.project.cancel" DESCRIPTION="Shortcut to cancel compilation."><SHORTCUT Ctrl="True">Pause</SHORTCUT></PREF>
@@ -22721,7 +22594,7 @@ msgstr ""
 #. 	<PREF NAME="shortcuts.view.tools.show_external_output_tool" DESCRIPTION="Shortcut to display External output tool."><SHORTCUT Ctrl="True" Alt="True">X</SHORTCUT></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:699
 msgid "Shortcut to display External output tool."
-msgstr ""
+msgstr "Shortcut to display Console tool"
 
 #. 	<PREF NAME="shortcuts.view.tools.show_favorites_tool" DESCRIPTION="Shortcut to display Favorites tool."><SHORTCUT Ctrl="True" Alt="True">A</SHORTCUT></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:710
@@ -22787,7 +22660,7 @@ msgstr ""
 msgid "Shortcut to display Warning tool."
 msgstr ""
 
-#. 	<PREF NAME="shortcuts.debug.show_watch_tool" DESCRIPTION="Shortcut to display Watch tool."><SHORTCUT Ctrl="True" Alt="True">H</SHORTCUT></PREF>	
+#. 	<PREF NAME="shortcuts.debug.show_watch_tool" DESCRIPTION="Shortcut to display Watch tool."><SHORTCUT Ctrl="True" Alt="True">H</SHORTCUT></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:743
 msgid "Shortcut to display Watch tool."
 msgstr ""
@@ -23070,7 +22943,7 @@ msgstr ""
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="shortcuts.debug.show_object_viewer_tool" DESCRIPTION="Shortcut to display Object Viewer tool."><SHORTCUT Ctrl="True" Alt="True">L</SHORTCUT></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="shortcuts.debug.show_watch_tool" DESCRIPTION="Shortcut to display Watch tool."><SHORTCUT Ctrl="True" Alt="True">H</SHORTCUT></PREF>	
+#. 	<PREF NAME="shortcuts.debug.show_watch_tool" DESCRIPTION="Shortcut to display Watch tool."><SHORTCUT Ctrl="True" Alt="True">H</SHORTCUT></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:646
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:647
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:649
@@ -23168,8 +23041,7 @@ msgstr ""
 
 #. Source code: target_exception_trace_description: STRING_GENERAL is do Result := locale.translation ("Should a complete exception trace be generated in the finalized version?")	end
 #: conf_interface_names.e:118
-msgid ""
-"Should a complete exception trace be generated in the finalized version?"
+msgid "Should a complete exception trace be generated in the finalized version?"
 msgstr ""
 
 #. 	<PREF NAME="interface.development_window.show_address_toolbar" DESCRIPTION="Should address toolbar be shown?"><BOOLEAN>True</BOOLEAN></PREF>
@@ -23179,9 +23051,7 @@ msgstr ""
 
 #. 	<PREF NAME="interface.development_window.show_all_applicable_docking_indicators" DESCRIPTION="Should all applicable docking feedback indicators be shown when dragging a tool or a editor tab?"><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:187
-msgid ""
-"Should all applicable docking feedback indicators be shown when dragging a "
-"tool or a editor tab?"
+msgid "Should all applicable docking feedback indicators be shown when dragging a tool or a editor tab?"
 msgstr ""
 
 #. 	<PREF NAME="tools.refactoring.class_rename.all_classes" DESCRIPTION="Should all classes be processed?" HIDDEN="True"><BOOLEAN>False</BOOLEAN></PREF>
@@ -23189,10 +23059,9 @@ msgstr ""
 msgid "Should all classes be processed?"
 msgstr ""
 
-#. 	<PREF NAME="tools.class_browser.expand_categorized_folder_level" HIDDEN="false" DESCRIPTION="Should categorized folder level in dependency view be expanded by default?"><BOOLEAN>False</BOOLEAN></PREF>	
+#. 	<PREF NAME="tools.class_browser.expand_categorized_folder_level" HIDDEN="false" DESCRIPTION="Should categorized folder level in dependency view be expanded by default?"><BOOLEAN>False</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:121
-msgid ""
-"Should categorized folder level in dependency view be expanded by default?"
+msgid "Should categorized folder level in dependency view be expanded by default?"
 msgstr ""
 
 #. 	<PREF NAME="tools.class_browser.classes_categorized_folder" HIDDEN="false" DESCRIPTION="Should classes be categorized in physical folders where they locate?"><BOOLEAN>False</BOOLEAN></PREF>
@@ -23207,9 +23076,7 @@ msgstr ""
 
 #. 	<PREF NAME="editor.eiffel.auto_complete_words" DESCRIPTION="Should completion automatically complete words when a single best match is available?"><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:238
-msgid ""
-"Should completion automatically complete words when a single best match is "
-"available?"
+msgid "Should completion automatically complete words when a single best match is available?"
 msgstr ""
 
 #. 	<PREF NAME="editor.eiffel.auto_auto-complete" DESCRIPTION="Should completion window appear automatically after typing a `.'?"><BOOLEAN>True</BOOLEAN></PREF>
@@ -23259,10 +23126,7 @@ msgstr ""
 
 #. 	<PREF NAME="editor.eiffel.filter_completion_list" DESCRIPTION="Should non-matching entries from completion list be hidden while completing? If not, all entries are shown and selection in completion list will change to the closest matching entry while completing."><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:243
-msgid ""
-"Should non-matching entries from completion list be hidden while completing? "
-"If not, all entries are shown and selection in completion list will change "
-"to the closest matching entry while completing."
+msgid "Should non-matching entries from completion list be hidden while completing? If not, all entries are shown and selection in completion list will change to the closest matching entry while completing."
 msgstr ""
 
 #. Source code: l_Dummy: STRING_GENERAL is					do Result := locale.translation("Should not be read")	end
@@ -23326,9 +23190,7 @@ msgstr ""
 
 #. 	<PREF NAME="interface.development_window.remember_completion_list_size" DESCRIPTION="Should size of completion list be remembered between completions in the editor?"><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:206
-msgid ""
-"Should size of completion list be remembered between completions in the "
-"editor?"
+msgid "Should size of completion list be remembered between completions in the editor?"
 msgstr ""
 
 #. 	<PREF NAME="tools.class_browser.syntactical_classes" HIDDEN="false" DESCRIPTION="Should syntactical referenced classes be displayed?"><BOOLEAN>False</BOOLEAN></PREF>
@@ -23373,9 +23235,7 @@ msgstr ""
 
 #. Source code: library_use_application_options_description: STRING_GENERAL is do Result := locale.translation ("Should this library use options from the application instead of from the library?")	end
 #: conf_interface_names.e:244
-msgid ""
-"Should this library use options from the application instead of from the "
-"library?"
+msgid "Should this library use options from the application instead of from the library?"
 msgstr ""
 
 #. 	<PREF NAME="editor.eiffel.auto_remove_trailing_blank_when_saving" DESCRIPTION="Should trailing blanks be auto-removed when saving?"><BOOLEAN>True</BOOLEAN></PREF>
@@ -23390,16 +23250,12 @@ msgstr ""
 
 #. 	<PREF NAME="debugger.dotnet.keep_stepping_info_dotnet_feature" DESCRIPTION="Should we always try to debug non-Eiffel code in case it calls back into some Eiffel code?"><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:19
-msgid ""
-"Should we always try to debug non-Eiffel code in case it calls back into "
-"some Eiffel code?"
+msgid "Should we always try to debug non-Eiffel code in case it calls back into some Eiffel code?"
 msgstr ""
 
 #. 	<PREF NAME="editor.general.automatic_update" DESCRIPTION="Should we reload the content of a file automatically if no change has been made here and the file has been modified by an external editor?"><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:557
-msgid ""
-"Should we reload the content of a file automatically if no change has been "
-"made here and the file has been modified by an external editor?"
+msgid "Should we reload the content of a file automatically if no change has been made here and the file has been modified by an external editor?"
 msgstr ""
 
 #. Source code: f_show: STRING_GENERAL is do Result := locale.translation ("Show ") end
@@ -23476,7 +23332,8 @@ msgstr ""
 #. Source code: l_Showallcallers: STRING_GENERAL is			do Result := locale.translation("Show all callers")	end
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="tools.context_tool.show_all_callers" DESCRIPTION="Show all callers (as opposed to local callers) in `callers' form."><BOOLEAN>True</BOOLEAN></PREF>
-#: interface_names.e:1258 $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:96
+#: interface_names.e:1258
+#: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:96
 msgid "Show all callers"
 msgstr ""
 
@@ -23608,7 +23465,7 @@ msgstr ""
 #. 	<PREF NAME="shortcuts.view.tools.show_external_output_tool" DESCRIPTION="Shortcut to display External output tool."><SHORTCUT Ctrl="True" Alt="True">X</SHORTCUT></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:699
 msgid "Show external output tool"
-msgstr ""
+msgstr "Show console tool"
 
 #. 	<PREF NAME="shortcuts.view.tools.show_favorites_tool" DESCRIPTION="Shortcut to display Favorites tool."><SHORTCUT Ctrl="True" Alt="True">A</SHORTCUT></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:710
@@ -23845,7 +23702,7 @@ msgstr ""
 msgid "Show warning tool"
 msgstr ""
 
-#. 	<PREF NAME="shortcuts.debug.show_watch_tool" DESCRIPTION="Shortcut to display Watch tool."><SHORTCUT Ctrl="True" Alt="True">H</SHORTCUT></PREF>	
+#. 	<PREF NAME="shortcuts.debug.show_watch_tool" DESCRIPTION="Shortcut to display Watch tool."><SHORTCUT Ctrl="True" Alt="True">H</SHORTCUT></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:743
 msgid "Show watch tool"
 msgstr ""
@@ -24123,16 +23980,12 @@ msgstr ""
 
 #. Source code: l_formatter_invalid_metric: STRING_GENERAL do Result := locale.translation ("Specified metric is not defined or invalid, this will cause current formatter not usable") end
 #: interface_names.e:674
-msgid ""
-"Specified metric is not defined or invalid, this will cause current "
-"formatter not usable"
+msgid "Specified metric is not defined or invalid, this will cause current formatter not usable"
 msgstr ""
 
 #. Source code: option_msil_application_optimize_description: STRING_GENERAL is do Result := locale.translation ("Specifies if any applicable application-orientated optimizations should be applied to a finalized compilation.")	end
 #: conf_interface_names.e:296
-msgid ""
-"Specifies if any applicable application-orientated optimizations should be "
-"applied to a finalized compilation."
+msgid "Specifies if any applicable application-orientated optimizations should be applied to a finalized compilation."
 msgstr ""
 
 #. Source code: l_Specify_arguments: STRING_GENERAL is		do Result := locale.translation("Specify arguments")	end
@@ -24163,9 +24016,7 @@ msgstr ""
 
 #. 	<PREF NAME="tools.diagram_tool.autoscroll_speed" DESCRIPTION="Speed for scrolling when dragging figures from diagram near the edge of the diagram tool (a valid value is between 0 and 100)."><INTEGER>50</INTEGER></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:86
-msgid ""
-"Speed for scrolling when dragging figures from diagram near the edge of the "
-"diagram tool (a valid value is between 0 and 100)."
+msgid "Speed for scrolling when dragging figures from diagram near the edge of the diagram tool (a valid value is between 0 and 100)."
 msgstr ""
 
 #. Source code: m_Debug_run_new: STRING_GENERAL is			do Result := locale.translation("St&art")	end
@@ -24185,9 +24036,7 @@ msgstr ""
 
 #. 	<PREF NAME="debugger.critical_stack_depth" DESCRIPTION="Stack overflow detection: depth of stack at which execution will pause and ask whether it is ok to continue (only works in classic Eiffel)." RESTART="True"><INTEGER>1000</INTEGER></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:4
-msgid ""
-"Stack overflow detection: depth of stack at which execution will pause and "
-"ask whether it is ok to continue (only works in classic Eiffel)."
+msgid "Stack overflow detection: depth of stack at which execution will pause and ask whether it is ok to continue (only works in classic Eiffel)."
 msgstr ""
 
 #. Source code: target_compilation_type_standard: STRING_GENERAL is do Result := locale.translation ("Standard (C/byte code)")	end
@@ -24294,7 +24143,8 @@ msgstr ""
 #. Source code: do Result := locale.translation ("Step into") end
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="shortcuts.debug.step_into" DESCRIPTION="Shortcut to step into a routine."><SHORTCUT>F11</SHORTCUT></PREF>
-#: debugger_names.e:192 $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:732
+#: debugger_names.e:192
+#: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:732
 msgid "Step into"
 msgstr ""
 
@@ -24875,9 +24725,9 @@ msgstr ""
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="editor.eiffel.text_mode_is_windows" DESCRIPTION="Format to use when saving class text. True means using Windows text format, False means using Unix text format."><BOOLEAN>True</BOOLEAN></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="editor.eiffel.text_mode_is_windows" DESCRIPTION="Format to use when saving class text. True means using Windows text format, False means using Unix text format."><BOOLEAN>True</BOOLEAN></PREF>	
+#. 	<PREF NAME="editor.eiffel.text_mode_is_windows" DESCRIPTION="Format to use when saving class text. True means using Windows text format, False means using Unix text format."><BOOLEAN>True</BOOLEAN></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="editor.eiffel.text_mode_is_windows" DESCRIPTION="Format to use when saving class text. True means using Windows text format, False means using Unix text format."><BOOLEAN>False</BOOLEAN></PREF>	
+#. 	<PREF NAME="editor.eiffel.text_mode_is_windows" DESCRIPTION="Format to use when saving class text. True means using Windows text format, False means using Unix text format."><BOOLEAN>False</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:250
 #: $EIFFEL_SRC/Delivery/studio/eifinit/spec/windows/default.xml:2
 #: $EIFFEL_SRC/Delivery/studio/eifinit/spec/unix/default.xml:2
@@ -25055,9 +24905,7 @@ msgstr ""
 
 #. 	<PREF NAME="compiler.maximum_processors_usage" DESCRIPTION="The maximum number of processors to use during compilation. Used '0' to use all available processors."><INTEGER>0</INTEGER></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:2
-msgid ""
-"The maximum number of processors to use during compilation. Used '0' to use "
-"all available processors."
+msgid "The maximum number of processors to use during compilation. Used '0' to use all available processors."
 msgstr ""
 
 #. Source code: m_Second_state: STRING_GENERAL is do Result := locale.translation ("The number of states is limited to 10.") end;
@@ -25126,9 +24974,7 @@ msgstr ""
 
 #. 	<PREF NAME="interface.development_window.auto_hide_animation_speed" DESCRIPTION="The speed, in milliseconds, in which the auto-hide tools will reveal or hide themselves completely. Use '0' to disable animation effect."><BOOLEAN>20</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:186
-msgid ""
-"The speed, in milliseconds, in which the auto-hide tools will reveal or hide "
-"themselves completely. Use '0' to disable animation effect."
+msgid "The speed, in milliseconds, in which the auto-hide tools will reveal or hide themselves completely. Use '0' to disable animation effect."
 msgstr ""
 
 #. Source code: "The system could not be launched in allotted time:%N%
@@ -25144,8 +24990,7 @@ msgstr ""
 
 #. Source code: do Result := locale.translation ("The system has no entry feature, it is not executable from EiffelStudio.") end
 #: debugger_names.e:44
-msgid ""
-"The system has no entry feature, it is not executable from EiffelStudio."
+msgid "The system has no entry feature, it is not executable from EiffelStudio."
 msgstr ""
 
 #. Source code: w_Class_not_modifiable: STRING_GENERAL is do Result := locale.translation ("The text of this class cannot be modified.") end
@@ -25216,9 +25061,7 @@ msgstr ""
 
 #. Source code: Result := locale.formatted_string (locale.translation ("There is already a feature with this name in class $1. This would lead to a conflict."), [a_class])
 #: interface_names.e:1310
-msgid ""
-"There is already a feature with this name in class $1. This would lead to a "
-"conflict."
+msgid "There is already a feature with this name in class $1. This would lead to a conflict."
 msgstr ""
 
 #. Source code: Result := locale.formatted_string (locale.translation ("There is already a metric named $1.%NChange its name in %"Metric name%" column to make it importable."), [a_name]);
@@ -25332,9 +25175,7 @@ msgstr ""
 
 #. Source code: l_Only_available_for_stopped_application: STRING_GENERAL is do Result := locale.translation("This feature is only available when debugging, and when the debugged application is stopped.")	end
 #: interface_names.e:866
-msgid ""
-"This feature is only available when debugging, and when the debugged "
-"application is stopped."
+msgid "This feature is only available when debugging, and when the debugged application is stopped."
 msgstr ""
 
 #. Source code: t_this_file_has_been_modified: STRING_GENERAL is 	do Result := locale.translation ("This file has been modified by another editor.") end
@@ -25465,9 +25306,7 @@ msgstr ""
 
 #. 	<PREF NAME="debugger.classic_debugger.timeout" DESCRIPTION="Timeout used to start the Eiffel debugger daemon (classic only). Leave it to 0 to use the default environment value."><INTEGER>0</INTEGER></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:16
-msgid ""
-"Timeout used to start the Eiffel debugger daemon (classic only). Leave it to "
-"0 to use the default environment value."
+msgid "Timeout used to start the Eiffel debugger daemon (classic only). Leave it to 0 to use the default environment value."
 msgstr ""
 
 #. Source code: l_to_do_dialog: STRING_GENERAL is do Result := locale.translation ("To do information") end
@@ -25612,15 +25451,12 @@ msgstr ""
 
 #. Source code: Result := locale.translation ("Too many crieria is specified in %"criterion%" section. Only one is expected.")
 #: eb_metric_names.e:462
-msgid ""
-"Too many crieria is specified in \"criterion\" section. Only one is expected."
+msgid "Too many crieria is specified in \"criterion\" section. Only one is expected."
 msgstr ""
 
 #. Source code: Result := locale.translation ("Too many criterion sections specified. Only one criterion section is expected.")
 #: eb_metric_names.e:477
-msgid ""
-"Too many criterion sections specified. Only one criterion section is "
-"expected."
+msgid "Too many criterion sections specified. Only one criterion section is expected."
 msgstr ""
 
 #. Source code: Result := locale.translation ("Too many value retrievers nodes. Only one is expected.")
@@ -25785,13 +25621,13 @@ msgstr ""
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="tools.metric_tool.keep_archive_detailed_result" DESCRIPTION="Keep archive detailed result?"><BOOLEAN>False</BOOLEAN></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="tools.metric_tool.check_defined_warning" DESCRIPTION="Check defined value warning when metric archive is recalculated?"><BOOLEAN>False</BOOLEAN></PREF>	
+#. 	<PREF NAME="tools.metric_tool.check_defined_warning" DESCRIPTION="Check defined value warning when metric archive is recalculated?"><BOOLEAN>False</BOOLEAN></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="tools.metric_tool.maximize_metric_result_area" DESCRIPTION="Maximize metric result area?"><BOOLEAN>False</BOOLEAN></PREF>	
+#. 	<PREF NAME="tools.metric_tool.maximize_metric_result_area" DESCRIPTION="Maximize metric result area?"><BOOLEAN>False</BOOLEAN></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="tools.metric_tool.warning_background_color" DESCRIPTION="Background color for archive items whose recent calculated value violates pre-defined value criterion."><COLOR>253;209;199</COLOR></PREF>	
+#. 	<PREF NAME="tools.metric_tool.warning_background_color" DESCRIPTION="Background color for archive items whose recent calculated value violates pre-defined value criterion."><COLOR>253;209;199</COLOR></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="tools.metric_tool.highlight_background_color" DESCRIPTION="Highlight background color"><COLOR>255;255;170</COLOR></PREF>	
+#. 	<PREF NAME="tools.metric_tool.highlight_background_color" DESCRIPTION="Highlight background color"><COLOR>255;255;170</COLOR></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="tools.class_browser.classes_categorized_folder" HIDDEN="false" DESCRIPTION="Should classes be categorized in physical folders where they locate?"><BOOLEAN>False</BOOLEAN></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
@@ -25799,7 +25635,7 @@ msgstr ""
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="tools.class_browser.expand_referencer_class" HIDDEN="false" DESCRIPTION="Should referencer classes in dependency view be expanded by default?"><BOOLEAN>False</BOOLEAN></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="tools.class_browser.expand_categorized_folder_level" HIDDEN="false" DESCRIPTION="Should categorized folder level in dependency view be expanded by default?"><BOOLEAN>False</BOOLEAN></PREF>	
+#. 	<PREF NAME="tools.class_browser.expand_categorized_folder_level" HIDDEN="false" DESCRIPTION="Should categorized folder level in dependency view be expanded by default?"><BOOLEAN>False</BOOLEAN></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="tools.class_browser.inheritance_classes" HIDDEN="false" DESCRIPTION="Should inheritance classes be displayed?"><BOOLEAN>False</BOOLEAN></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
@@ -25924,7 +25760,8 @@ msgstr ""
 #. 	<PREF NAME="tools.diagram_tool.uml.uml_client_label_font" DESCRIPTION="Font for feature names on UML client supplier links."><FONT>sans-r-regular-9-sans</FONT></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="tools.diagram_tool.uml.uml_cluster_name_font" DESCRIPTION="UML cluster name font."><FONT>sans-r-regular-9-sans</FONT></PREF>
-#: docking_names.e:18 $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:43
+#: docking_names.e:18
+#: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:43
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:44
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:45
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:46
@@ -26702,9 +26539,7 @@ msgstr ""
 
 #. Source code: f_refactoring_undo: STRING_GENERAL is		do Result := locale.translation("Undo Last Refactoring (only works as long as no file that was refactored has been changed by hand)")	end
 #: interface_names.e:519
-msgid ""
-"Undo Last Refactoring (only works as long as no file that was refactored has "
-"been changed by hand)"
+msgid "Undo Last Refactoring (only works as long as no file that was refactored has been changed by hand)"
 msgstr ""
 
 #. Source code: b_refactoring_undo: STRING_GENERAL is		do Result := locale.translation("Undo Refactoring")	end
@@ -26749,9 +26584,7 @@ msgstr ""
 
 #. Source code: Result := locale.formatted_string (locale.translation ("Unit %"$1%" of variable metric is different from unit %"$2%" of linear metric."), [a_wrong_unit, a_right_unit])
 #: eb_metric_names.e:771
-msgid ""
-"Unit \"$1\" of variable metric is different from unit \"$2\" of linear "
-"metric."
+msgid "Unit \"$1\" of variable metric is different from unit \"$2\" of linear metric."
 msgstr ""
 
 #. Source code: Result := locale.formatted_string (locale.translation ("Unit name %"$1%" is invalid."), [a_unit_name])
@@ -27352,23 +27185,17 @@ msgstr ""
 
 #. 	<PREF NAME="editor.eiffel.customized_string_1" DESCRIPTION="User customized string inserted when user performs the key combination defined in Editor->Eiffel->Keyboard Shortcuts->Customized insertion 1."><STRING></STRING></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:240
-msgid ""
-"User customized string inserted when user performs the key combination "
-"defined in Editor->Eiffel->Keyboard Shortcuts->Customized insertion 1."
+msgid "User customized string inserted when user performs the key combination defined in Editor->Eiffel->Keyboard Shortcuts->Customized insertion 1."
 msgstr ""
 
 #. 	<PREF NAME="editor.eiffel.customized_string_2" DESCRIPTION="User customized string inserted when user performs the key combination defined in Editor->Eiffel->Keyboard Shortcuts->Customized insertion 2."><STRING></STRING></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:241
-msgid ""
-"User customized string inserted when user performs the key combination "
-"defined in Editor->Eiffel->Keyboard Shortcuts->Customized insertion 2."
+msgid "User customized string inserted when user performs the key combination defined in Editor->Eiffel->Keyboard Shortcuts->Customized insertion 2."
 msgstr ""
 
 #. 	<PREF NAME="editor.eiffel.customized_string_3" DESCRIPTION="User customized string inserted when user performs the key combination defined in Editor->Eiffel->Keyboard Shortcuts->Customized insertion 3."><STRING></STRING></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:242
-msgid ""
-"User customized string inserted when user performs the key combination "
-"defined in Editor->Eiffel->Keyboard Shortcuts->Customized insertion 3."
+msgid "User customized string inserted when user performs the key combination defined in Editor->Eiffel->Keyboard Shortcuts->Customized insertion 3."
 msgstr ""
 
 #. Source code: t_metric_backuped: STRING_GENERAL is do Result := locale.translation ("User-defined metrics backup finished.") end
@@ -27488,8 +27315,7 @@ msgstr ""
 
 #. Source code: Result := locale.formatted_string (locale.translation ("Value %"$1%" of %"normal%" attribute is invalid. A boolean value is expected."), [a_value])
 #: eb_metric_names.e:963
-msgid ""
-"Value \"$1\" of \"normal\" attribute is invalid. A boolean value is expected."
+msgid "Value \"$1\" of \"normal\" attribute is invalid. A boolean value is expected."
 msgstr ""
 
 #. Source code: Result := locale.formatted_string (locale.translation ("Value %"$1%" of attribute %"$2%" is invalid. A boolean is expected."), [a_value, a_attr_name])
@@ -27499,36 +27325,27 @@ msgstr ""
 
 #. Source code: Result := locale.formatted_string (locale.translation ("Value %"$1%" of attribute %"case_sensitive%" is invalid. A boolean is expected."), [a_value])
 #: eb_metric_names.e:598
-msgid ""
-"Value \"$1\" of attribute \"case_sensitive\" is invalid. A boolean is "
-"expected."
+msgid "Value \"$1\" of attribute \"case_sensitive\" is invalid. A boolean is expected."
 msgstr ""
 
 #. Source code: Result := locale.formatted_string (locale.translation ("Value %"$1%" of attribute %"indirect%" is invalid. A boolean value is expected."), [a_value])
 #: eb_metric_names.e:981
-msgid ""
-"Value \"$1\" of attribute \"indirect\" is invalid. A boolean value is "
-"expected."
+msgid "Value \"$1\" of attribute \"indirect\" is invalid. A boolean value is expected."
 msgstr ""
 
 #. Source code: Result := locale.formatted_string (locale.translation ("Value %"$1%" of attribute %"negation%" is invalid. A boolean is expected."), [a_value])
 #: eb_metric_names.e:644
-msgid ""
-"Value \"$1\" of attribute \"negation\" is invalid. A boolean is expected."
+msgid "Value \"$1\" of attribute \"negation\" is invalid. A boolean is expected."
 msgstr ""
 
 #. Source code: Result := locale.formatted_string (locale.translation ("Value %"$1%" of attribute %"only_current_version%" is invalid. A boolean is expected."), [a_value])
 #: eb_metric_names.e:654
-msgid ""
-"Value \"$1\" of attribute \"only_current_version\" is invalid. A boolean is "
-"expected."
+msgid "Value \"$1\" of attribute \"only_current_version\" is invalid. A boolean is expected."
 msgstr ""
 
 #. Source code: Result := locale.formatted_string (locale.translation ("Value %"$1%" of attribute %"regular_expression%" is invalid. A boolean is expected."), [a_value])
 #: eb_metric_names.e:608
-msgid ""
-"Value \"$1\" of attribute \"regular_expression\" is invalid. A boolean is "
-"expected."
+msgid "Value \"$1\" of attribute \"regular_expression\" is invalid. A boolean is expected."
 msgstr ""
 
 #. Source code: Result := locale.formatted_string (locale.translation ("Value %"$1%" of attribute %"time%" is invalid."), [a_value])
@@ -27543,8 +27360,7 @@ msgstr ""
 
 #. Source code: Result := locale.formatted_string (locale.translation ("Value %"$1%" of attribute %"value%" is invalid. A real number is expected."), [a_value])
 #: eb_metric_names.e:744
-msgid ""
-"Value \"$1\" of attribute \"value\" is invalid. A real number is expected."
+msgid "Value \"$1\" of attribute \"value\" is invalid. A real number is expected."
 msgstr ""
 
 #. Source code: w_value_of_element_is_not_valid (a_name: STRING_GENERAL): STRING_GENERAL is do Result := locale.formatted_string (locale.translation ("Value of element $1 is not valid."), [a_name]) end;
@@ -27574,8 +27390,7 @@ msgstr ""
 
 #. Source code: Result := locale.translation ("Variable metric is missng. At least one variable metric should be defined.")
 #: eb_metric_names.e:752
-msgid ""
-"Variable metric is missng. At least one variable metric should be defined."
+msgid "Variable metric is missng. At least one variable metric should be defined."
 msgstr ""
 
 #. Source code: Result := locale.translation ("Variable metric name is missing.")
@@ -27841,7 +27656,7 @@ msgid "Warning"
 msgstr ""
 
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
-#. 	<PREF NAME="tools.metric_tool.warning_background_color" DESCRIPTION="Background color for archive items whose recent calculated value violates pre-defined value criterion."><COLOR>253;209;199</COLOR></PREF>	
+#. 	<PREF NAME="tools.metric_tool.warning_background_color" DESCRIPTION="Background color for archive items whose recent calculated value violates pre-defined value criterion."><COLOR>253;209;199</COLOR></PREF>
 #. #-#-#-#-#  estudio.pot  #-#-#-#-#
 #. 	<PREF NAME="editor.eiffel.colors.warning_background_color" DESCRIPTION="Background color of warning text"><COLOR>255;255;255</COLOR></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:115
@@ -27972,9 +27787,7 @@ msgstr ""
 
 #. 	<PREF NAME="interface.development_window.estudio_dbg_menu_accelerator_allowed" DESCRIPTION="When estudio_dbg_menu_enabled_preference is True, is EiffelStudio Debug menu shown by accelerator?" HIDDEN="True"><BOOLEAN>True</BOOLEAN></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:194
-msgid ""
-"When estudio_dbg_menu_enabled_preference is True, is EiffelStudio Debug menu "
-"shown by accelerator?"
+msgid "When estudio_dbg_menu_enabled_preference is True, is EiffelStudio Debug menu shown by accelerator?"
 msgstr ""
 
 #. Source code: do Result := locale.translation ("When hits ...") end
@@ -28005,11 +27818,7 @@ msgstr ""
 
 #. 	<PREF NAME="debugger.dotnet_debugger" DESCRIPTION="Which .NET debugger to launch: `EiffelStudio Dbg' will use the EiffelStudio debugger; `cordbg' will use the command line debugger from the .NET Framework SDK; `DebugCLR' will use the graphical debugger from the .NET Framework SDK."><LIST>[EiffelStudio Dbg];cordbg;DbgCLR</LIST></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:11
-msgid ""
-"Which .NET debugger to launch: `EiffelStudio Dbg' will use the EiffelStudio "
-"debugger; `cordbg' will use the command line debugger from the .NET "
-"Framework SDK; `DebugCLR' will use the graphical debugger from the .NET "
-"Framework SDK."
+msgid "Which .NET debugger to launch: `EiffelStudio Dbg' will use the EiffelStudio debugger; `cordbg' will use the command line debugger from the .NET Framework SDK; `DebugCLR' will use the graphical debugger from the .NET Framework SDK."
 msgstr ""
 
 #. Source code: l_Whole_project: STRING_GENERAL is			do Result := locale.translation("Whole project")	end
@@ -28029,9 +27838,7 @@ msgstr ""
 
 #. 	<PREF NAME="interface.development_window.completion_list_width" DESCRIPTION="Width of completion list.  Used if 'remember_completion_list_size' is set to True." HIDDEN="true"><INTEGER>240</INTEGER></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:226
-msgid ""
-"Width of completion list.  Used if 'remember_completion_list_size' is set to "
-"True."
+msgid "Width of completion list.  Used if 'remember_completion_list_size' is set to True."
 msgstr ""
 
 #. 	<PREF NAME="interface.development_window.width" DESCRIPTION="Width of development window." HIDDEN="true"><INTEGER>950</INTEGER></PREF>
@@ -28046,9 +27853,7 @@ msgstr ""
 
 #. 	<PREF NAME="editor.general.left_margin_width" DESCRIPTION="Width of left margin in editor.  Note: this is not the breakpoint margin, but the whitespace to the left of the editor."><INTEGER>8</INTEGER></PREF>
 #: $EIFFEL_SRC/Delivery/studio/eifinit/default.xml:562
-msgid ""
-"Width of left margin in editor.  Note: this is not the breakpoint margin, "
-"but the whitespace to the left of the editor."
+msgid "Width of left margin in editor.  Note: this is not the breakpoint margin, but the whitespace to the left of the editor."
 msgstr ""
 
 #. 	<PREF NAME="general.preference_window_height" DESCRIPTION="Width of preferences window." HIDDEN="True"><INTEGER>300</INTEGER></PREF>
@@ -28232,16 +28037,14 @@ msgstr ""
 
 #. Source code: m_Second_state: STRING_GENERAL is do Result := locale.translation ("You can create an executable file (.exe) or  dynamic-link library (.dll)") end
 #: interface_names.e:114
-msgid ""
-"You can create an executable file (.exe) or  dynamic-link library (.dll)"
+msgid "You can create an executable file (.exe) or  dynamic-link library (.dll)"
 msgstr ""
 
 #. Source code: do Result := locale.translation("You can generate the Execution Profile from a Run-time Information Record%N%
 #: interface_names.e:2215
 msgid ""
 "You can generate the Execution Profile from a Run-time Information Record\n"
-"created by a profiler, or you can reuse an existing Execution Profile if "
-"you\n"
+"created by a profiler, or you can reuse an existing Execution Profile if you\n"
 "have already generated one for this system."
 msgstr ""
 
@@ -28361,8 +28164,7 @@ msgstr ""
 msgid ""
 "Your old configration file needs to be converted to the new format.\n"
 "The default name for the new configuration is '$1'.\n"
-"Select OK if you want to keep this name, or 'Save As...' to choose a "
-"different name."
+"Select OK if you want to keep this name, or 'Save As...' to choose a different name."
 msgstr ""
 
 #. Source code: t_Diagram_zoom_cmd: STRING_GENERAL is				do Result := locale.translation("Zoom")	end
@@ -29160,3 +28962,4 @@ msgstr ""
 #: shared_ewb_help.e:201
 msgid "yank (save) output of last command to a file"
 msgstr ""
+

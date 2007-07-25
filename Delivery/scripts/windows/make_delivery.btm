@@ -84,11 +84,10 @@ remtrace esbuilder
 exprt %DEFAULT_ORIGO_SVN/Delivery/esbuilder esbuilder
 remtrace vision2 tour
 exprt %DEFAULT_ORIGO_SVN/Delivery/vision2_demo vision2_demo
-remtrace .NET libraries
-exprt %DEFAULT_ORIGO_SVN/Src/library.net library.net
 remtrace examples
 exprt %DEFAULT_ORIGO_SVN/Src/examples examples
 cd examples
+fullrd obsolete
 fullrd eiffeltest
 fullrd math
 fullrd matisse
@@ -124,7 +123,7 @@ safe_md %STUDIO_DIR\precomp
 safe_md %STUDIO_DIR\precomp\spec
 cd %STUDIO_DIR\precomp\spec
 exprt %DEFAULT_ORIGO_SVN/Delivery/precomp/spec/platform %ISE_PLATFORM
-exprt %DEFAULT_ORIGO_SVN/Delivery/precomp/spec/dotnet dotnet
+exprt %DEFAULT_ORIGO_SVN/Delivery/precomp/spec/dotnet %ISE_PLATFORM-dotnet
 cdd %STUDIO_DIR
 remtrace wizards
 exprt %DEFAULT_ORIGO_SVN/Delivery/wizards wizards
@@ -133,10 +132,6 @@ fullrd %STUDIO_DIR\studio\wizards\new_projects\wizard
 remtrace C_library
 exprt %DEFAULT_ORIGO_SVN/Src/C_library C_library
 fullrd C_library\.libs
-remtrace Free add ons
-exprt %DEFAULT_ORIGO_SVN/free_add_ons free_add_ons
-remtrace .NET assemblies
-exprt %DEFAULT_ORIGO_SVN/Delivery/dotnet dotnet
 remtrace root
 exprt -N %DEFAULT_ORIGO_SVN/Delivery Delivery
 move Delivery\*.* . >>& %INSTALL_LOG
