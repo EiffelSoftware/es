@@ -118,7 +118,7 @@ feature {NONE} -- Visitor implementation
 						l_formal_type := formal_parameters.item
 						if l_class_name.is_equal (l_formal_type.name) then
 							l_new_formal := ast_factory.new_formal_as (l_class_name, l_formal_type.is_reference,
-								l_formal_type.is_expanded, Void)
+								l_formal_type.is_expanded, l_formal_type.is_monomorph, l_formal_type.monomorph_keyword)
 							l_new_formal.set_position (l_formal_type.position)
 								-- Jump out of the loop.
 							formal_parameters.finish

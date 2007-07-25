@@ -11,6 +11,13 @@ deferred class TYPE_AS
 inherit
 	AST_EIFFEL
 
+	REFACTORING_HELPER
+		export
+			{NONE} all
+		undefine
+			is_equal, out
+		end
+
 feature -- Roundtrip
 
 	lcurly_symbol, rcurly_symbol: SYMBOL_AS
@@ -47,6 +54,33 @@ feature -- Roundtrip/Token
 			if a_list /= Void and then rcurly_symbol /= Void then
 				Result := rcurly_symbol.last_token (a_list)
 			end
+		end
+
+feature -- Status
+
+	has_covariant_keyword: BOOLEAN
+			-- Is the type marked with a covariant keyword?
+		do
+			Result := covariant_keyword /= Void
+			fixme ("Move covariant_keyword into wrapper class which encapsulates the keyword and a TYPE_AS. Adapt type list for generic derivation to use the new wrapper.")
+		end
+
+feature -- Access
+
+	covariant_keyword: KEYWORD_AS
+			-- Keyword which marks type as covariant
+			--| Void if type is not part of generic derivation.
+
+feature -- Element change
+
+	set_covariant_keyword (a_keyword: KEYWORD_AS)
+			-- Set `covariant_keyword' to `a_keyword'
+		require
+			a_keyword_not_void: a_keyword /= Void
+		do
+			covariant_keyword := a_keyword
+		ensure
+			keyword_set: covariant_keyword = a_keyword
 		end
 
 feature -- Output

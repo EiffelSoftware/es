@@ -163,7 +163,7 @@ create
 %type <STRING_AS>			Manifest_string Non_empty_string Default_manifest_string Typed_manifest_string Infix_operator Prefix_operator Alias_name
 %type <TAGGED_AS>			Assertion_clause
 %type <TUPLE_AS>			Manifest_tuple
-%type <TYPE_AS>				Type Non_class_type Typed Class_or_tuple_type Class_type Tuple_type Type_no_id Constraint_type
+%type <TYPE_AS>				Type Non_class_type Typed Class_or_tuple_type Class_type Tuple_type Type_no_id Constraint_type Actual_generic_type
 %type <PAIR [SYMBOL_AS, TYPE_AS]> Type_mark
 %type <CLASS_TYPE_AS>		Parent_class_type
 %type <TYPE_DEC_AS>			Entity_declaration_group
@@ -200,7 +200,7 @@ create
 %type <EIFFEL_LIST [STRING_AS]>			String_list
 %type <DEBUG_KEY_LIST_AS>	Debug_keys
 %type <EIFFEL_LIST [TAGGED_AS]>			Assertion Assertion_list
-%type <TYPE_LIST_AS>	Generics Generics_opt Type_list Type_list_impl Actual_parameter_list
+%type <TYPE_LIST_AS>	Generics Generics_opt Type_list Type_list_impl Actual_parameter_list Generic_type_list Generic_type_list_impl
 %type <TYPE_DEC_LIST_AS>		Entity_declaration_list Named_parameter_list 
 %type <LOCAL_DEC_LIST_AS>	Local_declarations
 %type <FORMAL_ARGU_DEC_LIST_AS> Formal_arguments Optional_formal_arguments
@@ -1532,7 +1532,7 @@ Generics_opt: -- Empty
 			}
 	;
 
-Generics:	TE_LSQURE Type_list TE_RSQURE
+Generics:	TE_LSQURE Generic_type_list TE_RSQURE
 			{
 				$$ := $2
 				if $$ /= Void then
@@ -1568,6 +1568,39 @@ Type_list_impl: Type
 				end
 			}
 	;
+
+Generic_type_list: Add_counter Generic_type_list_impl Remove_counter
+		{ $$ := $2 }
+	;
+
+Generic_type_list_impl: Actual_generic_type
+			{
+				$$ := ast_factory.new_eiffel_list_type (counter_value + 1)
+				if $$ /= Void and then $1 /= Void then
+					$$.reverse_extend ($1)
+				end
+			}
+	|	Actual_generic_type TE_COMMA Increment_counter Generic_type_list_impl
+			{
+				$$ := $4
+				if $$ /= Void and then $1 /= Void then
+					$$.reverse_extend ($1)
+					ast_factory.reverse_extend_separator ($$, $2)
+				end
+			}
+	;
+
+Actual_generic_type: Type
+			{
+				$$ := $1
+			}
+	| TE_VARIANT Type
+			{
+				$$ := $2
+				$$.set_covariant_keyword ($1)
+			}
+	;
+
 
 Tuple_type: TE_TUPLE
 			{ $$ := ast_factory.new_class_type_as ($1, Void) }
@@ -1731,7 +1764,7 @@ Formal_parameter: TE_REFERENCE Class_identifier
 						-- therefore not part of `TE_ID'.
 					raise_error
 				else
-					$$ := ast_factory.new_formal_as ($2, True, False, $1)
+					$$ := ast_factory.new_formal_as ($2, True, False, False, $1)
 				end
 			}
 	| TE_EXPANDED Class_identifier
@@ -1745,9 +1778,40 @@ Formal_parameter: TE_REFERENCE Class_identifier
 						-- therefore not part of `TE_ID'.
 					raise_error
 				else
-					$$ := ast_factory.new_formal_as ($2, False, True, $1)
+					$$ := ast_factory.new_formal_as ($2, False, True, False, $1)
 				end
 			}
+	| TE_FROZEN Class_identifier
+			{
+				if $2 /= Void and then none_class_name_id = $2.name_id then
+						-- Trigger an error when constraint is NONE.
+						-- Needs to be done manually since current test for
+						-- checking that `$2' is not a class name
+						-- will fail for NONE, whereas before there were some
+						-- syntactic conflict since `NONE' was a keyword and
+						-- therefore not part of `TE_ID'.
+					raise_error
+				else
+					$$ := ast_factory.new_formal_as ($2, False, False, True, $1)
+				end
+			}
+
+	| TE_INVARIANT Class_identifier
+			{
+				if $2 /= Void and then none_class_name_id = $2.name_id then
+						-- Trigger an error when constraint is NONE.
+						-- Needs to be done manually since current test for
+						-- checking that `$2' is not a class name
+						-- will fail for NONE, whereas before there were some
+						-- syntactic conflict since `NONE' was a keyword and
+						-- therefore not part of `TE_ID'.
+					raise_error
+				else
+					$$ := ast_factory.new_formal_as ($2, False, False, True, $1)
+				end
+			}
+
+
 
 	|	Class_identifier
 			{
@@ -1760,7 +1824,7 @@ Formal_parameter: TE_REFERENCE Class_identifier
 						-- therefore not part of `TE_ID'.
 					raise_error
 				else
-					$$ := ast_factory.new_formal_as ($1, False, False, Void)
+					$$ := ast_factory.new_formal_as ($1, False, False, False, Void)
 				end
 			}
 	;

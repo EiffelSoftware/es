@@ -53,6 +53,15 @@ feature -- Property
 	generics: ARRAY [TYPE_A]
 			-- Actual generical parameter
 
+	is_covariant (a_generic_position: INTEGER): BOOLEAN
+			-- Is generic at `a_generic_position' marked as covariant?
+		do
+			if covariance_flags /= Void then
+				Result := covariance_flags [a_generic_position]
+			end
+
+		end
+
 feature -- Comparison
 
 	is_equivalent (other: like Current): BOOLEAN is
@@ -238,6 +247,16 @@ feature {COMPILER_EXPORTER} -- Primitives
 			generics := g
 		ensure
 			generics_set: generics = g
+		end
+
+	set_covariance_flags (a_flags: like covariance_flags) is
+			-- Assign `a_flags' to `covariance_flags'.
+		require
+			a_flags_not_void: a_flags /= Void
+		do
+			covariance_flags := a_flags
+		ensure
+			covariance_flags_set: covariance_flags = a_flags
 		end
 
 	has_expanded: BOOLEAN is
@@ -611,6 +630,9 @@ feature {COMPILER_EXPORTER} -- Primitives
 			end
 			Result := twin
 			Result.set_generics (duplicate_generics)
+			if covariance_flags /= Void then
+				Result.set_covariance_flags (covariance_flags.twin)
+			end
 		end
 
 	good_generics: BOOLEAN is
@@ -1087,6 +1109,11 @@ feature {COMPILER_EXPORTER} -- Primitives
 				ctxt.process_symbol_text (ti_R_bracket)
 			end
 		end
+
+feature {NONE} -- Implementation
+
+	covariance_flags: PACKED_BOOLEANS
+			-- Stores whether a generic at a certain position is marked covariant or not.
 
 invariant
 

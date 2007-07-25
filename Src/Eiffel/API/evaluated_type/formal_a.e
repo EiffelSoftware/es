@@ -22,7 +22,8 @@ inherit
 			convert_to,
 			check_const_gen_conformance,
 			is_reference,
-			is_expanded
+			is_expanded,
+			is_monomorph
 		end
 
 	REFACTORING_HELPER
@@ -79,6 +80,9 @@ feature -- Property
 
 	is_expanded: BOOLEAN
 			-- Is current constrained to be always an expanded?
+
+	is_monomorph: BOOLEAN
+			-- Is curren type a monomorph?
 
 	hash_code: INTEGER is
 			--

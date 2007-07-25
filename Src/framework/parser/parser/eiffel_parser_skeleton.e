@@ -618,7 +618,7 @@ feature {NONE} -- Type factory
 									-- Shouldn't we just remove the formal type
 									-- name from the clickable list instead? (ericb)
 								l_new_formal := ast_factory.new_formal_as (an_id, formal_type.is_reference,
-									formal_type.is_expanded, Void)
+									formal_type.is_expanded, formal_type.is_monomorph, formal_type.monomorph_keyword)
 								l_new_formal.set_position (formal_type.position)
 								Result := l_new_formal
 									-- Jump out of the loop.

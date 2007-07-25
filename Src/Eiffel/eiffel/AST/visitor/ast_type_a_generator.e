@@ -127,6 +127,9 @@ feature {NONE} -- Visitor implementation
 			i, count: INTEGER
 			l_has_error: BOOLEAN
 			l_type: TYPE_A
+			l_covariant_flags: PACKED_BOOLEANS
+			l_type_as: TYPE_AS
+			l_gen_type: GEN_TYPE_A
 		do
 				-- Lookup class in universe, it should be present.
 			l_class_i := universe.class_named (l_as.class_name.name, current_class.group)
@@ -142,10 +145,23 @@ feature {NONE} -- Visitor implementation
 					until
 						i > count or l_has_error
 					loop
-						l_as.generics.i_th (i).process (Current)
+
+						l_type_as := l_as.generics.i_th (i)
+						l_type_as.process (Current)
+						if l_type_as.has_covariant_keyword then
+							if l_covariant_flags = Void then
+								create l_covariant_flags.make (count)
+							end
+							l_covariant_flags.put (True, i)
+						end
 						l_has_error := last_type = Void
 						l_actual_generic.put (last_type, i)
 						i := i + 1
+					end
+					if l_covariant_flags /= Void then
+						l_gen_type ?= l_type
+						check is_gen_type_a: l_gen_type /= Void  end
+						l_gen_type.set_covariance_flags (l_covariant_flags)
 					end
 					if l_has_error then
 						check failure_enabled: is_failure_enabled end

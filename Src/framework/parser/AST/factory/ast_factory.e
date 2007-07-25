@@ -96,7 +96,7 @@ feature -- Roundtrip: Match list maintaining
 		end
 
 	is_match_list_extension_disabled: BOOLEAN
-			-- Is match list extension disabled?
+			-- Is match list extension disabled?	
 
 feature -- Roundtrip
 
@@ -1305,11 +1305,11 @@ feature -- Access
 			end
 		end
 
-	new_formal_as (n: ID_AS; is_ref, is_exp: BOOLEAN; r_as: KEYWORD_AS): FORMAL_AS is
+	new_formal_as (n: ID_AS; is_ref, is_exp, is_monomorph: BOOLEAN; r_as: KEYWORD_AS): FORMAL_AS is
 			-- New FORMAL AST node
 		do
 			if n /= Void then
-				create Result.initialize (n, is_ref, is_exp, r_as)
+				create Result.initialize (n, is_ref, is_exp, is_monomorph, r_as)
 			end
 		end
 

@@ -20,7 +20,7 @@ create
 
 feature {NONE} -- Initialization
 
-	initialize (n: ID_AS; is_ref, is_exp: BOOLEAN; r_as: like reference_expanded_keyword) is
+	initialize (n: ID_AS; is_ref, is_exp, a_is_monomorph: BOOLEAN; r_as: like reference_expanded_keyword) is
 			-- Create a new FORMAL AST node.
 		require
 			n_not_void: n /= Void
@@ -28,6 +28,7 @@ feature {NONE} -- Initialization
 			name := n
 			is_reference := is_ref
 			is_expanded := is_exp
+			is_monomorph := a_is_monomorph
 			reference_expanded_keyword := r_as
 		ensure
 			name_set: name = n
@@ -49,6 +50,12 @@ feature -- Roundtrip
 	reference_expanded_keyword: KEYWORD_AS
 			-- Keyword "reference" or "expanded" associated with this structure
 
+	monomorph_keyword: KEYWORD_AS
+			-- Keyword which marks type as monomorph
+		do
+			Result := reference_expanded_keyword
+		end
+
 feature -- Properties
 
 	name: ID_AS
@@ -63,6 +70,9 @@ feature -- Properties
 
 	is_expanded: BOOLEAN
 			-- Is Current formal to be always instantiated as an expanded type?
+
+	is_monomorph: BOOLEAN
+			-- Is Current formal marked as monomorph formal?
 
 feature -- Roundtrip/Token
 

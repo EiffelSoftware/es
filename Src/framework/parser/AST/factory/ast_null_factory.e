@@ -769,7 +769,7 @@ feature -- Access
 		do
 		end
 
-	new_formal_as (n: ID_AS; is_ref, is_exp: BOOLEAN; r_as: KEYWORD_AS): FORMAL_AS is
+	new_formal_as (n: ID_AS; is_ref, is_exp, is_monomorph: BOOLEAN; r_as: KEYWORD_AS): FORMAL_AS is
 			-- New FORMAL AST node
 		do
 		end
