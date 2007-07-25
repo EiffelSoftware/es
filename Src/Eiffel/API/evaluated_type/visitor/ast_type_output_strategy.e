@@ -155,6 +155,10 @@ feature {TYPE_A} -- Visitors
 				until
 					i > count
 				loop
+					if a_type.is_covariant (i) then
+						text_formatter.process_keyword_text (ti_variant_keyword, Void)
+						text_formatter.add_space
+					end
 					a_type.generics.item (i).process (Current)
 					if i /= count then
 						text_formatter.process_symbol_text (ti_comma)
