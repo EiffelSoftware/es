@@ -136,6 +136,12 @@ feature {NONE} -- Initialization
 
 				-- Real removed classes
 			create real_removed_classes.make (10)
+
+				-- Routine redefinition flags
+			create routine_redefinition_flags.make (500)
+			create routine_covariance_flags.make (500)
+			create routine_formal_flags.make (500)
+
 		end
 
 feature -- Counters
@@ -1646,6 +1652,9 @@ feature -- Recompilation
 			d1, d2: DATE_TIME
 			l_il_env: IL_ENVIRONMENT
 		do
+				-- Reset statistics
+			reset_statistics
+
 				-- create new backup subdir
 			if automatic_backup then
 				workbench.create_backup_directory
@@ -1847,6 +1856,9 @@ end
 					print_memory_statistics
 					create d1.make_now
 				end
+
+					-- Print statistics gathered in degree 4 and 3
+				print_statistics
 
 					-- Melt the changed features
 				melt
@@ -5279,6 +5291,281 @@ feature {NONE} -- External features
 		alias
 			"time"
 		end
+
+feature -- Covariance / Redefined features table
+
+	is_routine_redefined (routine_id: INTEGER): BOOLEAN is
+			-- Is routine with routine id `routine_id' redefined in the system?
+		do
+			Result := routine_redefinition_flags.valid_index (routine_id) and then routine_redefinition_flags.item (routine_id)
+		end
+
+	is_routine_covariantly_redefined (routine_id: INTEGER): BOOLEAN is
+			-- Is routine with routine id `routine_id' redefined covariantly in the system?
+		do
+			Result := routine_covariance_flags.valid_index (routine_id) and then routine_covariance_flags.item (routine_id)
+		end
+
+	is_routine_with_formal_arguments (routine_id: INTEGER): BOOLEAN is
+			-- Does routine with routine id `routine_id' have formal arguments?
+		do
+			Result := routine_formal_flags.valid_index (routine_id) and then routine_formal_flags.item (routine_id)
+		end
+
+	set_routine_redefined (routine_id: INTEGER; flag: BOOLEAN) is
+			-- Set routine redefinition flag of `routine_id' to `flag'.
+		do
+			routine_redefinition_flags.force (flag, routine_id)
+		ensure
+			flag_set: is_routine_redefined (routine_id) = flag
+		end
+
+	set_routine_covariantly_redefined (routine_id_set: ROUT_ID_SET; flag: BOOLEAN) is
+			-- Set routine covariantly redefined flag of routine ids in `routine_id_set' to `flag'.
+		require
+			routine_id_set_not_void: routine_id_set /= Void
+		local
+			i, l_count: INTEGER
+		do
+			from
+				i := 1
+				l_count := routine_id_set.count
+			until
+				i > l_count
+			loop
+				routine_covariance_flags.force (flag, routine_id_set.item (i))
+				i := i + 1
+			end
+		ensure
+			flag_set: is_routine_covariantly_redefined (routine_id_set.first) = flag
+		end
+
+	set_routine_has_formal (routine_id_set: ROUT_ID_SET; flag: BOOLEAN) is
+			-- Set routine with formal arguments flag of routine ids in `routine_id_set' to `flag'.
+		require
+			routine_id_set_not_void: routine_id_set /= Void
+		local
+			i, l_count: INTEGER
+		do
+			from
+				i := 1
+				l_count := routine_id_set.count
+			until
+				i > l_count
+			loop
+				routine_formal_flags.force (flag, routine_id_set.item (i))
+				i := i + 1
+			end
+		ensure
+			flag_set: is_routine_with_formal_arguments (routine_id_set.first) = flag
+		end
+
+feature {NONE} -- Implementation
+
+	routine_redefinition_flags: PACKED_BOOLEANS
+			-- List of redefined routines indexed by routine id
+
+	routine_covariance_flags: PACKED_BOOLEANS
+			-- List of covariantly redefined routines indexed by routine id
+
+	routine_formal_flags: PACKED_BOOLEANS
+			-- List of routines which have formal arguments indexed by routine id
+
+feature -- Statistics
+
+	statistics: TUPLE [
+				-- Number of feature calls processed
+			feature_calls: INTEGER        -- Number of feature calls in system
+			feature_arguments: INTEGER    -- Number of feature calls which have arguments
+			feature_check_done: INTEGER   -- Number of times the argument check is actually done
+
+				-- Catcalls found
+			catcall_total: INTEGER
+
+			catcall_export_violation: INTEGER
+			catcall_covariant_violation: INTEGER
+			catcall_generic_violation: INTEGER
+
+			catcall_any_features: INTEGER
+			catcall_like_current_features: INTEGER
+			catcall_generic_features: INTEGER
+			catcall_other: INTEGER
+
+			catcall_call_feature: INTEGER
+
+				-- Conformance checks
+			conformance_total: INTEGER
+
+			conformance_formal_generic: INTEGER
+			conformance_anchored: INTEGER
+			conformance_like_current: INTEGER
+			conformance_monomorph: INTEGER
+
+			conformance_tuple: INTEGER
+			conformance_agents: INTEGER
+		]
+			-- Information about current compilation run
+
+	reset_statistics
+			-- Reset statistics to zero
+		do
+			statistics := [
+					0, 0, 0, 0,
+					0, 0, 0, 0, 0, 0, 0, 0,
+					0, 0, 0, 0, 0, 0, 0, 0
+				]
+		end
+
+	print_statistics
+			-- Print statistics to standard output
+		do
+			print ("STATISTICS%N")
+			print ("----------%N%N")
+
+				-- Features
+			print ("Features%N")
+			print_line ("Total", routine_id_counter.count)
+			print_line_percentage ("Formal or covariant", covariant_only_feature_count + formal_only_feature_count + formal_and_covariant_feature_count, routine_id_counter.count)
+			print_line_percentage ("Covariant only", covariant_only_feature_count, routine_id_counter.count)
+			print_line_percentage ("Formal only", formal_only_feature_count, routine_id_counter.count)
+			print_line_percentage ("Formal and covariant", formal_and_covariant_feature_count, routine_id_counter.count)
+
+			print ("%N")
+
+				-- Feature calls / checks
+			print ("Feature calls%N")
+			print_line ("Total", statistics.feature_calls)
+			print_line_percentage ("Calls with arguments", statistics.feature_arguments, statistics.feature_calls)
+			print_line_percentage ("Calls without arguments", (statistics.feature_calls - statistics.feature_arguments), statistics.feature_calls)
+			print_line_percentage ("Calls checked", statistics.feature_check_done, statistics.feature_calls)
+			print_line_percentage ("Calls omitted", statistics.feature_calls - statistics.feature_check_done, statistics.feature_calls)
+
+			print ("%N")
+
+				-- Catcalls found
+			print ("Potential catcalls found%N")
+			print_line ("Total", statistics.catcall_total)
+			print ("Percentage of checked feature calls: " + percentage (statistics.catcall_total, statistics.feature_check_done) + "%%%N")
+			print ("Percentage of total feature calls: " + percentage (statistics.catcall_total, statistics.feature_calls) + "%%%N")
+--			print_line_percentage ("Export violation", statistics.catcall_export_violation, statistics.catcall_total)
+--			print_line_percentage ("Covariant violation", statistics.catcall_covariant_violation, statistics.catcall_total)
+			print_line_percentage ("ANY features", statistics.catcall_any_features, statistics.catcall_total)
+			print_line_percentage ("like Current features", statistics.catcall_like_current_features, statistics.catcall_total)
+			print_line_percentage ("Formal generic features", statistics.catcall_generic_features, statistics.catcall_total)
+
+			print ("%N")
+
+				-- Conformance checks
+			print ("Interval conformance check mismatches%N")
+			print_line ("Total", statistics.conformance_total)
+			print_line_percentage ("Formal generic", statistics.conformance_formal_generic, statistics.conformance_total)
+			print_line_percentage ("Anchored", statistics.conformance_anchored, statistics.conformance_total)
+			print_line_percentage ("like Current", statistics.conformance_like_current, statistics.conformance_total)
+			print_line_percentage ("Monomorph", statistics.conformance_monomorph, statistics.conformance_total)
+			print_line_percentage ("Agents", statistics.conformance_agents, statistics.conformance_total)
+			print_line_percentage ("Tuple", statistics.conformance_tuple, statistics.conformance_total)
+
+		end
+
+	print_line (a_name: STRING; a_count: INTEGER)
+			-- Print statistics line.
+		do
+			print (a_name)
+			print (": ")
+			print (a_count)
+			print ("%N")
+		end
+
+	print_line_percentage (a_name: STRING; a_count, a_total: INTEGER)
+			-- Print statistics line with percentage.
+		do
+			print (a_name)
+			print (": ")
+			print (a_count)
+			print (" (")
+			print (percentage (a_count, a_total))
+			print ("%%)%N")
+		end
+
+	percentage (a_count, a_total: INTEGER): STRING
+			-- Percentage of `a_count' / `a_total' as a string
+		do
+			if a_total = 0 then
+				Result := "0"
+			else
+				Result := fraction_formatter.formatted ((a_count / a_total) * 100.0)
+				Result.left_adjust
+				Result.right_adjust
+			end
+		end
+
+	fraction_formatter: FORMAT_DOUBLE
+			-- Formatter to output fractions
+		once
+			create Result.make (5, 2)
+		end
+
+	covariant_only_feature_count: INTEGER
+			-- Number of features which are covariantly redefined or formal
+		local
+			i: INTEGER
+		do
+			from
+				i := 1
+			until
+				i > routine_id_counter.count
+			loop
+				if
+					not (routine_formal_flags.valid_index (i) and then routine_formal_flags.item (i)) and then
+					(routine_covariance_flags.valid_index (i) and then routine_covariance_flags.item (i))
+				then
+					Result := Result + 1
+				end
+				i := i + 1
+			end
+		end
+
+	formal_only_feature_count: INTEGER
+			-- Number of features which have formal arguments
+		local
+			i: INTEGER
+		do
+			from
+				i := 1
+			until
+				i > routine_id_counter.count
+			loop
+				if
+					(routine_formal_flags.valid_index (i) and then routine_formal_flags.item (i)) and then
+					not (routine_covariance_flags.valid_index (i) and then routine_covariance_flags.item (i))
+				then
+					Result := Result + 1
+				end
+				i := i + 1
+			end
+		end
+
+	formal_and_covariant_feature_count: INTEGER
+			-- Number of features which have formal arguments
+		local
+			i: INTEGER
+		do
+			from
+				i := 1
+			until
+				i > routine_id_counter.count
+			loop
+				if
+					(routine_formal_flags.valid_index (i) and then routine_formal_flags.item (i)) and then
+					(routine_covariance_flags.valid_index (i) and then routine_covariance_flags.item (i))
+				then
+					Result := Result + 1
+				end
+				i := i + 1
+			end
+		end
+
+invariant
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

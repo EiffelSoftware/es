@@ -1420,6 +1420,24 @@ end;
 				if f.assigner_name_id /= 0 then
 					f.check_assigner (resulting_table)
 				end
+				l_args := f.arguments
+				if l_args /= Void then
+					from
+						l_args.start
+					until
+						l_args.after
+					loop
+						l_type := l_args.item
+						if l_type.is_like_current then
+							system.set_routine_covariantly_redefined (f.rout_id_set, True)
+						elseif l_type.is_formal or else l_type.conformance_type.is_formal then
+							system.set_routine_has_formal (f.rout_id_set, True)
+						elseif l_type.is_like then
+
+						end
+						l_args.forth
+					end
+				end
 				resulting_table.forth
 			end
 		end

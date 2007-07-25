@@ -1971,6 +1971,28 @@ end
 						Error_handler.insert_error (ve02a)
 					end
 
+					l_old_conformance_type := old_type.conformance_type
+					l_new_conformance_type := new_type.conformance_type
+
+						-- Check if it feature contains formals
+					if
+						old_type.is_formal or else
+						new_type.is_formal or else
+						l_old_conformance_type.is_formal or else
+						l_new_conformance_type.is_formal
+					then
+						system.set_routine_has_formal (rout_id_set, True)
+					end
+
+						-- Check if it is a covariant redeclaration
+					if
+						old_type.is_like_current or else
+						new_type.is_like_current or else
+						not l_old_conformance_type.same_as (l_new_conformance_type)
+					then
+						system.set_routine_covariantly_redefined (rout_id_set, True)
+					end
+
 					i := i + 1
 				end
 			end

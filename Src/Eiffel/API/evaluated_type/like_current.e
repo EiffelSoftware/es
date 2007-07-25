@@ -140,6 +140,8 @@ feature {COMPILER_EXPORTER} -- Primitives
 	instantiation_in (type: TYPE_A; written_id: INTEGER): TYPE_A is
 			-- Instantiation of Current in the context of `class_type',
 			-- assuming that Current is written in class of id `written_id'.
+		local
+			cl_type_a: CL_TYPE_A
 		do
 				-- Special cases for calls on a target which is a manifest integer
 				-- that might be compatible with _8 or _16. The returned
@@ -159,6 +161,14 @@ feature {COMPILER_EXPORTER} -- Primitives
 				-- or
 				-- i16 := (0x00FF & i8).to_integer_16
 			Result := type.intrinsic_type
+
+				-- Todo: maybe there is a better way to ensure that the type will be monomorphic
+			cl_type_a ?= Result
+			if cl_type_a /= Void and then not cl_type_a.is_monomorph then
+				cl_type_a := cl_type_a.twin
+				cl_type_a.set_monomorph_mark
+				Result := cl_type_a
+			end
 		end
 
 	instantiated_in (class_type: TYPE_A): TYPE_A is

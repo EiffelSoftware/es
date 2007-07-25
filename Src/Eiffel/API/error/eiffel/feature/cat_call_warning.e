@@ -17,6 +17,8 @@ inherit
 
 	SHARED_NAMES_HEAP
 
+	SHARED_WORKBENCH
+
 create
 	make
 
@@ -196,7 +198,7 @@ feature -- Output
 				end
 			end
 
-			update_statistics
+--			update_statistics
 			print_statistics (a_text_formatter)
 		end
 
@@ -208,30 +210,19 @@ feature {NONE} -- Implementation
 	export_status_violations: LINKED_LIST [TUPLE [descendant_class: CLASS_C; descendant_feature: E_FEATURE]]
 			-- List of descendants which produce a possible cat-call because of an export status violation
 
-	statistics: TUPLE [
-		total: INTEGER;
-		export_violation: INTEGER;
-		covariant_violation: INTEGER;
-		any_features: INTEGER;
-		generic_features: INTEGER;
-		like_current_feature: INTEGER;
-		other: INTEGER] is
-			-- Statistics of catcalls in system
-		once
-			Result := [0, 0, 0, 0, 0, 0, 0]
-		end
+feature
 
 	update_statistics is
 			-- Update statistics with catcall of current warning
 		local
 			l_feature_name: INTEGER
 		do
-			statistics.total := statistics.total + 1
+			system.statistics.catcall_total := system.statistics.catcall_total + 1
 			if not export_status_violations.is_empty then
-				statistics.export_violation := statistics.export_violation + 1
+				system.statistics.catcall_export_violation := system.statistics.catcall_export_violation + 1
 			end
 			if not covariant_argument_violations.is_empty then
-				statistics.covariant_violation := statistics.covariant_violation + 1
+				system.statistics.catcall_covariant_violation := system.statistics.catcall_covariant_violation + 1
 				l_feature_name := called_feature.name_id
 				if
 					l_feature_name = names_heap.equal_name_id or
@@ -244,7 +235,7 @@ feature {NONE} -- Implementation
 					l_feature_name = names_heap.standard_copy_name_id or
 					l_feature_name = names_heap.deep_copy_name_id
 				then
-					statistics.any_features := statistics.any_features + 1
+					system.statistics.catcall_any_features := system.statistics.catcall_any_features + 1
 				elseif
 					called_feature.arguments /= Void and then
 					called_feature.arguments.there_exists (
@@ -253,7 +244,7 @@ feature {NONE} -- Implementation
 								Result := a_type.is_like_current
 							end)
 				then
-					statistics.like_current_feature := statistics.like_current_feature + 1
+					system.statistics.catcall_like_current_features := system.statistics.catcall_like_current_features + 1
 				elseif
 					called_feature.arguments /= Void and then
 					called_feature.arguments.there_exists (
@@ -262,9 +253,9 @@ feature {NONE} -- Implementation
 								Result := a_type.is_formal or else a_type.actual_type.is_formal
 							end)
 				then
-					statistics.generic_features := statistics.generic_features + 1
+					system.statistics.catcall_generic_features := system.statistics.catcall_generic_features + 1
 				else
-					statistics.other := statistics.other + 1
+					system.statistics.catcall_other := system.statistics.catcall_other + 1
 				end
 			end
 		end
@@ -273,13 +264,13 @@ feature {NONE} -- Implementation
 			--
 		do
 			a_text_formatter.add ("STAT (")
-			a_text_formatter.add ("total: " + statistics.total.out + "%T")
-			a_text_formatter.add ("export-violation: " + statistics.export_violation.out + "%T")
-			a_text_formatter.add ("covariant-violation: " + statistics.covariant_violation.out + "%T")
-			a_text_formatter.add ("any-features: " + statistics.any_features.out + "%T")
-			a_text_formatter.add ("like-current-features: " + statistics.like_current_feature.out + "%T")
-			a_text_formatter.add ("generics: " + statistics.generic_features.out + "%T")
-			a_text_formatter.add ("other: " + statistics.other.out + "%T")
+			a_text_formatter.add ("total: " + system.statistics.catcall_total.out + "%T")
+			a_text_formatter.add ("export-violation: " + system.statistics.catcall_export_violation.out + "%T")
+			a_text_formatter.add ("covariant-violation: " + system.statistics.catcall_covariant_violation.out + "%T")
+			a_text_formatter.add ("any-features: " + system.statistics.catcall_any_features.out + "%T")
+			a_text_formatter.add ("like-current-features: " + system.statistics.catcall_like_current_features.out + "%T")
+			a_text_formatter.add ("generics: " + system.statistics.catcall_generic_features.out + "%T")
+			a_text_formatter.add ("other: " + system.statistics.catcall_other.out + "%T")
 			a_text_formatter.add (")")
 			a_text_formatter.add_new_line
 		end
