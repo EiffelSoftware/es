@@ -514,8 +514,8 @@ feature {COMPILER_EXPORTER} -- Primitives
 					until
 						i > count or else not Result
 					loop
-						Result := gen_type_generics.item (i).
-							conform_to (generics.item (i))
+						Result := gen_type_generics.item (i).conform_to (generics.item (i))
+
 						i := i + 1
 					end
 				end

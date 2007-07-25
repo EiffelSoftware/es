@@ -68,10 +68,10 @@ feature {COMPILER_EXPORTER} -- Access
 			Result := type.associated_class
 		end
 
-	conform_to (other: TYPE_A): BOOLEAN is
+	is_conforming_descendant (other: TYPE_A): BOOLEAN is
 			-- Does Current conform to `other' ?		
 		do
-			Result := type.conform_to (other)
+			Result := type.is_conforming_descendant (other)
 		end
 
 	--| Martins 1/23/07: instantiation*

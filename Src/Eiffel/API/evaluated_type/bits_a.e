@@ -12,7 +12,7 @@ inherit
 		rename
 			make as cl_make
 		redefine
-			is_bits, is_valid, conform_to,
+			is_bits, is_valid, is_conforming_descendant,
 			associated_class, dump,
 			same_as, ext_append_to,
 			format, is_equivalent, process
@@ -112,7 +112,7 @@ feature -- Output
 
 feature {COMPILER_EXPORTER}
 
-	conform_to (other: TYPE_A): BOOLEAN is
+	is_conforming_descendant (other: TYPE_A): BOOLEAN is
 			-- Does Current conform to `other'?
 		local
 			other_bits: BITS_A

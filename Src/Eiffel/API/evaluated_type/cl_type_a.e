@@ -331,7 +331,7 @@ feature {COMPILER_EXPORTER} -- Conformance
 			end
 		end
 
-	conform_to (other: TYPE_A): BOOLEAN is
+	is_conforming_descendant (other: TYPE_A): BOOLEAN is
 			-- Does Current conform to `other'?
 		local
 			other_class_type: CL_TYPE_A
@@ -363,12 +363,7 @@ feature {COMPILER_EXPORTER} -- Conformance
 					end
 				end
 			elseif l_other_type_set /= Void then
-				Result := to_type_set.conform_to (l_other_type_set.twin)
-			end
-			if context.current_class.is_cat_call_detection then
-				if Result and other.is_monomorph then
-					Result := is_monomorph and then equivalent (Current, other)
-				end
+				Result := to_type_set.is_conforming_descendant (l_other_type_set)
 			end
 		end
 

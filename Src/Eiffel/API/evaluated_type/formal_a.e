@@ -305,7 +305,7 @@ feature {COMPILER_EXPORTER}
 	is_loose: BOOLEAN is True
 			-- Does type depend on formal generic parameters and/or anchors?
 
-	conform_to (other: TYPE_A): BOOLEAN is
+	is_conforming_descendant (other: TYPE_A): BOOLEAN is
 			-- Does Current conform to `other'?
 		local
 			l_constraints: TYPE_SET_A
@@ -324,7 +324,7 @@ feature {COMPILER_EXPORTER}
 					end
 						-- Get the actual type for the formal generic parameter
 					l_constraints := System.current_class.constraints_if_possible (position)
-					Result := l_constraints.constraining_types (system.current_class).conform_to_type (other)
+					Result := l_constraints.constraining_types (system.current_class).is_conforming_descendant (other)
 				end
 			end
 		end

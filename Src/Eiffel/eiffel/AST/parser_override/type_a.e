@@ -524,7 +524,73 @@ feature {COMPILER_EXPORTER} -- Access
 			is_valid: is_valid
 			other_not_void: other /= Void
 			other_is_valid: other.is_valid
+		local
+			l_cat_result: BOOLEAN
+	--		l_warning: SOME_TYPE
+		do
+			if system.current_class.is_cat_call_detection then
+
+					-- Increase check level. This tells us when we are on the lowest
+					-- level of checking a generic class so we emit the warning only once
+				conformance_check.level := conformance_check.level + 1
+				if conformance_check.level = 1 then
+					conformance_check.cat_result := True
+				end
+
+					-- Conformance check ignoring monomorphic types, but checking for variant generics
+				Result := is_conforming_descendant (other)
+				l_cat_result := Result
+
+					-- Conformance check for monomorphic types
+				if l_cat_result and then other.is_monomorph then
+					if other.is_formal then
+						check is_formal end
+							-- monomorphic generics only conform to itself
+						l_cat_result := is_equivalent (other)
+					else
+							-- monomorphic types need to be of the same class
+						l_cat_result := has_associated_class and then other.has_associated_class and then associated_class.class_id = other.associated_class.class_id
+					end
+				end
+				if not l_cat_result then
+					conformance_check.cat_result := False
+				end
+
+					-- If result is not the same (in any of the checks, even recursively for generics)
+					-- and it's the first level (i.e. the base class for a generic)
+					-- then we emit a warning
+				if conformance_check.level = 1 and not conformance_check.cat_result then
+--					create l_warning.make (system.current_class, Void)
+--					l_warning.set_result (Result, not Result)
+--					l_warning.set_types (Current, other)
+--					error_handler.insert_warning (l_warning)
+--					l_warning.update_statistics
+				end
+				conformance_check.level := conformance_check.level - 1
+			else
+					-- Conformance check ignoring monomorphic types. This will also check variant generics,
+					-- but if a generic check fails it only sets `conformance_check.cat_result' to False which
+					-- is ignored here
+				Result := is_conforming_descendant (other)
+			end
+		end
+
+	is_conforming_descendant (other: TYPE_A): BOOLEAN is
+			-- Does Current conform to `other' ?
+			-- Do not care about monomorphic types.
+		require
+			is_valid: is_valid
+			other_not_void: other /= Void
+			other_is_valid: other.is_valid
 		deferred
+		end
+
+	conformance_check: TUPLE [level: INTEGER; cat_result: BOOLEAN]
+			-- Tuple used to hold information about current conformance check.
+			-- If `level' is 0, the conformance check starts, otherwise we are
+			-- checking generic parameters.
+		once
+			Result := [0, True]
 		end
 
 	is_conformant_to (other: TYPE_A): BOOLEAN is

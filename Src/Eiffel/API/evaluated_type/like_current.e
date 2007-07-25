@@ -11,7 +11,7 @@ class
 inherit
 	LIKE_TYPE_A
 		redefine
-			actual_type, associated_class, conform_to, conformance_type, convert_to,
+			actual_type, associated_class, is_conforming_descendant, conformance_type, convert_to,
 			generics, has_associated_class, instantiated_in,
 			is_basic, is_expanded, is_external, is_like_current, is_none, is_reference,
 			meta_type, set_actual_type, type_i, evaluated_type_in_descendant,
@@ -195,10 +195,10 @@ feature {COMPILER_EXPORTER} -- Primitives
 			create Result
 		end
 
-	conform_to (other: TYPE_A): BOOLEAN is
+	is_conforming_descendant (other: TYPE_A): BOOLEAN is
 			-- Does `Current' conform to `other'?
 		do
-			Result := other.is_like_current or else conformance_type.conform_to (other.conformance_type)
+			Result := other.is_like_current or else conformance_type.is_conforming_descendant (other.conformance_type)
 		end
 
 	convert_to (a_context_class: CLASS_C; a_target_type: TYPE_A): BOOLEAN is

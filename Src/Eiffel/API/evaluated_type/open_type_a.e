@@ -19,11 +19,12 @@ inherit
 			dump,
 			type_i,
 			good_generics,
-			conform_to,
+			is_conforming_descendant,
 			format
 		end
 
 feature -- Visitor
+
 	process (v: TYPE_A_VISITOR) is
 			-- Process current element.
 		do
@@ -98,7 +99,7 @@ feature {COMPILER_EXPORTER}
 
 feature {COMPILER_EXPORTER} -- Conformance
 
-	conform_to (other: TYPE_A): BOOLEAN is
+	is_conforming_descendant (other: TYPE_A): BOOLEAN is
 			-- Does Current conform to `other'?
 		do
 			-- An open type can be replaced by anything

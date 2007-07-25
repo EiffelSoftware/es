@@ -8147,6 +8147,7 @@ feature {NONE} -- Implementation: catcall check
 			-- Type list with one entry
 		once
 			create Result.make (1)
+			Result.force (Void)
 		end
 
 	descendant_list: ARRAYED_LIST [CLASS_C]	is

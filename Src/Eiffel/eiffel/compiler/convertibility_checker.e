@@ -411,7 +411,7 @@ feature -- Initialization/Checking
 				if not a_formal.is_single_constraint_without_renaming (a_context_class) then
 						-- Multi constraint case, use TYPE_SET_A.
 					l_constraints := a_context_class.constraints (a_formal.position)
-					l_convert_ok := l_constraints.conform_to_type (a_target_type)
+					l_convert_ok := l_constraints.is_conforming_descendant (a_target_type)
 				else
 						-- Single constraint, common case.
 					l_constraint := a_context_class.constraint (a_formal.position)
