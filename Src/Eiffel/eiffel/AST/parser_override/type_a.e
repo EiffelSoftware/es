@@ -545,7 +545,7 @@ feature {COMPILER_EXPORTER} -- Access
 				l_cat_result := Result
 
 					-- Conformance check for monomorphic types
-				if l_cat_result and then other.is_monomorph then
+				if l_cat_result and then other.is_monomorph and then not is_none then
 					if other.is_formal then
 						check is_formal end
 							-- monomorphic generics only conform to itself
@@ -555,14 +555,14 @@ feature {COMPILER_EXPORTER} -- Access
 						l_cat_result := has_associated_class and then other.has_associated_class and then associated_class.class_id = other.associated_class.class_id
 					end
 				end
-				if not l_cat_result then
+				if l_cat_result xor Result then
 					conformance_check.cat_result := False
 				end
 
 					-- If result is not the same (in any of the checks, even recursively for generics)
 					-- and it's the first level (i.e. the base class for a generic)
 					-- then we emit a warning
-				if conformance_check.level = 1 and then (conformance_check.cat_result xor Result) then
+				if conformance_check.level = 1 and then not conformance_check.cat_result then
 					create l_pcat
 					l_pcat.set_class (system.current_class)
 					l_pcat.set_source_type (Current)
