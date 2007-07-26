@@ -3959,8 +3959,8 @@ feature -- Implementation
 				-- Check if `l_left_type' conforms to `l_right_type' or if
 				-- `l_right_type' conforms to `l_left_type'.
 			if
-				not (l_left_type.conform_to (l_right_type.actual_type) or else
-				l_right_type.conform_to (l_left_type.actual_type))
+				not (l_left_type.silent_conform_to (l_right_type.actual_type) or else
+				l_right_type.silent_conform_to (l_left_type.actual_type))
 			then
 				if l_right_type.convert_to (context.current_class, l_left_type.actual_type) then
 					l_conv_info := context.last_conversion_info
