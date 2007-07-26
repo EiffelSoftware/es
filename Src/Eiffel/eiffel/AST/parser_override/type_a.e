@@ -564,7 +564,7 @@ feature {COMPILER_EXPORTER} -- Access
 					-- then we emit a warning
 				if conformance_check.level = 1 and then (conformance_check.cat_result xor Result) then
 					create l_pcat
-					context.init_error (l_pcat)
+					l_pcat.set_class (system.current_class)
 					l_pcat.set_source_type (Current)
 					l_pcat.set_target_type (other)
 					if context.current_feature /= Void then

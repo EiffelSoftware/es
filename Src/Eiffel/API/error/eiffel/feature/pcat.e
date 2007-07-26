@@ -8,14 +8,12 @@ indexing
 class PCAT
 
 inherit
-	FEATURE_ERROR
+	EIFFEL_ERROR
 		redefine
 			build_explain
 		end
 
 feature -- Properties
-
-	target_name: STRING;
 
 	target_type: TYPE_A;
 			-- Target type of the assignment (left part)
@@ -79,11 +77,6 @@ feature {COMPILER_EXPORTER}
 			-- Assign `t' to `target_type'.
 		do
 			target_type := t;
-		end;
-
-	set_target_name (s: STRING) is
-		do
-			target_name := s;
 		end;
 
 indexing
