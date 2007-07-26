@@ -520,6 +520,8 @@ feature {COMPILER_EXPORTER} -- Access
 
 	conform_to (other: TYPE_A): BOOLEAN is
 			-- Does Current conform to `other' ?
+			-- If catcall checking is activated, this prints warnings if the conformance
+			-- check would fail with monomorphic types.
 		require
 			is_valid: is_valid
 			other_not_void: other /= Void
@@ -559,13 +561,44 @@ feature {COMPILER_EXPORTER} -- Access
 					-- If result is not the same (in any of the checks, even recursively for generics)
 					-- and it's the first level (i.e. the base class for a generic)
 					-- then we emit a warning
-				if conformance_check.level = 1 and not conformance_check.cat_result then
+				if conformance_check.level = 1 and then (conformance_check.cat_result xor Result) then
+					do_nothing
 --					create l_warning.make (system.current_class, Void)
 --					l_warning.set_result (Result, not Result)
 --					l_warning.set_types (Current, other)
 --					error_handler.insert_warning (l_warning)
 --					l_warning.update_statistics
 				end
+				conformance_check.level := conformance_check.level - 1
+			else
+					-- Conformance check ignoring monomorphic types. This will also check variant generics,
+					-- but if a generic check fails it only sets `conformance_check.cat_result' to False which
+					-- is ignored here
+				Result := is_conforming_descendant (other)
+			end
+		end
+
+	silent_conform_to (other: TYPE_A): BOOLEAN is
+			-- Does Current conform to `other' ?
+			-- This does not print warnings if conformance check would
+			-- fail using monomorphic types
+		require
+			is_valid: is_valid
+			other_not_void: other /= Void
+			other_is_valid: other.is_valid
+		do
+			if system.current_class.is_cat_call_detection then
+
+					-- Increase check level. This prevents subsequent "conform_to" features
+					-- to not print warnings
+				conformance_check.level := conformance_check.level + 1
+				if conformance_check.level = 1 then
+					conformance_check.cat_result := True
+				end
+
+					-- Conformance check ignoring monomorphic types, but checking for variant generics
+				Result := is_conforming_descendant (other)
+
 				conformance_check.level := conformance_check.level - 1
 			else
 					-- Conformance check ignoring monomorphic types. This will also check variant generics,

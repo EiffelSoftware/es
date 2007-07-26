@@ -1915,7 +1915,7 @@ end
 				-- The conformance check for signatures ignores monomorphic types
 				-- That way, "like Current" types (which are monomorph) still
 				-- conform to their precursors
-			if not new_type.is_conforming_descendant (old_type) then
+			if not new_type.silent_conform_to (old_type) then
 				create vdrd51
 				vdrd51.init (old_feature, Current)
 				Error_handler.insert_error (vdrd51)
@@ -1976,7 +1976,7 @@ end
 						-- The conformance check for signatures ignores monomorphic types
 						-- That way, "like Current" types (which are monomorph) still
 						-- conform to their precursors
-					if not new_type.is_conforming_descendant (old_type) then
+					if not new_type.silent_conform_to (old_type) then
 						create vdrd53
 						vdrd53.init (old_feature, Current)
 						Error_handler.insert_error (vdrd53)

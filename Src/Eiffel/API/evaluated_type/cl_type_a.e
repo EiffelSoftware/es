@@ -182,6 +182,7 @@ feature -- Access
 			Result := other_class_type /= Void and then class_id = other_class_type.class_id
 						and then is_expanded = other_class_type.is_expanded
 						and then is_separate = other_class_type.is_separate
+						and then is_monomorph = other_class_type.is_monomorph
 		end
 
 	associated_class: CLASS_C is

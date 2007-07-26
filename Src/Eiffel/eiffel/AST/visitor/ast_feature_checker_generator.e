@@ -1698,7 +1698,7 @@ feature -- Implementation
 							not l_feature.is_inline_agent and
 							not is_static and
 							not l_feature.is_frozen and
-							(system.is_routine_covariantly_redefined (l_feature.rout_id_set.first) or else
+							(system.is_routine_arguments_covariantly_redefined (l_feature.rout_id_set.first) or else
 							 system.is_routine_with_formal_arguments (l_feature.rout_id_set.first))
 						then
 								-- Cat call detection is enabled: Test if this feature call is valid
@@ -1711,7 +1711,7 @@ feature -- Implementation
 							end
 
 							check not l_last_constrained.is_formal end
-							check_cat_call (l_last_constrained.conformance_type, l_feature, is_qualified, l_conformance_arg_types, l_feature_name, l_last_id)
+--							check_cat_call (l_last_constrained.conformance_type, l_feature, is_qualified, l_conformance_arg_types, l_feature_name, l_last_id)
 
 								-- Statistics
 							system.statistics.feature_check_done := system.statistics.feature_check_done + 1

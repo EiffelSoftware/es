@@ -515,7 +515,10 @@ feature {COMPILER_EXPORTER} -- Primitives
 						i > count or else not Result
 					loop
 						Result := gen_type_generics.item (i).conform_to (generics.item (i))
-
+						if not is_covariant (i) and then not equivalent (gen_type_generics.item (i).conformance_type, generics.item (i).conformance_type) then
+								-- It is not a covariant generic, and the types differ. This is a conformance mismatch
+							conformance_check.cat_result := False
+						end
 						i := i + 1
 					end
 				end
