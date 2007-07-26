@@ -1404,6 +1404,7 @@ end;
 			f: FEATURE_I
 			l_args: FEAT_ARG
 			l_type: TYPE_A
+			l_like_feature: LIKE_FEATURE
 		do
 			from
 				adaptations.start
@@ -1422,6 +1423,9 @@ end;
 				if f.assigner_name_id /= 0 then
 					f.check_assigner (resulting_table)
 				end
+					-- Check if argument of feature are formal or covariantly redefined
+					-- If yes, we will insert the feature in the appropriate lists of
+					-- SYSTEM_I
 				l_args := f.arguments
 				if l_args /= Void then
 					from
@@ -1431,11 +1435,25 @@ end;
 					loop
 						l_type := l_args.item
 						if l_type.is_like_current then
-							system.set_routine_covariantly_redefined (f.rout_id_set, True)
+							system.set_routine_arguments_covariantly_redefined (f.rout_id_set, True)
 						elseif l_type.is_formal or else l_type.conformance_type.is_formal then
 							system.set_routine_has_formal (f.rout_id_set, True)
 						elseif l_type.is_like then
-
+								-- Check if anchor of like type is covariantly redefined
+								-- We only care about LIKE_FEATURE types:
+								--  * like current is already handled
+								--  * like argument types are handled since the anchor is an argument
+								--    and will be checked for covariant redeclaration
+							l_like_feature ?= l_type
+							if l_like_feature /= Void then
+									-- The like feature is covariantly redefined if the result type of the
+									-- referenced feature is covariantly redefined. Since the redeclarations were
+									-- already checked in the beginning of this feature, we are sure that the
+									-- referenced features is in the global list already.
+								if system.is_routine_result_type_covariantly_redefined (l_like_feature.routine_id) then
+									system.set_routine_arguments_covariantly_redefined (f.rout_id_set, True)
+								end
+							end
 						end
 						l_args.forth
 					end

@@ -1912,7 +1912,10 @@ debug ("ACTIVITY")
 	io.error.put_new_line
 end
 
-			if not new_type.conform_to (old_type) then
+				-- The conformance check for signatures ignores monomorphic types
+				-- That way, "like Current" types (which are monomorph) still
+				-- conform to their precursors
+			if not new_type.is_conforming_descendant (old_type) then
 				create vdrd51
 				vdrd51.init (old_feature, Current)
 				Error_handler.insert_error (vdrd51)
@@ -1924,6 +1927,18 @@ end
 --				ve02.set_type (new_type)
 --				ve02.set_precursor_type (old_type)
 				Error_handler.insert_error (ve02)
+			end
+
+			l_old_conformance_type := old_type.conformance_type
+			l_new_conformance_type := new_type.conformance_type
+
+				-- Check if it is a covariant redeclaration
+			if
+				old_type.is_like_current or else
+				new_type.is_like_current or else
+				not l_old_conformance_type.same_as (l_new_conformance_type)
+			then
+				system.set_routine_result_type_covariantly_redefined (rout_id_set, True)
 			end
 
 				-- Check the argument count
@@ -1957,7 +1972,11 @@ debug ("ACTIVITY")
 	end
 	io.error.put_new_line
 end
-					if not new_type.conform_to (old_type) then
+
+						-- The conformance check for signatures ignores monomorphic types
+						-- That way, "like Current" types (which are monomorph) still
+						-- conform to their precursors
+					if not new_type.is_conforming_descendant (old_type) then
 						create vdrd53
 						vdrd53.init (old_feature, Current)
 						Error_handler.insert_error (vdrd53)
@@ -1991,7 +2010,7 @@ end
 						new_type.is_like_current or else
 						not l_old_conformance_type.same_as (l_new_conformance_type)
 					then
-						system.set_routine_covariantly_redefined (rout_id_set, True)
+						system.set_routine_arguments_covariantly_redefined (rout_id_set, True)
 					end
 
 					i := i + 1

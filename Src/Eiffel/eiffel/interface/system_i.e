@@ -125,8 +125,8 @@ feature {NONE} -- Initialization
 
 				-- Run-time table creation
 			create execution_table.make
-			create rout_info_table.make (500)
-			create optimization_tables.make (300)
+			create rout_info_table.make (2000)
+			create optimization_tables.make (1000)
 
 				-- Address table
 			create address_table.make
@@ -138,9 +138,9 @@ feature {NONE} -- Initialization
 			create real_removed_classes.make (10)
 
 				-- Routine redefinition flags
-			create routine_redefinition_flags.make (500)
-			create routine_covariance_flags.make (500)
-			create routine_formal_flags.make (500)
+			create routine_covariant_argument_flags.make (2000)
+			create routine_covariant_result_type_flags.make (2000)
+			create routine_formal_flags.make (2000)
 
 		end
 
@@ -5294,34 +5294,33 @@ feature {NONE} -- External features
 
 feature -- Covariance / Redefined features table
 
-	is_routine_redefined (routine_id: INTEGER): BOOLEAN is
-			-- Is routine with routine id `routine_id' redefined in the system?
+	is_routine_arguments_covariantly_redefined (routine_id: INTEGER): BOOLEAN is
+			-- Are any of the arguments of routine with routine id `routine_id'
+			-- redefined covariantly in the system?
 		do
-			Result := routine_redefinition_flags.valid_index (routine_id) and then routine_redefinition_flags.item (routine_id)
+			Result :=
+				routine_covariant_argument_flags.valid_index (routine_id) and then
+				routine_covariant_argument_flags.item (routine_id)
 		end
 
-	is_routine_covariantly_redefined (routine_id: INTEGER): BOOLEAN is
+	is_routine_result_type_covariantly_redefined (routine_id: INTEGER): BOOLEAN is
 			-- Is routine with routine id `routine_id' redefined covariantly in the system?
 		do
-			Result := routine_covariance_flags.valid_index (routine_id) and then routine_covariance_flags.item (routine_id)
+			Result :=
+				routine_covariant_result_type_flags.valid_index (routine_id) and then
+				routine_covariant_result_type_flags.item (routine_id)
 		end
 
 	is_routine_with_formal_arguments (routine_id: INTEGER): BOOLEAN is
 			-- Does routine with routine id `routine_id' have formal arguments?
 		do
-			Result := routine_formal_flags.valid_index (routine_id) and then routine_formal_flags.item (routine_id)
+			Result :=
+				routine_formal_flags.valid_index (routine_id) and then
+				routine_formal_flags.item (routine_id)
 		end
 
-	set_routine_redefined (routine_id: INTEGER; flag: BOOLEAN) is
-			-- Set routine redefinition flag of `routine_id' to `flag'.
-		do
-			routine_redefinition_flags.force (flag, routine_id)
-		ensure
-			flag_set: is_routine_redefined (routine_id) = flag
-		end
-
-	set_routine_covariantly_redefined (routine_id_set: ROUT_ID_SET; flag: BOOLEAN) is
-			-- Set routine covariantly redefined flag of routine ids in `routine_id_set' to `flag'.
+	set_routine_arguments_covariantly_redefined (routine_id_set: ROUT_ID_SET; flag: BOOLEAN) is
+			-- Set routine arguments covariantly redefined flag of routine ids in `routine_id_set' to `flag'.
 		require
 			routine_id_set_not_void: routine_id_set /= Void
 		local
@@ -5333,11 +5332,33 @@ feature -- Covariance / Redefined features table
 			until
 				i > l_count
 			loop
-				routine_covariance_flags.force (flag, routine_id_set.item (i))
+				routine_covariant_argument_flags.force (flag, routine_id_set.item (i))
 				i := i + 1
 			end
 		ensure
-			flag_set: is_routine_covariantly_redefined (routine_id_set.first) = flag
+			flag_set: is_routine_arguments_covariantly_redefined (routine_id_set.first) = flag
+			--flags_set: routine_id_set.linear_representation.for_all (agent (a_id: INTEGER; a_flag: BOOLEAN): BOOLEAN do Result := is_routine_arguments_covariantly_redefined (a_id) = a_flag end (?, flag))
+		end
+
+	set_routine_result_type_covariantly_redefined (routine_id_set: ROUT_ID_SET; flag: BOOLEAN) is
+			-- Set routine result type covariantly redefined flag of routine ids in `routine_id_set' to `flag'.
+		require
+			routine_id_set_not_void: routine_id_set /= Void
+		local
+			i, l_count: INTEGER
+		do
+			from
+				i := 1
+				l_count := routine_id_set.count
+			until
+				i > l_count
+			loop
+				routine_covariant_result_type_flags.force (flag, routine_id_set.item (i))
+				i := i + 1
+			end
+		ensure
+			flag_set: is_routine_result_type_covariantly_redefined (routine_id_set.first) = flag
+			--flags_set: routine_id_set.linear_representation.for_all (agent (a_id: INTEGER; a_flag: BOOLEAN): BOOLEAN do Result := is_routine_result_type_covariantly_redefined (a_id) = a_flag end (?, flag))
 		end
 
 	set_routine_has_formal (routine_id_set: ROUT_ID_SET; flag: BOOLEAN) is
@@ -5358,15 +5379,16 @@ feature -- Covariance / Redefined features table
 			end
 		ensure
 			flag_set: is_routine_with_formal_arguments (routine_id_set.first) = flag
+			--flags_set: routine_id_set.linear_representation.for_all (agent (a_id: INTEGER; a_flag: BOOLEAN): BOOLEAN do Result := is_routine_with_formal_arguments (a_id) = a_flag end (?, flag))
 		end
 
 feature {NONE} -- Implementation
 
-	routine_redefinition_flags: PACKED_BOOLEANS
-			-- List of redefined routines indexed by routine id
+	routine_covariant_argument_flags: PACKED_BOOLEANS
+			-- List of routines which have an argument covariantly redefined indexed by routine id
 
-	routine_covariance_flags: PACKED_BOOLEANS
-			-- List of covariantly redefined routines indexed by routine id
+	routine_covariant_result_type_flags: PACKED_BOOLEANS
+			-- List of routines which have a result type covariantly redefined indexed by routine id
 
 	routine_formal_flags: PACKED_BOOLEANS
 			-- List of routines which have formal arguments indexed by routine id
@@ -5517,7 +5539,7 @@ feature -- Statistics
 			loop
 				if
 					not (routine_formal_flags.valid_index (i) and then routine_formal_flags.item (i)) and then
-					(routine_covariance_flags.valid_index (i) and then routine_covariance_flags.item (i))
+					(routine_covariant_argument_flags.valid_index (i) and then routine_covariant_argument_flags.item (i))
 				then
 					Result := Result + 1
 				end
@@ -5537,7 +5559,7 @@ feature -- Statistics
 			loop
 				if
 					(routine_formal_flags.valid_index (i) and then routine_formal_flags.item (i)) and then
-					not (routine_covariance_flags.valid_index (i) and then routine_covariance_flags.item (i))
+					not (routine_covariant_argument_flags.valid_index (i) and then routine_covariant_argument_flags.item (i))
 				then
 					Result := Result + 1
 				end
@@ -5557,7 +5579,7 @@ feature -- Statistics
 			loop
 				if
 					(routine_formal_flags.valid_index (i) and then routine_formal_flags.item (i)) and then
-					(routine_covariance_flags.valid_index (i) and then routine_covariance_flags.item (i))
+					(routine_covariant_argument_flags.valid_index (i) and then routine_covariant_argument_flags.item (i))
 				then
 					Result := Result + 1
 				end
