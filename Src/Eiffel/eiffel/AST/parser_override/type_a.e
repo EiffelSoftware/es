@@ -529,8 +529,9 @@ feature {COMPILER_EXPORTER} -- Access
 		local
 			l_cat_result: BOOLEAN
 	--		l_warning: SOME_TYPE
+			l_pcat: PCAT
 		do
-			if system.current_class.is_cat_call_detection then
+			if system.current_class /= Void and then system.current_class.is_cat_call_detection then
 
 					-- Increase check level. This tells us when we are on the lowest
 					-- level of checking a generic class so we emit the warning only once
@@ -562,12 +563,14 @@ feature {COMPILER_EXPORTER} -- Access
 					-- and it's the first level (i.e. the base class for a generic)
 					-- then we emit a warning
 				if conformance_check.level = 1 and then (conformance_check.cat_result xor Result) then
-					do_nothing
---					create l_warning.make (system.current_class, Void)
---					l_warning.set_result (Result, not Result)
---					l_warning.set_types (Current, other)
---					error_handler.insert_warning (l_warning)
---					l_warning.update_statistics
+					create l_pcat
+					context.init_error (l_pcat)
+					l_pcat.set_source_type (Current)
+					l_pcat.set_target_type (other)
+					if context.current_feature /= Void then
+						l_pcat.set_location (context.current_feature.e_feature.ast.start_location)
+					end
+					error_handler.insert_warning (l_pcat)
 				end
 				conformance_check.level := conformance_check.level - 1
 			else
