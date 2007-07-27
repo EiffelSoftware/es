@@ -12,6 +12,7 @@ create
 	make
 
 feature {NONE} -- Initlization
+
 	make (a_tab_state: SD_TAB_STATE; a_docking_manager: SD_DOCKING_MANAGER) is
 			-- Creation method.
 		require
@@ -151,12 +152,12 @@ feature {SD_TAB_STATE}  -- Implementation functions.
 						l_contents.item.user_widget.parent.prune (l_contents.item.user_widget)
 					end
 					create l_tab_state.make (l_contents.item, a_target_zone, l_orignal_direction)
-					l_contents.item.change_state (l_tab_state)
 					first_move_to_docking_zone := False
 				else
 					l_tab_zone ?= l_tab_state.zone
 					create l_tab_state.make_with_tab_zone (l_contents.item, l_tab_zone, l_orignal_direction)
 				end
+				l_contents.item.change_state (l_tab_state)
 				l_tab_state.set_direction (l_orignal_direction)
 				l_contents.forth
 			end
@@ -182,7 +183,6 @@ feature {SD_TAB_STATE}  -- Implementation functions.
 			-- Move one tab from a tab zone to a docking zone.
 		require
 			a_target_zone_not_void: a_target_zone /= Void
-			valid: a_index > 0
 		local
 			l_tab_state: SD_TAB_STATE
 			l_orignal_direction: INTEGER

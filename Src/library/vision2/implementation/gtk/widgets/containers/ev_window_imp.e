@@ -201,9 +201,12 @@ feature -- Status setting
 	enable_user_resize is
 			-- Allow the resize of the window.
 		do
-			user_can_resize := True
-			if is_displayed then
-				allow_resize
+			if not user_can_resize then
+				disable_user_resize_called := False
+				user_can_resize := True
+				if is_displayed then
+					allow_resize
+				end
 			end
 		end
 
@@ -256,7 +259,10 @@ feature -- Status setting
 				disable_capture
 				Precursor {EV_GTK_WINDOW_IMP}
 					-- Setting positions so that if `Current' is reshown then it reappears in the same place, as on Windows.
-				allow_resize
+				if disable_user_resize_called then
+					allow_resize
+				end
+
 				set_position (a_x_pos, a_y_pos)
 			end
 		end
@@ -317,7 +323,7 @@ feature -- Element change
 
 feature {EV_GTK_WINDOW_IMP} -- Access
 
-	accel_list: HASH_TABLE [EV_ACCELERATOR, INTEGER]
+	accel_list: HASH_TABLE [EV_ACCELERATOR, NATURAL_32]
 		-- Lookup table for accelerator access.
 
 feature {NONE} -- Accelerators
@@ -473,12 +479,12 @@ feature {EV_INTERMEDIARY_ROUTINES, EV_APPLICATION_IMP} -- Implementation
 		do
 			a_widget ?= app_implementation.eif_object_from_gtk_object (a_widget_ptr)
 			l_previously_focused_widget ?= app_implementation.eif_object_from_gtk_object (previously_focused_widget)
+			set_focused_widget (a_widget)
+				-- If `a_widget_ptr' is null then `a_widget' is Void.
 			if a_widget /= Void then
-				set_focused_widget (a_widget)
 				a_widget.on_focus_changed (True)
 			end
 			if l_previously_focused_widget /= Void and then l_previously_focused_widget /= a_widget then
-				set_focused_widget (Void)
 				l_previously_focused_widget.on_focus_changed (False)
 			end
 		end
@@ -552,7 +558,7 @@ feature {EV_INTERMEDIARY_ROUTINES}
 	call_close_request_actions is
 			-- Call the close request actions.
 		do
-			if close_request_actions_internal /= Void and then not App_implementation.is_in_transport and then not has_modal_window then
+			if close_request_actions_internal /= Void and then not App_implementation.is_in_transport and then not has_modal_window and then not is_destroyed then
 				close_request_actions_internal.call (Void)
 			end
 		end

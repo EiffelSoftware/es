@@ -73,6 +73,8 @@ feature {NONE} -- Initialization
 			create item_grid
 			create item_grid_wrapper.make (item_grid)
 			create descriptor_row_table.make (10)
+			create helper_label
+			create property_grid.make_with_description (helper_label)
 			item_grid.set_column_count_to (item_grid_column_count)
 			default_create
 			next_new_item_index := 1
@@ -99,7 +101,6 @@ feature {NONE} -- Initialization
 			remove_button.select_actions.extend (agent on_remove_item)
 			remove_button.disable_sensitive
 
-			create helper_label
 			helper_label.set_minimum_height (50)
 			helper_label.align_text_left
 			help_area.extend (helper_label)
@@ -124,9 +125,7 @@ feature {NONE} -- Initialization
 			setup_item_grid
 
 				-- Setup `property_grid'.
-			create property_grid.make_with_description (helper_label)
 			property_grid_area.extend (property_grid)
-
 			property_grid.set_minimum_width (350)
 			property_grid.hide
 
@@ -170,7 +169,7 @@ feature -- Access
 	items_getter: FUNCTION [ANY, TUPLE, LIST [G]]
 			-- Agent to get information of `items'
 
-	tool_table: HASH_TABLE [TUPLE [display_name: STRING_GENERAL; pixmap: EV_PIXMAP], STRING] is
+	tool_table: HASH_TABLE [TUPLE [display_name: STRING_32; pixmap: EV_PIXMAP], STRING] is
 			-- Table of supported tools			
 		local
 			l_tool_info: like tool_info
@@ -190,7 +189,7 @@ feature -- Access
 				l_tools.after
 			loop
 				l_tool_info := tool_info (l_tools.item)
-				Result.put ([l_tool_info.display_name, l_tool_info.pixmap], l_tool_info.store_name)
+				Result.put ([l_tool_info.display_name.as_string_32, l_tool_info.pixmap], l_tool_info.store_name)
 				l_tools.forth
 			end
 		ensure
@@ -602,10 +601,10 @@ feature{NONE} -- Implementation/Sorting
 			-- Tester to decide order between `a_item' and `a_item' according sorting order specified by `a_order'
 		do
 			if a_order = ascending_order then
-				Result := name_of_item (a_item) <= name_of_item (b_item)
+				Result := name_of_item (a_item).as_string_32 <= name_of_item (b_item).as_string_32
 			elseif a_order = descending_order then
 
-				Result := name_of_item (a_item) > name_of_item (b_item)
+				Result := name_of_item (a_item).as_string_32 > name_of_item (b_item).as_string_32
 			end
 		end
 
@@ -633,4 +632,5 @@ invariant
 	formatter_grid_wrapper_attached: item_grid_wrapper /= Void
 	descriptor_row_table_attached: descriptor_row_table /= Void
 end
+
 

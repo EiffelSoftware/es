@@ -79,6 +79,13 @@ feature {EB_EXPRESSION} -- Evaluation
 			dobj: DEBUGGED_OBJECT
 		do
 			reset_error
+				--| Clean evaluation.
+			final_result_static_type := Void
+			final_result_type := Void
+			final_result_value := Void
+			tmp_result_static_type := Void
+			tmp_result_value := Void
+			tmp_target := Void
 
 			if as_object then
 				final_result_value := dump_value_at_address (context_address)
@@ -93,23 +100,24 @@ feature {EB_EXPRESSION} -- Evaluation
 				if on_context then
 						--| .. Init current context using current call_stack
 					init_context_with_current_callstack
+				elseif on_class then
+					init_context_address_with_current_callstack
+					set_context_data (Void, context_class, Void)
 				elseif on_object then
 					dobj := debugger_manager.object_manager.debugged_object (context_address, 0, 0)
 					if dobj.is_erroneous then
-						notify_error_expression (Cst_error_during_context_preparation + "%NUnable to get valid target object for " + context_address)
+						notify_error_expression (Debugger_names.msg_error_during_context_preparation (Debugger_names.msg_error_unable_to_get_valid_target_for (context_address)))
 					else
 						set_context_data (Void, dobj.dtype, dobj.class_type)
 					end
 					dobj := Void
-				elseif on_class then
-					set_context_data (Void, context_class, Void)
 				end
 
 				if
 					(on_context and context_feature = Void)
 					or (on_class and context_class = Void)
 				then
-					notify_error_expression (Cst_error_during_context_preparation)
+					notify_error_expression (Debugger_names.Cst_error_during_context_preparation)
 					l_error_occurred := True
 				else
 						--| Compute and get `expression_byte_node'
@@ -188,7 +196,7 @@ feature {NONE} -- Evaluation
 					process_instruction_evaluation (instruction_byte_node)
 				end
 			else
-				notify_error_exception (cst_error_evaluation_failed_with_internal_exception)
+				notify_error_exception (Debugger_names.cst_error_evaluation_failed_with_internal_exception)
 			end
 			if not keep_assertion_checking then
 				debugger_manager.application.restore_assertion_check
@@ -208,7 +216,7 @@ feature {NONE} -- INSTR_B evaluation
 			if l_instr_call_b /= Void then
 				evaluate_call_b (l_instr_call_b.call)
 			else
-				notify_error_evaluation (a_instr_b.generator + ": Instruction evaluation not yet available")
+				notify_error_evaluation (Debugger_names.msg_error_instruction_eval_not_yet_available (a_instr_b))
 			end
 		end
 
@@ -227,7 +235,7 @@ feature {NONE} -- INSTR_B evaluation
 				if l_nested_b /= Void then
 					evaluate_nested_b (l_nested_b)
 				else
-					notify_error_evaluation (a_call_b.generator + ": Not yet available")
+					notify_error_evaluation (Debugger_names.msg_error_expression_not_yet_available (a_call_b))
 				end
 			end
 		end
@@ -352,10 +360,7 @@ feature {NONE} -- EXPR_B evaluation
 
 	evaluate_void_b	(a_void_b: VOID_B) is
 			-- Evaluate Void keyword value
-		local
-			t: TYPE_I
 		do
-			t := a_void_b.type
 			tmp_result_value := Void
 			tmp_result_value := Void
 			tmp_result_value := Debugger_manager.Dump_value_factory.new_void_value (Void)
@@ -384,7 +389,7 @@ feature {NONE} -- EXPR_B evaluation
 					if l_array_const_b /= Void then
 						evaluate_array_const_b (l_array_const_b)
 					else
-						notify_error_not_implemented (a_expr_b.generator + Cst_error_not_yet_ready)
+						notify_error_not_implemented_and_ready (a_expr_b, Void, Void)
 					end
 				end
 			end
@@ -409,7 +414,7 @@ feature {NONE} -- EXPR_B evaluation
 			l_type_i: CL_TYPE_I
 		do
 			l_tmp_target_backup := tmp_target
-			l_type_i := a_tuple_const_b.type
+			l_type_i := resolved_real_type_in_context (a_tuple_const_b.type)
 			create_empty_instance_of (l_type_i)
 			if not error_occurred then
 				l_call_value := tmp_result_value
@@ -457,7 +462,7 @@ feature {NONE} -- EXPR_B evaluation
 							l_byte_list.forth
 						end
 						if error_occurred then
-							notify_error_evaluation ("Creation of class {" + l_type_i.name + "} raised an error.%N")
+							notify_error_evaluation (Debugger_names.msg_error_instanciation_of_type_raised_error (l_type_i.name))
 						end
 					end
 				end
@@ -485,7 +490,7 @@ feature {NONE} -- EXPR_B evaluation
 			dbg: like debugger_manager
 		do
 			l_tmp_target_backup := tmp_target
-			l_type_i := a_array_const_b.type
+			l_type_i := resolved_real_type_in_context (a_array_const_b.type)
 			create_empty_instance_of (l_type_i)
 			if not error_occurred then
 				dbg := debugger_manager
@@ -505,7 +510,7 @@ feature {NONE} -- EXPR_B evaluation
 					evaluate_routine (tmp_target.address, tmp_target, l_class, l_create_feat_i, l_arg_as_lst)
 					l_arg_as_lst := Void
 				else
-					notify_error_evaluation ("Creation of class {" + l_type_i.name + "} raised an error.%N")
+					notify_error_evaluation (Debugger_names.msg_error_instanciation_of_type_raised_error (l_type_i.name))
 				end
 				if not error_occurred then
 					tmp_target := l_call_value
@@ -545,7 +550,7 @@ feature {NONE} -- EXPR_B evaluation
 							l_byte_list.forth
 						end
 						if error_occurred then
-							notify_error_evaluation ("Creation of class {" + l_type_i.name + "} raised an error.%N")
+							notify_error_evaluation (Debugger_names.msg_error_instanciation_of_type_raised_error (l_type_i.name))
 						end
 					end
 				end
@@ -578,10 +583,9 @@ feature {NONE} -- EXPR_B evaluation
 				l_type := l_integer.type
 				if
 					l_cl = Void
-					and then l_type.type_a /= Void
-					and then l_type.type_a.has_associated_class
+					and then l_type /= Void
 				then
-					l_cl := l_type.type_a.associated_class
+					l_cl := class_c_from_type_i (l_type)
 				end
 				if l_cl /= Void then
 					if l_type.is_natural then
@@ -662,7 +666,7 @@ feature {NONE} -- EXPR_B evaluation
 				end
 				tmp_result_value := d_fact.new_bits_value (l_bit.bit_value, l_cl.class_signature, l_cl);
 			else
-				notify_error_not_implemented (a_value_i.generator + Cst_error_not_yet_ready)
+				notify_error_not_implemented_and_ready (a_value_i, Void, Void)
 			end
 		end
 
@@ -683,7 +687,7 @@ feature {NONE} -- EXPR_B evaluation
 					l_nested_b := a_binary_b.nested_b
 					evaluate_nested_b (l_nested_b)
 				else
-					notify_error_not_implemented (a_binary_b.generator + "/BINARY_B" + Cst_error_not_yet_ready)
+					notify_error_not_implemented_and_ready (a_binary_b, "/BINARY_B", Void)
 				end
 			end
 		end
@@ -711,7 +715,7 @@ feature {NONE} -- EXPR_B evaluation
 				l_nested_b := a_bool_binary_b.nested_b
 				evaluate_boolean_nested_b (l_nested_b, l_lazy_eval, l_lazy_value)
 			else
-				notify_error_not_implemented (a_bool_binary_b.generator + "/BOOL_BINARY_B" + Cst_error_not_yet_ready)
+				notify_error_not_implemented_and_ready (a_bool_binary_b, "/BOOL_BINARY_B", Void)
 			end
 		end
 
@@ -745,7 +749,7 @@ feature {NONE} -- EXPR_B evaluation
 				end
 			end
 			if not error_occurred and tmp_result_value = Void then
-				notify_error_not_implemented (a_bin_equal_b.generator + "/BINARY_B" + Cst_error_not_yet_ready)
+				notify_error_not_implemented_and_ready (a_bin_equal_b, "/BINARY_B", Void)
 			end
 		end
 
@@ -773,7 +777,7 @@ feature {NONE} -- EXPR_B evaluation
 						if l_un_old_b /= Void then
 							evaluate_un_old_b (l_un_old_b)
 						else
-							notify_error_not_implemented (a_unary_b.generator + " = UNARY_B" + Cst_error_not_yet_ready)
+							notify_error_not_implemented_and_ready (a_unary_b, "/UNARY_B", Void)
 						end
 					end
 				end
@@ -825,8 +829,7 @@ feature {NONE} -- EXPR_B evaluation
 										if l_tuple_access_b /= Void then
 											evaluate_tuple_access_b (l_tuple_access_b)
 										else
-
-											notify_error_not_implemented (a_access_b.generator + " = ACCESS_B" + Cst_error_not_yet_ready)
+											notify_error_not_implemented_and_ready (a_access_b, "/ACCESS_B", Void)
 										end
 									end
 								end
@@ -903,9 +906,8 @@ feature {NONE} -- EXPR_B evaluation
 		end
 
 	evaluate_routine_creation_b (a_routine_creation_b: ROUTINE_CREATION_B) is
-		local
 		do
-			notify_error_not_implemented (a_routine_creation_b.generator + " = agent creation " + Cst_error_not_yet_ready)
+			notify_error_not_implemented_and_ready (a_routine_creation_b, "/ROUTINE_CREATION_B", Void)
 		end
 
 	evaluate_creation_expr_b (a_creation_expr_b: CREATION_EXPR_B) is
@@ -964,10 +966,9 @@ feature {NONE} -- EXPR_B evaluation
 			if l_has_error and not l_supported then
 				l_type_to_create := a_creation_expr_b.info.type_to_create
 				if l_type_to_create = Void then
-					notify_error_not_implemented (a_creation_expr_b.generator + " = CREATION_EXPR_B" + Cst_error_not_yet_ready)
+					notify_error_not_implemented_and_ready (a_creation_expr_b, "/CREATION_EXPR_B", Void)
 				else
-					notify_error_not_implemented (a_creation_expr_b.generator + " = CREATION_EXPR_B" + Cst_error_not_yet_ready
-						+ " for " + l_type_to_create.name )
+					notify_error_not_implemented_and_ready (a_creation_expr_b, "/CREATION_EXPR_B", l_type_to_create.name)
 				end
 			end
 		rescue
@@ -985,7 +986,7 @@ feature {NONE} -- EXPR_B evaluation
 			l_call: CALL_B
 		do
 			l_tmp_target_backup := tmp_target
-			create_empty_instance_of (a_type_i)
+			create_empty_instance_of (resolved_real_type_in_context (a_type_i))
 			if not error_occurred then
 				tmp_target := tmp_result_value
 				l_call_value := tmp_target
@@ -1025,7 +1026,7 @@ feature {NONE} -- EXPR_B evaluation
 					evaluate_routine (context_address, Void, cl, fi, params)
 				end
 			else
-				notify_error_evaluation (a_tuple_access_b.generator + Cst_error_report_to_support)
+				notify_error_evaluation_report_to_support (a_tuple_access_b)
 			end
 		end
 
@@ -1045,7 +1046,7 @@ feature {NONE} -- EXPR_B evaluation
 				l_external_b ?= a_call_access_b
 				evaluate_external_b (l_external_b)
 			else
-				notify_error_not_implemented (a_call_access_b.generator + " = CALL_ACCESS_B"+ Cst_error_not_yet_ready)
+				notify_error_not_implemented_and_ready (a_call_access_b, "/CALL_ACCESS_B", Void)
 			end
 		end
 
@@ -1066,9 +1067,7 @@ feature {NONE} -- EXPR_B evaluation
 			end
 
 			if cl = Void then
-				notify_error_evaluation (Cst_error_call_on_void_target +
-						Cst_feature_name_left_limit + a_feature_b.feature_name + Cst_feature_name_right_limit
-					)
+				notify_error_evaluation_call_on_void (a_feature_b.feature_name)
 			else
 --| Not yet ready, and useless since we do a metamorph on basic type to their ref value
 --| thus no built-in evaluation			
@@ -1109,15 +1108,15 @@ feature {NONE} -- EXPR_B evaluation
 						elseif fi.is_attribute then
 								-- How come ? maybe with redefinition .. and so on ..
 							if tmp_target /= Void then
-								evaluate_attribute (tmp_target.value_address, tmp_target, fi)
+								evaluate_attribute (tmp_target.value_address, tmp_target, cl, fi)
 							else
-								evaluate_attribute (context_address, Void, fi)
+								evaluate_attribute (context_address, Void, cl, fi)
 							end
 						else
-							notify_error_not_implemented (a_feature_b.generator +  Cst_error_other_than_func_cst_once_not_available)
+							notify_error_not_implemented (Debugger_names.msg_error_other_than_func_cst_once_not_available (a_feature_b))
 						end
 					else
-						notify_error_evaluation (a_feature_b.generator + Cst_error_report_to_support)
+						notify_error_evaluation_report_to_support (a_feature_b)
 					end
 				end
 			end
@@ -1132,13 +1131,11 @@ feature {NONE} -- EXPR_B evaluation
 		do
 			if a_external_b.is_static_call then
 				ti := a_external_b.static_class_type
-				if
-					ti /= Void
-					and then ti.type_a /= Void
-					and then ti.type_a.has_associated_class
-				then
-					cl := ti.type_a.associated_class
+				if ti /= Void then
+					cl := class_c_from_type_i (ti)
 				end
+			elseif on_class then
+				cl := context_class
 			end
 			if cl = Void then
 				if tmp_target /= Void then
@@ -1151,9 +1148,7 @@ feature {NONE} -- EXPR_B evaluation
 			end
 
 			if cl = Void then
-				notify_error_evaluation (Cst_error_call_on_void_target +
-							Cst_feature_name_left_limit + a_external_b.feature_name + Cst_feature_name_right_limit
-						)
+				notify_error_evaluation_call_on_void (a_external_b.feature_name)
 			else
 				fi := feature_i_from_call_access_b_in_context (cl, a_external_b)
 				if fi = Void then
@@ -1165,7 +1160,7 @@ feature {NONE} -- EXPR_B evaluation
 
 						if tmp_result_value = Void then
 								-- FIXME: What about static ? check ...
-							notify_error_expression (a_external_b.generator + Cst_error_during_evaluation_of_external_call + a_external_b.feature_name)
+							notify_error_evaluation_during_call_evaluation (a_external_b, a_external_b.feature_name)
 						end
 					end
 				else
@@ -1173,7 +1168,7 @@ feature {NONE} -- EXPR_B evaluation
 							--| parameters ...
 						params := parameter_values_from_parameters_b (a_external_b.parameters)
 						if not error_occurred then
-							if a_external_b.is_static_call then
+							if on_class or a_external_b.is_static_call then
 								if tmp_target /= Void then
 									evaluate_static_routine (tmp_target.value_address, tmp_target, cl, fi, params)
 								else
@@ -1185,18 +1180,22 @@ feature {NONE} -- EXPR_B evaluation
 								elseif context_address /= Void then
 									evaluate_routine (context_address, Void, cl, fi, params)
 								else
-									evaluate_static_function (fi, cl, params)
+									if debugger_manager.is_dotnet_project  then
+										evaluate_static_function (fi, cl, params)
+									else
+										evaluate_static_routine (context_address, Void, cl, fi, params)
+									end
 								end
 							end
 						end
 					elseif fi.is_attribute then
 						if tmp_target /= Void then
-							evaluate_attribute (tmp_target.value_address, tmp_target, fi)
+							evaluate_attribute (tmp_target.value_address, tmp_target, cl, fi)
 						else
-							evaluate_attribute (context_address, tmp_target, fi)
+							evaluate_attribute (context_address, tmp_target, cl, fi)
 						end
 					else
-						notify_error_expression (a_external_b.generator + Cst_error_during_evaluation_of_external_call + a_external_b.feature_name)
+						notify_error_evaluation_during_call_evaluation (a_external_b, a_external_b.feature_name)
 					end
 				end
 			end
@@ -1238,17 +1237,17 @@ feature {NONE} -- EXPR_B evaluation
 			end
 
 			if cl = Void then
-				notify_error_evaluation (Cst_error_call_on_void_target)
+				notify_error_evaluation_call_on_void (a_attribute_b.attribute_name)
 			else
 				fi := feature_i_from_call_access_b_in_context (cl, a_attribute_b)
 				if fi /= Void then
 					if tmp_target /= Void then
-						evaluate_attribute (tmp_target.value_address, tmp_target, fi)
+						evaluate_attribute (tmp_target.value_address, tmp_target, cl, fi)
 					else
-						evaluate_attribute (context_address, Void, fi)
+						evaluate_attribute (context_address, Void, cl, fi)
 					end
 				else
-					notify_error_evaluation ("Error: issue with attribute " + a_attribute_b.attribute_name)
+					notify_error_evaluation (Debugger_names.msg_error_with_retrieving_attribute (a_attribute_b.attribute_name))
 				end
 			end
 		end
@@ -1276,7 +1275,7 @@ feature {NONE} -- EXPR_B evaluation
 			tmp_target := l_tmp_target_backup
 
 			if Result = Void then
-				notify_error_evaluation (a_expr_b.generator + Cst_error_evaluating_parameter)
+				notify_error_evaluation (Debugger_names.msg_error_evaluating_parameter (a_expr_b))
 			end
 		end
 
@@ -1380,16 +1379,15 @@ feature {NONE} -- EXPR_B evaluation
 				check cse /= Void end
 				tmp_result_value := dbg_evaluator.current_object_from_callstack (cse)
 				if tmp_result_value = Void then
-					notify_error_evaluation ("Unable to get Current object")
+					notify_error_evaluation (Debugger_names.Cst_unable_to_get_current_object)
 				end
 				tmp_result_static_type := context_class
 			end
 		end
 
 	evaluate_un_old_b (a_un_old_b: UN_OLD_B) is
-		local
 		do
-			notify_error_not_implemented (a_un_old_b.generator + " = UN_OLD_B" + Cst_error_not_yet_ready)
+			notify_error_not_implemented_and_ready (a_un_old_b, "/UN_OLD_B", Void)
 		end
 
 feature {NONE} -- Concrete evaluation
@@ -1418,9 +1416,13 @@ feature {NONE} -- Concrete evaluation
 			f /= Void
 			f_is_not_attribute: not f.is_attribute
 		do
-			prepare_evaluation
-			Dbg_evaluator.evaluate_static_function (f, cl, params)
-			retrieve_evaluation
+			if as_auto_expression then
+				notify_error_evaluation_limited_for_auto_expression
+			else
+				prepare_evaluation
+				Dbg_evaluator.evaluate_static_function (f, cl, params)
+				retrieve_evaluation
+			end
 		end
 
 	evaluate_once (f: FEATURE_I) is
@@ -1446,20 +1448,18 @@ feature {NONE} -- Concrete evaluation
 			if cv_cst_i /= Void then
 				evaluate_value_i (cv_cst_i.value, cv_cst_i.type.associated_class)
 			else
-				notify_error_evaluation ("Unknown constant type for " + Cst_feature_name_left_limit + f.feature_name + Cst_feature_name_right_limit)
+				notify_error_evaluation (Debugger_names.msg_error_unknown_constant_type_for (f.feature_name))
 			end
 		end
 
-	evaluate_attribute (a_addr: STRING; a_target: DUMP_VALUE; f: FEATURE_I) is
+	evaluate_attribute (a_addr: STRING; a_target: DUMP_VALUE; c: CLASS_C; f: FEATURE_I) is
 			-- Evaluate attribute feature
 		do
 			if a_target /= Void and then a_target.is_void then
-				notify_error_evaluation (Cst_error_call_on_void_target +
-						Cst_feature_name_left_limit + f.feature_name + Cst_feature_name_right_limit
-					)
+				notify_error_evaluation_call_on_void (f.feature_name)
 			else
 				prepare_evaluation
-				Dbg_evaluator.evaluate_attribute (a_addr, a_target, f)
+				Dbg_evaluator.evaluate_attribute (a_addr, a_target, c, f)
 				retrieve_evaluation
 			end
 		end
@@ -1469,14 +1469,18 @@ feature {NONE} -- Concrete evaluation
 			f /= Void
 			f_is_not_attribute: not f.is_attribute
 		do
-			if a_target /= Void and then a_target.is_void then
-				notify_error_evaluation (Cst_error_call_on_void_target +
-						Cst_feature_name_left_limit + f.feature_name + Cst_feature_name_right_limit
-					)
+			if as_auto_expression then
+				notify_error_evaluation_limited_for_auto_expression
 			else
-				prepare_evaluation
-				Dbg_evaluator.evaluate_routine (a_addr, a_target, cl, f, params, False)
-				retrieve_evaluation
+				if a_target /= Void and then a_target.is_void then
+					notify_error_evaluation_call_on_void (f.feature_name)
+				elseif on_class and then not f.is_once then
+					notify_error_evaluation (Debugger_names.msg_error_vst1_on_class_context (cl.name_in_upper, f.feature_name))
+				else
+					prepare_evaluation
+					Dbg_evaluator.evaluate_routine (a_addr, a_target, cl, f, params, False)
+					retrieve_evaluation
+				end
 			end
 		end
 
@@ -1485,14 +1489,16 @@ feature {NONE} -- Concrete evaluation
 			f /= Void
 			f_is_not_attribute: not f.is_attribute
 		do
-			if a_target /= Void and then a_target.is_void then
-				notify_error_evaluation (Cst_error_call_on_void_target +
-						Cst_feature_name_left_limit + f.feature_name + Cst_feature_name_right_limit
-					)
+			if as_auto_expression then
+				notify_error_evaluation_limited_for_auto_expression
 			else
-				prepare_evaluation
-				Dbg_evaluator.evaluate_routine (a_addr, a_target, cl, f, params, True)
-				retrieve_evaluation
+				if a_target /= Void and then a_target.is_void then
+					notify_error_evaluation_call_on_void (f.feature_name)
+				else
+					prepare_evaluation
+					Dbg_evaluator.evaluate_routine (a_addr, a_target, cl, f, params, True)
+					retrieve_evaluation
+				end
 			end
 		end
 
@@ -1505,16 +1511,20 @@ feature {NONE} -- Concrete evaluation
 		local
 			l_addr: STRING
 		do
-			if debugger_manager.is_dotnet_project then
-					-- FIXME: What about static ? check ...
-				if a_target /= Void then
-					l_addr := tmp_target.value_address
-				else
-					l_addr := context_address
+			if as_auto_expression then
+				notify_error_evaluation_limited_for_auto_expression
+			else
+				if debugger_manager.is_dotnet_project then
+						-- FIXME: What about static ? check ...
+					if a_target /= Void then
+						l_addr := tmp_target.value_address
+					else
+						l_addr := context_address
+					end
+					prepare_evaluation
+					Dbg_evaluator.evaluate_function_with_name (l_addr, a_target, a_feature_name, a_external_name, params)
+					retrieve_evaluation
 				end
-				prepare_evaluation
-				Dbg_evaluator.evaluate_function_with_name (l_addr, a_target, a_feature_name, a_external_name, params)
-				retrieve_evaluation
 			end
 		end
 
@@ -1522,38 +1532,31 @@ feature {NONE} -- Concrete evaluation
 			-- New empty instance of class represented by `a_type_id'.
 		require
 			a_type_i_not_void: a_type_i /= Void
+			already_resolved: a_type_i = resolved_real_type_in_context (a_type_i)
 		local
-			l_type_i: TYPE_I
 			l_cl_type_i: CL_TYPE_I
 			ct: CLASS_TYPE
 			l_is_special: BOOLEAN
 		do
-			if a_type_i.has_associated_class_type then
-				if context_class_type /= Void then
-					l_type_i := byte_context.real_type_in (a_type_i, context_class_type)
-					if l_type_i /= Void then
-						l_cl_type_i ?= l_type_i
-					end
-				end
-				if l_cl_type_i = Void then
-					l_cl_type_i := a_type_i
-				end
-				if l_cl_type_i.has_associated_class_type then
-					ct := l_cl_type_i.associated_class_type
-					if ct.associated_class /= Void then
-						l_is_special := ct.associated_class.is_special
-					end
+			l_cl_type_i := a_type_i
+			if l_cl_type_i.has_associated_class_type then
+				ct := l_cl_type_i.associated_class_type
+				if ct.associated_class /= Void then
+					l_is_special := ct.associated_class.is_special
 				end
 				if l_is_special then
 					fixme ("To create SPECIAL objects, we have to use INTERNAL.new_special_any_instance ... ")
-					notify_error_evaluation ("Can not instanciate class {" + l_type_i.name + "} (SPECIAL is not yet supported)%N")
+					notify_error_evaluation (Debugger_names.msg_error_can_not_instanciate_type (l_cl_type_i.name, Debugger_names.cst_error_special_not_yet_supported))
 				else
 					prepare_evaluation
 					Dbg_evaluator.create_empty_instance_of (l_cl_type_i)
 					retrieve_evaluation
+					if error_occurred and l_cl_type_i.has_true_formal then
+						notify_error_not_implemented (Debugger_names.msg_error_can_not_instanciate_type (l_cl_type_i.name, Debugger_names.cst_error_formal_type_not_yet_supported))
+					end
 				end
 			else
-				notify_error_evaluation ("Can not instanciate class {" + l_type_i.name + "} (not compiled)%N")
+				notify_error_evaluation (Debugger_names.msg_error_can_not_instanciate_type (l_cl_type_i.name, Debugger_names.cst_error_not_compiled))
 			end
 		end
 
@@ -1586,7 +1589,7 @@ feature -- Change Context
 		do
 			cse := application_status.current_call_stack_element
 			if cse = Void then
-				notify_error_expression (Cst_error_during_context_preparation)
+				notify_error_expression (Debugger_names.Cst_error_during_context_preparation)
 			else
 					--| Cse can be Void if the application raised an exception
 					--| at the very beginning of the execution (for instance under dotnet)
@@ -1595,11 +1598,23 @@ feature -- Change Context
 				if ecse = Void then
 					--| Could occurs in case of External call stack element
 					--| in case of Exception or stopped state
-					notify_error_expression (Cst_error_during_context_preparation)
+					notify_error_expression (Debugger_names.Cst_error_during_context_preparation)
 				else
 					fi := ecse.routine_i
 					set_context_data (fi, ecse.dynamic_class, ecse.dynamic_type)
 				end
+			end
+		end
+
+	init_context_address_with_current_callstack is
+		local
+			cse: CALL_STACK_ELEMENT
+		do
+			cse := application_status.current_call_stack_element
+				--| Cse can be Void if the application raised an exception
+				--| at the very beginning of the execution (for instance under dotnet)
+			if cse /= Void then
+				context_address := cse.object_address
 			end
 		end
 
@@ -1637,6 +1652,10 @@ feature -- Change Context
 				end
 				if not equal (context_class_type, c_c_t) then
 					context_class_type := c_c_t
+					l_reset_byte_node := True
+				end
+				if context_class = Void and context_class_type /= Void then
+					context_class_type := Void
 					l_reset_byte_node := True
 				end
 				if l_reset_byte_node then
@@ -1871,12 +1890,12 @@ feature {NONE} -- Implementation
 						end
 						Ast_context.clear_all
 					else
-						notify_error_expression_and_tag (Cst_error_context_corrupted_or_not_found, Void)
+						notify_error_expression_and_tag (Debugger_names.Cst_error_context_corrupted_or_not_found, Void)
 						Ast_context.clear_all
 					end
 				end
 			else
-				notify_error_expression (Cst_error_during_expression_analyse)
+				notify_error_expression (Debugger_names.Cst_error_during_expression_analyse)
 				error_handler.wipe_out
 			end
 		ensure
@@ -1925,7 +1944,7 @@ feature {NONE} -- Implementation
 			else
 				ast_context.set_is_ignoring_export (False)
 				if not type_check_succeed then
-					notify_error_expression (Cst_error_type_checking_failed)
+					notify_error_expression (Debugger_names.Cst_error_type_checking_failed)
 				end
 				if error_handler.has_error then
 					notify_error_list_expression_and_tag (error_handler.error_list)
@@ -1956,6 +1975,20 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Compiler helpers
 
+	resolved_real_type_in_context (a_type_i: CL_TYPE_I): CL_TYPE_I is
+		require
+			a_type_i_not_void: a_type_i /= Void
+		do
+			if context_class_type /= Void then
+				Result ?= byte_context.real_type_in (a_type_i, context_class_type)
+			end
+			if Result = Void then
+				Result := a_type_i
+			end
+		ensure
+			Result_not_void: Result /= Void
+		end
+
 	feature_i_from_call_access_b_in_context (cl: CLASS_C; a_call_access_b: CALL_ACCESS_B): FEATURE_I is
 			-- Return FEATURE_I corresponding to `a_call_access_b' in class `cl'
 			-- (this handles the feature renaming cases)
@@ -1964,20 +1997,91 @@ feature {NONE} -- Compiler helpers
 			a_call_access_b_not_void: a_call_access_b /= Void
 		local
 			wcl: CLASS_C
+			l_cl: CLASS_C
 		do
-			if cl.class_id = a_call_access_b.written_in then
-				Result := cl.feature_of_feature_id (a_call_access_b.feature_id)
+			if cl.is_basic then
+				l_cl := dbg_evaluator.associated_reference_basic_class_type (cl).associated_class
+				Result := l_cl.feature_of_rout_id (a_call_access_b.routine_id)
 			else
-				wcl := system.class_of_id (a_call_access_b.written_in)
-				Result := wcl.feature_of_rout_id (a_call_access_b.routine_id)
-				if Result = Void then
-						--| Better try to find the feature by any way
-					fixme ("We should redesign this part to do exactly what should be done")
+				if cl.class_id = a_call_access_b.written_in then
+						--| if same class, this is straight forward
 					Result := cl.feature_of_feature_id (a_call_access_b.feature_id)
+				else
+						--| let's search from written_class
+					wcl := system.class_of_id (a_call_access_b.written_in)
+					check wcl_not_void: wcl /= Void end
+					Result := wcl.feature_of_rout_id (a_call_access_b.routine_id)
+					if Result /= Void and then wcl /= cl then
+						Result := fi_version_of_class (Result, cl)
+					end
+					if Result = Void then
+							--| from _B target static type ...
+						if a_call_access_b.parent /= Void and then a_call_access_b.parent.target /= Void then
+							l_cl := class_c_from_expr_b (a_call_access_b.parent.target)
+							if l_cl /= Void then
+								Result := l_cl.feature_of_rout_id (a_call_access_b.routine_id)
+								if Result /= Void and then l_cl /= cl then
+									Result := fi_version_of_class (Result, cl)
+								end
+							end
+						end
+
+						--| else giveup, no need to find an erroneous feature whic lead to debuggee crash
+					end
 				end
 			end
-			if Result /= Void and then wcl /= cl then
-				Result := fi_version_of_class (Result, cl)
+		end
+
+	class_c_from_expr_b (a_expr_b: EXPR_B): CLASS_C is
+			-- Class C related to `a_expr_b' if exists.
+		require
+			a_expr_b_not_void: a_expr_b /= Void
+		local
+			l_type_i: TYPE_I
+		do
+			l_type_i := a_expr_b.type
+			if l_type_i /= Void then
+				Result := class_c_from_type_i (l_type_i)
+			end
+		end
+
+	class_c_from_type_i (a_type_i: TYPE_I): CLASS_C is
+			-- Class C related to `a_type_i' if exists.
+		require
+			a_type_i_not_void: a_type_i /= Void
+		local
+			l_type_a: TYPE_A
+		do
+			if a_type_i /= Void then
+				l_type_a := a_type_i.type_a
+				if l_type_a.has_associated_class then
+					Result := l_type_a.associated_class
+				end
+			end
+		end
+
+	class_type_from_expr_b (a_expr_b: EXPR_B): CLASS_TYPE is
+			-- Class type related to `a_expr_b' if exists.
+			--| NOT USED FOR NOW.
+		require
+			a_expr_b_not_void: a_expr_b /= Void
+		local
+			l_cl_type_i: CL_TYPE_I
+		do
+			l_cl_type_i ?= a_expr_b.type
+			if l_cl_type_i /= Void then
+				l_cl_type_i := resolved_real_type_in_context (l_cl_type_i)
+				if l_cl_type_i.has_associated_class_type then
+					Result := l_cl_type_i.associated_class_type
+				end
+			else
+				--| might be :
+				--| FORMAL_I
+				--| LIKE_CURRENT_I
+				--| MULTI_FORMAL_I
+				--| NONE_I
+				--| REFERENCE_I																
+				--| VOID_I
 			end
 		end
 

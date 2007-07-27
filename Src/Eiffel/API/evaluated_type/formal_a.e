@@ -60,11 +60,15 @@ feature -- Property
 	is_multi_constrained (a_context_class: CLASS_C): BOOLEAN is
 			-- Is Current a multi constraint formal relative to current context class?
 			--
-			-- `a_context_class': Used to resolve formals to their constraints.
+			-- `a_context_class': Used to resolve formals to their constraints.		
 		require
-			a_context_class_attached: a_context_class /= Void
+			a_context_class_not_void: a_context_class /= Void
+			a_context_class_valid: a_context_class.is_generic and then a_context_class.is_valid_formal_position (position)
+		local
+			l_generics: EIFFEL_LIST[FORMAL_DEC_AS]
 		do
-			Result := has_multi_constraints (a_context_class)
+			l_generics := a_context_class.generics
+			Result := l_generics.i_th (position).is_multi_constrained (l_generics)
 		end
 
 	is_full_named_type: BOOLEAN is True
@@ -98,29 +102,6 @@ feature -- Property
 				Result := l_generics.i_th (position).is_single_constraint_without_renaming (l_generics)
 		end
 
-			is_single_constrained_formal_without_renaming (a_context_class: CLASS_C): BOOLEAN is
-			-- Is current type a formal type which is single constrained and the constraint has not a feature renaming?
-			--| G -> A -> True
-			--| G -> A rename a as b end -> False
-			--| G -> {A, B} -> False
-		require
-			a_context_class_not_void: a_context_class /= Void
-		do
-			-- False
-		end
-
-	has_multi_constraints (a_context_class: CLASS_C): BOOLEAN is
-			-- Does current instance have multiple constraining types?
-			-- This means at least two constraining types.
-		require
-			a_context_class_sane: a_context_class.generics /= Void and then a_context_class.generics.count >= position
-		local
-			l_generics: EIFFEL_LIST[FORMAL_DEC_AS]
-		do
-				l_generics := a_context_class.generics
-				Result := l_generics.i_th (position).is_multi_constrained (l_generics)
-		end
-
 feature -- Comparison
 
 	is_equivalent (other: like Current): BOOLEAN is
@@ -142,7 +123,7 @@ feature -- Access
 			Result := a_context_class.constrained_type (position)
 		ensure
 			Result_not_void: Result /= Void
-			Result_is_named_but_not_formal:  Result.is_named_type and not Result.is_formal
+			Result_is_named_but_not_formal:  (Result.is_none or Result.is_named_type) and not Result.is_formal
 		end
 
 	constrained_types (a_context_class: CLASS_C): TYPE_SET_A
@@ -338,7 +319,7 @@ feature {COMPILER_EXPORTER}
 						count_ok: System.current_class.generics.count >= position
 					end
 						-- Get the actual type for the formal generic parameter
-					l_constraints := System.current_class.constraints (position)
+					l_constraints := System.current_class.constraints_if_possible (position)
 					Result := l_constraints.constraining_types (system.current_class).conform_to_type (other)
 				end
 			end

@@ -106,7 +106,7 @@ feature -- Command
 			l_pointer_style: EV_POINTER_STYLE
 			l_stock_pixmaps: EV_STOCK_PIXMAPS
 
-			l_err: EV_ERROR_DIALOG
+			l_err: EB_ERROR_DIALOG
 		do
 			l_pointer_style := development_window.window.pointer_style
 			create l_stock_pixmaps
@@ -120,6 +120,9 @@ feature -- Command
 				l_err.show_modal_to_window (development_window.window)
 				development_window.restore_standard_tools_docking_layout
 			end
+
+			development_window.menus.update_menu_lock_items
+			development_window.menus.update_show_tool_bar_items
 
 			development_window.window.set_pointer_style (l_pointer_style)
 		end

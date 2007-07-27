@@ -245,6 +245,7 @@ feature -- Basic operations
 		require
 			a_metric_not_void: a_metric /= Void
 		do
+			metric_selector.remove_selection
 			a_metric.set_name (metric_manager.next_metric_name_with_unit (a_metric.unit))
 			load_metric_definition (a_metric, metric_type_id (a_metric), a_metric.unit, True)
 		end
@@ -260,7 +261,6 @@ feature -- Actions
 			l_editor := current_metric_editor
 			if l_editor /= Void then
 				l_metric := l_editor.metric
-				metric_selector.remove_selection
 				clone_and_load_metric (l_metric)
 			end
 		end
@@ -276,13 +276,13 @@ feature -- Actions
 
 	on_metric_selected (a_metric: EB_METRIC) is
 			-- Action to be performed when a metric is selected
-		require
-			a_metric_attached: a_metric /= Void
 		do
-			set_is_metric_changed (False)
-			load_metric_definition (a_metric, metric_type_id (a_metric), a_metric.unit, False)
-			set_is_up_to_date (False)
-			update_ui
+			if a_metric /= Void then
+				set_is_metric_changed (False)
+				load_metric_definition (a_metric, metric_type_id (a_metric), a_metric.unit, False)
+				set_is_up_to_date (False)
+				update_ui
+			end
 		end
 
 	on_save_metric is
@@ -290,7 +290,7 @@ feature -- Actions
 		local
 			l_old_metric: EB_METRIC
 			l_new_metric: EB_METRIC
-			l_dlg: EV_ERROR_DIALOG
+			l_dlg: EB_ERROR_DIALOG
 			l_ok: BOOLEAN
 			l_message: STRING_32
 		do
@@ -306,7 +306,7 @@ feature -- Actions
 				metric_manager.has_metric (l_new_metric.name)
 			then
 				l_ok := False
-				l_message := metric_names.t_metric_with_name.as_string_32 + " %"" + l_new_metric.name + "%" " + metric_names.t_metric_exists
+				l_message := metric_names.t_metric_with_name_already_exists (l_new_metric.name)
 			elseif
 				current_metric_editor.mode = {EB_METRIC_EDITOR}.edit_mode and then
 				l_old_metric /= Void and then
@@ -314,7 +314,7 @@ feature -- Actions
 				metric_manager.has_metric (l_new_metric.name)
 			then
 				l_ok := False
-				l_message := metric_names.t_metric_with_name.as_string_32 + " %"" + l_new_metric.name + "%" " + metric_names.t_metric_exists
+				l_message := metric_names.t_metric_with_name_already_exists (l_new_metric.name)
 			end
 			if l_ok then
 				metric_manager.save_metric (l_new_metric, current_metric_editor.mode = {EB_METRIC_EDITOR}.new_mode, l_old_metric)
@@ -355,7 +355,7 @@ feature -- Actions
 			end
 			create l_dlg.make_initialized (
 				2, preferences.dialog_data.confirm_remove_metric_string,
-				metric_names.t_remove_metric.as_string_32 +  "%"" + current_metric_editor.name_area.name.twin + "%"?",
+				metric_names.t_remove_metric (current_metric_editor.name_area.name),
 				metric_names.t_discard_remove_prompt,
 				preferences.preferences
 			)
@@ -485,7 +485,7 @@ feature {EB_CONTEXT_MENU_FACTORY} -- Implemetation
 			end
 			create l_dlg.make_initialized (
 				2, preferences.dialog_data.confirm_remove_metric_string,
-				metric_names.t_remove_metric.as_string_32 +  "%"" + a_metric.name.twin + "%"?",
+				metric_names.t_remove_metric (a_metric.name),
 				metric_names.t_discard_remove_prompt,
 				preferences.preferences
 			)

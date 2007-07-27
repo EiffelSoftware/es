@@ -19,12 +19,12 @@ feature{NONE} -- Initialization
 			-- Initialize `name' with `a_name' and `id' with `a_id'.
 		require
 			a_name_attached: a_name /= Void
-			a_name_valid: not a_name.is_empty
 			a_id_attached: a_id /= Void
 			a_id_valid: not a_id.is_empty
 		do
 			set_name (a_name)
 			set_id (a_id)
+			set_pixmap_location ("")
 			create handlers.make (2)
 		end
 
@@ -68,7 +68,6 @@ feature -- Setting
 			-- Set `name' with `a_name'.
 		require
 			a_name_attached: a_name /= Void
-			a_name_valid: not a_name.is_empty
 		do
 			name := a_name.twin
 		ensure
@@ -104,7 +103,7 @@ feature -- Setting
 		end
 
 invariant
-	name_valid: name /= Void and then not name.is_empty
+	name_valid: name /= Void
 	id_valid: id /= Void and then not id.is_empty
 	pixmap_location_attached: pixmap_location /= Void
 	handlers_attached: handlers /= Void

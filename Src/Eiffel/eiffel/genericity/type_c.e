@@ -111,31 +111,38 @@ feature
 			good_arguments: buffer /= Void and arg_types /= Void
 			good_array: arg_types.lower = 1
 		do
-			generate_function_cast_type (buffer, Void, arg_types)
+			buffer.put_string (function_cast_string)
+			buffer.put_character ('(')
+			if context.workbench_mode and then not is_void then
+				buffer.put_string (union_string)
+			else
+				buffer.put_string (c_string)
+			end
+			buffer.put_three_character (',', ' ', '(')
+			buffer.put_string_array (arg_types)
+			buffer.put_three_character (')', ')', ' ')
 		end
 
-	generate_function_cast_type (buffer: GENERATION_BUFFER; call_type: STRING; arg_types: ARRAY [STRING]) is
-			-- Generate C function cast in `buffer'.
+	generate_external_function_cast_type (buffer: GENERATION_BUFFER; call_type: STRING; arg_types: ARRAY [STRING]) is
+			-- Generate C external function cast in `buffer'.
 		require
 			good_arguments: buffer /= Void and arg_types /= Void
 			good_array: arg_types.lower = 1
 		do
 			if call_type /= Void then
-				buffer.put_string ("FUNCTION_CAST_TYPE(")
+				buffer.put_string (function_cast_type_string)
+				buffer.put_character ('(')
 				buffer.put_string (c_string)
 				buffer.put_character (',')
 				buffer.put_string (call_type)
 			else
-				buffer.put_string ("FUNCTION_CAST(")
-				if context.workbench_mode and then not is_void then
-					buffer.put_string ("EIF_UNION")
-				else
-					buffer.put_string (c_string)
-				end
+				buffer.put_string (function_cast_string)
+				buffer.put_character ('(')
+				buffer.put_string (c_string)
 			end
-			buffer.put_string (", (")
-			buffer.put_array (arg_types)
-			buffer.put_string (")) ")
+			buffer.put_three_character (',', ' ', '(')
+			buffer.put_string_array (arg_types)
+			buffer.put_three_character (')', ')', ' ')
 		end
 
 	generate_conversion_to_real_64 (buffer: GENERATION_BUFFER) is
@@ -203,8 +210,15 @@ feature
 
 feature {NONE} -- Constants
 
-	Sizeof: STRING is "sizeof(";
+	Sizeof: STRING is "sizeof("
 			-- Used for generation.
+
+	union_string: STRING is "EIF_UNION"
+			-- Name for union structure.
+
+	function_cast_string: STRING is "FUNCTION_CAST"
+	function_cast_type_string: STRING is "FUNCTION_CAST_TYPE";
+			-- Name of different function casts.
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

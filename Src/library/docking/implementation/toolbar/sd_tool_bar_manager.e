@@ -17,7 +17,7 @@ inherit
 		end
 
 create
-	make
+	{SD_DOCKING_MANAGER} make
 
 feature {NONE} -- Initialization
 
@@ -41,9 +41,18 @@ feature {NONE} -- Initialization
 
 	init_right_click_menu is
 			-- Initialize right click menu.
+		local
+			l_platform: PLATFORM
 		do
 			application_right_click_agent := agent on_menu_area_click
-			ev_application.pointer_button_press_actions.extend (application_right_click_agent)
+
+			create l_platform
+			-- We will use pointe release actions only in the future. Larry 2007-6-7
+			if l_platform.is_windows then
+				ev_application.pointer_button_press_actions.extend (application_right_click_agent)
+			else
+				ev_application.pointer_button_release_actions.extend (application_right_click_agent)
+			end
 		end
 
 feature -- Query
@@ -124,7 +133,18 @@ feature -- Command
 
 	destroy is
 			-- Release hooks.
+		local
+			l_floating_tool_bars: like floating_tool_bars
 		do
+			from
+				l_floating_tool_bars := floating_tool_bars
+				l_floating_tool_bars.start
+			until
+				l_floating_tool_bars.after
+			loop
+				l_floating_tool_bars.item.destroy
+				l_floating_tool_bars.forth
+			end
 			ev_application.pointer_button_press_actions.prune_all (application_right_click_agent)
 			contents.wipe_out
 		end
@@ -201,27 +221,31 @@ feature {SD_DOCKING_MANAGER_AGENTS, SD_OPEN_CONFIG_MEDIATOR, SD_TOOL_BAR_ZONE_AS
 			not_void: a_content /= Void
 			main_window_not_has:
 		local
-			l_tool_bar_zone: SD_TOOL_BAR_ZONE
 			l_tool_bar_row: SD_TOOL_BAR_ROW
 			l_container: EV_CONTAINER
 		do
-			a_content.set_manager (Current)
-			create l_tool_bar_zone.make (False, docking_manager, a_content.is_menu_bar)
-			l_tool_bar_zone.extend (a_content)
-
 			create l_tool_bar_row.make (docking_manager, False)
-			l_tool_bar_row.set_ignore_resize (True)
-			l_tool_bar_row.extend (l_tool_bar_zone)
-			l_tool_bar_row.record_state
-			l_tool_bar_row.set_ignore_resize (False)
-
 			l_container := tool_bar_container (a_direction)
 			l_container.extend (l_tool_bar_row)
-			docking_manager.command.resize (True)
+			set_top_imp (a_content, l_tool_bar_row)
+		end
+
+	set_top_with (a_source_content, a_target_content: SD_TOOL_BAR_CONTENT) is
+			-- Set `a_source_content' docking at same row/column of `a_target_content'.
+		require
+			not_void: a_source_content /= Void and a_target_content /= Void
+			docking: a_target_content.is_docking
+			not_floating: not a_target_content.is_floating
+		local
+			l_tool_bar_row: SD_TOOL_BAR_ROW
+		do
+			l_tool_bar_row := a_target_content.zone.row
+			set_top_imp (a_source_content, l_tool_bar_row)
 		end
 
 feature {SD_DOCKING_MANAGER_AGENTS, SD_OPEN_CONFIG_MEDIATOR, SD_SAVE_CONFIG_MEDIATOR,
-			SD_TOOL_BAR_ZONE_ASSISTANT,	SD_TOOL_BAR_ZONE, SD_DEBUG_ACCESS, SD_TOOL_BAR} -- Internal querys
+			SD_TOOL_BAR_ZONE_ASSISTANT,	SD_TOOL_BAR_ZONE, SD_DEBUG_ACCESS, SD_TOOL_BAR,
+			SD_TOOL_BAR_CONTENT} -- Internal querys
 
 	tool_bar_container (a_direction: INTEGER): EV_BOX is
 			-- Tool bar container base on `a_direction'.
@@ -328,18 +352,25 @@ feature {NONE} -- Agents
 
 	on_menu_area_click (a_widget: EV_WIDGET; a_button, a_screen_x, a_screen_y: INTEGER) is
 			-- Handle menu area right click.
+		local
+			l_combo_box: EV_COMBO_BOX
 		do
-			if is_at_menu_area (a_widget) and a_button = {EV_POINTER_CONSTANTS}.right
-				and then not has_pointer_actions (a_screen_x, a_screen_y)
-				and then not has_pebble_function (a_screen_x, a_screen_y)
-				and then not has_drop_function (a_screen_x, a_screen_y) then
-				-- We query if a button `has_drop_function' before showing the menu, because if a
-				-- pick action starts from a widget which is same as the widget receive the drop
-				-- action, then there will be an additional pointer click actions called after drop
-				-- action. If the pick action not from the same widget which receive the drop action,
-				-- then there won't be a pointer click actions action called after drop action. I think
-				-- this is a bug.		 Larry Apr. 27th 2007.
-				right_click_menu.show
+			-- End user not dragging a tool bar.
+			if internal_shared.tool_bar_docker_mediator_cell.item = Void then
+				l_combo_box ?= a_widget
+				if is_at_menu_area (a_widget) and a_button = {EV_POINTER_CONSTANTS}.right
+					and then not has_pointer_actions (a_screen_x, a_screen_y)
+					and then not has_pebble_function (a_screen_x, a_screen_y)
+					and then not has_drop_function (a_screen_x, a_screen_y)
+					and then l_combo_box = Void then
+					-- We query if a button `has_drop_function' before showing the menu, because if a
+					-- pick action starts from a widget which is same as the widget receive the drop
+					-- action, then there will be an additional pointer click actions called after drop
+					-- action. If the pick action not from the same widget which receive the drop action,
+					-- then there won't be a pointer click actions action called after drop action. I think
+					-- this is a bug.		 Larry Apr. 27th 2007.
+					right_click_menu.show
+				end
 			end
 		end
 
@@ -469,10 +500,20 @@ feature {NONE} -- Implementation
 				create l_menu_item.make_with_text (contents.item.title)
 				if contents.item.is_visible then
 					l_menu_item.enable_select
-					l_menu_item.select_actions.extend (agent (contents.item).hide)
+					l_menu_item.select_actions.extend (agent (a_content: SD_TOOL_BAR_CONTENT)
+															require
+																not_void: a_content /= Void
+															do
+																a_content.close_request_actions.call ([])
+															end (contents.item))
 				else
 					l_menu_item.disable_select
-					l_menu_item.select_actions.extend (agent (contents.item).show)
+					l_menu_item.select_actions.extend (agent (a_content: SD_TOOL_BAR_CONTENT)
+															require
+																not_void: a_content /= Void
+															do
+																a_content.show_request_actions.call ([])
+															end (contents.item))
 				end
 
 				Result.extend (l_menu_item)
@@ -481,7 +522,7 @@ feature {NONE} -- Implementation
 
 			create l_separator
 			Result.extend (l_separator)
-			-- Custome menu items
+			-- Customize menu items
 
 			from
 				contents.start
@@ -490,9 +531,7 @@ feature {NONE} -- Implementation
 			loop
 
 				create l_custom_dialog.make_for_menu (contents.item.zone)
-				l_string := internal_shared.interface_names.tool_bar_right_click_customize.as_string_32
-				l_string.append (contents.item.title)
-				l_string.append (customize_string_end)
+				l_string := internal_shared.interface_names.tool_bar_right_click_customize (contents.item.title)
 				create l_menu_item.make_with_text_and_action (l_string, agent l_custom_dialog.on_customize)
 				Result.extend (l_menu_item)
 				contents.forth
@@ -500,10 +539,24 @@ feature {NONE} -- Implementation
 
 		end
 
-	customize_string_end: STRING_GENERAL is
-			-- String for customize
-		once
-			Result := "..."
+	set_top_imp (a_content: SD_TOOL_BAR_CONTENT; a_row: SD_TOOL_BAR_ROW) is
+			-- Common part of `set_top' and `set_top_with'.
+		require
+			not_void: a_content /= Void
+			not_void: a_row /= Void
+		local
+			l_tool_bar_zone: SD_TOOL_BAR_ZONE
+		do
+			a_content.set_manager (Current)
+			create l_tool_bar_zone.make (False, docking_manager, a_content.is_menu_bar)
+			l_tool_bar_zone.extend (a_content)
+
+			a_row.set_ignore_resize (True)
+			a_row.extend (l_tool_bar_zone)
+			a_row.record_state
+			a_row.set_ignore_resize (False)
+
+			docking_manager.command.resize (True)
 		end
 
 	application_right_click_agent: PROCEDURE [ANY, TUPLE [EV_WIDGET, INTEGER_32, INTEGER_32, INTEGER_32]]
@@ -519,6 +572,7 @@ invariant
 	not_void: internal_shared /= Void
 	not_void: contents /= Void
 	not_void: floating_tool_bars /= Void
+	items_not_void: contents.for_all (agent (v: SD_TOOL_BAR_CONTENT): BOOLEAN do Result := v /= Void end)
 
 indexing
 	library:	"SmartDocking: Library of reusable components for Eiffel."

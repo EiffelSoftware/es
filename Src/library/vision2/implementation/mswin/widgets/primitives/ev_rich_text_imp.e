@@ -14,10 +14,9 @@ inherit
 	EV_RICH_TEXT_I
 		rename
 			last_load_successful as implementation_last_load_successful
-		undefine
-			selected_text
 		redefine
 			interface,
+			selected_text,
 			text_length
 		end
 
@@ -62,7 +61,8 @@ inherit
 			text_length,
 			wel_text_length,
 			set_background_color,
-			scroll_to_end
+			scroll_to_end,
+			selected_text
 		select
 			wel_line_index,
 			wel_current_line_number,
@@ -124,7 +124,6 @@ inherit
 			set_height,
 			set_width,
 			insert_text,
-			selected_text,
 			current_line_number,
 			on_en_change,
 			set_text_limit,
@@ -159,7 +158,8 @@ inherit
 			rtf_stream_in,
 			on_erase_background,
 			enable_redraw,
-			on_en_change
+			on_en_change,
+			selected_text
 		end
 
 	WEL_CFM_CONSTANTS
@@ -249,11 +249,9 @@ feature {NONE} -- Initialization
 
 	default_style: INTEGER is
 			-- Default style used to create the control
-			-- (from WEL_RICH_EDIT)
-			-- (export status {NONE})
 		once
 			Result := Ws_visible + Ws_child + Ws_border + Ws_vscroll + Es_savesel +
-				Es_disablenoscroll + Es_multiline + es_autovscroll + Es_Wantreturn + ws_tabstop
+				Es_disablenoscroll + Es_multiline + es_autovscroll + Es_Wantreturn + ws_tabstop + es_nohidesel
 		end
 
 	default_ex_style: INTEGER is
@@ -742,6 +740,27 @@ feature -- Status report
 			end
 		end
 
+	selected_text: STRING_32 is
+			-- Text currently selected in `Current'.
+		local
+			i, nb: INTEGER
+		do
+				-- Get the text from WEL
+			Result := Precursor {WEL_RICH_EDIT}
+				-- Replace all %R with %N since that's what we have from Windows.
+			from
+				i := 1
+				nb := Result.count
+			until
+				i > nb
+			loop
+				if Result.item (i) = '%R' then
+					Result.put ('%N', i)
+				end
+				i := i + 1
+			end
+		end
+
 feature -- Status setting
 
 	set_text (a_text: STRING_GENERAL) is
@@ -1157,7 +1176,11 @@ feature -- Status setting
 			{WEL_API}.send_message (wel_item, Em_settypographyoptions,
 				to_wparam (to_advancedtypography), to_lparam (to_advancedtypography))
 			set_text_limit (2560000)
-			set_default_font
+			if private_font /= Void then
+				set_font (private_font)
+			else
+				set_default_font
+			end
 			if parent_imp /= Void then
 				parent_imp.notify_change (nc_minsize, Current)
 			end

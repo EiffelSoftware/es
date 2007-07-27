@@ -162,6 +162,7 @@ feature -- Initialization
 			feature_stack.wipe_out
 			add_feature_frame
 			is_supplier_recorded := True
+			is_constraint_renaming := False
 			once_manifest_string_count := 0
 			counters.wipe_out
 			last_rsqure.wipe_out
@@ -169,7 +170,11 @@ feature -- Initialization
 
 feature -- Status report
 
+	is_constraint_renaming: BOOLEAN
+			-- Is the parser parsing a constraint renaming?
+
 	is_parsing_class_head: BOOLEAN
+			-- Is the parser parsing a class hed?
 
 	il_parser: BOOLEAN
 			-- Is current Eiffel parser an IL Eiffel parser?
@@ -181,7 +186,7 @@ feature -- Status report
 			-- Is current Eiffel parser an expression parser ?
 
 	feature_parser: BOOLEAN
-			-- Feature parser
+			-- Is `Current' a feature parser?
 
 	indexing_parser: BOOLEAN
 			-- Is current Eiffel parser an indexing clause parser ?

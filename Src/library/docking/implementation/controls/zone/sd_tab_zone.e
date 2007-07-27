@@ -109,6 +109,7 @@ feature -- Query
 
 	is_drag_title_bar: BOOLEAN
 			-- If user dragging title bar?
+			-- If true, then we move all the contents, otherwise only move selected content.
 
 	title_area: EV_RECTANGLE is
 			-- Title bar area.
@@ -146,9 +147,12 @@ feature -- Command
 				l_index := 1
 			end
 			l_selected := contents.i_th (l_index)
-
-			internal_title_bar.set_title (l_selected.long_title)
-			update_mini_tool_bar (l_selected)
+			-- `l_selected' should not be void in theroy.
+			-- But in fact, it can be void sometimes, see bug#12807.
+			if l_selected /= Void then
+				internal_title_bar.set_title (l_selected.long_title)
+				update_mini_tool_bar (l_selected)
+			end
 		end
 
 	set_show_normal_max (a_show: BOOLEAN) is
@@ -224,9 +228,8 @@ feature -- Command
 			-- Set a_content's position to a_index.
 		require
 			has: has (a_content)
-			valid: a_index > 0
 		do
-			if a_index >= contents.count then
+			if not contents.valid_index (a_index) then
 				internal_notebook.set_content_position (a_content, contents.count)
 			else
 				internal_notebook.set_content_position (a_content, a_index)
@@ -267,6 +270,16 @@ feature {SD_TAB_STATE} -- Internal issues.
 			on_select_tab
 		ensure
 			selected: internal_notebook.selected_item_index = internal_notebook.index_of (a_content)
+		end
+
+feature {SD_FLOATING_STATE} -- Internal issues
+
+	set_drag_title_bar (a_bool: BOOLEAN) is
+			-- Set `is_drag_title_bar' with `a_bool'
+		do
+			is_drag_title_bar := a_bool
+		ensure
+			set: is_drag_title_bar = a_bool
 		end
 
 feature {NONE} -- Agents for user
@@ -339,16 +352,19 @@ feature {NONE} -- Agents for docker
 		local
 			l_tab_state: SD_TAB_STATE
 		do
-			is_drag_title_bar := True
-			internal_docker_mediator := internal_docking_manager.query.docker_mediator (Current, internal_docking_manager)
-			internal_docker_mediator.cancel_actions.extend (agent on_cancel_dragging)
-			internal_docker_mediator.start_tracing_pointer (a_screen_x - screen_x, a_screen_y - screen_y)
-			enable_capture
-			l_tab_state ?= content.state
-			check l_tab_state /= Void end
+			if not is_destroyed and then is_displayed then
+				is_drag_title_bar := True
+				internal_docker_mediator := internal_docking_manager.query.docker_mediator (Current, internal_docking_manager)
+				internal_docker_mediator.cancel_actions.extend (agent on_cancel_dragging)
+
+				enable_capture
+				internal_docker_mediator.start_tracing_pointer (a_screen_x - screen_x, a_screen_y - screen_y)
+
+				l_tab_state ?= content.state
+				check l_tab_state /= Void end
+			end
 		ensure
-			internal_docker_mediator_not_void: internal_docker_mediator /= Void
-			internal_docker_mediator_tracing_pointer: internal_docker_mediator.is_tracing_pointer
+			internal_docker_mediator_tracing_pointer: internal_docker_mediator /= Void implies internal_docker_mediator.is_tracing_pointer
 		end
 
 	on_pointer_release (a_x, a_y, a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER) is
@@ -372,18 +388,21 @@ feature {NONE} -- Agents for docker
 		do
 			internal_docker_mediator := internal_docking_manager.query.docker_mediator (Current, internal_docking_manager)
 			internal_docker_mediator.cancel_actions.extend (agent on_cancel_dragging)
-			internal_docker_mediator.start_tracing_pointer (a_screen_x - screen_x, screen_y + height - a_screen_y)
+			-- Enable captuer must called before start tracing pointer on GTK, otherwise, pointer realse actions may not be called on GTK.
 			enable_capture
+			internal_docker_mediator.start_tracing_pointer (a_screen_x - screen_x, screen_y + height - a_screen_y)
 		end
 
 	on_pointer_motion (a_x, a_y: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER) is
 			-- Handle pointer motion.
 		do
-			if internal_docker_mediator /= Void then
+			-- If `internal_docker_mediator' /= Void and `internal_docker_mediator'.is_tracing = False, it means, we just started enable capture in `on_notebook_drag', but not called `start_tracing_pointer' yet.
+			if internal_docker_mediator /= Void and then internal_docker_mediator.is_tracing then
 				internal_docker_mediator.on_pointer_motion (a_screen_x, a_screen_y)
 			end
 		ensure
-			pointer_motion_forwarded: internal_docker_mediator /= Void implies internal_docker_mediator.screen_x = a_screen_x and internal_docker_mediator.screen_y = a_screen_y
+			pointer_motion_forwarded: internal_docker_mediator /= Void and then internal_docker_mediator.is_tracing implies
+				internal_docker_mediator.screen_x = a_screen_x and internal_docker_mediator.screen_y = a_screen_y
 		end
 
 	on_notebook_drop (a_any: ANY) is

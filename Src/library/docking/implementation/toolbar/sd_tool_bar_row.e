@@ -19,7 +19,7 @@ inherit
 			prune as prune_fixed
 		export
 			{NONE} all
-			{ANY} has, parent, count, prunable
+			{ANY} has, parent, count, prunable, is_destroyed
 			{SD_TOOL_BAR_ZONE, SD_TOOL_BAR} set_item_size, width, screen_x
 			{SD_TOOL_BAR_HOT_ZONE, SD_TOOL_BAR_CONTENT} destroy
 		end
@@ -59,15 +59,15 @@ feature -- Command
 			extend_fixed (a_zone.tool_bar)
 
 			if is_vertical then
-				if a_zone.tool_bar.minimum_width > {SD_SHARED}.tool_bar_size then
-					a_zone.tool_bar.set_minimum_width ({SD_SHARED}.tool_bar_size)
+				if a_zone.tool_bar.minimum_width > internal_shared.tool_bar_size then
+					a_zone.tool_bar.set_minimum_width (internal_shared.tool_bar_size)
 				end
-				set_item_width (a_zone.tool_bar, {SD_SHARED}.tool_bar_size)
+				set_item_width (a_zone.tool_bar, internal_shared.tool_bar_size)
 			else
-				if a_zone.tool_bar.minimum_height > {SD_SHARED}.tool_bar_size then
-					a_zone.tool_bar.set_minimum_height ({SD_SHARED}.tool_bar_size)
+				if a_zone.tool_bar.minimum_height > internal_shared.tool_bar_size then
+					a_zone.tool_bar.set_minimum_height (internal_shared.tool_bar_size)
 				end
-				set_item_height (a_zone.tool_bar, {SD_SHARED}.tool_bar_size)
+				set_item_height (a_zone.tool_bar, internal_shared.tool_bar_size)
 			end
 
 			set_item_position_fixed (a_zone.tool_bar, 0, 0)
@@ -106,8 +106,13 @@ feature -- Command
 		local
 			l_relative_position: INTEGER
 		do
-			l_relative_position := to_relative_position (a_screen_position)
-			internal_positioner.on_pointer_motion (l_relative_position)
+			-- We have to check if `internal_positioner' is dragging for GTK since key press actions may
+			-- not be called immediately.
+			-- See bug#13196.			
+			if internal_positioner.is_dragging then
+				l_relative_position := to_relative_position (a_screen_position)
+				internal_positioner.on_pointer_motion (l_relative_position)
+			end
 		end
 
 	set_item_position_relative (a_widget: EV_WIDGET; a_relative_x_y: INTEGER) is

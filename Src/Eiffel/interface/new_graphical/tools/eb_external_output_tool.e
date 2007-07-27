@@ -629,14 +629,21 @@ feature{NONE} -- Actions
 		local
 			found: BOOLEAN
 			l_text: STRING_32
+			l_input_text: STRING
+			l_string: STRING_GENERAL
 		do
 			l_text := input_field.text.twin
 			l_text.append ("%N")
-			if destination_encoding /= Void and then source_encoding /= Void and then destination_encoding.is_valid and then source_encoding.is_valid then
-				on_input_to_process (destination_encoding.convert_to (source_encoding, l_text).as_string_8)
-			else
-				on_input_to_process (l_text.as_string_8)
+			if source_encoding /= Void then
+				l_string := utf16_to_console_encoding (source_encoding, l_text)
 			end
+			if l_string = Void then
+					-- Conversion fails.
+				l_input_text := l_text.as_string_8
+			else
+				l_input_text := l_string.as_string_8
+			end
+			on_input_to_process (l_input_text)
 
 			if not l_text.is_empty then
 				from

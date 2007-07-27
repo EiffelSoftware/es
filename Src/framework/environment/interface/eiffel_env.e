@@ -135,7 +135,7 @@ feature -- Status report
 feature -- Version
 
 	Major_version: NATURAL_16 is 6
-	Minor_version: NATURAL_16 is 0
+	Minor_version: NATURAL_16 is 1
 
 feature -- Access
 
@@ -363,11 +363,17 @@ feature -- Access: file name
 			-- Retrieve precomp location.
 		require
 			is_valid_environment: is_valid_environment
+		local
+			l_dn_name: STRING
 		do
 			Result := lib_path.twin
 			Result.extend_from_array (<<"precomp", "spec">>)
 			if a_is_dotnet then
-				Result.extend ("dotnet")
+					-- Append '-dotnet' to platform name
+				create l_dn_name.make (eiffel_platform.count + 7)
+				l_dn_name.append (eiffel_platform)
+				l_dn_name.append ("-dotnet")
+				Result.extend (l_dn_name)
 			else
 				Result.extend (eiffel_platform)
 			end
@@ -908,6 +914,19 @@ feature -- Access: command name
 			if not platform.is_unix then
 				Result.add_extension (executable_suffix)
 			end
+		ensure
+			result_not_void_or_empty: Result /= Void and then not Result.is_empty
+		end
+
+	compile_library_command_name: FILE_NAME is
+			-- Complete path to `compile_library.bat'.
+		require
+			is_valid_environment: is_valid_environment
+			is_windows: platform.is_windows
+		once
+			create Result.make_from_string (bin_path)
+			Result.set_file_name ("compile_library")
+			Result.add_extension ("bat")
 		ensure
 			result_not_void_or_empty: Result /= Void and then not Result.is_empty
 		end

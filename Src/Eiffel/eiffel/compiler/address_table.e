@@ -226,7 +226,7 @@ feature -- Register
 			if not has_dollar_operator (a_class_id, a_feature_id) then
 				l_table_entry := force_new_table_entry (a_class_id, a_feature_id)
 				l_table_entry.set_has_dollar_op
-				System.set_freeze
+				System.request_freeze
 			end
 		ensure
 			has_dollar_operator (a_class_id, a_feature_id)
@@ -937,7 +937,7 @@ feature {NONE} -- Generation
 					function_name := Encoder.feature_name (l_type.static_type_id, a_feature.body_index)
 					buffer.put_string (function_name)
 					buffer.put_string (")(")
-					extern_declarations.add_routine_with_signature (c_return_type,
+					extern_declarations.add_routine_with_signature (return_type_string,
 						function_name, a_types)
 
 					check
@@ -1078,7 +1078,7 @@ feature {NONE} -- Generation
 						l_function_name := l_rout_table.feature_name + system.seed_of_routine_id (l_rout_id).generic_fingerprint
 						buffer.put_string (l_function_name)
 						buffer.put_string (")(")
-						extern_declarations.add_routine_with_signature (c_return_type,
+						extern_declarations.add_routine_with_signature (c_return_type.c_string,
 							l_function_name, a_types)
 					else
 							-- Function pointer associated to a deferred feature
@@ -1281,7 +1281,7 @@ feature {NONE} -- Generation
 			tmp_buffer.clear_all
 			tmp_buffer.put_string (a_return_type)
 			tmp_buffer.put_string ("(*f_ptr) (")
-			tmp_buffer.put_array (a_types)
+			tmp_buffer.put_string_array (a_types)
 			tmp_buffer.put_string (")")
 			l_arg_types.put (tmp_buffer.as_string, 1)
 				-- The name of the pointer is embedded in its type

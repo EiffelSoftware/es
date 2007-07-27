@@ -70,9 +70,11 @@ feature {DBG_EVALUATOR} -- Interface
 				if a_addr /= Void then
 					send_ref_value (hex_to_pointer (a_addr))
 				else
-					notify_error_evaluation ("Can not evaluate (non once) function %"{"
-							+ fi.written_class.name_in_upper + "}." + fi.feature_name
-							+ "%" on Void object or Class name")
+					notify_error_evaluation (Debugger_names.msg_error_unable_to_evaluate_non_once_call_with_any_object (
+								fi.written_class.name_in_upper,
+								fi.feature_name
+								)
+							)
 				end
 			else
 				dmp := a_target
@@ -92,34 +94,29 @@ feature {DBG_EVALUATOR} -- Interface
 					par := par + 8
 				end
 
+				if orig_class.is_expanded and then orig_class.is_basic then
+						--| Take care of "2 > 3"
+					if ctype.associated_class.conform_to (fi.written_class) then
+						wclt := fi.written_type (ctype)
+					else
+						wclt := fi.written_class.types.first
+					end
+				else
+					wclt := ctype
+				end
 				if fi.written_class.is_precompiled then
 					par := par + 2
 					rout_info := System.rout_info_table.item (fi.rout_id_set.first)
-					send_rqst_3_integer (Rqst_dynamic_eval, rout_info.offset, rout_info.origin, par)
+					send_rqst_4_integer (Rqst_dynamic_eval, rout_info.offset, rout_info.origin, wclt.type_id - 1, par)
 				else
 					fixme ("it seems the runtime/debug is not designed to call precursor ...")
-					if orig_class.is_expanded and then orig_class.is_basic then
-							--| Take care of "2 > 3"
-						if ctype.associated_class.conform_to (fi.written_class) then
-							wclt := fi.written_type (ctype)
-						else
-							wclt := fi.written_class.types.first
-						end
-					else
-						wclt := ctype
-					end
-
-					send_rqst_3_integer (Rqst_dynamic_eval, fi.feature_id, wclt.static_type_id - 1, par)
+					send_rqst_4_integer (Rqst_dynamic_eval, fi.feature_id, wclt.static_type_id - 1, 0, par)
 				end
 					-- Receive the Result.
 				recv_value (Current)
 				if is_exception_trace then
 					get_exception_trace
-					notify_error (Cst_error_exception_during_evaluation,
-							"Exception occurred during evaluation"
-							+ " of {" + fi.written_class.name_in_upper + "}." + fi.feature_name + ": %N"
-							+ exception_trace
-							)
+					notify_error_exception (Debugger_names.msg_error_exception_occurred_during_evaluation (fi.written_class.name_in_upper, fi.feature_name, exception_trace))
 					reset_recv_value
 				else
 					if fi.is_function then
@@ -146,21 +143,21 @@ feature {DBG_EVALUATOR} -- Interface
 				if f.is_function then
 					res := once_r.once_result (f)
 					if once_r.last_failed then
-						notify_error (cst_error_exception_during_evaluation, "Once feature " + f.feature_name + ": " + once_r.last_exception_meaning)
+						notify_error_exception (Debugger_names.msg_error_once_evaluation_failed (f.feature_name, once_r.last_exception_meaning))
 					else
 						if res /= Void then
 							last_result_value := res.dump_value
 							last_result_static_type := f.type.associated_class
 						else
-							notify_error (cst_error_exception_during_evaluation, "Once function " + f.feature_name + ": an exception occurred")
+							notify_error_exception (Debugger_names.msg_error_once_evaluation_failed (f.feature_name, Void))
 						end
 					end
 					once_r.clear_last_values
 				else
-					notify_error (cst_error_exception_during_evaluation, "Once procedure " + f.feature_name + ": can not evaluate once procedure yet")
+					notify_error_exception (Debugger_names.msg_error_once_procedure_evaluation_not_yet_available (f.feature_name))
 				end
 			else
-				notify_error (cst_error_occurred, "Once feature " + f.feature_name + ": not yet called")
+				notify_error_evaluation (Debugger_names.msg_error_once_routine_not_yet_called (f.feature_name))
 			end
 		end
 
@@ -183,20 +180,32 @@ feature {DBG_EVALUATOR} -- Interface
 				last_result_value := item.dump_value
 				reset_recv_value
 			else
-				notify_error (cst_error_occurred, "Instance creation of class {" + a_type_i.name + "} raised an error.")
+				notify_error_evaluation (Debugger_names.msg_error_instanciation_of_type_raised_error (a_type_i.name))
+--				create_empty_instance_using_internal (a_type_i)
+--				if error_occurred or last_result_value = Void then
+--					notify_error_evaluation (Debugger_names.msg_error_instanciation_of_type_raised_error (a_type_i.name))
+--				end
 			end
 		end
 
-	associated_reference_basic_class_type (cl: CLASS_C): CLASS_TYPE is
-		local
-			l_basic: BASIC_I
-		do
-			l_basic ?= cl.actual_type.type_i
-			check
-				l_basic_not_void: l_basic /= Void
-			end
-			Result := l_basic.associated_reference_class_type
-		end
+--	create_empty_instance_using_internal (a_type_i: CL_TYPE_I) is
+--			--
+--		local
+--			l_class_c: CLASS_C
+--			l_params: LINKED_LIST [DUMP_VALUE]
+--			f: FEATURE_I
+--		do
+--			l_class_c := debugger_manager.compiler_data.internal_class_c
+--			if l_class_c /= Void then
+--				create_empty_instance_of (l_class_c.types.first.type)
+--				if not error_occurred then
+--					create l_params.make
+--					l_params.extend (debugger_manager.dump_value_factory.new_integer_32_value (a_type_i.type_id, debugger_manager.compiler_data.integer_32_class_c))
+--					f := l_class_c.feature_named ("new_instance_of")
+--					effective_evaluate_routine (Void, last_result_value, f, f, l_class_c.types.first, l_class_c, l_params, False)
+--				end
+--			end
+--		end
 
 	current_object_from_callstack (cse: EIFFEL_CALL_STACK_ELEMENT): DUMP_VALUE is
 		do

@@ -334,7 +334,7 @@ feature -- Command
 				l_name ?= l_datas.item @ 1
 				check not_void: l_name /= Void end
 				l_item := Void
-				if l_name.as_string_8.is_equal (l_separator.name.as_string_8) then
+				if l_name.as_string_32.is_equal (l_separator.name.as_string_32) then
 					-- First check if it's a separator
 					l_content.items.extend (l_separator)
 					create l_separator.make
@@ -344,7 +344,7 @@ feature -- Command
 					until
 						l_all_items.after or l_item /= Void
 					loop
-						if l_all_items.item.name.as_string_8.is_equal (l_name.as_string_8) then
+						if l_all_items.item.name.as_string_32.is_equal (l_name.as_string_32) then
 							l_item := l_all_items.item
 							if not l_datas.item.boolean_item (2) then
 								l_item.disable_displayed
@@ -359,8 +359,43 @@ feature -- Command
 				end
 				l_datas.forth
 			end
+			refresh_items_visible
+		end
+
+	save_items_layout (a_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM])
+			-- Save items layout to it's data.
+			-- (export status {NONE})
+		local
+			l_datas: ARRAYED_LIST [TUPLE [STRING_GENERAL, BOOLEAN]]
+			l_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+		do
+			from
+				if a_items /= Void then
+					l_items := a_items
+				else
+					l_items := zone.content.items
+				end
+				create l_datas.make (l_items.count)
+				l_items.start
+			until
+				l_items.after
+			loop
+				l_datas.extend ([l_items.item.name, l_items.item.is_displayed])
+				l_items.forth
+			end
+			last_state.set_items_layout (l_datas)
+		ensure
+			saved: last_state.items_layout /= Void
+		end
+
+	refresh_items_visible is
+			-- Refresh items visible states.
+		local
+			l_content: SD_TOOL_BAR_CONTENT
+		do
+			l_content := zone.content
 			zone.wipe_out
-			l_content.clear_widget_items_parents
+			l_content.clear
 			zone.extend (l_content)
 			update_indicator
 			if zone.row /= Void then

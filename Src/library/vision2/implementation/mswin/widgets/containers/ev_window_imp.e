@@ -991,16 +991,13 @@ feature {EV_ANY_I} -- Implementation
 							l_pebble_function := widget_imp.pebble_function
 							widget_imp.call_pebble_function (wel_point.x - widget_imp.screen_x,
 								wel_point.y - widget_imp.screen_y, wel_point.x, wel_point.y)
-
 						end
 						if widget_imp.pebble /= Void then
 							Result := widget_imp
 						end
 						if l_pebble_function /= Void then
-								-- We clear the result of the pebble function call to avoid side effects.
-							l_pebble_function.clear_last_result
-							widget_imp.remove_pebble
-							widget_imp.set_pebble_function (l_pebble_function)
+								-- We clear the result of the pebble function call, if any, to avoid side effects.
+							widget_imp.reset_pebble_function
 						end
 						item_list_imp ?= widget_imp
 						if item_list_imp /= Void then
@@ -1023,10 +1020,8 @@ feature {EV_ANY_I} -- Implementation
 									end
 								end
 								if l_pebble_function /= Void then
-										-- Clear pebble function result to avoid side effects.
-									l_pebble_function.clear_last_result
-									an_item_imp.remove_pebble
-									an_item_imp.set_pebble_function (l_pebble_function)
+										-- We clear the result of the pebble function call, if any, to avoid side effects.
+									an_item_imp.reset_pebble_function
 								end
 							end
 						end
@@ -1163,12 +1158,8 @@ feature {EV_ANY_I} -- Implementation
 				create a_menu.make_by_pointer (wparam)
 				on_menu_opened (a_menu)
 			when Wm_enteridle then
-					--| FIXME This message is sent when `Current' has a modal dialog
-					--| as a child. This message is only sent once, and not repeatedly as
-					--| we require for the idle actions.
-				if application_imp.idle_actions /= Void then
-					application_imp.idle_actions.call (Void)
-				end
+					--| This message is sent when `Current' has a modal dialog as a child.
+				application_imp.process_event_queue (False)
 				fire_dialog_show_actions (lparam)
 			else
 				Result := Precursor {WEL_FRAME_WINDOW} (hwnd, msg, wparam, lparam)

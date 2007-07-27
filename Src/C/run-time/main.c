@@ -406,6 +406,17 @@ rt_public int is_debug_mode (void){
 	return debug_mode;
 }
 
+/*
+doc:	<routine name="set_debug_mode" return_type="void" export="public">
+doc:		<summary>Public assigner to `debug_mode'.</summary>
+doc:		<thread_safety>Safe</thread_safety>
+doc:	</routine>
+*/
+
+rt_public void set_debug_mode (int v){
+	debug_mode = v;
+}
+
 rt_public void once_init (void)
 {
 	EIF_GET_CONTEXT
@@ -668,10 +679,6 @@ rt_public void eif_rtinit(int argc, char **argv, char **envp)
 	 * with that name (with the notable exception of the stack trace, for
 	 * formatting purpose).
 	 */
-
-#ifdef EIF_WINDOWS
-	static char module_name [255] = {0};
-#endif
 
 #ifdef EIF_WINDOWS
 	set_windows_exception_filter();

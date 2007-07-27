@@ -1,5 +1,5 @@
 indexing
-	description: "Objects that ..."
+	description: "Objects that represent an expression line"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	author: ""
@@ -149,7 +149,11 @@ feature {NONE} -- Refresh implementation
 			evaluation_requested
 		do
 			evaluation_requested := False
-			expression.evaluate
+			if is_auto_expression then
+				expression.evaluate_as_auto_expression
+			else
+				expression.evaluate
+			end
 			refresh
 		ensure
 			not evaluation_requested
@@ -177,18 +181,22 @@ feature -- change properties
 
 feature -- Settings
 
-	set_read_only (b: like is_readonly) is
+	set_auto_expression	(b: like is_auto_expression) is
+			-- Set `is_auto_expression' value
 		do
-			is_readonly := b
+			is_auto_expression := b
 		end
 
 feature -- Properties
 
-	is_readonly: BOOLEAN
+	is_auto_expression: BOOLEAN
+			-- Is auto expression line ?
 
 	expression: EB_EXPRESSION
+			-- Associated expression.
 
 	expression_evaluator: DBG_EXPRESSION_EVALUATOR
+			-- Associated expression evaluator.
 
 	object_name: STRING_32 is
 		do
@@ -270,41 +278,48 @@ feature -- Graphical changes
 		require else
 			is_attached_to_row: row /= Void
 		local
+			glab: EV_GRID_LABEL_ITEM
 			gedit: ES_OBJECTS_GRID_EXPRESSION_CELL
 			l_provider: EB_NORMAL_COMPLETION_POSSIBILITIES_PROVIDER
 			l_class_c: CLASS_C
 			l_feature_as: FEATURE_AS
 		do
 			title := v
-			gedit ?= cell (Col_expression_index)
-			if gedit = Void then
-				gedit := new_cell_expression
-				if not is_readonly then
+			if is_read_only then
+				glab ?= cell (Col_expression_index)
+				if glab = Void then
+					glab := new_cell_name
+				end
+			else
+				gedit ?= cell (Col_expression_index)
+				if gedit = Void then
+					gedit := new_cell_expression
 					gedit.pointer_double_press_actions.extend (agent grid_activate_item_if_row_selected (gedit, False, ?,?,?,?,?,?,?,?))
 					gedit.pointer_button_press_actions.extend (agent grid_activate_item_if_row_selected (gedit, True, ?,?,?,?,?,?,?,?))
 					gedit.deactivate_actions.extend (agent update_expression_on_deactivate (gedit))
-				end
 
-				apply_cell_expression_text_properties_on (gedit)
-				set_cell (Col_expression_index, gedit)
-
-				if expression /= Void and then expression.context_class /= Void then
-					l_class_c := expression.context_class
-				else
-					l_class_c := eb_debugger_manager.current_debugging_class_c
-					l_feature_as := eb_debugger_manager.current_debugging_feature_as
-				end
-				if l_class_c /= Void then
-					create l_provider.make (l_class_c, l_feature_as)
-					if expression = Void or else expression.context_class = Void then
-						l_provider.set_dynamic_context_functions (
-										agent eb_debugger_manager.current_debugging_class_c,
-										agent eb_debugger_manager.current_debugging_feature_as)
+					if expression /= Void and then expression.context_class /= Void then
+						l_class_c := expression.context_class
+					else
+						l_class_c := eb_debugger_manager.current_debugging_class_c
+						l_feature_as := eb_debugger_manager.current_debugging_feature_as
 					end
-					gedit.set_completion_possibilities_provider (l_provider)
+					if l_class_c /= Void then
+						create l_provider.make (l_class_c, l_feature_as)
+						if expression = Void or else expression.context_class = Void then
+							l_provider.set_dynamic_context_functions (
+											agent eb_debugger_manager.current_debugging_class_c,
+											agent eb_debugger_manager.current_debugging_feature_as)
+						end
+						gedit.set_completion_possibilities_provider (l_provider)
+					end
 				end
+				glab := gedit
 			end
-			grid_cell_set_text (gedit, v)
+
+			apply_cell_expression_text_properties_on (glab)
+			set_cell (Col_expression_index, glab)
+			grid_cell_set_text (glab, v)
 		end
 
 	update_expression_on_deactivate (a_item: ES_OBJECTS_GRID_EXPRESSION_CELL) is
@@ -331,6 +346,9 @@ feature -- Graphical changes
 					then
 						a_item.set_text (expression.expression)
 					elseif not new_text.is_equal (expression.expression) then
+						if is_auto_expression then
+							set_auto_expression (False)
+						end
 						expression.set_expression (new_text)
 						if debugger_manager.safe_application_is_stopped  then
 							request_evaluation (True)
@@ -366,7 +384,7 @@ feature -- Graphical changes
 			grid_cell_set_pixmap (gi, v)
 		end
 
-	show_error_dialog (txt: STRING_32) is
+	show_error_dialog (txt: STRING_GENERAL) is
 		local
 			dlg: EB_DEBUGGER_EXCEPTION_DIALOG
 			l_tag: STRING_32
@@ -394,7 +412,7 @@ feature -- Graphical changes
 			r: EV_GRID_ROW
 		do
 			if
-				not is_readonly
+				not is_read_only
 				and then abutton = 1
 				and not ev_application.ctrl_pressed
 				and not ev_application.shift_pressed
@@ -412,8 +430,9 @@ feature -- Graphical changes
 
 	compute_grid_display is
 		local
-			l_error_message: STRING
-			l_error_tag: STRING
+			l_error_message: STRING_32
+			l_error_tag: STRING_32
+			s32: STRING_32
 			l_tooltip: STRING_32
 			glab: EV_GRID_LABEL_ITEM
 			add,typ: STRING
@@ -464,19 +483,21 @@ feature -- Graphical changes
 						end
 						if expression_evaluator.error_occurred then
 							l_error_message := expression_evaluator.text_from_error_messages
-							l_error_tag := expression_evaluator.short_text_from_error_messages
 
 							if l_error_message /= Void then
 								l_tooltip.prepend_string ("%N%N")
-								l_tooltip.prepend_string (l_error_message.as_string_32)
+								l_tooltip.prepend_string (l_error_message)
 							end
-							l_tooltip.prepend_string (interface_names.l_error_occurred)
+							l_tooltip.prepend_string (interface_names.l_error_occurred.as_string_32)
+							l_error_tag := expression_evaluator.short_text_from_error_messages
 							if l_error_tag /= Void then
-								l_error_tag := "[" + l_error_tag + "] "
+								s32 := "["
+								s32.append_string (l_error_tag)
+								s32.append_string ("] ")
 							else
-								l_error_tag := ""
+								s32 := ""
 							end
-							set_expression_info (l_error_tag)
+							set_expression_info (s32)
 
 							create glab
 							grid_cell_set_text (glab, interface_names.l_error_occurred_click)
@@ -526,7 +547,13 @@ feature -- Graphical changes
 							set_expression_pixmap (pixmaps.icon_pixmaps.debugger_object_watched_icon)
 						end
 					end
-					set_context (expression.context)
+					if is_auto_expression then
+						set_pixmap (pixmaps.mini_pixmaps.watch_auto_icon)
+						set_context (interface_names.m_auto_expression_context)
+					else
+						set_context (expression.context)
+					end
+
 					if row.item (col_expression_index) /= Void then
 						grid_cell_set_tooltip (row.item (Col_expression_index), l_tooltip)
 					end

@@ -30,6 +30,7 @@ Src/C/bench/config.sh
 Src/C/bench/make.bat
 Src/C/bench/meltdump
 Src/C/config.sh
+Src/C/console/*.a
 Src/C/console/*.lib
 Src/C/console/*.obj
 Src/C/console/*.pdb
@@ -64,6 +65,7 @@ Src/C/ipc/*.lib
 Src/C/ipc/*.obj
 Src/C/ipc/*.pdb
 Src/C/ipc/Makefile
+Src/C/ipc/app/*.a
 Src/C/ipc/app/*.lib
 Src/C/ipc/app/*.obj
 Src/C/ipc/app/*.pdb
@@ -173,6 +175,7 @@ Src/C/run-time/wkbench/*.lib
 Src/C/run-time/wkbench/*.obj
 Src/C/run-time/wkbench/*.pdb
 Src/C/run-time/x2c
+Src/C/shell/.bash_history
 Src/C_library/zlib/example.exe
 Src/C_library/zlib/example_d.exe
 Src/C_library/zlib/minigzip.exe
@@ -274,6 +277,7 @@ Src/dotnet/consumer/EIFGENs
 Src/dotnet/consumer/EiffelSoftware.MetadataConsumer.rc
 Src/examples/docking/simple/EIFGENs
 Src/examples/vision2/widget_test/bitmaps
+Src/examples/vision2/widget_test/interface/default_object_state_checker.e
 Src/examples/vision2/widget_test/interface/events
 Src/examples/vision2/widget_test/interface/gb_color_stone.e
 Src/examples/vision2/widget_test/interface/gb_constants.e
@@ -299,7 +303,6 @@ Src/examples/vision2/widget_test/interface/gb_supported_events.e
 Src/examples/vision2/widget_test/interface/gb_table_positioner.e
 Src/examples/vision2/widget_test/interface/gb_table_positioner_imp.e
 Src/examples/vision2/widget_test/interface/gb_widget_utilities.e
-Src/examples/vision2/widget_test/interface/object_default_state_checker.e
 Src/examples/vision2/widget_test/interface/ordered_string_handler.e
 Src/examples/vision2/widget_test/templates
 Src/framework/cli_debugger/Clib/OBJ
@@ -313,7 +316,10 @@ Src/framework/configuration/*.wb
 Src/framework/configuration/EIFGENs
 Src/framework/parser/parser/output.txt
 Src/free_add_ons
+Src/library/com/spec/bcb
+Src/library/com/spec/mingw
 Src/library/com/spec/msc
+Src/library/encryption/spec
 Src/library/event/spec
 Src/library/gobo
 Src/library/gobo/History.txt
@@ -338,7 +344,9 @@ Src/library/i18n/sample.ecf
 Src/library/i18n/sample.rc
 Src/library/net/spec
 Src/library/store/spec
+Src/library/vision2/spec/bcb
 Src/library/vision2/spec/linux-x86-64
+Src/library/vision2/spec/mingw
 Src/library/vision2/spec/msc
 Src/library/vision2/spec/unix
 Src/library/wel/Clib/ilwel.lib

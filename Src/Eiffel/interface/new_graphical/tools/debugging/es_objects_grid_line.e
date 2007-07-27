@@ -109,6 +109,13 @@ feature {ES_OBJECTS_GRID, ES_OBJECTS_GRID_MANAGER} -- Grid and row attachement
 			attached_to_row: row /= Void
 		end
 
+	safe_unattach is
+		do
+			if is_attached_to_row then
+				unattach
+			end
+		end
+
 	unattach is
 		require
 			is_attached_to_row: is_attached_to_row
@@ -119,6 +126,7 @@ feature {ES_OBJECTS_GRID, ES_OBJECTS_GRID_MANAGER} -- Grid and row attachement
 				row.clear
 			end
 			row.set_data (Void)
+			compute_grid_row_completed_action.wipe_out
 			reset_row_actions
 			row := Void
 			compute_grid_display_done := False
@@ -158,6 +166,16 @@ feature -- Properties
 	row: ES_OBJECTS_GRID_ROW
 
 	parent_grid: ES_OBJECTS_GRID
+
+	is_read_only: BOOLEAN
+
+feature -- Change
+
+	set_read_only (b: like is_read_only) is
+			-- set `is_read_only'
+		do
+			is_read_only := b
+		end
 
 feature -- Query
 
@@ -200,7 +218,7 @@ feature -- Graphical computation
 				end
 			end
 		ensure
-			result_not_void_if_stopped: (debugger_manager.safe_application_is_stopped ) implies Result /= Void
+			result_not_void_if_stopped: (row /= Void and debugger_manager.safe_application_is_stopped ) implies Result /= Void
 		end
 
 	compute_grid_row is
@@ -208,7 +226,7 @@ feature -- Graphical computation
 			is_attached_to_row: is_attached_to_row
 		do
 			compute_grid_display
-			compute_grid_row_completed_action.call (Void) -- call ([Current])
+			compute_grid_row_completed_action.call (Void) -- call ([Current])				
 		end
 
 	compute_grid_display is
@@ -223,6 +241,7 @@ feature -- Graphical computation
 feature -- Actions
 
 	compute_grid_row_completed_action: EV_NOTIFY_ACTION_SEQUENCE -- [TUPLE [ES_OBJECTS_GRID_LINE]]
+			-- Actions to be trigger when the row is computation is completed.
 
 feature -- Updating
 

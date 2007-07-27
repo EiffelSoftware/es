@@ -50,7 +50,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Eiffel Software Inc.")]
 [assembly: AssemblyProduct("EiffelStudio/ENViSioN!")]
-[assembly: AssemblyCopyright("Eiffel Software Inc. 2004")]
+[assembly: AssemblyCopyright("Eiffel Software Inc. 2007")]
 [assembly: AssemblyTrademark("Eiffel Software Inc.")]
 [assembly: AssemblyCulture("")]		
 
@@ -65,7 +65,7 @@ using System.Runtime.CompilerServices;
 // You can specify all the value or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("5.7.0414.0")]
+[assembly: AssemblyVersion("6.0.6.9104")]
 
 //
 // In order to sign your assembly you must specify a key to use. Refer to the 

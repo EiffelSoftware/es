@@ -82,6 +82,12 @@ inherit
 			default_create
 		end
 
+	PROPERTY_HELPER
+		undefine
+			default_create,
+			copy
+		end
+
 create
 	make,
 	make_for_target
@@ -195,7 +201,6 @@ feature {NONE}-- Initialization
 			hb.disable_item_expand (l_btn)
 			set_default_cancel_button (l_btn)
 
-			close_request_actions.extend (agent on_cancel)
 			show_actions.extend (agent section_tree.set_focus)
 
 				-- add accelerator for opening the context menu
@@ -284,8 +289,9 @@ feature {NONE} -- Agents
 	on_ok is
 			-- Quit with saving
 		do
-			conf_system.store
-			conf_system.set_file_date
+			if conf_system /= Void then
+				commit_changes
+			end
 			hide_actions.call (Void)
 			hide
 		end
@@ -791,6 +797,7 @@ feature {CONFIGURATION_SECTION} -- Section tree selection agents
 			l_vars, l_inh_vars: EQUALITY_HASH_TABLE [STRING, STRING]
 			i: INTEGER
 			l_item: STRING_PROPERTY
+			l_var_key: STRING
 		do
 			current_target := a_target
 			is_refreshing := True
@@ -815,30 +822,31 @@ feature {CONFIGURATION_SECTION} -- Section tree selection agents
 			loop
 				i := grid.row_count
 				create l_item.make ("")
-				l_item.set_value (l_vars.key_for_iteration)
+				l_var_key := l_vars.key_for_iteration
+				l_item.set_value (l_var_key)
 				l_item.pointer_button_press_actions.wipe_out
 				l_item.pointer_double_press_actions.force_extend (agent l_item.activate)
-				l_item.change_value_actions.extend (agent (s: STRING_32; a_vars: EQUALITY_HASH_TABLE [STRING, STRING])
+				l_item.change_value_actions.extend (agent (s: STRING_32; a_var_key: STRING)
 					require
 						s_not_void: s /= Void
-						a_vars_not_void: a_vars /= Void
+						a_var_key_not_void: a_var_key /= Void
 					do
-						update_variable_key (a_vars.key_for_iteration, s.as_string_8)
-					end (?, l_vars))
+						update_variable_key (a_var_key, s.as_string_8)
+					end (?, l_var_key))
 				grid.set_item (1, i + 1, l_item)
 				create l_item.make ("")
 				l_item.set_value (l_vars.item_for_iteration)
 				l_item.pointer_button_press_actions.wipe_out
 				l_item.pointer_double_press_actions.force_extend (agent l_item.activate)
-				l_item.change_value_actions.extend (agent (s: STRING_32; a_vars: EQUALITY_HASH_TABLE [STRING, STRING])
+				l_item.change_value_actions.extend (agent (s: STRING_32; a_var_key: STRING)
 					require
 						s_not_void: s /= Void
-						a_vars_not_void: a_vars /= Void
+						a_var_key_not_void: a_var_key /= Void
 					do
-						update_variable_value (a_vars.key_for_iteration, s.as_string_8)
-					end (?, l_vars))
+						update_variable_value (a_var_key, s.as_string_8)
+					end (?, l_var_key))
 				grid.set_item (2, i + 1, l_item)
-				l_inh_vars.search (l_vars.key_for_iteration)
+				l_inh_vars.search (l_var_key)
 				if l_inh_vars.found then
 					if l_inh_vars.found_item.is_equal (l_vars.item_for_iteration) then
 						-- inherited
@@ -870,6 +878,7 @@ feature {CONFIGURATION_SECTION} -- Section tree selection agents
 			l_vars, l_inh_vars: EQUALITY_HASH_TABLE [STRING, STRING]
 			i: INTEGER
 			l_item: STRING_PROPERTY
+			l_var_key: STRING
 		do
 			current_target := a_target
 			is_refreshing := True
@@ -893,30 +902,31 @@ feature {CONFIGURATION_SECTION} -- Section tree selection agents
 			loop
 				i := grid.row_count
 				create l_item.make ("")
-				l_item.set_value (l_vars.key_for_iteration)
+				l_var_key := l_vars.key_for_iteration
+				l_item.set_value (l_var_key)
 				l_item.pointer_button_press_actions.wipe_out
 				l_item.pointer_double_press_actions.force_extend (agent l_item.activate)
-				l_item.change_value_actions.extend (agent (s: STRING_32; a_vars: EQUALITY_HASH_TABLE [STRING, STRING])
+				l_item.change_value_actions.extend (agent (s: STRING_32; a_var_key: STRING)
 					require
 						s_not_void: s /= Void
-						a_vars_not_void: a_vars /= Void
+						a_var_key_not_void: a_var_key /= Void
 					do
-						update_mapping_key (a_vars.key_for_iteration, s.as_string_8)
-					end (?, l_vars))
+						update_mapping_key (a_var_key, s.as_string_8)
+					end (?, l_var_key))
 				grid.set_item (1, i + 1, l_item)
 				create l_item.make ("")
 				l_item.set_value (l_vars.item_for_iteration)
 				l_item.pointer_button_press_actions.wipe_out
 				l_item.pointer_double_press_actions.force_extend (agent l_item.activate)
-				l_item.change_value_actions.extend (agent (s: STRING_32; a_vars: EQUALITY_HASH_TABLE [STRING, STRING])
+				l_item.change_value_actions.extend (agent (s: STRING_32; a_var_key: STRING)
 					require
 						s_not_void: s /= Void
-						a_vars_not_void: a_vars /= Void
+						a_var_key_not_void: a_var_key /= Void
 					do
-						update_mapping_value (a_vars.key_for_iteration, s.as_string_8)
-					end (?, l_vars))
+						update_mapping_key (a_var_key, s.as_string_8)
+					end (?, l_var_key))
 				grid.set_item (2, i + 1, l_item)
-				l_inh_vars.search (l_vars.key_for_iteration)
+				l_inh_vars.search (l_var_key)
 				if l_inh_vars.found then
 					if l_inh_vars.found_item.is_equal (l_vars.item_for_iteration) then
 						-- inherited
@@ -963,6 +973,15 @@ feature {CONFIGURATION_SECTION} -- Section tree selection agents
 		end
 
 feature {NONE} -- Implementation
+
+	commit_changes is
+			-- Commits configuration changes
+		require
+			conf_system_attached: conf_system /= Void
+		do
+			conf_system.store
+			conf_system.set_file_date
+		end
 
 	group_section_expanded_status: HASH_TABLE [BOOLEAN, STRING_GENERAL] is
 			-- Expanded status of sections of groups.
@@ -1018,6 +1037,10 @@ feature {NONE} -- Implementation
 		do
 			l_cmd_string := external_editor_command.item ([conf_system.file_name, 1])
 			if l_cmd_string /= Void and then not l_cmd_string.is_empty then
+					-- Commit changes
+				if conf_system /= Void then
+					commit_changes
+				end
 				create l_env
 				l_env.launch (l_cmd_string)
 			end
@@ -1099,7 +1122,7 @@ feature {NONE} -- Implementation
 			properties.add_property (l_choice_prop)
 
 				-- readonly
-			create l_bool_prop.make_with_value (conf_interface_names.system_readonly_name, conf_system.is_readonly)
+			l_bool_prop := new_boolean_property (conf_interface_names.system_readonly_name, conf_system.is_readonly)
 			l_bool_prop.set_description (conf_interface_names.system_readonly_description)
 			l_bool_prop.change_value_actions.extend (agent conf_system.set_readonly)
 			l_bool_prop.change_value_actions.extend (agent change_no_argument_boolean_wrapper (?, agent handle_value_changes (False)))
@@ -1263,7 +1286,7 @@ feature {NONE} -- Implementation
 			properties.add_property (l_dir_prop)
 
 				-- must succeed
-			create l_bool_prop.make_with_value (conf_interface_names.task_succeed_name, a_task.must_succeed)
+			l_bool_prop := new_boolean_property (conf_interface_names.task_succeed_name, a_task.must_succeed)
 			l_bool_prop.set_description (conf_interface_names.task_succeed_description)
 			l_bool_prop.change_value_actions.extend (agent a_task.set_must_succeed)
 			l_bool_prop.change_value_actions.extend (agent change_no_argument_boolean_wrapper (?, agent handle_value_changes (False)))
@@ -1300,14 +1323,15 @@ feature {NONE} -- Configuration setting
 			current_target: current_target /= Void
 			variables: grid /= Void
 		local
-			l_item: TEXT_PROPERTY [STRING]
+			l_item: TEXT_PROPERTY [STRING_GENERAL]
 		do
 			if grid.selected_rows /= Void and then not grid.selected_rows.is_empty then
 				l_item ?= grid.selected_rows.first.item (1)
 				check
 					valid_item: l_item /= Void
+					valid_value: l_item.value /= Void
 				end
-				current_target.remove_variable (l_item.value)
+				current_target.remove_variable (l_item.value.as_string_8)
 				show_properties_target_variables (current_target)
 			end
 		end
@@ -1320,7 +1344,7 @@ feature {NONE} -- Configuration setting
 			an_old_key_valid: current_target.variables.has (an_old_key)
 		do
 			if a_new_key /= Void and then not a_new_key.is_empty then
-				current_target.variables.replace_key (a_new_key.as_lower, an_old_key)
+				current_target.internal_variables.replace_key (a_new_key.as_lower, an_old_key)
 			end
 			show_properties_target_variables (current_target)
 		end
@@ -1355,14 +1379,14 @@ feature {NONE} -- Configuration setting
 			current_target: current_target /= Void
 			variables: grid /= Void
 		local
-			l_item: TEXT_PROPERTY [STRING]
+			l_item: TEXT_PROPERTY [STRING_GENERAL]
 		do
 			if grid.selected_rows /= Void and then not grid.selected_rows.is_empty then
 				l_item ?= grid.selected_rows.first.item (1)
 				check
 					valid_item: l_item /= Void
 				end
-				current_target.remove_mapping (l_item.text)
+				current_target.remove_mapping (l_item.text.as_string_8)
 				show_properties_target_mapping (current_target)
 			end
 		end
@@ -1375,7 +1399,7 @@ feature {NONE} -- Configuration setting
 			an_old_key_valid: current_target.mapping.has (an_old_key)
 		do
 			if (create {EIFFEL_SYNTAX_CHECKER}).is_valid_class_name (a_new_key) then
-				current_target.mapping.replace_key (a_new_key.as_upper, an_old_key)
+				current_target.internal_mapping.replace_key (a_new_key.as_upper, an_old_key)
 			end
 			show_properties_target_mapping (current_target)
 		end

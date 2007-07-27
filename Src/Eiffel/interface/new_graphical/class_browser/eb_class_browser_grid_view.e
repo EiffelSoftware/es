@@ -42,6 +42,8 @@ inherit
 			grid
 		end
 
+	EVS_GENERAL_TOOLTIP_UTILITY
+
 feature{NONE} -- Initialization
 
 	make (a_dev_window: like development_window; a_drop_actions: like drop_actions) is
@@ -722,31 +724,8 @@ feature {NONE} -- Implementation
 
 	default_row_height: INTEGER is
 			-- Default height to set grid rows.
-		local
-			l_height: INTEGER
-			l_font_table: like label_font_table
-			l_index, l_count: INTEGER
 		do
-			if is_fixed_fonts_used then
-				from
-					l_font_table := label_font_table
-					l_count := l_font_table.count
-				until
-					l_index = l_count
-				loop
-					if l_font_table.item (l_index) /= Void then
-						l_height := l_font_table.item (l_index).height
-						if l_height > Result then
-							Result := l_height
-						end
-					end
-					l_index := l_index + 1
-				end
-				Result := Result.max (pixmap_height) + 1
-			else
-				Result := line_height.max (pixmap_height) + 1
-					-- We make sure we give enough space to display the pixmap.
-			end
+			Result := grid_row_height_for_tokens (not is_fixed_fonts_used)
 		end
 
 	quick_search_bar: EB_GRID_QUICK_SEARCH_TOOL
@@ -784,6 +763,7 @@ feature {NONE} -- Implementation
 			-- Update current view according to change in `model'.
 		do
 			if not is_up_to_date then
+				tooltip_window.hide_tooltip
 				if data /= Void then
 					text.hide
 					component_widget.show

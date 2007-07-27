@@ -67,6 +67,7 @@ feature  -- Agents
 		local
 			l_auto_hide_zone: SD_AUTO_HIDE_ZONE
 			l_zones: ARRAYED_LIST [SD_ZONE]
+			l_content: SD_CONTENT
 		do
 			l_zones := internal_docking_manager.zones.zones.twin
 			from
@@ -82,7 +83,10 @@ feature  -- Agents
 							l_zones.item.content.focus_in_actions.call (Void)
 						end
 					else
-						l_auto_hide_zone ?= internal_docking_manager.property.last_focus_content.state.zone
+						l_content := internal_docking_manager.property.last_focus_content
+						if l_content /= Void then
+							l_auto_hide_zone ?= l_content.state.zone
+						end
 						if l_auto_hide_zone = Void and not ignore_additional_click then
 							internal_docking_manager.command.remove_auto_hide_zones (True)
 						elseif l_auto_hide_zone /= Void then
@@ -125,6 +129,9 @@ feature  -- Agents
 
 	on_resize (a_x: INTEGER; a_y: INTEGER; a_width: INTEGER; a_height: INTEGER; a_force: BOOLEAN) is
 			-- Handle resize zone event. Resize all the widgets in fixed_area (EV_FIXED).
+		local
+			l_width: INTEGER
+			l_main_container: SD_MULTI_DOCK_AREA
 		do
 			debug ("docking")
 				io.put_string ("%N SD_DOCKING_MANAGER on_resize ~~~~~~~~~~~~~~~~~~~~")
@@ -136,7 +143,16 @@ feature  -- Agents
 
 			if a_width > 0 then
 				internal_docking_manager.internal_viewport.set_item_width (internal_docking_manager.internal_viewport.width)
-				internal_docking_manager.fixed_area.set_item_width (internal_docking_manager.query.inner_container_main , internal_docking_manager.fixed_area.width)
+
+				-- We have to make sure `l_width' not smaller than the minimum width of `l_main_container''s item.
+				-- Otherwise, it will cause bug#12065. This bug ONLY happens on Solaris (both CDE and JDS), not happens on Windows, Ubuntu.
+				-- And we don't need to care about the height of `l_main_container''s item since it works fine.
+				l_main_container := internal_docking_manager.query.inner_container_main
+				l_width := internal_docking_manager.fixed_area.width
+				if l_main_container.item /= Void and then l_width < l_main_container.item.minimum_width then
+					l_width := l_main_container.item.minimum_width
+				end
+				internal_docking_manager.fixed_area.set_item_width (l_main_container , l_width)
 			end
 			if a_height > 0 then
 				internal_docking_manager.internal_viewport.set_item_height (internal_docking_manager.internal_viewport.height)
@@ -200,13 +216,13 @@ feature  -- Agents
 			end
 		end
 
-	on_top_level_window_focus_out is
+	on_top_level_window_focus_out
 			-- Handle top level window focus out actions.
 		local
 			l_floating_zones: ARRAYED_LIST [SD_FLOATING_ZONE]
 			l_has_focus: BOOLEAN
 		do
-			if not internal_docking_manager.main_window.is_destroyed then
+			if not internal_docking_manager.main_window.is_destroyed and not internal_docking_manager.property.is_opening_config then
 				l_floating_zones := internal_docking_manager.query.floating_zones
 				l_has_focus := internal_docking_manager.main_window.has_focus
 				if not l_has_focus then

@@ -73,11 +73,12 @@ feature{NONE} -- Initialization
 	build_interface is
 			-- Build interface
 		do
+			initialize
+
 			create history_manager.make (Current)
 			create address_manager.make (Current, True)
 			address_manager.set_context_menu_factory (develop_window.menus.context_menu_factory)
 
-			initialize
 			build_formatters
 			fill_in
 			on_select
@@ -719,7 +720,7 @@ feature{NONE} -- Actions
 	on_project_loaded is
 			-- Action to be performed when project is loaded into EiffelStudio
 		do
-			reload_customized_formatter (False)
+			reload_customized_formatter (True)
 		end
 
 feature{NONE} -- Implementation

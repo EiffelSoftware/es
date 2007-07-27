@@ -135,7 +135,8 @@ rt_public struct dbinfo d_data = {
 	0, 				/* db_status */
 	0,				/* db_callstack_depth */
 	0,				/* db_callstack_depth_stop */
-	0				/* db_stepinto_mode */
+	0,				/* db_stepinto_mode */
+	0				/* db_discard_breakpoints */
 };	/* Global debugger information */
 
 /*
@@ -170,7 +171,6 @@ doc:		<fixme>No synchronization is done on accessing fileds of this structure.</
 doc:	</attribute>
 */
 rt_shared struct dbglobalinfo d_globaldata = {
-	0,				/* db_discard_breakpoints */
 	NULL			/* db_bpinfo */
 };
 
@@ -190,7 +190,7 @@ rt_private EIF_LW_MUTEX_TYPE  *db_mutex;	/* Mutex to protect `dstop' against con
 #define DBGMTX_DESTROY \
 	EIF_LW_MUTEX_DESTROY(db_mutex, "Cannot destroy mutex for the debugger [dbreak]\n");
 #define DBGMTX_LOCK	\
-	EIF_ENTER_C; EIF_ASYNC_SAFE_LW_MUTEX_LOCK(db_mutex, "Cannot lock mutex for the debugger [dbreak]\n"); EIF_EXIT_C;
+	EIF_ENTER_C; EIF_ASYNC_SAFE_LW_MUTEX_LOCK(db_mutex, "Cannot lock mutex for the debugger [dbreak]\n"); EIF_EXIT_C; RTGC
 #define DBGMTX_UNLOCK \
 	EIF_ASYNC_SAFE_LW_MUTEX_UNLOCK(db_mutex, "Cannot unlock mutex for the debugger [dbreak]\n"); 
 #else
@@ -243,9 +243,6 @@ rt_private struct ex_vect *last_call(EIF_CONTEXT_NOARG);	/* Last call recorded o
 rt_public void dmove(int offset);					/* Move inside calling context stack */
 rt_private void call_down(int level);				/* Move cursor downwards */
 rt_private void call_up(int level);					/* Move cursor upwards */
-
-/* Updating once supermelted routines */
-rt_private void write_long(char *where, long int value);
 
 
 /*
@@ -336,7 +333,8 @@ rt_public void discard_breakpoints()
 	 * ...                        <-- breakpoints no more discarded.
 	 */
 
-	d_globaldata.db_discard_breakpoints++; 
+	EIF_GET_CONTEXT
+	d_data.db_discard_breakpoints++; 
 }
 
 rt_public void undiscard_breakpoints()
@@ -358,7 +356,9 @@ rt_public void undiscard_breakpoints()
 	 * undiscard_breakpoints
 	 * ...                        <-- breakpoints no more discarded.
 	 */
-	d_globaldata.db_discard_breakpoints--;
+
+	EIF_GET_CONTEXT
+	d_data.db_discard_breakpoints--;
 }
 
 rt_public void dstart(EIF_CONTEXT_NOARG)
@@ -592,15 +592,16 @@ rt_public void dstop(struct ex_vect *exvect, uint32 break_index)
 			
 	if (debug_mode) {
 		RT_GET_CONTEXT
-		EIF_GET_CONTEXT	/* Not declared at the beggining because we only need it here.
+		EIF_GET_CONTEXT	/* Not declared at the beginning because we only need it here.
 						 * As dstop is called even when the application is not launched
 						 * from Estudio, we can avoid the execution of this declaration
  						 * when the application is started from the command line
  						 */
-		DBGMTX_LOCK;	/* Enter critical section */
-		if (!d_globaldata.db_discard_breakpoints) {
+		if (!d_data.db_discard_breakpoints) {
 			int stopped = 0;
 			BODY_INDEX bodyid = exvect->ex_bodyid;
+
+			DBGMTX_LOCK;	/* Enter critical section */
  
 			if (should_be_interrupted() && dinterrupt()) {	/* Ask daemon whether application should be interrupted here.*/
 					/* update previous value for next call */
@@ -651,8 +652,8 @@ rt_public void dstop(struct ex_vect *exvect, uint32 break_index)
 				previous_break_index = break_index;
 				stopped = 1;
 			}
+			DBGMTX_UNLOCK; /* Leave critical section */
 		}
-		DBGMTX_UNLOCK; /* Leave critical section */
 	}
 }
 
@@ -661,45 +662,35 @@ rt_public void dstop_nested(struct ex_vect *exvect, uint32 break_index)
 	/* args: ex_vect, current execution vector     */
 	/*       break_index, current offset (i.e. line number in stoppoints mode) within feature */
 {
-	BODY_INDEX bodyid;
 
 	if (debug_mode) {	
 		RT_GET_CONTEXT
-		EIF_GET_CONTEXT	/* Not declared at the beggining because we only need it here.
+		EIF_GET_CONTEXT	/* Not declared at the beginning because we only need it here.
 	   					* As dstop if called even when the application is not launched
 	   					* with Estudio, we can avoid the execution of this declaration
 	   					* when the application is started from the command line
 	   					*/
 
-		DBGMTX_LOCK;	/* Enter critical section */
-						
-		if (d_globaldata.db_discard_breakpoints) { /* test the 'discard_breakpoint' flag */
+		if (!d_data.db_discard_breakpoints) {
+			BODY_INDEX bodyid = exvect->ex_bodyid;
+			DBGMTX_LOCK;	/* Enter critical section */
+				
+			if (previous_bodyid == bodyid && previous_break_index == break_index) {
+				/* We are in a middle of a qualified call, then ignore stop */
+			} else {
+				if (d_data.db_stepinto_mode || d_data.db_callstack_depth < d_data.db_callstack_depth_stop) {
+						/* IF: (test stepinto flag) or (test the stack depth) */
+					d_data.db_stepinto_mode = 0;		/* remove the stepinto flag if it was not
+														   already cleared 							 */
+					d_data.db_callstack_depth_stop = 0;	/* remove the stack stop if it was activated */
+					safe_dbreak(PG_STEP);		 		/* stop the application */
+				}
+			}
+
+			/* we don't test the other case: breakpoint & interruption to avoid
+			 * stopping in the middle of a nested call */
 			DBGMTX_UNLOCK; /* Leave critical section */
-			return;
 		}
-
-		bodyid = exvect->ex_bodyid;
-			
-		/* test if we are in a middle of a qualified call, if so, ignore stop */
-		if (previous_bodyid == bodyid && previous_break_index==break_index) {
-			DBGMTX_UNLOCK; /* Leave critical section */
-			return;
-		}
-			
-		if 
-			(d_data.db_stepinto_mode /* test stepinto flag */
-			|| d_data.db_callstack_depth < d_data.db_callstack_depth_stop) /* test the stack depth */
-		{
-			d_data.db_stepinto_mode = 0;		/* remove the stepinto flag if it was not
-												   already cleared */
-			d_data.db_callstack_depth_stop = 0;	/* remove the stack stop if it was activated */
-			safe_dbreak(PG_STEP);		 			/* stop the application */
-		}
-
-		/* we don't test the other case: breakpoint & interruption to avoid
-		 * stopping in the middle of a nested call */
-
-		DBGMTX_UNLOCK; /* Leave critical section */
 	}
 }
 /*************************************************************************************************************************
@@ -1745,32 +1736,13 @@ rt_public struct item *docall(EIF_CONTEXT register BODY_INDEX body_id, register 
 	if (egc_frozen [body_id]) { 
 			/* Frozen feature */
 		pid = (uint32) FPatId(body_id);
-		(pattern[pid].toc)(egc_frozen[body_id], 0);		/* Call pattern */
+		(pattern[pid].toc)(egc_frozen[body_id]);		/* Call pattern */
 	} else
 		xinterp(melt[body_id]);
 	IC = OLD_IC;				/* Restore IC back-up */
 
 	return opop();				/* Return the result of the once function */
 								/* and remove it from the operational stack */
-}
-
-rt_private void write_long(char *where, long int value)
-{
-	/* Routine taken from `update.c' and this one should be modified in relation
-	 * to the content of `update.c' */
-	/* Write 'value' in possibly mis-aligned address 'where' */
-
-	union {
-		char xtract[sizeof(long)];
-		long value;
-	} xlong;
-	char *p = (char *) &xlong;
-	int i;
-
-	xlong.value = value;
-
-	for (i = 0; i < sizeof(long); i++)
-		where [i] = *p++;
 }
 
 /************************************************************************ 

@@ -1,8 +1,10 @@
 indexing
 	description: "[
 					 Set of types. This class encapsulates features to handle conformance and feature lookup on a set of types .
+					 Refactoring:
 					 TODO: This class could be made generic constrained to TYPE_A. 
 					 The issue is that the agent conformance does not allow it because some features become invalid.
+					 TODO: feature_i_* and e_feature_* are very similar. Maybe get rid of e_feature_*?
 				]"
 	author: ""
 	date: "$Date$"
@@ -107,10 +109,13 @@ feature -- Access
 			-- Use features from the family `info_about_feature*' to get detailed information.
 		require
 			a_name_not_void: a_name /= Void
+			not_has_formal: not has_formal
 		do
 			Result := feature_i_state_by_name_id (a_name.name_id)
 		ensure
 			result_not_void: Result /= Void
+			e_feature_relation: e_feature_state (a_name).features_found_count = Result.features_found_count and then
+								e_feature_state (a_name).class_type_of_feature.same_as (Result.class_type_of_feature)
 		end
 
 	feature_i_state_by_name_id (a_name_id: INTEGER): TUPLE [feature_item: FEATURE_I; class_type_of_feature: CL_TYPE_A; features_found_count: INTEGER; constraint_position: INTEGER]  is
@@ -154,14 +159,22 @@ feature -- Access
 					if
 						l_feature /= Void
 					then
-						l_constraint_position := cursor.index
-						l_last_feature  :=  l_feature
 						l_class_type ?= l_item.type
 							-- This check is guaranteed by the precondition.
 						check l_class_type_not_void: l_class_type /= Void end
-
-						if l_last_class_type = Void or else (not l_class_type.same_as (l_last_class_type)) then
-								-- Only if we found a true new static type we count up.
+							-- A "new" feature is found and we "count up" if...
+						if
+								-- we have not found anything so far,
+							l_last_class_type = Void or else
+								-- the class providing the feature changed or
+							not l_last_class_type.same_as (l_class_type) or else
+								-- the feature changed
+							not l_last_feature.equiv (l_feature)
+						then
+								-- Only if we found a true new static type we update our information.
+							l_last_class_type := l_class_type
+							l_constraint_position := cursor.index
+							l_last_feature  :=  l_feature
 							l_features_found_count := l_features_found_count + 1
 						else
 							-- If it was the same static type that is ok because it does not change anything
@@ -170,7 +183,6 @@ feature -- Access
 							-- There are more complex examples which lead to the same effect where it makes
 							-- more sense than this given example.
 						end
-						l_last_class_type := l_class_type
 					end
 
 				end
@@ -186,6 +198,7 @@ feature -- Access
 			result_not_void: Result /= Void
 			result_semantic_correct: Result.feature_item = Void implies (Result.class_type_of_feature = Void and Result.features_found_count /= 1)
 			result_semantic_correct: Result.features_found_count > 1  implies (Result.feature_item = Void and Result.class_type_of_feature = Void)
+			e_feature_relation: e_feature_state_by_name_id (a_name_id).features_found_count = Result.features_found_count
 		end
 
 	feature_i_state_by_rout_id (a_routine_id: INTEGER): TUPLE [feature_item: FEATURE_I; class_type_of_feature: CL_TYPE_A; features_found_count: INTEGER; constraint_position: INTEGER]
@@ -196,7 +209,7 @@ feature -- Access
 			-- If there are multiple features found use `features_found_count' from the result tuple to find out how many.
 			-- Use features from the family `info_about_feature*' to get detailed information.
 		require
-			not_loose: not is_loose
+			not_has_formal: not has_formal
 		local
 			l_last_feature, l_feature: FEATURE_I
 			l_class_type: CL_TYPE_A
@@ -224,9 +237,17 @@ feature -- Access
 					l_class_type ?= l_item.type
 						-- This check is guaranteed by the precondition.
 					check l_class_type_not_void: l_class_type /= Void end
-
 						-- See comments in `feature_i_state_by_name_id'
-					if l_last_class_type = Void or else (not l_class_type.same_as (l_last_class_type)) then
+							-- A "new" feature is found and we "count up" if...
+					if
+							-- we have not found anything so far,
+						l_last_class_type = Void or else
+							-- the class providing the feature changed or
+						not l_last_class_type.same_as (l_class_type) or else
+							-- the feature changed
+						not l_last_feature.equiv (l_feature)
+					then
+
 						l_features_found_count := l_features_found_count + 1
 					end
 					l_last_class_type := l_class_type
@@ -243,7 +264,7 @@ feature -- Access
 			result_not_void: Result /= Void
 			result_semantic_correct: Result.feature_item = Void implies (Result.class_type_of_feature = Void and Result.features_found_count /= 1)
 			result_semantic_correct: Result.features_found_count > 1  implies (Result.feature_item = Void and Result.class_type_of_feature = Void)
-
+			e_feature_relation: e_feature_state_by_rout_id (a_routine_id).features_found_count = Result.features_found_count
 		end
 
 	any_feature_i_by_routine_id (a_routine_id: INTEGER): TUPLE [feature_item: FEATURE_I; class_type: RENAMED_TYPE_A [TYPE_A]]
@@ -252,7 +273,7 @@ feature -- Access
 			-- `a_routine_id' is a routine id for which we query all types in the type set.
 			--| An assignment attempt is needed.
 		require
-			not_loose: not is_loose
+			not_has_formal: not has_formal
 		local
 			l_class: CLASS_C
 			l_feat: FEATURE_I
@@ -275,13 +296,13 @@ feature -- Access
 			end
 		end
 
-	feature_i_list_by_rout_id (a_routine_id: INTEGER): ARRAYED_LIST[TUPLE[feature_item: FEATURE_I; class_type: RENAMED_TYPE_A [TYPE_A]]]
+	feature_i_list_by_rout_id (a_routine_id: INTEGER): ARRAYED_LIST [TUPLE[feature_item: FEATURE_I; class_type: RENAMED_TYPE_A [TYPE_A]]]
 			-- Builds a list of pairs of FEATURE_I and RENAMED_TYPE_A [TYPE_A] which all have a feature with routine id `a_routine_id'.
 			--
 			-- `a_routine_id' is the routine ID of the routine for which the list is built.
 			--| If you are just interested in any feature for a given routine id use `first_feature_i'
 		require
-			not_loose: not is_loose
+			not_has_formal: not has_formal
 		local
 			l_class: CLASS_C
 			l_feat: FEATURE_I
@@ -307,7 +328,26 @@ feature -- Access
 			Result_not_void: Result /= Void
 		end
 
-	feature_i_state_by_alias (an_alias: STRING): TUPLE [feature_item: FEATURE_I; class_type_of_feature: CL_TYPE_A; features_found_count: INTEGER;  constraint_position: INTEGER]  is
+	feature_i_state_by_alias_name (an_alias_name: STRING): TUPLE [feature_item: FEATURE_I; class_type_of_feature: CL_TYPE_A; features_found_count: INTEGER;  constraint_position: INTEGER]  is
+			-- Compute feature state.
+			--
+			-- `an_alias_name': A feature alias for which the state is computed.
+			-- Returns `feature_item' void if the feature cannot be found in the type set.
+			-- If there are multiple features found use `features_found_count' from the result tuple to find out how many.
+			-- Use features from the family `info_about_feature*' to get detailed information.
+		require
+			an_alias_name_not_void: an_alias_name /= Void
+			not_has_formal: not has_formal
+		do
+			Result := feature_i_state_by_alias_name_id (names_heap.id_of (an_alias_name))
+		ensure
+				-- It basically states that if there is exactly one feature you get the result, otherwise feature_item and class_of_feature are void.
+			result_not_void: Result /= Void
+			result_semantic_correct: Result.feature_item = Void implies (Result.class_type_of_feature = Void and Result.features_found_count /= 1)
+			result_semantic_correct: Result.features_found_count > 1  implies (Result.feature_item = Void and Result.class_type_of_feature = Void)
+		end
+
+	feature_i_state_by_alias_name_id (an_alias_name_id: INTEGER): like feature_i_state_by_alias_name
 			-- Compute feature state.
 			--
 			-- `an_alias' is a feature alias for which the state is computed.
@@ -315,16 +355,16 @@ feature -- Access
 			-- If there are multiple features found use `features_found_count' from the result tuple to find out how many.
 			-- Use features from the family `info_about_feature*' to get detailed information.
 		require
-			an_alias_not_void: an_alias /= Void
-			not_loose: not is_loose
+			not_has_formal: not has_formal
 		local
 			l_last_feature, l_feature: FEATURE_I
 			l_class_c: CLASS_C
-			l_last_class_type: CL_TYPE_A
+			l_class_type, l_last_class_type: CL_TYPE_A
 			l_constraint_position: INTEGER
 				-- The Position at which the constraint where the feature was selected from is written.
 			l_features_found_count: INTEGER
 			l_item: RENAMED_TYPE_A [TYPE_A]
+			l_renaming: RENAMING_A
 		do
 			from
 				start
@@ -333,17 +373,37 @@ feature -- Access
 			loop
 				l_item := item
 				if l_item.has_associated_class then
+					l_renaming := l_item.renaming
 					l_class_c := l_item.associated_class
-					l_feature :=  l_class_c.feature_table.alias_item (an_alias)
+					if l_renaming = Void then
+						l_feature :=  l_class_c.feature_table.item_alias_id (an_alias_name_id)
+					else
+						l_feature :=  l_class_c.feature_table.item_id (l_renaming.renamed (an_alias_name_id))
+					end
+
 					if
 						l_feature /= Void
 					then
-						l_constraint_position := cursor.index
-						l_last_feature  :=  l_feature
-						l_last_class_type ?= l_item.type
-							-- Precondition should ensure this.
-						check class_type_not_void: l_last_class_type /= Void end
-						l_features_found_count := l_features_found_count + 1
+						l_class_type ?= l_item.type
+								-- Precondition should ensure this.
+						check class_type_not_void: l_class_type /= Void end
+							-- A "new" feature is found and we "count up" if...
+						if
+								-- we have not found anything so far,
+							l_last_class_type = Void or else
+								-- the class providing the feature changed or
+							not l_last_class_type.same_as (l_class_type) or else
+								-- the feature changed
+							not l_last_feature.equiv (l_feature)
+						then
+							l_constraint_position := cursor.index
+							l_last_feature  :=  l_feature
+							l_last_class_type := l_class_type
+							l_features_found_count := l_features_found_count + 1
+						else
+								-- See `feature_i_state_by_name_id' for more comments.
+						end
+
 					end
 				end
 				forth
@@ -373,6 +433,7 @@ feature -- Access
 			Result := e_feature_state_by_name_id (a_name.name_id)
 		ensure
 			result_not_void: Result /= Void
+			feature_i_relation: feature_i_state (a_name).features_found_count = Result.features_found_count
 		end
 
 	e_feature_state_by_name  (a_name: STRING): TUPLE [feature_item: E_FEATURE; class_type_of_feature: CL_TYPE_A; features_found_count: INTEGER; constraint_position: INTEGER]
@@ -387,12 +448,14 @@ feature -- Access
 			not_has_formal: not has_formal
 		do
 			Result := e_feature_state_by_name_id (names_heap.id_of (a_name))
+		ensure
+			feature_i_relation: feature_i_state_by_name_id (names_heap.id_of (a_name)).features_found_count = Result.features_found_count 
 		end
 
 	e_feature_state_by_name_id (a_name_id: INTEGER): TUPLE [feature_item: E_FEATURE; class_type_of_feature: CL_TYPE_A; features_found_count: INTEGER; constraint_position: INTEGER]  is
 			-- Compute feature state.	
 			--
-			-- `a_name_id' is the `names_heap'-id of the feature name string.
+			-- `a_name_id': It is the `names_heap'-id of the feature name string.
 			-- Returns `feature_item' void if the feature cannot be found in the type set.
 			-- If there are multiple features found use `features_found_count' from the result tuple to find out how many.
 			-- Use features from the family `info_about_feature*' to get detailed information.
@@ -401,13 +464,14 @@ feature -- Access
 		local
 			l_item: TYPE_A
 			l_last_feature: E_FEATURE
-			l_feature: FEATURE_I
+			l_feature, l_last_feature_i: FEATURE_I
 			l_last_class_type: CL_TYPE_A
 			l_class_c: CLASS_C
 			l_features_found_count: INTEGER
 			l_renaming: RENAMING_A
 			l_constraint_position: INTEGER
 			l_feature_table: FEATURE_TABLE
+			l_class_type: CL_TYPE_A
 		do
 			from
 				start
@@ -433,12 +497,24 @@ feature -- Access
 						if
 							l_feature /= Void
 						then
-							l_constraint_position := cursor.index
-							l_last_feature  :=  l_feature.api_feature (l_class_c.class_id)
-							l_last_class_type ?= item.type
+							l_class_type ?= item.type
 								-- This check is guaranteed by the precondition.
-							check l_last_class_type_not_void: l_last_class_type /= Void end
-							l_features_found_count := l_features_found_count + 1
+							check l_class_type_not_void: l_class_type /= Void end
+							-- A "new" feature is found and we "count up" if...
+							if
+									-- we have not found anything so far,
+								l_last_class_type = Void or else
+									-- the class providing the feature changed or
+								not l_last_class_type.same_as (l_class_type) or else
+									-- the feature changed
+								not l_last_feature_i.equiv (l_feature)
+							then
+								l_constraint_position := cursor.index
+								l_last_feature_i := l_feature
+								l_last_feature  :=  l_feature.api_feature (l_class_c.class_id)
+								l_last_class_type := l_class_type
+								l_features_found_count := l_features_found_count + 1
+							end
 						end
 					end
 				end
@@ -454,6 +530,7 @@ feature -- Access
 			result_not_void: Result /= Void
 			result_semantic_correct: Result.feature_item = Void implies (Result.class_type_of_feature = Void and Result.features_found_count /= 1)
 			result_semantic_correct: Result.features_found_count > 1  implies (Result.feature_item = Void and Result.class_type_of_feature = Void)
+			feature_i_relation: feature_i_state_by_name_id (a_name_id).features_found_count = Result.features_found_count
 		end
 
 	e_feature_state_by_rout_id (a_routine_id: INTEGER): TUPLE [feature_item: E_FEATURE; class_type_of_feature: CL_TYPE_A; features_found_count: INTEGER; constraint_position: INTEGER]  is
@@ -504,12 +581,42 @@ feature -- Access
 			result_not_void: Result /= Void
 			result_semantic_correct: Result.feature_item = Void implies (Result.class_type_of_feature = Void and Result.features_found_count /= 1)
 			result_semantic_correct: Result.features_found_count > 1  implies (Result.feature_item = Void and Result.class_type_of_feature = Void)
+			feature_i_relation: feature_i_state_by_rout_id (a_routine_id).features_found_count = Result.features_found_count
+		end
+
+	any_e_feature_by_routine_id (a_routine_id: INTEGER): TUPLE [feature_item: E_FEATURE; class_type: RENAMED_TYPE_A [TYPE_A]]
+			-- Returns the first matching feature and its class type
+			--
+			-- `a_routine_id' is a routine id for which we query all types in the type set.
+			--| An assignment attempt is needed.
+		require
+			not_has_formal: not has_formal
+		local
+			l_class: CLASS_C
+			l_feat: E_FEATURE
+			l_item: RENAMED_TYPE_A [TYPE_A]
+		do
+			from
+				start
+			until
+				after or Result /= Void
+			loop
+				l_item := item
+					-- implied by precondition: not_loose
+				check has_associated_class: l_item.has_associated_class end
+				l_class := l_item.associated_class
+				l_feat := l_class.feature_with_rout_id (a_routine_id)
+				if l_feat /= Void then
+					Result := [l_feat, l_item]
+				end
+				forth
+			end
 		end
 
 	e_feature_list_by_rout_id (a_routine_id: INTEGER): ARRAYED_LIST[TUPLE[feature_item: E_FEATURE; class_type: RENAMED_TYPE_A [TYPE_A]]]
 			--
 		require
-			not_loose: not is_loose
+			not_has_formal: not has_formal
 		local
 			l_class: CLASS_C
 			l_feat: E_FEATURE

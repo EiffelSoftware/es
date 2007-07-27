@@ -125,6 +125,22 @@ feature -- Status setting
 			is_transport_disabled: not is_transport_enabled
 		end
 
+	reset_pebble_function
+			-- Reset any values created by calling `pebble_function'.
+		local
+			l_pebble_function: like pebble_function
+		do
+			l_pebble_function := pebble_function
+			if l_pebble_function /= Void then
+				l_pebble_function.clear_last_result
+				pebble := Void
+			end
+		ensure
+			pebble_function_preserved: pebble_function = old pebble_function
+			pebble_without_function: pebble_function = Void implies (pebble = old pebble)
+			pebble_with_function: pebble_function /= Void implies pebble = Void
+		end
+
 	enable_transport is
             		-- Activate pick/drag and drop mechanism.
 		require

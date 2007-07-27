@@ -45,6 +45,7 @@ feature {NONE} -- Initialization
 		ensure
 			set: is_vertical = a_vertical
 			set: docking_manager = a_docking_manager
+			tool_bar_not_void: tool_bar /= Void
 		end
 
 	init_drag_area is
@@ -170,6 +171,8 @@ feature -- Command
 
 	float (a_screen_x, a_screen_y: INTEGER; a_visible: BOOLEAN) is
 			-- Float to `a_screen_x' and `a_screen_y'.
+		local
+			l_platform: PLATFORM
 		do
 			destroy_parent_containers
 
@@ -195,6 +198,14 @@ feature -- Command
 			end
 			if a_visible then
 				floating_tool_bar.show
+			end
+
+			-- We have to set position again after showing on Solaris. Otherwise it will cause bug#12873.
+			-- The vertical position problem only happens on Solaris JDS. Not happens on Windows, Ubuntu (both GNome and KDE) and
+			-- Solaris CDE. Maybe it's a bug of JDS.
+			create l_platform
+			if l_platform.is_unix then
+				floating_tool_bar.set_position (a_screen_x, a_screen_y)
 			end
 
 			docking_manager.tool_bar_manager.floating_tool_bars.extend (floating_tool_bar)
@@ -244,6 +255,7 @@ feature -- Command
 			l_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 		do
 			content := a_content
+			tool_bar.set_content (a_content)
 			a_content.set_zone (Current)
 			l_items := a_content.items.twin
 			from
@@ -324,6 +336,9 @@ feature -- Query
 		do
 			Result := floating_tool_bar /= Void
 		end
+
+	customize_dialog: SD_TOOL_BAR_CUSTOMIZE_DIALOG
+			-- SD_TOOL_BAR_CUSTOMIZE_DIALOG if exists.
 
 	tool_bar: SD_TOOL_BAR
 			-- Tool bar which managed by Current.
@@ -483,7 +498,7 @@ feature {NONE} -- Implmentation
 	hash_code: INTEGER is
 			-- Hash code is index in all tool bar zones.
 		do
-			Result := docking_manager.tool_bar_manager.contents.index_of (Current.content, 1)
+			Result := docking_manager.tool_bar_manager.contents.index_of (content, 1)
 		end
 
 	internal_shared: SD_SHARED
@@ -559,7 +574,7 @@ feature {NONE} -- Implmentation
 			end
 		end
 
-feature {SD_TOOL_BAR_ZONE_ASSISTANT, SD_TOOL_BAR_HIDDEN_ITEM_DIALOG, SD_FLOATING_TOOL_BAR_ZONE, SD_TOOL_BAR} -- Internal issues
+feature {SD_TOOL_BAR_ZONE_ASSISTANT, SD_TOOL_BAR_HIDDEN_ITEM_DIALOG, SD_FLOATING_TOOL_BAR_ZONE, SD_TOOL_BAR, SD_TOOL_BAR_CONTENT} -- Internal issues
 
 	tail_indicator: SD_TOOL_BAR_NARROW_BUTTON
 			-- Button at tail of Current, which used for show hide buttons and customize dialog.
@@ -593,6 +608,14 @@ feature {SD_TOOL_BAR_ZONE_ASSISTANT, SD_TOOL_BAR_HIDDEN_ITEM_DIALOG, SD_FLOATING
 			end
 		end
 
+	set_customize_dialog (a_dialog: like customize_dialog) is
+			-- Set `customize_dialog' with `a_dialog'
+		do
+			customize_dialog := a_dialog
+		ensure
+			set: customize_dialog = a_dialog
+		end
+
 feature {SD_FLOATING_TOOL_BAR_ZONE} -- Internal issues.
 
 	agents: SD_TOOL_BAR_DRAGGING_AGENTS
@@ -601,6 +624,7 @@ invariant
 
 	not_void: internal_shared /= Void
 	not_void: assistant /= Void
+	tool_bar_not_void: tool_bar /= Void
 
 indexing
 	library:	"SmartDocking: Library of reusable components for Eiffel."

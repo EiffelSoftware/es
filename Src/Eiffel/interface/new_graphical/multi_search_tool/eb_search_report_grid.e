@@ -85,24 +85,29 @@ feature -- Access
 		do
 			Result := interface_names.l_class
 		end
+
 	grid_head_line_number: STRING_GENERAL is
 		do
 			Result := interface_names.l_line
 		end
+
 	grid_head_found: STRING_GENERAL is
 		do
 			Result := interface_names.l_found
 		end
+
 	grid_head_context: STRING_GENERAL is
 		do
 			Result := interface_names.l_context
 		end
+
 	grid_head_file_location: STRING_GENERAL is
 		do
 			Result := interface_names.l_file_location
 		end
 
 	search_tool: EB_MULTI_SEARCH_TOOL
+			-- The search tool
 
 feature {EB_MULTI_SEARCH_TOOL} -- Access
 
@@ -116,13 +121,15 @@ feature {EB_MULTI_SEARCH_TOOL} -- Access
 			Result.extend (label_font.string_width (grid_head_file_location) + column_border_space + column_border_space + 10)
 		end
 
-		column_border_space: INTEGER is 8
-				-- Padding space for column content	
+	column_border_space: INTEGER is 8
+			-- Padding space for column content	
 
-		multi_search_performer: MSR is
-			--
+	multi_search_performer: MSR is
+			-- Search performer from the search tool.
 		do
 			Result := search_tool.multi_search_performer
+		ensure
+			Result_not_void: Result /= Void
 		end
 
 feature {EB_MULTI_SEARCH_TOOL} -- Redraw
@@ -471,18 +478,36 @@ feature {EB_MULTI_SEARCH_TOOL} -- Implementation
 		local
 			l_row: EV_GRID_ROW
 			l_item: MSR_ITEM
-			l_class_name: STRING
-			l_list: LIST [CLASS_I]
+			l_text_item: MSR_TEXT_ITEM
+			l_start, l_end: INTEGER
+			l_class: CLASS_I
+			l_class_c: CLASS_C
+			l_compiled_line_stone: COMPILED_LINE_STONE
+			l_uncompiled_line_stone: UNCOMPILED_LINE_STONE
 		do
 			if a_item /= Void then
 				l_row := a_item.row
 				l_item ?= l_row.data
 				if l_item /= Void then
-					create l_class_name.make_from_string (l_item.class_name)
-					l_class_name.to_upper
-					l_list := universe.classes_with_name (l_class_name)
-					if l_list /= Void and then not l_list.is_empty then
-						Result := stone_from_class_i (l_list.first)
+					l_class ?= l_item.data
+					if l_class /= Void then
+						l_text_item ?= l_row.data
+						if l_text_item /= Void then
+							l_start := l_text_item.start_index_in_unix_text
+							l_end := l_text_item.end_index_in_unix_text + 1
+							l_class_c := l_class.compiled_representation
+							if l_class_c /= Void then
+								create l_compiled_line_stone.make_with_line (l_class_c, 1, True)
+								l_compiled_line_stone.set_selection ([l_start, l_end])
+								Result := l_compiled_line_stone
+							else
+								create l_uncompiled_line_stone.make_with_line (l_class, 1, True)
+								l_uncompiled_line_stone.set_selection ([l_start, l_end])
+								Result := l_uncompiled_line_stone
+							end
+						else
+							Result := stone_from_class_i (l_class)
+						end
 					end
 				end
 			end
@@ -585,7 +610,7 @@ feature {EB_MULTI_SEARCH_TOOL} -- Implementation
 		local
 			l_item: MSR_ITEM
 		do
-			search_tool.set_check_class_succeed (true)
+			search_tool.set_check_class_succeed (True)
 			if a_row.parent /= Void and then a_row.parent_row /= Void and then a_row.parent_row.is_expandable and then not a_row.parent_row.is_expanded then
 				a_row.parent_row.expand
 				adjust_grid_column_width
@@ -611,10 +636,12 @@ feature {EB_MULTI_SEARCH_TOOL} -- Implementation
 			l_saving_string: STRING_GENERAL
 			l_start, l_end: INTEGER
 		do
-			search_tool.set_new_search_set (false)
-			l_text_item ?= multi_search_performer.item
+			search_tool.set_new_search_set (False)
+			if multi_search_performer.is_search_launched and then not multi_search_performer.off then
+				l_text_item ?= multi_search_performer.item
+			end
 			if l_text_item /= Void then
-				if search_tool.old_editor /= Void then
+				if search_tool.old_editor /= Void and then not search_tool.old_editor.is_recycled then
 					l_editor := search_tool.old_editor
 				else
 					l_editor := search_tool.editor
@@ -706,7 +733,7 @@ feature {EB_MULTI_SEARCH_TOOL} -- Implementation
 			l_row: EV_GRID_ROW
 			loop_end: BOOLEAN
 		do
-			loop_end := false
+			loop_end := False
 			from
 				i := 1
 			until
@@ -715,7 +742,7 @@ feature {EB_MULTI_SEARCH_TOOL} -- Implementation
 				l_row := row (i)
 				if l_row.data /= Void and then l_row.data = a_data then
 					Result := l_row
-					loop_end := true
+					loop_end := True
 				end
 				i := i + 1
 			end
@@ -724,6 +751,7 @@ feature {EB_MULTI_SEARCH_TOOL} -- Implementation
 invariant
 	report_summary_string_not_void: report_summary_string /= Void
 	search_tool_set: search_tool /= Void
+
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

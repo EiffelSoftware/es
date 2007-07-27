@@ -31,6 +31,8 @@ inherit
 			enable_grid_item_pnd_support
 		end
 
+	EVS_UTILITY
+
 create
 	make_with_grid
 
@@ -57,16 +59,25 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	stone_at_position (a_x, a_y: INTEGER): ANY  is
-			-- Stone at position (`a_x', `a_y') which is related to the top-left coordinate of `grid'
-			-- Void if no item is found or that item contains no stone.			
+	grid_row_height_for_tokens (a_preferenced_font_used: BOOLEAN): INTEGER is
+			-- Suitable row height of grid to display editor tokens (Taken heading pixmap height into consideration)
+			-- If `a_preferenced_font_used' is True, use fonts specified in preferences for editors,
+			-- otherwise use default font.
 		local
-			l_pickable_item: ES_GRID_PICKABLE_ITEM
+			l_pixmap_height: INTEGER
+			l_border_height: INTEGER
+			l_token: EB_GRID_EDITOR_TOKEN_ITEM
 		do
-			l_pickable_item ?= grid_item_at_position (grid, a_x, a_y)
-			if l_pickable_item /= Void then
-				Result := l_pickable_item.pebble_at_position
+			create l_token
+			l_border_height := l_token.top_border + l_token.bottom_border + l_token.border_line_width * 2
+			l_pixmap_height := (create {EB_SHARED_PIXMAPS}).icon_pixmaps.pixel_height
+
+			if a_preferenced_font_used then
+				Result := (create {SHARED_EDITOR_FONT}).line_height
+			else
+				Result := (create{EB_SHARED_WRITER}).label_font_height
 			end
+			Result := (Result + l_border_height).max (l_pixmap_height)
 		end
 
 feature -- Pick and drop support for grid items
@@ -81,7 +92,7 @@ feature -- Pick and drop support for grid items
 			l_grid: EV_GRID
 			l_stone: STONE
 		do
-			if a_item /= Void and then a_item.is_parented and then not ev_application.ctrl_pressed then
+			if a_item /= Void and then a_item.is_parented then
 				l_item ?= a_item
 				if l_item /= Void and then l_item.grid_item.is_parented then
 					l_stone ?= l_item.on_pick
@@ -95,8 +106,6 @@ feature -- Pick and drop support for grid items
 					end
 				end
 			end
-			set_last_pebble (l_stone)
-			a_grid_support.set_last_pebble (l_stone)
 		end
 
 	on_pick_ended_from_grid_pickable_item (a_item: EV_GRID_ITEM) is

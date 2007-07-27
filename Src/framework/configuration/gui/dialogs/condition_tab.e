@@ -76,6 +76,7 @@ feature {NONE} -- Initialization
 			l_frame: EV_FRAME
 			li: EV_LIST_ITEM
 			l_btn: EV_BUTTON
+			l_cell: EV_CELL
 		do
 			Precursor
 
@@ -84,13 +85,11 @@ feature {NONE} -- Initialization
 				-- top part (platforms, builds, multithreaded, .NET)
 			create hb_top
 			extend (hb_top)
-			disable_item_expand (hb_top)
 			hb_top.set_padding (layout_constants.default_padding_size)
 
 				-- platforms
 			create l_frame.make_with_text (conf_interface_names.dial_cond_platforms)
 			hb_top.extend (l_frame)
-			hb_top.disable_item_expand (l_frame)
 			create vb
 			l_frame.extend (vb)
 			vb.set_border_width (layout_constants.default_border_size)
@@ -111,7 +110,6 @@ feature {NONE} -- Initialization
 			platforms.set_minimum_size (105, 75)
 			create exclude_platforms.make_with_text (conf_interface_names.dial_cond_platforms_exclude)
 			vb.extend (exclude_platforms)
-			vb.disable_item_expand (exclude_platforms)
 			if data.platform /= Void and then data.platform.item.invert then
 				exclude_platforms.enable_select
 			end
@@ -119,8 +117,6 @@ feature {NONE} -- Initialization
 				-- other
 			create l_frame.make_with_text (conf_interface_names.dial_cond_other)
 			hb_top.extend (l_frame)
-			l_frame.set_minimum_width (220)
-			hb_top.disable_item_expand (l_frame)
 
 			create hb
 			l_frame.extend (hb)
@@ -128,12 +124,9 @@ feature {NONE} -- Initialization
 
 				-- build
 			create vb
-			vb.set_minimum_width (100)
 			hb.extend (vb)
-			hb.disable_item_expand (vb)
 			create build_enabled.make_with_text (conf_interface_names.dial_cond_build)
 			vb.extend (build_enabled)
-			vb.disable_item_expand (build_enabled)
 			create builds.make_with_strings (<<build_workbench_name, build_finalize_name>>)
 			builds.disable_edit
 			vb.extend (builds)
@@ -161,8 +154,7 @@ feature {NONE} -- Initialization
 			append_small_margin (vb)
 			create dynamic_runtime_enabled.make_with_text (conf_interface_names.dial_cond_dynamic_runtime)
 			vb.extend (dynamic_runtime_enabled)
-			vb.disable_item_expand (dynamic_runtime_enabled)
-			create dynamic_runtime.make_with_strings (<<"True", "False">>)
+			create dynamic_runtime.make_with_strings (boolean_list)
 			dynamic_runtime.disable_edit
 			vb.extend (dynamic_runtime)
 			vb.disable_item_expand (dynamic_runtime)
@@ -177,17 +169,18 @@ feature {NONE} -- Initialization
 				dynamic_runtime.disable_sensitive
 			end
 
-			hb.extend (create {EV_CELL})
+				-- cell to separate left and right settings
+			create l_cell
+			l_cell.set_minimum_width (5)
+			hb.extend (l_cell)
+			hb.disable_item_expand (l_cell)
 
 				-- dotnet
 			create vb
-			vb.set_minimum_width (100)
 			hb.extend (vb)
-			hb.disable_item_expand (vb)
 			create dotnet_enabled.make_with_text (conf_interface_names.dial_cond_dotnet)
 			vb.extend (dotnet_enabled)
-			vb.disable_item_expand (dotnet_enabled)
-			create dotnet.make_with_strings (<<"True", "False">>)
+			create dotnet.make_with_strings (boolean_list)
 			dotnet.disable_edit
 			vb.extend (dotnet)
 			vb.disable_item_expand (dotnet)
@@ -206,8 +199,7 @@ feature {NONE} -- Initialization
 			append_small_margin (vb)
 			create multithreaded_enabled.make_with_text (conf_interface_names.dial_cond_multithreaded)
 			vb.extend (multithreaded_enabled)
-			vb.disable_item_expand (multithreaded_enabled)
-			create multithreaded.make_with_strings (<<"True", "False">>)
+			create multithreaded.make_with_strings (boolean_list)
 			multithreaded.disable_edit
 			vb.extend (multithreaded)
 			vb.disable_item_expand (multithreaded)
@@ -452,19 +444,28 @@ feature {NONE} -- Actions
 	on_dotnet is
 			-- Dotnet value was changed, update data.
 		do
-			data.set_dotnet (dotnet.text.to_boolean)
+			check
+				has_boolean_text: conf_interface_names.boolean_values.has (dotnet.text)
+			end
+			data.set_dotnet (boolean_value_from_name (dotnet.text))
 		end
 
 	on_multithreaded is
 			-- Multithreaded value hsas changed, udpate data.
 		do
-			data.set_multithreaded (multithreaded.text.to_boolean)
+			check
+				has_boolean_text: conf_interface_names.boolean_values.has (multithreaded.text)
+			end
+			data.set_multithreaded (boolean_value_from_name (multithreaded.text))
 		end
 
 	on_dynamic_runtime is
 			-- Dynamic_runtime value was changed, update data.
 		do
-			data.set_dynamic_runtime (dynamic_runtime.text.to_boolean)
+			check
+				has_boolean_text: conf_interface_names.boolean_values.has (dynamic_runtime.text)
+			end
+			data.set_dynamic_runtime (boolean_value_from_name (dynamic_runtime.text))
 		end
 
 	on_compiler_version is
@@ -579,7 +580,7 @@ feature {NONE} -- Actions
 	remove_custom is
 			-- Remove a custom condition.
 		local
-			l_item: TEXT_PROPERTY [STRING]
+			l_item: TEXT_PROPERTY [STRING_GENERAL]
 		do
 			if not custom.selected_rows.is_empty then
 				l_item ?= custom.selected_rows.first.item (1)
@@ -699,6 +700,24 @@ feature {NONE} -- Implementation
 					l_cust.forth
 				end
 			end
+		end
+
+	boolean_list: ARRAY [STRING_GENERAL] is
+			-- Array with boolean names
+		do
+			Result := <<conf_interface_names.boolean_true, conf_interface_names.boolean_false>>
+		ensure
+			Result_not_void: Result /= Void
+			Result_has_two_value: Result @ 1 /= Void and Result @ 2 /= Void
+		end
+
+	boolean_value_from_name (a_string: STRING_GENERAL): BOOLEAN is
+			-- Boolean value from translated string.
+		require
+			a_string_not_void: a_string /= Void
+			has_a_string: conf_interface_names.boolean_values.has (a_string)
+		do
+			Result := conf_interface_names.boolean_values.item (a_string)
 		end
 
 indexing

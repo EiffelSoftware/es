@@ -19,6 +19,7 @@ create
 feature -- Initialization
 
 	make is
+			-- Creation method
 		local
 			l_constants: EV_LAYOUT_CONSTANTS
 		do
@@ -58,11 +59,13 @@ feature -- Initialization
 
 			create pool_list.make (True)
 			pool_list.drop_actions.extend (agent move_to_pool_list)
+			pool_list.drop_actions.set_veto_pebble_function (agent veto_pebble_function)
 			pool_list.disable_multiple_selection
 			pool_list.select_actions.extend (agent on_pool_select)
 			pool_list.deselect_actions.extend (agent on_pool_deselect)
 			create current_list.make (False)
 			current_list.drop_actions.extend (agent move_to_current_list)
+			current_list.drop_actions.set_veto_pebble_function (agent veto_pebble_function)
 			current_list.disable_multiple_selection
 			current_list.select_actions.extend (agent on_current_select)
 			current_list.deselect_actions.extend (agent on_current_deselect)
@@ -155,6 +158,7 @@ feature -- Initialization
 			is_text_displayed := text_displayed
 			is_text_important := text_important
 
+			all_items := toolbar
 			fill_lists (toolbar)
 
 			valid_data := False
@@ -177,6 +181,21 @@ feature -- Result
 
 	final_toolbar: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 			-- list containing the buttons to be displayed and then the ones in the pool
+
+	veto_pebble_function (an_item: SD_CUSTOMIZABLE_LIST_ITEM): BOOLEAN is
+			-- Veto pebble function
+		local
+			l_tool_bar_item: SD_TOOL_BAR_ITEM
+			l_separator: SD_TOOL_BAR_SEPARATOR
+		do
+			l_separator ?= an_item.data
+			l_tool_bar_item ?= an_item.data
+			if l_separator /= Void then
+				Result := True
+			elseif l_tool_bar_item /= Void then
+				Result := all_items.has (l_tool_bar_item)
+			end
+		end
 
 feature {NONE} -- Graphical interface
 
@@ -219,6 +238,9 @@ feature {NONE} -- Graphical interface
 			--
 			-- Useful only because Vision2 currently does not remember the size
 			-- of the window after a hide/show.
+
+	all_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+			-- All tool bar items in one SD_TOOL_BAR_CONTENT.
 
 feature {NONE} -- Button actions
 
@@ -287,7 +309,7 @@ feature {NONE} -- Button actions
 					pool_list.start
 					pool_list.prune (sel)
 				else
-					create sel.make (create {SD_TOOL_BAR_SEPARATOR}.make)
+					create sel.make (Current, create {SD_TOOL_BAR_SEPARATOR}.make)
 					set_up_events (sel)
 				end -- if
 				sel2 := current_list.customizable_selected_item
@@ -432,7 +454,7 @@ feature {NONE} -- Actions performed by agents like graying buttons
 					an_item.parent.prune (an_item)
 					current_list.extend (an_item)
 				else
-					current_list.extend (create {SD_CUSTOMIZABLE_LIST_ITEM}.make (create {SD_TOOL_BAR_SEPARATOR}.make))
+					current_list.extend (create {SD_CUSTOMIZABLE_LIST_ITEM}.make (Current, create {SD_TOOL_BAR_SEPARATOR}.make))
 					set_up_events (an_item)
 				end
 			end
@@ -491,7 +513,7 @@ feature {NONE} -- Internal data
 		do
 			pool_list.wipe_out
 			current_list.wipe_out
-			create n.make (create {SD_TOOL_BAR_SEPARATOR}.make)
+			create n.make (Current, create {SD_TOOL_BAR_SEPARATOR}.make)
 			n.pointer_double_press_actions.extend (agent mouse_move (n, ?, ?, ?, ?, ?, ?, ?, ?))
 			pool_list.extend (n)
 			from
@@ -499,7 +521,7 @@ feature {NONE} -- Internal data
 			until
 				a_toolbar.after
 			loop
-				create n.make (a_toolbar.item)
+				create n.make (Current, a_toolbar.item)
 				set_up_events (n)
 				if n.is_separator then
 					current_list.extend (n)

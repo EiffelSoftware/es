@@ -8,13 +8,13 @@ else
 fi
 
 # Check out Build source.
-svn co $svntag/Src/build Src/build
+until svn co $svntag/Src/build Src/build; do echo "svn failure, retrying..."; done
 
 # Check out bitmaps from Build delivery
-svn co $svntag/Delivery/esbuilder/bitmaps Delivery/esbuilder/bitmaps
+until svn co $svntag/Delivery/esbuilder/bitmaps Delivery/esbuilder/bitmaps; do echo "svn failure, retrying..."; done
 
 # Check out files from vision2_tour
-svn co $svntag/Delivery/vision2_demo Delivery/vision2_demo
+until svn co $svntag/Delivery/vision2_demo Delivery/vision2_demo; do echo "svn failure, retrying..."; done
 
 # Copy template files
 cp -r Delivery/vision2_demo/templates ./
@@ -26,7 +26,7 @@ cp ./Src/build/utilities/gb_general_utilities.e ./interface/
 cp ./Src/build/utilities/gb_widget_utilities.e ./interface/
 cp ./Src/build/utilities/ordered_string_handler.e ./interface/
 cp ./Src/build/main/gb_supported_events.e ./interface/
-cp ./Src/build/utilities/object_default_state_checker.e ./interface/
+cp ./Src/build/utilities/default_object_state_checker.e ./interface/
 cp ./Src/build/utilities/gb_color_stone.e ./interface/
 
 

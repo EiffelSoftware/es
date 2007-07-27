@@ -63,6 +63,10 @@ inherit
 			on_expose,
 			initialize,
 			item_at_position
+		select
+			has_capture_vision2,
+			enable_capture_vision2,
+			disable_capture_vision2
 		end
 
 	EV_FIXED
@@ -71,14 +75,14 @@ inherit
 			wipe_out as wipe_out_fixed,
 			has as has_fixed,
 			prune as prune_fixed,
-			force as force_fixed
+			force as force_fixed,
+			has_capture as has_capture_not_use,
+			enable_capture as enable_capture_not_use,
+			disable_capture as disable_capture_not_use
 		export
 			{NONE} all
 			{ANY} is_destroyed
 		undefine
-			enable_capture,
-			disable_capture,
-			has_capture,
 			pointer_motion_actions,
 			pointer_button_release_actions,
 			pointer_button_press_actions,
@@ -267,36 +271,6 @@ feature -- Command
 			end
 		end
 
-	record_width (a_name: STRING_GENERAL; a_width: INTEGER) is
-			-- Record the with of item for store.
-		require
-			not_void: a_name /= Void
-			valid: a_width >= 0
-		local
-			l_tool_bar_row: SD_TOOL_BAR_ROW
-			l_data: ARRAYED_LIST [TUPLE [name: STRING_GENERAL; width: INTEGER]]
-			l_found: BOOLEAN
-		do
-			l_tool_bar_row ?= parent
-			if l_tool_bar_row /= Void then
-				l_data := l_tool_bar_row.docking_manager.property.resizable_items_data
-				from
-					l_data.start
-				until
-					l_data.after or l_found
-				loop
-					if l_data.item.name.as_string_32.is_equal (a_name.as_string_32) then
-						l_data.item.width := a_width
-						l_found := True
-					end
-					l_data.forth
-				end
-				if not l_found then
-					l_data.extend ([a_name, a_width])
-				end
-			end
-		end
-
 	screen_x_end_row: INTEGER is
 			-- Maximum x position.
 		local
@@ -336,11 +310,18 @@ feature -- Command
 			l_tool_bar_row: SD_TOOL_BAR_ROW
 			l_parent: EV_CONTAINER
 			l_floating_zone: EV_WINDOW
+			l_old_size: INTEGER
 		do
-			compute_minimum_size
 			l_tool_bar_row ?= parent
 			if l_tool_bar_row /= Void then
+				-- After `compute_minimum_size', `l_tool_bar_row' size will changed, we record it here.
+				-- Otherwise it will cause bug#13164.
+				l_old_size := l_tool_bar_row.size
+			end
+			compute_minimum_size
+			if l_tool_bar_row /= Void then
 				l_tool_bar_row.set_item_size (Current, minimum_width, minimum_height)
+				l_tool_bar_row.on_resize (l_old_size)
 			else
 				-- If Current is in a SD_FLOATING_TOOL_BAR_ZONE which is a 3 level parent.
 				l_parent := parent
@@ -575,7 +556,9 @@ feature {NONE} -- Implementation
 					l_widget_item ?= l_items.item
 					if l_widget_item /= Void then
 						l_widget := l_widget_item.widget
-						set_item_width (l_widget, l_widget.minimum_width)
+						if has_fixed (l_widget) then
+							set_item_width (l_widget, l_widget.minimum_width)
+						end
 					end
 				end
 				l_items.forth
@@ -601,7 +584,7 @@ feature {NONE} -- Implementation
 					 then l_item.has_rectangle (create {EV_RECTANGLE}.make (a_x, a_y, a_width, a_height)) and has (l_item) then
 						l_item_x := item_x (l_item)
 						l_item_y := item_y (l_item)
-						if l_item_x /= l_item.widget.x_position or else l_item_y /= l_item.widget.y_position then
+						if (l_item_x /= l_item.widget.x_position or else l_item_y /= l_item.widget.y_position) and then has_fixed (l_item.widget) then
 							set_item_position (l_item.widget, l_item_x, l_item_y)
 						end
 				end

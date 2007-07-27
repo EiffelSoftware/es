@@ -226,14 +226,6 @@ feature -- Status setting
 			set: show_all_tab_stub_text =  a_bool
 		end
 
-	set_tool_bar_docker_mediator (a_mediator: SD_TOOL_BAR_DOCKER_MEDIATOR) is
-			-- Set tool bar docker mediator singleton.
-		do
-			tool_bar_docker_mediator_cell.put (a_mediator)
-		ensure
-			set: tool_bar_docker_mediator_cell.item = a_mediator
-		end
-
 	set_default_screen_x (a_x: INTEGER) is
 			-- Set `default_screen_x'
 		require
@@ -435,6 +427,12 @@ feature -- Constants
 			Result := tool_bar_font.width * 35
 		end
 
+	tab_zone_upper_minimum_height: INTEGER is
+			-- SD_TAB_ZONE_UPPER and SD_DOCKING_ZONE_UPPER's minimum height.
+		do
+			Result := notebook_tab_height + 5
+		end
+
 	Zone_minmum_width: INTEGER is
 			-- Minmum width of a zone.
 		once
@@ -447,8 +445,24 @@ feature -- Constants
 			Result := Title_bar_height + 1
 		end
 
-	Tool_bar_size: INTEGER is 24
+	Tool_bar_size: INTEGER is
 			-- Size of tool bar. When horizontal the size is height. When vertical the size is width.
+		once
+			Result := tool_bar_font.height + 2 * Tool_bar_border_width
+		end
+
+	Tool_bar_border_width: INTEGER is
+			-- Tool bar border width
+		local
+			l_platform: PLATFORM
+		do
+			Result := (tool_bar_font.height / 2).floor
+
+			create l_platform
+			if l_platform.is_windows then
+				Result := Result + 1
+			end
+		end
 
 	Tool_bar_hidden_item_dialog_max_width: INTEGER is 400
 			-- Tool bar hidden item dialog maximum allowed width.
@@ -512,7 +526,15 @@ feature -- Constants
 			Result_not_void: Result /= Void
 		end
 
-feature {SD_DOCKING_MANAGER} -- Implementation
+feature {SD_DOCKING_MANAGER, SD_TOOL_BAR_DRAGGING_AGENTS, SD_TOOL_BAR_DOCKER_MEDIATOR} -- Implementation
+
+	set_tool_bar_docker_mediator (a_mediator: SD_TOOL_BAR_DOCKER_MEDIATOR) is
+			-- Set tool bar docker mediator singleton.
+		do
+			tool_bar_docker_mediator_cell.put (a_mediator)
+		ensure
+			set: tool_bar_docker_mediator_cell.item = a_mediator
+		end
 
 	add_docking_manager (a_manager: SD_DOCKING_MANAGER) is
 			-- Set `internal_docking_manager'.

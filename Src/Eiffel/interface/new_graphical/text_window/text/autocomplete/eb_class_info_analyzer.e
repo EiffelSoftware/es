@@ -180,6 +180,7 @@ feature {NONE} -- Click ast exploration
 			pos, i, j, pos_in_txt, c: INTEGER
 			a_click_ast: CLICK_AST
 			clickable: CLICKABLE_AST
+			l_precursor: PRECURSOR_AS
 			clickable_position: EB_CLICKABLE_POSITION
 			ast_list: CLICK_LIST
 			a_class: CLASS_I
@@ -225,7 +226,13 @@ feature {NONE} -- Click ast exploration
 								a_class := clickable_info.associated_eiffel_class (current_class_i, clickable)
 								if a_class /= Void then
 									create clickable_position.make (a_click_ast.start_position, a_click_ast.end_position)
-									clickable_position.set_class (a_class.name)
+									if clickable.is_class then
+										clickable_position.set_class (clickable.class_name.name)
+									else
+										l_precursor ?= clickable
+										check l_precursor_not_void: l_precursor /= Void end
+										clickable_position.set_class (l_precursor.parent_base_class.class_name.name)
+									end
 									prov_list.extend (clickable_position)
 								end
 							elseif clickable.is_feature then
@@ -428,7 +435,6 @@ feature {NONE} -- Implementation (`type_from')
 			feat: E_FEATURE
 			l_current_class_c: CLASS_C
 			l_precursor_from: TYPE_A
-			l_class: CLASS_C
 		do
 			from
 				last_constraints := Void
@@ -483,13 +489,13 @@ feature {NONE} -- Implementation (`type_from')
 							exp.finish
 							exp.remove
 						end
-						l_class := written_class
 						type := complete_expression_type (exp)
 						if type /= Void then
 								-- Fixme: some problems here, type is possible multi-constaint.
 							last_target_type := type
-						else
-							written_class := l_class
+							if type.has_associated_class then
+								written_class := type.associated_class
+							end
 						end
 					end
 				else
@@ -707,6 +713,10 @@ feature {NONE} -- Implementation (`type_from')
 						end
 					else
 						feat := l_processed_class.feature_with_name (a_name)
+						if feat = Void and then last_was_constrained and then not last_formal.is_single_constraint_without_renaming (current_class_c) then
+								-- Renamed in constaint clause?
+							feat := feature_of_constaint_renamed (last_formal, a_name)
+						end
 						if feat /= Void then
 							type := feat.type
 						end
@@ -732,11 +742,7 @@ feature {NONE} -- Implementation (`type_from')
 			l_is_named_tuple: BOOLEAN
 		do
 			l_is_named_tuple := a_parent_type.is_named_tuple
-			if l_is_named_tuple then
-				l_class := current_class_c
-			else
-				l_class := a_class
-			end
+			l_class := current_class_c
 			if a_type.is_loose then
 				if l_is_named_tuple then
 					last_target_type := a_type.actual_type.instantiation_in (a_type, a_class.class_id)
@@ -749,7 +755,7 @@ feature {NONE} -- Implementation (`type_from')
 					last_was_constrained := last_target_type.is_formal
 					last_formal ?= last_target_type
 					if last_was_constrained then
-						last_was_multi_constrained := last_formal.is_multi_constrained (l_class)
+						last_was_multi_constrained := not last_formal.is_single_constraint_without_renaming (l_class)
 						if last_was_multi_constrained then
 								-- We're in the multi constraint case, let's compute a flat version (without formals) of all constraints.							
 							last_constraints := last_formal.constraints (l_class).constraining_types_if_possible (l_class)
@@ -763,7 +769,12 @@ feature {NONE} -- Implementation (`type_from')
 				end
 			else
 					-- Non formal status.
-				last_target_type := a_type.actual_type.instantiation_in (a_parent_type, a_class.class_id)
+				if not a_parent_type.is_tuple then
+					last_target_type := a_type.actual_type.instantiation_in (a_parent_type, a_class.class_id)
+				else
+					last_target_type := a_type
+				end
+
 				last_type := last_target_type
 				last_was_multi_constrained := False
 				last_was_constrained := False
@@ -863,6 +874,36 @@ feature {NONE} -- Implementation (`type_from')
 			Result := type
 		ensure
 			Result_not_void_implies_processed_class_not_void: Result /= Void implies written_class /= Void
+		end
+
+	feature_of_constaint_renamed (a_formal: FORMAL_A; a_new_name: STRING): E_FEATURE is
+			-- Constaint renamed feature of current class.
+		require
+			a_formal_not_void: a_formal /= Void
+			a_new_name_not_void: a_new_name /= Void
+			current_class_c_not_void: current_class_c /= Void
+		local
+			l_renames: ARRAY [RENAMING_A]
+			l_renaming: RENAMING_A
+			i, upper, l_new_name_id, l_old_name_id: INTEGER
+		do
+			l_new_name_id := names_heap.id_of (a_new_name)
+			l_renames := current_class_c.constraint_renaming (current_class_c.generics.i_th (last_formal.position))
+			from
+				i := l_renames.lower
+				upper := l_renames.upper
+			until
+				i > upper or Result /= Void
+			loop
+				l_renaming := l_renames.item (i)
+				if l_renaming /= Void then
+					l_old_name_id := l_renaming.item (l_new_name_id)
+					if l_old_name_id > 0 then
+						Result := current_class_c.feature_with_name_id (l_old_name_id)
+					end
+				end
+				i := i + 1
+			end
 		end
 
 	written_class: CLASS_C
@@ -1248,6 +1289,7 @@ feature {NONE}-- Implementation
 			current_class_c_not_void: current_class_c /= Void
 		local
 			sub_exp, recur_exp: LINKED_LIST[EDITOR_TOKEN]
+			l_type_set: TYPE_SET_A
 			type: TYPE_A
 			par_cnt: INTEGER
 			name: STRING
@@ -1335,10 +1377,35 @@ feature {NONE}-- Implementation
 							error := True
 						else
 							name := sub_exp.item.image.as_lower
+							if type.is_formal then
+								formal ?= type
+								if l_current_class_c.is_valid_formal_position (formal.position) then
+									if formal.is_single_constraint_without_renaming (l_current_class_c) then
+										type := formal.constrained_type_if_possible (l_current_class_c)
+									else
+										l_type_set := formal.constrained_types_if_possible (l_current_class_c)
+									end
+								else
+									-- TODO: Can this case ever occur in a valid system?
+								end
+							end
+							if type.has_associated_class then
+									-- This case includes the ordinary case and the case were we had
+									-- a single constrained formal without a renaming (constrained_type has been called).
 							l_processed_class := type.associated_class
-							type := Void
 							if l_processed_class /= Void and then l_processed_class.has_feature_table then
 								processed_feature := l_processed_class.feature_with_name (name)
+								end
+							else
+									-- Maybe we computed a type set?
+								if l_type_set /= Void then
+									processed_feature := l_type_set.e_feature_state_by_name (name).feature_item
+								end
+							end
+								-- Set to `Void' as we are in a loop.
+							type := Void
+							l_type_set := Void
+								-- If we found a feature continue...
 								if processed_feature /= Void and then processed_feature.type /= Void then
 									if processed_feature.type.is_formal then
 										formal ?= processed_feature.type
@@ -1353,7 +1420,6 @@ feature {NONE}-- Implementation
 										type := processed_feature.type
 									end
 								end
-							end
 							sub_exp.forth
 						end
 					else
@@ -1476,6 +1542,9 @@ feature {NONE}-- Implementation
 			name_id: INTEGER
 			retried: BOOLEAN
 			l_current_class_c: CLASS_C
+			l_class_type_as: CLASS_TYPE_AS
+			l_class_name_as: ID_AS
+			l_name: STRING
 		do
 			if retried then
 				Result := Void
@@ -1508,6 +1577,18 @@ feature {NONE}-- Implementation
 									Result := local_evaluated_type (entities_list.item.type,
 										l_current_class_c,
 										current_feature)
+									if Result = Void then
+										l_class_type_as ?= entities_list.item.type
+										if l_class_type_as /= Void then
+											l_class_name_as := l_class_type_as.class_name
+											if l_class_name_as /= Void then
+												l_name := l_class_name_as.name
+												if l_name /= Void then
+													Result := type_of_generic (l_name)
+								end
+											end
+										end
+									end
 								end
 								id_list.forth
 							end

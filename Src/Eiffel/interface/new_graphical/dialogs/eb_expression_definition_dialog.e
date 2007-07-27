@@ -27,6 +27,11 @@ inherit
 			{NONE} all
 		end
 
+	EIFFEL_SYNTAX_CHECKER
+		export
+			{NONE} all
+		end
+
 create
 	make_new_expression,
 	make_with_expression_text,
@@ -506,11 +511,11 @@ feature {NONE} -- Event handling
 			l_list: LIST [CLASS_I]
 		do
 			if class_radio.is_selected then
-				l_class_name := class_field.text
+				l_class_name := class_field.text.as_string_8
 				l_class_name.left_adjust
 				l_class_name.right_adjust
 				l_class_name.to_upper
-				if not l_class_name.is_empty then
+				if is_valid_class_name (l_class_name) then
 					l_list := eiffel_universe.compiled_classes_with_name (l_class_name)
 					if l_list /= Void and then not l_list.is_empty then
 						l_class_c := l_list.first.compiled_class
@@ -533,6 +538,7 @@ feature {NONE} -- Event handling
 		local
 			o: DEBUGGED_OBJECT
 			cl_i: LIST [CLASS_I]
+			ci: CLASS_I
 			cl: CLASS_C
 			t: STRING
 			wd: EB_WARNING_DIALOG
@@ -542,19 +548,42 @@ feature {NONE} -- Event handling
 			if modified_expression = Void then
 				if class_radio.is_selected then
 						-- We try to create an expression related to a class.
-					t := class_field.text.as_string_8.as_upper
-						--| First find the class given in `class_field'.
-					cl_i := Eiffel_universe.classes_with_name (t)
-					if not cl_i.is_empty then
-						from
-							cl_i.start
-						until
-							cl_i.after or cl /= Void
-						loop
-							cl := cl_i.item.compiled_class
-							cl_i.forth
+					t := class_field.text.as_string_8
+					t.left_adjust
+					t.right_adjust
+					t.to_upper
+					if is_valid_class_name (t) then
+							--| First find the class given in `class_field'.
+						cl_i := Eiffel_universe.classes_with_name (t)
+						if cl_i.is_empty then
+							ci := Eiffel_universe.class_named (t, eiffel_system.root_cluster)
+							if ci /= Void then
+								cl := ci.compiled_class
+							end
+						elseif not cl_i.is_empty then
+							from
+								cl_i.start
+							until
+								cl_i.after or cl /= Void
+							loop
+								ci := cl_i.item
+								if ci /= Void then
+									cl := ci.compiled_class
+								end
+								cl_i.forth
+							end
 						end
-						if cl /= Void then
+					end
+					if ci = Void then
+						set_focus (class_field)
+						create wd.make_with_text (Warning_messages.w_Cannot_find_class (t))
+						wd.show_modal_to_window (dialog)
+					else
+						if cl = Void then
+							set_focus (class_field)
+							create wd.make_with_text (Warning_messages.w_Not_a_compiled_class (t))
+							wd.show_modal_to_window (dialog)
+						else
 								--| Now we have the class, create the expression.
 							create new_expression.make_with_class (cl, expression_field.text)
 							if new_expression.syntax_error_occurred then
@@ -562,15 +591,7 @@ feature {NONE} -- Event handling
 								create wd.make_with_text (Warning_messages.w_Syntax_error_in_expression (expression_field.text.as_string_8))
 								wd.show_modal_to_window (dialog)
 							end
-						else
-							set_focus (class_field)
-							create wd.make_with_text (Warning_messages.w_Not_a_compiled_class (t))
-							wd.show_modal_to_window (dialog)
 						end
-					else
-						set_focus (class_field)
-						create wd.make_with_text (Warning_messages.w_Cannot_find_class (t))
-						wd.show_modal_to_window (dialog)
 					end
 				elseif on_object_radio.is_selected or as_object_radio.is_selected then
 						-- We try to create an expression related to a class.

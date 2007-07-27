@@ -71,7 +71,7 @@ feature -- Access
 			-- Text for tooltip of Current.  The tooltip shall display information which is not included in the
 			-- actual output of Current.
 		do
-			Result := Current.out.twin
+			Result := out.twin
 		end
 
 	grid_item : EB_GRID_EDITOR_TOKEN_ITEM is
@@ -88,7 +88,7 @@ feature -- Access
 				l_style.set_class_i (associated_class)
 			end
 			create Result
-			Result.set_overriden_fonts (label_font_table)
+			Result.set_overriden_fonts (label_font_table, label_font_height)
 			Result.set_pixmap (icon)
 			Result.set_text_with_tokens (l_style.text)
 		end

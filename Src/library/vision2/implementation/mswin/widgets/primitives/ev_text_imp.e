@@ -36,7 +36,8 @@ inherit
 			insert_text,
 			on_key_down,
 			select_region,
-			selected_text
+			selected_text,
+			ignore_character_code
 		end
 
 	WEL_MULTIPLE_LINE_EDIT
@@ -284,9 +285,12 @@ feature -- Status Report
 
 	line_number_from_position (i: INTEGER): INTEGER is
 			-- Line containing caret position `i'.
+		local
+			l_actual_caret_position: INTEGER
 		do
+			l_actual_caret_position := actual_position_from_caret_position (i)
 			Result := {WEL_API}.send_message_result_integer (wel_item, em_linefromchar,
-				to_wparam (i + 1), to_lparam (0)) + 1
+				to_wparam (l_actual_caret_position + 1), to_lparam (0)) + 1
 		end
 
 	selection_start: INTEGER is
@@ -328,36 +332,14 @@ feature -- Status Settings
 
 	enable_word_wrapping is
 			-- Ensure `has_word_wrap' is True.
-		local
-			old_text: like text
 		do
-			old_text := text
-			wel_destroy
-			internal_window_make (wel_parent, "", default_style, 0, 0, 0, 0, 0, default_pointer)
-			set_default_font
-			set_text (old_text)
-			{WEL_API}.send_message (wel_item, Em_limittext, to_wparam (0), to_lparam (0))
-			show_vertical_scroll_bar
-			if parent_imp /= Void then
-				parent_imp.notify_change (nc_minsize, Current)
-			end
+			recreate_current (0)
 		end
 
 	disable_word_wrapping is
 			-- Ensure `has_word_wrap' is False.
-		local
-			old_text: like text
 		do
-			old_text := text
-			wel_destroy
-			internal_window_make (wel_parent, "", default_style + Ws_hscroll, 0, 0, 0, 0, 0, default_pointer)
-			set_default_font
-			set_text (old_text)
-			{WEL_API}.send_message (wel_item, Em_limittext, to_wparam (0), to_lparam (0))
-			show_vertical_scroll_bar
-			if parent_imp /= Void then
-				parent_imp.notify_change (nc_minsize, Current)
-			end
+			recreate_current (ws_hscroll)
 		end
 
 	append_text (txt: STRING_GENERAL) is
@@ -377,36 +359,8 @@ feature -- Status Settings
 	set_caret_position (pos: INTEGER) is
 			-- set current caret position.
 			--| This position is used for insertions.
-		local
-			new_lines: INTEGER
-			counter: INTEGER
-			l_r_code: NATURAL_32
-			nb: INTEGER
-			l_text: like wel_text
 		do
-				-- We cannot simply call `occurrences' on `wel_text' to determine how
-				-- many new line characters there are before `pos' as each time one is
-				-- found, we must increase `pos' by one. This is because from the interface,
-				-- new lines are "%N" but on Windows they are "%R%N".
-			from
-				l_r_code := ('%R').natural_32_code
-				l_text := wel_text
-				counter := 1
-				nb := pos - 1
-			until
-				counter >= nb
-			loop
-				if l_text.code (counter) = l_r_code then
-					new_lines := new_lines + 1
-					nb := nb + 1
-					counter := counter + 2
-				else
-					counter := counter + 1
-				end
-			end
-				-- We store `pos' so caret position can be restored
-				-- after operations that should not move caret, but do.
-			internal_set_caret_position (pos - 1 + new_lines)
+			internal_set_caret_position (actual_position_from_caret_position (pos))
 		end
 
 	select_region (start_pos, end_pos: INTEGER) is
@@ -449,6 +403,45 @@ feature -- Basic operation
 		end
 
 feature {NONE} -- Implementation
+
+	ignore_character_code (a_character_code: INTEGER): BOOLEAN
+			-- Should default processing for `a_character_code' be ignored?
+		do
+			-- All characters need to be default processed.
+		end
+
+	actual_position_from_caret_position (pos: INTEGER): INTEGER
+			-- Return the actual caret position from the logical character position.
+		local
+			new_lines: INTEGER
+			counter: INTEGER
+			l_r_code: NATURAL_32
+			nb: INTEGER
+			l_text: like wel_text
+		do
+				-- We cannot simply call `occurrences' on `wel_text' to determine how
+				-- many new line characters there are before `pos' as each time one is
+				-- found, we must increase `pos' by one. This is because from the interface,
+				-- new lines are "%N" but on Windows they are "%R%N".
+			from
+				l_r_code := ('%R').natural_32_code
+				l_text := wel_text
+				counter := 1
+				nb := pos - 1
+			until
+				counter >= nb
+			loop
+				if l_text.code (counter) = l_r_code then
+					new_lines := new_lines + 1
+					nb := nb + 1
+					counter := counter + 2
+				else
+					counter := counter + 1
+				end
+			end
+			Result := pos - 1 + new_lines
+		end
+
 
 	convert_string (a_string: STRING_GENERAL): STRING_32 is
 			-- Replace all "%N" with "%R%N" which is the Windows new line
@@ -539,7 +532,7 @@ feature {NONE} -- WEL Implementation
 					+ Ws_tabstop + Ws_border + Es_left
 					+ Es_multiline + Es_wantreturn
 					+ Es_autovscroll + Ws_clipchildren
-					+ Ws_clipsiblings
+					+ Ws_clipsiblings + es_nohidesel
 		end
 
 	default_ex_style: INTEGER is
@@ -588,6 +581,68 @@ feature {NONE} -- WEL Implementation
 					process_navigation_key (virtual_key)
 				end
 				Precursor {EV_TEXT_COMPONENT_IMP} (virtual_key, key_data)
+			end
+		end
+
+	recreate_current (a_additional_style: INTEGER) is
+			-- Destroy the existing widget and recreate current using the new style added with `a_additional_style'.
+		local
+			par_imp: WEL_WINDOW
+			cur_x: INTEGER
+			cur_y: INTEGER
+			cur_width: INTEGER
+			cur_height: INTEGER
+			l_sensitive: like is_sensitive
+			l_tooltip: like tooltip
+			l_text: like text
+			l_caret: like caret_position
+			l_is_read_only: like read_only
+		do
+			l_sensitive := is_sensitive
+			l_tooltip := tooltip
+			l_text := text
+			l_caret := caret_position
+			l_is_read_only := read_only
+			set_tooltip ("")
+
+				-- We keep some useful informations that will be
+				-- destroyed when calling `wel_destroy'
+			par_imp ?= parent_imp
+				-- `Current' may not have been actually phsically parented
+				-- within windows yet.
+			if par_imp = Void then
+				par_imp ?= default_parent
+			end
+			cur_x := x_position
+			cur_y := y_position
+			cur_width := ev_width
+			cur_height := ev_height
+
+					-- We destroy the widget
+			wel_destroy
+
+				-- We create the new combo.
+			internal_window_make (par_imp, "", default_style + a_additional_style, cur_x, cur_y, cur_width, cur_height, 0, default_pointer)
+			{WEL_API}.send_message (wel_item, Em_limittext, to_wparam (0), to_lparam (0))
+			show_vertical_scroll_bar
+
+				-- Restore the previous settings.
+			if private_font /= Void then
+				set_font (private_font)
+			else
+				set_default_font
+			end
+			if not l_sensitive then
+				disable_sensitive
+			end
+			if foreground_color_imp /= Void then
+				set_foreground_color (foreground_color)
+			end
+			set_tooltip (l_tooltip)
+			set_text (l_text)
+			set_caret_position (l_caret)
+			if l_is_read_only then
+				set_read_only
 			end
 		end
 

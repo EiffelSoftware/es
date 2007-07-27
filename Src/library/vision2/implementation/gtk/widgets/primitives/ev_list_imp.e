@@ -13,7 +13,8 @@ inherit
 		undefine
 			wipe_out,
 			selected_items,
-			call_pebble_function
+			call_pebble_function,
+			reset_pebble_function
 		redefine
 			interface,
 			disable_default_key_processing
@@ -27,7 +28,8 @@ inherit
 			item_from_coords,
 			on_mouse_button_event,
 			row_height,
-			call_selection_action_sequences
+			call_selection_action_sequences,
+			needs_event_box
 		end
 
 create
@@ -93,6 +95,9 @@ feature -- Initialize
 			real_signal_connect (a_selection, "changed", agent (app_implementation.gtk_marshal).on_pnd_deferred_item_parent_selection_change (internal_id), Void)
 			initialize_pixmaps
 		end
+
+	needs_event_box: BOOLEAN = True
+		-- Give event box to Current.
 
 feature -- Access
 
@@ -271,6 +276,8 @@ feature -- PND
 				if pnd_row_imp /= Void and then not (pnd_row_imp.able_to_transport (a_button) or pnd_row_imp.mode_is_configurable_target_menu) then
 					pnd_row_imp := Void
 				end
+			else
+				pnd_row_imp := Void
 			end
 			Precursor {EV_LIST_ITEM_LIST_IMP} (a_type, a_x, a_y, a_button, a_x_tilt, a_y_tilt, a_pressure, a_screen_x, a_screen_y)
 		end

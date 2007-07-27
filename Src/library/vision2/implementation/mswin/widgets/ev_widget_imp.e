@@ -352,7 +352,7 @@ feature -- Status setting
 			-- in case it was set insensitive by the child.
 		do
 			if parent_imp /= Void then
-				parent_imp.interface.prune (Current.interface)
+				parent_imp.interface.prune (interface)
 			end
 			wel_destroy
 			set_is_destroyed (True)
@@ -987,6 +987,14 @@ feature {EV_DIALOG_IMP_COMMON} -- Implementation
 
 feature {NONE} -- Implementation
 
+	ignore_character_code (a_char_code: INTEGER): BOOLEAN
+			-- Should default processing for `a_char_code' be cancelled?
+		do
+				-- By default we ignore default processing for the Enter key.
+				-- This prevents unnecessary system beeps in some controls.
+			Result := a_char_code = 13
+		end
+
 	on_key_down (virtual_key, key_data: INTEGER) is
 			-- Executed when a key is pressed.
 		do
@@ -1014,19 +1022,23 @@ feature {NONE} -- Implementation
 			-- Executed when a key is pressed.
 			--| Now outputs all displayable characters, previously
 			--| depended on process_standard_key returning a valid EV_KEY.
+		require
+			exists: exists
 		local
 			character_string: STRING_32
+			l_char: CHARACTER_32
 			l_key: EV_KEY
 			l_code: INTEGER
 		do
 			if character_code = 13 then
 					-- On Windows, the Enter key gives us "%R" but we need to
 					-- substitute this with "%N" which is the Eiffel newline character.
-				character_string := "%N"
+				l_char := '%N'
 			else
-				create character_string.make(1)
-				character_string.append_character(character_code.as_natural_32.to_character_32)
+				l_char := character_code.as_natural_32.to_character_32
 			end
+			create character_string.make(1)
+			character_string.append_character (l_char)
 			inspect character_code
 			when 8, 27, 127 then
 				-- Do not fire `key_press_string_actions' if Backspace, Esc or del
@@ -1040,13 +1052,17 @@ feature {NONE} -- Implementation
 				end
 			end
 			if default_key_processing_handler /= Void then
-				l_code := {WEL_API}.vk_key_scan (character_string.item (1))
+				l_code := {WEL_API}.vk_key_scan (l_char)
 				if l_code /= -1 and then valid_wel_code (l_code) then
 					create l_key.make_with_code (key_code_from_wel (l_code))
 					if not default_key_processing_handler.item ([l_key]) then
 						disable_default_processing
 					end
 				end
+			elseif not has_focus or ignore_character_code (character_code) then
+					-- When we loose the focus or press return, we do not perform the
+					-- default processing since it causes a system beep.
+				disable_default_processing
 			end
 		end
 

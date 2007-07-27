@@ -248,7 +248,6 @@ feature -- Setting
 			end
 			if sd_button /= Void then
 				sd_button.set_tooltip (tt)
-				sd_button.set_name (capital_command_name)
 				sd_button.set_description (capital_command_name)
 			end
 		end
@@ -359,7 +358,7 @@ feature -- Interface
 				tt.append (Closing_parenthesis)
 			end
 			Result.set_tooltip (tt)
-			Result.set_name (capital_command_name)
+			Result.set_name (generating_type)
 			Result.set_description (capital_command_name)
 			set_sd_button (Result)
 			Result.drop_actions.extend (agent execute_with_stone)
@@ -414,10 +413,10 @@ feature -- Actions
 	execute_with_stone (a_stone: STONE) is
 			-- Notify `manager' of the dropping of `stone'.
 		do
+			manager.set_stone (a_stone)
 			if not selected then
 				execute
 			end
-			manager.set_stone (a_stone)
 		end
 
 feature -- Commands

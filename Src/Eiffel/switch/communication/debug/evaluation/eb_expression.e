@@ -219,13 +219,13 @@ feature -- Status report
 			-- Return a string representing `Current's context.
 		do
 			if on_class then
-				Result := context_class.name_in_upper
+				Result := context_class.name_in_upper.twin
 			elseif as_object then
-				Result :=  interface_names.l_As_object
+				Result :=  interface_names.l_As_object.twin
 			elseif on_object then
-				Result := context_address
+				Result := context_address.twin
 			else
-				Result := interface_names.l_Current_context
+				Result := interface_names.l_Current_context.twin
 			end
 			if keep_assertion_checking then
 				Result.append (" - ")
@@ -310,6 +310,9 @@ feature -- Evaluation settings
 			-- Do we keep assertion checking enabled during evaluation ?
 			--| Default: False.
 
+	as_auto_expression: BOOLEAN
+			-- Evaluate as auto expression ?
+
 feature -- Basic operations
 
 	set_unevaluated is
@@ -322,6 +325,14 @@ feature -- Basic operations
 			-- Set `keep_assertion_checking' with `b'
 		do
 			keep_assertion_checking := b
+		end
+
+	evaluate_as_auto_expression is
+			-- Evaluate `dbg_expression' with `expression_evaluator'
+		do
+			as_auto_expression := True
+			evaluate
+			as_auto_expression := False
 		end
 
 	evaluate is
@@ -338,6 +349,7 @@ feature -- Basic operations
 			if syntax_error_occurred then
 				expression_evaluator.notify_error_syntax (dbg_expression.error_message)
 			else
+				expression_evaluator.set_as_auto_expression (as_auto_expression)
 				expression_evaluator.evaluate (a_keep_assertion_checking)
 			end
 			is_evaluated := True

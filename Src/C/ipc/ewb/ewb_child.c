@@ -83,9 +83,9 @@ extern unsigned int TIMEOUT;	/* Time to let the child initialize */
 #define dexit(i) return NULL;
 #define SPAWN_CHILD_FAILED(i) return NULL;
 
+#ifndef EIF_WINDOWS
 /* To fight SIGPIPE signals */
 rt_private jmp_buf env;		/* Environment saving for longjmp() */
-#ifndef EIF_WINDOWS
 rt_private Signal_t broken(void);	/* Signal handler for SIGPIPE */
 #endif
 
@@ -144,8 +144,8 @@ rt_public STREAM *spawn_ecdbgd(char*id, char *ecdbgd_path, Pid_t *child_pid)
 	STREAM *sp;							/* Stream used for communications with ewb */
 
 #ifdef EIF_WINDOWS
-		/* We encode 2 pointers, plus '\"?' and '?\"' plus a space and a null terminating character. */
-	uu_buffer_size = uuencode_buffer_size(2) + 6;
+		/* We encode 2 pointers, plus '"?' and '?"' plus a space and a null terminating character. */
+	uu_buffer_size = uuencode_buffer_size(2) + 6; /* 6 = "? + space + ?" + \0 */
 
 	cmdline = malloc (strlen (ecdbgd_path) + uu_buffer_size);
 	strcpy (cmdline, ecdbgd_path);
@@ -470,9 +470,9 @@ rt_public STREAM *spawn_ecdbgd(char*id, char *ecdbgd_path, Pid_t *child_pid)
 	 */
 
 #ifdef EIF_WINDOWS
-	sprintf (event_str, "eif_event_r%x_%s", piProcInfo.dwProcessId, id);
+	sprintf (event_str, "eif_event_r%x_%s", (unsigned int) piProcInfo.dwProcessId, id);
 	child_event_r = CreateSemaphore (NULL, 0, 32767, event_str);
-	sprintf (event_str, "eif_event_w%x_%s", piProcInfo.dwProcessId, id);
+	sprintf (event_str, "eif_event_w%x_%s", (unsigned int) piProcInfo.dwProcessId, id);
 	child_event_w = CreateSemaphore (NULL, 0, 32767, event_str);
 
 #ifdef USE_ADD_LOG

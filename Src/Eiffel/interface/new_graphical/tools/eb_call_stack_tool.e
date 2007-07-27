@@ -66,9 +66,9 @@ feature {NONE} -- Initialization
 			development_window: EB_DEVELOPMENT_WINDOW
 			box: EV_VERTICAL_BOX
 			box2: EV_VERTICAL_BOX
+			tb_but: like exception_dialog_button
 			box_exception: EV_HORIZONTAL_BOX
 			tb_exception: SD_TOOL_BAR
-			tb_but_exception: SD_TOOL_BAR_BUTTON
 			t_label: EV_LABEL
 			special_label_col: EV_COLOR
 		do
@@ -138,12 +138,14 @@ feature {NONE} -- Initialization
 			create exception
 			box_exception.extend (exception)
 			create tb_exception.make
-			create tb_but_exception.make
-			tb_but_exception.set_pixmap (pixmaps.icon_pixmaps.debug_exception_dialog_icon)
-			tb_but_exception.set_pixel_buffer (pixmaps.icon_pixmaps.debug_exception_dialog_icon_buffer)
-			tb_but_exception.set_tooltip (interface_names.l_open_exception_dialog_tooltip)
-			tb_but_exception.pointer_button_press_actions.extend (agent show_call_stack_message)
-			tb_exception.extend (tb_but_exception)
+			create tb_but.make
+			exception_dialog_button := tb_but
+			tb_but.disable_sensitive
+			tb_but.set_pixmap (pixmaps.icon_pixmaps.debug_exception_dialog_icon)
+			tb_but.set_pixel_buffer (pixmaps.icon_pixmaps.debug_exception_dialog_icon_buffer)
+			tb_but.set_tooltip (interface_names.l_open_exception_dialog_tooltip)
+			tb_but.select_actions.extend (agent show_call_stack_message)
+			tb_exception.extend (tb_but)
 			tb_exception.compute_minimum_size
 			box_exception.extend (tb_exception)
 			box_exception.disable_item_expand (tb_exception)
@@ -287,6 +289,9 @@ feature -- Access
 	exception: EV_TEXT_FIELD
 			-- Exception application has encountered.
 
+	exception_dialog_button: SD_TOOL_BAR_BUTTON
+			-- Button to display exception dialog.
+
 	title_for_pre: STRING is
 			-- Title of the tool.
 		do
@@ -397,6 +402,7 @@ feature -- Memory management
 
 			exception.remove_text
 			exception.remove_tooltip
+			exception_dialog_button.disable_sensitive
 			stop_cause.remove_text
 			display_box_thread (False)
 
@@ -579,6 +585,7 @@ feature {NONE} -- Implementation
 		local
 			m: STRING_32
 		do
+			exception_dialog_button.disable_sensitive
 			if not Debugger_manager.application_is_executing then
 				stop_cause.set_text (Interface_names.l_System_launched)
 				exception.remove_text
@@ -602,18 +609,21 @@ feature {NONE} -- Implementation
 				when Pg_overflow then
 					stop_cause.set_text (Interface_names.l_Possible_overflow)
 					m.append (Interface_names.l_Possible_overflow)
+					set_focus_is_visible
 				when Pg_raise then
 					stop_cause.set_text (Interface_names.l_Explicit_exception_pending)
 					m.append (Interface_names.l_Explicit_exception_pending)
 					m.append (": ")
 					m.append (exception_tag_text)
 					display_exception
+					set_focus_is_visible
 				when Pg_viol then
 					stop_cause.set_text (Interface_names.l_Implicit_exception_pending)
 					m.append (Interface_names.l_Implicit_exception_pending)
 					m.append (": ")
 					m.append (exception_tag_text)
 					display_exception
+					set_focus_is_visible
 				when Pg_new_breakpoint then
 					stop_cause.set_text (Interface_names.l_New_breakpoint)
 					m.append (Interface_names.l_New_breakpoint)
@@ -622,6 +632,14 @@ feature {NONE} -- Implementation
 					m.append (Interface_names.l_Unknown_status)
 				end
 				Eb_debugger_manager.debugging_window.status_bar.display_message ( first_line_of (m) )
+			end
+		end
+
+	set_focus_is_visible is
+			-- Set focus if visible
+		do
+			if content /= Void and then content.is_visible then
+				content.set_focus
 			end
 		end
 
@@ -635,21 +653,24 @@ feature {NONE} -- Implementation
 --| We'll enable this, once we have an exception window to display the full message
 			exception.set_text (first_line_of (m))
 			exception.set_tooltip (m)
+			exception_dialog_button.enable_sensitive
 		end
 
-	show_call_stack_message (x, y, button: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER) is
+	show_call_stack_message is
 		local
 			dlg: EB_DEBUGGER_EXCEPTION_DIALOG
 			wdlg: EB_WARNING_DIALOG
+			w: EV_WINDOW
 		do
+			w := Eb_debugger_manager.debugging_window.window
 			if debugger_manager.safe_application_is_stopped then
 				create dlg
 				dlg.set_exception_tag (exception_tag_text)
 				dlg.set_exception_message (exception_message_text)
-				dlg.show_modal_to_window (Eb_debugger_manager.debugging_window.window)
+				dlg.show_modal_to_window (w)
 			else
 				create wdlg.make_with_text (interface_names.l_Only_available_for_stopped_application)
-				wdlg.show_modal_to_window (Eb_debugger_manager.debugging_window.window)
+				wdlg.show_modal_to_window (w)
 			end
 		end
 
@@ -800,7 +821,7 @@ feature {NONE} -- Implementation
 				if oc /= Void then
 					l_orig_class_info := oc.name_in_upper
 					l_tooltip.prepend_string (interface_names.l_from_class (l_orig_class_info))
-					l_same_name := oc.is_equal (dc)
+					l_same_name := dc /= Void and then oc.same_type (dc) and then oc.is_equal (dc)
 				else
 					l_orig_class_info := Interface_names.l_Same_class_name
 				end
@@ -808,7 +829,7 @@ feature {NONE} -- Implementation
 					--| Routine name
 				l_has_rescue := e_cse.has_rescue
 				if l_has_rescue then
-					l_tooltip.append_string ("%N   + feature has a rescue clause")
+					l_tooltip.append_string (interface_names.l_feature_has_rescue_clause)
 				end
 				l_is_melted := e_cse.is_melted
 				if l_is_melted then
@@ -1116,10 +1137,7 @@ feature {NONE} -- Implementation
 			th_tools: ES_DBG_THREADS_TOOL
 		do
 			th_tools := Eb_debugger_manager.threads_tool
-			if not th_tools.shown then
-				th_tools.show
-				th_tools.widget.set_focus
-			end
+			th_tools.show
 		end
 
 	select_call_stack_thread (lab: EV_LABEL; x, y, button: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER) is

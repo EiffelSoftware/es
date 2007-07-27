@@ -9,7 +9,7 @@ class
 	SD_TOOL_BAR_HIDDEN_ITEM_DIALOG
 
 inherit
-	EV_SHADOW_DIALOG
+	EV_POPUP_WINDOW
 		export
 			{NONE}	all
 			{ANY} show
@@ -33,16 +33,14 @@ feature {NONE}  -- Initlization
 		require
 			not_void: a_hidden_items /= Void
 			not_void: a_tool_bar /= Void
-		local
-			l_shared: SD_SHARED
 		do
-			default_create
+			make_with_shadow
 			disable_user_resize
 			disable_border
 			create internal_vertical_box
-			create l_shared
-			internal_vertical_box.set_border_width (l_shared.border_width)
-			internal_vertical_box.set_background_color (l_shared.border_color)
+			create internal_shared
+			internal_vertical_box.set_border_width (internal_shared.border_width)
+			internal_vertical_box.set_background_color (internal_shared.border_color)
 
 			extend (internal_vertical_box)
 
@@ -124,7 +122,7 @@ feature {NONE}  -- Initlization
 			end
 
 			create l_button.make
-			l_button.set_text ("Customize")
+			l_button.set_text (internal_shared.interface_names.customize)
 			l_button.select_actions.extend (agent on_customize)
 			internal_tool_bar.extend (l_button)
 		end
@@ -147,22 +145,50 @@ feature {SD_TOOL_BAR_MANAGER} -- Command
 		local
 			l_dialog: SD_TOOL_BAR_CUSTOMIZE_DIALOG
 			l_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+			l_parent_window: EV_WINDOW
+			l_vertical_docking: BOOLEAN
+			l_docking_manager: SD_DOCKING_MANAGER
+			l_assit: SD_TOOL_BAR_ZONE_ASSISTANT
 		do
-			create l_dialog.make
-			l_items := parent_tool_bar.content.items
-			l_dialog.set_size (300, 300)
-			l_dialog.customize_toolbar (parent_tool_bar.docking_manager.main_window, True, True, l_items)
+			if parent_tool_bar.customize_dialog /= Void and then not parent_tool_bar.customize_dialog.is_destroyed then
+				parent_tool_bar.customize_dialog.set_focus
+			else
+				create l_dialog.make
+				parent_tool_bar.set_customize_dialog (l_dialog)
 
-			if l_dialog.valid_data then
-				save_items_layout (l_dialog.final_toolbar)
+				l_items := parent_tool_bar.content.items
+				l_dialog.set_size (300, 300)
 
-				parent_tool_bar.assistant.open_items_layout
-
-				if not parent_tool_bar.is_floating then
-					parent_tool_bar.extend_one_item (parent_tool_bar.tail_indicator)
+				if parent_tool_bar.is_floating then
+					l_parent_window := parent_tool_bar.floating_tool_bar
+				else
+					l_parent_window := parent_tool_bar.docking_manager.main_window
 				end
-				save_items_layout (l_dialog.final_toolbar)
-				parent_tool_bar.compute_minmum_size
+				l_dialog.customize_toolbar (l_parent_window, True, True, l_items)
+				parent_tool_bar.set_customize_dialog (Void)
+				if l_dialog.valid_data then
+					l_assit := parent_tool_bar.assistant
+					l_assit.save_items_layout (l_dialog.final_toolbar)
+
+					l_vertical_docking := parent_tool_bar.content.is_docking and then parent_tool_bar.is_vertical
+					if l_vertical_docking then
+						l_docking_manager := parent_tool_bar.docking_manager
+						l_docking_manager.command.lock_update (Void, True)
+					end
+
+					l_assit.open_items_layout
+
+					if not parent_tool_bar.is_floating then
+						parent_tool_bar.extend_one_item (parent_tool_bar.tail_indicator)
+					end
+					if l_vertical_docking then
+						parent_tool_bar.change_direction (False)
+						l_docking_manager.command.resize (True)
+						l_docking_manager.command.unlock_update
+					end
+					
+					parent_tool_bar.compute_minmum_size
+				end
 			end
 		end
 
@@ -214,6 +240,9 @@ feature {NONE} -- Implementation
 
 	internal_label: EV_LABEL
 			-- Label which show "Customize".
+
+	internal_shared: SD_SHARED
+			-- All singletons.
 
 invariant
 	not_void: parent_tool_bar /= Void

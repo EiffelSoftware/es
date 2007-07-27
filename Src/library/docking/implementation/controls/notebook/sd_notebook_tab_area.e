@@ -56,7 +56,7 @@ feature {NONE}  -- Initlization
 
 			set_minimum_width (0)
 			set_minimum_height (internal_shared.notebook_tab_height + 3)
-			
+
 			if internal_docking_manager.tab_drop_actions.count > 0 then
 				drop_actions.extend (agent on_drop_actions)
 
@@ -185,8 +185,9 @@ feature -- Command
 			-- `a_width' is tab areas' width, not include other EV_TOOL_BAR.
 		do
 			if is_displayed then
-				if not ignore_resize then
+				if not ignore_resize and a_width /= last_resize_width then
 					resize_tabs (a_width)
+					last_resize_width := a_width
 					debug ("docking")
 						print ("%N SD_NOTEBOOK_TAB_AREA on_resize")
 					end
@@ -268,16 +269,20 @@ feature {NONE}  -- Implementation functions
 			l_dialog: SD_NOTEBOOK_HIDE_TAB_DIALOG
 			l_tabs: like all_tabs
 			l_helper: SD_POSITION_HELPER
+			l_tabs_invisible: like internal_tabs_not_shown
 		do
 			create l_dialog.make (internal_notebook)
-
+			check
+				internal_tabs_not_shown_not_void: internal_tabs_not_shown /= Void
+			end
 			from
-				internal_tabs_not_shown.start
+				l_tabs_invisible := internal_tabs_not_shown
+				l_tabs_invisible.finish
 			until
-				internal_tabs_not_shown.after
+				l_tabs_invisible.before
 			loop
-				l_dialog.extend_hide_tab (internal_tabs_not_shown.item)
-				internal_tabs_not_shown.forth
+				l_dialog.extend_hide_tab (l_tabs_invisible.item)
+				l_tabs_invisible.back
 			end
 
 			from
@@ -313,8 +318,10 @@ feature {NONE}  -- Implementation functions
 			l_enough: BOOLEAN
 			l_tabs: like all_tabs
 			l_tab: SD_NOTEBOOK_TAB
+			l_tabs_invisible: like internal_tabs_not_shown
 		do
 			create internal_tabs_not_shown.make (1)
+			l_tabs_invisible := internal_tabs_not_shown
 			if not is_empty then
 				l_total_width := total_prefered_width
 				if l_total_width > a_width then
@@ -328,7 +335,7 @@ feature {NONE}  -- Implementation functions
 						l_tab := l_tabs.item
 						if not l_tab.is_selected then
 							if l_total_width > a_width then
-								internal_tabs_not_shown.extend (l_tab)
+								l_tabs_invisible.extend (l_tab)
 								l_total_width := l_total_width - l_tab.prefered_size
 							else
 								l_enough := True
@@ -457,6 +464,10 @@ feature {SD_NOTEBOOK_TAB_BOX} -- Internal attributes
 			-- Notebook which Current belong to.
 
 feature {NONE}  -- Implementation attributes
+
+	last_resize_width: INTEGER
+			-- We have to remember last width in `on_resize', otherwise there will be infinite loop.
+			-- See bug#13065.
 
 	internal_one_not_enough_space: BOOLEAN
 			-- If current space not enough to draw selected tab?

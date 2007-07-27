@@ -510,6 +510,9 @@ feature -- Command
 			docking_manager.contents.start
 			docking_manager.contents.prune (Current)
 			docking_manager.property.remove_from_clicked_list (Current)
+			if docking_manager.property.last_focus_content = Current then
+				docking_manager.property.set_last_focus_content (Void)
+			end
 		end
 
 	hide is
@@ -517,6 +520,9 @@ feature -- Command
 		do
 			state.hide
 			is_visible := False
+			if docking_manager.property.last_focus_content = Current then
+				docking_manager.property.set_last_focus_content (Void)
+			end
 		end
 
 	show is
@@ -703,7 +709,7 @@ invariant
 
 	the_user_widget_not_void: internal_user_widget /= Void
 	internal_shared_not_void: internal_shared /= Void
-	drop_actions_not_void: show_actions /= Void
+	drop_actions_not_void: drop_actions /= Void
 	show_actions_not_void: show_actions /= Void
 
 indexing

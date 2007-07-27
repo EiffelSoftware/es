@@ -86,6 +86,7 @@ feature {NONE} -- Initialization
 			denominator_area.extend (denominator_metric_setter)
 			denominator_area.disable_item_expand (denominator_metric_setter)
 
+			expression_lbl.set_text (metric_names.t_expression)
 			create l_text
 			expression_text.set_background_color (l_text.background_color)
 			numerator_frame.set_text (interface_names.first_character_as_upper (metric_names.l_numerator_metric))
@@ -129,6 +130,8 @@ feature -- Setting
 				denominator_coefficient_txt.set_text ("1")
 			end
 			on_change
+			numerator_coefficient_txt.change_actions.resume
+			denominator_coefficient_txt.change_actions.resume
 		end
 
 	enable_edit is
@@ -162,8 +165,17 @@ feature -- Access
 			Result.set_description (name_area.description)
 			Result.set_numerator_metric_name (numerator_metric_setter.metric_name)
 			Result.set_denominator_metric_name (denominator_metric_setter.metric_name)
-			Result.set_numerator_coefficient (numerator_coefficient_txt.text.to_double)
-			Result.set_denominator_coefficient (denominator_coefficient_txt.text.to_double)
+			if numerator_coefficient_txt.text.is_double then
+				Result.set_numerator_coefficient (numerator_coefficient_txt.text.to_double)
+			else
+				Result.set_numerator_coefficient (1)
+			end
+			if denominator_coefficient_txt.text.is_double then
+				Result.set_denominator_coefficient (denominator_coefficient_txt.text.to_double)
+			else
+				Result.set_denominator_coefficient (1)
+			end
+
 		end
 
 	metric_type: INTEGER is
@@ -271,4 +283,5 @@ indexing
                 ]"
 
 end -- class EB_RATIO_METRIC_DEFINITION_AREA
+
 

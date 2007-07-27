@@ -17,14 +17,16 @@ inherit
 	SERVICE_CONTAINER_IMPL
 		rename
 			add_service as provider_add_service,
-			add_service_with_activator as provider_add_service_with_creator,
-			revoke_service as provider_remove_service,
+			add_service_with_activator as provider_add_service_with_activator,
+			revoke_service as provider_revoke_service,
 			proffers_service as provider_proffers_service
 		export {NONE}
 			provider_add_service,
-			provider_add_service_with_creator,
-			provider_remove_service,
+			provider_add_service_with_activator,
+			provider_revoke_service,
 			provider_proffers_service
+		redefine
+			internal_query_service
 		end
 
 	SERVICE_PROVIDER
@@ -57,7 +59,7 @@ feature -- Extension
 			not_proffers_service: not proffers_service (a_type)
 			service_conforms_to_type: service_conforms_to_type (a_type, a_activator)
 		do
-			provider_add_service_with_creator (a_type, a_activator, False)
+			provider_add_service_with_activator (a_type, a_activator, False)
 		ensure
 			proffers_service: proffers_service (a_type)
 		end
@@ -70,7 +72,7 @@ feature -- Removal
 		require
 			a_type_attached: a_type /= Void
 		do
-			provider_remove_service (a_type, False)
+			provider_revoke_service (a_type, False)
 		ensure
 			not_proffers_service: not proffers_service (a_type)
 		end
@@ -87,8 +89,11 @@ feature -- Query
 
 feature -- Query
 
-	query_service (a_type: TYPE [ANY]): ANY
-			-- Queries for service `a_type' and returns result if service was found on Current
+	internal_query_service (a_type: TYPE [ANY]): ANY
+			-- Queries for service `a_type' and returns result if service was found on Current.
+			--
+			-- Note: Typically will retrieve a concealed service as the result, which must be
+			--       revealed using `reveal_service'
 		do
 			if proffers_service (a_type) then
 				Result := services [type_hash_code (a_type)]

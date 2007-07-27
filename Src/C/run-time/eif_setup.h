@@ -181,14 +181,22 @@ extern void egc_init_plug (void);		/* Defined in E1/eplug.c, and
 
 
 #define EIF_THREAD_DISPOSE \
-	EIF_RT_BASIC_CLEANUP \
+	eif_thr_exit(); \
 }
-
 
 #define EIF_DISPOSE_ALL \
 	EIF_RT_BASIC_CLEANUP \
 }
 
+/* Lazy initialization of per thread data for a thread that was not
+ * created by the Eiffel runtime. */
+#define EIF_INITIALIZE_AUX_THREAD \
+	GTCX; \
+	if (!eif_globals) { \
+		eif_thr_register(); \
+		eif_set_thr_context ();\
+		initstk(); \
+	}
 
 #else
 
@@ -212,8 +220,11 @@ extern void egc_init_plug (void);		/* Defined in E1/eplug.c, and
 	EIF_RT_BASIC_CLEANUP \
 }
 
+#define EIF_INITIALIZE_AUX_THREAD
+
+#endif	/* EIF_THREADS */
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif	/* EIF_THREADS */

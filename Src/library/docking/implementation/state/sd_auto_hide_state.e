@@ -21,7 +21,8 @@ inherit
 			record_state,
 			restore,
 			move_to_docking_zone,
-			move_to_tab_zone
+			move_to_tab_zone,
+			change_zone_split_area
 		end
 
 create
@@ -94,8 +95,8 @@ feature -- Redefine.
 			show
 			if zone /= Void then
 				zone.on_focus_in (a_content)
-				docking_manager.property.set_last_focus_content (content)
 			end
+			docking_manager.property.set_last_focus_content (content)
 		end
 
 	close is
@@ -108,7 +109,7 @@ feature -- Redefine.
 		end
 
 	stick (a_direction: INTEGER) is
-			-- Redefine. `a_direction' is useless, it's only used for SD_DOCKING_STATE.
+			-- Redefine. `a_direction' is useless. This feature used by SD_DOCKING_STATE and SD_CONTENT.set_auto_hide.
 		local
 			l_retried: BOOLEAN
 		do
@@ -117,13 +118,19 @@ feature -- Redefine.
 				internal_docking_manager.command.remove_auto_hide_zones (False)
 				internal_docking_manager.command.recover_normal_state
 
+				-- Hanlde the case that first call SD_AUTO_HIDE_STATE.hide, then SD_AUTO_HIDE_STATE.stick.
+				-- So we should insert the `tab_stub' which removed by `hide'.
+				if is_hide then
+					auto_hide_panel.tab_stubs.extend (tab_stub)
+				end
+
 				stick_zones (a_direction)
 
 				internal_docking_manager.command.remove_empty_split_area
 				internal_docking_manager.command.unlock_update
 			end
 		ensure then
-			tab_stubs_pruned: auto_hide_panel.tab_stubs.count < old auto_hide_panel.tab_stubs.count
+			tab_stubs_pruned: old not is_hide implies auto_hide_panel.tab_stubs.count < old auto_hide_panel.tab_stubs.count
 		rescue
 			internal_docking_manager.command.unlock_update
 			l_retried := True
@@ -187,6 +194,25 @@ feature -- Redefine.
 			end
 			l_docking_state.dock_at_top_level (a_multi_dock_area)
 			change_state (l_docking_state)
+
+			internal_close
+			internal_docking_manager.command.unlock_update
+		ensure then
+			state_changed: internal_content.state /= Current
+		end
+
+	change_zone_split_area (a_target_zone: SD_ZONE; a_direction: INTEGER) is
+			-- Redefine.
+		local
+			l_docking_state: SD_DOCKING_STATE
+		do
+			content.set_visible (True)
+			internal_docking_manager.command.lock_update (a_target_zone, False)
+			create l_docking_state.make (internal_content, a_direction, 0)
+			l_docking_state.change_zone_split_area (a_target_zone, a_direction)
+			change_state (l_docking_state)
+
+			internal_close
 			internal_docking_manager.command.unlock_update
 		ensure then
 			state_changed: internal_content.state /= Current
@@ -203,6 +229,7 @@ feature -- Redefine.
 					auto_hide_panel.tab_stubs.extend (tab_stub)
 				end
 				animation.show (True)
+				content.show_actions.call ([])
 				internal_docking_manager.command.unlock_update
 			end
 		ensure then
@@ -367,7 +394,12 @@ feature {NONE} -- Implementation functions.
 			l_docking_zone: SD_DOCKING_ZONE
 			l_tab_zone: SD_TAB_ZONE
 		do
-			internal_docking_manager.command.lock_update (zone, False)
+			if zone /= Void and then not zone.is_destroyed then
+				internal_docking_manager.command.lock_update (zone, False)
+			else
+				internal_docking_manager.command.lock_update (void, True)
+			end
+
 			internal_close
 			internal_docking_manager.zones.prune_zone_by_content (internal_content)
 

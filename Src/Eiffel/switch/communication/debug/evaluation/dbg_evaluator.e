@@ -15,6 +15,8 @@ inherit
 
 	SHARED_DEBUGGER_MANAGER
 
+	SHARED_BENCH_NAMES
+
 	SHARED_WORKBENCH
 		export
 			{NONE} all
@@ -72,9 +74,9 @@ feature {SHARED_DBG_EVALUATOR} -- Variables
 
 	last_result_static_type: CLASS_C
 
-	error_evaluation_message: STRING
+	error_evaluation_message: STRING_32
 
-	error_exception_message: STRING
+	error_exception_message: STRING_32
 
 	error_occurred: BOOLEAN is
 		do
@@ -91,21 +93,23 @@ feature {SHARED_DBG_EVALUATOR, DBG_EVALUATOR_IMP} -- Variables preparation
 			last_result_static_type := trs
 		end
 
-	notify_error_evaluation (mesg: STRING) is
+	notify_error_evaluation (mesg: STRING_GENERAL) is
 		do
 			if error_evaluation_message /= Void then
-				error_evaluation_message.append_string ("%N" + mesg)
-			else
-				error_evaluation_message := mesg
+				error_evaluation_message.append_character ('%N')
+				error_evaluation_message.append_string_general (mesg)
+			elseif mesg /= Void then
+				error_evaluation_message := mesg.as_string_32
 			end
 		end
 
-	notify_error_exception (mesg: STRING) is
+	notify_error_exception (mesg: STRING_GENERAL) is
 		do
 			if error_exception_message /= Void then
-				error_exception_message.append_string ("%N" + mesg)
-			else
-				error_exception_message := mesg
+				error_exception_message.append_character ('%N')
+				error_exception_message.append_string_general (mesg)
+			elseif mesg /= Void then
+				error_exception_message := mesg.as_string_32
 			end
 		end
 
@@ -127,11 +131,9 @@ feature -- Concrete evaluation
 			retrieve_evaluation
 
 			if last_result_value /= Void then
-				if f.type.has_associated_class then
-					last_result_static_type := f.type.associated_class
-				end
+				last_result_static_type := class_c_from_type_a (f.type, cl)
 			else
-				notify_error_evaluation ("Unable to evaluate {" + cl.name_in_upper + "}." + f.feature_name)
+				notify_error_evaluation (Debugger_names.msg_error_unable_to_evaluate_call (cl.name_in_upper, f.feature_name, Void, Void))
 			end
 		end
 
@@ -146,7 +148,7 @@ feature -- Concrete evaluation
 			effective_evaluate_once_function (f)
 		end
 
-	evaluate_attribute (a_addr: STRING; a_target: DUMP_VALUE; f: FEATURE_I) is
+	evaluate_attribute (a_addr: STRING; a_target: DUMP_VALUE; c: CLASS_C; f: FEATURE_I) is
 			-- Evaluate attribute feature
 		local
 			lst: DS_LIST [ABSTRACT_DEBUG_VALUE]
@@ -169,12 +171,12 @@ feature -- Concrete evaluation
 				lst := attributes_list_from_object (l_address)
 				dv := find_item_in_list (f.feature_name, lst)
 
-				last_result_static_type := f.type.associated_class
+				last_result_static_type := class_c_from_type_a (f.type, c)
 				if dv = Void then
-					if f.feature_name.is_equal ("Void") then
+					if f.feature_name.is_equal (once "Void") then
 						last_result_value := Debugger_manager.Dump_value_factory.new_void_value (last_result_static_type)
 					else
-						notify_error_evaluation ("Could not find attribute value for " + f.feature_name)
+						notify_error_evaluation (Debugger_names.msg_error_cannot_find_attribute (f.feature_name))
 					end
 				else
 					last_result_value := dv.dump_value
@@ -183,7 +185,7 @@ feature -- Concrete evaluation
 --				result_object := a_target
 --				result_static_type := a_target.dynamic_class
 			else
-				notify_error_evaluation ("Cannot evaluate an attribute ["+ f.feature_name +"] of a expanded value")
+				notify_error_evaluation (Debugger_names.msg_error_cannot_evaluate_attribute_of_expanded (f.feature_name))
 			end
 		end
 
@@ -195,8 +197,6 @@ feature -- Concrete evaluation
 			l_target_dynclass: CLASS_C
 			l_dyntype: CLASS_TYPE
 			realf: FEATURE_I
-			at: TYPE_A
-			l_err_msg: STRING
 		do
 			debug ("debugger_trace_eval")
 				print (generating_type + ".evaluate_routine :%N")
@@ -218,7 +218,7 @@ feature -- Concrete evaluation
 				l_target_dynclass := a_target.dynamic_class
 			end
 			if l_target_dynclass /= Void and then l_target_dynclass.is_basic then
-				l_dyntype := associated_reference_basic_class_type (l_target_dynclass)
+				l_dyntype := associated_basic_class_type (l_target_dynclass)
 			elseif l_target_dynclass /= Void and then l_target_dynclass.types.count = 1 then
 				l_dyntype := l_target_dynclass.types.first
 			elseif l_target_dynclass = Void or else l_target_dynclass.types.count > 1 then
@@ -226,7 +226,7 @@ feature -- Concrete evaluation
 						-- The type has generic derivations: we need to find the precise type.
 					l_dyntype := class_type_from_object_relative_to (a_addr, l_target_dynclass)
 					if l_dyntype = Void then
-						notify_error_evaluation ("Error occurred: unable to find the context object <" + a_addr + ">")
+						notify_error_evaluation (Debugger_names.msg_error_cannot_find_context_object (a_addr))
 					elseif l_target_dynclass = Void then
 						l_target_dynclass := l_dyntype.associated_class
 					end
@@ -236,48 +236,58 @@ feature -- Concrete evaluation
 					l_dyntype := Void
 				else
 						--| Shouldn't happen: basic types are not generic.
-					notify_error_evaluation ("Cannot find complete dynamic type of an expanded type")
+					notify_error_evaluation (Debugger_names.cst_error_cannot_find_complete_dynamic_type_of_expanded_type)
 				end
 			else
-				l_dyntype := l_target_dynclass.types.first
+				check l_target_dynclass /= Void and then l_target_dynclass.types.count = 0 end
 			end
 			if f.is_once then
 				effective_evaluate_once_function (f)
 				if last_result_value = Void then
-					notify_error_evaluation ("Unable to evaluate once {" + f.written_class.name_in_upper + "}." + f.feature_name)
+					notify_error_evaluation (Debugger_names.msg_error_unable_to_evaluate_once_call (f.written_class.name_in_upper, f.feature_name))
 				end
 			elseif not error_occurred then
-					-- Get real feature
-				realf := ancestor_version_of (f, f.written_class)
-				if realf = Void then
-						--| FIXME JFIAT: 2004-02-01 : why `realf' can be Void in some case ?
-						--| occurred for EV_RICH_TEXT_IMP.line_index (...)
-					debug ("debugger_trace_eval_data")
-						print ("f.ancestor_version (f.written_class) = Void%N")
-						print ("  f.feature_name  = " + f.feature_name + "%N")
-						print ("  f.written_class = " + f.written_class.name_in_upper + "%N")
+				check l_target_dynclass /= Void end
+				if l_dyntype = Void then
+					notify_error_evaluation (
+								Debugger_names.msg_error_unable_to_evaluate_call (f.written_class.name_in_upper, f.feature_name, Void,
+										Debugger_names.msg_error_type_not_compiled (l_target_dynclass.name_in_upper)
+									)
+							)
+				else
+						-- Get real feature
+					realf := ancestor_version_of (f, f.written_class)
+					if realf = Void then
+							--| FIXME JFIAT: 2004-02-01 : why `realf' can be Void in some case ?
+							--| occurred for EV_RICH_TEXT_IMP.line_index (...)
+						debug ("debugger_trace_eval_data")
+							print ("f.ancestor_version (f.written_class) = Void%N")
+							print ("  f.feature_name  = " + f.feature_name + "%N")
+							print ("  f.written_class = " + f.written_class.name_in_upper + "%N")
+						end
+						realf := f
+					elseif realf.is_deferred then
+						realf := f
 					end
-					realf := f
-				end
-				check
-					valid_dyn_type: l_dyntype /= Void
-				end
-
-				effective_evaluate_routine (a_addr, a_target, f, realf, l_dyntype, l_target_dynclass, params, is_static_call)
-				if last_result_value = Void then
-					l_err_msg := "Unable to evaluate {" + l_dyntype.associated_class.name_in_upper + "}." + f.feature_name
-					if a_addr /= Void then
-						l_err_msg.append_string (" on <" + a_addr + ">")
+					check
+						valid_dyn_type: l_dyntype /= Void
+						f_is_not_once: not f.is_once
 					end
-					notify_error_evaluation (l_err_msg)
+					if realf.is_deferred and f.is_deferred then
+						notify_error_evaluation (Debugger_names.msg_error_unable_to_evaluate_deferred_call (f.written_class.name_in_upper, f.feature_name))
+					else
+						effective_evaluate_routine (a_addr, a_target, f, realf, l_dyntype, l_target_dynclass, params, is_static_call)
+						if last_result_value = Void then
+							notify_error_evaluation (
+										Debugger_names.msg_error_unable_to_evaluate_call (l_dyntype.associated_class.name_in_upper, f.feature_name, a_addr, Void)
+									)
+						end
+					end
 				end
-
 				if not error_occurred and then last_result_value /= Void then
 					if f.is_function then
-						at := f.type
-						if at.has_associated_class then
-							last_result_static_type := at.associated_class
-						end
+						check l_target_dynclass /= Void end
+						last_result_static_type := class_c_from_type_a (f.type, l_target_dynclass)
 						if last_result_static_type = Void then
 							last_result_static_type := Workbench.Eiffel_system.Any_class.compiled_class
 						end
@@ -423,7 +433,7 @@ feature {NONE} -- List helpers
 			same_name_if_found: (Result /= Void) implies (Result.name.is_equal (n))
 		end
 
-feature {NONE} -- compiler helpers
+feature {DBG_EXPRESSION_EVALUATOR} -- compiler helpers
 
 	ancestor_version_of (fi: FEATURE_I; an_ancestor: CLASS_C): FEATURE_I is
 			-- Feature in `an_ancestor' of which `Current' is derived.
@@ -436,23 +446,40 @@ feature {NONE} -- compiler helpers
 			ris: ROUT_ID_SET
 			rout_id: INTEGER
 		do
-			ris := fi.rout_id_set
-			from
-				n := ris.lower
-				nb := ris.count
-			until
-				n > nb or else Result /= Void
-			loop
-				rout_id := ris.item (n)
-				if
-					rout_id /= 0
-					and then an_ancestor.is_valid
-					and then an_ancestor.has_feature_table
-				then
-					Result := an_ancestor.feature_table.feature_of_rout_id (rout_id)
+			if
+				an_ancestor.is_valid
+				and then an_ancestor.has_feature_table
+			then
+				ris := fi.rout_id_set
+				from
+					n := ris.lower
+					nb := ris.count
+				until
+					n > nb or else Result /= Void
+				loop
+					rout_id := ris.item (n)
+					if rout_id > 0 then
+						Result := an_ancestor.feature_table.feature_of_rout_id (rout_id)
+					end
+					n := n + 1
 				end
-				n := n + 1
 			end
+		end
+
+	associated_basic_class_type (cl: CLASS_C): CLASS_TYPE is
+			-- Associated classtype for type `cl'
+		require
+			cl_not_void: cl /= Void
+			cl_is_basic: cl.is_basic
+		local
+			t: CL_TYPE_I
+		do
+			t := cl.actual_type.type_i
+			if t.has_associated_class_type then
+				Result := t.associated_class_type
+			end
+		ensure
+			associated_basic_class_type_not_void: Result /= Void
 		end
 
 	associated_reference_basic_class_type (cl: CLASS_C): CLASS_TYPE is
@@ -462,16 +489,46 @@ feature {NONE} -- compiler helpers
 			cl_not_void: cl /= Void
 			cl_is_basic: cl.is_basic
 		do
-			fixme ("[
-						jfiat 2004-10-06 : why do we have two different behaviors
-						depending if we are on dotnet or classic ?
-				]")
 			Result := implementation.associated_reference_basic_class_type (cl)
-		ensure
-			associated_reference_class_type_not_void: Result /= Void
 		end
 
 feature {NONE} -- Implementation
+
+	class_c_from_type_a (t: TYPE_A; a_ctx_class: CLASS_C): CLASS_C is
+		require
+			t_not_void: t /= Void
+			a_ctx_class_not_void: a_ctx_class /= Void
+		local
+			l_type: TYPE_A
+			l_formal: FORMAL_A
+--			l_last_type_set: TYPE_SET_A
+		do
+			if t.has_associated_class then
+				Result := t.associated_class
+			else
+				l_type := t.actual_type
+				if l_type.is_formal then
+					l_formal ?= l_type
+					if l_formal.is_multi_constrained (a_ctx_class) then
+						fixme("Handle multi constrained type...")
+--						l_last_type_set := l_type.to_type_set.constraining_types (a_ctx_class)
+--						l_type := l_last_type_set.instantiated_in (a_ctx_class.actual_type)
+--						if l_type.is_formal then
+--							l_formal ?= l_type
+--							l_type := l_formal.constrained_type (a_ctx_class)
+--						end
+						l_type := Void
+					else
+						l_type := l_formal.constrained_type (a_ctx_class)
+					end
+				end
+				if l_type /= Void and then not l_type.is_none then
+					Result := l_type.associated_class
+				else
+					Result := Void
+				end
+			end
+		end
 
 	prepare_evaluation is
 			-- Initialization before effective evaluation

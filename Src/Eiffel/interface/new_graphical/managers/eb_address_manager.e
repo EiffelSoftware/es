@@ -119,9 +119,9 @@ feature {NONE} -- Initialization
 				l_hbox.extend (label)
 
 				create {SD_TOOL_BAR_WIDGET_ITEM} l_item.make (l_hbox)
-				l_item.set_description ("Class label")
+				l_item.set_description (interface_names.l_class_label)
 
-				l_item.set_name (l_item.description)
+				l_item.set_name ("class label")
 
 				tool_bar_items.extend (l_item)
 			end
@@ -136,8 +136,8 @@ feature {NONE} -- Initialization
 			else
 				-- Then we build a `class_addre
 				create {SD_TOOL_BAR_RESIZABLE_ITEM} l_item.make (class_address)
-				l_item.set_description ("Class address")
-				l_item.set_name (l_item.description)
+				l_item.set_description (interface_names.l_class_address)
+				l_item.set_name ("class address combo")
 
 				tool_bar_items.extend (l_item)
 			end
@@ -154,9 +154,9 @@ feature {NONE} -- Initialization
 				l_hbox.extend (label)
 
 				create {SD_TOOL_BAR_WIDGET_ITEM} l_item.make (l_hbox)
-				l_item.set_description ("Feature label")
+				l_item.set_description (interface_names.l_feature_label)
 
-				l_item.set_name (l_item.description)
+				l_item.set_name ("feature label")
 
 				tool_bar_items.extend (l_item)
 			end
@@ -169,8 +169,8 @@ feature {NONE} -- Initialization
 				hbox.extend (feature_address)
 			else
 				create {SD_TOOL_BAR_RESIZABLE_ITEM} l_item.make (feature_address)
-				l_item.set_description ("Feature address")
-				l_item.set_name (l_item.description)
+				l_item.set_description (interface_names.l_feature_address)
+				l_item.set_name ("feature address combo")
 				tool_bar_items.extend (l_item)
 			end
 			if not mode then
@@ -184,8 +184,8 @@ feature {NONE} -- Initialization
 
 				create {SD_TOOL_BAR_WIDGET_ITEM} l_item.make (l_hbox)
 
-				l_item.set_description ("View label")
-				l_item.set_name (l_item.description)
+				l_item.set_description (interface_names.l_view_label)
+				l_item.set_name ("view label")
 
 				tool_bar_items.extend (l_item)
 			end
@@ -244,7 +244,7 @@ feature {NONE} -- Initialization
 		do
 			create l_view_points_widget
 			view_points_widget := l_view_points_widget
-			create l_label.make_with_text (parent_widget.interface_names.l_viewpoints)
+			create l_label.make_with_text (parent_widget.interface_names.l_viewpoints_colon)
 			l_view_points_widget.extend (l_label)
 			l_view_points_widget.disable_item_expand (l_label)
 
@@ -280,8 +280,8 @@ feature -- Access
 				l_combo.parent.prune (l_combo)
 			end
 			create {SD_TOOL_BAR_RESIZABLE_ITEM} Result.make (l_combo)
-			Result.set_name ("Viewpoints")
-			Result.set_description (Result.name)
+			Result.set_name ("view combo")
+			Result.set_description (interface_names.l_viewpoints)
 		ensure
 			not_void: Result /= Void
 		end
@@ -645,9 +645,18 @@ feature -- Observer management
 
 	on_new_tab_command is
 			-- Handle EB_NEW_TAB_EDITOR_COMMAND.
+		local
+			l_window: EB_DEVELOPMENT_WINDOW
+			l_editor: EB_SMART_EDITOR
 		do
 			if class_address.is_displayed and class_address.is_sensitive then
-				ev_application.do_once_on_idle (agent class_address.set_focus)
+				l_window := window_manager.last_focused_development_window
+				if l_window /= Void then
+					l_editor :=  l_window.editors_manager.current_editor
+					if l_editor /= Void and then not l_editor.file_loaded then
+						ev_application.do_once_on_idle (agent class_address.set_focus)
+					end
+				end
 			end
 		end
 
@@ -2357,18 +2366,19 @@ feature {NONE} -- Implementation of the clickable labels for `header_info'
 	one_lost_focus is
 			-- One of the widgets displayed in `address_dialog' has lost the focus.
 			-- If none now has the focus, hide `address_dialog'.
-		require
-			for_context_tool: mode
 		do
-			if
-				lost_focus_action_enabled and then
-				not class_address.has_focus and then
-				not feature_address.has_focus and then
-				not cluster_address.has_focus and then
-				not address_dialog.has_focus and then
-				(choice = Void or else (choice.is_destroyed or else not choice.is_show_requested))
-			then
-				address_dialog.hide
+			if mode then
+			-- Now it's for context tool, `address_dialog' exists.
+				if
+					lost_focus_action_enabled and then
+					(class_address = Void or else not class_address.has_focus) and then
+					(feature_address = Void or else not feature_address.has_focus) and then
+					(cluster_address = Void or else not cluster_address.has_focus) and then
+					(address_dialog = Void or else not address_dialog.has_focus) and then
+					(choice = Void or else (choice.is_destroyed or else not choice.is_show_requested))
+				then
+					address_dialog.hide
+				end
 			end
 		end
 

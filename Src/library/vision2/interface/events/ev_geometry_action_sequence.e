@@ -11,10 +11,8 @@ class
 	EV_GEOMETRY_ACTION_SEQUENCE
 
 inherit
-	EV_ACTION_SEQUENCE [TUPLE [INTEGER, INTEGER, INTEGER, INTEGER]]
-	-- EV_ACTION_SEQUENCE [TUPLE [x, y, width, height: INTEGER]]
-	-- (ETL3 TUPLE with named parameters)
-	
+	EV_ACTION_SEQUENCE [TUPLE [x: INTEGER; y: INTEGER; width: INTEGER; height: INTEGER]]
+
 create
 	default_create
 

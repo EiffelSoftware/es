@@ -60,7 +60,11 @@ feature{NONE} -- Initialization
 			a_viewer_attached: a_viewer /= Void
 			a_tooltip_attached: a_tooltip /= Void
 		do
-			set_command_name_internal (a_cmd_name)
+			if a_cmd_name.is_empty then
+				set_command_name_internal (default_name)
+			else
+				set_command_name_internal (a_cmd_name)
+			end
 			set_header_internal (a_header)
 			set_temp_header_internal (a_temp_header)
 			set_menu_name_internal (a_menu_name)
@@ -289,9 +293,17 @@ feature -- Setting
 			end
 		end
 
-	set_pixmap (a_pixmap: like pixmap) is
+	set_pixmap_and_pixel_buffer (a_pixmap: like pixmap; a_pixel_buffer: like pixel_buffer) is
 			-- Set `pixmap' with `a_pixmap'.
+		require
+			not_void: a_pixel_buffer /= Void
+		local
+			l_right_size_buffer: EV_PIXEL_BUFFER
 		do
+			create l_right_size_buffer.make_with_size (16, 16)
+			l_right_size_buffer.draw_pixel_buffer (a_pixel_buffer, create {EV_RECTANGLE}.make (0, 0, a_pixel_buffer.width, a_pixel_buffer.height))
+			pixel_buffer_internal := l_right_size_buffer
+
 			pixmap := a_pixmap
 			pixmap.stretch (16, 16)
 		end
@@ -340,7 +352,9 @@ feature -- Setting
 						widget.show
 					end
 					setup_viewpoint
-					generate_result
+					if browser /= Void then
+						generate_result
+					end
 					display_header
 				end
 			end
@@ -348,6 +362,8 @@ feature -- Setting
 
 	generate_result is
 			-- Generate result for `stone'.
+		require
+			browser_attached: browser /= Void
 		local
 			l_domain_item: EB_METRIC_DOMAIN_ITEM
 			l_retried: BOOLEAN
@@ -559,9 +575,9 @@ feature{NONE} -- Implementation/Setting
 		do
 			create l_pixmap_loader
 			l_result := l_pixmap_loader.loaded_pixmap_from_file (icon_location, pixmaps.icon_pixmaps.diagram_export_to_png_icon, pixmaps.icon_pixmaps.diagram_export_to_png_icon_buffer)
-			l_result.a_pixmap.stretch (16, 16)
-			set_pixmap (l_result.a_pixmap)
-			pixel_buffer_internal := l_result.a_buffer
+
+			set_pixmap_and_pixel_buffer (l_result.a_pixmap, l_result.a_buffer)
+
 			set_is_pixmap_loaded (True)
 		ensure
 			pixmap_attached: pixmap /= Void
@@ -576,12 +592,14 @@ feature{NONE} -- Implementation/Setting
 			is_pixmap_loaded_set: is_pixmap_loaded = b
 		end
 
+	default_name: STRING is "Unnamed formatter"
+			-- Default formatter name
+
 invariant
 	command_name_internal_attached: command_name_internal /= Void
 	header_internal_attached: header_internal /= Void
 	temp_header_internal_attached: temp_header_internal /= Void
 	menu_name_internal_attached: menu_name_internal /= Void
-	browser_attached: browser /= Void
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

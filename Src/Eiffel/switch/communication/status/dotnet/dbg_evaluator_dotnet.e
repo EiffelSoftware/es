@@ -15,7 +15,7 @@ inherit
 	DBG_EVALUATOR_IMP
 		redefine
 			init,
-			Cst_error_messages,
+			error_code_to_message,
 			effective_evaluate_function_with_name,
 			effective_evaluate_static_function,
 			address_from_basic_dump_value,
@@ -53,7 +53,6 @@ feature {DBG_EVALUATOR} -- Interface
 			-- Evaluate dotnet function
 		local
 			l_params: ARRAY [DUMP_VALUE]
-			l_error_message: STRING
 			l_icdv_obj: ICOR_DEBUG_VALUE
 			l_icd_function: ICOR_DEBUG_FUNCTION
 			l_ctype: CLASS_TYPE
@@ -93,7 +92,7 @@ feature {DBG_EVALUATOR} -- Interface
 					if nat_edv /= Void then
 						internal_evaluate_function_on_native_array (nat_edv, realf, l_params)
 					else
-						notify_error (Cst_error_occurred, " NATIVE_ARRAY is not yet fully supported")
+						notify_error_evaluation (Debugger_names.msg_error_native_array_partially_supported (realf.feature_name))
 					end
 				else
 						--| Get the ICorDebugFunction to call.
@@ -105,28 +104,28 @@ feature {DBG_EVALUATOR} -- Interface
 					else
 						last_result_value := dotnet_evaluate_icd_function (l_icdv_obj, l_icd_function, l_params, l_ctype.is_external, f.is_function)
 						if error_occurred then
-							l_error_message := "%"" + realf.feature_name + "%" : "
 							if evaluation_aborted then
-								l_error_message.append_string ("Evaluation aborted")
+								notify_error (cst_error_evaluation_aborted, Debugger_names.msg_error_evaluation_aborted (realf.written_class.name_in_upper, realf.feature_name))
 							elseif exception_occurred then
 								exc_dv := last_result_value.value_exception
 								if exc_dv /= Void then
 									exc_dv.set_name (f.feature_name)
-									exc_dv.set_tag ("Feature [" + f.feature_name + "]: an exception occurred")
-									l_error_message.append_string ("Exception occurred during evaluation"
-											+ " of {" + f.written_class.name_in_upper + "}." + f.feature_name + ": %N"
-											+ exc_dv.display_message
-	--										+ last_exception_trace
+									exc_dv.set_tag (Debugger_names.msg_error_exception_occurred_during_evaluation (f.written_class.name_in_upper, f.feature_name, Void))
+									notify_error_exception (
+											Debugger_names.msg_error_exception_occurred_during_evaluation (
+												f.written_class.name_in_upper, 
+												f.feature_name, 
+												exc_dv.display_message
+											)
 										)
 								else
-									l_error_message.append_string (error_message)
+									notify_error_evaluation (error_message)
 								end
 							elseif error_occurred then
-								l_error_message.append_string (error_message)
+								notify_error_evaluation (error_message)
 							else
-								l_error_message.append_string (" error occurred")
+								notify_error_evaluation (realf.feature_name)
 							end
-							notify_error (Cst_error_occurred, l_error_message)
 						else
 							if not f.is_function then
 								check last_result_value = Void end
@@ -179,12 +178,12 @@ feature {DBG_EVALUATOR} -- Interface
 							end
 						end
 					else
-						notify_error (Cst_error_occurred, " NATIVE_ARRAY is not yet fully supported, unable to evaluate %"" + fn + "%"")
+						notify_error_evaluation (Debugger_names.msg_error_native_array_partially_supported (fn));
 					end
 				end
 				nat_edv.release_array_value
 			else
-				notify_error (Cst_error_occurred, " an internal error occurred during evaluation of  %"{NATIVE_ARRAY}." + f.feature_name + "%"")
+				notify_error_evaluation ("an internal error occurred during evaluation of  %"{NATIVE_ARRAY}." + f.feature_name + "%"")
 				if nat_edv.array_value /= Void then
 					nat_edv.release_array_value
 				end
@@ -253,9 +252,9 @@ feature {DBG_EVALUATOR} -- Interface
 
 			if last_result_value = Void or error_occurred then
 				if a_addr = Void then
-					notify_error (cst_error_occurred, "Unable to evaluate : " + a_external_name)
+					notify_error_evaluation ("Unable to evaluate : " + a_external_name)
 				else
-					notify_error (cst_error_occurred, "Unable to evaluate : " + a_external_name + " on <" + a_addr + ">")
+					notify_error_evaluation ("Unable to evaluate : " + a_external_name + " on <" + a_addr + ">")
 				end
 			end
 			if not error_occurred and then last_result_value /= Void then
@@ -282,20 +281,19 @@ feature {DBG_EVALUATOR} -- Interface
 			l_ctype: CLASS_TYPE
 			l_icdv_args: ARRAY [ICOR_DEBUG_VALUE]
 			l_icdm: ICOR_DEBUG_MODULE
-			l_cl_tok, l_f_tok: INTEGER
 			l_icd_fun: ICOR_DEBUG_FUNCTION
 			l_result: ICOR_DEBUG_VALUE
 			l_adv: ABSTRACT_DEBUG_VALUE
 			l_icd_frame: ICOR_DEBUG_FRAME
 		do
-				--| Reset error status
-			reset_error
-
 			debug ("debugger_trace_eval")
 				print (generating_type + ".dotnet_evaluate_static_function : ")
 				print (ctype.associated_class.name_in_upper + "." + f.feature_name)
 				print ("%N")
 			end
+
+				--| Reset error status
+			reset_error
 
 			if params /= Void and then not params.is_empty then
 				prepare_parameters (ctype, f, params)
@@ -310,9 +308,7 @@ feature {DBG_EVALUATOR} -- Interface
 			l_icdm := Eifnet_debugger.ise_runtime_module
 				--| FIXME jfiat: here we are only dealing with EiffelSoftware runtime ... classes
 
-			l_cl_tok := l_icdm.md_class_token_by_type_name (l_ctype.full_il_type_name)
-			l_f_tok := l_icdm.md_feature_token (l_cl_tok, f.external_name)
-			l_icd_fun := l_icdm.get_function_from_token (l_f_tok)
+			l_icd_fun := eifnet_debugger.icd_function_by_names (l_icdm, l_ctype.full_il_type_name, f.external_name)
 			if l_icd_fun /= Void then
 				l_icd_frame := current_icor_debug_frame
 				if l_icd_frame = Void then
@@ -371,7 +367,7 @@ feature {DBG_EVALUATOR} -- Interface
 					err_dv.set_message ("Once feature [" + f.feature_name + "]: not yet called")
 					last_result_value := err_dv.dump_value
 
-					notify_error (cst_error_occurred, "Once feature [" + f.feature_name + "]: not yet called")
+					notify_error_evaluation ("Once feature [" + f.feature_name + "]: not yet called")
 				elseif last_once_failed then
 					create exc_dv.make_with_name (f.feature_name)
 					exc_dv.set_wrapper_mode (True)
@@ -384,12 +380,12 @@ feature {DBG_EVALUATOR} -- Interface
 					notify_error (cst_error_exception_during_evaluation, "Once feature [" + f.feature_name + "]: an exception occurred")
 				elseif l_adv = Void then
 						--| Is it possible ???
-					notify_error (cst_error_occurred, "Once feature [" + f.feature_name + "]: Default value (i.e: Void ...)")
+					notify_error_evaluation ("Once feature [" + f.feature_name + "]: Default value (i.e: Void ...)")
 				else
 					last_result_value := l_adv.dump_value
 				end
 			else
-				notify_error (cst_error_occurred , "Once feature " + f.feature_name + ": Could not get information")
+				notify_error_evaluation ("Once feature " + f.feature_name + ": Could not get information")
 			end
 		end
 
@@ -436,7 +432,7 @@ feature {DBG_EVALUATOR} -- Interface
 					end
 				end
 			else
-				notify_error (cst_error_occurred, "Could not create instance of [" + a_type_i.name + "]")
+				notify_error_evaluation (Debugger_names.msg_error_instanciation_of_type_raised_error (a_type_i.name))
 			end
 		end
 
@@ -456,17 +452,6 @@ feature {DBG_EVALUATOR} -- Interface
 			l_new_instance_of_feat_i := a_internal_class_c.feature_named ("new_instance_of")
 			l_icd_func := eifnet_debugger.icd_function_by_feature (a_internal_value, a_internal_class_c.types.first, l_new_instance_of_feat_i)
 			Result := dotnet_evaluate_icd_function (a_internal_value, l_icd_func, <<l_dv>>, False, True)
-		end
-
-	associated_reference_basic_class_type (cl: CLASS_C): CLASS_TYPE is
-		local
-			l_basic: BASIC_I
-		do
-			l_basic ?= cl.actual_type.type_i
-			check
-				l_basic_not_void: l_basic /= Void
-			end
-			Result := l_basic.associated_reference_class_type
 		end
 
 	current_object_from_callstack (cse: EIFFEL_CALL_STACK_ELEMENT): DUMP_VALUE is
@@ -623,10 +608,13 @@ feature {NONE} -- Error code id
 
 	Cst_error_unable_to_get_icd_function: INTEGER is 0x20
 
-	Cst_error_messages: HASH_TABLE [STRING, INTEGER] is
-		once
-			Result := Precursor
-			Result.force ("Unable to get ICorDebugFunction", Cst_error_unable_to_get_icd_function)
+	error_code_to_message (a_code: INTEGER): STRING_GENERAL is
+		do
+			if a_code = Cst_error_unable_to_get_icd_function then
+				Result := Debugger_names.Cst_error_unable_to_get_icd_function
+			else
+				Result := Precursor {DBG_EVALUATOR_IMP} (a_code)
+			end
 		end
 
 feature {NONE} -- Implementation

@@ -100,7 +100,7 @@ feature -- Project file/directory warnings
 	w_no_compilable_target: STRING_GENERAL is do Result := locale.translation ("Cannot compile project: no valid target found.") end
 			-- Error when no compilable target was found.
 
-	w_None_system: STRING is "A system with an all classes root is not runnable."
+	w_None_system: STRING is do Result := locale.translation ("A system with an all classes root is not runnable.") end
 
 	w_unable_to_retrieve_wizard_list: STRING_GENERAL is do Result := locale.translation ("Unable to retrieve the list of installed wizard.") end
 
@@ -263,6 +263,8 @@ feature -- Project settings warnings
 	w_cluster_path_not_valid: STRING_GENERAL is do Result := locale.translation ("Cluster path is not valid.") end
 
 feature -- Debug warnings
+
+	w_apply_debugger_profiles_before_continuing: STRING_GENERAL is do Result := locale.translation ("Profiles are modified.%NDo you want to apply the changes before continuing?") end
 
 	w_Compile_before_debug: STRING_GENERAL is do Result := locale.translation ("Do you want to compile before executing?") end
 
@@ -597,9 +599,9 @@ feature -- Backup warnings
 	w_Found_backup: STRING_GENERAL is do Result := locale.translation ("A backed up version of the file was found.%N%
 							%Do you want to open the original file or the backup file?%N%
 							%If you choose the original file, the backup file will be%N%
-							%deleted. If choose the backup file, then the original file%N%
-							%will be overwritten with the contents of the backup file%N%
-							%when you save.%N") end
+							%deleted. If you choose the backup file, then the original%N%
+							%file will be overwritten with the contents of the backup%N%
+							%file when you save.%N") end
 
 	w_Save_backup: STRING_GENERAL is do Result := locale.translation ("You are about to overwrite the original file with%N%
 					%the backup file. Previous content will be lost%N%
@@ -910,7 +912,7 @@ feature -- Warning messages
 
 	w_Invalid_folder_name: STRING_GENERAL is do Result := locale.translation ("Invalid folder name") end
 
-	w_Folder_name_cannot_contain: STRING_GENERAL is do Result := locale.translation ("%N A favorite folder name cannot contain any ot the following characters: %N ( ) * ") end
+	w_Folder_name_cannot_contain: STRING_GENERAL is do Result := locale.translation ("%N A favorite folder name cannot contain any of the following characters: %N ( ) * ") end
 
 	w_Invalid_cluster: STRING_GENERAL is
 			-- One of the clusters involved in a move operation was invalid.
@@ -1086,6 +1088,16 @@ feature -- Warning messages
 	w_retrieve_default_color: STRING_GENERAL is do Result := locale.translation ("Retrieve default color.") end;
 
 	w_help_topic_could_not_be_displayed: STRING_GENERAL is do Result := locale.translation ("Help Topic could not be displayed, please check Eiffel Installation") end
+
+	w_Unknown_error: STRING_GENERAL is do Result := locale.translation ("An unknown error has occurred%N") end
+
+	w_file_not_valid_assembly (a_file: STRING_GENERAL): STRING_GENERAL is
+		require
+			a_file_not_void: a_file /= Void
+		do
+			Result := locale.formatted_string (locale.translation ("The selected file '$1' is not a valid .NET assembly."), [a_file])
+		end
+
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

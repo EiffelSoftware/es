@@ -3363,7 +3363,7 @@ rt_shared rt_uint_ptr chunk_coalesc(struct chunk *c)
 			/* Compute new list number for coalesced block */
 			old_i = i;					/* Save old index */
 			r = flags & B_SIZE;			/* Size of coalesced block */
-			if (max_size < (int) r)
+			if (max_size < r)
 				max_size = r;			/* Update maximum size yielded */
 			i = HLIST_INDEX(r);
 
@@ -3858,6 +3858,7 @@ rt_public EIF_REFERENCE eif_box (EIF_UNION v)
 		case SK_POINTER: Result = RTLN(egc_point_dtype);  *(EIF_POINTER *)    Result = v.value.EIF_POINTER_value; break;
 		case SK_REF:     Result = v.value.EIF_REFERENCE_value; break;
 		default: 
+			Result = NULL;	/* To avoid C warnings. */
 			eif_panic("illegal value type");
 	}
 	return Result;

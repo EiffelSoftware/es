@@ -10,8 +10,10 @@ class
 
 inherit
 	SED_BINARY_READER_WRITER
+		rename
+			buffer_position as count
 		export
-			{ANY} buffer
+			{ANY} buffer, count
 		end
 
 create
@@ -43,13 +45,33 @@ feature {NONE} -- Initialization
 			buffer_size_set: buffer_size = a_buffer.count
 		end
 
+feature -- Access
+
+	data: MANAGED_POINTER is
+			-- Copy of `buffer' containing ONLY the serialized/deserialized data.
+		do
+			create Result.make_from_pointer (buffer.item, count)
+		ensure
+			data_not_void: Result /= Void
+			valid_data_size: Result.count = count
+		end
+
+feature {NONE} -- Implementation: Status report
+
+	buffer_position: INTEGER is
+			-- Equivalent to `count'.
+		obsolete "Use `count' instead."
+		do
+			Result := count
+		end
+
 feature {NONE} -- Buffer update
 
 	check_buffer (n: INTEGER) is
 			-- If there is enough space in `buffer' to read `n' bytes, do nothing.
 			-- Otherwise, read/write to `medium' to free some space.
 		do
-			if n + buffer_position > buffer_size then
+			if n + count > buffer_size then
 				buffer.resize (buffer.count + buffer.count // 2)
 				buffer_size := buffer.count
 			end
@@ -66,10 +88,5 @@ indexing
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com
 		]"
-
-
-
-
-
 
 end

@@ -60,7 +60,7 @@ feature {NONE} -- Initialization
 		do
 			set_slices (0, 50)
 			set_displayed_string_size (60)
-			set_critical_stack_depth (-1) --| Dft: 1000
+			set_critical_stack_depth (1000) --| Dft: 1000
 			set_interrupt_number (1)
 			set_maximum_stack_depth (100)
 			set_max_evaluation_duration (5)
@@ -220,7 +220,8 @@ feature -- Breakpoints management
 					when {BREAKPOINT}.hits_count_condition_equal then
 						bp_reached := bp.hits_count = bp.hits_count_condition.value
 					when {BREAKPOINT}.hits_count_condition_multiple then
-						bp_reached := bp.hits_count \\ bp.hits_count_condition.value = 0
+						bp_reached := bp.hits_count_condition.value = 0
+									or else (bp.hits_count \\ bp.hits_count_condition.value = 0)
 					when {BREAKPOINT}.hits_count_condition_greater then
 						bp_reached := bp.hits_count >= bp.hits_count_condition.value
 					else
@@ -888,6 +889,7 @@ feature -- Debugging events
 				bl.item_for_iteration.reset_session_data
 				bl.forth
 			end
+			save_debugger_data
 			application_launching_in_progress := True
 			application_prelaunching_actions.call (Void)
 		end
@@ -988,14 +990,13 @@ feature -- Debugging events
 				observers.do_all (agent {DEBUGGER_OBSERVER}.on_application_quit (Current))
 					--| Kept objects
 				application_status.clear_kept_objects
-
-					--| Save debug info
-				save_debugger_data
 			end
 
 			if has_stopped_action then
 				stopped_actions.call ([Current])
 			end
+				--| Save debug info
+			save_debugger_data
 
 			destroy_application
 			reset_class_c_data

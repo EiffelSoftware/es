@@ -66,6 +66,8 @@ inherit
 			{NONE} all
 		end
 
+	DEBUG_OUTPUT
+
 	REFACTORING_HELPER
 
 create
@@ -1691,7 +1693,7 @@ feature -- Structure generation
 				else
 					if has_creation_routine then
 						c_name := encoder.feature_name (static_type_id, initialization_body_index)
-						Extern_declarations.add_routine_with_signature (Void_c_type,
+						Extern_declarations.add_routine_with_signature (Void_c_type.c_string,
 							c_name, <<"EIF_REFERENCE, EIF_REFERENCE">>)
 						buffer.put_string (c_name)
 						buffer.put_character ('(')
@@ -1724,7 +1726,7 @@ feature -- Structure generation
 					buffer.put_string (c_name)
 					buffer.put_character ('(')
 					buffer.put_string (a_target_name)
-					Extern_declarations.add_routine_with_signature (Void_c_type,
+					Extern_declarations.add_routine_with_signature (Void_c_type.c_string,
 						c_name, <<"EIF_REFERENCE">>)
 					buffer.put_string (");")
 					buffer.put_new_line
@@ -1756,18 +1758,10 @@ feature -- Cecil generation
 			buffer.put_character ('{')
 			buffer.put_string ("(int32) ")
 			buffer.put_integer (associated_class.visible_table_size)
-			if final_mode then
-				buffer.put_string (", sizeof(char *(*)()), cl")
-			else
-				buffer.put_string (", sizeof(int32), cl")
-			end
+			buffer.put_string (", sizeof(char *(*)()), cl")
 			buffer.put_integer (associated_class.class_id)
 			buffer.put_string (", (char *) cr")
-			if final_mode then
-				buffer.put_integer (type_id)
-			else
-				buffer.put_integer (associated_class.class_id)
-			end
+			buffer.put_integer (type_id)
 			buffer.put_character ('}')
 		end
 
@@ -1979,6 +1973,31 @@ feature {NONE} -- Convenience
 				-- Bit 12: Store `is_deferred'
 			if l_class.is_deferred then
 				Result := Result | 0x1000
+			end
+		end
+
+feature {NONE} -- Debug output
+
+	debug_output: STRING is
+			-- Output displayed in debugger.
+		local
+			l_name: STRING
+		do
+			if type /= Void then
+				l_name := type.name
+				create Result.make (l_name.count + 15 )
+			else
+				create Result.make (13)
+			end
+			Result.append_character ('s')
+			Result.append_character (':')
+			Result.append_integer (static_type_id)
+			Result.append_character (',')
+			Result.append_integer (type_id)
+			if l_name /= Void then
+				Result.append_character (':')
+				Result.append_character (' ')
+				Result.append (l_name)
 			end
 		end
 

@@ -24,6 +24,9 @@ feature -- Text
 	e_interrupted_by_compile: STRING_GENERAL is do Result := locale.translation ("Interrupted because Eiffel complication starts") end
 	e_no_metric_is_selected: STRING_GENERAL is do Result := locale.translation ("No metric is selected.") end
 
+	e_xml_files: STRING_GENERAL is do Result := locale.translation ("XML files") end
+	e_all_files: STRING_GENERAL is do Result := locale.translation ("All files") end
+
 feature -- Titles
 
 	t_expression: STRING_GENERAL is do Result := locale.translation ("Expression:") end
@@ -53,8 +56,12 @@ feature -- Titles
 	t_discard_remove_prompt: STRING_GENERAL is do Result := locale.translation ("Do not ask me again and always remove selected metric") end
 	t_discard_save_prompt: STRING_GENERAL is do Result := locale.translation ("Do not ask me again and always save modified metric") end
 	t_name_cannot_be_empty: STRING_GENERAL is do Result := locale.translation ("Metric name is empty.") end
-	t_metric_with_name: STRING_GENERAL is do Result := locale.translation ("Metric with name") end
-	t_metric_exists: STRING_GENERAL is do Result := locale.translation ("already exists.") end
+	t_metric_with_name_already_exists (a_metric_name: STRING_GENERAL): STRING_GENERAL is
+		require
+			a_metric_name_not_void: a_metric_name /= Void
+		do
+			Result := locale.formatted_string (locale.translation ("Metric with name '$1' already exists"), [a_metric_name])
+		end
 	t_metric_not_saved: STRING_GENERAL is do Result := locale.translation ("Note: Metric is not saved.") end
 	t_select_archive: STRING_GENERAL is do Result := locale.translation ("Select a metric archive file") end
 	t_metric_no_metric_selected: STRING_GENERAL is do Result := locale.translation ("No metric is selected") end
@@ -64,7 +71,12 @@ feature -- Titles
 	t_selected_archive_not_valid: STRING_GENERAL is do Result := locale.translation ("Metric archive in specified file is not valid, it must be cleaned") end
 	t_metric: STRING_GENERAL is do Result := locale.translation ("metric") end
 	t_metric_name_can_not_be_empty: STRING_GENERAL is do Result := locale.translation ("Metric name cannot be empty") end
-	t_remove_metric: STRING_GENERAL is do Result := locale.translation ("Remove metric ") end
+	t_remove_metric (a_metric_name: STRING_GENERAL): STRING_GENERAL is
+		require
+			a_metric_name_not_void: a_metric_name /= Void
+		do
+			Result := locale.formatted_string (locale.translation ("Remove metric '$1'?"), [a_metric_name])
+		end
 	t_no_archive_selected: STRING_GENERAL is do Result := locale.translation ("No metric archive is selected.") end
 	t_archive_management: STRING_GENERAL is do Result := locale.translation ("Archive Management") end
 	t_archive_comparison: STRING_GENERAL is do Result := locale.translation ("Archive Comparison") end
@@ -226,7 +238,7 @@ feature -- Tooltip
 	f_clear_rows: STRING_GENERAL is do Result := locale.translation ("Remove all rows") end
 	f_indent_with_and_criterion: STRING_GENERAL is do Result := locale.translation ("Indent selected row using an %"AND%" criterion") end
 	f_indent_with_or_criterion: STRING_GENERAL is do Result := locale.translation ("Indent selected row using an %"OR%" criterion") end
-	f_drop_metric_here: STRING_GENERAL is do Result := locale.translation ("Pick and drop metric here") end
+	f_drop_metric_here: STRING_GENERAL is do Result := locale.translation ("Pick metric and drop here") end
 	f_reload_metrics: STRING_GENERAL is do Result := locale.translation ("Reload metrics") end
 
 	f_start_archive: STRING_GENERAL is do Result := locale.translation ("Start metric archive evaluation") end
@@ -253,8 +265,8 @@ feature -- Tooltip
 	f_application_scope: STRING_GENERAL is do Result := locale.translation ("Add current application target scope") end
 	f_search_for_class: STRING_GENERAL is do Result := locale.translation ("Search for group/class/feature") end
 	f_filter_result: STRING_GENERAL is do Result := locale.translation ("Filter result which is not visible from input domain") end
-	f_pick_and_drop_items: STRING_GENERAL is do Result := locale.translation ("Pick and drop items like group/class/feature here") end
-	f_pick_and_drop_metric_and_items: STRING_GENERAL is do Result := locale.translation ("Pick and drop metrics or items like group/class/feature here") end
+	f_pick_and_drop_items: STRING_GENERAL is do Result := locale.translation ("Pick items like group/class/feature and drop here") end
+	f_pick_and_drop_metric_and_items: STRING_GENERAL is do Result := locale.translation ("Pick metrics or items like group/class/feature and drop here") end
 	f_insert_text_here: STRING_GENERAL is do Result := locale.translation ("Insert text here") end
 	f_get_criterion_list: STRING_GENERAL is do Result := locale.translation ("Available criterion list") end;
 	f_get_negation: STRING_GENERAL is do Result := locale.translation ("You can put %"not%" before a criterion name to negate it") end
@@ -338,6 +350,12 @@ feature -- Tooltip
 	l_base_value: STRING_GENERAL is do Result := locale.translation ("Base value") end
 	l_operator: STRING_GENERAL is do Result := locale.translation ("Operator") end
 	t_drop_program_elements: STRING_GENERAL is do Result := locale.translation ("Drop target/group/class/feature here") end
+
+	f_metrics_in_archive (a_count: INTEGER): STRING_GENERAL is
+		do
+			Result := locale.formatted_string (locale.plural_translation ("There is $1 metric in archive", "There are $1 metrics in archive", a_count), [a_count])
+		end
+
 
 feature -- Error/warning message
 
@@ -433,7 +451,7 @@ feature -- Error/warning message
 		require
 			a_dir_name_attached: a_dir_name /= Void
 		do
-			Result := locale.formatted_string (locale.translation ("Cannot create directroy: $1."), [a_dir_name])
+			Result := locale.formatted_string (locale.translation ("Cannot create directory: $1."), [a_dir_name])
 		ensure
 			result_attached: Result /= Void
 		end
@@ -936,7 +954,7 @@ feature -- Error/warning message
 			result_attached: Result /= Void
 		end
 
-	err_denominator_coefficient_is_zero: STRING_GENERAL is do Result := locale.translation ("Coefficient for denominator metric is zero. A non-zero real numer is expected.") end
+	err_denominator_coefficient_is_zero: STRING_GENERAL is do Result := locale.translation ("Coefficient for denominator metric is zero. A non-zero real number is expected.") end
 
 	err_normal_referenced_class_attr_invalid (a_value: STRING_GENERAL): STRING_GENERAL is
 		require

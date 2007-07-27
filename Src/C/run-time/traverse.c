@@ -287,10 +287,11 @@ rt_shared void traversal(EIF_REFERENCE object, int p_accounting)
 		 */
 
 		if (p_accounting & TR_MAP) {
+			struct mstack *l_stack = &map_stack;
 			RT_GC_PROTECT(object);		/* Protection against GC */
 			new = eclone(object);
 			mapped = hrecord(new);
-			if (-1 == epush((struct stack *) &map_stack, (char *) mapped))
+			if (-1 == epush((struct stack *) l_stack, (char *) mapped))
 				eraise("map table recording", EN_MEM);
 			zone = HEADER(object);			/* Object may have moved */
 			flags = zone->ov_flags;			/* Flags may have changed */
@@ -339,17 +340,14 @@ rt_shared void traversal(EIF_REFERENCE object, int p_accounting)
 		count = RT_SPECIAL_COUNT_WITH_INFO(object_ref);
 
 		if (flags & EO_TUPLE) {
-			EIF_TYPED_ELEMENT *l_item = (EIF_TYPED_ELEMENT *) object;
 				/* Don't forget that first element of TUPLE is the BOOLEAN
 				 * `object_comparison' attribute. */
-			l_item++;
-			count--;
-			for (; count > 0; count--, l_item++) {
-				if
-					((eif_tuple_item_type(l_item) == EIF_REFERENCE_CODE) &&
-				 	(eif_reference_tuple_item(l_item)))
-				{
-					traversal(eif_reference_tuple_item(l_item), p_accounting);	
+			for (i = 1; i < count ; i++) {
+				if (eif_item_type(object, i) == EIF_REFERENCE_CODE) {
+					reference = eif_reference_item(object, i);
+					if (reference) {
+						traversal(reference, p_accounting);	
+					}
 				}
 			}
 		} else if (!(flags & EO_COMP))

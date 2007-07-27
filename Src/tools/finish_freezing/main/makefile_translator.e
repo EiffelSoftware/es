@@ -18,16 +18,16 @@ inherit
 create
 	make
 
-feature -- Initialization
+feature {NONE} -- Initialization
 
-	make (mapped_path: BOOLEAN; a_force_32bit: BOOLEAN; a_processor_count: NATURAL_8) is
+	make (a_options: like options; mapped_path: BOOLEAN; a_force_32bit: BOOLEAN; a_processor_count: NATURAL_8) is
 			-- Initialize
+		require
+			a_options_not_void: a_options /= Void
 		local
-			error: BOOLEAN
-			error_msg: STRING
-			status_box: STATUS_BOX
+			l_c_setup: COMPILER_SETUP
 		do
-			create options.make (25)
+			options := a_options
 			create system_dependent_directories.make (5)
 			create object_dependent_directories.make (50)
 			create dependent_directories.make (55)
@@ -38,43 +38,29 @@ feature -- Initialization
 
 			uses_precompiled := False
 
-			if not error then
-				read_options
+			directory_separator := options.get_string ("directory_separator", "\")
+			object_extension := options.get_string ("obj_file_ext", "obj").twin
+			object_extension.prepend_character ('.')
 
-				directory_separator := options.get_string ("directory_separator", "\")
-				object_extension := options.get_string ("obj_file_ext", "obj").twin
-				object_extension.prepend_character ('.')
+			lib_extension := options.get_string ("intermediate_file_ext", "lib").twin
+			lib_extension.prepend_character ('.')
 
-				lib_extension := options.get_string ("intermediate_file_ext", "lib").twin
-				lib_extension.prepend_character ('.')
-
-				check_for_il
-				quick_compilation := options.get_boolean ("quick_compilation", True)
-				if quick_compilation and not is_il_code then
-					io.put_string ("Preparing C compilation...%N")
-					io.default_output.flush
-					launch_quick_compilation
-				end
-
-				smart_checking := options.get_boolean ("smart_checking", True)
-				if eiffel_layout.eiffel_c_compiler.is_equal ("msc") and smart_checking then
-						-- Visual Studio C compiler.
-					create vs_setup.make (a_force_32bit)
-				elseif eiffel_layout.eiffel_c_compiler.is_equal ("bcb") then
-						-- Borland C compiler.
-					create borland_setup
-				end
-			else
-				error_msg.append ("Could not launch finish_freezing. Make%N")
-				error_msg.append ("sure that the ISE EiffelStudio environment%N")
-				error_msg.append ("has been correctly installed.%N%N")
-				create status_box.make (error_msg, True, False, True, mapped_path)
-				(create {EXCEPTIONS}).die (-1)
+			check_for_il
+			quick_compilation := options.get_boolean ("quick_compilation", True)
+			if quick_compilation and not is_il_code then
+				io.put_string ("Preparing C compilation...%N")
+				io.default_output.flush
+				launch_quick_compilation
 			end
+
+				-- Initialize the C compiler environment.
+			create l_c_setup.initialize (options, a_force_32bit)
 		ensure
 			processor_count_set: processor_count = a_processor_count
 			force_32bit_set: force_32bit = a_force_32bit
 		end
+
+feature -- Quick compile
 
 	launch_quick_compilation is
 			-- Launch the `quick_finalize' program with the correct options.
@@ -112,10 +98,6 @@ feature -- Access
 
 	quick_compilation: BOOLEAN
 			-- Is the current compilation a quick one?
-
-	smart_checking: BOOLEAN
-			-- Does the current compilation require that environment variables
-			-- are automatically set for Visual Studio (i.e. should we run vcvars32.bat)?
 
 	delete_next: BOOLEAN
 			-- Is the next line to be deleted?
@@ -155,18 +137,6 @@ feature -- Access
 
 feature -- Execution
 
-	read_options is
-			-- read options from config.eif
-		local
-			reader: RESOURCE_PARSER
-			l_layout: FINISH_FREEZING_EIFFEL_LAYOUT
-		do
-			create reader
-			l_layout ?= eiffel_layout
-			check layout_not_void: l_layout /= Void end
-			reader.parse_file (l_layout.Config_eif, options)
-		end
-
 	translate is
 			-- create Makefile from Makefile.SH and options
 		do
@@ -183,11 +153,13 @@ feature -- Execution
 				-- the command to execute the make utility on this platform
 			command := options.get_string ("make", Void)
 			subst_eiffel (command)
+			subst_platform (command)
+			subst_compiler (command)
 
 				-- Launch building of `E1\estructure.h' in case it is not built and we are not
 				-- in .NET mode
 			if not is_il_code then
-				env.system (command + " E1\estructure.h")
+				env.system (command + " E1" + directory_separator + "estructure.h")
 			end
 
 				-- Launch distributed make.
@@ -1448,12 +1420,6 @@ feature {NONE}	-- substitutions
 
 feature {NONE} -- Implementation
 
-	vs_setup: VS_SETUP
-			-- Visual Studio setup details.
-
-	borland_setup: BORLAND_SETUP
-			-- Borland setup details.
-
 	env: EXECUTION_ENVIRONMENT is
 			-- Execution environment
 		once
@@ -1731,6 +1697,9 @@ feature {NONE} -- Implementation
 				end
 			end
 		end
+
+invariant
+	options_not_void: options /= Void
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

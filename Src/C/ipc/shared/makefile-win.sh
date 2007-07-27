@@ -1,12 +1,12 @@
-TOP=..\..
+TOP=..$(DIR)..
+DIR = $dir_sep
 OUTDIR= .
 INDIR= .
 CC=$cc
-RM=del
 OUTPUT_CMD= $output_cmd
-LIBRUN = $(TOP)\run-time
-LIBIDR = $(TOP)\idrs
-DPFLAGS = -I$(TOP) -I$(LIBRUN) -I$(LIBIDR) -I$(LIBRUN)\include -I.
+LIBRUN = $(TOP)$(DIR)run-time
+LIBIDR = $(TOP)$(DIR)idrs
+DPFLAGS = -I$(TOP) -I$(LIBRUN) -I$(LIBIDR) -I$(LIBRUN)$(DIR)include -I.
 CFLAGS = $(DPFLAGS) -DWORKBENCH -DEIF_IPC
 JCFLAGS = $(CFLAGS) $ccflags $optimize
 JMTCFLAGS = $(CFLAGS) $mtccflags $optimize
@@ -17,7 +17,6 @@ OBJECTS = \
 	lock.$obj \
 	logfile.$obj \
 	network.$obj \
-	networku.$obj \
 	select.$obj \
 	shword.$obj \
 	stack.$obj \
@@ -33,7 +32,6 @@ MT_OBJECTS = \
 	MTlock.$obj \
 	MTlogfile.$obj \
 	MTnetwork.$obj \
-	MTnetworku.$obj \
 	MTselect.$obj \
 	MTshword.$obj \
 	MTstack.$obj \
@@ -72,9 +70,6 @@ MTlogfile.$obj: logfile.c
 	$(CC) $(JMTCFLAGS) $(OUTPUT_CMD)$@ -c $?
 
 MTnetwork.$obj: network.c
-	$(CC) $(JMTCFLAGS) $(OUTPUT_CMD)$@ -c $?
-
-MTnetworku.$obj: networku.c
 	$(CC) $(JMTCFLAGS) $(OUTPUT_CMD)$@ -c $?
 
 MTselect.$obj: select.c

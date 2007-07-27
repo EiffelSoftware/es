@@ -39,11 +39,11 @@ feature -- Status report
 		do
 			l_area := area.twin
 			if internal_vertical then
-				l_area.set_left (l_area.left - {SD_SHARED}.tool_bar_size)
-				l_area.set_right (l_area.right + {SD_SHARED}.tool_bar_size)
+				l_area.set_left (l_area.left - internal_shared.tool_bar_size)
+				l_area.set_right (l_area.right + internal_shared.tool_bar_size)
 			else
-				l_area.set_top (l_area.top - {SD_SHARED}.tool_bar_size)
-				l_area.set_bottom (l_area.bottom + {SD_SHARED}.tool_bar_size)
+				l_area.set_top (l_area.top - internal_shared.tool_bar_size)
+				l_area.set_bottom (l_area.bottom + internal_shared.tool_bar_size)
 			end
 			Result := l_area
 		ensure
@@ -158,7 +158,10 @@ feature {NONE} -- Implementation functions.
 					Result := True
 					internal_docking_manager.command.lock_update (Void, True)
 					if internal_dock_mediator.caller.is_floating then
+						-- Ignore focus out actions during the process of changing from floating to docking.
+						internal_dock_mediator.set_ignore_focus_out_actions (True)
 						internal_dock_mediator.caller.dock
+						internal_dock_mediator.set_ignore_focus_out_actions (False)
 					end
 					create_new_row_by_position (a_screen_y_or_x)
 					internal_docking_manager.command.unlock_update

@@ -325,13 +325,12 @@ rt_public void rout_obj_call_procedure_dynamic (
 	EIF_REFERENCE open_map)
 {
 	EIF_GET_CONTEXT
-	size_t i = 2;
-	size_t args_count = open_count + closed_count;
+	int i = 2;
+	int args_count = open_count + closed_count;
 	int next_open = 0xFFFF;
 	int open_idx = 1;
 	int closed_idx = 1;
 	EIF_TYPED_ELEMENT* first_arg = 0;
-	EIF_TYPED_ELEMENT* arg = 0;
 	EIF_INTEGER* open_positions = 0;
 
 	if (closed_count > 0) {
@@ -386,7 +385,9 @@ rt_public void rout_obj_call_procedure_dynamic (
 		/* We are calling a feature through an agent, in this case, we consider all calls
 		 * as qualified so that the invariant is checked. */
 	nstcall = 1;
-	dynamic_eval (feature_id, stype_id, is_precompiled, is_basic_type, 0, is_inline_agent);
+		/* We pass `0' for `dtype' in `dynamic_eval' because for an agent call we always have
+		 * a target object to get this from. */
+	dynamic_eval (feature_id, stype_id, 0, is_precompiled, is_basic_type, 0, is_inline_agent);
 }
 
 void fill_it (struct item* it, EIF_TYPED_ELEMENT* te) 
@@ -418,7 +419,6 @@ rt_public void rout_obj_call_function_dynamic (
 	EIF_TYPED_ELEMENT* open_args, int open_count, 
 	EIF_REFERENCE open_map, void* res)
 {
-	EIF_GET_CONTEXT
 	struct item* it = 0;
 
 	rout_obj_call_procedure_dynamic (stype_id, feature_id, is_precompiled, is_basic_type, is_inline_agent,
