@@ -79,10 +79,11 @@ feature -- Properties
 	has_associated_class: BOOLEAN is
 			-- Does Current have an associated class?
 		do
-			Result := not (is_void or else is_formal or else is_none or else is_type_set)
+			Result := not (is_void or else is_formal or else is_none or else is_type_set or else is_open_type)
 		ensure
 			Yes_if_is: Result implies not (is_void or else
-								is_formal or else is_none or else is_type_set)
+								is_formal or else is_none or else
+								is_type_set or else is_open_type)
 		end
 
 	generics: ARRAY [TYPE_A] is
@@ -302,6 +303,12 @@ feature -- Properties
 
 	is_monomorph: BOOLEAN is
 			-- Is the current type monomorph?
+		do
+			-- Do nothing
+		end
+
+	is_open_type: BOOLEAN is
+			-- Is the current type an open type?
 		do
 			-- Do nothing
 		end
@@ -543,8 +550,12 @@ feature {COMPILER_EXPORTER} -- Access
 				Result := is_conforming_descendant (other)
 				l_cat_result := Result
 
-					-- Conformance check for monomorphic types
-				if l_cat_result and then other.is_monomorph and then not is_none then
+					-- Conformance check for monomorphic types. Only check if:
+					--  * The two types are conforming descendants
+					--  * `other' is monomorphic
+					--  * Current is not NONE (NONE conforms to monomorphic types)
+					--  * Current is not an open type (open types conform to everything)
+				if l_cat_result and then other.is_monomorph and then not is_none and then not is_open_type then
 					if other.is_formal then
 						check is_formal end
 							-- monomorphic generics only conform to itself

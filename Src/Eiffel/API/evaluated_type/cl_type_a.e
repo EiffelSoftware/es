@@ -177,12 +177,22 @@ feature -- Access
 			-- Is the current type the same as `other' ?
 		local
 			other_class_type: CL_TYPE_A
+			l_pcat: PCAT
 		do
 			other_class_type ?= other
 			Result := other_class_type /= Void and then class_id = other_class_type.class_id
 						and then is_expanded = other_class_type.is_expanded
 						and then is_separate = other_class_type.is_separate
-						and then is_monomorph = other_class_type.is_monomorph
+			if Result and then not is_monomorph = other.is_monomorph then
+				create l_pcat
+				l_pcat.set_class (system.current_class)
+				l_pcat.set_source_type (Current)
+				l_pcat.set_target_type (other)
+				if context.current_feature /= Void then
+					l_pcat.set_location (context.current_feature.e_feature.ast.start_location)
+				end
+				error_handler.insert_warning (l_pcat)
+			end
 		end
 
 	associated_class: CLASS_C is
