@@ -528,7 +528,6 @@ feature {COMPILER_EXPORTER} -- Access
 			other_is_valid: other.is_valid
 		local
 			l_cat_result: BOOLEAN
-	--		l_warning: SOME_TYPE
 			l_pcat: PCAT
 		do
 			if system.current_class /= Void and then system.current_class.is_cat_call_detection then

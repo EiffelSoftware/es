@@ -13,6 +13,7 @@ inherit
 		redefine
 			is_valid,
 			is_equivalent,
+			has_associated_class,
 			same_as,
 			associated_class,
 			ext_append_to,
@@ -37,6 +38,9 @@ feature -- Properties
 		do
 			Result := True
 		end
+
+	has_associated_class: BOOLEAN is False
+			-- Open types have no associated class
 
 feature -- Comparison
 
