@@ -8,7 +8,7 @@ indexing
 class PCAT
 
 inherit
-	EIFFEL_ERROR
+	FEATURE_ERROR
 		redefine
 			build_explain
 		end

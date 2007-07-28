@@ -189,6 +189,7 @@ feature -- Access
 				l_pcat.set_source_type (Current)
 				l_pcat.set_target_type (other)
 				if context.current_feature /= Void then
+					l_pcat.set_feature (context.current_feature)
 					l_pcat.set_location (context.current_feature.e_feature.ast.start_location)
 				end
 				error_handler.insert_warning (l_pcat)
