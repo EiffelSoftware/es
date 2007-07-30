@@ -152,7 +152,7 @@ feature {NONE} -- Implementation
 			else
 				set_information_label_text ("Refreshing workitem list:%NReceiving workitem list...")
 
-				l_workitem_list := l_api_calls.workitem_list (l_session, preferences.origo_data.maximum_workitem_age, preferences.origo_data.show_unread_only)
+				l_workitem_list := l_api_calls.workitem_list (l_session, preferences.origo_data.number_of_workitems, preferences.origo_data.show_unread_only)
 
 				if l_workitem_list = Void then
 					set_information_label_text (l_api_calls.last_error)

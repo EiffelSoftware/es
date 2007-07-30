@@ -293,11 +293,11 @@ feature -- XML RPC calls
 			end
 		end
 
-	workitem_list (a_session: STRING; a_days: INTEGER; a_unread_only: BOOLEAN): DS_LINKED_LIST [EB_ORIGO_WORKITEM] is
+	workitem_list (a_session: STRING; a_number: INTEGER; a_unread_only: BOOLEAN): DS_LINKED_LIST [EB_ORIGO_WORKITEM] is
 			-- receive workitem list
 		require
 			session_attached: a_session /= Void and not a_session.is_empty
-			a_days_positive: a_days > 0
+			a_days_positive: a_number > 0
 		local
 			l_process: PROCESS
 			l_factory: PROCESS_FACTORY
@@ -313,7 +313,7 @@ feature -- XML RPC calls
 			l_command_line := preferences.origo_data.xml_rpc_client_path.out
 			l_command_line.append (" workitem_list -s ")
 			l_command_line.append (a_session)
-			l_command_line.append (" -d " + a_days.out)
+			l_command_line.append (" -num " + a_number.out)
 			if a_unread_only then
 				l_command_line.append (" -uro")
 			end
