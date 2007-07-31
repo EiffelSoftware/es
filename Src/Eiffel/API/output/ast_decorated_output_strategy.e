@@ -2842,10 +2842,6 @@ feature {NONE} -- Implementation
 				last_actual_local_type := last_type
 			end
 			if not expr_type_visiting then
-				if l_as.has_covariant_keyword then
-					text_formatter_decorator.process_keyword_text (ti_variant_keyword, Void)
-					text_formatter_decorator.add_space
-				end
 				if last_type /= Void then
 					type_output_strategy.process (last_type, text_formatter_decorator, current_class, current_feature)
 				else

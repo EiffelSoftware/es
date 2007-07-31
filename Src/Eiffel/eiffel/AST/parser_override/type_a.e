@@ -223,6 +223,13 @@ feature -- Properties
 		do
 			-- Do nothing
 		end
+
+	is_like_feature: BOOLEAN is
+			-- Is the current type a like feature?
+		do
+			-- Do nothing
+		end
+
 	is_named_tuple: BOOLEAN is
 			-- Is the current type a tuple with labels?
 		do

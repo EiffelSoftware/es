@@ -1140,6 +1140,8 @@ feature -- Implementation
 			l_last_original_feature_name_id: INTEGER
 			l_tuple_access_b: TUPLE_ACCESS_B
 			l_vtmc1: VTMC1
+			l_gen_type: GEN_TYPE_A
+			l_vuar3: VUAR3
 		do
 				-- Reset
 			if a_feature = Void then
@@ -1435,6 +1437,15 @@ feature -- Implementation
 								-- Get formal argument type.
 							l_formal_arg_type := l_feature.arguments.i_th (i)
 
+							l_formal ?= l_formal_arg_type.conformance_type
+							if l_formal /= Void then
+								l_gen_type ?= l_last_type.conformance_type
+								if l_gen_type.is_covariant (l_formal.position) then
+									insert_vuar3_error (l_feature, l_parameters, l_last_id, i, l_arg_type,
+										l_formal)
+								end
+							end
+
 								-- Take care of anchoring to argument
 							if l_formal_arg_type.is_like_argument then
 								l_like_arg_type := l_formal_arg_type.actual_argument_type (l_arg_types)
@@ -1451,6 +1462,8 @@ feature -- Implementation
 										l_like_arg_type)
 								end
 							end
+
+
 
 								-- Adapted type in case it is a formal generic parameter or a like.
 							l_formal_arg_type := adapted_type (l_formal_arg_type, l_last_type, l_last_constrained)
@@ -6521,6 +6534,32 @@ feature {NONE} -- Implementation
 			l_vuar2.set_formal_type (a_formal_type)
 			l_vuar2.set_location (a_params.i_th (a_pos).start_location)
 			error_handler.insert_error (l_vuar2)
+		end
+
+	insert_vuar3_error (a_feature: FEATURE_I; a_params: EIFFEL_LIST [EXPR_AS]; a_in_class_id, a_pos: INTEGER; a_actual_type, a_formal_type: TYPE_A) is
+			-- Insert a VUAR3 error in call to `a_feature' from `a_in_class_id' class for argument
+			-- at position `a_pos'.
+		require
+			a_feature_not_void: a_feature /= Void
+			a_params_not_void: a_params /= Void
+			a_params_matches: a_params.valid_index (a_pos)
+			a_in_class_id_non_negative: a_in_class_id >= 0
+			a_pos_positive: a_pos > 0
+			a_pos_valid: a_pos <= a_feature.argument_count
+			a_actual_type_not_void: a_actual_type /= Void
+			a_formal_type_not_void: a_formal_type /= Void
+		local
+			l_vuar3: VUAR3
+		do
+			create l_vuar3
+			context.init_error (l_vuar3)
+			l_vuar3.set_called_feature (a_feature, a_in_class_id)
+			l_vuar3.set_argument_position (a_pos)
+			l_vuar3.set_argument_name (a_feature.arguments.item_name (a_pos))
+			l_vuar3.set_actual_type (a_actual_type)
+			l_vuar3.set_formal_type (a_formal_type)
+			l_vuar3.set_location (a_params.i_th (a_pos).start_location)
+			error_handler.insert_error (l_vuar3)
 		end
 
 	process_type_compatibility (l_target_type: like last_type) is

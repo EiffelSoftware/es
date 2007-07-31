@@ -2010,7 +2010,7 @@ end
 						new_type.is_like_current or else
 						not l_old_conformance_type.same_as (l_new_conformance_type)
 					then
-						system.set_routine_arguments_covariantly_redefined (rout_id_set, True)
+						system.set_routine_result_type_covariantly_redefined (rout_id_set, True)
 					end
 
 					i := i + 1

@@ -160,6 +160,9 @@ feature -- Output
 				until
 					i > count
 				loop
+					if is_covariant (i) then
+						Result.append ("variant ")
+					end
 					Result.append (generics.item (i).dump)
 					if i /= count then
 						Result.append (", ")
@@ -187,6 +190,10 @@ feature -- Output
 				until
 					i > count
 				loop
+					if is_covariant (i) then
+						st.process_symbol_text (ti_Variant_keyword)
+						st.add_space
+					end
 					generics.item (i).ext_append_to (st, c)
 					if i /= count then
 						st.process_symbol_text (ti_Comma)
@@ -497,11 +504,14 @@ feature {COMPILER_EXPORTER} -- Primitives
 		end
 
 	valid_generic (type: CL_TYPE_A): BOOLEAN is
-			-- Check generic parameters
+			-- Do the generic parameter of `type' conform to those of
+			-- Current ?
 		local
 			i, count: INTEGER
 			gen_type: GEN_TYPE_A
 			gen_type_generics: like generics
+			l_covariant_conformance: BOOLEAN
+			l_same_type: BOOLEAN
 		do
 			if class_id = type.class_id then
 				gen_type ?= type
@@ -514,15 +524,30 @@ feature {COMPILER_EXPORTER} -- Primitives
 					until
 						i > count or else not Result
 					loop
-						Result := gen_type_generics.item (i).conform_to (generics.item (i))
-						if
-							Result and then -- Original check is True
-							not is_covariant (i) and then -- no "variant" keyword is specified
-							not generics.item (i).conform_to (gen_type_generics.item (i)) -- Reverse conformance. If both sides conform, it's the same type (Todo: this could be done bether, but `equivalent' does not handle like types correctly)
-						then
-								-- It is not a covariant generic, and the types differ. This is a conformance mismatch
-							conformance_check.cat_result := False
+
+							-- Check variant generics. Valid is:
+							-- (1) formal position of left hand (Current) has a variant mark and types conform
+							-- (2) formal position of both sides do not have a variant mark and the types match exactly
+						l_covariant_conformance := gen_type_generics.item (i).conform_to (generics.item (i))
+
+						if l_covariant_conformance then
+								-- Only in the case of covariant conformance we perform additional checks
+							if is_covariant (i) then
+									-- conforms (1)
+							else
+								l_same_type := l_covariant_conformance and then generics.item (i).conform_to (gen_type_generics.item (i))
+								if not gen_type.is_covariant (i) and then l_same_type then
+										-- conforms (2)
+								else
+									conformance_check.cat_result := False
+								end
+							end
 						end
+
+							-- Use covaraint conformance for official result
+							-- 	`conformance_check.cat_result' is used as the CAT secure Result
+						Result := l_covariant_conformance
+
 						i := i + 1
 					end
 				end

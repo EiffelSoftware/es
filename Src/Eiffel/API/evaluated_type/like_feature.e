@@ -11,7 +11,7 @@ class
 inherit
 	LIKE_TYPE_A
 		redefine
-			update_dependance, evaluated_type_in_descendant
+			update_dependance, evaluated_type_in_descendant, is_like_feature
 		end
 
 	SHARED_NAMES_HEAP
@@ -67,6 +67,9 @@ feature -- Properties
 			Result_not_void: Result /= Void
 			Result_not_empty: not Result.is_empty
 		end
+
+	is_like_feature: BOOLEAN is True
+			-- Is the current type a like feature?
 
 feature {COMPILER_EXPORTER} -- Implementation: Access
 
