@@ -10,8 +10,6 @@ deferred class
 feature --Initialization
 	make
 			-- Create the controller.
-		local
-			ctrl: like Current
 		do
 			create observed_stack.make(1000)
 			observed_stack.put (False)
@@ -60,17 +58,6 @@ feature -- Basic operations
 		deferred
 		end
 
-	observed_stack: DS_ARRAYED_STACK [BOOLEAN]
-			--Stack of the is_observed Values
-
-		enter is
-			-- Enter into the capture/replay management code.
-			-- Note: disables Capture/Replay
-		do
-			is_capture_replay_enabled := False
-			is_replay_phase := False
-		end
-
 	leave is
 			-- Leave the Capture/Replay management code.
 			-- note sets Capture/Replay to the original status.
@@ -79,15 +66,45 @@ feature -- Basic operations
 			is_replay_phase := is_replay_phase_original
 		end
 
+	enter is
+			-- Enter into the capture/replay management code.
+			-- Note: disables Capture/Replay
+		do
+			is_capture_replay_enabled := False
+			is_replay_phase := False
+		end
+
 	accept(visitor: PROGRAM_FLOW_SINK_VISITOR) is
 			-- Accept a visitor.
 		deferred end
+
+	put_to_observed_stack (class_is_observed: BOOLEAN) is
+			--
+		do
+			observed_stack.put (class_is_observed)
+		end
+
+	remove_from_observed_stack is
+			--
+		do
+			observed_stack.remove
+		end
+
+	observed_stack_item: BOOLEAN is
+			--
+		do
+			Result := observed_stack.item
+		end
+
 
 feature -- Obsolete
 
 feature -- Inapplicable
 
 feature {NONE} -- Implementation
+	observed_stack: DS_ARRAYED_STACK [BOOLEAN]
+			--Stack of the is_observed Values
+
 	is_capture_replay_enabled_original: BOOLEAN
 			-- is c/r really enabled? (not only temporary)
 

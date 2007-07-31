@@ -129,43 +129,37 @@ feature -- Basic operations
 	put_feature_exit (res: ANY) is
 			-- Notice that a feature exit event with result `res' occurred.
 		local
-			callee_observed: BOOLEAN
+			caller_observed: BOOLEAN
 			callret: RETURN_EVENT
 			non_basic_return_entity: NON_BASIC_ENTITY
 		do
 			if not has_error then
-				callee_observed := observed_stack.item
-				observed_stack.remove
-				if callee_observed /= observed_stack.item then
-					-- boundary cross
-					if event_input.end_of_input then
-						report_and_set_error ("Received Callret_event, but log is finished.")
-					else
-						set_error_status_for_callret (event_input.last_event, res, callee_observed)
-						if not has_error then
-							callret ?= event_input.last_event
-							if callee_observed then
-								--INCALLRET
-								non_basic_return_entity ?= callret.return_value
-								if non_basic_return_entity /= Void then
-									check res /= Void end --already checked in` set_error_status_for_callret'
-									-- This return value must be registered.
-									resolver.associate_object_to_entity (res, non_basic_return_entity)
-								end
-								last_result := res --don't change the return value.
-							else
-								--OUTCALLRET
-								if callret.return_value /= Void then
-									last_result := resolver.resolve_entity (callret.return_value)
-								else
-									last_result := Void
-								end
-							end
-							consume_event
-						end
-					end
+				caller_observed := observed_stack.item
+				if event_input.end_of_input then
+					report_and_set_error ("Received Callret_event, but log is finished.")
 				else
-					last_result := res
+					set_error_status_for_callret (event_input.last_event, res, not caller_observed)
+					if not has_error then
+						callret ?= event_input.last_event
+						if caller_observed then
+							--OUTCALLRET
+							if callret.return_value /= Void then
+								last_result := resolver.resolve_entity (callret.return_value)
+							else
+								last_result := Void
+							end
+						else
+							--INCALLRET
+							non_basic_return_entity ?= callret.return_value
+							if non_basic_return_entity /= Void then
+								check res /= Void end --already checked in` set_error_status_for_callret'
+								-- This return value must be registered.
+								resolver.associate_object_to_entity (res, non_basic_return_entity)
+							end
+							last_result := res --don't change the return value.
+						end
+						consume_event
+					end
 				end
 			end
 		end
@@ -173,34 +167,28 @@ feature -- Basic operations
 	put_feature_invocation (feature_name: STRING_8; target: ANY; arguments: TUPLE) is
 			-- Notice that a feature invocation event (`target'.`feature_name'(`arguments')) occurred.
 		local
-			caller_is_observed: BOOLEAN
 			call_event: CALL_EVENT
 		do
 			if not has_error then
-				caller_is_observed := observed_stack.item
-				observed_stack.put (target.is_observed)
-				if target.is_observed /= caller_is_observed then
-					--boundary cross
-					if not event_input.end_of_input then
-						set_error_status_for_call (event_input.last_event, feature_name, target, arguments)
-						if not has_error then
-							if target.is_observed then
-								-- INCALL
-								consume_event
-							else
-								call_event ?= event_input.last_event
-								--OUTCALL
-								resolver.associate_object_to_entity (target, call_event.target)
-								index_arguments (call_event.arguments, arguments)
-								consume_event
-								if not has_error then
-									simulate_unobserved_body
-								end
+				if not event_input.end_of_input then
+					set_error_status_for_call (event_input.last_event, feature_name, target, arguments)
+					if not has_error then
+						if target.is_observed then
+							-- INCALL
+							consume_event
+						else
+							call_event ?= event_input.last_event
+							--OUTCALL
+							resolver.associate_object_to_entity (target, call_event.target)
+							index_arguments (call_event.arguments, arguments)
+							consume_event
+							if not has_error then
+								simulate_unobserved_body
 							end
 						end
-					else
-						report_and_set_error ("Received call event, but log is finished.")
 					end
+				else
+					report_and_set_error ("Received call event, but log is finished.")
 				end
 			end
 		end

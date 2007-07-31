@@ -422,13 +422,18 @@ feature -- Capture/Replay
 			replay_phase: BOOLEAN
 		do
 			if program_flow_sink.is_capture_replay_enabled then
-				replay_phase := program_flow_sink.is_replay_phase
 				program_flow_sink.enter
-				called_from_unobserved_space := not program_flow_sink.observed_stack.item
-				create manifest_wrapper.make_empty
-				manifest_wrapper.set_item (Current) -- XXX better use new_content, at replay, Current /= new_content
-				program_flow_sink.put_feature_invocation ("note_direct_manipulation", Current, [manifest_wrapper])
+				if program_flow_sink.observed_stack_item /= is_observed then
+					replay_phase := program_flow_sink.is_replay_phase
 
+					called_from_unobserved_space := not program_flow_sink.observed_stack_item
+					create manifest_wrapper.make_empty
+					program_flow_sink.put_to_observed_stack (is_observed)
+					manifest_wrapper.set_item (new_content)
+					program_flow_sink.put_feature_invocation ("note_direct_manipulation", Current, [manifest_wrapper])
+ 				else
+					program_flow_sink.put_to_observed_stack (is_observed)
+				end
 					-- Simulate the manipulation of the data, if necessary:
 				simulation_necessary := replay_phase and called_from_unobserved_space and is_observed
 				if simulation_necessary then

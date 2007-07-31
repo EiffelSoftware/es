@@ -56,17 +56,12 @@ feature -- Basic Operations
 
 	put_feature_exit (res: ANY)
 			-- Record a feature_exit - event
-		local
-			current_observed: BOOLEAN
 		do
-			current_observed := observed_stack.item
-			observed_stack.remove
-			if current_observed /= observed_stack.item then
-				if current_observed then
-					serializer.write_incallret (res)
-				else
-					serializer.write_outcallret (res)
-				end
+			-- There was a border crossing. To which part will we return?
+			if observed_stack.item then
+				serializer.write_outcallret (res)
+			else
+				serializer.write_incallret (res)
 			end
 			last_result := res
 		end
@@ -75,14 +70,11 @@ feature -- Basic Operations
 			-- Record a feature_invoke - event.
 		do
 			--opt print_debug ("{REC}: MethodBodyStart: " + feature_name + "%N")
-			if (target.is_observed /= observed_stack.item) then
-				if target.is_observed then
-					serializer.write_incall (feature_name, target, arguments)
-				else
-					serializer.write_outcall (feature_name, target, arguments)
-				end
+			if target.is_observed then
+				serializer.write_incall (feature_name, target, arguments)
+			else
+				serializer.write_outcall (feature_name, target, arguments)
 			end
-			observed_stack.put (target.is_observed)
 		end
 
 	put_attribute_access (attribute_name: STRING_8; target, value: ANY) is

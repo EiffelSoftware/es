@@ -65,10 +65,10 @@ feature -- Basic operations
 
 	put_feature_exit (res: ANY) is
 		do
-			Precursor {PLAYER}(res)
+			Precursor {PLAYER} (res)
 				-- Invoking the recorder after the player is safe, because the player
 				-- doesn't simulate any further feature calls.
-			recorder.put_feature_exit(last_result)
+			recorder.put_feature_exit (last_result)
 		end
 
 	put_attribute_access (attribute_name: STRING_8; target, value: ANY) is

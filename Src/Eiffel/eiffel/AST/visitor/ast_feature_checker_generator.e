@@ -6009,7 +6009,7 @@ feature {NONE} -- Capture/Replay Instrumentation
 					create do_replacement.make (replacement_body,  do_as.do_keyword)
 					routine.set_routine_body (do_replacement)
 				end
-				end
+			end
 		end
 
 	cr_call (target_name: STRING; feature_name: STRING; parameters: EIFFEL_LIST [EXPR_AS]): NESTED_AS is
@@ -6045,26 +6045,53 @@ feature {NONE} -- Capture/Replay Instrumentation
 		end
 
 
-	cr_if_block (condition: EXPR_AS; compound: EIFFEL_LIST [INSTRUCTION_AS]): IF_AS
+	cr_if_block (condition: EXPR_AS; then_compound, else_compound: EIFFEL_LIST [INSTRUCTION_AS]): IF_AS
 			-- IF_AS representing the eiffel code:
 			--     if `condition' then
 			--		`compound'
 			--		end
 		require
 			condition_not_void: condition /= Void
-			compound_not_void: compound /= Void
+			then_compound_not_void: then_compound /= Void
 		local
 			if_keyword: KEYWORD_AS
 			then_keyword: KEYWORD_AS
 			end_keyword: KEYWORD_AS
+			else_keyword: KEYWORD_AS
 		do
 			create if_keyword.make ({EIFFEL_TOKENS}.te_if, "if", 0, 0, 0, 0)
-			create then_keyword.make ({EIFFEL_TOKENS}.te_else, "else", 0, 0, 0, 0)
+			create then_keyword.make ({EIFFEL_TOKENS}.te_then, "then", 0, 0, 0, 0)
 			create end_keyword.make ({EIFFEL_TOKENS}.te_end, "end", 0, 0, 0, 0)
-
-			create Result.initialize (condition, compound, Void, Void, end_keyword, if_keyword, then_keyword, Void)
+			if else_compound /= Void then
+				create else_keyword.make ({EIFFEL_TOKENS}.te_else, "else", 0, 0, 0, 0)
+			end
+			create Result.initialize (condition, then_compound, Void, else_compound, end_keyword, if_keyword, then_keyword, else_keyword)
 		ensure
 			result_not_void: Result /= Void
+		end
+
+	cr_border_crossed_condition : BIN_NE_AS is
+			-- The condition that is true, when the observed/unobserved border
+			-- was crossed due to a call.
+			-- Note the generated code corresponds to "program_flow_sink.observed_stack_item /= is_observed"
+		local
+
+			left: EXPR_CALL_AS
+			right: EXPR_CALL_AS
+		do
+			create left.initialize (cr_call ("program_flow_sink", "observed_stack_item", Void))
+			right := cr_expr_call ("is_observed")
+			create Result.initialize (left, right, cr_symbol ({EIFFEL_TOKENS}.te_ne))
+		end
+
+	cr_put_to_observed_stack_call: INSTR_CALL_AS is
+			--
+		local
+			parameters: EIFFEL_LIST [EXPR_AS]
+		do
+			create parameters.make (1)
+			parameters.extend (cr_expr_call ("is_observed"))
+			Result := cr_call_instr ("program_flow_sink", "put_to_observed_stack", parameters)
 		end
 
 
@@ -6155,10 +6182,11 @@ feature {NONE} -- Capture/Replay Instrumentation
 			current_argument: EXPR_CALL_AS
 			parameters: EIFFEL_LIST [EXPR_AS]
 			invocation_call: INSTR_CALL_AS
-			compound: EIFFEL_LIST [INSTRUCTION_AS]
+			then_compound, else_compound, invocation_compound: EIFFEL_LIST [INSTRUCTION_AS]
 		do
+
 			-- Create the invocation call
-			-- It corresponds to "program_flow_sink.put_feature_invocation("feature_name", Current, [argument1,argument2,...])
+			-- It corresponds to "program_flow_sink.put_feature_invocation("feature_name", Current, [argument1,argument2,...], is_observed)
 			create target_argument.initialize (feature_name, 0, 0, 0, 0)
 			create current_argument.initialize (create {CURRENT_AS}.make_with_location(0, 0, 0, 0))
 			create parameters.make (3)
@@ -6166,10 +6194,17 @@ feature {NONE} -- Capture/Replay Instrumentation
 			parameters.extend (current_argument)
 			parameters.extend (cr_arguments_tuple (arguments))
 			invocation_call := cr_call_instr ("program_flow_sink", "put_feature_invocation", parameters)
-			create compound.make (1)
-			compound.extend (invocation_call)
+			create then_compound.make (2)
+			then_compound.extend (invocation_call)
+			then_compound.extend (cr_put_to_observed_stack_call)
+			create else_compound.make (1)
+			else_compound.extend (cr_put_to_observed_stack_call)
+
+			create invocation_compound.make (1)
+			invocation_compound.extend(cr_if_block (cr_border_crossed_condition, then_compound, else_compound))
+
 			-- Put the rest around this statement.
-			Result := cr_wrapped_management_instructions (compound)
+			Result := cr_wrapped_management_instructions (invocation_compound)
 		ensure
 			result_not_void: Result /= Void
 		end
@@ -6203,7 +6238,7 @@ feature {NONE} -- Capture/Replay Instrumentation
 			create condition_lhs.initialize (condition_lhs_not, condition_lhs_lparan, condition_lhs_rparan)
 			condition_rhs := cr_expr_call ("is_observed")
 			create condition.initialize (condition_lhs, condition_rhs, condition_operator)
-			Result := cr_if_block (condition, original_methodbody)
+			Result := cr_if_block (condition, original_methodbody, Void)
 		end
 
 	cr_feature_exit_block (feature_has_return_value: BOOLEAN): INSTRUCTION_AS is
@@ -6217,6 +6252,8 @@ feature {NONE} -- Capture/Replay Instrumentation
 			--			end
 		local
 			exit_block_instructions: EIFFEL_LIST [INSTRUCTION_AS]
+			border_crossing_instructions: EIFFEL_LIST [INSTRUCTION_AS]
+			border_crossing_if_block: IF_AS
 			put_exit_call: INSTR_CALL_AS
 			void_result: VOID_AS
 			result_expression: EXPR_CALL_AS
@@ -6235,16 +6272,22 @@ feature {NONE} -- Capture/Replay Instrumentation
 				exit_call_parameters.extend (void_result)
 			end
 			put_exit_call := cr_call_instr ("program_flow_sink", "put_feature_exit", exit_call_parameters)
-			create exit_block_instructions.make (1)
-			exit_block_instructions.extend (put_exit_call)
+			create border_crossing_instructions.make(1)
+			border_crossing_instructions.extend (put_exit_call)
 			-- Create the instruction 'Result ?= program_flow_sink.last_result' if necessary.
 			if feature_has_return_value then
 				create last_result.initialize (cr_call ("program_flow_sink", "last_result", Void))
 				assignment_attempt_symbol := cr_symbol ({EIFFEL_TOKENS}.te_accept)
 				create result_assignment_instr.initialize (create {RESULT_AS}.make_with_location (0, 0, 0, 0),
 							 last_result, assignment_attempt_symbol)
-				exit_block_instructions.extend (result_assignment_instr)
+				border_crossing_instructions.extend (result_assignment_instr)
 			end
+
+			border_crossing_if_block := cr_if_block (cr_border_crossed_condition, border_crossing_instructions, Void)
+
+			create exit_block_instructions.make (2)
+			exit_block_instructions.extend (cr_call_instr ("program_flow_sink", "remove_from_observed_stack", Void))
+			exit_block_instructions.extend (border_crossing_if_block)
 			Result := cr_wrapped_management_instructions (exit_block_instructions)
 		end
 
@@ -6272,7 +6315,7 @@ feature {NONE} -- Capture/Replay Instrumentation
 			compound.extend (cr_call_instr ("program_flow_sink", "leave", Void))
 
 			create capture_replay_condition.initialize (cr_call ("program_flow_sink", "is_capture_replay_enabled", Void))
-			Result := cr_if_block (capture_replay_condition, compound)
+			Result := cr_if_block (capture_replay_condition, compound, Void)
 		ensure
 			result_not_void: Result /= Void
 		end
