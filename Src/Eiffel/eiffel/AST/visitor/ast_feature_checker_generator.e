@@ -1141,7 +1141,6 @@ feature -- Implementation
 			l_tuple_access_b: TUPLE_ACCESS_B
 			l_vtmc1: VTMC1
 			l_gen_type: GEN_TYPE_A
-			l_vuar3: VUAR3
 		do
 				-- Reset
 			if a_feature = Void then
@@ -1437,15 +1436,6 @@ feature -- Implementation
 								-- Get formal argument type.
 							l_formal_arg_type := l_feature.arguments.i_th (i)
 
-							l_formal ?= l_formal_arg_type.conformance_type
-							if l_formal /= Void then
-								l_gen_type ?= l_last_type.conformance_type
-								if l_gen_type.is_covariant (l_formal.position) then
-									insert_vuar3_error (l_feature, l_parameters, l_last_id, i, l_arg_type,
-										l_formal)
-								end
-							end
-
 								-- Take care of anchoring to argument
 							if l_formal_arg_type.is_like_argument then
 								l_like_arg_type := l_formal_arg_type.actual_argument_type (l_arg_types)
@@ -1463,12 +1453,29 @@ feature -- Implementation
 								end
 							end
 
-
-
 								-- Adapted type in case it is a formal generic parameter or a like.
 							l_formal_arg_type := adapted_type (l_formal_arg_type, l_last_type, l_last_constrained)
 								-- Actual type of feature argument
 							l_formal_arg_type := l_formal_arg_type.instantiation_in (l_last_type, l_last_id).actual_type
+
+								-- Variance check: First, check if argument is a formal.
+							l_formal ?= l_formal_arg_type.conformance_type
+							if l_formal /= Void then
+									-- The actual generic parameter is a formal. If the actual generic parameter
+									-- is marked as 'variant' we insert an error
+								l_gen_type ?= l_last_constrained.conformance_type
+								check
+										-- l_gen_type can be Void only in one case:
+										--  * If a call is made on a formal generic which has the argument `like Current':
+										--    e.g. v: G; v.is_equal (v). Then the argument is formal but the target type is not a gen-type
+										-- Otherwise, if the argument is a formal, the target is a gen type
+									l_feature.arguments.i_th (i).is_like_current or else l_gen_type /= Void
+								end
+								if l_gen_type /= Void and then l_gen_type.is_covariant (l_formal.position) then
+									insert_vuar3_error (l_feature, l_parameters, l_last_id, i, l_arg_type,
+										l_formal)
+								end
+							end
 
 								-- Conformance: take care of constrained genericity
 								-- We must generate an error when `l_formal_arg_type' becomes
@@ -1703,19 +1710,26 @@ feature -- Implementation
 
 						-- Check if cat-call detection is enabled for current context class
 					if context.current_class.is_cat_call_detection then
-							-- Inline agents have no descendants, so they don't need to be checked anyway
-							-- Static calls or frozen features don't need to be checked since they can't 
-							-- have a descendant either.
-							-- Only features which are covariantly redefined or have formal arguments need to be checked
+							-- For optimization, the catcall check is only done in the following cases:
+							--  * The feature is marked as covariant:
+							--      features which are not marked covariant don't need to be checked
+							--  * Qualified call:
+							--      `Current' is monomorph, thus an unqualified call does not need to be checked
+							--  * `l_last_type' is not monomorph or formal:
+							--      Calls on monomorph types don't need to be checked. Formals are an exception as they
+							--      can be derived with any type which fits their constraint
+							--  * Not inline agent, static calls or frozen calls:
+							--      there are no descendant features which could overwrite the arguments covariantly
+							--      Note: This check is probably not necessary, as these features are not marked as
+							--            covariant anyway.
 						if
-							not l_feature.is_inline_agent and
-							not is_static and
-							not l_feature.is_frozen and
-							(system.is_routine_arguments_covariantly_redefined (l_feature.rout_id_set.first) or else
-							 system.is_routine_with_formal_arguments (l_feature.rout_id_set.first))
+							system.is_routine_arguments_covariantly_redefined (l_feature.rout_id_set.first) and then
+							is_qualified and then
+							(not l_last_type.is_monomorph or l_last_type.is_formal) and then
+							(not l_feature.is_inline_agent and not is_static and not l_feature.is_frozen)
 						then
-								-- Cat call detection is enabled: Test if this feature call is valid
-								-- in all subtypes of the current class.
+								-- Cat call detection is done for this call: Test if this feature call is valid
+								-- with all descendants of the target type.
 
 								-- If conversion took place, they are stored in l_conformance_arg_types.
 								-- If it is void, no conversion took place, so we can use the original argument types
@@ -1723,8 +1737,9 @@ feature -- Implementation
 								l_conformance_arg_types := l_arg_types
 							end
 
+								-- TODO: also pass `l_last_type' if it is a formal
 							check not l_last_constrained.is_formal end
---							check_cat_call (l_last_constrained.conformance_type, l_feature, is_qualified, l_conformance_arg_types, l_feature_name, l_last_id)
+							check_cat_call (l_last_constrained.conformance_type, l_feature, l_conformance_arg_types, l_feature_name, l_last_id)
 
 								-- Statistics
 							system.statistics.feature_check_done := system.statistics.feature_check_done + 1
@@ -8053,12 +8068,11 @@ feature {NONE} -- Implementation: Error handling
 
 feature {NONE} -- Implementation: catcall check
 
-	check_cat_call (a_callee_type: TYPE_A; a_feature: FEATURE_I; a_qualified: BOOLEAN; a_params: ARRAY [TYPE_A]; a_location: LOCATION_AS; a_last_id: INTEGER) is
+	check_cat_call (a_callee_type: TYPE_A; a_feature: FEATURE_I; a_params: ARRAY [TYPE_A]; a_location: LOCATION_AS; a_last_id: INTEGER) is
 			-- Check if a call can potentially be a cat call.
 			--
 			-- `a_callee_type': Type on which the call happens
 			-- `a_feature': Feature which is called on callee
-			-- `a_qualified': Flag to indicate if feature call is qualified or not
 			-- `a_params': Parameters of call, already evaluated to their types. If conversion took place, the type in the array is the converted one
 			-- `a_location': Location where warning will be linked to
 		require
@@ -8076,7 +8090,7 @@ feature {NONE} -- Implementation: catcall check
 			l_cat_call_warning: CAT_CALL_WARNING
 			l_descendant_index, l_argument_index: INTEGER
 			l_descendant_argument: TYPE_A
-			l_descendant_formal: FORMAL_A
+--			l_descendant_formal: FORMAL_A
 			l_actual_argument: TYPE_A
 		do
 				-- Check call on all descendants of type
@@ -8086,7 +8100,7 @@ feature {NONE} -- Implementation: catcall check
 			until
 				l_descendant_index > l_descendants.count
 			loop
-					-- Get descendant class and the feature in the context of the descendant\
+					-- Get descendant class and the feature in the context of the descendant
 				l_descendant_type := l_descendants.i_th (l_descendant_index)
 				l_descendant_class := l_descendant_type.associated_class
 				l_descendant_feature := l_descendant_class.feature_of_rout_id (a_feature.rout_id_set.first)
@@ -8099,11 +8113,13 @@ feature {NONE} -- Implementation: catcall check
 				loop
 					l_actual_argument := a_params.item (l_argument_index)
 					l_descendant_argument := l_descendant_feature.arguments.i_th (l_argument_index).actual_type
-						-- If argument is a formal, replace with instantiation of callee type
-					if l_descendant_argument.is_formal then
-						l_descendant_formal ?= l_descendant_argument
-						l_descendant_argument := l_descendant_type.generics.item (l_descendant_formal.position)
-					end
+
+-- TODO: does not work if descendant has more formals than the callee type
+--						-- If argument is a formal, replace with instantiation of callee type
+--					if l_descendant_argument.is_formal then
+--						l_descendant_formal ?= l_descendant_argument
+--						l_descendant_argument := l_descendant_type.generics.item (l_descendant_formal.position)
+--					end
 						-- Check if actual parameter conforms to the possible type of the descendant feature
 					if not l_actual_argument.conform_to (l_descendant_argument) then
 							-- Conformance is violated. Add notice to warning.
@@ -8166,9 +8182,9 @@ feature {NONE} -- Implementation: catcall check
 								-- if yes: keep
 								-- if no: does not conform
 					l_type := l_descendants.item.actual_type
-					if l_type.conform_to (a_type) then
-						Result.extend (l_type)
-					end
+--					if l_type.conform_to (a_type) then
+--						Result.extend (l_type)
+--					end
 					l_descendants.forth
 				end
 			end
