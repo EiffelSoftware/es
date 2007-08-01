@@ -7,7 +7,7 @@
 		</option>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
-		<cluster name="direct_manipulation" location=".\" recursive="true">
+		<cluster name="direct_manipulation" location=".\">
 			<file_rule>
 				<exclude>/EIFGENs$</exclude>
 				<exclude>/.svn$</exclude>
@@ -16,6 +16,7 @@
 		</cluster>
 		<cluster name="erl_g" location="$ERL_G\library\runtime\" recursive="true"/>
 		<cluster name="own_base_classes" location="..\..\..\Src\library\base\capture_replay\own_classes\" recursive="true"/>
+		<override name="application_overrides" location=".\overrides\" recursive="true"/>
 		<override name="elks_overrides" location="..\..\..\Src\library\base\capture_replay\elks_overrides\" recursive="true">
 			<option>
 				<assertions/>

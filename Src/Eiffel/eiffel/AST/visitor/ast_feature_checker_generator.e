@@ -6048,7 +6048,11 @@ feature {NONE} -- Capture/Replay Instrumentation
 	cr_if_block (condition: EXPR_AS; then_compound, else_compound: EIFFEL_LIST [INSTRUCTION_AS]): IF_AS
 			-- IF_AS representing the eiffel code:
 			--     if `condition' then
-			--		`compound'
+			--		`then_compound'
+			--     [{iff else /= Void}
+			--     else
+			--       `else_compound'
+			--     ]
 			--		end
 		require
 			condition_not_void: condition /= Void
@@ -6073,7 +6077,7 @@ feature {NONE} -- Capture/Replay Instrumentation
 	cr_border_crossed_condition : BIN_NE_AS is
 			-- The condition that is true, when the observed/unobserved border
 			-- was crossed due to a call.
-			-- Note the generated code corresponds to "program_flow_sink.observed_stack_item /= is_observed"
+			-- Note: the generated code corresponds to "program_flow_sink.observed_stack_item /= is_observed"
 		local
 
 			left: EXPR_CALL_AS
@@ -6085,7 +6089,7 @@ feature {NONE} -- Capture/Replay Instrumentation
 		end
 
 	cr_put_to_observed_stack_call: INSTR_CALL_AS is
-			--
+			-- Instruction that represents 'program_flow_sink.put_to_observed_stack (is_observed)'
 		local
 			parameters: EIFFEL_LIST [EXPR_AS]
 		do
@@ -6172,7 +6176,12 @@ feature {NONE} -- Capture/Replay Instrumentation
 			-- Note: creates the AST for this Eiffel code:
 			--          if program_flow_sink.is_capture_replay_enabled then
 			-- 				program_flow_sink.enter
-            --              program_flow_sink.put_feature_invocation(`feature_name' Current, [`arguments'])
+			--				if program_flow_sink.observed_stack_item /= is_observed then
+            --					program_flow_sink.put_to_observed_stack (is_observed)
+            --	            	program_flow_sink.put_feature_invocation(`feature_name' Current, [`arguments'])
+            --				else
+            --					program_flow_sink.put_to_observed_stack (is_observed)
+            --				end
             --	            program_flow_sink.leave
             --          end
 		require
@@ -6195,8 +6204,8 @@ feature {NONE} -- Capture/Replay Instrumentation
 			parameters.extend (cr_arguments_tuple (arguments))
 			invocation_call := cr_call_instr ("program_flow_sink", "put_feature_invocation", parameters)
 			create then_compound.make (2)
-			then_compound.extend (invocation_call)
 			then_compound.extend (cr_put_to_observed_stack_call)
+			then_compound.extend (invocation_call)
 			create else_compound.make (1)
 			else_compound.extend (cr_put_to_observed_stack_call)
 
@@ -6246,8 +6255,11 @@ feature {NONE} -- Capture/Replay Instrumentation
 			-- Note: Generates AST-Nodes for this Eiffel code:
 			--			if program_flow_sink.capture_replay_enabled then
 			--				program_flow_sink.enter
-			--				program_flow_sink.put_feature_exit[(Void) or (Result) if feature has a result value]
-			--				Result ?= program_flow_sink.last_result [only if feature has a result value]
+			--				program_flow_sink.remove_from_observed_stack
+			--				if program_flow_sink.observed_stack_item /= is_observed then
+			--					program_flow_sink.put_feature_exit[(Void) or (Result) if feature has a result value]
+			--					Result ?= program_flow_sink.last_result [only if feature has a result value]
+			--				end
 			--				program_flow_sink.leave
 			--			end
 		local

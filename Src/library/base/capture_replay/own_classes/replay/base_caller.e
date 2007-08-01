@@ -23,13 +23,13 @@ feature -- Basic operations
 			ignore_result: ANY
 		do
 			if feature_name.is_equal("make") then
-				program_flow_sink.leave
 				make_arg1 ?= arguments @ 1
+				program_flow_sink.leave
 				string.make (make_arg1)
 				program_flow_sink.enter
 			elseif feature_name.is_equal("set_count") then
-				program_flow_sink.leave
 				set_count_arg1 ?= arguments @ 1
+				program_flow_sink.leave
 				string.set_count(set_count_arg1)
 				program_flow_sink.enter
 			elseif feature_name.is_equal("out") then
@@ -41,8 +41,8 @@ feature -- Basic operations
 				ignore_result := string.capacity
 				program_flow_sink.enter
 			elseif feature_name.is_equal("resize") then
-				program_flow_sink.leave
 				resize_arg1 ?= arguments @ 1
+				program_flow_sink.leave
 				string.resize (resize_arg1)
 				program_flow_sink.enter
 			elseif feature_name.is_equal("to_c") then

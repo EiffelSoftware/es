@@ -87,6 +87,7 @@ feature -- Basic operations
 	remove_from_observed_stack is
 			--
 		do
+			print ("remove_from_observed_stack")
 			observed_stack.remove
 		end
 
