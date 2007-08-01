@@ -1849,6 +1849,7 @@ end
 			l_old_conformance_type, l_new_conformance_type: TYPE_A
 			i, arg_count: INTEGER
 			old_arguments: like arguments
+			l_has_covariant_arguments: BOOLEAN
 			current_class: CLASS_C
 			vdrd51: VDRD51
 			vdrd52: VDRD52
@@ -1936,9 +1937,16 @@ end
 			if
 				old_type.is_like_current or else
 				new_type.is_like_current or else
-				not l_old_conformance_type.same_as (l_new_conformance_type)
+-- juliant, 1. Aug 2007
+-- I have the feeling this does not work all the time. For example, "monomorph INTEGER" and "INTEGER" should be regarded as the same
+-- as INTEGER is expanded and thus monomorph by default, but "same_as" looks at the monomorph keyword.
+--				not l_old_conformance_type.same_as (l_new_conformance_type)
+-- This is the more expensive check if the types are the same, but it should work in any case
+				not (l_old_conformance_type.conform_to (l_new_conformance_type) and then l_new_conformance_type.conform_to (l_old_conformance_type))
 			then
-				system.set_routine_result_type_covariantly_redefined (rout_id_set, True)
+				system.covariant_result_type_index.add_class (rout_id_set, current_class)
+			else
+				system.covariant_result_type_index.remove_class (rout_id_set, current_class)
 			end
 
 				-- Check the argument count
@@ -2008,13 +2016,26 @@ end
 					if
 						old_type.is_like_current or else
 						new_type.is_like_current or else
-						not l_old_conformance_type.same_as (l_new_conformance_type)
+-- juliant, 1. Aug 2007
+-- I have the feeling this does not work all the time. For example, "monomorph INTEGER" and "INTEGER" should be regarded as the same
+-- as INTEGER is expanded and thus monomorph by default, but "same_as" looks at the monomorph keyword.
+--						not l_old_conformance_type.same_as (l_new_conformance_type)
+-- This is the more expensive check if the types are the same, but it should work in any case
+						not (l_old_conformance_type.conform_to (l_new_conformance_type) and then l_new_conformance_type.conform_to (l_old_conformance_type))
 					then
-						system.set_routine_result_type_covariantly_redefined (rout_id_set, True)
+						l_has_covariant_arguments := True
 					end
 
 					i := i + 1
 				end
+
+					-- Mark feature covariance in the current class				
+				if l_has_covariant_arguments then
+					system.covariant_argument_index.add_class (rout_id_set, current_class)
+				else
+					system.covariant_argument_index.remove_class (rout_id_set, current_class)
+				end
+
 			end
 				-- Check aliases
 			if not is_same_alias (old_feature) then

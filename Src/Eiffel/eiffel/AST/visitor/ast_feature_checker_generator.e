@@ -1713,17 +1713,19 @@ feature -- Implementation
 							-- For optimization, the catcall check is only done in the following cases:
 							--  * The feature is marked as covariant:
 							--      features which are not marked covariant don't need to be checked
-							--  * Qualified call:
-							--      `Current' is monomorph, thus an unqualified call does not need to be checked
 							--  * `l_last_type' is not monomorph or formal:
 							--      Calls on monomorph types don't need to be checked. Formals are an exception as they
-							--      can be derived with any type which fits their constraint
+							--      can be derived with any type which fits their constraint, so even monomorph formals
+							--      need to be checked
+							--  * Qualified call:
+							--      Unqualified calls don't need to be checked as their target, `Current', is monomorph
 							--  * Not inline agent, static calls or frozen calls:
-							--      there are no descendant features which could overwrite the arguments covariantly
-							--      Note: This check is probably not necessary, as these features are not marked as
-							--            covariant anyway.
+							--      There are no descendant features which could overwrite the arguments covariantly
+							--      Note: The static and inline agent check is probably not necessary, as these features
+							--            are not marked as covariant anyway. Frozen features can be covariant if they
+							--            have a precursor.
 						if
-							system.is_routine_arguments_covariantly_redefined (l_feature.rout_id_set.first) and then
+							system.covariant_argument_index.is_covariantly_redefined (l_feature.rout_id_set.first, l_last_constrained.associated_class) and then
 							is_qualified and then
 							(not l_last_type.is_monomorph or l_last_type.is_formal) and then
 							(not l_feature.is_inline_agent and not is_static and not l_feature.is_frozen)
@@ -1739,7 +1741,7 @@ feature -- Implementation
 
 								-- TODO: also pass `l_last_type' if it is a formal
 							check not l_last_constrained.is_formal end
-							check_cat_call (l_last_constrained.conformance_type, l_feature, l_conformance_arg_types, l_feature_name, l_last_id)
+--							check_cat_call (l_last_constrained.conformance_type, l_feature, l_conformance_arg_types, l_feature_name, l_last_id)
 
 								-- Statistics
 							system.statistics.feature_check_done := system.statistics.feature_check_done + 1
@@ -8174,21 +8176,21 @@ feature {NONE} -- Implementation: catcall check
 				until
 					l_descendants.after
 				loop
-						-- TODO:
-						-- A [ANY] -> X [G]
-						-- for_all (formal of A) evaluate in X
-							-- if still formal: keep formal -> should fail later if occurs in feature
-							-- if normal type: check if type conforms
-								-- if yes: keep
-								-- if no: does not conform
-					l_type := l_descendants.item.actual_type
-					if l_type.has_generics then
-						l_gen_type
-					end
-					Result.extend (l_type)
-					if l_type.conform_to (a_type) then
-						Result.extend (l_type)
-					end
+--						-- TODO:
+--						-- A [ANY] -> X [G]
+--						-- for_all (formal of A) evaluate in X
+--							-- if still formal: keep formal -> should fail later if occurs in feature
+--							-- if normal type: check if type conforms
+--								-- if yes: keep
+--								-- if no: does not conform
+--					l_type := l_descendants.item.actual_type
+--					if l_type.has_generics then
+--						l_gen_type
+--					end
+--					Result.extend (l_type)
+--					if l_type.conform_to (a_type) then
+--						Result.extend (l_type)
+--					end
 					l_descendants.forth
 				end
 			end
