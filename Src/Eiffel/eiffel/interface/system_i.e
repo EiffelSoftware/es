@@ -5294,21 +5294,17 @@ feature {NONE} -- External features
 
 feature -- Covariance / Redefined features table
 
-	is_routine_arguments_covariantly_redefined (routine_id: INTEGER): BOOLEAN is
+	is_routine_arguments_covariantly_redefined (routine_id, a_class_id: INTEGER): BOOLEAN is
 			-- Are any of the arguments of routine with routine id `routine_id'
 			-- redefined covariantly in the system?
 		do
-			Result :=
-				routine_covariant_argument_flags.valid_index (routine_id) and then
-				routine_covariant_argument_flags.item (routine_id)
+			Result := has_class_id (routine_covariant_arguments_flags, a_routine_id, a_class_id)
 		end
 
-	is_routine_result_type_covariantly_redefined (routine_id: INTEGER): BOOLEAN is
+	is_routine_result_type_covariantly_redefined (a_routine_id, a_class_id: INTEGER): BOOLEAN is
 			-- Is routine with routine id `routine_id' redefined covariantly in the system?
 		do
-			Result :=
-				routine_covariant_result_type_flags.valid_index (routine_id) and then
-				routine_covariant_result_type_flags.item (routine_id)
+			Result := has_class_id (routine_covariant_result_flags, a_routine_id, a_class_id)
 		end
 
 	is_routine_with_formal_arguments (routine_id: INTEGER): BOOLEAN is
@@ -5319,46 +5315,69 @@ feature -- Covariance / Redefined features table
 				routine_formal_flags.item (routine_id)
 		end
 
-	set_routine_arguments_covariantly_redefined (routine_id_set: ROUT_ID_SET; flag: BOOLEAN) is
+	set_routine_arguments_covariantly_redefined (a_routine_id_set: ROUT_ID_SET; a_class_id: INTEGER) is
 			-- Set routine arguments covariantly redefined flag of routine ids in `routine_id_set' to `flag'.
 		require
-			routine_id_set_not_void: routine_id_set /= Void
-		local
-			i, l_count: INTEGER
+			a_routine_id_set_not_void: a_routine_id_set /= Void
 		do
-			from
-				i := 1
-				l_count := routine_id_set.count
-			until
-				i > l_count
-			loop
-				routine_covariant_argument_flags.force (flag, routine_id_set.item (i))
-				i := i + 1
-			end
+			add_class_to_routine_index (routine_covariant_argument_flags, a_routine_id_set, a_class_id)
 		ensure
-			flag_set: is_routine_arguments_covariantly_redefined (routine_id_set.first) = flag
-			--flags_set: routine_id_set.linear_representation.for_all (agent (a_id: INTEGER; a_flag: BOOLEAN): BOOLEAN do Result := is_routine_arguments_covariantly_redefined (a_id) = a_flag end (?, flag))
+			flag_set: is_routine_arguments_covariantly_redefined (a_routine_id_set.first)
 		end
 
-	set_routine_result_type_covariantly_redefined (routine_id_set: ROUT_ID_SET; flag: BOOLEAN) is
-			-- Set routine result type covariantly redefined flag of routine ids in `routine_id_set' to `flag'.
+	set_routine_result_type_covariantly_redefined (a_routine_id_set: ROUT_ID_SET; a_class_id: INTEGER) is
+			-- Set routine result type covariantly redefined for class with id `a_class_id'
+			-- and routine ids in `a_routine_id_set'.
 		require
-			routine_id_set_not_void: routine_id_set /= Void
+			a_routine_id_set_not_void: a_routine_id_set /= Void
+		do
+			add_class_to_routine_index (routine_covariant_result_type_flags, a_routine_id_set, a_class_id)
+		ensure
+			flag_set: is_routine_result_type_covariantly_redefined (a_routine_id_set.first)
+		end
+
+	add_class_to_routine_index (a_routine_index: HASH_TABLE [ARRAYED_LIST [INTEGER], INTEGER];  a_routine_id_set: ROUT_ID_SET; a_class_id: INTEGER) is
+			-- Insert class with id `a_class_id' in `a_routine_index' for routine ids in `a_routine_id_set'.
+		require
+			a_routine_index_not_void: a_routine_index /= Void
+			a_routine_id_set_not_void: a_routine_id_set /= Void
 		local
-			i, l_count: INTEGER
+			i, l_count, l_routine_id: INTEGER
+			l_class_list: ARRAYED_LIST [INTEGER]
 		do
 			from
 				i := 1
-				l_count := routine_id_set.count
+				l_count := a_routine_id_set.count
 			until
 				i > l_count
 			loop
-				routine_covariant_result_type_flags.force (flag, routine_id_set.item (i))
+				l_routine_id := a_routine_id_set.item (i)
+				a_routine_index.search (l_routine_id)
+				if a_routine_index.found then
+					l_class_list := a_routine_index.found_item
+					if not l_class_list.has (a_class_id) then
+						l_class_list.extend (a_class_id)
+					end
+				else
+					create l_class_list.make (3)
+					a_routine_index.put (l_class_list, l_routine_id)
+					l_class_list.extend (a_class_id)
+				end
 				i := i + 1
 			end
-		ensure
-			flag_set: is_routine_result_type_covariantly_redefined (routine_id_set.first) = flag
-			--flags_set: routine_id_set.linear_representation.for_all (agent (a_id: INTEGER; a_flag: BOOLEAN): BOOLEAN do Result := is_routine_result_type_covariantly_redefined (a_id) = a_flag end (?, flag))
+		end
+
+	has_class_id (a_routine_index: HASH_TABLE [ARRAYED_LIST [INTEGER], INTEGER]; a_routine_id, a_class_id: INTEGER): BOOLEAN is
+			-- Is class with id `a_class_id' an element of class set for a routine
+			-- given by `a_routine_id' in `a_routine_index'?
+		require
+			a_routine_index_not_void: a_routine_index /= Void
+		do
+				-- TODO
+			a_routine_index.search (a_routine_id)
+			if a_routine_index.found then
+				Result := a_routine_index.found_item.has (a_class_id)
+			end
 		end
 
 	set_routine_has_formal (routine_id_set: ROUT_ID_SET; flag: BOOLEAN) is
@@ -5384,11 +5403,13 @@ feature -- Covariance / Redefined features table
 
 feature {NONE} -- Implementation
 
-	routine_covariant_argument_flags: PACKED_BOOLEANS
-			-- List of routines which have an argument covariantly redefined indexed by routine id
+	routine_covariant_argument_flags: HASH_TABLE [ARRAYED_LIST [INTEGER], INTEGER]
+			-- List of routines which have an argument covariantly redefined indexed by routine-id
+			-- and then a list of class id's of classes which covariantly redefine the feature arguments
 
-	routine_covariant_result_type_flags: PACKED_BOOLEANS
-			-- List of routines which have a result type covariantly redefined indexed by routine id
+	routine_covariant_result_type_flags: HASH_TABLE [ARRAYED_LIST [INTEGER], INTEGER]
+			-- List of routines which have a result type covariantly redefined indexed by routine-id
+			-- and then a list of class id's of classes which covariantly redefine the result type of the feature
 
 	routine_formal_flags: PACKED_BOOLEANS
 			-- List of routines which have formal arguments indexed by routine id

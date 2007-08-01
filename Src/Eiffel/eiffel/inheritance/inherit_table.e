@@ -1437,7 +1437,7 @@ end;
 					loop
 						l_type := l_args.item
 						if l_type.is_like_current then
-							system.set_routine_arguments_covariantly_redefined (l_f_rout_id_set, True)
+							system.set_routine_arguments_covariantly_redefined (l_f_rout_id_set, l_type.associated_class.class_id)
 						elseif l_type.conformance_type.is_formal then
 							system.set_routine_has_formal (l_f_rout_id_set, True)
 						elseif l_type.is_like_feature then
@@ -1453,7 +1453,7 @@ end;
 								-- already checked in the calls to `check_adaptation' at the beginning of this feature,
 								-- we are sure that the referenced features is in the global list already.
 							if system.is_routine_result_type_covariantly_redefined (l_like_feature.routine_id) then
-								system.set_routine_arguments_covariantly_redefined (l_f_rout_id_set, True)
+								system.set_routine_arguments_covariantly_redefined (l_f_rout_id_set, l_like_feature.associated_class.class_id)
 							end
 						end
 						l_args.forth

@@ -8177,14 +8177,18 @@ feature {NONE} -- Implementation: catcall check
 						-- TODO:
 						-- A [ANY] -> X [G]
 						-- for_all (formal of A) evaluate in X
-							-- if still formal: keep formal -> should fail later
+							-- if still formal: keep formal -> should fail later if occurs in feature
 							-- if normal type: check if type conforms
 								-- if yes: keep
 								-- if no: does not conform
 					l_type := l_descendants.item.actual_type
---					if l_type.conform_to (a_type) then
---						Result.extend (l_type)
---					end
+					if l_type.has_generics then
+						l_gen_type
+					end
+					Result.extend (l_type)
+					if l_type.conform_to (a_type) then
+						Result.extend (l_type)
+					end
 					l_descendants.forth
 				end
 			end
