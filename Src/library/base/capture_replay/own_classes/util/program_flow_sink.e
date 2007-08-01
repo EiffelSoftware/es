@@ -79,19 +79,19 @@ feature -- Basic operations
 		deferred end
 
 	put_to_observed_stack (class_is_observed: BOOLEAN) is
-			--
+			-- Put `class_is_observed' onto the observed stack.
 		do
 			observed_stack.put (class_is_observed)
 		end
 
 	remove_from_observed_stack is
-			--
+			-- Remove the top element from the observed_stack.
 		do
 			observed_stack.remove
 		end
 
 	observed_stack_item: BOOLEAN is
-			--
+			-- The top element of the observed_stack.
 		do
 			Result := observed_stack.item
 		end
