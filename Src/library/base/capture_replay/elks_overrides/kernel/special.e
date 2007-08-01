@@ -417,33 +417,30 @@ feature -- Capture/Replay
 			--		  the direct manipulation will be replayed as well.
 		local
 			manifest_wrapper: MANIFEST_SPECIAL [T]
-			called_from_unobserved_space: BOOLEAN
 			simulation_necessary: BOOLEAN
 			replay_phase: BOOLEAN
 		do
 			if program_flow_sink.is_capture_replay_enabled then
+				replay_phase := program_flow_sink.is_replay_phase
 				program_flow_sink.enter
 				if program_flow_sink.observed_stack_item /= is_observed then
-					replay_phase := program_flow_sink.is_replay_phase
-
-					called_from_unobserved_space := not program_flow_sink.observed_stack_item
 					create manifest_wrapper.make_empty
 					program_flow_sink.put_to_observed_stack (is_observed)
 					manifest_wrapper.set_item (new_content)
 					program_flow_sink.put_feature_invocation ("note_direct_manipulation", Current, [manifest_wrapper])
+						-- Simulate the manipulation of the data, if necessary:
+					if replay_phase and is_observed then
+						-- need to simulate the manipulation.
+						copy_data (new_content, 0, 0, new_content.count)
+					end
  				else
 					program_flow_sink.put_to_observed_stack (is_observed)
 				end
-					-- Simulate the manipulation of the data, if necessary:
-				simulation_necessary := replay_phase and called_from_unobserved_space and is_observed
-				if simulation_necessary then
-					copy_data (new_content, 0, 0, new_content.count)
-				end
 				program_flow_sink.leave
 			end
-
 			if program_flow_sink.is_capture_replay_enabled then
 				program_flow_sink.enter
+				program_flow_sink.remove_from_observed_stack
 				program_flow_sink.put_feature_exit (Void)
 				program_flow_sink.leave
 			end

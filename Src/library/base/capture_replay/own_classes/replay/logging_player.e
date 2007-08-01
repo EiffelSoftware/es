@@ -15,7 +15,9 @@ inherit
 		put_feature_exit,
 		put_feature_invocation,
 		put_attribute_access,
-		accept
+		accept,
+		remove_from_observed_stack,
+		put_to_observed_stack
 	end
 
 create
@@ -81,6 +83,20 @@ feature -- Basic operations
 			-- Accept a visitor.
 		do
 			visitor.visit_logging_player (Current)
+		end
+
+	put_to_observed_stack (class_is_observed: BOOLEAN) is
+			--
+		do
+			Precursor (class_is_observed)
+			recorder.put_to_observed_stack (class_is_observed)
+		end
+
+	remove_from_observed_stack is
+			--
+		do
+			Precursor
+			recorder.remove_from_observed_stack
 		end
 
 invariant
