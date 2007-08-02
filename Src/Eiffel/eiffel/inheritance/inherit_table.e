@@ -1465,11 +1465,11 @@ end;
 				resulting_table.after
 			loop
 				f := resulting_table.item_for_iteration
-				l_f_rout_id_set := f.rout_id_set
 
 					-- If the feature is new in this class - i.e. the origin - we don't need to check
 					-- for covariant redefinition.
 				if not f.is_origin or else f.written_in /= l_current_class_id then
+					l_f_rout_id_set := f.rout_id_set
 					l_result_type := f.type
 						-- Only like types can change covariantly without adapting the feature.
 						-- So all other covariant redefinitions are already checked in `check_adaptation'.
@@ -1510,45 +1510,51 @@ end;
 				resulting_table.after
 			loop
 				f := resulting_table.item_for_iteration
-				l_f_rout_id_set := f.rout_id_set
 
-					-- Check if argument of feature are formal or covariantly redefined
-					-- If yes, we will insert the feature in the appropriate lists of
-					-- SYSTEM_I
-				l_args := f.arguments
-				if l_args /= Void then
-					from
-						l_args.start
-						l_covariant_argument := False
-					until
-						l_args.after
-					loop
-						l_type := l_args.item
-						if l_type.is_like_current then
-							l_covariant_argument := True
-						elseif l_type.conformance_type.is_formal then
-							system.set_routine_has_formal (l_f_rout_id_set, True)
-						elseif l_type.is_like_feature then
-								-- Check if anchor of like type is covariantly redefined
-								-- We only care about LIKE_FEATURE types:
-								--  * like current is already handled
-								--  * like argument types are handled since the anchor is an argument
-								--    and will be checked for covariant redeclaration
-							l_like_feature ?= l_type
-							check l_like_feature /= Void end
-								-- The like feature is covariantly redefined if the result type of the
-								-- referenced feature is covariantly redefined. Since the redeclarations were
-								-- already checked in the calls to `check_adaptation' at the beginning of this feature,
-								-- we are sure that the referenced features is in the global list already.
-							l_anchor_rout_id_set := resulting_table.feature_of_rout_id (l_like_feature.routine_id).rout_id_set
-							if system.covariant_result_type_index.is_covariantly_redefined_set_in_class (l_anchor_rout_id_set, l_current_class) then
+					-- If the feature is new in this class - i.e. the origin - we don't need to check
+					-- for covariant redefinition.
+				if not f.is_origin or else f.written_in /= l_current_class_id then
+
+					l_f_rout_id_set := f.rout_id_set
+
+						-- Check if argument of feature are formal or covariantly redefined
+						-- If yes, we will insert the feature in the appropriate lists of
+						-- SYSTEM_I
+					l_args := f.arguments
+					if l_args /= Void then
+						from
+							l_args.start
+							l_covariant_argument := False
+						until
+							l_args.after
+						loop
+							l_type := l_args.item
+							if l_type.is_like_current then
 								l_covariant_argument := True
+							elseif l_type.conformance_type.is_formal then
+								system.set_routine_has_formal (l_f_rout_id_set, True)
+							elseif l_type.is_like_feature then
+									-- Check if anchor of like type is covariantly redefined
+									-- We only care about LIKE_FEATURE types:
+									--  * like current is already handled
+									--  * like argument types are handled since the anchor is an argument
+									--    and will be checked for covariant redeclaration
+								l_like_feature ?= l_type
+								check l_like_feature /= Void end
+									-- The like feature is covariantly redefined if the result type of the
+									-- referenced feature is covariantly redefined. Since the redeclarations were
+									-- already checked in the calls to `check_adaptation' at the beginning of this feature,
+									-- we are sure that the referenced features is in the global list already.
+								l_anchor_rout_id_set := resulting_table.feature_of_rout_id (l_like_feature.routine_id).rout_id_set
+								if system.covariant_result_type_index.is_covariantly_redefined_set_in_class (l_anchor_rout_id_set, l_current_class) then
+									l_covariant_argument := True
+								end
 							end
+							l_args.forth
 						end
-						l_args.forth
-					end
-					if l_covariant_argument then
-						system.covariant_argument_index.add_class (l_f_rout_id_set, l_current_class)
+						if l_covariant_argument then
+							system.covariant_argument_index.add_class (l_f_rout_id_set, l_current_class)
+						end
 					end
 				end
 				resulting_table.forth

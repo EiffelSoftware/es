@@ -222,7 +222,7 @@ feature -- Support
 		local
 			l_routine_id: INTEGER
 			l_class_id_list: ARRAYED_LIST [INTEGER]
-			l_class, l_origin_class: CLASS_C
+			l_class: CLASS_C
 			l_feature: FEATURE_I
 			l_feature_name_printed: BOOLEAN
 		do
