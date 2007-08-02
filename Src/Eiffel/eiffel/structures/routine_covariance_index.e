@@ -160,6 +160,48 @@ feature -- Element change
 			-- No guarantees can be made. A descendant can still covariantly redefine the feature
 		end
 
+feature -- Support
+
+	dump_to_io is
+			-- Dump data of structure to standard output.
+		local
+			l_routine_id: INTEGER
+			l_class_id_list: ARRAYED_LIST [INTEGER]
+			l_class, l_origin_class: CLASS_C
+			l_feature: FEATURE_I
+			l_feature_name_printed: BOOLEAN
+		do
+			from
+				data.start
+			until
+				data.after
+			loop
+				l_routine_id := data.key_for_iteration
+				l_class_id_list := data.item_for_iteration
+
+				from
+					l_class_id_list.start
+					l_feature_name_printed := False
+				until
+					l_class_id_list.after
+				loop
+					l_class := system.class_of_id (l_class_id_list.item)
+					if not l_feature_name_printed then
+						l_feature := l_class.feature_of_rout_id (l_routine_id)
+						io.put_string ("Feature: " + l_feature.feature_name + "%N")
+						io.put_string ("Covariantly redefined in classes: ")
+						l_feature_name_printed := True
+					end
+					io.put_string (l_class.name + ", ")
+					l_class_id_list.forth
+				end
+				io.put_string ("%N%N")
+
+				data.forth
+			end
+		end
+
+
 feature {NONE} -- Implementation
 
 	data: HASH_TABLE [ARRAYED_LIST [INTEGER], INTEGER]

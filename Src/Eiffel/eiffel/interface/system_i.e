@@ -5428,6 +5428,12 @@ feature -- Statistics
 			print_line_percentage ("Agents", statistics.conformance_agents, statistics.conformance_total)
 			print_line_percentage ("Tuple", statistics.conformance_tuple, statistics.conformance_total)
 
+			print ("%N")
+
+			print ("%N%NCovariant argument index:%N--------------------------------------------%N%N")
+			covariant_argument_index.dump_to_io
+			print ("%N%NCovariant result type index:%N--------------------------------------------%N%N")
+			covariant_result_type_index.dump_to_io
 		end
 
 	print_line (a_name: STRING; a_count: INTEGER)
