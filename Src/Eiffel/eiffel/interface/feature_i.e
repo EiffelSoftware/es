@@ -1937,16 +1937,17 @@ end
 			if
 				old_type.is_like_current or else
 				new_type.is_like_current or else
--- juliant, 1. Aug 2007
--- I have the feeling this does not work all the time. For example, "monomorph INTEGER" and "INTEGER" should be regarded as the same
--- as INTEGER is expanded and thus monomorph by default, but "same_as" looks at the monomorph keyword.
---				not l_old_conformance_type.same_as (l_new_conformance_type)
--- This is the more expensive check if the types are the same, but it should work in any case
-				not (l_old_conformance_type.conform_to (l_new_conformance_type) and then l_new_conformance_type.conform_to (l_old_conformance_type))
+				not l_old_conformance_type.same_as (l_new_conformance_type)
 			then
-				system.covariant_result_type_index.add_class (rout_id_set, current_class)
+					-- We take the routine id set of the old feature because
+					--  * If the new feature is merged of two other features, they will both be checked
+					--    and we only want to insert the covariant type for the routine ids which really
+					--    have a covariant redefinition.
+				system.covariant_result_type_index.add_class (old_feature.rout_id_set, current_class)
 			else
-				system.covariant_result_type_index.remove_class (rout_id_set, current_class)
+				-- The covariance flag for this class is alrady removed at the beginning of
+				-- {INHERIT_TABLE}.check_validity3
+				--system.covariant_result_type_index.remove_class (rout_id_set, current_class)
 			end
 
 				-- Check the argument count
@@ -2016,12 +2017,7 @@ end
 					if
 						old_type.is_like_current or else
 						new_type.is_like_current or else
--- juliant, 1. Aug 2007
--- I have the feeling this does not work all the time. For example, "monomorph INTEGER" and "INTEGER" should be regarded as the same
--- as INTEGER is expanded and thus monomorph by default, but "same_as" looks at the monomorph keyword.
---						not l_old_conformance_type.same_as (l_new_conformance_type)
--- This is the more expensive check if the types are the same, but it should work in any case
-						not (l_old_conformance_type.conform_to (l_new_conformance_type) and then l_new_conformance_type.conform_to (l_old_conformance_type))
+						not l_old_conformance_type.same_as (l_new_conformance_type)
 					then
 						l_has_covariant_arguments := True
 					end
@@ -2029,11 +2025,17 @@ end
 					i := i + 1
 				end
 
-					-- Mark feature covariance in the current class				
+					-- Mark feature covariant in the current class				
 				if l_has_covariant_arguments then
-					system.covariant_argument_index.add_class (rout_id_set, current_class)
+						-- We take the routine id set of the old feature because
+						--  * If the new feature is merged of two other features, they will both be checked
+						--    and we only want to insert the covariant type for the routine ids which really
+						--    have a covariant redefinition.
+					system.covariant_argument_index.add_class (old_feature.rout_id_set, current_class)
 				else
-					system.covariant_argument_index.remove_class (rout_id_set, current_class)
+					-- The covariance flag for this class is alrady removed at the beginning of
+					-- {INHERIT_TABLE}.check_validity3
+					--system.covariant_argument_index.remove_class (rout_id_set, current_class)
 				end
 
 			end

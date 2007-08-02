@@ -1406,7 +1406,33 @@ end;
 			l_args: FEAT_ARG
 			l_type, l_result_type: TYPE_A
 			l_like_feature: LIKE_FEATURE
+			l_current_class: CLASS_C
+			l_current_class_id: INTEGER
+			l_covariant_argument: BOOLEAN
+			l_anchor_rout_id_set: ROUT_ID_SET
 		do
+			l_current_class := system.current_class
+			l_current_class_id := l_current_class.class_id
+				-- For the covariance flags:
+				-- First, we remove all features of this class from the list. Features
+				-- which covariantly redefine arguments or result types will be inserted
+				-- again after the checking.
+				-- Note: Actually only features which are not in `adaptations' should be
+				--       reset, but it is easier to just reset them all. In the call to
+				--       `check_signature', the code to remove a feature from the list is
+				--       commented out at the moment as it is done here already.
+			from
+				resulting_table.start
+			until
+				resulting_table.after
+			loop
+				l_f_rout_id_set := resulting_table.item_for_iteration.rout_id_set
+				system.covariant_argument_index.remove_class (l_f_rout_id_set, l_current_class)
+				system.covariant_result_type_index.remove_class (l_f_rout_id_set, l_current_class)
+				resulting_table.forth
+			end
+
+				-- Check the adapted features for validity
 			from
 				adaptations.start
 			until
@@ -1415,6 +1441,24 @@ end;
 				adaptations.item.check_adaptation (resulting_table)
 				adaptations.forth
 			end
+
+				-- Check assigners
+			from
+				resulting_table.start
+			until
+				resulting_table.after
+			loop
+				f := resulting_table.item_for_iteration
+
+					-- Check assigner command validity
+				if f.assigner_name_id /= 0 then
+					f.check_assigner (resulting_table)
+				end
+
+				resulting_table.forth
+			end
+
+				-- Check covariant result types
 			from
 				resulting_table.start
 			until
@@ -1422,71 +1466,91 @@ end;
 			loop
 				f := resulting_table.item_for_iteration
 				l_f_rout_id_set := f.rout_id_set
-				if f.assigner_name_id /= 0 then
-					f.check_assigner (resulting_table)
+
+					-- If the feature is new in this class - i.e. the origin - we don't need to check
+					-- for covariant redefinition.
+				if not f.is_origin or else f.written_in /= l_current_class_id then
+					l_result_type := f.type
+						-- Only like types can change covariantly without adapting the feature.
+						-- So all other covariant redefinitions are already checked in `check_adaptation'.
+					if l_result_type /= Void and then l_result_type.is_like then
+						if l_result_type.is_like_feature then
+							l_like_feature ?= l_result_type
+							check l_like_feature /= Void end
+								-- Now we check whether the referenced features result type is covariant.
+								-- If so, we add the current feature to the list of features with covaraint result type.
+								-- TODO: this may  not work for like types which are again like types: x: like y; y: like z; z is covariant
+							l_anchor_rout_id_set := l_current_class.feature_of_rout_id (l_like_feature.routine_id).rout_id_set
+							if system.covariant_result_type_index.is_covariantly_redefined_set_in_class (l_anchor_rout_id_set, l_current_class) then
+								system.covariant_result_type_index.add_class (l_f_rout_id_set, l_current_class)
+							end
+						elseif l_result_type.is_like_current then
+							system.covariant_result_type_index.add_class (l_f_rout_id_set, l_current_class)
+						else
+							check l_result_type.is_like_argument end
+							 	-- Now we need to check whether the referenced argument is covariant or not.
+							 	-- We add the feature if there is at least one argument covariantly redefined.
+							 	-- This is not the exact behaviour but the revenue and expense ratio seems to
+							 	-- be in favour of adding the feature as soon as there is at least one argument
+							 	-- covaraintly redefined.
+							 if system.covariant_argument_index.is_covariantly_redefined (l_f_rout_id_set.first, l_current_class) then
+								system.covariant_result_type_index.add_class (l_f_rout_id_set, l_current_class)
+							 end
+						end
+					end
 				end
+
+				resulting_table.forth
+			end
+
+				-- Check covariant argument types
+			from
+				resulting_table.start
+			until
+				resulting_table.after
+			loop
+				f := resulting_table.item_for_iteration
+				l_f_rout_id_set := f.rout_id_set
+
 					-- Check if argument of feature are formal or covariantly redefined
 					-- If yes, we will insert the feature in the appropriate lists of
 					-- SYSTEM_I
---				l_args := f.arguments
---				if l_args /= Void then
---					from
---						l_args.start
---					until
---						l_args.after
---					loop
---						l_type := l_args.item
---						if l_type.is_like_current then
---							system.set_routine_arguments_covariantly_redefined (l_f_rout_id_set, l_type.associated_class.class_id)
---						elseif l_type.conformance_type.is_formal then
---							system.set_routine_has_formal (l_f_rout_id_set, True)
---						elseif l_type.is_like_feature then
---								-- Check if anchor of like type is covariantly redefined
---								-- We only care about LIKE_FEATURE types:
---								--  * like current is already handled
---								--  * like argument types are handled since the anchor is an argument
---								--    and will be checked for covariant redeclaration
---							l_like_feature ?= l_type
---							check l_like_feature /= Void end
---								-- The like feature is covariantly redefined if the result type of the
---								-- referenced feature is covariantly redefined. Since the redeclarations were
---								-- already checked in the calls to `check_adaptation' at the beginning of this feature,
---								-- we are sure that the referenced features is in the global list already.
---							if system.is_routine_result_type_covariantly_redefined (l_like_feature.routine_id) then
---								system.set_routine_arguments_covariantly_redefined (l_f_rout_id_set, l_like_feature.associated_class.class_id)
---							end
---						end
---						l_args.forth
---					end
---				end
---				if not system.is_routine_result_type_covariantly_redefined (l_f_rout_id_set.first) then
---						-- If the current feature is not yet in the list of features which have the return
---						-- type covariantly redefined check whether this is now necessary.
---					l_result_type := f.type
---					if l_result_type /= Void and then l_result_type.is_like then
---						if l_result_type.is_like_feature then
---							l_like_feature ?= l_result_type
---							check l_like_feature /= Void end
---								-- Now we check whether the referenced features result type is covariant.
---								-- If so, we add the current feature to the list of features with covaraint result type.
---							if system.is_routine_result_type_covariantly_redefined (l_like_feature.routine_id) then
---								system.set_routine_result_type_covariantly_redefined (l_f_rout_id_set, True)
---							end
---						elseif l_result_type.is_like_current then
---							system.set_routine_result_type_covariantly_redefined (l_f_rout_id_set, True)
---						else
---							check l_result_type.is_like_argument end
---							 	-- Now we need to check whether the referenced argument is covariant or not.
---							 	-- We add the feature if there is at least one argument covariantly redefined.
---							 	-- This is not the exact behaviour but the revenue and expense ratio seems to
---							 	-- be in favour of adding the feature as soon as there is at least one argument
---							 	-- covaraintly redefined.
---							 if system.is_routine_arguments_covariantly_redefined (l_f_rout_id_set.first) then
---								system.set_routine_result_type_covariantly_redefined (l_f_rout_id_set, True)
---							 end
---						end
---					end
---				end
+				l_args := f.arguments
+				if l_args /= Void then
+					from
+						l_args.start
+						l_covariant_argument := False
+					until
+						l_args.after
+					loop
+						l_type := l_args.item
+						if l_type.is_like_current then
+							l_covariant_argument := True
+						elseif l_type.conformance_type.is_formal then
+							system.set_routine_has_formal (l_f_rout_id_set, True)
+						elseif l_type.is_like_feature then
+								-- Check if anchor of like type is covariantly redefined
+								-- We only care about LIKE_FEATURE types:
+								--  * like current is already handled
+								--  * like argument types are handled since the anchor is an argument
+								--    and will be checked for covariant redeclaration
+							l_like_feature ?= l_type
+							check l_like_feature /= Void end
+								-- The like feature is covariantly redefined if the result type of the
+								-- referenced feature is covariantly redefined. Since the redeclarations were
+								-- already checked in the calls to `check_adaptation' at the beginning of this feature,
+								-- we are sure that the referenced features is in the global list already.
+							l_anchor_rout_id_set := l_current_class.feature_of_rout_id (l_like_feature.routine_id).rout_id_set
+							if system.covariant_result_type_index.is_covariantly_redefined_set_in_class (l_anchor_rout_id_set, l_current_class) then
+								l_covariant_argument := True
+							end
+						end
+						l_args.forth
+					end
+					if l_covariant_argument then
+						system.covariant_argument_index.add_class (l_f_rout_id_set, l_current_class)
+					end
+				end
 				resulting_table.forth
 			end
 		end

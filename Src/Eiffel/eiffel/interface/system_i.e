@@ -5292,7 +5292,7 @@ feature {NONE} -- External features
 			"time"
 		end
 
-feature -- Covariance / Redefined features table
+feature -- Covariant feature tables
 
 	is_routine_with_formal_arguments (routine_id: INTEGER): BOOLEAN is
 			-- Does routine with routine id `routine_id' have formal arguments?
@@ -5328,6 +5328,11 @@ feature -- Covariance / Redefined features table
 
 	covariant_result_type_index: ROUTINE_COVARIANCE_INDEX
 			-- Index of features which covariantly redefine the result type
+
+feature -- Anchor dependencies
+
+	anchor_dependencies: HASH_TABLE [ARRAYED_LIST [INTEGER], INTEGER]
+			-- List of routine ids which have an anchor to the index routine id
 
 feature {NONE} -- Implememtation
 

@@ -43,9 +43,11 @@ feature -- Status report
 
 	is_covariantly_redefined (a_routine_id: INTEGER; a_class: CLASS_C): BOOLEAN is
 			-- Is the routine with id `a_routine_id' covariantly redefined in any
-			-- descendant of class `a_class'?
+			-- proper descendant of class `a_class'?
 		local
 			l_class_list: ARRAYED_LIST [INTEGER]
+			l_class_id: INTEGER
+			l_possible_descendant_id: INTEGER
 		do
 				-- Check if a class list exists
 			data.search (a_routine_id)
@@ -54,22 +56,75 @@ feature -- Status report
 				l_class_list := data.found_item
 				from
 					l_class_list.start
+					l_class_id := a_class.class_id
 				until
 					l_class_list.after or Result
 				loop
-						-- Check for every class id if the class conforms to the class in question
-						-- If yes,
-					Result := system.class_of_id (l_class_list.item).conform_to (a_class)
+					l_possible_descendant_id := l_class_list.item
+						-- Descendants need to have a bigger class id.
+						-- We exclude the same class because we are only interested
+						-- in proper descendants
+					if l_possible_descendant_id > l_class_id then
+							-- Check if the class conforms to the class in question
+						Result := system.class_of_id (l_possible_descendant_id).conform_to (a_class)
+					end
 					l_class_list.forth
 				end
 			end
 		end
 
+--	is_covariantly_redefined_set (a_routine_id_set: ROUT_ID_SET; a_class: CLASS_C): BOOLEAN is
+--			-- Is any of the routines in the routine id set `a_routine_id_set' covariantly redefined
+--			-- in any proper descendant of class `a_class'?
+--		local
+--			i, l_count: INTEGER
+--		do
+--			from
+--				i := 1
+--				l_count := a_routine_id_set.count
+--			until
+--				i > l_count or Result
+--			loop
+--				Result := is_covariantly_redefined (a_routine_id_set.item (i), a_class)
+--				i := i + 1
+--			end
+--		end
+
 	is_covariantly_redefined_by_class_id (a_routine_id, a_class_id: INTEGER): BOOLEAN is
 			-- Is the routine with id `a_routine_id' covariantly redefined in any
-			-- descendant of class with `a_class_id'?
+			-- proper descendant of class with `a_class_id'?
 		do
 			Result := is_covariantly_redefined (a_routine_id, system.class_of_id (a_class_id))
+		end
+
+	is_covariantly_redefined_in_class (a_routine_id: INTEGER; a_class: CLASS_C): BOOLEAN is
+			-- Is the routine with id `a_routine_id' covariantly redefined in exactly class `a_class'?
+		require
+			a_class_not_void: a_class /= Void
+		do
+				-- Check if a class list exists
+			data.search (a_routine_id)
+			if data.found then
+					-- Check if class id is in list. Then this class covariantly redfines the feature.
+				Result := data.found_item.has (a_class.class_id)
+			end
+		end
+
+	is_covariantly_redefined_set_in_class (a_routine_id_set: ROUT_ID_SET; a_class: CLASS_C): BOOLEAN is
+			-- Is any of the routines in the routine id set `a_routine_id_set' covariantly redefined
+			-- in any proper descendant of class `a_class'?
+		local
+			i, l_count: INTEGER
+		do
+			from
+				i := 1
+				l_count := a_routine_id_set.count
+			until
+				i > l_count or Result
+			loop
+				Result := is_covariantly_redefined_in_class (a_routine_id_set.item (i), a_class)
+				i := i + 1
+			end
 		end
 
 feature -- Element change
@@ -204,7 +259,7 @@ feature -- Support
 
 feature {NONE} -- Implementation
 
-	data: HASH_TABLE [ARRAYED_LIST [INTEGER], INTEGER]
+	frozen data: HASH_TABLE [ARRAYED_LIST [INTEGER], INTEGER]
 			-- Data storage:
 			--  The hashtable holds a list of class ids indexed by routine ids
 

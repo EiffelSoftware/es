@@ -104,7 +104,7 @@ feature -- Properties
 	is_monomorph: BOOLEAN is
 			-- Is the current type monomorph?
 		do
-			Result := has_monomorph_mark or is_expanded or associated_class.is_frozen
+			Result := has_monomorph_mark or else is_expanded or else associated_class.is_frozen
 		end
 
 	is_valid: BOOLEAN is
