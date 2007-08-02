@@ -1141,6 +1141,7 @@ feature -- Implementation
 			l_tuple_access_b: TUPLE_ACCESS_B
 			l_vtmc1: VTMC1
 			l_gen_type: GEN_TYPE_A
+			l_cat_call_warning: CAT_CALL_WARNING
 		do
 				-- Reset
 			if a_feature = Void then
@@ -1477,6 +1478,17 @@ feature -- Implementation
 								end
 							end
 
+								-- `like Current' check: First, check if argument is a `like Current' somwhere in the chain of likes.
+							if l_formal_arg_type.actual_type.is_like_current then
+									-- The call is only allowed in one case:
+									-- * It is called on a monomorphic type
+									--	Note: This includes `Current' and therefore `like Current' also
+									--        formals marked as frozen are ok
+									if not l_formal_arg_type.conformance_type.is_monomorph then
+										insert_vuar3_error (l_feature, l_parameters, l_last_id, i, l_arg_type,
+										l_formal)
+									end
+							end
 								-- Conformance: take care of constrained genericity
 								-- We must generate an error when `l_formal_arg_type' becomes
 								-- an OPEN_TYPE_A, for example "~equal (?, b)" will
@@ -1710,41 +1722,36 @@ feature -- Implementation
 
 						-- Check if cat-call detection is enabled for current context class
 					if context.current_class.is_cat_call_detection then
-							-- For optimization, the catcall check is only done in the following cases:
-							--  * The feature is marked as covariant:
+							-- An error is added if all of the following conditions apply:
+							--  * Qualified call:
+							--      Unqualified calls don't need to be checked as their target, `Current', is monomorph
+							--  * The feature is marked as manualy covariant (not "generic" or "like Current" covariance
+							--    this has been handled before):
 							--      features which are not marked covariant don't need to be checked
 							--  * `l_last_type' is not monomorph or formal:
 							--      Calls on monomorph types don't need to be checked. Formals are an exception as they
 							--      can be derived with any type which fits their constraint, so even monomorph formals
 							--      need to be checked
-							--  * Qualified call:
-							--      Unqualified calls don't need to be checked as their target, `Current', is monomorph
 							--  * Not inline agent, static calls or frozen calls:
 							--      There are no descendant features which could overwrite the arguments covariantly
 							--      Note: The static and inline agent check is probably not necessary, as these features
-							--            are not marked as covariant anyway. Frozen features can be covariant if they
-							--            have a precursor.
+							--            are not marked as covariant anyway. This is also true for frozen features:
+							--		      They can never be redefined covariantly.
 						if
-							system.covariant_argument_index.is_covariantly_redefined (l_feature.rout_id_set.first, l_last_constrained.associated_class) and then
 							is_qualified and then
-							(not l_last_type.is_monomorph or l_last_type.is_formal) and then
-							(not l_feature.is_inline_agent and not is_static and not l_feature.is_frozen)
+							system.covariant_argument_index.is_covariantly_redefined (l_feature.rout_id_set.first, l_last_constrained.associated_class) and then
+							(not l_last_type.is_monomorph or else l_last_type.is_formal)
 						then
-								-- Cat call detection is done for this call: Test if this feature call is valid
-								-- with all descendants of the target type.
-
-								-- If conversion took place, they are stored in l_conformance_arg_types.
-								-- If it is void, no conversion took place, so we can use the original argument types
-							if l_conformance_arg_types = Void then
-								l_conformance_arg_types := l_arg_types
+							check
+								not_a_call_to_a_inline_agent: not l_feature.is_inline_agent
+								not_a_static_call: not is_static
+								not_a_frozen_feature: not l_feature.is_frozen
 							end
 
-								-- TODO: also pass `l_last_type' if it is a formal
-							check not l_last_constrained.is_formal end
---							check_cat_call (l_last_constrained.conformance_type, l_feature, l_conformance_arg_types, l_feature_name, l_last_id)
-
-								-- Statistics
-							system.statistics.feature_check_done := system.statistics.feature_check_done + 1
+								-- Report an error
+							create l_cat_call_warning.make (context.current_class, context.current_feature, l_feature_name)
+							l_cat_call_warning.set_called_feature (l_feature)
+							error_handler.insert_warning (l_cat_call_warning)
 						end
 							-- Statistics
 						system.statistics.feature_calls := system.statistics.feature_calls + 1

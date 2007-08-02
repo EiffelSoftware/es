@@ -303,9 +303,25 @@ feature -- Properties
 		end
 
 	is_like_current: BOOLEAN is
-			-- Is the current type a anchored type an Current ?
+			-- Is the current type a anchored type on Current ?
 		do
 			-- Do nothing
+		end
+
+	is_referencing_current: BOOLEAN is
+			-- Is this type anchored in someway to `Current'?
+		local
+			l_type, l_old_type: TYPE_A
+		do
+			from
+				l_type := Current
+			until
+				l_old_type = l_type
+			loop
+				l_old_type := l_type
+				l_type := l_type.actual_type
+			end
+			Result := l_type.is_like_current
 		end
 
 	is_monomorph: BOOLEAN is
