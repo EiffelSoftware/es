@@ -1480,7 +1480,7 @@ end;
 								-- Now we check whether the referenced features result type is covariant.
 								-- If so, we add the current feature to the list of features with covaraint result type.
 								-- TODO: this may  not work for like types which are again like types: x: like y; y: like z; z is covariant
-							l_anchor_rout_id_set := l_current_class.feature_of_rout_id (l_like_feature.routine_id).rout_id_set
+							l_anchor_rout_id_set := resulting_table.feature_of_rout_id (l_like_feature.routine_id).rout_id_set
 							if system.covariant_result_type_index.is_covariantly_redefined_set_in_class (l_anchor_rout_id_set, l_current_class) then
 								system.covariant_result_type_index.add_class (l_f_rout_id_set, l_current_class)
 							end
@@ -1540,7 +1540,7 @@ end;
 								-- referenced feature is covariantly redefined. Since the redeclarations were
 								-- already checked in the calls to `check_adaptation' at the beginning of this feature,
 								-- we are sure that the referenced features is in the global list already.
-							l_anchor_rout_id_set := l_current_class.feature_of_rout_id (l_like_feature.routine_id).rout_id_set
+							l_anchor_rout_id_set := resulting_table.feature_of_rout_id (l_like_feature.routine_id).rout_id_set
 							if system.covariant_result_type_index.is_covariantly_redefined_set_in_class (l_anchor_rout_id_set, l_current_class) then
 								l_covariant_argument := True
 							end

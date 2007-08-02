@@ -137,7 +137,7 @@ feature -- Element change
 		do
 			add_class_id (a_routine_id_set, a_class.class_id)
 		ensure
-			added: is_covariantly_redefined (a_routine_id_set.first, a_class)
+			added: is_covariantly_redefined_in_class (a_routine_id_set.first, a_class)
 		end
 
 	add_class_id (a_routine_id_set: ROUT_ID_SET; a_class_id: INTEGER) is
@@ -169,7 +169,7 @@ feature -- Element change
 				i := i + 1
 			end
 		ensure
-			added: is_covariantly_redefined_by_class_id (a_routine_id_set.first, a_class_id)
+			added: is_covariantly_redefined_in_class (a_routine_id_set.first, system.class_of_id (a_class_id))
 		end
 
 	remove_class (a_routine_id_set: ROUT_ID_SET; a_class: CLASS_C) is
