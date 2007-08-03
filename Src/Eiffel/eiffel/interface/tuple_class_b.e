@@ -51,7 +51,8 @@ feature -- Actual class type
 				until
 					i > count
 				loop
-					create formal.make (False, False, 1)
+					-- TODO: is polymorph ok? (3rd False)
+					create formal.make (False, False, False, 1)
 					actual_generic.put (formal, i)
 					i := i + 1
 				end

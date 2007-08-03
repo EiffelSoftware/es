@@ -33,6 +33,7 @@ inherit
 			is_generated_as_single_type,
 			is_reference,
 			is_separate,
+			is_monomorph,
 			is_consistent,
 			make_gen_type_byte_code,
 			same_as,

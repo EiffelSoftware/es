@@ -1478,13 +1478,13 @@ feature -- Implementation
 							end
 
 								-- `like Current' check: First, check if argument is a `like Current' somwhere in the chain of likes.
-							if l_unadapted_formal_arg_type.actual_type.is_like_current then
+							if l_unadapted_formal_arg_type.is_referencing_current then
 									-- The call is only allowed in one case:
 									-- * It is called on a monomorphic type
 									--	Note: This includes `Current' and therefore `like Current' also
 									--        formals marked as frozen are ok
 
-									if not l_last_constrained.conformance_type.is_monomorph and then not l_last_constrained.actual_type.is_like_current then
+									if not l_last_constrained.conformance_type.is_monomorph and then not l_last_constrained.is_referencing_current then
 										insert_vuar4_error (l_feature, l_parameters, l_last_id, i, l_last_constrained, l_arg_type, l_formal_arg_type)
 									end
 							end

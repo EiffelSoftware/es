@@ -1880,7 +1880,7 @@ feature -- Actual class type
 				loop
 					l_formal_dec ?= generics.i_th (i)
 					check l_formal_dec_not_void: l_formal_dec /= Void end
-					create formal.make (l_formal_dec.is_reference, l_formal_dec.is_expanded, i)
+					create formal.make (l_formal_dec.is_reference, l_formal_dec.is_expanded, l_formal_dec.is_monomorph, i)
 					actual_generic.put (formal, i)
 					i := i + 1
 				end
@@ -3664,7 +3664,7 @@ feature -- Genericity
 					if not l_inherited_formals.has (i) then
 						l_formal_dec := generics.i_th (i)
 						create l_formal_type.make (l_formal_dec.is_reference,
-							l_formal_dec.is_expanded, i)
+							l_formal_dec.is_expanded, l_formal_dec.is_monomorph, i)
 
 						create l_formal
 						l_formal.set_feature_name ("_" + name + "_Formal#" + i.out)

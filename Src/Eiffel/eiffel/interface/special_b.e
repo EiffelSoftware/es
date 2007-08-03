@@ -251,7 +251,8 @@ feature {NONE} -- Implementation
 			args.put_i_th (Integer_type, 1)
 			create Result
 			Result.set_arguments (args)
-			create f.make (False, False, 1)
+				-- TODO: is polymorph ok? (3rd False)
+			create f.make (False, False, False, 1)
 			Result.set_type (f, 0)
 			Result.set_feature_name_id (Names_heap.item_name_id, 0)
 		ensure
@@ -264,7 +265,7 @@ feature {NONE} -- Implementation
 			args: FEAT_ARG
 			f: FORMAL_A
 		do
-			create f.make (False, False, 1)
+			create f.make (False, False, False, 1)
 			create args.make (2)
 			args.put_i_th (f, 1)
 			args.put_i_th (Integer_type, 2)

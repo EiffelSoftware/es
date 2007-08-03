@@ -133,7 +133,7 @@ feature -- Status report
 	type_a: FORMAL_A is
 			-- Associated FORMAL_A object.
 		do
-			create Result.make (is_reference, is_expanded, position)
+			create Result.make (is_reference, is_expanded, is_monomorph, position)
 		end
 
 feature -- Comparison

@@ -102,7 +102,8 @@ feature {NONE}
 			f: FORMAL_A
 			gen: ARRAY [TYPE_A]
 		do
-			create f.make (False, False, 1)
+				-- TODO: is polymorph ok? (3rd False)
+			create f.make (False, False, False, 1)
 			create gen.make (1, 1)
 			gen.put (f, 1)
 			create Result.make (System.special_id, gen)

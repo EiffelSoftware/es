@@ -1667,7 +1667,7 @@ feature {NONE}-- Implementation
 					if a_str.is_equal (l_gens.item.name.name) then
 						end_loop := True
 						l_des_as := l_gens.item
-						create {FORMAL_A}Result.make (l_des_as.is_reference, l_des_as.is_expanded, l_des_as.position)
+						create {FORMAL_A} Result.make (l_des_as.is_reference, l_des_as.is_expanded, l_des_as.is_monomorph, l_des_as.position)
 					end
 					l_gens.forth
 				end

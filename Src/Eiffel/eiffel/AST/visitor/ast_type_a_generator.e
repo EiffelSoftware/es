@@ -116,7 +116,7 @@ feature {NONE} -- Visitor implementation
 
 	process_formal_as (l_as: FORMAL_AS) is
 		do
-			create {FORMAL_A} last_type.make (l_as.is_reference, l_as.is_expanded, l_as.position)
+			create {FORMAL_A} last_type.make (l_as.is_reference, l_as.is_expanded, l_as.is_monomorph, l_as.position)
 		end
 
 	process_class_type_as (l_as: CLASS_TYPE_AS) is

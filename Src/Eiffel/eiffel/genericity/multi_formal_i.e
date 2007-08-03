@@ -20,7 +20,7 @@ inherit
 			complete_instantiation_in,
 			generated_id, is_explicit, generate_gen_type_il,
 			generate_cid, generate_cid_array, generate_cid_init,
-			make_gen_type_byte_code, is_reference, is_expanded, is_standalone
+			make_gen_type_byte_code, is_reference, is_expanded, is_standalone, is_monomorph
 		end
 
 	SHARED_BYTE_CONTEXT
@@ -33,17 +33,19 @@ create
 
 feature {NONE} -- Initialization
 
-	make (is_ref: like is_reference; is_exp: like is_expanded; i: like position; a_constraint_position: like constraint_position) is
+	make (is_ref: like is_reference; is_exp: like is_expanded; is_mono: like is_monomorph; i: like position; a_constraint_position: like constraint_position) is
 			-- Assign `i' to `position'.
 		require
 			valid_position: i > 0
 		do
 			is_expanded := is_exp
+			is_monomorph := is_mono
 			position := i
 			constraint_position := a_constraint_position
 		ensure
 			constraint_position_set: a_constraint_position = constraint_position
 			is_expanded_set: is_expanded = is_exp
+			is_monomorph_set: is_monomorph = is_mono
 			position_set: position = i
 		end
 
@@ -111,6 +113,9 @@ feature -- Status report
 	is_multi_constrained: BOOLEAN is True
 			-- Is the type a formal type ?
 
+	is_monomorph: BOOLEAN
+			-- Is the type monomorph?
+
 	is_explicit: BOOLEAN is False
 
 	is_standalone: BOOLEAN is False
@@ -148,7 +153,7 @@ feature -- Status report
 	type_a: FORMAL_A is
 			-- Associated FORMAL_A object.
 		do
-			create Result.make (is_reference, is_expanded, position)
+			create Result.make (is_reference, is_expanded, is_monomorph, position)
 		end
 
 feature -- Comparison

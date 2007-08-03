@@ -32,16 +32,18 @@ create
 
 feature {NONE} -- Initialization
 
-	make (is_ref: like is_reference; is_exp: like is_expanded; i: like position) is
+	make (is_ref: like is_reference; is_exp: like is_expanded; is_mono: like is_monomorph; i: like position) is
 			-- Initialize new instance of FORMAL_A which is garanteed to
 			-- be instantiated as a reference type if `is_ref'.
 		do
 			is_reference := is_ref
 			is_expanded := is_exp
+			is_monomorph := is_mono
 			position := i
 		ensure
 			is_reference_set: is_reference = is_ref
 			is_expanded_set: is_expanded = is_exp
+			is_monomoprh_set: is_monomorph = is_mono
 			position_set: position = i
 		end
 
@@ -81,14 +83,16 @@ feature -- Property
 	is_expanded: BOOLEAN
 			-- Is current constrained to be always an expanded?
 
-	is_monomorph: BOOLEAN
-			-- Is curren type a monomorph?
-
 	hash_code: INTEGER is
 			--
 		do
 			Result := position
 		end
+
+	is_monomorph: BOOLEAN
+			-- Is current formal marked as monomorph?
+			--| This is the mark in the class header: class A [frozen G -> CONSTRAINT]
+			--| It means that all occurrences of G are monomorph by default.
 
 	is_single_constraint_without_renaming (a_context_class: CLASS_C): BOOLEAN
 			-- Is current type a formal type which is single constrained and the constraint has not a feature renaming?			

@@ -1068,7 +1068,7 @@ feature -- Access
 				reference_i ?= Result
 				if reference_i /= Void then
 					if formal.type_a.is_multi_constrained (context_type.type.base_class) then
-						create {MULTI_FORMAL_I} Result.make (formal.is_reference, formal.is_expanded, formal.position, -1)
+						create {MULTI_FORMAL_I} Result.make (formal.is_reference, formal.is_expanded, formal.is_monomorph, formal.position, -1)
 					else
 						Result := context_type_i.base_class.constrained_type (formal_position).type_i
 					end
@@ -1116,7 +1116,7 @@ feature -- Access
 					if l_type_set.has_expanded then
 						Result := l_type_set.expanded_representative.type_i
 					else
-						create {MULTI_FORMAL_I} Result.make (type.is_reference, l_type_set.has_expanded, l_formal.position, -1)
+						create {MULTI_FORMAL_I} Result.make (type.is_reference, l_type_set.has_expanded, l_formal.is_monomorph, l_formal.position, -1)
 					end
 			else
 				Result := constrained_type_in (type, context_type).instantiation_in (context_type)

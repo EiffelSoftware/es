@@ -39,7 +39,8 @@ feature -- Access
 			l_formal: FORMAL_A
 		do
 			if is_typed_pointer then
-				create l_formal.make (False, False, 1)
+					-- TODO: is polymorph ok? (3rd False)
+				create l_formal.make (False, False, False, 1)
 				create {TYPED_POINTER_A} Result.make_typed (l_formal)
 			else
 				Result := Pointer_type

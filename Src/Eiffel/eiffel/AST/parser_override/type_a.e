@@ -308,22 +308,13 @@ feature -- Properties
 			-- Do nothing
 		end
 
-	is_referencing_current: BOOLEAN is
+	frozen is_referencing_current: BOOLEAN is
 			-- Is this type anchored in someway to `Current'?
+			--| This is mainly a helper function to increase code readability.
 		local
 			l_type, l_old_type: TYPE_A
 		do
-			from
-				l_type := Current
-			until
-				l_old_type = l_type
-			loop
-				l_old_type := l_type
-				l_type := l_type.actual_type
-			end
-			Result := l_type.is_like_current
-				-- TODO: change implementation to this if it is the same
-			check Result = actual_type.is_like_current end
+			Result := actual_type.is_like_current
 		end
 
 	is_monomorph: BOOLEAN is

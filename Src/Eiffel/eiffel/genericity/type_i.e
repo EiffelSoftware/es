@@ -372,6 +372,13 @@ feature -- Status report
 			-- Do nothing
 		end
 
+	is_monomorph: BOOLEAN
+			-- Is the current type monomorph?
+			--| This enables static binding.
+		do
+			-- Result := False
+		end
+
 feature -- Formatting
 
 	dump (buffer: GENERATION_BUFFER) is

@@ -443,7 +443,7 @@ feature -- Inlining
 					loop
 						l_formal_dec ?= written_class.generics.i_th (1)
 						check l_formal_dec_not_void: l_formal_dec /= Void end
-						create formal_a.make (l_formal_dec.is_reference, l_formal_dec.is_expanded, i)
+						create formal_a.make (l_formal_dec.is_reference, l_formal_dec.is_expanded, l_formal_dec.is_monomorph, i)
 						actual_type := formal_a.instantiation_in (real_target_type, written_class.class_id)
 
 						if actual_type.is_expanded then

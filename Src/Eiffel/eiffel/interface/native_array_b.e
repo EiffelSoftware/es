@@ -146,7 +146,7 @@ feature -- Actual class type
 					i > nb
 				loop
 					l_formal_dec := generics.i_th (i)
-					create formal.make (l_formal_dec.is_reference, l_formal_dec.is_expanded, i)
+					create formal.make (l_formal_dec.is_reference, l_formal_dec.is_expanded, l_formal_dec.is_monomorph, i)
 					actual_generic.put (formal, i)
 					i := i + 1
 				end
@@ -225,7 +225,8 @@ feature {NONE}
 			args.put_i_th (Integer_type, 1)
 			create Result
 			Result.set_arguments (args)
-			create f.make (False, False, 1)
+				-- TODO: is polymorph ok?
+			create f.make (False, False, False, 1)
 			Result.set_type (f, 0)
 			Result.set_feature_name_id ({PREDEFINED_NAMES}.item_name_id, 0)
 		ensure
@@ -242,7 +243,8 @@ feature {NONE}
 			args.put_i_th (Integer_type, 1)
 			create Result
 			Result.set_arguments (args)
-			create f.make (False, False, 1)
+				-- TODO: is polymorph ok? (3rd False)
+			create f.make (False, False, False, 1)
 			Result.set_type (f, 0)
 			Result.set_feature_name_id ({PREDEFINED_NAMES}.infix_at_name_id, 0)
 		ensure
@@ -255,7 +257,8 @@ feature {NONE}
 			args: FEAT_ARG
 			f: FORMAL_A
 		do
-			create f.make (False, False, 1)
+				-- TODO: should it be monomorph or not?
+			create f.make (False, False, False, 1)
 			create args.make (2)
 			args.put_i_th (Integer_type, 1)
 			args.put_i_th (f, 2)
