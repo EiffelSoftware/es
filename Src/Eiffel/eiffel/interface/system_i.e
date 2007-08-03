@@ -5325,14 +5325,13 @@ feature -- Covariant feature tables
 
 	covariant_argument_index: ROUTINE_COVARIANCE_INDEX
 			-- Index of features which covariantly redefine the arguments
+			--| Important: feature arguments which are "like Current" are NOT counted!
+			--| They are covariant anyway and are not saved in this datastructure
 
 	covariant_result_type_index: ROUTINE_COVARIANCE_INDEX
 			-- Index of features which covariantly redefine the result type
-
-feature -- Anchor dependencies
-
-	anchor_dependencies: HASH_TABLE [ARRAYED_LIST [INTEGER], INTEGER]
-			-- List of routine ids which have an anchor to the index routine id
+			--| Important: result types which are "like Current" are NOT counted
+			--| They are covariant anyway and are not saved in this datastructure
 
 feature {NONE} -- Implememtation
 

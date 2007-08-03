@@ -1847,6 +1847,8 @@ end
 		local
 			old_type, new_type: TYPE_A
 			l_old_conformance_type, l_new_conformance_type: TYPE_A
+			l_like_argument: LIKE_ARGUMENT
+			l_like_argument_position: INTEGER
 			i, arg_count: INTEGER
 			old_arguments: like arguments
 			l_has_covariant_arguments: BOOLEAN
@@ -1934,20 +1936,29 @@ end
 			l_new_conformance_type := new_type.conformance_type
 
 				-- Check if it is a covariant redeclaration
+				-- We don't count if both are "like Current" as it is known to be covariant anyway.
 			if
-				old_type.is_like_current or else
-				new_type.is_like_current or else
-				not l_old_conformance_type.same_as (l_new_conformance_type)
+				(old_type.is_referencing_current and then new_type.is_referencing_current) or else
+				l_old_conformance_type.same_as (l_new_conformance_type)
 			then
+				if new_type.is_like_argument then
+						-- The result type is a like argument. We safe the position here and check
+						-- later on if this argument is covariant. If yes, we set the result type
+						-- covariant later on.
+					l_like_argument ?= new_type
+					l_like_argument_position := l_like_argument.position
+				else
+						-- No covariance. Remove the flag from the system
+					-- The covariance flag for this class is alrady removed at the beginning of
+					-- {INHERIT_TABLE}.check_validity3
+					--system.covariant_result_type_index.remove_class (old_feature.rout_id_set, current_class)
+				end
+			else
 					-- We take the routine id set of the old feature because
 					--  * If the new feature is merged of two other features, they will both be checked
 					--    and we only want to insert the covariant type for the routine ids which really
 					--    have a covariant redefinition.
 				system.covariant_result_type_index.add_class (old_feature.rout_id_set, current_class)
-			else
-				-- The covariance flag for this class is alrady removed at the beginning of
-				-- {INHERIT_TABLE}.check_validity3
-				--system.covariant_result_type_index.remove_class (rout_id_set, current_class)
 			end
 
 				-- Check the argument count
@@ -2014,12 +2025,26 @@ end
 					end
 
 						-- Check if it is a covariant redeclaration
+						-- We don't count if both are "like Current" as it is known to be covariant anyway.
 					if
-						old_type.is_like_current or else
-						new_type.is_like_current or else
-						not l_old_conformance_type.same_as (l_new_conformance_type)
+						(old_type.is_referencing_current and then new_type.is_referencing_current) or else
+						l_old_conformance_type.same_as (l_new_conformance_type)
 					then
+							-- They are the same or both "like Current"
+					else
+							-- Types are covariant
 						l_has_covariant_arguments := True
+							-- Check if this is the position of the `like argument' result type
+						if i = l_like_argument_position then
+								-- The result type points to a covariant argument. Set the result type
+								-- covariant
+
+								-- We take the routine id set of the old feature because
+								--  * If the new feature is merged of two other features, they will both be checked
+								--    and we only want to insert the covariant type for the routine ids which really
+								--    have a covariant redefinition.
+							system.covariant_result_type_index.add_class (old_feature.rout_id_set, current_class)
+						end
 					end
 
 					i := i + 1
@@ -2033,6 +2058,7 @@ end
 						--    have a covariant redefinition.
 					system.covariant_argument_index.add_class (old_feature.rout_id_set, current_class)
 				else
+						-- No covariance. Remove the flag from the system
 					-- The covariance flag for this class is alrady removed at the beginning of
 					-- {INHERIT_TABLE}.check_validity3
 					--system.covariant_argument_index.remove_class (rout_id_set, current_class)

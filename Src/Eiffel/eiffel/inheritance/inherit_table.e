@@ -1484,18 +1484,12 @@ end;
 							if system.covariant_result_type_index.is_covariantly_redefined_set_in_class (l_anchor_rout_id_set, l_current_class) then
 								system.covariant_result_type_index.add_class (l_f_rout_id_set, l_current_class)
 							end
-						elseif l_result_type.is_like_current then
-							system.covariant_result_type_index.add_class (l_f_rout_id_set, l_current_class)
 						else
-							check l_result_type.is_like_argument end
-							 	-- Now we need to check whether the referenced argument is covariant or not.
-							 	-- We add the feature if there is at least one argument covariantly redefined.
-							 	-- This is not the exact behaviour but the revenue and expense ratio seems to
-							 	-- be in favour of adding the feature as soon as there is at least one argument
-							 	-- covaraintly redefined.
-							 if system.covariant_argument_index.is_covariantly_redefined (l_f_rout_id_set.first, l_current_class) then
-								system.covariant_result_type_index.add_class (l_f_rout_id_set, l_current_class)
-							 end
+							-- It's a `like Current' or `like argument' type.
+							-- In both cases, we don't need to do anything:
+							--  * `like Current' is not stored in the datastructure as it is covariant anyway
+							--  * `like argument' is already handled in the {FEATURE_I}.`check_signature' for
+							--    all adaptations, and it can only change if it is an adaptation.
 						end
 					end
 				end
@@ -1529,9 +1523,10 @@ end;
 							l_args.after
 						loop
 							l_type := l_args.item
-							if l_type.is_like_current then
-								l_covariant_argument := True
+							if l_type.is_referencing_current then
+									-- `like Current' is not saved in the datastructure as it is covariant anyway
 							elseif l_type.conformance_type.is_formal then
+									-- Just for statistics...
 								system.set_routine_has_formal (l_f_rout_id_set, True)
 							elseif l_type.is_like_feature then
 									-- Check if anchor of like type is covariantly redefined

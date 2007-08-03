@@ -322,6 +322,8 @@ feature -- Properties
 				l_type := l_type.actual_type
 			end
 			Result := l_type.is_like_current
+				-- TODO: change implementation to this if it is the same
+			check Result = actual_type.is_like_current end
 		end
 
 	is_monomorph: BOOLEAN is
