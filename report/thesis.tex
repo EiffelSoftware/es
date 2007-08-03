@@ -1,0 +1,168 @@
+\documentclass[a4paper,10pt]{article}
+
+%picture imports
+\usepackage{graphicx}
+\usepackage{color}
+\definecolor{lbcolor}{rgb}{0.85,0.85,0.85}
+
+%sourcecode formatting
+\usepackage[final]{listings}
+\lstloadlanguages{Eiffel}
+\lstset{language=Eiffel,tabsize=2,backgroundcolor=\color{lbcolor},frame=tb,breaklines=true,morekeywords={use,modify,confined}}
+
+\begin{document}
+
+%opening
+\title{Capture and Replay for Eiffel}
+\author{Stefan Sieber}
+
+\begin{titlepage}
+	\begin{flushleft}
+		\includegraphics[width=100pt]{illustrations/SE.png}
+	\end{flushleft}
+
+	\vskip 50pt
+	\begin{center}
+		\Huge \textbf{Capture and Replay for Eiffel}
+	\end{center}
+
+	\vskip 100pt
+	\begin{flushright}
+		\large \textbf{Stefan Sieber}\\
+		\vskip 10pt
+		02-911-790\\
+		Master Thesis\\
+		Summer 2007\\
+	\end{flushright}
+	
+	\vskip 20pt
+	\begin{flushright}
+		\large Chair of Software Engineering\\
+		Department of Computer Science\\
+		ETH Z\"{u}rich
+	\end{flushright}
+		
+	\vskip 20pt
+	\begin{flushright}
+		\large Andreas Leitner\\
+		Prof. Bertrand Meyer
+	\end{flushright}
+
+	\vskip 50pt
+	\begin{tabular*}{1.00\textwidth}{@{\extracolsep{\fill}}lr}
+		 \includegraphics[width=100pt]{illustrations/ETH.png} &
+		 \includegraphics[width=100pt]{illustrations/INF.png}
+	\end{tabular*}
+	\vfil
+\end{titlepage}
+
+\newpage
+\begin{abstract}
+%Should the motivation include a reference to cdd?
+Debugging applications is very tedious work. One of the hardest steps to find a fault in a program is to reproduce the steps that lead to the associated program failure. Capture and Replay \cite{orso05may} makes it possible to replay the same program run again on a predefined set of classes, thus reproducing those steps automatically. The goal of this thesis is to implement this mechanism for Eiffel. During this process, the conceptual differences between the original implementation for Java and the implementation for Eiffel will be described. After examining the implementation design closer, the experimental results of will be presented.
+
+%CDD [reference!] facilitates this step by providing the developer a testcase that results in the same failure. 
+%motivation
+%capture/replay
+%scope
+%-modifications
+%-implementation
+%-experimental results
+\end{abstract}
+
+\newpage
+
+\section{Introduction}
+
+\section{Capture and Replay}
+\subsection{overview}
+\subsection{limitations}
+
+%Überblick über das Paper
+%Limitations (polymorphism / dynamic binding) --> oder doch nicht? she. Annahme über observed set.
+%Benefit for cdd
+
+
+\section{Capture and Replay for Eiffel}
+\subsection{Relevant Differences between Eiffel and Java}
+\subsection{Differences in the Requirements}
+\subsection{Idea for Code Instrumentation}
+
+% Unterschiedliche Language features Eiffel/Java
+% Unterschiede der Anforderungen
+% -keine dynamische Kompilierung
+%  capture/replay ohne neukompilierung (cdd)
+
+
+\section{Implementation}
+\subsection{Architecture}
+\subsection{Code Instrumentation}
+\subsubsection{Procedures}
+\subsubsection{Direct Manipulation from C Level}
+\subsubsection{Field Accesses}
+\subsection{Advantages over Traditional Capture and Replay}
+\subsection{Limitations}
+\subsection{Future Steps}
+%Design des Management Codes
+% Idee der Instrumentierung & Beispiel
+% Vorteile gegenüber der Original Implementierung
+% Limitations
+% Experimental Results
+
+\section{Experimental Results}
+\subsection{Example Application}
+\subsection{Results}
+\subsection{Conclusion}
+%Eiffel Vision Beispiel, mit unterschiedlichen observed sets
+
+
+
+\section{Prototype}
+
+\subsection{TEXT SERIALIZER}
+
+\subsubsection{file format}
+log ::= event* \\
+event ::= call $\mid$ return $\mid$ outread\\
+call ::= calltype entity methodname entity* \texttt{“\%N”} \\
+return ::= returntype [entity]  \texttt{“\%N”}\\
+outread ::= \texttt{OUTREAD} entity attribute\_name entity
+calltype ::= \texttt{INCALL} $\mid$ \texttt{OUTCALL} \\
+returntype ::= \texttt{INCALLRET} $\mid$ \texttt{OUTCALLRET} \\
+methodname ::= identifier \\
+attribute\_name ::= identifier \\
+entity ::= (object $\mid$ value) \\
+size ::= integer \\
+object ::= \texttt{[NON$\_$BASIC} typename object\_id \texttt{]} \\
+value ::= \texttt{[BASIC} typename \texttt{"} string \texttt{"]} \\
+typename ::= identifier \\
+object\_id ::= integer\\
+identifier ::= [A-Za-z]character*\\
+string ::= character*\\
+
+\subsection{capture-phase performance measurements}
+\begin{itemize}
+	\item normal application: 2.5s
+	\item Captured application: 30s
+	\begin{itemize}
+		\item RECORDER: 1.7s\\
+		\item SERIALIZER: 26s
+		\begin{itemize}
+			\item write$\_$statements: 16s
+			\begin{itemize}
+				\item file.put$\_$string: 4s
+				\item object$\_$id: 7s
+				\item other: 5s
+			\end{itemize}
+			\item is$\_$basic$\_$type: 3s
+			\item other: 7s
+		\end{itemize}
+	\end{itemize}
+\end{itemize}
+
+\bibliographystyle{plainyr} 
+\bibliography{thesis}
+
+\end{document}
+
+
