@@ -1091,7 +1091,7 @@ feature -- Implementation
 		local
 			l_arg_nodes: BYTE_LIST [EXPR_B]
 			l_arg_types, l_conformance_arg_types: like last_expressions_type
-			l_formal_arg_type, l_like_arg_type: TYPE_A
+			l_unadapted_formal_arg_type, l_formal_arg_type, l_like_arg_type: TYPE_A
 			l_like_argument: LIKE_ARGUMENT
 			l_cl_type_a: CL_TYPE_A
 			l_feature: FEATURE_I
@@ -1435,11 +1435,10 @@ feature -- Implementation
 							l_arg_type := l_arg_types.item (i)
 
 								-- Get formal argument type.
-							l_formal_arg_type := l_feature.arguments.i_th (i)
-
+							l_unadapted_formal_arg_type := l_feature.arguments.i_th (i)
 								-- Take care of anchoring to argument
-							if l_formal_arg_type.is_like_argument then
-								l_like_arg_type := l_formal_arg_type.actual_argument_type (l_arg_types)
+							if l_unadapted_formal_arg_type.is_like_argument then
+								l_like_arg_type := l_unadapted_formal_arg_type.actual_argument_type (l_arg_types)
 								l_like_arg_type :=
 									l_like_arg_type.instantiation_in (l_last_type, l_last_id).actual_type
 									-- Check that `l_arg_type' is compatible to its `like argument'.
@@ -1455,7 +1454,7 @@ feature -- Implementation
 							end
 
 								-- Adapted type in case it is a formal generic parameter or a like.
-							l_formal_arg_type := adapted_type (l_formal_arg_type, l_last_type, l_last_constrained)
+							l_formal_arg_type := adapted_type (l_unadapted_formal_arg_type, l_last_type, l_last_constrained)
 								-- Actual type of feature argument
 							l_formal_arg_type := l_formal_arg_type.instantiation_in (l_last_type, l_last_id).actual_type
 
@@ -1479,7 +1478,7 @@ feature -- Implementation
 							end
 
 								-- `like Current' check: First, check if argument is a `like Current' somwhere in the chain of likes.
-							if l_formal_arg_type.actual_type.is_like_current then
+							if l_unadapted_formal_arg_type.actual_type.is_like_current then
 									-- The call is only allowed in one case:
 									-- * It is called on a monomorphic type
 									--	Note: This includes `Current' and therefore `like Current' also
