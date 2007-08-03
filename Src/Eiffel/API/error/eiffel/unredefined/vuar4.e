@@ -65,6 +65,7 @@ feature -- Output
 			print_called_feature (a_text_formatter);
 			a_text_formatter.add ("On target type: ")
 			target_type.append_to (a_text_formatter)
+			a_text_formatter.add_new_line;
 			a_text_formatter.add ("Argument name: ");
 			a_text_formatter.add (argument_name);
 			a_text_formatter.add_new_line;

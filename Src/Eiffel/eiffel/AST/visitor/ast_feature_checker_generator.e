@@ -1484,7 +1484,8 @@ feature -- Implementation
 									-- * It is called on a monomorphic type
 									--	Note: This includes `Current' and therefore `like Current' also
 									--        formals marked as frozen are ok
-									if not l_last_constrained.conformance_type.is_monomorph then
+
+									if not l_last_constrained.conformance_type.is_monomorph and then not l_last_constrained.actual_type.is_like_current then
 										insert_vuar4_error (l_feature, l_parameters, l_last_id, i, l_last_constrained, l_arg_type, l_formal_arg_type)
 									end
 							end
