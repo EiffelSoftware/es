@@ -3,8 +3,8 @@
 /* this ALWAYS GENERATED file contains the definitions for the interfaces */
 
 
- /* File created by MIDL compiler version 6.00.0365 */
-/* at Wed Jan 17 15:51:27 2007
+ /* File created by MIDL compiler version 6.00.0366 */
+/* at Tue Jul 24 12:18:23 2007
  */
 /* Compiler settings for metadata_consumer.idl:
     Oicf, W1, Zp8, env=Win64 (32b run)

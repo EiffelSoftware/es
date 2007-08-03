@@ -1484,9 +1484,8 @@ feature -- Implementation
 									-- * It is called on a monomorphic type
 									--	Note: This includes `Current' and therefore `like Current' also
 									--        formals marked as frozen are ok
-									if not l_formal_arg_type.conformance_type.is_monomorph then
-										insert_vuar3_error (l_feature, l_parameters, l_last_id, i, l_arg_type,
-										l_formal)
+									if not l_last_constrained.conformance_type.is_monomorph then
+										insert_vuar4_error (l_feature, l_parameters, l_last_id, i, l_last_constrained, l_arg_type, l_formal_arg_type)
 									end
 							end
 								-- Conformance: take care of constrained genericity
@@ -6584,6 +6583,32 @@ feature {NONE} -- Implementation
 			l_vuar3.set_formal_type (a_formal_type)
 			l_vuar3.set_location (a_params.i_th (a_pos).start_location)
 			error_handler.insert_error (l_vuar3)
+		end
+
+	insert_vuar4_error (a_feature: FEATURE_I; a_params: EIFFEL_LIST [EXPR_AS]; a_in_class_id, a_pos: INTEGER; a_target_type, a_actual_type, a_formal_type: TYPE_A) is
+			-- Insert a VUAR4 error in call to `a_feature' from `a_in_class_id' class for argument
+			-- at position `a_pos'.
+		require
+			a_feature_not_void: a_feature /= Void
+			a_params_not_void: a_params /= Void
+			a_params_matches: a_params.valid_index (a_pos)
+			a_in_class_id_non_negative: a_in_class_id >= 0
+			a_pos_positive: a_pos > 0
+			a_pos_valid: a_pos <= a_feature.argument_count
+			a_actual_type_not_void: a_actual_type /= Void
+		local
+			l_vuar4: VUAR4
+		do
+			create l_vuar4
+			context.init_error (l_vuar4)
+			l_vuar4.set_called_feature (a_feature, a_in_class_id)
+			l_vuar4.set_argument_position (a_pos)
+			l_vuar4.set_argument_name (a_feature.arguments.item_name (a_pos))
+			l_vuar4.set_target_type (a_target_type)
+			l_vuar4.set_actual_type (a_actual_type)
+			l_vuar4.set_formal_type (a_formal_type)
+			l_vuar4.set_location (a_params.i_th (a_pos).start_location)
+			error_handler.insert_warning (l_vuar4)
 		end
 
 	process_type_compatibility (l_target_type: like last_type) is
