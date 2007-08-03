@@ -13,7 +13,8 @@
 #- Add GOBO to the path
 
 #Adapt these lines to match your environment:
-activate_estudio 1cdd #assumes that estudio_tools are installed, and the cdd delivery is available via ~/estudio/1cdd
+export CFLAGS='-DCAPTURE_REPLAY'
+activate_estudio 1XX_wkbench  #assumes that estudio_tools are installed, and the cdd delivery is available via ~/estudio/1XX_wkbench
 CURRENT_DIR=`pwd`
 export EIFFEL_SRC=$CURRENT_DIR/../Src/ #works, when this script is executed from its folder
 export GOBO=~/ETH/Masterarbeit/gobo
