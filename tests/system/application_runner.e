@@ -20,9 +20,7 @@ feature -- Initialization
 			ui: ATM_UI
 			recorder: RECORDER
 			player: PLAYER
-			caller: EXAMPLE_CALLER
 		do
-			create caller
 			create config.make
 			config.configure_program_flow_sink (program_flow_sink)
 			program_flow_sink.enter

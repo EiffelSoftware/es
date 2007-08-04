@@ -28,7 +28,7 @@
 				<assertions/>
 			</option>
 		</cluster>
-		<cluster name="example_application" location="..\..\examples\capture_replay\iteration0\" recursive="true">
+		<cluster name="example_application" location="..\..\examples\capture_replay\iteration1\" recursive="true">
 			<option>
 				<assertions/>
 			</option>
