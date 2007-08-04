@@ -17,11 +17,20 @@ inherit
 		put_attribute_access,
 		accept,
 		remove_from_observed_stack,
-		put_to_observed_stack
+		put_to_observed_stack,
+		simulate_unobserved_body
 	end
 
 create
 	make
+
+feature -- Access
+
+	last_feature_name: STRING
+
+	last_target: ANY
+
+	last_arguments: TUPLE
 
 feature -- Initialization
 
@@ -60,9 +69,14 @@ feature -- Basic operations
 				-- XXX invoking the recorder at this position leads to incorrect object ID's
 	            -- But it's necessary to record before the player is invoked to make sure that
 	            -- Nested calls are correctly recorded.
+	        last_feature_name := feature_name
+	        last_target := target
+	        last_arguments := arguments
 
-			recorder.put_feature_invocation(feature_name,target,arguments)
 			Precursor {PLAYER}(feature_name, target, arguments)
+			if target.is_observed then
+				recorder.put_feature_invocation(feature_name,target,arguments)
+			end
 		end
 
 	put_feature_exit (res: ANY) is
@@ -98,6 +112,17 @@ feature -- Basic operations
 			Precursor
 			recorder.remove_from_observed_stack
 		end
+
+	simulate_unobserved_body is
+			--
+		do
+			if not observed_stack_item and then last_target /= Void then
+				recorder.put_feature_invocation(last_feature_name, last_target, last_arguments)
+			end
+			Precursor
+		end
+
+
 
 invariant
 	invariant_clause: True -- Your invariant here
