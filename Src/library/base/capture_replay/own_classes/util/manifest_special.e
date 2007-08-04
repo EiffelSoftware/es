@@ -129,7 +129,7 @@ feature {NONE} -- Implementation
 			from
 				i := char_special.lower + 1
 			until
-				i >= char_special.upper
+				i > char_special.upper
 			loop
 				Result.append (",")
 				Result.append(escape_character (char_special[i]))
