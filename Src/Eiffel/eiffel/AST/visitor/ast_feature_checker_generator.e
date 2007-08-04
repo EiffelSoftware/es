@@ -1484,7 +1484,7 @@ feature -- Implementation
 									--	Note: This includes `Current' and therefore `like Current' also
 									--        formals marked as frozen are ok
 
-									if not l_last_constrained.conformance_type.is_monomorph and then not l_last_constrained.is_referencing_current then
+									if not l_last_type.is_monomorph and then not l_last_type.is_referencing_current then
 										insert_vuar4_error (l_feature, l_parameters, l_last_id, i, l_last_constrained, l_arg_type, l_formal_arg_type)
 									end
 							end
@@ -1498,7 +1498,7 @@ feature -- Implementation
 								-- happens in type checking of an agent, we can do it
 								-- at only one place, ie here.
 							l_open_type ?= l_formal_arg_type
-							if l_open_type /= Void or else not l_arg_type.conform_to (l_formal_arg_type) then
+							if l_open_type /= Void or else not l_arg_type.silent_conform_to (l_formal_arg_type) then
 								if
 									l_open_type = Void and
 									l_arg_type.convert_to (context.current_class, l_formal_arg_type)

@@ -129,6 +129,7 @@ feature {NONE} -- Visitor implementation
 			l_type: TYPE_A
 			l_covariant_flags: PACKED_BOOLEANS
 			l_type_as: TYPE_AS
+			l_class_type: CL_TYPE_A
 			l_gen_type: GEN_TYPE_A
 		do
 				-- Lookup class in universe, it should be present.
@@ -154,7 +155,20 @@ feature {NONE} -- Visitor implementation
 							end
 							l_covariant_flags.put (True, i)
 						end
+
 						l_has_error := last_type = Void
+						if not l_has_error and then l_class_c.is_formal_position_monomorph (i) then
+							l_class_type ?= last_type
+							if l_class_type /= Void then
+									-- Syntactic sugar: If we have a derivation of a generic class which has
+									-- declared a formal monomorph we automatically set the monomorph flag
+									-- for class types.
+									-- If the derivation is done by an other formal of the context class,
+									-- it is only valid if this formal is marked as monormoph too.
+								l_class_type.set_monomorph_mark
+							end
+						end
+
 						l_actual_generic.put (last_type, i)
 						i := i + 1
 					end

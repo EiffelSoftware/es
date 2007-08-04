@@ -99,11 +99,11 @@ feature -- Properties
 	is_monomorph: BOOLEAN is
 			-- Is the current type monomorph?
 		do
-			if actual_type.is_like then
-				Result := conformance_type.is_monomorph
-			else
+--			if actual_type.is_like then
+--				Result := conformance_type.is_monomorph
+--			else
 				Result := actual_type.is_monomorph
-			end
+--			end
 		end
 
 	same_as (other: TYPE_A): BOOLEAN is

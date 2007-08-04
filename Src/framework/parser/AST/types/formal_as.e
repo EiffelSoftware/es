@@ -72,7 +72,6 @@ feature -- Properties
 			-- Is Current formal to be always instantiated as an expanded type?
 
 	is_monomorph: BOOLEAN
-			-- Is Current formal marked as monomorph formal?
 
 feature -- Roundtrip/Token
 

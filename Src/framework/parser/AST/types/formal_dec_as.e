@@ -35,6 +35,7 @@ feature {NONE} -- Initialization
 			position := f.position
 			is_reference := f.is_reference
 			is_expanded := f.is_expanded
+			is_monomorph := f.is_monomorph
 			constrain_symbol := c_as
 			formal_para := f
 			create_keyword := ck_as

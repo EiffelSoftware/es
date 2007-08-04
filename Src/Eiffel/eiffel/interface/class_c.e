@@ -2703,6 +2703,15 @@ feature -- Properties
 	is_single: BOOLEAN
 			-- Is class generated as a single entity in IL code generation.
 
+	is_formal_position_monomorph (a_position: INTEGER): BOOLEAN is
+			-- Is the formal at position `position' declared monomorph?
+		require
+			is_generic: is_generic
+			a_position_valid: generics.valid_index (a_position)
+		do
+			Result := generics[a_position].is_monomorph
+		end
+
 	has_external_main_parent: BOOLEAN
 			-- Is one non-external parent class generated as a single IL type?
 
