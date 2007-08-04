@@ -22,13 +22,15 @@ feature -- Basic operations
 		local
 			i: INTEGER
 			acc_name: STRING
-			clock: DT_SYSTEM_CLOCK
-			time_before, time_after: DT_TIME
-			duration: DT_TIME_DURATION
+--don't measure the time, because DT_SYSTEM_CLOCK has a creation procedure
+--exported to NONE, which is not supported yet by capture/replay.
+--			clock: DT_SYSTEM_CLOCK
+--			time_before, time_after: DT_TIME
+--			duration: DT_TIME_DURATION
 		do
 			print("starting test")
-			create clock.make
-			time_before := clock.time_now
+--			create clock.make
+--			time_before := clock.time_now
 			acc_name := "test"
 			acc_name.get_area.note_direct_manipulation (acc_name.area)
 			from
@@ -43,10 +45,10 @@ feature -- Basic operations
 				end
 				i := i+1
 			end
-			time_after := clock.time_now
-			duration := time_after.time_duration (time_before)
-			print ("duration: ")
-			print (duration.out)
+--			time_after := clock.time_now
+--			duration := time_after.time_duration (time_before)
+--			print ("duration: ")
+--			print (duration.out)
 		end
 
 
