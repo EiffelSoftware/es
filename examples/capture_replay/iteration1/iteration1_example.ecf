@@ -31,7 +31,4 @@
 			</option>
 		</override>
 	</target>
-	<target name="iteration1_example_dotnet" extends="iteration1_example">
-		<setting name="msil_generation" value="true"/>
-	</target>
 </system>
