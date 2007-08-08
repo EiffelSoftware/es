@@ -3705,6 +3705,8 @@ free_add_ons/wex/library/wex/clib/cwex.lib svneol=native#unset
 report/illustrations/ETH.png -text
 report/illustrations/INF.png -text
 report/illustrations/SE.png -text
+report/implementation.tex -text
+report/related_work.tex -text
 report/thesis.bib -text
 report/thesis.kilepr -text
 report/thesis.tex -text

@@ -1,4 +1,4 @@
-\documentclass[a4paper,10pt]{article}
+\documentclass[a4paper,10pt]{report}
 
 %picture imports
 \usepackage{graphicx}
@@ -7,13 +7,19 @@
 
 %sourcecode formatting
 \usepackage[final]{listings}
-\lstloadlanguages{Eiffel}
-\lstset{language=Eiffel,tabsize=2,backgroundcolor=\color{lbcolor},frame=tb,breaklines=true,morekeywords={use,modify,confined}}
+\usepackage{url}
 
+
+\lstloadlanguages{Eiffel,bash}
+\newcommand{\eiffellisting}{\lstset{language=Eiffel,tabsize=2,backgroundcolor=\color{lbcolor},frame=tb,breaklines=true}}
+\newcommand{\bashlisting}{\lstset{basicstyle=\small\tt,language=bash,tabsize=2,backgroundcolor=\color{lbcolor},frame=tb,breaklines=true,morekeywords={svn,geant,mkdir,activate_estudio}}}
+\newcommand{\identifier}[1]{\texttt{#1}}
+
+\eiffellisting
 \begin{document}
 
 %opening
-\title{Capture and Replay for Eiffel}
+\title{Selective Capture and Replay for Eiffel}
 \author{Stefan Sieber}
 
 \begin{titlepage}
@@ -59,7 +65,11 @@
 \newpage
 \begin{abstract}
 %Should the motivation include a reference to cdd?
-Debugging applications is very tedious work. One of the hardest steps to find a fault in a program is to reproduce the steps that lead to the associated program failure. Capture and Replay \cite{orso05may} makes it possible to replay the same program run again on a predefined set of classes, thus reproducing those steps automatically. The goal of this thesis is to implement this mechanism for Eiffel. During this process, the conceptual differences between the original implementation for Java and the implementation for Eiffel will be described. After examining the implementation design closer, the experimental results of will be presented.
+Debugging applications is very tedious work. One of the hardest steps to find a fault in a program is to reproduce the steps that lead to the associated program failure. Capture and replay aims at simplifying this process. When trying to replay a software it is necessary to decide what parts are to be simulated in order to drive the rest of the program. 
+
+Selective Capture and Replay \cite{orso05may} makes it possible to replay the same program run again on a predefined set of classes, thus reproducing those steps automatically. It is possible to define the subset of the program that should be replayed individually. This makes it special compared to conventional systems where this border is fixed (e.g. everything except the network library). Another unique feature is that the amount of recorded data is linear to the number of variables passed over this border, whereas conventional systems record all the data that passes the border.
+ The goal of this thesis is to implement Selective Capture Replay for Eiffel, which in contrast to Java, supports multiple inheritance. This makes it necessary to instrument the programs in a different way than in the original implementation. One benefit of this changed implementation is the possibility to switch between capture and replay phase without recompilation.
+ To validate the implementation, an example will be presented and the performance of the technique will be measured using this example.
 
 %CDD [reference!] facilitates this step by providing the developer a testcase that results in the same failure. 
 %motivation
@@ -74,10 +84,7 @@ Debugging applications is very tedious work. One of the hardest steps to find a 
 
 \section{Introduction}
 
-\section{Capture and Replay}
-\subsection{overview}
-\subsection{limitations}
-
+\include{related_work}
 %Überblick über das Paper
 %Limitations (polymorphism / dynamic binding) --> oder doch nicht? she. Annahme über observed set.
 %Benefit for cdd
@@ -92,22 +99,7 @@ Debugging applications is very tedious work. One of the hardest steps to find a 
 % Unterschiede der Anforderungen
 % -keine dynamische Kompilierung
 %  capture/replay ohne neukompilierung (cdd)
-
-
-\section{Implementation}
-\subsection{Architecture}
-\subsection{Code Instrumentation}
-\subsubsection{Procedures}
-\subsubsection{Direct Manipulation from C Level}
-\subsubsection{Field Accesses}
-\subsection{Advantages over Traditional Capture and Replay}
-\subsection{Limitations}
-\subsection{Future Steps}
-%Design des Management Codes
-% Idee der Instrumentierung & Beispiel
-% Vorteile gegenüber der Original Implementierung
-% Limitations
-% Experimental Results
+\include{implementation}
 
 \section{Experimental Results}
 \subsection{Example Application}
@@ -115,13 +107,12 @@ Debugging applications is very tedious work. One of the hardest steps to find a 
 \subsection{Conclusion}
 %Eiffel Vision Beispiel, mit unterschiedlichen observed sets
 
+\section{Future Work}
+%Fehlende C/R und Language Features beschreiben, sowie einen möglichen Lösungsansatz.
+\section{Appendix}
 
+\subsection{Log File Grammar}
 
-\section{Prototype}
-
-\subsection{TEXT SERIALIZER}
-
-\subsubsection{file format}
 log ::= event* \\
 event ::= call $\mid$ return $\mid$ outread\\
 call ::= calltype entity methodname entity* \texttt{“\%N”} \\
@@ -160,7 +151,7 @@ string ::= character*\\
 	\end{itemize}
 \end{itemize}
 
-\bibliographystyle{plainyr} 
+\bibliographystyle{plain} 
 \bibliography{thesis}
 
 \end{document}

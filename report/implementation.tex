@@ -1,0 +1,102 @@
+
+\chapter{Implementation}
+\section{Architecture}
+%unterschiedliche Parts noch genauer beschreiben
+%-Log: (mikro-architektur), wieso kein XML?
+\section{Code Instrumentation}
+\subsection{Procedures}
+\subsection{Direct Manipulation from C Level}
+\subsection{Field Accesses}
+\section{Advantages over Traditional Capture and Replay}
+\section{Limitations}
+\section{Future Steps}
+%Design des Management Codes
+% Idee der Instrumentierung & Beispiel
+% Vorteile gegenüber der Original Implementierung
+% Limitations
+% Experimental Results
+\section{Building the Example from Source}
+In this section the process of building an example with capture replay support under Linux will be described. Setting up the modified version of Eiffel Studio and all necessary tools will take the biggest part of this explanation.\\
+%TODO: wieso genau wird eine modifizierte Version von Eiffel Studio benoetigt??
+It is assumed that all commands in the following steps are executed in the same session, thus keeping the environment variables.\\
+
+\subsection{Building the Preliminaries}
+The first tools we need are the  Eiffel Studio Tools \cite{estudiotools}. These will be used in many setup scripts in the examples or tests from the repository. Install those tools according to the description on the webpage.\\
+
+The delivery of the modified Eiffel Studio was built using revision 69201 of Eiffel Studio. Building a delivery with a later version of Eiffel Studio was not testet, so it might not work. If no binaries of revision 69201 are available, a delivery of that revision from source \texttt{(stimmt das wirklich??? gaebe das kein Henne / Ei Problem?)}.\\
+After copying the delivery to ~/estudio/Eiffel60\_gpl\_69201, it can be activated:
+\bashlisting
+\begin{lstlisting}
+   activate_estudio 60_gpl_69201
+\end{lstlisting}
+
+Now Gobo \cite{gobo} can be installed can be installed from svn (Revision 6001 was successfully tested).
+- Install Gobo  from svn (revision 6001) -->
+\begin{lstlisting}
+svn co -r6001 https://gobo-eiffel.svn.sourceforge.net/svnroot/gobo-eiffel/gobo/trunk ~/capture_replay/gobo
+export GOBO=~/capture\_replay/gobo
+export PATH=$GOBO/bin:$PATH
+$GOBO/work/bootstrap/bootstrap.sh gcc ise
+\end{lstlisting}
+
+As all preliminaries are installed, Erl-G can be downloaded and built:
+- install erl-g \cite{erlg} from svn (revision 704? ??) 
+\begin{lstlisting}
+svn co -r704 https://svn.origo.ethz.ch/autotest/trunk/erl_g ~/capture_replay/erl_g
+export ERL_G=~/capture_replay/erl_g
+export PATH=$ERL_G/bin:$PATH
+cd $ERL_G
+#EIFFEL_SRC is needed. avoid conflicts between EIFFEL_SRC and ISE_LIBRARY.
+export ISE_LIBRARY=$EIFFEL_SRC
+geant install
+geant compile
+\title{Selective Capture and Replay for Eiffel
+\end{lstlisting}
+
+To build a delivery of the modified Eiffel Studio, execute these commands: (this will take a few hours).
+\begin{lstlisting}
+cd ~/capture_replay/
+mkdir es
+svn co https://eiffelsoftware.origo.ethz.ch/svn/es/branches/capture_replay es
+export EIFFEL_SRC=~/capture_replay/es/Src
+cd es
+geant -b $EIFFEL_SRC/scripts/build.eant build_es
+\end{lstlisting}
+
+Before an example can be built the delivery that was just created needs to used be set as default instance of Eiffel Studio
+\begin{lstlisting}
+cd ~/estudio
+ln -s ~/capture_replay/es/EiffelXX EiffelCR
+activate_estudio CR
+\end{lstlisting}
+
+In order to make the created Eiffel Studio use a modified version of the runtime, it is necessary to recompile the runtime with modified CFLAGS. The new version of the runtime then needs to be installed in the delivery.
+
+It is not possible to directly build Eiffel Studio with the modified version of the runtime, because the changes in the runtime are not compatible to Eiffels store mechanism (\texttt{TODO: das auch noch unter irgendwelchem future work anmerken...}). This would render Eiffel Studio unusable because it relies on this mechanism during the build process.
+\begin{lstlisting}
+export CFLAGS='-DCAPTURE_REPLAY' 
+cd $EIFFEL_SRC
+#build the runtime from scratch (clobber the old one)
+geant -b scripts/build.eant compile_runtime
+cd $ISE_EIFFEL/studio/spec/linux-x86/lib
+rm *
+cp $EIFFEL_SRC/C/run-time/lib* .
+\end{lstlisting}
+
+
+\subsection{Building an Example}
+Now, all necessary tools should be installed and the corresponding environment variables set. And we can start to build an example.\\
+First we need to add reflection support to the example project. Erl G will generate reflection classes for us. If the environment variables are correctly set, the geant script should invoke Erl G automatically. \\
+At the moment Erl-G does not support overrides because this feature is missing in the Gobo parser. Therefore it's necessary to override the necessary classes manually. There are two geant tasks that take care of this:
+
+\begin{itemize}
+\item \identifier{patch\_elks} makes the manual override by copying the modified elks classes from \$EIFFEL\_SRC/library/base/capture\_replay/elks\_overrides to \$ISE\_LIBRARY/library/base/elks \\
+\item \identifier{unpatch\_elks} restores the original state by copying the original elks classes from \$EIFFEL\_SRC/library/base/elks to \$ISE\_LIBRARY/library/base/elks .
+\end{itemize}
+
+\begin{lstlisting}
+cd ~/capture_replay/es/examples/capture_replay/iteration1
+geant install
+\end{lstlisting}
+
+The example can now be opened with the modified version of Eiffel Studio. Make sure that the CFLAGS are still set to '-DCAPTURE\_REPLAY'. Otherwise it will not be possible to build the example.
