@@ -42,7 +42,6 @@
     <set name="eiffel" value="ise"/>
     <set name="type_list" value=""/>
     <geant target="check_setup"/>
-<!--    <gexace system="ise" xace="ababasystem.xace"/> -->
     <geant target="patch_elks"/>
     <geant target="erl_g"/>
     <geant target="unpatch_elks"/>
