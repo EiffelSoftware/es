@@ -1,8 +1,41 @@
 \chapter{Related Work}
-%Einleitung zu den State of the Art technologien, sowie den angewendeten Kategorien
+\section{Overview}
+Because replaying application runs is important in order to be able to debug or test applications, there exist many techniques that implement capture and replay. As mentioned before, one of the basic steps in order to be able to capture and replay an application is to distinct between the deterministic core of the application (the observed part) and the non-deterministic environment (the unobserved part) of the application like user input, network or external storage.
 
-\section {Capturing User Interactions}
-Mouse/Keyboard - User Interface
+During \emph{capture phase}, the capture and replay implementation needs to record at least all information that is passed from the unobserved part to the observed part. This is done by some management code that was introduced by the capture and replay framework (\figref{fig:GenericCrStructure_capture}).
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.5\textwidth]{illustrations/capture_and_replay_generic_structure_capture}
+  \caption{Generic structure of a capture and replay technique - capture phase}
+  \label{fig:GenericCrStructure_capture}
+%\includegraphics{illustrations/capture_and_replay_generic_structure}
+\end{figure}
+
+During \emph{replay phase} the management code needs to replace the unobserved part ( 
+\figref{fig:GenericCrStructure_replay}). Depending on the part of the application that was defined to be unobserved, the management part can act both as a driver (e.g. in the case of mouse events) and stub (e.g. in the case of sending network packets). 
+%Schema dazu: Capture phase & Replay phase , observed & unobserved part && log
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.4\textwidth]{illustrations/capture_and_replay_generic_structure_replay}
+  \caption{Generic structure of a capture and replay technique - replay phase}
+  \label{fig:GenericCrStructure_replay}
+%\includegraphics{illustrations/capture_and_replay_generic_structure}
+\end{figure}
+
+Different implementations have different assumptions about what behaves the same (is deterministic) throughout different runs of the application and what changes its behaviour. Therefore they define the observed and unobserved part in a different way. Here we will categorize the different implementation based on what is defined to be unobserved.
+
+\section {Capturing User Input}
+The best known capture and replay application is used for GUI testing. Here, keyboard and and mouse events are considered to belong to the unobserved part. The exact location where these events are captured may vary (inside the application or through the operating system), but the advantages and limitations mostly stay the same. Usually, capture and replay of user input is used for regression testing. In that setup, the tester executes a sequence of actions on the applications GUI while capturing is enabled. These recorded actions can be replayed on the application in order to check if there were regressions. Abbot \cite{abbot} is an example of such a tool, although it offers more features than only capture and replay of user interactions.
+\subsection{advantages}
+This technique is easy to understand, because there is a simple abstraction behind it. 
+\subsection{limitations}
+If this technique is implemented in a very naive way (i.e. only capturing the location of mouse events, not the targets), a changed GUI layout renders a recorded run unusable. This is especially painful, when the capture and replay is used for regression tests. Most applications use more than just the GUI to interact with their environment. As soon as the application uses the file system or the network, too, it is necessary to make sure, that the behaviour of this environment is the same every time the program is replayed. Otherwise this brakes the assumption, that the observed space behaves deterministically, which results in an incorrect replay of the application.
+\section {Capturing Interactions with the libraries}
+
+
+
+\subsection{advantages}
+\subsection{limitations}
 \section {Capturing Interactions with the Operating System}
 Operating System - Library
 %gehoert bugnet hier auch rein???
@@ -12,3 +45,6 @@ Operating System - Library
 \subsection{Overview}
 \subsection{Advantages}
 \subsection{Limitations}
+%Überblick über das Paper
+%Limitations (polymorphism / dynamic binding) --> oder doch nicht? she. Annahme über observed set.
+%Benefit for cdd

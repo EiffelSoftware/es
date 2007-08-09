@@ -14,8 +14,10 @@
 \newcommand{\eiffellisting}{\lstset{language=Eiffel,tabsize=2,backgroundcolor=\color{lbcolor},frame=tb,breaklines=true}}
 \newcommand{\bashlisting}{\lstset{basicstyle=\small\tt,language=bash,tabsize=2,backgroundcolor=\color{lbcolor},frame=tb,breaklines=true,morekeywords={svn,geant,mkdir,activate_estudio}}}
 \newcommand{\identifier}[1]{\texttt{#1}}
+\newcommand{\figref}[1]{Figure \ref{#1}}
 
-\eiffellisting
+\pagenumbering{roman}
+
 \begin{document}
 
 %opening
@@ -62,18 +64,23 @@
 	\vfil
 \end{titlepage}
 
+%prolog
+\addtolength{\parskip}{0.5\baselineskip} % add extra spacing between paragraphs
 \newpage
+\pagenumbering{roman}
 \include{abstract}
 
+% table of contents
+\addtolength{\parskip}{-0.5\baselineskip} % reset paragraph spacing
+\tableofcontents
+
 \newpage
 
+% chapters
+\addtolength{\parskip}{0.5\baselineskip} % add extra spacing between paragraphs
 \include{introduction}
 
 \include{related_work}
-%Überblick über das Paper
-%Limitations (polymorphism / dynamic binding) --> oder doch nicht? she. Annahme über observed set.
-%Benefit for cdd
-
 
 \chapter{Capture and Replay for Eiffel}
 \section{Relevant Differences between Eiffel and Java}
