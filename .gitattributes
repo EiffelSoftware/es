@@ -3702,10 +3702,12 @@ free_add_ons/wex/examples/wex/Framework_example/TOOLBAR.BMP svneol=native#unset
 free_add_ons/wex/examples/wex/Framework_example/app.ico svneol=native#unset
 free_add_ons/wex/examples/wex/MCI_Splash/APP.ICO svneol=native#unset
 free_add_ons/wex/library/wex/clib/cwex.lib svneol=native#unset
+report/abstract.tex -text
 report/illustrations/ETH.png -text
 report/illustrations/INF.png -text
 report/illustrations/SE.png -text
 report/implementation.tex -text
+report/introduction.tex -text
 report/related_work.tex -text
 report/thesis.bib -text
 report/thesis.kilepr -text
