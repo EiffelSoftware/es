@@ -2,6 +2,7 @@
 \section{Overview}
 Because replaying application runs is important in order to be able to debug or test applications, there exist many techniques that implement capture and replay. As mentioned before, one of the basic steps in order to be able to capture and replay an application is to distinct between the deterministic core of the application (the observed part) and the non-deterministic environment (the unobserved part) of the application like user input, network or external storage.
 
+In general, capture and replay can divided into two phases: The \emph{capture phase}, where the application is run and the information that is needed for replaying the application is captured and the \emph{replay phase} where the application is replayed based on this information.
 During \emph{capture phase}, the capture and replay implementation needs to record at least all information that is passed from the unobserved part to the observed part. This is done by some management code that was introduced by the capture and replay framework (\figref{fig:GenericCrStructure_capture}).
 \begin{figure}[h]
   \centering
@@ -26,25 +27,40 @@ Different implementations have different assumptions about what behaves the same
 
 \section {Capturing User Input}
 The best known capture and replay application is used for GUI testing. Here, keyboard and and mouse events are considered to belong to the unobserved part. The exact location where these events are captured may vary (inside the application or through the operating system), but the advantages and limitations mostly stay the same. Usually, capture and replay of user input is used for regression testing. In that setup, the tester executes a sequence of actions on the applications GUI while capturing is enabled. These recorded actions can be replayed on the application in order to check if there were regressions. Abbot \cite{abbot} is an example of such a tool, although it offers more features than only capture and replay of user interactions.
-\subsection{advantages}
+\subsection{Advantages}
 This technique is easy to understand, because there is a simple abstraction behind it. 
-\subsection{limitations}
-If this technique is implemented in a very naive way (i.e. only capturing the location of mouse events, not the targets), a changed GUI layout renders a recorded run unusable. This is especially painful, when the capture and replay is used for regression tests. Most applications use more than just the GUI to interact with their environment. As soon as the application uses the file system or the network, too, it is necessary to make sure, that the behaviour of this environment is the same every time the program is replayed. Otherwise this brakes the assumption, that the observed space behaves deterministically, which results in an incorrect replay of the application.
-\section {Capturing Interactions with the libraries}
+\subsection{Limitations}
+If this technique is implemented in a very naive way (i.e. only capturing the location of mouse events, not the targets), a changed GUI layout renders a recorded run unusable. This is especially painful, when the capture and replay is used for regression tests. Another problem is that most applications use more than just the GUI to interact with their environment. As soon as the application uses the file system or the network, too, it is necessary to make sure, that the behaviour of this environment is the same every time the program is replayed. Otherwise this brakes the assumption, that the observed space behaves deterministically, which results in an incorrect replay of the application.
 
+\section {Capturing Interactions with the Libraries}
+JRapture \cite{jrapture} uses an approach that has the potential of replaying more complex applications. JRapture is a tool for capturing and replaying Java applications in the field. In addition to capturing and replaying, it also offers a profiling interface that permits the program to be instrumented for profiling in the replay phase.
 
+In our model of capture and replay techniques, JRapture draws the border between observed and unobserved part between the Java API and the core of the program. They achieve this by instrumenting the Java API classes. JRapture supports multithreaded applications, but it does not guarantee a \emph{deterministic} replay of concurrent applications.
 
-\subsection{advantages}
-\subsection{limitations}
+\subsection{Advantages}
+JRapture has the potential to replay more complex applications that involve file and network access. In principle it is able to replay every interaction of the observed part with its environment as long as these interactions are executed through the Java API.
+\subsection{Limitations}
+JRapture relies on a modifed version of the Java API, which was created by manual instrumentation of it. Only a subset of the Java API is covered by this instrumentation yet, for example it lacks support for network I/O at the moment. Thus although JRaptures approach has the potential of replaying complex applications, it does not succeed yet to do so. Another drawback of the manual instrumentation is that applications that interact with the environment through other mechanisms than the Java API (for example through the Java Native Interface JNI) can not be easily supported.
 \section {Capturing Interactions with the Operating System}
 Operating System - Library
 %gehoert bugnet hier auch rein???
 %state (wird das als cr bezeichnet?) vs. events
-\section {concurrent systems}
+\section {Capturing Interactions with the Scheduler}
+The techniques presented so far did not consider thread scheduling as another source of non-determinism. DejaVu \cite{dejavu}, a capture and replay tool for java, considers thread scheduling as its only source of non-determinism, thus thread scheduling belongs to its unobserved part. Because threads are often scheduled by the operating system, it is not easy to instrument the scheduler in order to detect thread switches. DejaVu therefore introduces the concept of \emph{logical thread schedule} which is a simplified version of the real thread schedule (the \emph{physical thread schedule}). The \emph{logical thread schedule} contains enough thread schedule information to reproduce the execution behaviour of the program under the assumption that the thread schedule is the only source of non-determinism. By detecting some critical events during capture phase such as access to shared variables, and synchronization events, DejaVu is able to deduce this logical thread schedule.
+
+%TODO: application /= Applikation??????
+%XXX Rettet der 2. Satz unser Modell????
+DejaVu does not completely fit into our generic schema of a capture and replay technique from the implementation aspect, because the information passed between unobserved part (scheduler) and observed part (the application) is not directly captured but a simplified version is deduced. However, the semantic stays the same because the part of information that matters to the application is captured and can be used to replay the program afterwards.
+
+\subsection{Advantages}
+\subsection{Limitations}
+
 \section{Selective Capture Replay}
 \subsection{Overview}
 \subsection{Advantages}
 \subsection{Limitations}
+%Wir beachten call durations nicht (!)
+
 %Überblick über das Paper
 %Limitations (polymorphism / dynamic binding) --> oder doch nicht? she. Annahme über observed set.
 %Benefit for cdd

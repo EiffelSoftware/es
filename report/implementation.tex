@@ -9,6 +9,7 @@
 \subsection{Field Accesses}
 \section{Advantages over Traditional Capture and Replay}
 \section{Limitations}
+%unter welchen Umstaenden musste manuell instrumentiert werden??
 \section{Future Steps}
 %Design des Management Codes
 % Idee der Instrumentierung & Beispiel
@@ -39,10 +40,9 @@ export PATH=$GOBO/bin:$PATH
 $GOBO/work/bootstrap/bootstrap.sh gcc ise
 \end{lstlisting}
 
-As all preliminaries are installed, Erl-G can be downloaded and built:
-- install erl-g \cite{erlg} from svn (revision 704? ??) 
+As all preliminaries are installed, Erl-G \cite{erlg} can be downloaded and built. Revision 719 of Erl-G was tested together with capture and replay.
 \begin{lstlisting}
-svn co -r704 https://svn.origo.ethz.ch/autotest/trunk/erl_g ~/capture_replay/erl_g
+svn co -r719 https://svn.origo.ethz.ch/autotest/trunk/erl_g ~/capture_replay/erl_g
 export ERL_G=~/capture_replay/erl_g
 export PATH=$ERL_G/bin:$PATH
 cd $ERL_G
