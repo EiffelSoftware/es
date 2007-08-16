@@ -3,7 +3,7 @@ img_extIsRegExp=false
 img_extensions=.eps .pdf .dvi .ps .fig .gif .jpg .jpeg .png
 kileprversion=1
 kileversion=1.9.3
-lastDocument=related_work.tex
+lastDocument=preliminaries.tex
 masterDocument=
 name=thesis
 pkg_extIsRegExp=false
@@ -17,34 +17,34 @@ QuickBuild=
 
 [item:abstract.tex]
 archive=true
-column=11
+column=60
 encoding=UTF-8
 highlight=LaTeX
-line=7
+line=4
 open=true
-
-[item:illustrations/capture_and_replay_generic_structure.svg]
-archive=true
-column=0
-encoding=
-highlight=
-line=0
-open=false
 
 [item:implementation.tex]
 archive=true
-column=0
+column=41
 encoding=UTF-8
 highlight=LaTeX
-line=0
+line=87
 open=true
 
 [item:introduction.tex]
 archive=true
-column=29
+column=766
 encoding=UTF-8
 highlight=LaTeX
-line=4
+line=10
+open=true
+
+[item:preliminaries.tex]
+archive=true
+column=0
+encoding=UTF-8
+highlight=LaTeX
+line=68
 open=true
 
 [item:related_work.tex]
@@ -52,15 +52,15 @@ archive=true
 column=0
 encoding=UTF-8
 highlight=LaTeX
-line=50
+line=10
 open=true
 
 [item:thesis.bib]
 archive=true
-column=19
+column=13
 encoding=UTF-8
 highlight=BibTeX
-line=0
+line=15
 open=true
 
 [item:thesis.kilepr]
@@ -73,8 +73,8 @@ open=false
 
 [item:thesis.tex]
 archive=true
-column=9
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=88
+line=86
 open=true
