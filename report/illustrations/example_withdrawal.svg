@@ -1,0 +1,57 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20001102//EN" "http://www.w3.org/TR/2000/CR-SVG-20001102/DTD/svg-20001102.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" width="574" x="0" y="0" height="326" id="/home/stefan/ETH/Masterarbeit/capture_replay/report/illustrations/example_withdrawal" >
+ <rect width="574" x="97" y="48" height="325" transform="translate(-97,-48)" style="stroke:rgb(0,0,0);stroke-width:0;fill:rgb(255,255,255);" />
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;stroke-dasharray:18,6;fill:none;" y1="76" y2="373" x1="131" x2="131" />
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;stroke-dasharray:18,6;fill:none;" y1="76" y2="351" x1="248" x2="248" />
+ <rect width="58" x="314" y="48" height="28" transform="translate(-97,-48)" style="stroke:rgb(0,0,0);stroke-width:0.9;fill:rgb(255,255,192);" />
+ <text x="343" y="68" transform="translate(-97,-48)" style="fill:rgb(0,0,0);stroke-width:0;font-size:10;font-style:normal;font-weight:400;font-family:Sans Serif;" text-anchor="middle" > : BANK</text>
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;stroke-dasharray:18,6;fill:none;" y1="76" y2="343" x1="343" x2="343" />
+ <rect width="129" x="447" y="48" height="28" transform="translate(-97,-48)" style="stroke:rgb(0,0,0);stroke-width:0.9;fill:rgb(255,255,192);" />
+ <text x="511" y="68" transform="translate(-97,-48)" style="fill:rgb(0,0,0);stroke-width:0;font-size:10;font-style:normal;font-weight:400;font-family:Sans Serif;" text-anchor="middle" > : BANK_ACCOUNT</text>
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;stroke-dasharray:18,6;fill:none;" y1="76" y2="321" x1="511" x2="511" />
+ <rect width="17" x="129" y="98" height="255" transform="translate(-97,-48)" style="stroke:rgb(0,0,0);stroke-width:0;fill:rgb(255,255,255);" />
+ <rect width="17" x="129" y="98" height="255" transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:none;" />
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:none;" y1="101" y2="101" x1="146" x2="178" />
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:none;" y1="101" y2="350" x1="178" x2="178" />
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:none;" y1="350" y2="347" x1="146" x2="150" />
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:none;" y1="350" y2="353" x1="146" x2="150" />
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:none;" y1="350" y2="350" x1="146" x2="178" />
+ <text x="446" y="264" transform="translate(-97,-48)" style="fill:rgb(50,50,50);stroke-width:0;font-size:10;font-style:normal;font-weight:400;font-family:Sans Serif;" text-anchor="middle" >: withdraw(amount : INTEGER)</text>
+ <rect width="69" x="97" y="48" height="28" transform="translate(-97,-48)" style="stroke:rgb(0,0,0);stroke-width:0.9;fill:rgb(255,255,192);" />
+ <text x="131" y="68" transform="translate(-97,-48)" style="fill:rgb(0,0,0);stroke-width:0;font-size:10;font-style:normal;font-weight:400;font-family:Sans Serif;" text-anchor="middle" > : ATM_UI</text>
+ <rect width="17" x="239" y="139" height="192" transform="translate(-97,-48)" style="stroke:rgb(0,0,0);stroke-width:0;fill:rgb(255,255,255);" />
+ <rect width="17" x="239" y="139" height="192" transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:none;" />
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:none;" y1="143" y2="143" x1="139" x2="239" />
+ <polygon points="238 143 234 140 234 146" transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:rgb(255,0,0);" />
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:rgb(255,0,0);" y1="328" y2="325" x1="139" x2="143" />
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:rgb(255,0,0);" y1="328" y2="331" x1="139" x2="143" />
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;stroke-dasharray:3;fill:rgb(255,0,0);" y1="328" y2="328" x1="139" x2="239" />
+ <text x="308" y="134" transform="translate(-97,-48)" style="fill:rgb(50,50,50);stroke-width:0;font-size:10;font-style:normal;font-weight:400;font-family:Sans Serif;" text-anchor="middle" >: withdraw(account_name : STRING, amount : FLOAT)</text>
+ <rect width="17" x="334" y="229" height="95" transform="translate(-97,-48)" style="stroke:rgb(0,0,0);stroke-width:0;fill:rgb(255,255,255);" />
+ <rect width="17" x="334" y="229" height="95" transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:none;" />
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:none;" y1="233" y2="233" x1="256" x2="334" />
+ <polygon points="333 233 329 230 329 236" transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:rgb(255,0,0);" />
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:rgb(255,0,0);" y1="321" y2="318" x1="256" x2="260" />
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:rgb(255,0,0);" y1="321" y2="324" x1="256" x2="260" />
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;stroke-dasharray:3;fill:rgb(255,0,0);" y1="321" y2="321" x1="256" x2="334" />
+ <rect width="17" x="334" y="165" height="38" transform="translate(-97,-48)" style="stroke:rgb(0,0,0);stroke-width:0;fill:rgb(255,255,255);" />
+ <rect width="17" x="334" y="165" height="38" transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:none;" />
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:none;" y1="169" y2="169" x1="256" x2="334" />
+ <polygon points="333 169 329 166 329 172" transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:rgb(255,0,0);" />
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:rgb(255,0,0);" y1="200" y2="197" x1="256" x2="260" />
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:rgb(255,0,0);" y1="200" y2="203" x1="256" x2="260" />
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;stroke-dasharray:3;fill:rgb(255,0,0);" y1="200" y2="200" x1="256" x2="334" />
+ <text x="462" y="160" transform="translate(-97,-48)" style="fill:rgb(50,50,50);stroke-width:0;font-size:10;font-style:normal;font-weight:400;font-family:Sans Serif;" text-anchor="middle" >: account_for_name(account_name : STRING) : BANK_ACCOUNT</text>
+ <rect width="17" x="502" y="269" height="32" transform="translate(-97,-48)" style="stroke:rgb(0,0,0);stroke-width:0;fill:rgb(255,255,255);" />
+ <rect width="17" x="502" y="269" height="32" transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:none;" />
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:none;" y1="273" y2="273" x1="351" x2="502" />
+ <polygon points="501 273 497 270 497 276" transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:rgb(255,0,0);" />
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:rgb(255,0,0);" y1="298" y2="295" x1="351" x2="355" />
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;fill:rgb(255,0,0);" y1="298" y2="301" x1="351" x2="355" />
+ <line transform="translate(-97,-48)" style="stroke:rgb(255,0,0);stroke-width:0.9;stroke-dasharray:3;fill:rgb(255,0,0);" y1="298" y2="298" x1="351" x2="502" />
+ <rect width="50" x="223" y="48" height="28" transform="translate(-97,-48)" style="stroke:rgb(0,0,0);stroke-width:0.9;fill:rgb(255,255,192);" />
+ <text x="248" y="68" transform="translate(-97,-48)" style="fill:rgb(0,0,0);stroke-width:0;font-size:10;font-style:normal;font-weight:400;font-family:Sans Serif;" text-anchor="middle" > : ATM</text>
+ <text x="174" y="93" transform="translate(-97,-48)" style="fill:rgb(50,50,50);stroke-width:0;font-size:10;font-style:normal;font-weight:400;font-family:Sans Serif;" text-anchor="middle" >: withdraw()</text>
+ <text x="462" y="224" transform="translate(-97,-48)" style="fill:rgb(50,50,50);stroke-width:0;font-size:10;font-style:normal;font-weight:400;font-family:Sans Serif;" text-anchor="middle" >: withdraw(account : BANK_ACCOUNT, amount : FLOAT)</text>
+</svg>

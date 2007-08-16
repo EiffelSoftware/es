@@ -3706,6 +3706,15 @@ report/abstract.tex -text
 report/illustrations/ETH.png -text
 report/illustrations/INF.png -text
 report/illustrations/SE.png -text
+report/illustrations/example_class_diagram.pdf -text
+report/illustrations/example_class_diagram.svg -text
+report/illustrations/example_diagrams.xmi -text
+report/illustrations/example_withdrawal.pdf -text
+report/illustrations/example_withdrawal.svg -text
+report/illustrations/scr_capture_replay_phase.pdf -text
+report/illustrations/scr_capture_replay_phase.svg -text
+report/illustrations/scr_overall_schema.pdf -text
+report/illustrations/scr_overall_schema.svg -text
 report/implementation.tex -text
 report/introduction.tex -text
 report/related_work.tex -text
