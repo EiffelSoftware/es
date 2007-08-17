@@ -31,7 +31,7 @@ feature -- Initialisation
 feature -- Access
 
 	last_error: STRING
-		-- last error message
+		-- error message of last call (is empty if no error occurred)
 
 feature -- XML RPC calls
 
@@ -42,10 +42,10 @@ feature -- XML RPC calls
 			l_factory: PROCESS_FACTORY
 			command_line: STRING
 			session: STRING
-			error: STRING
+			l_error: STRING
 		do
 			session := ""
-			error := ""
+			l_error := ""
 			command_line := preferences.origo_data.xml_rpc_client_path.out
 			command_line.append (" login -uk ")
 			command_line.append (preferences.origo_data.user_key)
@@ -54,7 +54,7 @@ feature -- XML RPC calls
 			create l_factory
 			l_process := l_factory.process_launcher_with_command_line (command_line, Void)
 			l_process.redirect_output_to_agent (agent session.append)
-			l_process.redirect_error_to_agent (agent error.append)
+			l_process.redirect_error_to_agent (agent l_error.append)
 			l_process.launch
 
 				-- launch process
@@ -62,18 +62,18 @@ feature -- XML RPC calls
 				l_process.wait_for_exit
 
 					-- if everything went fine
-				if error.is_empty then
+				if l_error.is_empty then
 					Result := session
 
 					-- an error occurred
 				else
-					error.insert_string ("Error during login:%N", 1)
-					show_warning (error)
+					l_error.insert_string ("Error during login:%N", 1)
 				end
+				set_error (l_error)
 
 				-- the process could not be launched
 			else
-				show_warning ("Error during login:%NCommand line tool could not be launched")
+				set_error ("Error during login:%NCommand line tool could not be launched")
 			end
 		end
 
@@ -85,18 +85,18 @@ feature -- XML RPC calls
 			l_process: PROCESS
 			l_factory: PROCESS_FACTORY
 			command_line: STRING
-			error: STRING
+			l_error: STRING
 			username: STRING
 		do
 			username := ""
-			error := ""
+			l_error := ""
 			command_line := preferences.origo_data.xml_rpc_client_path.out
 			command_line.append (" my_name -s ")
 			command_line.append (session)
 			create l_factory
 			l_process := l_factory.process_launcher_with_command_line (command_line, Void)
 			l_process.redirect_output_to_agent (agent username.append)
-			l_process.redirect_error_to_agent (agent error.append)
+			l_process.redirect_error_to_agent (agent l_error.append)
 			l_process.launch
 
 				-- launch process
@@ -104,18 +104,18 @@ feature -- XML RPC calls
 				l_process.wait_for_exit
 
 					-- if everything went fine
-				if error.is_empty then
+				if l_error.is_empty then
 					Result := username
 
 					-- an error occurred
 				else
-					error.insert_string ("Error during my_username:%N", 1)
-					show_warning (error)
+					l_error.insert_string ("Error during my_username:%N", 1)
 				end
+				set_error (l_error)
 
 				-- the process could not be launched
 			else
-				show_warning ("Error during my_username:%NCommand line tool could not be launched")
+				set_error ("Error during my_username:%NCommand line tool could not be launched")
 			end
 		end
 
@@ -152,12 +152,12 @@ feature -- XML RPC calls
 					-- an error occurred
 				else
 					l_error.insert_string ("Error during my_password:%N", 1)
-					show_warning (l_error)
 				end
+				set_error (l_error)
 
 				-- the process could not be launched
 			else
-				show_warning ("Error during my_password:%NCommand line tool could not be launched")
+				set_error ("Error during my_password:%NCommand line tool could not be launched")
 			end
 		end
 
@@ -170,14 +170,14 @@ feature -- XML RPC calls
 			l_process: PROCESS
 			l_factory: PROCESS_FACTORY
 			command_line: STRING
-			error: STRING
+			l_error: STRING
 			project_list_string: STRING
 			l_lines: LIST [STRING]
 			l_line_parts: LIST [STRING]
 			l_project: TUPLE [id: INTEGER; name: STRING]
 		do
 			project_list_string := ""
-			error := ""
+			l_error := ""
 			command_line := preferences.origo_data.xml_rpc_client_path.out
 			command_line.append (" project_list_of_user -s ")
 			command_line.append (session)
@@ -186,7 +186,7 @@ feature -- XML RPC calls
 			create l_factory
 			l_process := l_factory.process_launcher_with_command_line (command_line, Void)
 			l_process.redirect_output_to_agent (agent project_list_string.append)
-			l_process.redirect_error_to_agent (agent error.append)
+			l_process.redirect_error_to_agent (agent l_error.append)
 			l_process.launch
 
 				-- launch process
@@ -194,7 +194,7 @@ feature -- XML RPC calls
 				l_process.wait_for_exit
 
 					-- if everything went fine
-				if error.is_empty then
+				if l_error.is_empty then
 
 						-- parse the result and fill the Result
 					l_lines := project_list_string.split ('%N')
@@ -221,13 +221,13 @@ feature -- XML RPC calls
 
 					-- an error occurred
 				else
-					error.insert_string ("Error during project_list_of_user:%N", 1)
-					show_warning (error)
+					l_error.insert_string ("Error during project_list_of_user:%N", 1)
 				end
+				set_error (l_error)
 
 				-- the process could not be launched
 			else
-				show_warning ("Error during project_list_of_user:%NCommand line tool could not be launched")
+				set_error ("Error during project_list_of_user:%NCommand line tool could not be launched")
 			end
 		end
 
@@ -243,11 +243,11 @@ feature -- XML RPC calls
 			l_process: PROCESS
 			l_factory: PROCESS_FACTORY
 			command_line: STRING
-			error: STRING
+			l_error: STRING
 			username: STRING
 		do
 			username := ""
-			error := ""
+			l_error := ""
 			command_line := preferences.origo_data.xml_rpc_client_path.out
 			command_line.append (" release -s " + session)
 			command_line.append (" -pid " + a_project_id.out)
@@ -274,7 +274,7 @@ feature -- XML RPC calls
 			create l_factory
 			l_process := l_factory.process_launcher_with_command_line (command_line, Void)
 			l_process.redirect_output_to_agent (agent username.append)
-			l_process.redirect_error_to_agent (agent error.append)
+			l_process.redirect_error_to_agent (agent l_error.append)
 			l_process.launch
 
 				-- launch process
@@ -282,14 +282,14 @@ feature -- XML RPC calls
 				l_process.wait_for_exit
 
 					-- an error occurred
-				if not error.is_empty then
-					error.insert_string ("Error during release:%N", 1)
-					show_warning (error)
+				if not l_error.is_empty then
+					l_error.insert_string ("Error during release:%N", 1)
 				end
+				set_error (l_error)
 
 				-- the process could not be launched
 			else
-				show_warning ("Error during release:%NCommand line tool could not be launched")
+				set_error ("Error during release:%NCommand line tool could not be launched")
 			end
 		end
 
@@ -365,12 +365,12 @@ feature -- XML RPC calls
 					-- an error occurred
 				else
 					l_error.insert_string ("Error during workitem_list:%N", 1)
-					show_warning (l_error)
 				end
+				set_error (l_error)
 
 				-- the process could not be launched
 			else
-				show_warning ("Error during workitem_list:%NCommand line tool could not be launched")
+				set_error ("Error during workitem_list:%NCommand line tool could not be launched")
 			end
 		end
 
@@ -435,12 +435,11 @@ feature -- XML RPC calls
 					-- an error occurred
 				else
 					l_error.insert_string ("Error during workitem_details:%N", 1)
-					show_warning (l_error)
 				end
-
+				set_error (l_error)
 				-- the process could not be launched
 			else
-				show_warning ("Error during workitem_details:%NCommand line tool could not be launched")
+				set_error ("Error during workitem_details:%NCommand line tool could not be launched")
 			end
 		end
 
@@ -480,12 +479,12 @@ feature -- FTP functions
 					-- an error occurred
 				if not l_error.is_empty then
 					l_error.insert_string ("Error during ftp_upload:%N", 1)
-					show_warning (l_error)
 				end
+				set_error (l_error)
 
 				-- the process could not be launched
 			else
-				show_warning ("Error during ftp_upload:%NCommand line tool could not be launched")
+				set_error ("Error during ftp_upload:%NCommand line tool could not be launched")
 			end
 		end
 
@@ -542,12 +541,12 @@ feature -- FTP functions
 					-- an error occurred
 				else
 					l_error.insert_string ("Error during ftp_file_list:%N", 1)
-					show_warning (l_error)
 				end
+				set_error (l_error)
 
 				-- the process could not be launched
 			else
-				show_warning ("Error during ftp_file_list:%NCommand line tool could not be launched")
+				set_error ("Error during ftp_file_list:%NCommand line tool could not be launched")
 			end
 		end
 
@@ -584,12 +583,12 @@ feature -- FTP functions
 					-- an error occurred
 				if not l_error.is_empty then
 					l_error.insert_string ("Error during ftp_delete:%N", 1)
-					show_warning (l_error)
 				end
+				set_error (l_error)
 
 				-- the process could not be launched
 			else
-				show_warning ("Error during ftp_delete:%NCommand line tool could not be launched")
+				set_error ("Error during ftp_delete:%NCommand line tool could not be launched")
 			end
 		end
 
@@ -597,19 +596,11 @@ feature -- FTP functions
 
 feature {NONE} -- Implementation
 
-	show_warning (warning: STRING) is
-			-- show a warning dialog
-		local
-			warning_dialog: EV_WARNING_DIALOG
+	set_error (error: STRING) is
+			-- set `last_error'
 		do
---			create warning_dialog.make_with_text (warning)
---			if parent_window = Void then
---				warning_dialog.show
---			else
---				warning_dialog.show_modal_to_window (parent_window)
---			end
-			warning.prune_all ('%R')
-			last_error := warning.out
+			error.prune_all ('%R')
+			last_error := error.out
 		end
 
 feature {NONE} -- Implementation
@@ -761,10 +752,13 @@ feature {NONE} -- Implementation
 			-- the processed part of `a_string' will be removed from it
 		local
 			l_line: STRING
+			l_dummy: STRING
 		do
 			create Result.make
 			fill_general_workitem (Result, a_string)
 			Result.set_title (read_line_from_string (a_string))
+			Result.set_url (read_line_from_string (a_string))
+			Result.set_diff_url (read_line_from_string (a_string))
 
 			if read_details then
 				Result.set_detailed (True)
@@ -783,6 +777,8 @@ feature {NONE} -- Implementation
 			create Result.make
 			fill_general_workitem (Result, a_string)
 			Result.set_title (read_line_from_string (a_string))
+			Result.set_url (read_line_from_string (a_string))
+			Result.set_diff_url (read_line_from_string (a_string))
 
 			if read_details then
 				Result.set_detailed (True)

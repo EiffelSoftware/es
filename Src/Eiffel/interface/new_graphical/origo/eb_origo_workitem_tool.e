@@ -215,17 +215,6 @@ feature {NONE} -- Implementation
 				i := i + 1
 			end
 
-
---			workitem_grid.set_item (a_column, a_row: INTEGER_32, a_item: EV_GRID_ITEM)
-
---			l_rw := workitem_grid.row (1)
---			l_rw.set_background_color(create {EV_COLOR}.make_with_8_bit_rgb (120, 120, 120))
---			l_rw.set_item (1, create {EV_GRID_TEXT_ITEM}.make_with_text ("in 2 weeks"))
---			l_rw.set_item (2, create {EV_GRID_TEXT_ITEM}.make_with_text ("brick-breaker"))
---			l_rw.set_item (3, create {EV_GRID_TEXT_ITEM}.make_with_text ("bischora"))
---			l_rw.set_item (4, create {EV_GRID_TEXT_ITEM}.make_with_text ("commit"))
---			l_rw.set_item (5, create {EV_GRID_TEXT_ITEM}.make_with_text ("moo"))
-
 			hide_information_label
 		end
 

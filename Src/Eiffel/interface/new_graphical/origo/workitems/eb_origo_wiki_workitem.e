@@ -25,6 +25,8 @@ feature -- Initialisation
 			type := Workitem_type_wiki
 			title := ""
 			diff := ""
+			url := ""
+			diff_url := ""
 		end
 
 feature -- Access
@@ -46,6 +48,12 @@ feature -- Access
 
 	diff: STRING
 			-- diff
+
+	url: STRING
+			-- URL
+
+	diff_url: STRING
+			-- diff url
 
 feature -- Element Change
 
@@ -89,12 +97,37 @@ feature -- Element Change
 			set:  diff.is_equal (a_diff)
 		end
 
+	set_url (a_url: like url) is
+			-- set `url'
+		require
+			not_void: a_url /= Void
+		do
+			url := a_url.out
+		ensure
+			set:  url.is_equal (a_url)
+		end
+
+	set_diff_url (a_diff_url: like diff_url) is
+			-- set `diff_url'
+		require
+			not_void: a_diff_url /= Void
+		do
+			diff_url := a_diff_url.out
+		ensure
+			set:  diff_url.is_equal (a_diff_url)
+		end
+
 feature -- Output		
 
 	out: STRING is
 			-- redefine
 		do
-			Result := "Wiki page: " + title
+			if diff_url.is_empty then
+				Result := "New wiki page: "
+			else
+				Result := "Changes on wiki page "
+			end
+			Result.append (title)
 		end
 
 	label_text: STRING is
@@ -102,17 +135,30 @@ feature -- Output
 		do
 			Result := precursor + "%N%N"
 			Result.append ("Title: " + title + "%N")
-			Result.append ("Revisions: " + old_revision.out + " -> " + revision.out + "%N")
-			Result.append ("%NDiff:")
+
+			-- it's a wiki page blog entry
+			if diff_url.is_empty then
+				Result.append ("%NContent:")
+			else
+				Result.append ("Revisions: " + old_revision.out + " -> " + revision.out + "%N")
+				Result.append ("%NDiff:")
+			end
 		end
 
 	text_field_text: STRING is
 			-- redefine
 		do
-			Result := diff.out
+			Result := "URL: " + url + "%N"
+			if not diff_url.is_empty then
+				Result.append ("Diff URL: " + diff_url + "%N")
+			end
+			Result.append ("%N%N")
+			Result.append (diff)
 		end
 
 invariant
 	title_not_void: title /= Void
 	diff_not_void: diff /= Void
+	url_not_void: url /= Void
+	diff_url_not_void: diff_url /= Void
 end

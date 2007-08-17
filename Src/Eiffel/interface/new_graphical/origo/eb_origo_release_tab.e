@@ -188,6 +188,7 @@ feature {NONE} -- Implementation
 			l_confirm_dialog: EB_CONFIRMATION_DIALOG
 			l_info_dialog: EB_INFORMATION_DIALOG
 			l_selected_items: DYNAMIC_LIST [EV_LIST_ITEM]
+			l_warning_dialog: EB_WARNING_DIALOG
 		do
 				-- confirm deletion
 			l_message := "Do you really want to delete following files?%N"
@@ -227,6 +228,11 @@ feature {NONE} -- Implementation
 					parent_window.origo_client.ftp_delete (parent_window.username,
 															parent_window.password,
 															l_selected_items.item.text)
+
+					if not parent_window.origo_client.last_error.is_empty then
+						create l_warning_dialog.make_with_text (parent_window.origo_client.last_error)
+						l_warning_dialog.show_modal_to_window (parent_window)
+					end
 
 						-- remove item from `release_list'
 					release_list.prune (l_selected_items.item)
