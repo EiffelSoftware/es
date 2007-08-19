@@ -358,7 +358,7 @@ feature {NONE} -- Implementation
 
 					-- call the release api
 				if l_confirm_dialog /= Void and then l_confirm_dialog.is_ok_selected then
-					l_project_id ?= parent_window.project_list.selected_item.data
+					l_project_id := parent_window.project_list.selected_item.data.out.to_integer
 					parent_window.state_label.set_text ("Building release...")
 					parent_window.state_label.refresh_now
 					parent_window.origo_client.release (parent_window.session, l_project_id, l_dialog, l_file_list)

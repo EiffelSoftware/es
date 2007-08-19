@@ -161,7 +161,7 @@ feature -- XML RPC calls
 			end
 		end
 
-	project_list_of_user (session: STRING; username: STRING): DS_LINKED_LIST [TUPLE [id: INTEGER; name: STRING]] is
+	project_list_of_user (session: STRING; username: STRING): DS_LINKED_LIST [TUPLE [id: INTEGER; name: STRING; is_owned: BOOLEAN]] is
 			-- return project list of `username'
 		require
 			session_attached: session /= Void and not session.is_empty
@@ -174,7 +174,7 @@ feature -- XML RPC calls
 			project_list_string: STRING
 			l_lines: LIST [STRING]
 			l_line_parts: LIST [STRING]
-			l_project: TUPLE [id: INTEGER; name: STRING]
+			l_project: TUPLE [id: INTEGER; name: STRING; is_owned: BOOLEAN]
 		do
 			project_list_string := ""
 			l_error := ""
@@ -197,6 +197,7 @@ feature -- XML RPC calls
 				if l_error.is_empty then
 
 						-- parse the result and fill the Result
+					project_list_string.prune_all ('%R')
 					l_lines := project_list_string.split ('%N')
 					create Result.make
 					if l_lines.count > 0 then
@@ -213,6 +214,7 @@ feature -- XML RPC calls
 								create l_project
 								l_project.name := l_line_parts[2]
 								l_project.id := l_line_parts[1].to_integer
+								l_project.is_owned := l_line_parts[3].is_equal ("3")
 								Result.force_first (l_project)
 							end
 							l_lines.forth
@@ -610,8 +612,6 @@ feature {NONE} -- Implementation
 			-- if there is a '%N' just before the '%N' it will not be part of the returned string
 		require
 			a_string_not_void: a_string /= Void
-		local
-			l_index: INTEGER
 		do
 			Result := read_head_from_string (a_string, '%N')
 		ensure
@@ -677,8 +677,6 @@ feature {NONE} -- Implementation
 	read_issue_workitem (a_string: STRING; read_details: BOOLEAN): EB_ORIGO_ISSUE_WORKITEM is
 			-- read `a_string' and convert the data into an issue workitem
 			-- the processed part of `a_string' will be removed from it
-		local
-			l_line: STRING
 		do
 			create Result.make
 			fill_general_workitem (Result, a_string)
@@ -689,7 +687,6 @@ feature {NONE} -- Implementation
 			-- read `a_string' and convert the data into a release workitem
 			-- the processed part of `a_string' will be removed from it
 		local
-			l_line: STRING
 			l_file_count: INTEGER
 			i: INTEGER
 			l_strings: LIST [STRING]
@@ -733,7 +730,6 @@ feature {NONE} -- Implementation
 			-- the processed part of `a_string' will be removed from it
 		local
 			l_line: STRING
-			l_length: INTEGER
 		do
 			create Result.make
 			fill_general_workitem (Result, a_string)
@@ -750,9 +746,6 @@ feature {NONE} -- Implementation
 	read_wiki_workitem (a_string: STRING; read_details: BOOLEAN): EB_ORIGO_WIKI_WORKITEM is
 			-- read `a_string' and convert the data into a wiki workitem
 			-- the processed part of `a_string' will be removed from it
-		local
-			l_line: STRING
-			l_dummy: STRING
 		do
 			create Result.make
 			fill_general_workitem (Result, a_string)
@@ -771,8 +764,6 @@ feature {NONE} -- Implementation
 	read_blog_workitem (a_string: STRING; read_details: BOOLEAN): EB_ORIGO_BLOG_WORKITEM is
 			-- read `a_string' and convert the data into a blog workitem
 			-- the processed part of `a_string' will be removed from it
-		local
-			l_line: STRING
 		do
 			create Result.make
 			fill_general_workitem (Result, a_string)

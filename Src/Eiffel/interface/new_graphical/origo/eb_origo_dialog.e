@@ -45,7 +45,6 @@ feature -- Initialization
 			l_button_box: EV_HORIZONTAL_BOX
 			l_project_name_label: EV_LABEL
 			l_list_item: EV_LIST_ITEM
-			l_user_opts: USER_OPTIONS
 		do
 			default_create
 
@@ -55,7 +54,6 @@ feature -- Initialization
 				-- buttons
 			create l_ok_button.make_with_text_and_action (Interface_names.b_Ok, agent
 															do
-																save_data
 																destroy
 															end)
 			Layout_constants.set_default_width_for_button (l_ok_button)
@@ -75,14 +73,6 @@ feature -- Initialization
 			create l_list_item.make_with_text (Interface_names.t_No_origo_project)
 			l_list_item.set_data (-1)
 			project_list.extend (l_list_item)
-			l_user_opts := lace.user_options
-			if not l_user_opts.origo_project_name.is_equal (interface_names.t_no_origo_project.to_string_8) then
-				create l_list_item.make_with_text (l_user_opts.origo_project_name)
-				l_list_item.set_data (l_user_opts.origo_project_id)
-				project_list.extend (l_list_item)
-				l_list_item.enable_select
-			end
-			project_list.list_shown_actions.force (agent refresh_project_list)
 
 				-- notebook tabs
 			create upload_tab.make (Current)
@@ -188,6 +178,7 @@ feature {EB_ORIGO_UPLOAD_TAB, EB_ORIGO_RELEASE_TAB} -- Implementation
 
 			if password /= Void then
 				release_tab.refresh_release_list
+				refresh_project_list
 			else
 				l_warning_dialog.show_modal_to_window (Current)
 				destroy
@@ -198,7 +189,7 @@ feature {EB_ORIGO_UPLOAD_TAB, EB_ORIGO_RELEASE_TAB} -- Implementation
 			-- refresh content of project list combo box
 		local
 			l_list_item: EV_LIST_ITEM
-			l_projects: DS_LINKED_LIST [TUPLE[id: INTEGER; name: STRING]]
+			l_projects: DS_LINKED_LIST [TUPLE[id: INTEGER; name: STRING; is_owned: BOOLEAN]]
 			l_current_project_name: STRING
 			l_warning_dialog: EB_WARNING_DIALOG
 		do
@@ -223,12 +214,10 @@ feature {EB_ORIGO_UPLOAD_TAB, EB_ORIGO_RELEASE_TAB} -- Implementation
 				until
 					l_projects.after
 				loop
-					create l_list_item.make_with_text (l_projects.item_for_iteration.name)
-					l_list_item.set_data (l_projects.item_for_iteration.id)
-					project_list.force (l_list_item)
-
-					if l_current_project_name.is_equal (l_projects.item_for_iteration.name) then
-						l_list_item.enable_select
+					if l_projects.item_for_iteration.is_owned then
+						create l_list_item.make_with_text (l_projects.item_for_iteration.name)
+						l_list_item.set_data (l_projects.item_for_iteration.id)
+						project_list.force (l_list_item)
 					end
 
 					l_projects.forth
@@ -241,18 +230,6 @@ feature {EB_ORIGO_UPLOAD_TAB, EB_ORIGO_RELEASE_TAB} -- Implementation
 				l_warning_dialog.show_modal_to_window (Current)
 				state_label.set_text ("An error ocurred")
 			end
-		end
-
-	save_data is
-			-- save selected project name
-		local
-			l_user_opts: USER_OPTIONS
-			l_user_factory: USER_OPTIONS_FACTORY
-		do
-			l_user_opts := lace.user_options
-			l_user_opts.set_origo_project_name (project_list.selected_item.text)
-			create l_user_factory
-			l_user_factory.store (lace.user_options)
 		end
 
 	list_item_with_text (a_list: EV_LIST_ITEM_LIST; a_text: STRING; a_occurrence: INTEGER): EV_LIST_ITEM is
