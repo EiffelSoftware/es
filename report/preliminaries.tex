@@ -190,11 +190,24 @@ The methods from the scaffolding control if the events from the log match the de
 \end{description}
 
 \subsubsection{Assumptions}
-%no direct access from unmodifiable classes to a field of an observed class
-%no direct access from native code to an observed field
-%multi threading does not affect behaviour of the observed code.
-%runtime exceptions occur deterministically.
+Selective capture and replay works under some assumptions:
+\begin{itemize}
+ \item It is assumed that there is no direct access from unmodifiable classes to fields of observed classes.
+ \item Because native code is not instrumented, they also assume that there is no direct access from native code to observed fields.
+ \item The technique can not guarantee the same thread schedule during capture and replay phase. Therefore it is assumed that the interleaving due to multi-threading does not change the behaviour of the observed code.
+ \item They assume that runtime exceptions occur deterministically. This is necessary, because exceptions generated in the observed code are consumed, but not replayed.
+\end{itemize}
+
 \subsubsection{Special Cases}
+\begin{description}
+ \item [Polymorphism and Dynamic Binding] It is not always possible to determine whether an event is internal or external, because it depends on the dynamic type of the receiver. In these cases, it is necessary to add a runtime check to determine whether the receiver is an internal or external class. This is done using the \texttt{instanceof} operator. \texttt{XXX Is this insertion here valid?} We assume that this case occurs at least in examples that use multiple interface inheritance, where it can not be assumed that the implementors of an interface are either all in the observed set or all in the unobserved set.
+ \item [Inheritance] If a class \emph{c} is in the observed set, but not all of \emph{c's} subclasses, creating an instance of any of \emph{c's} subclasses would result in the creation of an instance of \emph{c}. To avoid this issue, it is required that if a class \emph{c} is added to the observed set, all subclasses of \emph{c} are also in the observed set. We assume that the side effect described here is an implementation specific problem, and could be avoided.
+ \item [reflection] The technique handles most cases of reflection, however in some cases, additional instrumentation is required (e.g. if reflection is used in external code to modify fields of observed classes). 
+ \item [Access Modifiers] In order to replay recorded executions, in some cases it is necessary to change access modifiers. We assume that this applies primarily to the \texttt{protected} modifier, which may prohibit access to observed classes from within the replay scaffolding.
+ \item [Garbage Collection] To allow the collection of unused objects, the technique must make sure that it does not keep references to unused objects. For example the reference map must use weak references to avoid memory leaks.
+ \item [Finalize] Calls to \texttt{finalize} are non-deterministic in Java, thus they can generate out-of-sync events during the replay phase. Therefore calls to \texttt{finalize} are treated in a special way: when receiving a call to \texttt{finalize}, the technique consumes the next matching entry in the event log, that is a call to \texttt{finalize}.
+\end{description}
+
 %Polymorphism and Dynamic Binding
 %Inheritance
 %Reflection

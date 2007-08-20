@@ -6,3 +6,7 @@
 
 %weitere Unterschiede:
 % - creation procedures nicht gesondert instrumentiert --> synchronisierung bei outcalls. sonst muessten die unobserved Klassen nicht instrumentiert werden (nur outcallret) (?)
+
+\section {Limitations}
+%-Konstruktoren nach ANY exportiert (fehlende unterstuetzung von Eiffel-Seite fuer Konstruktoren)
+%- Access modifiers e.g. export of a observed feature only to an unobserved class --> replay not possible.
