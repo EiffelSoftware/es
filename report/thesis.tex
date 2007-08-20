@@ -1,8 +1,8 @@
-\documentclass[a4paper,10pt]{report}
-
+\documentclass[a4paper,twoside,10pt]{report}
 %picture imports
 \usepackage{graphicx}
 \usepackage{color}
+\usepackage{fancyhdr}
 \definecolor{lbcolor}{rgb}{0.85,0.85,0.85}
 
 %sourcecode formatting
@@ -10,12 +10,13 @@
 \usepackage{url}
 
 
-\lstloadlanguages{Eiffel,bash}
-\newcommand{\eiffellisting}{\lstset{language=Eiffel,tabsize=2,backgroundcolor=\color{lbcolor},frame=tb,breaklines=true}}
+\lstloadlanguages{Eiffel,bash,Java}
+\newcommand{\eiffellisting}{\lstset{basicstyle=\small,language=Eiffel,tabsize=2,backgroundcolor=\color{lbcolor},frame=tb,breaklines=true}}
 \newcommand{\bashlisting}{\lstset{basicstyle=\small\tt,language=bash,tabsize=2,backgroundcolor=\color{lbcolor},frame=tb,breaklines=true,morekeywords={svn,geant,mkdir,activate_estudio}}}
+\newcommand{\javalisting}{\lstset{basicstyle=\small,language=Java,tabsize=2,backgroundcolor=\color{lbcolor},frame=tb,breaklines=true}}
 \newcommand{\identifier}[1]{\texttt{#1}}
 \newcommand{\figref}[1]{Figure \ref{#1}}
-
+\newcommand {\class}[1] {\texttt{#1}}
 \pagenumbering{roman}
 
 \begin{document}
@@ -78,6 +79,18 @@
 
 % chapters
 \pagenumbering{arabic}
+%configure headers:
+\pagestyle{fancy}%
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\footrulewidth}{0pt}
+\renewcommand{\chaptermark}[1]{\markboth{\MakeUppercase{#1}}{}}
+\renewcommand{\sectionmark}[1]{\markright{\MakeUppercase{#1}}{}}
+\fancyhf{}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[LO]{\rightmark}
+\fancyhead[RE]{\leftmark}
+\fancyfoot{}
+
 \addtolength{\parskip}{0.5\baselineskip} % add extra spacing between paragraphs
 \include{introduction}
 

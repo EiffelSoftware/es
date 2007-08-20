@@ -17,11 +17,11 @@ QuickBuild=
 
 [item:abstract.tex]
 archive=true
-column=60
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=4
-open=true
+line=0
+open=false
 
 [item:implementation.tex]
 archive=true
@@ -29,7 +29,7 @@ column=41
 encoding=UTF-8
 highlight=LaTeX
 line=87
-open=true
+open=false
 
 [item:introduction.tex]
 archive=true
@@ -37,23 +37,23 @@ column=766
 encoding=UTF-8
 highlight=LaTeX
 line=10
-open=true
+open=false
 
 [item:preliminaries.tex]
 archive=true
-column=0
+column=180
 encoding=UTF-8
 highlight=LaTeX
-line=68
+line=88
 open=true
 
 [item:related_work.tex]
 archive=true
-column=0
+column=188
 encoding=UTF-8
 highlight=LaTeX
-line=10
-open=true
+line=43
+open=false
 
 [item:thesis.bib]
 archive=true
@@ -61,7 +61,7 @@ column=13
 encoding=UTF-8
 highlight=BibTeX
 line=15
-open=true
+open=false
 
 [item:thesis.kilepr]
 archive=true
@@ -76,5 +76,5 @@ archive=true
 column=0
 encoding=UTF-8
 highlight=LaTeX
-line=86
+line=20
 open=true
