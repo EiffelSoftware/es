@@ -19,14 +19,9 @@ feature --creation
 			ignore_result: ANY
 			test_string: STRING
 		do
-			-- <methodbody_start name="make" args="[]">
-			-- </methodbody_start>
-				test_string := "test_string"
-				create the_account.make ("test")
-				create the_atm.make (Current)
-			-- <methodbody_end return_value="False">
-
-			-- </methodbody_end>
+			test_string := "test_string"
+			create the_account.make ("test")
+			create the_atm.make (Current)
 		end
 
 feature -- Access
@@ -37,26 +32,16 @@ feature -- Access
 		require
 			name_not_void: name /= Void
 		do
-			-- <methodbody_start name="account_for_name" args="[name]">
-			-- </methodbody_start>
-				if name.is_equal ("test") then
-					Result := the_account
-				end
-			-- <methodbody_end return_value="True">
-
-			-- </methodbody_end>
+			if name.is_equal ("test") then
+				Result := the_account
+			end
 		end
 
 	atm:ATM
 			-- ATM that is connected to this
 			-- bank
 		do
-			-- <methodbody_start name="atm" args="[]">
-			-- </methodbody_start>
-				Result := the_atm
-			-- <methodbody_end return_value="True">
-
-			-- </methodbody_end>
+			Result := the_atm
 		ensure
 			result_not_void: Result /= Void
 		end
@@ -71,14 +56,8 @@ feature -- Basic Operations
 		local
 			ignore_result: ANY
 		do
-			-- <methodbody_start name="withdraw" args="[an_account, amount]">
-			-- </methodbody_start>
 				an_account.withdraw (amount)
-				--XXX breaks replay
-				print (the_atm.authorization_key) -- to test outcalls ;)
-			-- <methodbody_end return_value="False">
-
-			-- </methodbody_end>
+--				print (the_atm.authorization_key) -- to test outcalls ;)
 		end
 
 	deposit(an_account: BANK_ACCOUNT; amount: REAL)
@@ -89,14 +68,8 @@ feature -- Basic Operations
 		local
 			ignore_result: ANY
 		do
-			-- <methodbody_start name="deposit" args="[an_account, amount]">
-			-- </methodbody_start>
-				an_account.deposit (amount)
-				--XXX breaks replay?
-				print (the_atm.authorization_key) -- test outcalls...
-			-- <methodbody_end return_value="False">
-
-			-- </methodbody_end>
+			an_account.deposit (amount)
+--			print (the_atm.authorization_key) -- test outcalls...
 		end
 
 feature {NONE} -- Implementation

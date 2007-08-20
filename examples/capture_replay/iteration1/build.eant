@@ -92,6 +92,10 @@
       Invoke the 'erl_g' tool on the current system. Make classes in
       ${type_list} creatable.
     </description>
+    <!--deletion of the reflection library is necessary, because otherwise
+        the reflection library would be reflected, too. -->
+    <echo message="deleting old reflection library ..."/>
+    <delete directory="reflection_library"/>
     <echo message="starting reflection library generation with Erl-G"/>
     <exec executable="erl_g ${system_dir}/iteration1_example.ecf ${type_list}"/>
   </target>

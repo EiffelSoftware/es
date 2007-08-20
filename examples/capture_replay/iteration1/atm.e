@@ -25,13 +25,9 @@ feature -- creation
 		local
 			ignore_result: ANY
 		do
-			-- <methodbody_start name="make" args="[a_bank]">
-			-- </methodbody_start>
-				the_bank := a_bank
-				create the_ui.make (Current)
-			-- <methodbody_end return_value="False">
-
-			-- </methodbody_end>
+			the_bank := a_bank
+			create the_ui.make (Current)
+			create the_log.make
 		end
 
 feature -- Access
@@ -41,12 +37,7 @@ feature -- Access
 	ui: ATM_UI
 			-- UI of the ATM
 		do
-			-- <methodbody_start name="ui" args="[]">
-			-- </methodbody_start>
-				Result := the_ui
-			-- <methodbody_end return_value="True">
-
-			-- </methodbody_end>
+			Result := the_ui
 		ensure
 			result_not_void: ui /= Void
 		end
@@ -54,14 +45,14 @@ feature -- Access
 	last_operation_succeeded: BOOLEAN
 			-- Did the last operation succeed?
 		do
-			-- <methodbody_start name="last_operation_succeeded" args="[]">
-			-- </methodbody_start>
-				Result := success
-			-- <methodbody_end return_value="True">
-
-			-- </methodbody_end>
+			Result := success
 		end
 
+	log: ATM_LOG is
+			-- The log of the ATM
+		do
+			Result := the_log
+		end
 
 feature -- Element change
 
@@ -73,19 +64,14 @@ feature -- Element change
 			an_account: BANK_ACCOUNT
 			ignore_result: ANY
 		do
-			-- <methodbody_start name="deposit" args="[account_name,amount]">
-			-- </methodbody_start>
-				an_account := the_bank.account_for_name (account_name)
+			an_account := the_bank.account_for_name (account_name)
 
-				if an_account /= Void then
-					the_bank.deposit (an_account, amount)
-					success := true
-				else
-					success := false
-				end
-			-- <methodbody_end return_value="False">
-
-			-- </methodbody_end>
+			if an_account /= Void then
+				the_bank.deposit (an_account, amount)
+				success := true
+			else
+				success := false
+			end
 		end
 
 	withdraw (account_name: STRING; amount:REAL)
@@ -97,19 +83,14 @@ feature -- Element change
 
 			ignore_result: ANY
 		do
-			-- <methodbody_start name="withdraw" args="[account_name, amount]">
-			-- </methodbody_start>
-				an_account := the_bank.account_for_name (account_name)
+			an_account := the_bank.account_for_name (account_name)
 
-				if an_account /= Void then
-					the_bank.withdraw (an_account, amount)
-					success := True
-				else
-					success := False
-				end
-			-- <methodbody_end return_value="False">
-
-			-- </methodbody_end>
+			if an_account /= Void then
+				the_bank.withdraw (an_account, amount)
+				success := True
+			else
+				success := False
+			end
 		end
 
 	account_exists (account_name:STRING): BOOLEAN
@@ -117,12 +98,7 @@ feature -- Element change
 		require
 				account_name_not_void: account_name /= Void
 		do
-			-- <methodbody_start name="account_exists" args="[account_name]">
-			-- </methodbody_start>
-				Result := (the_bank.account_for_name (account_name) /= Void)
-			-- <methodbody_end return_value="True">
-
-			-- </methodbody_end>
+			Result := (the_bank.account_for_name (account_name) /= Void)
 		end
 
 	balance_for_account_name (account_name: STRING): REAL
@@ -132,25 +108,9 @@ feature -- Element change
 		local
 			an_account: BANK_ACCOUNT
 		do
-			-- <methodbody_start name="balance_for_account_name" args="[account_name]">
-			-- </methodbody_start>
-				ui.ping
-				an_account:=the_bank.account_for_name (account_name)
-				Result := an_account.balance
-			-- <methodbody_end return_value="True">
-
-			-- </methodbody_end>
-		end
-
-	authorization_key: STRING
-			--the (fake) authorization key
-		do
-			-- <methodbody_start name="authorization_key" args="[]">
-			-- </methodbody_start>
-				Result:= "100%% trustworthy%N"
-			-- <methodbody_end return_value="True">
-
-			-- </methodbody_end>
+			ui.ping
+			an_account:=the_bank.account_for_name (account_name)
+			Result := an_account.balance
 		end
 
 	set_ui(a_ui: ATM_UI) is
@@ -160,22 +120,20 @@ feature -- Element change
 		local
 			ignore_result: ANY
 		do
-			-- <methodbody_start name="set_ui" args="[a_ui]">
-			-- </methodbody_start>
-				the_ui := a_ui
-			-- <methodbody_end return_value="False">
-
-			-- </methodbody_end>
+			the_ui := a_ui
 		end
 
 
 feature {NONE} -- Implementation
 
 	the_bank: BANK
+
 	the_ui: ATM_UI
+
+	the_log: ATM_LOG
 
 	success: BOOLEAN
 invariant
-	invariant_clause: True -- Your invariant here
-
+	ui_not_void: the_ui /= Void
+	log_not_void: the_log /= Void
 end
