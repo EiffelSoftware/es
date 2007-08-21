@@ -2,7 +2,7 @@
 %picture imports
 \usepackage{graphicx}
 \usepackage{color}
-\usepackage{fancyhdr}
+ \usepackage{fancyhdr}
 \definecolor{lbcolor}{rgb}{0.85,0.85,0.85}
 
 %sourcecode formatting
@@ -80,16 +80,17 @@
 % chapters
 \pagenumbering{arabic}
 %configure headers:
-\pagestyle{fancy}%
-\renewcommand{\headrulewidth}{0.3pt}
-\renewcommand{\footrulewidth}{0pt}
-\renewcommand{\chaptermark}[1]{\markboth{\MakeUppercase{#1}}{}}
-\renewcommand{\sectionmark}[1]{\markright{\MakeUppercase{#1}}{}}
-\fancyhf{}
-\fancyhead[LE,RO]{\thepage}
-\fancyhead[LO]{\rightmark}
-\fancyhead[RE]{\leftmark}
-\fancyfoot{}
+%XXX reenable fancyhdr, when fancyhdr.sty was found.
+% \pagestyle{fancy}%
+% \renewcommand{\headrulewidth}{0.3pt}
+% \renewcommand{\footrulewidth}{0pt}
+% \renewcommand{\chaptermark}[1]{\markboth{\MakeUppercase{#1}}{}}
+% \renewcommand{\sectionmark}[1]{\markright{\MakeUppercase{#1}}{}}
+% \fancyhf{}
+% \fancyhead[LE,RO]{\thepage}
+% \fancyhead[LO]{\rightmark}
+% \fancyhead[RE]{\leftmark}
+% \fancyfoot{}
 
 \addtolength{\parskip}{0.5\baselineskip} % add extra spacing between paragraphs
 \include{introduction}
@@ -101,10 +102,6 @@
 %-CDD (?)
 \include{eiffel_implementation}
 
-% Unterschiedliche Language features Eiffel/Java
-% Unterschiede der Anforderungen
-% -keine dynamische Kompilierung
-%  capture/replay ohne neukompilierung (cdd)
 \include{implementation}
 
 \chapter{Experimental Results}
