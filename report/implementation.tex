@@ -4,6 +4,9 @@
 %unterschiedliche Parts noch genauer beschreiben
 %-Log: (mikro-architektur), wieso kein XML?
 \section{Code Instrumentation}
+
+The problem arises, because the management code uses the same libraries as the application. When for example RECORDER writes an event to a file, this should not trigger additional events.  
+
 \subsection{Procedures}
 \subsection{Direct Manipulation from C Level}
 \subsection{Field Accesses}
@@ -100,3 +103,9 @@ geant install
 \end{lstlisting}
 
 The example can now be opened with the modified version of Eiffel Studio. Make sure that the CFLAGS are still set to '-DCAPTURE\_REPLAY'. Otherwise it will not be possible to build the example.
+
+
+
+\section {Limitations}
+%-Konstruktoren nach ANY exportiert (fehlende unterstuetzung von Eiffel-Seite fuer Konstruktoren)
+%- Access modifiers e.g. export of a observed feature only to an unobserved class --> replay not possible.

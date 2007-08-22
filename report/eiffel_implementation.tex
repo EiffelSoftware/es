@@ -11,10 +11,12 @@ Eiffel has a nomenclature that differs from other programming languages. Here th
 \begin{tabular}[]{|l|l|} \hline
  \textbf{Eiffel}&\textbf{Java} \\ \hline
  Attribute&Field \\ \hline
+ Ouery&Field or Method that has a return value \\ \hline
  Routine&Method \\ \hline
  Procedure&Method that has no return value \\ \hline
  Function&Method that has a return value \\ \hline
  Feature&Method or Attribute \\ \hline
+ ANY&Object (ancestor of all classes) \\ \hline
 \end{tabular} 
 \end{center}
 
@@ -59,12 +61,18 @@ These limitations can be resolved using selective capture and replay:
 
 Prestate extraction using selective capture and replay requires an immediate rerun of the application under test. Because complete recompiles in Eiffel last for tens of minutes up to hours, we can not afford to instrument the application again before replaying it. Thus it is necessary to design the code instrumentation to be both applicable for capture and replay phase. We pushed this approach even further to allow the user to disable the whole instrumentation. This allows execution with minimal overhead if capture and replay is not needed without recompiling the application.
 
-\section{Idea for Code Instrumentation}
+\section{Code Instrumentation Outline}
+In the previous chapter, we stated that there are two fundamental changes to the original implementation of selective capture and replay:
 
+\begin{enumerate}
+ \item It is necessary to determine dynamically whether an object is observed or not.
+\item It needs to be possible to switch between capture and replay phase without reinstrumenting the code.
+\end{enumerate}
 
-%weitere Unterschiede:
-% - creation procedures nicht gesondert instrumentiert --> synchronisierung bei outcalls. sonst muessten die unobserved Klassen nicht instrumentiert werden (nur outcallret) (?)
+The first requirement can be met by adding an additional query to every class that can be used to find out whether an object is an instance of an observed or an unobserved class. We ensure that every class has this query by adding it to ANY. In the next chapter we will discuss how this query can be implemented efficiently.
 
-\section {Limitations}
-%-Konstruktoren nach ANY exportiert (fehlende unterstuetzung von Eiffel-Seite fuer Konstruktoren)
-%- Access modifiers e.g. export of a observed feature only to an unobserved class --> replay not possible.
+In order to be able to switch between capture and replay mode, the class PROGRAM\_FLOW\_SINK was introduced. It is both the ancestor class of RECORDER, the class that contains the management code for recording events and PLAYER, the class that provides the scaffolding for replaying events. The standard instance of a PROGRAM\_FLOW\_SINK is globally accessible. It is dynamically bound to an instance of RECORDER during capture phase and PLAYER during replay phase.
+
+To create placeholder objects from unobserved classes, their original routine bodies are only executed during capture phase. When replaying, the routines only execute instrumentation code that invokes the scaffolding and takes care of the return value if necessary.
+
+Whereas the original implementation captures routine calls by instrumenting the call site (in the client), we decided to instrument the calee (the supplier). This simplifies code instrumentation, because there is no need to make changes inside existing routine bodies, it is sufficient to add some code at the beginning and the end of the routine bodies. %TODO Gibt es noch ein besseres Motiv?
