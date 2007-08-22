@@ -179,9 +179,18 @@ feature {NONE} -- Implementation
 				-- check if everything was filled out
 			if
 				name_field.text.is_empty or
-				version_field.text.is_empty
+				version_field.text.is_empty or
+				description_text.text.is_empty
 			then
-				create l_info.make_with_text ("You have to specify a release name and a version")
+				create l_info.make_with_text ("All fields must contain a text.")
+				l_info.show_modal_to_window (Current)
+
+			elseif
+				name_field.text.has ('"') or
+				version_field.text.has ('"') or
+				description_text.text.has ('"')
+			then
+				create l_info.make_with_text ("There are no %" allowed in any of the texts here.")
 				l_info.show_modal_to_window (Current)
 			else
 				closed_with_ok := True
