@@ -7,6 +7,7 @@ Delivery/studio/wizards/new_projects/dotnet/spec
 Delivery/studio/wizards/new_projects/vision2/spec
 Delivery/studio/wizards/new_projects/wel/spec
 Delivery/studio/wizards/others/precompile/spec
+Src/*.bak
 Src/C/CONFIGS/*.exe
 Src/C/CONFIGS/*.ilk
 Src/C/CONFIGS/*.lib
@@ -272,6 +273,10 @@ Src/Eiffel/doc/weasel_results/_vti_cnf
 Src/Eiffel/doc/weasel_results/_vti_pvt
 Src/Eiffel/eiffel/com_il_generation/Core/run-time/*.dll
 Src/Eiffel/eiffel/com_il_generation/Core/run-time/*.pdb
+Src/Eiffel/interface/new_graphical/preference_tool/parameters/*.bak
+Src/Eiffel/interface/new_graphical/shared/*.bak
+Src/Eiffel/interface/new_graphical/windows/development_window/*.bak
+Src/Eiffel/interface/new_graphical/windows/development_window/initialization/*.bak
 Src/dotnet/codedom_provider_2.0/configuration/*.rc
 Src/dotnet/consumer/*.wb
 Src/dotnet/consumer/EIFGENs
@@ -315,8 +320,10 @@ Src/framework/cli_writer/Clib/*.pdb
 Src/framework/cli_writer/spec
 Src/framework/configuration/*.wb
 Src/framework/configuration/EIFGENs
+Src/framework/interface_names/*.bak
 Src/framework/parser/parser/output.txt
 Src/free_add_ons
+Src/lib
 Src/library/com/spec/bcb
 Src/library/com/spec/mingw
 Src/library/com/spec/msc
@@ -353,6 +360,7 @@ Src/library/vision2/spec/unix
 Src/library/wel/Clib/ilwel.lib
 Src/library/wel/Clib/make.log
 Src/library/wel/Clib/wel.lib
+Src/library/wel/Clib/wel_hook.exp
 Src/library/wel/spec/bcb
 Src/library/wel/spec/mingw
 Src/library/wel/spec/msc
