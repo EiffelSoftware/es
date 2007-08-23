@@ -1,1 +1,0 @@
-CALL make.bat branches/Eiffel_for_aspnet_56 branches/Eiffel_56_new_consumer C:\Eiffel56

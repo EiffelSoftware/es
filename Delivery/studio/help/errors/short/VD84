@@ -1,2 +1,0 @@
-Configuration error: pre or post compile task could not be executed correctly.
-What to do: make sure that the command returns with a return value of 0.
