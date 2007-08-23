@@ -99,6 +99,11 @@
 	<PREF NAME="tools.context_tool.default_feature_formatter_index" DESCRIPTION="Feature format that is selected by default."><INTEGER>2</INTEGER></PREF>
 	<PREF NAME="tools.context_tool.formatters_history_size" DESCRIPTION="Number of cached formatted text in history."><INTEGER>60</INTEGER></PREF>
 	<PREF NAME="tools.context_tool.default_dependency_formatter_index" DESCRIPTION="Default dependency formatter that should be popped up automatically."><INTEGER>2</INTEGER></PREF>
+	
+	<PREF NAME="tools.origo.xml_rpc_client_path" DESCRIPTION="Path of Origo XML RPC command line client"><STRING></STRING></PREF>
+	<PREF NAME="tools.origo.user_key" DESCRIPTION="Your Origo user key"><STRING></STRING></PREF>
+	<PREF NAME="tools.origo.number_of_workitems" DESCRIPTION="Number of workitems to be displayed"><INTEGER>25</INTEGER></PREF>
+	<PREF NAME="tools.origo.show_unread_only" DESCRIPTION="Should only unread workitems be shown?"><BOOLEAN>False</BOOLEAN></PREF>
 
 	<PREF NAME="tools.metric_tool.automatic_go_to_result_panel" HIDDEN="true" DESCRIPTION="Show Detailed Result when computation done."><BOOLEAN>True</BOOLEAN></PREF>
 	<PREF NAME="tools.metric_tool.display_percentage_for_ratio" HIDDEN="true" DESCRIPTION="Is percentage for ratio metric displayed?"><BOOLEAN>True</BOOLEAN></PREF>
