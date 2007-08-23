@@ -2760,4 +2760,4 @@ free_add_ons/gcc/windows/msys/1.0/msys.ico -text
 free_add_ons/wex/examples/wex/Framework_example/TOOLBAR.BMP svneol=native#unset
 free_add_ons/wex/examples/wex/Framework_example/app.ico svneol=native#unset
 free_add_ons/wex/examples/wex/MCI_Splash/APP.ICO svneol=native#unset
-free_add_ons/wex/library/wex/Clib7/cwex.lib svneol=native#unset
+free_add_ons/wex/library/wex/Clib/cwex.lib svneol=native#unset
