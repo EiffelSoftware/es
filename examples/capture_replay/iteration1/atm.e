@@ -26,7 +26,8 @@ feature -- creation
 			ignore_result: ANY
 		do
 			the_bank := a_bank
-			create the_ui.make (Current)
+
+			create {ATM_UI_TEXTUAL}the_ui.make (Current)
 			create the_log.make
 		end
 
@@ -108,7 +109,6 @@ feature -- Element change
 		local
 			an_account: BANK_ACCOUNT
 		do
-			ui.ping
 			an_account:=the_bank.account_for_name (account_name)
 			Result := an_account.balance
 		end
