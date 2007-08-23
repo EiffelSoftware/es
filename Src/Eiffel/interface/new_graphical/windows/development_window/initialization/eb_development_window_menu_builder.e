@@ -767,7 +767,9 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			-- Build the project menu.
 		local
 			l_command_menu_item: EB_COMMAND_MENU_ITEM
+			l_menu_item: EV_MENU_ITEM
 			l_project_menu: EV_MENU
+			l_origo_cmd: EB_ORIGO_COMMAND
 		do
 			create l_project_menu.make_with_text (develop_window.Interface_names.m_project)
 			develop_window.menus.set_project_menu (l_project_menu)
@@ -867,6 +869,12 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			l_command_menu_item := develop_window.system_cmd.new_menu_item
 			develop_window.add_recyclable (l_command_menu_item)
 			l_project_menu.extend (l_command_menu_item)
+
+				-- Origo
+			create l_menu_item.make_with_text (develop_window.Interface_names.m_Origo)
+			create l_origo_cmd
+			l_menu_item.select_actions.extend (agent l_origo_cmd.execute)
+			l_project_menu.extend (l_menu_item)
 
 				-- System information
 			l_command_menu_item := develop_window.commands.system_info_cmd.new_menu_item
@@ -1041,6 +1049,8 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			fill_show_menu_for_tool (Result, develop_window.tools.favorites_tool)
 			Result.extend (create {EV_MENU_SEPARATOR})
 			fill_show_menu_for_tool (Result, develop_window.tools.breakpoints_tool)
+			Result.extend (create {EV_MENU_SEPARATOR})
+			fill_show_menu_for_tool (Result, develop_window.tools.origo_workitem_tool)
 
 			l_customized_tools := develop_window.tools.customized_tools
 			if not l_customized_tools.is_empty then

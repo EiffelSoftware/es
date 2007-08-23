@@ -30,6 +30,7 @@ feature {NONE} -- Initialization
 			create external_command_data.make (a_preferences)
 			create metric_tool_data.make (a_preferences)
 			create misc_shortcut_data.make (a_preferences)
+			create origo_data.make (a_preferences)
 			is_gui_mode := True
 		end
 
@@ -71,6 +72,9 @@ feature -- Access
 	misc_shortcut_data: EB_MISC_SHORTCUT_DATA
 			-- Shortcuts other than editor shortcuts and external command shortcuts.
 
+	origo_data: EB_ORIGO_DATA
+			-- Preference data for origo
+
 	is_gui_mode: BOOLEAN
 			-- Is current in gui mode?
 
@@ -84,6 +88,7 @@ invariant
 	search_tool_data_not_void: is_gui_mode implies search_tool_data /= Void
 	metric_tool_data_attached: is_gui_mode implies metric_tool_data /= Void
 	class_browser_data_attached: is_gui_mode implies class_browser_data /= Void
+	origo_data_attacked: origo_data /= Void
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

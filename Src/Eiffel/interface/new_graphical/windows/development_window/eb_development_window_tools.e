@@ -329,6 +329,9 @@ feature -- Query
 	errors_and_warnings_tool: ES_ERRORS_AND_WARNINGS_TOOL assign set_errors_and_warnings_tool
 			-- Errors and warnings tool
 
+	origo_workitem_tool: EB_ORIGO_WORKITEM_TOOL
+			-- Origo Workitem tool
+
 	customized_tools: LIST [EB_CUSTOMIZED_TOOL] is
 			-- Customized tools
 		do
@@ -583,6 +586,15 @@ feature {EB_DEVELOPMENT_WINDOW_MAIN_BUILDER, EB_DEVELOPMENT_WINDOW} -- Setting
 		ensure
 			set: windows_tool = a_tool
 		end
+
+	set_origo_workitem_tool (a_tool: like origo_workitem_tool) is
+			-- Set `origo_workitem_tool'
+		do
+			origo_workitem_tool := a_tool
+		ensure
+			set: origo_workitem_tool = a_tool
+		end
+
 
 feature{NONE} -- Implementation
 

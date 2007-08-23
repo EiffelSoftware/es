@@ -83,6 +83,13 @@ feature -- Pngs
 			Result := load_pixmap_from_repository ("borland_logo")
 		end
 
+	bm_Origo: EV_PIXMAP is
+			-- Icon bitmap for Origo
+		once
+			Result := load_pixmap_from_repository ("origo")
+		end
+
+
 feature -- Icons
 
 	Icon_dotnet_import: EV_PIXMAP is
