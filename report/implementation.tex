@@ -1,24 +1,21 @@
 
 \chapter{Implementation}
-\section{Architecture}
-%unterschiedliche Parts noch genauer beschreiben
-%-Log: (mikro-architektur), wieso kein XML?
+
 \section{Code Instrumentation}
 
 The problem arises, because the management code uses the same libraries as the application. When for example RECORDER writes an event to a file, this should not trigger additional events.  
-
-\subsection{Procedures}
-\subsection{Direct Manipulation from C Level}
-\subsection{Field Accesses}
+\subsection{Routines}
+\subsection{Attribute Accesses}
+\subsection{Attribute Manipulation from C Level}
+\section{Architecture}
+%unterschiedliche Parts noch genauer beschreiben
+%-Log: (mikro-architektur), wieso kein XML?
 \section{Advantages over Traditional Capture and Replay}
 \section{Limitations}
 %unter welchen Umstaenden musste manuell instrumentiert werden??
 \section{Future Steps}
-%Design des Management Codes
-% Idee der Instrumentierung & Beispiel
-% Vorteile gegenüber der Original Implementierung
-% Limitations
-% Experimental Results
+%Fehlende features + idee zu deren implementierung
+
 \section{Building the Example from Source}
 In this section the process of building an example with capture replay support under Linux will be described. Setting up the modified version of Eiffel Studio and all necessary tools will take the biggest part of this explanation.\\
 %TODO: wieso genau wird eine modifizierte Version von Eiffel Studio benoetigt??

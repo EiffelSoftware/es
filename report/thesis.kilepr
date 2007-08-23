@@ -25,18 +25,18 @@ open=false
 
 [item:eiffel_implementation.tex]
 archive=true
-column=292
+column=17
 encoding=UTF-8
 highlight=LaTeX
-line=44
+line=59
 open=true
 
 [item:implementation.tex]
 archive=true
-column=0
+column=106
 encoding=UTF-8
 highlight=LaTeX
-line=93
+line=110
 open=true
 
 [item:introduction.tex]

@@ -3712,6 +3712,8 @@ report/illustrations/example_class_diagram.svg -text
 report/illustrations/example_diagrams.xmi -text
 report/illustrations/example_withdrawal.pdf -text
 report/illustrations/example_withdrawal.svg -text
+report/illustrations/obs_unobs_multiple_inheritance.pdf -text
+report/illustrations/obs_unobs_multiple_inheritance.svg -text
 report/illustrations/scr_capture_replay_phase.pdf -text
 report/illustrations/scr_capture_replay_phase.svg -text
 report/illustrations/scr_overall_schema.pdf -text
