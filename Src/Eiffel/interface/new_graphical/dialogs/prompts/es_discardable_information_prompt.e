@@ -1,58 +1,65 @@
 indexing
-
-	description:
-		"Error when a name of a creation clause is not a final name %
-		%of the associated class."
+	description: "[
+		A EiffelStudio discardable informative prompt.
+	]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class.";
-	date: "$Date$";
-	revision: "$Revision $"
+	date: "$date$";
+	revision: "$revision$"
 
-class VGCP2
+class
+	ES_DISCARDABLE_INFORMATION_PROMPT
 
 inherit
-	VGCP
+	ES_DISCARDABLE_PROMPT
 		redefine
-			subcode, build_explain, print_single_line_error_message
-		end;
-
-feature -- Properties
-
-	subcode: INTEGER is 2;
-
-	feature_name: STRING;
-			-- Feature name repeated in the creation clause of the class
-			-- of id `class_id'
-
-feature -- Output
-
-	build_explain (a_text_formatter: TEXT_FORMATTER) is
-		do
-			a_text_formatter.add ("Invalid creation procedure name: ");
-			a_text_formatter.add (feature_name);
-			a_text_formatter.add_new_line;
-		end;
-
-feature {NONE} -- Output
-
-	print_single_line_error_message (a_text_formatter: TEXT_FORMATTER) is
-			-- Displays single line help in `a_text_formatter'.
-		do
-			Precursor {VGCP} (a_text_formatter)
-			a_text_formatter.add_space
-			a_text_formatter.add ("Invalid creation procedure `" + feature_name + "'.")
+			build_prompt_interface
 		end
 
-feature {COMPILER_EXPORTER} -- Setting
+create
+	make,
+	make_standard
 
-	set_feature_name (s: STRING) is
-			-- Assign `s' to `feature_name'.
+feature {NONE} -- User interface initialization
+
+	build_prompt_interface (a_container: EV_VERTICAL_BOX)
+			-- Builds the dialog's user interface.
+			-- Note: Redefine to add widgets before the discardable check.
+			--
+			-- `a_container': The dialog's container where the user interface elements should be extended
 		do
-			feature_name := s;
-		end;
+			Precursor {ES_DISCARDABLE_PROMPT} (a_container)
+			set_title (interface_names.t_eiffelstudio_info)
+		end
 
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+feature {NONE} -- Access
+
+	icon: EV_PIXEL_BUFFER
+			-- The dialog's icon
+		do
+			Result := large_icon
+		end
+
+	large_icon: EV_PIXEL_BUFFER
+			-- The dialog's large icon, shown on the left
+		do
+			Result := os_stock_pixmaps.information_pixmap
+		end
+
+	standard_buttons: DS_HASH_SET [INTEGER]
+			-- Standard set of buttons for a current prompt
+		once
+			Result := dialog_buttons_helper.ok_cancel_buttons
+		end
+
+	standard_default_button: INTEGER
+			-- Standard buttons `standard_buttons' default button
+		once
+			Result := dialog_buttons_helper.ok_button
+		end
+
+;indexing
+	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -83,4 +90,4 @@ indexing
 			 Customer support http://support.eiffel.com
 		]"
 
-end -- class VGCP2
+end

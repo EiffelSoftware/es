@@ -1,58 +1,28 @@
 indexing
-
-	description:
-		"Error when a name of a creation clause is not a final name %
-		%of the associated class."
+	description: "[
+		Shared access to a instance of {ES_DIALOG_BUTTONS}. For more information please see {ES_DIALOG_BUTTONS}.
+	]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class.";
-	date: "$Date$";
-	revision: "$Revision $"
+	date: "$date$";
+	revision: "$revision$"
 
-class VGCP2
+class
+	ES_SHARED_DIALOG_BUTTONS
 
-inherit
-	VGCP
-		redefine
-			subcode, build_explain, print_single_line_error_message
-		end;
+feature -- Access
 
-feature -- Properties
-
-	subcode: INTEGER is 2;
-
-	feature_name: STRING;
-			-- Feature name repeated in the creation clause of the class
-			-- of id `class_id'
-
-feature -- Output
-
-	build_explain (a_text_formatter: TEXT_FORMATTER) is
-		do
-			a_text_formatter.add ("Invalid creation procedure name: ");
-			a_text_formatter.add (feature_name);
-			a_text_formatter.add_new_line;
-		end;
-
-feature {NONE} -- Output
-
-	print_single_line_error_message (a_text_formatter: TEXT_FORMATTER) is
-			-- Displays single line help in `a_text_formatter'.
-		do
-			Precursor {VGCP} (a_text_formatter)
-			a_text_formatter.add_space
-			a_text_formatter.add ("Invalid creation procedure `" + feature_name + "'.")
+	dialog_buttons: ES_DIALOG_BUTTONS
+			-- Shared access to EiffelStudio dialog buttons
+		once
+			create Result
+		ensure
+			result_attached: Result /= Void
+			result_consistent: Result = dialog_buttons
 		end
 
-feature {COMPILER_EXPORTER} -- Setting
-
-	set_feature_name (s: STRING) is
-			-- Assign `s' to `feature_name'.
-		do
-			feature_name := s;
-		end;
-
-indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+;indexing
+	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -83,4 +53,4 @@ indexing
 			 Customer support http://support.eiffel.com
 		]"
 
-end -- class VGCP2
+end
