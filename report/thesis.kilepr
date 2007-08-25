@@ -3,7 +3,7 @@ img_extIsRegExp=false
 img_extensions=.eps .pdf .dvi .ps .fig .gif .jpg .jpeg .png
 kileprversion=1
 kileversion=1.9.3
-lastDocument=eiffel_implementation.tex
+lastDocument=preliminaries.tex
 masterDocument=
 name=thesis
 pkg_extIsRegExp=false
@@ -33,10 +33,10 @@ open=true
 
 [item:implementation.tex]
 archive=true
-column=106
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=110
+line=0
 open=true
 
 [item:introduction.tex]
@@ -49,10 +49,10 @@ open=false
 
 [item:preliminaries.tex]
 archive=true
-column=273
+column=9
 encoding=UTF-8
 highlight=LaTeX
-line=28
+line=205
 open=true
 
 [item:related_work.tex]
