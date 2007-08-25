@@ -22,12 +22,11 @@ feature -- creation
 			--'a_bank'.
 		require
 			a_bank_not_void: a_bank /= Void
-		local
-			ignore_result: ANY
 		do
 			the_bank := a_bank
 
-			create {ATM_UI_TEXTUAL}the_ui.make (Current)
+--			create {ATM_UI_TEXTUAL}the_ui.make (Current)
+			create {ATM_UI_GRAPHICAL}the_ui.make (Current)
 			create the_log.make
 		end
 
@@ -63,7 +62,6 @@ feature -- Element change
 			account_exists: account_exists(account_name)
 		local
 			an_account: BANK_ACCOUNT
-			ignore_result: ANY
 		do
 			an_account := the_bank.account_for_name (account_name)
 
@@ -81,8 +79,6 @@ feature -- Element change
 			account_exists: account_exists(account_name)
 		local
 			an_account: BANK_ACCOUNT
-
-			ignore_result: ANY
 		do
 			an_account := the_bank.account_for_name (account_name)
 
@@ -117,8 +113,6 @@ feature -- Element change
 			-- replace the ATM's UI.
 		require
 			a_ui_not_void: a_ui /= Void
-		local
-			ignore_result: ANY
 		do
 			the_ui := a_ui
 		end

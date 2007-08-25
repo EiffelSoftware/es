@@ -45,38 +45,32 @@ feature -- Basic operations
 			-- Run the UI.
 		local
 			exit: BOOLEAN
-			ignore_result: ANY
 		do
-			-- <methodbody_start name="run" args="[]">
-			-- </methodbody_start>
-				from
-					exit := False
-				until
-					exit
-				loop
-					print("ATM Main Menu. Your options: %N")
-					print("d deposit %N")
-					print("w withdraw %N")
-					print("q quit %N")
+			from
+				exit := False
+			until
+				exit
+			loop
+				print("ATM Main Menu. Your options: %N")
+				print("d deposit %N")
+				print("w withdraw %N")
+				print("q quit %N")
 
-					io.read_character
+				io.read_character
 
-					inspect
-						io.last_character
-					when 'd' then
-						deposit
-					when 'w' then
-						withdraw
-					when 'q' then
-						print ("exiting application")
-						exit := True
-					else
-						print("command not recognized")
-					end
+				inspect
+					io.last_character
+				when 'd' then
+					deposit
+				when 'w' then
+					withdraw
+				when 'q' then
+					print ("exiting application")
+					exit := True
+				else
+					print("command not recognized")
 				end
-			-- <methodbody_end return_value="False">
-
-			-- </methodbody_end>
+			end
 		end
 
 feature -- Obsolete

@@ -19,10 +19,10 @@ feature -- Initialization
 			-- Create a new ATM_UI for 'an_atm'.
 		require
 			an_atm_not_void: an_atm /= Void
-		local
-			ignore_result: ANY
 		do
 				atm := an_atm
+		ensure
+			atm_set: atm = an_atm
 		end
 
 feature -- Access

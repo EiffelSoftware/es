@@ -16,7 +16,6 @@ feature --creation
 	make
 		-- Create a bank
 		local
-			ignore_result: ANY
 			test_string: STRING
 		do
 			test_string := "test_string"
@@ -53,11 +52,9 @@ feature -- Basic Operations
 		require
 			an_account_not_void: an_account /= Void
 			amount_not_negative: amount >= 0
-		local
-			ignore_result: ANY
 		do
-				an_account.withdraw (amount)
---				print (the_atm.authorization_key) -- to test outcalls ;)
+			an_account.withdraw (amount)
+--			print (the_atm.authorization_key) -- to test outcalls ;)
 		end
 
 	deposit(an_account: BANK_ACCOUNT; amount: REAL)
@@ -65,8 +62,6 @@ feature -- Basic Operations
 		require
 			an_account_not_void: an_account /= Void
 			amount_not_negative: amount >= 0
-		local
-			ignore_result: ANY
 		do
 			an_account.deposit (amount)
 --			print (the_atm.authorization_key) -- test outcalls...

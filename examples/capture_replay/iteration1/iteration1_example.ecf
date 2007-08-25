@@ -9,6 +9,7 @@
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf" readonly="false"/>
 		<library name="gobo" location="$ISE_LIBRARY\library\gobo_vanilla.ecf"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
+		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf"/>
 		<cluster name="additional_base_classes" location="..\..\..\Src\library\base\capture_replay\own_classes\" recursive="true">
 			<option>
 				<assertions/>

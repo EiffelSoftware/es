@@ -16,15 +16,8 @@ feature -- creation
 			-- Make a Bank account with name `a_name'.
 		require
 			a_name_not_void: a_name /= Void
-		local
-			ignore_result: ANY
 		do
-			-- <methodbody_start name="make" args="[a_name]">
-			-- </methodbody_start>
-				the_name := a_name
-			-- <methodbody_end return_value="False">
-
-			-- </methodbody_end>
+			the_name := a_name
 		ensure
 			name_set: name = a_name
 		end
@@ -34,23 +27,13 @@ feature -- Access
 	name: STRING is
 			-- Name of the account
 		do
-			-- <methodbody_start name="name" args="[]">
-			-- </methodbody_start>
-				Result := the_name
-			-- <methodbody_end return_value="True">
-
-			-- </methodbody_end>
+			Result := the_name
 		end
 
 	balance: REAL is
 			-- Balance of the account
 		do
-			-- <methodbody_start name="balance" args="[]">
-			-- </methodbody_start>
-				Result := the_balance
-			-- <methodbody_end return_value="True">
-
-			-- </methodbody_end>
+			Result := the_balance
 		end
 
 feature {BANK} -- Restricted
@@ -59,15 +42,8 @@ feature {BANK} -- Restricted
 			-- Withdraw 'an_amount'
 		require
 			an_amount_reasonable: an_amount >= 0
-		local
-			ignore_result: ANY
 		do
-			-- <methodbody_start name="withdraw" args="[an_amount]">
-			-- </methodbody_start>
-				the_balance := the_balance - an_amount
-			-- <methodbody_end return_value="False">
-
-			-- </methodbody_end>
+			the_balance := the_balance - an_amount
 		ensure
 			amount_withdrawn: balance = old balance - an_amount
 		end
@@ -77,15 +53,8 @@ feature {BANK} -- Restricted
 			--Deposit 'an_amount'
 		require
 			an_amount_reasonable: an_amount >= 0
-		local
-			ignore_result: ANY
 		do
-			-- <methodbody_start name="deposit" args="[an_amount]">
-			-- </methodbody_start>
-				the_balance := the_balance + an_amount
-			-- <methodbody_end return_value="False">
-
-			-- </methodbody_end>
+			the_balance := the_balance + an_amount
 		ensure
 			an_amount_deposited: balance = old balance + an_amount
 		end
