@@ -1,4 +1,5 @@
 \chapter{Capture and Replay for Eiffel}
+\eiffellisting
 \section{Differences to Existing Implementation}
 Selective capture and replay as described by Joshi and Orso \cite{orso05may} can not be directly applied to Eiffel. Although the core elements of the technique can be used in Eiffel, too, we need to adapt some parts. In this section the changes to the original implementation and reasons for these changes will be discussed.
 
@@ -72,15 +73,99 @@ Due to differences between Eiffel and Java and a different use case, there are t
 
 The first requirement can be met by adding an additional query to every class so that it is possible to find out whether an object is an instance of an observed or an unobserved class. We ensure that every class has this query by adding it to ANY. In the next chapter we will discuss how this query can be implemented efficiently.
 
-In order to be able to switch between capture and replay mode, the class PROGRAM\_FLOW\_SINK was introduced. It is both the ancestor class of RECORDER, the class that contains the management code for recording events and PLAYER, the class that provides the scaffolding for replaying events. The standard instance of a PROGRAM\_FLOW\_SINK is globally accessible. It is dynamically bound to an instance of RECORDER during capture phase and PLAYER during replay phase.
+In order to be able to switch between capture and replay mode, the class PROGRAM\_FLOW\_SINK was introduced. Program flow events are put into the PROGRAM\_FLOW\_SINK. It is both the ancestor class of RECORDER, the class that contains the management code for recording events and PLAYER, the class that provides the scaffolding for replaying events. The standard instance of a PROGRAM\_FLOW\_SINK is globally accessible. It is dynamically bound to an instance of RECORDER during capture phase and PLAYER during replay phase.
 
 To create placeholder objects from unobserved classes, their original routine bodies are disabled during replay pha phase. When replaying, the routines only execute instrumentation code that invokes the scaffolding and takes care of the return value if necessary.
 
+\subsection{Routines}
 Whereas the original implementation captures routine calls by instrumenting the call site (in the client), we decided to instrument the calee (the supplier). This simplifies code instrumentation, because there is no need to make changes inside existing routine bodies, it is sufficient to add some code at the beginning and the end of the routine bodies. %TODO Gibt es noch ein besseres Motiv?
+
+The routine instrumentation can be divided into three parts (\figref{fig:routine_instrumentation_structure}): Right at the beginning of the routine, code to detect call events is inserted. The original routine body is made conditional so that it is not executed for unobserved routines during the replay phase. Finally, code to detect callret events is inserted at the end of the routine.
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.5\textwidth]{illustrations/routine_instrumentation_structure}
+  \caption{Structure of Routine Instrumentations}
+  \label{fig:routine_instrumentation_structure}
+\end{figure}
+
+To explain instrumentation in more detail, we describe each of these three parts using the command \texttt{withdraw} of the class \texttt{ATM} (\listref{lst:withdraw_original}).
+
+\begin{lstlisting}[caption=Original Code of Command \texttt{withdraw} ,label=lst:withdraw_original]
+withdraw (account_name: STRING_8; amount: REAL_32)
+		-- Withdraw 'amount' on the account with name 'account_name'
+	require
+		account_exists: account_exists (account_name)
+	local
+		an_account: BANK_ACCOUNT
+	do
+		an_account := the_bank.account_for_name (account_name)
+		if an_account /= Void then
+			the_bank.withdraw (an_account, amount)
+			success := True
+		else
+			success := False
+		end
+	end
+\end{lstlisting}
+
+\subsubsection{Capturing Call Events}
+\subsubsection{Conditional Methodbody Execution}
+\subsubsection{Capturing Callret Events}
+
+
+
+\begin{itemize}
+ \item Code to detect call events (INCALL and OUTCALL) is inserted right at the beginning of the routine. If a border crossing call is detected, the code prepares the routine arguments, the target of the call and the routine name for the PROGRAM\_FLOW\_SINK.
+ \item The technique makes sure that the original method body of unobserved routines is only executed during capture phase.
+ \item After the conditional method body, instrumentation code to detect the callret events (INCALLRET and OUTCALLRET) follows. If the call was triggered across the border, the return value is prepared for the PROGRAM\_FLOW\_SINK.
+\end{itemize}
+
+
+
+
+\begin{lstlisting}
+withdraw (account_name: STRING_8; amount: REAL_32)
+		-- Withdraw 'amount' on the account with name 'account_name'
+	require
+		account_exists: account_exists (account_name)
+	local
+		an_account: BANK_ACCOUNT
+		ignore_result: ANY
+	do
+		if program_flow_sink.is_capture_replay_enabled then
+			program_flow_sink.enter
+			if program_flow_sink.observed_stack_item /= is_observed then
+				program_flow_sink.put_to_observed_stack (is_observed)
+				program_flow_sink.put_feature_invocation ("withdraw", Current, [account_name, amount])
+			else
+				program_flow_sink.put_to_observed_stack (is_observed)
+			end
+			program_flow_sink.leave
+		end
+		if (not program_flow_sink.is_replay_phase) or is_observed then
+			an_account := the_bank.account_for_name (account_name)
+			if an_account /= Void then
+				the_bank.withdraw (an_account, amount)
+				success := True
+			else
+				success := False
+			end
+		end
+		if program_flow_sink.is_capture_replay_enabled then
+			program_flow_sink.enter
+			program_flow_sink.remove_from_observed_stack
+			if program_flow_sink.observed_stack_item /= is_observed then
+				program_flow_sink.put_feature_exit (Void)
+			end
+			program_flow_sink.leave
+		end
+	end
+\end{lstlisting}
+
 
 
 The problem arises, because the management code uses the same libraries as the application. When for example RECORDER writes an event to a file, this should not trigger additional events.  
-\subsection{Routines}
+
 \subsection{Attribute Accesses}
 \subsection{Attribute Manipulation from C Level}
 

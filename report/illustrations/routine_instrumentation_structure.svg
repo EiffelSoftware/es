@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.0"
+   width="265.77597"
+   height="216.94449"
+   id="svg2">
+  <defs
+     id="defs4" />
+  <g
+     transform="translate(-99.500008,-81.112)"
+     id="layer1">
+    <rect
+       width="264.77597"
+       height="215.94449"
+       rx="8.0000019"
+       ry="7.999999"
+       x="100.00001"
+       y="81.612"
+       style="opacity:1;fill:#eeeeee;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:8.8;stroke-opacity:1"
+       id="rect2160" />
+    <text
+       x="114.71785"
+       y="95.13266"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       id="text2162"
+       xml:space="preserve"><tspan
+         x="114.71785"
+         y="95.13266"
+         id="tspan2164">Routine</tspan></text>
+    <rect
+       width="248.99998"
+       height="40.154438"
+       rx="8"
+       ry="7.9999995"
+       x="107.76624"
+       y="100.35359"
+       style="opacity:1;fill:#fdd99b;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:8.8;stroke-opacity:1"
+       id="rect2166" />
+    <rect
+       width="249"
+       height="98.84169"
+       rx="8.000001"
+       ry="7.9999995"
+       x="107.76624"
+       y="143.15012"
+       style="opacity:1;fill:#aaccee;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:8.8;stroke-opacity:1"
+       id="rect2168" />
+    <rect
+       width="249"
+       height="44.78764"
+       rx="8.000001"
+       ry="7.9999995"
+       x="107.76624"
+       y="244.60471"
+       style="opacity:1;fill:#fdd99b;fill-opacity:1;stroke:#000000;stroke-width:0.99999994;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:8.8;stroke-opacity:1"
+       id="rect2170" />
+    <text
+       x="114.71785"
+       y="259.32037"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       id="text2172"
+       xml:space="preserve"><tspan
+         x="114.71785"
+         y="259.32037"
+         id="tspan2174">Instrumentation to capture</tspan><tspan
+         x="114.71785"
+         y="274.32037"
+         id="tspan2184">callret events</tspan></text>
+    <text
+       x="114.71785"
+       y="155.27467"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       id="text2176"
+       xml:space="preserve"><tspan
+         x="114.71785"
+         y="155.27467"
+         id="tspan2178">Conditional original methodbody</tspan></text>
+    <text
+       x="114.71785"
+       y="113.85841"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       id="text2180"
+       xml:space="preserve"><tspan
+         x="114.71785"
+         y="113.85841"
+         id="tspan2182">Instrumentation to capture call events</tspan></text>
+  </g>
+</svg>

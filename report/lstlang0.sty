@@ -1,0 +1,47 @@
+\lst@definelanguage{extNadl}%
+  {morekeywords={VARIABLES, bool, nat, SYSTEM, agt, mod, eff, pre,
+      ENVIRONMENT, INITIALLY, GOAL},
+   sensitive,%
+   morecomment=[l]\%,%
+   morestring=[d]",%
+  breaklines=true, 
+  numbers=left, 
+  stepnumber=3, 
+  numbersep=2pt, 
+  numberstyle=\tiny,
+  basicstyle=\tiny,
+  backgroundcolor=\color{lightgray}, 
+  identifierstyle=\color{black}, 
+  commentstyle=\color{darkgreen}, 
+  stringstyle=\color{darkgreen}\bfseries,
+  showstringspaces=false,
+  keywordstyle=\color{darkblue},
+  tabsize=2,
+  frame=ltrb,
+  framexleftmargin=10pt,
+  framexrightmargin=10pt,
+  frameround=tttt
+  }[keywords,comments,strings]%
+
+\lst@definelanguage{OOSC2Eiffel}%
+  {morekeywords={alias,all,and,as,check,class,%
+      creation,create,debug,deferred,do,else,elseif,end,%
+      ensure,expanded,export,external,false,feature,from,frozen,if,%
+      implies,indexing,infix,inherit,inspect,invariant,is,%
+      like,local,loop,not,obsolete,old,once,or,prefix,%
+      redefine,rename,require,rescue,retry,select,%
+      separate,strip,then,true,undefine,unique,until,variant,%
+      when,xor, Result, Current},%
+   morendkeywords={DOUBLE, INTEGER, POINTER NONE, REAL,
+     STRING,BIT,BOOLEAN,CHARACTER,STRING
+     LINKED_LIST,
+     INTEGER, BOOLEAN, CURSOR, DYNAMIC_LIST, DYNAMIC_CHAIN, LIST,
+     TRAVERSABLE, ACTIVE, CHAIN, OPERATING_ENVIRONMENT, ANY, STD_FILES,
+     PROCEDURE, TUPLE, ROUTINE, FUNCTION, LINEAR, COLLECTION,
+     CONTAINER, SEQUENCE, BILINEAR},
+   sensitive,%
+   morecomment=[l]--,%
+   morestring=[d]",%
+   columns=flexible,%
+  }[keywords,comments,strings]%
+
