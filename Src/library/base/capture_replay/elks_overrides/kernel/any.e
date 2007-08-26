@@ -407,13 +407,7 @@ feature -- Capture/Replay
 		do
 			cr_originally_enabled := program_flow_sink.is_capture_replay_enabled
 			program_flow_sink.enter
-			class_name := Current.generating_type
-			end_of_class_name := class_name.index_of (' ', 1)
-			if end_of_class_name /= 0 then
-				class_name := class_name.substring (0, end_of_class_name)
-			end
-
-			Result := not cr_unobserved_table.has (class_name)
+			Result := cr_unobserved_set.has_object(Current)
 
 			if cr_originally_enabled then
 				-- Don't reenable c/r if it was disabled before
@@ -421,17 +415,14 @@ feature -- Capture/Replay
 			end
 		end
 
-	cr_unobserved_table: HASH_TABLE [BOOLEAN, STRING] is
-			-- Contains one entry for each class that is not observable.
+	cr_unobserved_set: UNOBSERVED_SET is
+			-- Contains the name of that classes that are unobserved.
 			-- XXX: This is a hack, a more sophisticated implementation
 			--     of is_observed should not use this table anymore for performance reasons.
 			--     It'll be smarter to override the is_observed feature (which will result in
 			--     a _lot_ of undefining for descendants of the classes that do the override.
-		local
-			table_creator: UNOBSERVED_TABLE_CREATOR
 		once
-			create table_creator
-			Result := table_creator.create_unobserved_table
+			create Result.make
 		end
 
 	cr_object_id: INTEGER_32 is
