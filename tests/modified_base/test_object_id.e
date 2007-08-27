@@ -14,12 +14,6 @@ inherit
 		tear_down
 	end
 
---Hint: as the Object Identifiers are written to the logfiles, too, don't allocate more
--- objects on set_up, as it would break all solution log files (the generated ones are compared against)
-
--- TODO: add tests for nested generics (e.g. SET[SET[ANY]])
-
-
 feature -- Test Variables:
 
 feature -- Helpers
@@ -150,6 +144,7 @@ feature -- Testing the tests:
 			-- Note: objects can be equal even though their object id differs.
 		local
 			ex1, ex2: EXAMPLE_CLASS
+			temp_id: INTEGER
 		do
 			create ex1.make
 			create ex2.make
@@ -160,13 +155,17 @@ feature -- Testing the tests:
 			ex1.set_non_basic_field (ex1)
 			ex2.set_non_basic_field (ex1)
 
+			--request object id's to make sure they're set:
+			temp_id := ex1.cr_object_id
+			temp_id := ex2.cr_object_id
 			assert_equal ("objects with equal content are equal", ex1, ex2)
 		end
 
 	test_deep_equal_any is
-
+			-- Tests if deep equal works with different object ID's
 		local
 			ex1, ex2, ex3: EXAMPLE_CLASS
+			temp_id: INTEGER
 		do
 			create ex1.make
 			create ex2.make
@@ -180,11 +179,66 @@ feature -- Testing the tests:
 			ex1.set_non_basic_field (ex3)
 			ex2.set_non_basic_field (ex3)
 
+			-- Request an object ID, to make sure it is set:
+			temp_id := ex1.cr_object_id
+			temp_id := ex2.cr_object_id
+
 			assert ("objects with same references are deep equal", ex1.is_deep_equal(ex2))
 		end
 
+	test_copy is
+			-- Tests if copy works on the example class as expected
+		local
+			ex1, ex2: EXAMPLE_CLASS
+			temp_object_id: INTEGER
+		do
+			create ex1.make
+			ex1.set_basic_field (999)
+			ex1.set_non_basic_field (ex1)
+			temp_object_id := ex1.cr_object_id
+			create ex2.make
+			ex2.copy(ex1)
+
+			assert_equal ("copied object equals original object:", ex1, ex2)
+			assert_not_equal ("copied object has different object id", ex1.cr_object_id, ex2.cr_object_id)
+		end
+
+	test_manifest_string_8 is
+			-- Test if object ID works correct together with STRING_8 built from a manifest
+		do
+			check_string ("I'm a string...")
+		end
+
+	test_string_8 is
+			-- Test if object ID works correct together with STRING_8 that was manually created.
+		local
+			string: STRING
+		do
+			create string.make (10)
+			string.put ('a',1)
+			string.put ('b',2)
+			string.put ('c',3)
+			string.put ('d',4)
+			string.put ('e',5)
+			string.put ('f',6)
+			check_string (string)
+		end
+
+
 
 feature {NONE} -- Implementation
+	check_string (string: STRING) is
+			-- Test if object ID works correct for `string'
+		local
+			original_count: INTEGER
+			new_object_id: INTEGER
+		do
+			original_count := string.count
+			new_object_id := 9999
+			string.cr_set_object_id(new_object_id)
+			assert_equal ("String count did not change due to change of object_id", original_count, string.count)
+			assert_equal ("String object - id is set", new_object_id, string.cr_object_id)
+		end
 
 invariant
 	invariant_clause: True -- Your invariant here
