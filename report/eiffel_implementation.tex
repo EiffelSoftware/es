@@ -88,87 +88,99 @@ The routine instrumentation can be divided into three parts (\figref{fig:routine
   \label{fig:routine_instrumentation_structure}
 \end{figure}
 
-To explain instrumentation in more detail, we describe each of these three parts using the command \texttt{withdraw} of the class \texttt{ATM} (\listref{lst:withdraw_original}).
+To explain instrumentation in more detail, we describe each of these three parts using the command \texttt{withdraw} of the class \texttt{ATM} (\listref{lst:account_exists_original}).
 
-\begin{lstlisting}[caption=Original Code of Command \texttt{withdraw} ,label=lst:withdraw_original]
-withdraw (account_name: STRING_8; amount: REAL_32)
-		-- Withdraw 'amount' on the account with name 'account_name'
+\begin{lstlisting}[caption=Original Code of Command \texttt{withdraw} ,label=lst:account_exists_original]
+account_exists (account_name:STRING): BOOLEAN
+		-- Is there an account with name 'account_name'?
 	require
-		account_exists: account_exists (account_name)
-	local
-		an_account: BANK_ACCOUNT
+			account_name_not_void: account_name /= Void
 	do
-		an_account := the_bank.account_for_name (account_name)
-		if an_account /= Void then
-			the_bank.withdraw (an_account, amount)
-			success := True
-		else
-			success := False
-		end
+		Result := (the_bank.account_for_name (account_name) /= Void)
 	end
 \end{lstlisting}
 
 \subsubsection{Capturing Call Events}
-\subsubsection{Conditional Methodbody Execution}
+To capture call events, instrumented code, which is only executed when capture and replay is enabled, is inserted at the beginning of every routine. The code first detects whether the routine was called across the boundaries. If that is the case, it puts the associated event into the program flow \listref{lst:invocation_instrumentation}
+\begin{lstlisting}[caption=Instrumentation Code to Detect Call Events,label=lst:invocation_instrumentation]
+if program_flow_sink.is_capture_replay_enabled then
+	program_flow_sink.enter
+	if program_flow_sink.observed_stack_item /= is_observed then
+		program_flow_sink.put_to_observed_stack (is_observed)
+		program_flow_sink.put_feature_invocation ("account_exists", Current, [account_name])
+	else
+		program_flow_sink.put_to_observed_stack (is_observed)
+	end
+	program_flow_sink.leave
+end
+\end{lstlisting}
+Note that all the inserted code is part of the selective capture and replay management code, which does not belong to the code of the original application. Thus these instructions must not trigger further events for the event log (e.g. the creation of the manifest string ``withdraw'' should not create other call events on class STRING). To make sure, that this won't happen, the commands \texttt{enter} to disable capture and replay and \texttt{leave} to reenable capture and replay were implemented.
+
+To detect boundary crossing calls, the management code keeps an own stack that indicates whether the target objects of the calls on the call stack are observed or not. This stack is managed in parallel to the call stack; in the invocation instrumentation code, the result of the query \texttt{is\_observed} is put onto the stack and in the exit instrumentation code, thes value is removed again. Using this stack, it is possible to find out, whether the caller object was observed or not.
+\subsubsection{Conditional Routine Body Execution}
+To be able to switch between the original and the placeholder routine body, the original routine of unobserved routines is only executed during capture phase. Placeholder routines are only needed for unobserved routines, thus the original body is always executed for observed routines (\listref{lst:methodbody_instrumentation}). The query \texttt{is\_replay\_phase} always returns false, when capture and replay is disabled, therefore the management code will always use the original routine body.
+
+\begin{lstlisting}[caption=Conditional Methodbody,label=lst:methodbody_instrumentation]
+if (not program_flow_sink.is_replay_phase) or is_observed then
+	Result := (the_bank.account_for_name (account_name) /= Void)
+end
+\end{lstlisting}
 \subsubsection{Capturing Callret Events}
+To capture and replay callret events, instrumentation code is inserted at the end of the routines. Again, the code only puts an event into the \texttt{program\_flow\_sink} if the routine was called across the boundary. If the routine is a function, the code also restores the result that was computed in the capture phase for unobserved functions. The result is only restored for unobserved classes during replay phase, otherwise the query \texttt{last\_result} returns the same value that was put into the \texttt{program\_flow\_sink} before. Thus functions can be used as placeholder functions without altering the instrumentation between capture and replay phase.
+\begin{lstlisting}[caption=Instrumentation to Capture Callret Events,label=lst:exit_instrumentation]
+if program_flow_sink.is_capture_replay_enabled then
+	program_flow_sink.enter
+	program_flow_sink.remove_from_observed_stack
+	if program_flow_sink.observed_stack_item /= is_observed then
+		program_flow_sink.put_feature_exit (Result)
+		Result ?= program_flow_sink.last_result
+	end
+	program_flow_sink.leave
+end
+\end{lstlisting}
 
-
-
-\begin{itemize}
- \item Code to detect call events (INCALL and OUTCALL) is inserted right at the beginning of the routine. If a border crossing call is detected, the code prepares the routine arguments, the target of the call and the routine name for the PROGRAM\_FLOW\_SINK.
- \item The technique makes sure that the original method body of unobserved routines is only executed during capture phase.
- \item After the conditional method body, instrumentation code to detect the callret events (INCALLRET and OUTCALLRET) follows. If the call was triggered across the border, the return value is prepared for the PROGRAM\_FLOW\_SINK.
-\end{itemize}
-
-
-
-
-\begin{lstlisting}
-withdraw (account_name: STRING_8; amount: REAL_32)
-		-- Withdraw 'amount' on the account with name 'account_name'
+\subsubsection{Complete Routine Instrumentation}
+\listref{lst:account_exists_instrumented} shows the routine after combining all three parts of the instrumentation.
+\begin{lstlisting}[caption=Routine \texttt{account\_exists} After Instrumentation,label=lst:account_exists_instrumented]
+account_exists (account_name: STRING_8): BOOLEAN
+		-- Is there an account with name 'account_name'?
 	require
-		account_exists: account_exists (account_name)
-	local
-		an_account: BANK_ACCOUNT
-		ignore_result: ANY
+		account_name_not_void: account_name /= Void
 	do
 		if program_flow_sink.is_capture_replay_enabled then
 			program_flow_sink.enter
 			if program_flow_sink.observed_stack_item /= is_observed then
 				program_flow_sink.put_to_observed_stack (is_observed)
-				program_flow_sink.put_feature_invocation ("withdraw", Current, [account_name, amount])
+				program_flow_sink.put_feature_invocation ("account_exists", Current, [account_name])
 			else
 				program_flow_sink.put_to_observed_stack (is_observed)
 			end
 			program_flow_sink.leave
 		end
 		if (not program_flow_sink.is_replay_phase) or is_observed then
-			an_account := the_bank.account_for_name (account_name)
-			if an_account /= Void then
-				the_bank.withdraw (an_account, amount)
-				success := True
-			else
-				success := False
-			end
+			Result := (the_bank.account_for_name (account_name) /= Void)
 		end
 		if program_flow_sink.is_capture_replay_enabled then
 			program_flow_sink.enter
 			program_flow_sink.remove_from_observed_stack
 			if program_flow_sink.observed_stack_item /= is_observed then
-				program_flow_sink.put_feature_exit (Void)
+				program_flow_sink.put_feature_exit (Result)
+				Result ?= program_flow_sink.last_result
 			end
 			program_flow_sink.leave
 		end
 	end
 \end{lstlisting}
 
-
-
-The problem arises, because the management code uses the same libraries as the application. When for example RECORDER writes an event to a file, this should not trigger additional events.  
-
 \subsection{Attribute Accesses}
-\subsection{Attribute Manipulation from C Level}
+\texttt{TODO!!!}
 
+\subsection{Attribute Manipulation from C Level}
+One assumption of the original selective capture and replay implementation is that native code never manipulates observed fields. Eiffel allows integration of C code into classes, using the \texttt{external} keyword. In order to write to fields of Eiffel objects, the C code needs the adress of that object, which can be done using the \texttt{\$} - operator.
+
+To find out the classes whose fields are written from native code, we searched for the \texttt{\$} operator in the Eiffel base library. Writes to \texttt{{STRING}.area} of type \texttt{SPECIAL [CHARACTER]} (where the characters of strings are stored) is most common and needed to be adressed. 
+
+this would be too restrictive. On the other hand, it is not possible to automatically instrument the integrated C code, therefore we require manual instrumentation when attributes are written from native code.
 
 
 \section{Architecture}
