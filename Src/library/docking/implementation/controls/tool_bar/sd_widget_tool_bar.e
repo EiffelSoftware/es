@@ -310,11 +310,18 @@ feature -- Command
 			l_tool_bar_row: SD_TOOL_BAR_ROW
 			l_parent: EV_CONTAINER
 			l_floating_zone: EV_WINDOW
+			l_old_size: INTEGER
 		do
-			compute_minimum_size
 			l_tool_bar_row ?= parent
 			if l_tool_bar_row /= Void then
+				-- After `compute_minimum_size', `l_tool_bar_row' size will changed, we record it here.
+				-- Otherwise it will cause bug#13164.
+				l_old_size := l_tool_bar_row.size
+			end
+			compute_minimum_size
+			if l_tool_bar_row /= Void then
 				l_tool_bar_row.set_item_size (Current, minimum_width, minimum_height)
+				l_tool_bar_row.on_resize (l_old_size)
 			else
 				-- If Current is in a SD_FLOATING_TOOL_BAR_ZONE which is a 3 level parent.
 				l_parent := parent
@@ -547,9 +554,11 @@ feature {NONE} -- Implementation
 			loop
 				if l_items.item.has_rectangle (l_rect) then
 					l_widget_item ?= l_items.item
-					if l_widget_item /= Void and then has_fixed (l_widget) then
+					if l_widget_item /= Void then
 						l_widget := l_widget_item.widget
-						set_item_width (l_widget, l_widget.minimum_width)
+						if has_fixed (l_widget) then
+							set_item_width (l_widget, l_widget.minimum_width)
+						end
 					end
 				end
 				l_items.forth

@@ -83,7 +83,7 @@ feature -- Basic Operations
 			-- Standard functions.
 		require
 			non_void_component: a_component /= Void
-			non_void_cpp_class_writer: cpp_class_writer /= Void	
+			non_void_cpp_class_writer: cpp_class_writer /= Void
 		do
 			add_constructor (a_component)
 			add_constructor_from_object  (a_component)
@@ -115,7 +115,7 @@ feature -- Basic Operations
 			cpp_class_writer.add_member (member_writer, Private)
 
 			add_get_type_info_function (a_component)
-			add_get_type_info_count_function 
+			add_get_type_info_count_function
 			add_get_ids_of_names_function (a_component)
 			dispatch_invoke_function (a_component)
 		end
@@ -194,13 +194,16 @@ feature -- Basic Operations
 		ensure
 			non_void_result: Result /= Void
 		end
-		
+
 	add_destructor (a_component: WIZARD_COMPONENT_DESCRIPTOR) is
 			-- Add destructor.
 		local
 			l_body: STRING
 		do
 			create l_body.make (2000)
+			l_body.append (eif_initialize_aux_thread)
+			l_body.append (ecom_enter_proc_stub)
+			l_body.append (new_line)
 			l_body.append ("%TEIF_PROCEDURE eiffel_procedure;%N%T")
 			l_body.append ("eiffel_procedure = eif_procedure (%"set_item%", type_id);%N%N%T")
 			l_body.append ("(FUNCTION_CAST (void, (EIF_REFERENCE, EIF_POINTER))eiffel_procedure) (eif_access (eiffel_object), NULL);%N%T")
@@ -209,6 +212,8 @@ feature -- Basic Operations
 				l_body.append ("%N%Tif (pTypeInfo)%N%T%TpTypeInfo->Release ();")
 			end
 			l_body.append (destructor_addition (a_component))
+			l_body.append (new_line_tab)
+			l_body.append (ecom_exit_proc_stub)
 			cpp_class_writer.set_destructor (l_body)
 		end
 
@@ -222,7 +227,7 @@ feature -- Basic Operations
 		ensure
 			non_void_result: Result /= Void
 		end
-		
+
 	add_get_type_info_function (a_component: WIZARD_COMPONENT_DESCRIPTOR) is
 			-- Add GetTypeInfo function.
 		require
@@ -247,7 +252,7 @@ feature -- Basic Operations
 			func_writer.set_body (l_body)
 			cpp_class_writer.add_function (func_writer, Public)
 		end
-		
+
 	add_get_type_info_count_function is
 			-- Add GetTypeInfoCount function.
 		local
@@ -309,7 +314,7 @@ feature -- Basic Operations
 			body_code.append ("unsigned int uArgErr;%N%T")
 			body_code.append ("if (wFlags & ~(DISPATCH_METHOD | DISPATCH_PROPERTYGET | DISPATCH_PROPERTYPUT | DISPATCH_PROPERTYPUTREF))%N%T%T")
 			body_code.append ("return ResultFromScode (E_INVALIDARG);%N%N%T")
-			
+
 			body_code.append ("if (puArgErr == NULL)%N%T%T")
 			body_code.append ("puArgErr = &uArgErr;%N%N%T")
 
@@ -318,7 +323,7 @@ feature -- Basic Operations
 			body_code.append ("unsigned int cArgs = pDispParams->cArgs;%N%T")
 			body_code.append ("unsigned int cNamedArgs = pDispParams->cNamedArgs;%N%T")
 			body_code.append ("VARIANTARG ** tmp_value = NULL;%N%N%T")
-			
+
 			body_code.append ("if (pExcepInfo != NULL)%N%T{%N%T%T")
 			body_code.append ("pExcepInfo->wCode = 0;%N%T%T")
 			body_code.append ("pExcepInfo->wReserved = 0;%N%T%T")
@@ -355,7 +360,7 @@ feature -- Basic Operations
 		do
 			create prop_get_functions.make (2)
 			create prop_put_functions.make (2)
-			create Result.make (10000)			
+			create Result.make (10000)
 
 			if interface_desc.is_idispatch_heir then
 				from
@@ -505,7 +510,7 @@ feature -- Basic Operations
 			a_body_generator: WIZARD_DISPATCH_INVOKE_CASE_BODY_GENERATOR
 		do
 			create a_body_generator.make (func_desc)
-			Result := a_body_generator.function_case_body 
+			Result := a_body_generator.function_case_body
 		ensure
 			non_void_body: Result /= Void
 			valid_body: Result /= Void
@@ -515,7 +520,7 @@ feature -- Basic Operations
 			-- Code for case statement.
 		require
 			non_void_body: a_case_body /= Void
-			non_empty_body: not a_case_body.is_empty 
+			non_empty_body: not a_case_body.is_empty
 			valid_body_start: a_case_body.substring_index ("%N%T%T%T%<", 1) = 1 or a_case_body.substring_index ("%N%T%T%Tif", 1) = 1
 		do
 			create Result.make (1000)
@@ -570,7 +575,7 @@ feature -- Basic Operations
 			type_lib: WIZARD_TYPE_LIBRARY_DESCRIPTOR
 		do
 			type_lib := a_component.type_library_descriptor
-			
+
 			create Result.make (2000)
 
 			Result.append ("%Tif (pTypeInfo == 0)%N%T{%N%T%T")
@@ -608,7 +613,7 @@ feature -- Basic Operations
 			func_writer: WIZARD_WRITER_C_FUNCTION
 		do
 			create func_writer.make
-			
+
 			create l_body.make (2000)
 			l_body.append (unlock_module)
 			l_body.append ("%TLONG res = InterlockedDecrement (&ref_count);%N%T")
@@ -652,7 +657,7 @@ feature -- Basic Operations
 			non_void_body: Result /= Void
 			valid_body: not Result.is_empty
 		end
-	
+
 	default_dispinterface_name (a_component_descriptor: WIZARD_COMPONENT_DESCRIPTOR): STRING is
 			-- Name of default dispinterface.
 		require

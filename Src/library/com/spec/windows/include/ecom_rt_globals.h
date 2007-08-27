@@ -18,7 +18,7 @@ indexing
 #include "ecom_exception.h"
 #include "ecom_runtime_c_e.h"
 #include "ecom_runtime_e_c.h"
-
+#include "ecom_runtime.h"
 #ifdef __cplusplus
 
 extern "C" Formatter  f;
@@ -26,6 +26,8 @@ extern "C" Formatter  f;
 extern "C" ecom_runtime_ce rt_ce;
 
 extern "C" ecom_runtime_ec rt_ec;
+
+extern "C" ecom_runtime rt;
 
 #endif // __cplusplus
 

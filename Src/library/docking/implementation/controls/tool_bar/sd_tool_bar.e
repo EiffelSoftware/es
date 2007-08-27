@@ -170,11 +170,18 @@ feature -- Command
 			l_tool_bar_row: SD_TOOL_BAR_ROW
 			l_parent: EV_CONTAINER
 			l_floating_zone: SD_FLOATING_TOOL_BAR_ZONE
+			l_old_size: INTEGER
 		do
-			compute_minimum_size
 			l_tool_bar_row ?= parent
 			if l_tool_bar_row /= Void then
+				-- After `compute_minimum_size', `l_tool_bar_row' size will changed, we record it here.
+				-- Otherwise it will cause bug#13164.
+				l_old_size := l_tool_bar_row.size
+			end
+			compute_minimum_size
+			if l_tool_bar_row /= Void then
 				l_tool_bar_row.set_item_size (Current, minimum_width, minimum_height)
+				l_tool_bar_row.on_resize (l_old_size)
 			else
 				-- If Current is in a SD_FLOATING_TOOL_BAR_ZONE which is a 3 level parent.
 				l_parent := parent
@@ -247,9 +254,21 @@ feature {SD_TOOL_BAR_TITLE_BAR, SD_TITLE_BAR} -- Special setting
 feature -- Query
 
 	items: like internal_items is
-			-- `internal_items''s snapshot.
+			-- Visible items
 		do
 			Result := internal_items.twin
+		ensure
+			not_void: Result /= Void
+		end
+
+	all_items: like internal_items is
+			-- All items
+		do
+			if content /= Void then
+				Result := content.items.twin
+			else
+				Result := items
+			end
 		ensure
 			not_void: Result /= Void
 		end
@@ -583,22 +602,28 @@ feature {NONE} -- Agents
 			debug ("docking")
 				print ("%NSD_TOOL_BAR on_pointer_press")
 			end
-			if a_button = {EV_POINTER_CONSTANTS}.left then
-				enable_capture
-				from
-					l_items := items
-					l_items.start
-				until
-					l_items.after
-				loop
-					l_item := l_items.item
-					l_item.on_pointer_press (a_x, a_y)
-					if l_item.is_need_redraw then
-						drawer.start_draw (l_item.rectangle)
-						redraw_item (l_item)
-						drawer.end_draw
+			-- We only handle press/release occurring in the widget (i.e. we ignore the one outside of the widget).			
+			-- Otherwise it will cause bug#12549.
+			if a_screen_x >= screen_x and a_screen_x <= screen_x + width and
+				a_screen_y >= screen_y  and a_screen_y <= screen_y + height then
+
+				if a_button = {EV_POINTER_CONSTANTS}.left then
+					enable_capture
+					from
+						l_items := items
+						l_items.start
+					until
+						l_items.after
+					loop
+						l_item := l_items.item
+						l_item.on_pointer_press (a_x, a_y)
+						if l_item.is_need_redraw then
+							drawer.start_draw (l_item.rectangle)
+							redraw_item (l_item)
+							drawer.end_draw
+						end
+						l_items.forth
 					end
-					l_items.forth
 				end
 			end
 		end
@@ -625,25 +650,31 @@ feature {NONE} -- Agents
 			l_items: like internal_items
 			l_item: SD_TOOL_BAR_ITEM
 		do
-			if a_button = {EV_POINTER_CONSTANTS}.left then
-				disable_capture
-				internal_pointer_pressed := False
-				from
-					l_items := items
-					l_items.start
-				until
-					l_items.after
-				loop
-					l_item := l_items.item
-					l_item.on_pointer_release (a_x, a_y)
-					if l_item.is_displayed and then l_item.is_need_redraw and then l_item.tool_bar /= Void and then not l_item.tool_bar.is_destroyed then
-						--| FIXME According to LarryL, if l_item.is_displayed is False, then the toolbar is Void, this appears to not be the case in
-						--| some circumstances so the protection has been added.
-						drawer.start_draw (l_item.rectangle)
-						redraw_item (l_item)
-						drawer.end_draw
+			-- We only handle press/release occurring in the widget (i.e. we ignore the one outside of the widget).			
+			-- Otherwise it will cause bug#12549.
+			if a_screen_x >= screen_x and a_screen_x <= screen_x + width and
+				a_screen_y >= screen_y  and a_screen_y <= screen_y + height then
+
+				if a_button = {EV_POINTER_CONSTANTS}.left then
+					disable_capture
+					internal_pointer_pressed := False
+					from
+						l_items := items
+						l_items.start
+					until
+						l_items.after
+					loop
+						l_item := l_items.item
+						l_item.on_pointer_release (a_x, a_y)
+						if l_item.is_displayed and then l_item.is_need_redraw and then l_item.tool_bar /= Void and then not l_item.tool_bar.is_destroyed then
+							--| FIXME According to LarryL, if l_item.is_displayed is False, then the toolbar is Void, this appears to not be the case in
+							--| some circumstances so the protection has been added.
+							drawer.start_draw (l_item.rectangle)
+							redraw_item (l_item)
+							drawer.end_draw
+						end
+						l_items.forth
 					end
-					l_items.forth
 				end
 			end
 		end
@@ -748,6 +779,17 @@ feature {NONE} -- Agents
 		end
 
 feature {SD_TOOL_BAR, SD_TOOL_BAR_ZONE} -- Implementation
+
+	set_content (a_content: like content) is
+			-- Set `content' with `a_content'.
+		do
+			content := a_content
+		ensure
+			content_set: content = a_content
+		end
+
+	content: SD_TOOL_BAR_CONTENT
+			-- Related tool bar content
 
 	redraw_item (a_item: SD_TOOL_BAR_ITEM) is
 			-- Redraw `a_item'.
