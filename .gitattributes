@@ -3703,6 +3703,7 @@ free_add_ons/wex/examples/wex/Framework_example/app.ico svneol=native#unset
 free_add_ons/wex/examples/wex/MCI_Splash/APP.ICO svneol=native#unset
 free_add_ons/wex/library/wex/clib/cwex.lib svneol=native#unset
 report/abstract.tex -text
+report/appendix.tex -text
 report/eiffel_implementation.tex -text
 report/illustrations/ETH.png -text
 report/illustrations/INF.png -text
@@ -3712,6 +3713,10 @@ report/illustrations/example_class_diagram.svg -text
 report/illustrations/example_diagrams.xmi -text
 report/illustrations/example_withdrawal.pdf -text
 report/illustrations/example_withdrawal.svg -text
+report/illustrations/implementation_overall_architecture.pdf -text
+report/illustrations/implementation_overall_architecture.svg -text
+report/illustrations/implementation_parser.png -text
+report/illustrations/implementation_serializer.png -text
 report/illustrations/obs_unobs_multiple_inheritance.pdf -text
 report/illustrations/obs_unobs_multiple_inheritance.svg -text
 report/illustrations/routine_instrumentation_structure.pdf -text

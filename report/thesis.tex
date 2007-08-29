@@ -112,47 +112,8 @@
 
 \chapter{Future Work}
 %Fehlende C/R und Language Features beschreiben, sowie einen möglichen Lösungsansatz.
-\chapter{Appendix}
 
-\subsection{Log File Grammar}
-
-log ::= event* \\
-event ::= call $\mid$ return $\mid$ outread\\
-call ::= calltype entity methodname entity* \texttt{“\%N”} \\
-return ::= returntype [entity]  \texttt{“\%N”}\\
-outread ::= \texttt{OUTREAD} entity attribute\_name entity
-calltype ::= \texttt{INCALL} $\mid$ \texttt{OUTCALL} \\
-returntype ::= \texttt{INCALLRET} $\mid$ \texttt{OUTCALLRET} \\
-methodname ::= identifier \\
-attribute\_name ::= identifier \\
-entity ::= (object $\mid$ value) \\
-size ::= integer \\
-object ::= \texttt{[NON$\_$BASIC} typename object\_id \texttt{]} \\
-value ::= \texttt{[BASIC} typename \texttt{"} string \texttt{"]} \\
-typename ::= identifier \\
-object\_id ::= integer\\
-identifier ::= [A-Za-z]character*\\
-string ::= character*\\
-
-\subsection{capture-phase performance measurements}
-\begin{itemize}
-	\item normal application: 2.5s
-	\item Captured application: 30s
-	\begin{itemize}
-		\item RECORDER: 1.7s\\
-		\item SERIALIZER: 26s
-		\begin{itemize}
-			\item write$\_$statements: 16s
-			\begin{itemize}
-				\item file.put$\_$string: 4s
-				\item object$\_$id: 7s
-				\item other: 5s
-			\end{itemize}
-			\item is$\_$basic$\_$type: 3s
-			\item other: 7s
-		\end{itemize}
-	\end{itemize}
-\end{itemize}
+\include{appendix}
 
 \bibliographystyle{plain} 
 \bibliography{thesis}

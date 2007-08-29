@@ -3,7 +3,7 @@ img_extIsRegExp=false
 img_extensions=.eps .pdf .dvi .ps .fig .gif .jpg .jpeg .png
 kileprversion=1
 kileversion=1.9.3
-lastDocument=preliminaries.tex
+lastDocument=eiffel_implementation.tex
 masterDocument=
 name=thesis
 pkg_extIsRegExp=false
@@ -25,18 +25,10 @@ open=false
 
 [item:eiffel_implementation.tex]
 archive=true
-column=17
+column=55
 encoding=UTF-8
 highlight=LaTeX
-line=59
-open=true
-
-[item:implementation.tex]
-archive=true
-column=0
-encoding=UTF-8
-highlight=LaTeX
-line=0
+line=242
 open=true
 
 [item:introduction.tex]
@@ -47,12 +39,20 @@ highlight=LaTeX
 line=10
 open=false
 
-[item:preliminaries.tex]
+[item:lstlang0.sty]
 archive=true
-column=9
+column=31
 encoding=UTF-8
 highlight=LaTeX
-line=205
+line=25
+open=true
+
+[item:preliminaries.tex]
+archive=true
+column=132
+encoding=UTF-8
+highlight=LaTeX
+line=196
 open=true
 
 [item:related_work.tex]
@@ -65,10 +65,10 @@ open=false
 
 [item:thesis.bib]
 archive=true
-column=20
+column=57
 encoding=UTF-8
 highlight=BibTeX
-line=91
+line=100
 open=true
 
 [item:thesis.kilepr]
@@ -84,5 +84,5 @@ archive=true
 column=0
 encoding=UTF-8
 highlight=LaTeX
-line=62
+line=104
 open=true
