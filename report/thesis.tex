@@ -16,8 +16,10 @@
 \newcommand{\bashlisting}{\lstset{basicstyle=\small\tt,language=bash,tabsize=2,backgroundcolor=\color{lbcolor},frame=tb,breaklines=true,morekeywords={svn,geant,mkdir,activate_estudio}}}
 \newcommand{\javalisting}{\lstset{basicstyle=\small,language=Java,tabsize=2,backgroundcolor=\color{lbcolor},frame=tb,breaklines=true}}
 \newcommand{\identifier}[1]{\texttt{#1}}
+
 \newcommand{\figref}[1]{Figure \ref{#1}}
 \newcommand{\listref}[1]{Listing \ref{#1}}
+\newcommand{\sectref}[1]{Section \ref{#1}}
 \newcommand {\class}[1] {\texttt{#1}}
 \pagenumbering{roman}
 
@@ -107,11 +109,10 @@
 \chapter{Experimental Results}
 \section{Example Application}
 \section{Results}
-\section{Conclusion}
+
 %Eiffel Vision Beispiel, mit unterschiedlichen observed sets
 
-\chapter{Future Work}
-%Fehlende C/R und Language Features beschreiben, sowie einen möglichen Lösungsansatz.
+\include{conclusions}
 
 \include{appendix}
 
