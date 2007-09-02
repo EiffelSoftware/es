@@ -801,6 +801,10 @@ rt_public EIF_REFERENCE emalloc_as_old(uint32 ftype)
 	uint32 type = (uint32) Deif_bid(ftype);
 	uint32 nbytes = EIF_Size(type);
 
+#ifdef CAPTURE_REPLAY
+        nbytes = nbytes + sizeof(OBJECT_ID_TYPE);
+#endif
+
 #ifdef ISE_GC
 	uint32 mod;							/* Remainder for padding */
 #endif
