@@ -209,6 +209,12 @@ feature -- Testing the tests:
 			check_string ("I'm a string...")
 		end
 
+	test_once_manifest_string_8 is
+			-- Test if object ID works correct together with STRING_8 built from a manifest
+		do
+			check_string (once "I'm a string...")
+		end
+
 	test_string_8 is
 			-- Test if object ID works correct together with STRING_8 that was manually created.
 		local
