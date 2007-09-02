@@ -15,7 +15,7 @@ inherit
 create
 	make
 
--- Assumptions: event_factory.last_event always contains theevent that is
+-- Assumptions: event_factory.last_event always contains the event that is
 --				currently being treated. As soon as the treatment is finished
 --				the next event will be read.
 --				Thus every method handling an event can assume that the event it
@@ -28,8 +28,11 @@ create
 --					-End of log is reached while still executing
 --					-Called method doesn't match the one in the run log
 --					-Arguments of the called method don't conform to the recorded ones.
---Questions: 	-is there a way to recover from that problem?
---				-What could be signalled to the players client?
+--
+-- Reaction to these problems:
+-- 				The has_error Flag is set and further replay is stopped, if possible
+--				(it is not possible if currently observed code is executed; maybe it
+--				would help to raise an exception to abort everything)
 
 feature -- Initialization
 
@@ -175,6 +178,12 @@ feature -- Basic operations
 					if not has_error then
 						if target.is_observed then
 							-- INCALL
+
+								-- Register target, to make sure that observed objects created from unobserved code
+								-- can be resolved:
+							call_event ?= event_input.last_event
+							resolver.associate_object_to_entity (target, call_event.target)
+
 							consume_event
 						else
 							call_event ?= event_input.last_event
