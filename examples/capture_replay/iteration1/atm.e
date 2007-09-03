@@ -25,8 +25,7 @@ feature -- creation
 		do
 			the_bank := a_bank
 
---			create {ATM_UI_TEXTUAL}the_ui.make (Current)
-			create {ATM_UI_GRAPHICAL}the_ui.make (Current)
+			create {ATM_UI_TEXTUAL}the_ui.make (Current)
 			create the_log.make
 		end
 
