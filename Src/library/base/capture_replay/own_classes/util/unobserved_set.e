@@ -18,22 +18,18 @@ feature -- Initialization
 			-- Create a hashtable that contains the names of the classes
 			-- that aren't observed.
 		do
-			create unobserved_class_names.make (10)
+			create unobserved_class_names.make (40)
+			unobserved_class_names.set_equality_tester (create {KL_STRING_EQUALITY_TESTER})
+
+			unobserved_class_names.put ("ACTION_SEQUENCE")
 			unobserved_class_names.put ("CONSOLE")
-			unobserved_class_names.put ("STD_FILES")
-			unobserved_class_names.put ("EV_TITLED_WINDOW_IMP")
-			unobserved_class_names.put ("EV_LITE_ACTION")
-			unobserved_class_names.put ("EV_WINDOW_I")
-			unobserved_class_names.put ("EV_VERTICAL_BOX")
-			unobserved_class_names.put ("EV_LABEL")
-			unobserved_class_names.put ("EV_TEXT_FIELD")
-			unobserved_class_names.put ("EV_BUTTON")
-			unobserved_class_names.put ("EV_FRAME")
-			unobserved_class_names.put ("EV_VERTICAL_BOX")
-			unobserved_class_names.put ("EV_APPLICATION")
-			unobserved_class_names.put ("EV_APPLICATION_IMP")
-			unobserved_class_names.put ("POINTER")
 			unobserved_class_names.put ("C_STRING")
+			unobserved_class_names.put ("FUNCTION")
+			unobserved_class_names.put ("PROCEDURE")
+			unobserved_class_names.put ("POINTER")
+			unobserved_class_names.put ("STD_FILES")
+			unobserved_class_names.put ("STRING_32")
+			unobserved_class_names.put ("MANAGED_POINTER")
 		end
 
 feature -- Access
@@ -41,7 +37,12 @@ feature -- Access
 	has_class_name (class_name: STRING): BOOLEAN is
 			-- Is the class with name `class_name' in the unobserved_set?
 		do
-			Result := unobserved_class_names.has (class_name)
+			if class_name.substring (1, 3).is_equal("EV_") then
+				-- The whole Vision2 library is unobserved...
+				Result := True
+			else
+				Result := unobserved_class_names.has (class_name)
+			end
 		end
 
 	has_object (obj: ANY): BOOLEAN is
@@ -50,13 +51,12 @@ feature -- Access
 			class_name: STRING
 			end_of_class_name: INTEGER
 		do
-			class_name := Current.generating_type
+			class_name := obj.generating_type
 			end_of_class_name := class_name.index_of (' ', 1)
 			if end_of_class_name /= 0 then
-				class_name := class_name.substring (0, end_of_class_name)
+				class_name := class_name.substring (1, end_of_class_name - 1)
 			end
-
-			Result := not has_class_name (class_name)
+			Result := has_class_name (class_name)
 		end
 
 

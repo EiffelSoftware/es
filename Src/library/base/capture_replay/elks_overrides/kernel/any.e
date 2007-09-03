@@ -401,13 +401,11 @@ feature -- Capture/Replay
 	is_observed: BOOLEAN
 			-- Is this object observed?
 		local
-			class_name: STRING
-			end_of_class_name: INTEGER
 			cr_originally_enabled: BOOLEAN
 		do
 			cr_originally_enabled := program_flow_sink.is_capture_replay_enabled
 			program_flow_sink.enter
-			Result := cr_unobserved_set.has_object(Current)
+			Result := not cr_unobserved_set.has_object(Current)
 
 			if cr_originally_enabled then
 				-- Don't reenable c/r if it was disabled before
