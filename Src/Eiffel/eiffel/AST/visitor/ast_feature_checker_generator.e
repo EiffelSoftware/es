@@ -5970,9 +5970,10 @@ feature {NONE} -- Capture/Replay Instrumentation
 	cr_instrumentation_feature_exclusion_list: ARRAY [STRING] is
 			-- Features that need to remain uninstrumented
 		once
-			create Result.make (1,1)
+			create Result.make (1,2)
 			Result.compare_objects
 			Result [1] := "SPECIAL.note_direct_manipulation"
+			Result [2] := "STRING_8.make_from_c"
 		end
 
 	cr_add_instrumentation(routine: ROUTINE_AS) is
