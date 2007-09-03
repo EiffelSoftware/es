@@ -15,11 +15,12 @@
    id="svg2"
    sodipodi:version="0.32"
    inkscape:version="0.45"
-   sodipodi:docname="scr_overall_schema.pdf"
+   sodipodi:docname="scr_overall_schema.svg"
    sodipodi:docbase="/home/stefan/ETH/Masterarbeit/capture_replay/report/illustrations"
-   inkscape:output_extension="org.inkscape.output.pdf"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0"
-   inkscape:dataloss="true">
+   inkscape:dataloss="true"
+   sodipodi:modified="true">
   <metadata
      id="metadata75">
     <rdf:RDF>
@@ -152,7 +153,7 @@
        y2="9.1720877" />
   </defs>
   <sodipodi:namedview
-     inkscape:window-height="975"
+     inkscape:window-height="961"
      inkscape:window-width="1680"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
@@ -163,11 +164,11 @@
      bordercolor="#666666"
      pagecolor="#ffffff"
      id="base"
-     inkscape:zoom="0.58520705"
-     inkscape:cx="363.7069"
-     inkscape:cy="342.69507"
+     inkscape:zoom="4.6816564"
+     inkscape:cx="255.94743"
+     inkscape:cy="255.26742"
      inkscape:window-x="0"
-     inkscape:window-y="25"
+     inkscape:window-y="0"
      inkscape:current-layer="svg2"
      height="350px"
      width="620px" />
@@ -372,52 +373,48 @@
          id="tspan2721"
          sodipodi:role="line">User</tspan></text>
   </g>
-  <g
-     id="g4171"
-     transform="matrix(2.5862646,0,0,2.5862646,-12.294583,-10.451087)">
-    <rect
-       ry="0.2"
-       rx="0.20000002"
-       y="5.6254654"
-       x="5.5792589"
-       height="2.5450838"
-       width="3.5393417"
-       id="rect2734"
-       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.01950307;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-    <text
-       id="text3705"
-       y="5.9436011"
-       x="5.7442179"
-       style="font-size:0.2340368px"
-       xml:space="preserve"><tspan
-         y="5.9436011"
-         x="5.7442179"
-         id="tspan3707"
-         sodipodi:role="line">Software System</tspan></text>
-    <rect
-       ry="0.2"
-       rx="0.19999997"
-       y="6.3088679"
-       x="6.1082616"
-       height="1.1311486"
-       width="2.4031935"
-       id="rect3716"
-       style="fill:url(#linearGradient2922);fill-opacity:1;stroke:#000000;stroke-width:0.01950307;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:0.15602456, 0.15602456;stroke-dashoffset:0;stroke-opacity:1" />
-    <text
-       id="text3718"
-       y="6.7801795"
-       x="6.7445321"
-       style="font-size:0.2340368px"
-       xml:space="preserve"><tspan
-         y="6.7801795"
-         x="6.7445321"
-         id="tspan3720"
-         sodipodi:role="line">Captured</tspan><tspan
-         id="tspan3728"
-         y="7.0727255"
-         x="6.7445321"
-         sodipodi:role="line">Subsystem</tspan></text>
-  </g>
+  <rect
+     style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.0504401;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="rect2734"
+     width="9.1536741"
+     height="6.5822601"
+     x="2.1348569"
+     y="4.0978551"
+     rx="0.51725298"
+     ry="0.51725292" />
+  <text
+     xml:space="preserve"
+     style="font-size:0.60528111px"
+     x="2.5614843"
+     y="4.9206381"
+     id="text3705"><tspan
+       sodipodi:role="line"
+       id="tspan3707"
+       x="2.5614843"
+       y="4.9206381">Software System</tspan></text>
+  <rect
+     style="fill:#aaccee;fill-opacity:1;stroke:#000000;stroke-width:0.0504401;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:0.4035208, 0.4035208;stroke-dashoffset:0;stroke-opacity:1"
+     id="rect3716"
+     width="6.2152944"
+     height="2.9254496"
+     x="3.5029976"
+     y="5.865315"
+     rx="0.51725286"
+     ry="0.51725292" />
+  <text
+     xml:space="preserve"
+     style="font-size:0.60528111px"
+     x="5.1485615"
+     y="7.0842514"
+     id="text3718"><tspan
+       sodipodi:role="line"
+       id="tspan3720"
+       x="5.1485615"
+       y="7.0842514">Captured</tspan><tspan
+       sodipodi:role="line"
+       x="5.1485615"
+       y="7.8408528"
+       id="tspan3728">Subsystem</tspan></text>
   <path
      style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.0504401;stroke-linecap:round;stroke-linejoin:miter;marker-start:url(#TriangleInL);marker-mid:none;marker-end:url(#TriangleOutL);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      d="M -1.5843091,7.7807989 L 1.5168319,7.7807989"
