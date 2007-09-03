@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 
-<project name="iteration1 example" default="help">
+<project name="vision2 example" default="help">
 
   <description>
-    description: "Eiffel Ant file for 'iteration1_example', derived from erl_g's HelloWorld example."
-    system: "iteration1_example"
+    description: "Eiffel Ant file for 'vision2_example', derived from erl_g's HelloWorld example."
+    system: "vision2_example"
     copyright: "Copyright (c) 2007 Stefan Sieber and others"
     license: "Eiffel Forum License v2 (see forum.txt)"
     date: "$Date$"
@@ -97,7 +97,7 @@
     <echo message="deleting old reflection library ..."/>
     <delete directory="reflection_library"/>
     <echo message="starting reflection library generation with Erl-G"/>
-    <exec executable="erl_g ${system_dir}/iteration1_example.ecf ${type_list}"/>
+    <exec executable="erl_g ${system_dir}/vision2_example.ecf ${type_list}"/>
   </target>
 
 </project>
