@@ -5,14 +5,14 @@ indexing
 	revision: "$Revision$"
 
 class
-	ATM_LOG
+	ATM_JOURNAL
 
 create
 	make
 
 feature -- Initialization
 	make is
-			-- Initialize an ATM_LOG
+			-- Initialize an ATM_JOURNAL
 		do
 			create log.make (0, capacity)
 		end

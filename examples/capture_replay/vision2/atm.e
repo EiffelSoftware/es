@@ -25,9 +25,8 @@ feature -- creation
 		do
 			the_bank := a_bank
 
---			create {ATM_UI_TEXTUAL}the_ui.make (Current)
-			create {ATM_UI_GRAPHICAL}the_ui.make (Current)
-			create the_log.make
+			create {ATM_UI_TEXTUAL}the_ui.make (Current)
+			create the_journal.make
 		end
 
 feature -- Access
@@ -48,10 +47,10 @@ feature -- Access
 			Result := success
 		end
 
-	log: ATM_LOG is
-			-- The log of the ATM
+	journal: ATM_JOURNAL is
+			-- The journal of the ATM
 		do
-			Result := the_log
+			Result := the_journal
 		end
 
 feature -- Element change
@@ -124,10 +123,10 @@ feature {NONE} -- Implementation
 
 	the_ui: ATM_UI
 
-	the_log: ATM_LOG
+	the_journal: ATM_JOURNAL
 
 	success: BOOLEAN
 invariant
 	ui_not_void: the_ui /= Void
-	log_not_void: the_log /= Void
+	journal_not_void: the_journal /= Void
 end

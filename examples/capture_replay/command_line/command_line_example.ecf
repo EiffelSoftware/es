@@ -2,7 +2,7 @@
 <system xmlns="http://www.eiffel.com/developers/xml/configuration-1-2-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-2-0 http://www.eiffel.com/developers/xml/configuration-1-2-0.xsd" name="command_line_example" uuid="9D47B610-776E-419C-A11C-E3938B1EB625">
 	<target name="command_line_example">
 		<root class="ROOT_CLASS" feature="make"/>
-		<option profile="false" warning="true">
+		<option profile="true" warning="true">
 			<assertions/>
 		</option>
 		<setting name="console_application" value="true"/>

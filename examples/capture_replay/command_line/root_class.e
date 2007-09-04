@@ -26,10 +26,17 @@ feature -- Initialization
 			bank: BANK
 			atm: ATM
 			ui: ATM_UI
+			ui_instance: STRING
 			test_performance: BOOLEAN
+			environment: EXECUTION_ENVIRONMENT
 		do
 			--Initialize the rest of the PROGRAM_FLOW_SINK:
 --			create caller
+
+			create environment
+			ui_instance := environment.get("UI")
+			test_performance := ui_instance.is_equal("performance_test")
+
 			create config.make
 --no. use erl_g to call...			config.set_caller(caller)
 			config.configure_program_flow_sink (program_flow_sink)
@@ -38,7 +45,6 @@ feature -- Initialization
 				player.play
 				program_flow_sink.enter --avoid unnecessary events at the end of replay...
 			else
-				test_performance := False
 				create bank.make
 				atm := bank.atm
 				if test_performance then
