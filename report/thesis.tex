@@ -4,7 +4,7 @@
 \usepackage{color}
  \usepackage{fancyhdr}
 \definecolor{lbcolor}{rgb}{0.85,0.85,0.85}
-
+\definecolor{classcolor}{rgb}{0,0.5,1}
 %sourcecode formatting
 \usepackage[final]{listings}
 \usepackage{url}
@@ -15,12 +15,16 @@
 \newcommand{\eiffellisting}{\lstset{basicstyle=\small,language=OOSC2Eiffel,tabsize=2,backgroundcolor=\color{lbcolor},frame=tb,breaklines=true}}
 \newcommand{\bashlisting}{\lstset{basicstyle=\small\tt,language=bash,tabsize=2,backgroundcolor=\color{lbcolor},frame=tb,breaklines=true,morekeywords={svn,geant,mkdir,activate_estudio}}}
 \newcommand{\javalisting}{\lstset{basicstyle=\small,language=Java,tabsize=2,backgroundcolor=\color{lbcolor},frame=tb,breaklines=true}}
-\newcommand{\identifier}[1]{\texttt{#1}}
+
 
 \newcommand{\figref}[1]{Figure \ref{#1}}
 \newcommand{\listref}[1]{Listing \ref{#1}}
 \newcommand{\sectref}[1]{Section \ref{#1}}
-\newcommand {\class}[1] {\texttt{#1}}
+\newcommand {\class}[1] {\textcolor{blue}{\textit{#1}}}
+\newcommand {\feature}[1]{\textit{#1}}
+\newcommand{\identifier}[1]{\textit{#1}}
+\newcommand{\inlinejava}[1]{\lstinline[language=Java,basicstyle=\tt,backgroundcolor=\color{white}]{#1}}
+\newcommand{\inlineeiffel}[1]{\lstinline[language=OOSC2Eiffel,basicstyle=\tt,backgroundcolor=\color{white}]{#1}}
 \pagenumbering{roman}
 
 \begin{document}
