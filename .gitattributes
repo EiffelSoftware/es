@@ -3703,6 +3703,7 @@ free_add_ons/wex/examples/wex/Framework_example/app.ico svneol=native#unset
 free_add_ons/wex/examples/wex/MCI_Splash/APP.ICO svneol=native#unset
 free_add_ons/wex/library/wex/clib/cwex.lib svneol=native#unset
 report/abstract.tex -text
+report/acknowledgments.tex -text
 report/appendix.tex -text
 report/conclusions.tex -text
 report/eiffel_implementation.tex -text

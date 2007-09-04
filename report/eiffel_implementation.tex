@@ -1,18 +1,21 @@
 \chapter{Capture and Replay for Eiffel}
+%TODO: add text
 \eiffellisting
 \section{Differences to Existing Implementation}
-Selective capture and replay as described by Joshi and Orso \cite{orso05may} can not be directly applied to Eiffel. Although the core elements of the technique can be used in Eiffel, too, we need to adapt some parts. In this section the changes to the original implementation and reasons for these changes will be discussed.
+Selective capture and replay as described by Joshi and Orso \cite{orso05may} can not be directly applied to Eiffel.
+%<TODO nicht was getan wurde, sondern was das Resultat ist!
+Although the core elements of the technique can be used in Eiffel too, we adapted  some parts. In this section the changes to the original implementation and reasons for these changes will be discussed.
 
 \subsection{Language Aspects}
-Even though Java and Eiffel are both object oriented languages, there are differences between these two languages, syntax left aside. Eiffel offers a wider set of language constructs, many times trying to solve problems inherently object oriented, whereas Java reused solutions from its ancestors, mainly C++. One example for this difference are be the Eiffel basic types, which can be treated as objects with methods and attributes versus the Java basic types, which are no objects. This section focuses on the differences between Java and Eiffel that influenced our implementation of selective capture and replay.
+Even though Java and Eiffel are both object oriented languages, there are differences between these two languages, syntax left aside. Eiffel offers a wider set of language constructs, many times trying to solve problems inherently object oriented, whereas Java reused solutions from its ancestors, mainly C++. One example for this difference are be the Eiffel basic types, which can be treated as objects with methods versus the Java basic types, which are no objects. This section focuses on the differences between Java and Eiffel that influenced our implementation of selective capture and replay.
 
 \subsubsection{Terminology} % diesen Titel weglassen?
-Eiffel has a nomenclature that differs from other programming languages. Here the Eiffel terminology is described according to \cite{oosc2} and compared to the one from Java.
+Eiffel has a nomenclature that differs from other programming languages. Here the Eiffel terminology is described according to Meyer's Book \cite{oosc2} and compared to the one from Java.
 \begin{center}
 \begin{tabular}[]{|l|l|} \hline
  \textbf{Eiffel}&\textbf{Java} \\ \hline
  Attribute&Field \\ \hline
- Ouery&Field or Method that has a return value \\ \hline
+ Query&Field or Method that has a return value \\ \hline
  Routine&Method \\ \hline
  Procedure&Method that has no return value \\ \hline
  Function&Method that has a return value \\ \hline
@@ -28,16 +31,17 @@ If this assumption is translated to multiple inheritance, it would not be possib
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.5\textwidth]{illustrations/obs_unobs_multiple_inheritance}
-  \caption{Conflict Due to Multiple Inheritance}
+  \caption{Conflict Between Observed and Unobserved Set Due to Multiple Inheritance}
   \label{fig:obs_unobs_multiple_inheritance}
 %\includegraphics{illustrations/capture_and_replay_generic_structure}
 \end{figure}
 
-Multiple inheritance is extensively used in Eiffel, thus this assumption would be too restrictive in our opinion. It would lead to big clusters that could not be divided into observed and unobserved set. 
+%TODO our opinion raus.
+Multiple inheritance is extensively used in Eiffel, thus this assumption would be too restrictive in our opinion. It leads to big clusters that could not be divided into observed and unobserved set.
 
-Although Java does not allow multiple inheritance, it supports multiple interface inheritance. Joshi and Orso \cite{orso05may} mention that they need to dynamically determine if the target of an event is observed or unobserved in certain cases. We assume that multiple interface inheritance with a class that both implements an observed and unobserved interface  is at least one of these cases. They use the \texttt{instanceof} operator to determine if an object is an instance of an observed class.
+Although Java does not allow multiple inheritance, it supports multiple interface inheritance. Joshi and Orso \cite{orso05may} mention that they need to dynamically determine if the target of an event is observed or unobserved in certain cases. We assume that multiple interface inheritance with a class that both implements an observed and unobserved interface  is at least one of these cases. They use the \texttt{instanceof} operator to determine if an object is an instance of an observed class. %TODO: Beispiel dazu?
 
-We will present a solution that always determines dynamically, if an object is an instance of an observed class (\emph{observed object}) or an instance of an unobserved class (\emph{unobserved object}), together with a proposal how to solve this problem without reflection.
+We will present a solution that always determines dynamically, if an object is an instance of an observed class (\emph{observed object}) or an instance of an unobserved class (\emph{unobserved object}), together with a proposal how to solve this problem without reflection. %TODO: together raus!
 
 \subsubsection{Read Only Attributes}
 Eiffel strictly follows the \emph{uniform access principle} \cite{oosc2}. The principle states that it should not be visible to the clients whether features are implemented through storage or computation. This ensures that the implementation of a feature can be changed from attribute to function or vice versa. One of the consequences of this principle is that clients of a class cannot write to attributes, as these attributes could be implemented as a function as well.
@@ -84,7 +88,7 @@ The routine instrumentation can be divided into three parts (\figref{fig:routine
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.5\textwidth]{illustrations/routine_instrumentation_structure}
-  \caption{Structure of Routine Instrumentations}
+  \caption{The Three Sections of Routine Instrumentations}
   \label{fig:routine_instrumentation_structure}
 \end{figure}
 
@@ -203,22 +207,22 @@ Manifest strings are another case where C code writes to strings, because the C 
 \subsection{Compiler Integration}
 To insert the instrumentation code automatically, the compiler of Eiffel Studio was modified. The Eiffel Studio compiler has many backends: Finalized C code, workbench C code, workbench melted code, java bytecode and .net CIL. The generated code runs on a variety of platforms like Windows, Linux, several Unix operating systems, MacOS X and others \cite{eiffelsoftware}. To support as many backends as possible, one target was to keep the instrumentation code in Eiffel wherever possible, as the backend and platform independence is then guaranteed by the Eiffel compiler. To this end our modifications in the compiler change the abstract syntax tree (AST) before code generation, which is the approach that comes closest to changing the source code of the application directly.
 
-Emmanuel Stapf advised us to make the modifications in the class \texttt{AST\_FEATURE\_CHECKER\_GENERATOR}, which is used at the stage where the compiler checks the types of the program. Code instrumentation is inserted into the routines before type checking (\texttt{process\_routine\_as}). Our code generates additional AST nodes and replaces the original AST of the routine body. At the moment only regular routines are instrumented, but it should be possible to support once routines, too, without much additional work. 
+Emmanuel Stapf advised us to make the modifications in the class \texttt{AST\_FEATURE\_CHECKER\_GENERATOR}, which is used at the stage where the compiler checks the types of the program. Code instrumentation is inserted into the routines before their body is type checked, in the feature \texttt{process\_routine\_as}. Our code generates additional AST nodes and replaces the original AST of the routine body. At the moment, only regular routines are instrumented, but it should be possible to support once routines, too, without much additional work. 
 
-A simple mechanism to exclude classes and routines from instrumentation was implemented, because some classes like \texttt{PROGRAM\_FLOW\_SINK} need a special treatment to avoid management code invoke itself through instrumentation code. There are also some features that need to be instrumented in a special way, for example \texttt{SPECIAL.note_direct_manipulation} that needs to record the content of the special during capture phase and restore that content during replay phase. At the moment, two arrays are initialized with the names of exceptional classes and features, but it is clear that at later stage this needs to be managable through a configuration file, to avoid recompiling Eiffel Studio, only because these exceptions changed.
+A simple mechanism to exclude classes and routines from instrumentation was implemented, because some classes like \texttt{PROGRAM\_FLOW\_SINK} need a special treatment to avoid management code invoking itself through instrumentation code. There are also some features that need to be instrumented in a special way, for example \texttt{SPECIAL.note\_direct\_manipulation} that needs to record the content of the instance during capture phase and restore that content during replay phase. To support classes and features that should not be instrumented, two arrays are initialized with the names of exceptional classes and features, but it is clear that at a later stage this needs to be controlled by a configuration file, to avoid recompiling Eiffel Studio, only because these exceptions changed.
 
-%TODO ausschaltbare instrumentierung
+%TODO: Möglichkeit, instrumentierung ganz abzuschalten.
 
 \section{Implementation}
-In this chapter, we will explain the implementation of the management code. For a quick overview over our implementation, we will first outline the architecture of the solution:
+In this chapter, we will explain the implementation of the management code. For a quick overview over our implementation, we will first outline the architecture of the solution and then go through the different parts of the management code in the subsequent sections.
 
+\subsection{Outline}
  \figref{fig:implementation_overall_architecture} shows the key classes of the implementation with the \texttt{PROGRAM\_FLOW\_SINK} as the entrance point to the management code. Program flow events are put into the standard instance of it, which all classes can access through the once function \texttt{\{ANY\}.program\_flow\_sink}; during capture phase, it is set to an object of type \texttt{RECORDER} and during replay phase, it is set to an instance of \texttt{PLAYER}.
 
-\texttt{RECORDER} uses \texttt{CAPTURE\_SERIALIZER} to write events to a log file.
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.8\textwidth]{illustrations/implementation_overall_architecture}
-  \caption{Overall Architecture of the Implementation}
+  \caption{Overall Architecture of the Management Code}
   \label{fig:implementation_overall_architecture}
 \end{figure}
 
@@ -243,7 +247,7 @@ The player reads events from the class \texttt{EVENT\_INPUT}, which uses the par
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{illustrations/implementation_parser.png}
-  \caption{Architecture of the parser}
+  \caption{Architecture of the Event Log Parser}
   \label{fig:implementation_parser}
 \end{figure}
 
@@ -252,7 +256,7 @@ Selective capture and replay relies on object IDs to be able to capture only par
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.4\textwidth]{illustrations/any_object_id}
-  \caption{Object Layout with Object ID}
+  \caption{Object ID in the Object Layout}
   \label{fig:any_object_id}
 \end{figure}
 
@@ -260,7 +264,7 @@ The class \texttt{SPECIAL}, which is able to store a variable number of elements
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.4\textwidth]{illustrations/special_object_id}
-  \caption{Object Layout of \texttt{SPECIAL} with Object ID}
+  \caption{Object ID in the Object Layout of \texttt{SPECIAL}}
   \label{fig:special_object_id}
 \end{figure}
 
@@ -281,7 +285,7 @@ It is not possible to make a standard implementation for unobserved classes in \
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.7\textwidth]{illustrations/observed_query_conflicting_redefinitions}
-  \caption{Conflicting Redefinitions}
+  \caption{Example of Conflicting Redefinitions Of \texttt{is\_observed}}
   \label{fig:observed_query_conflicting_redefinitions}
 \end{figure}
 
@@ -307,6 +311,7 @@ Every time the player is invoked from the instrumentation code, it reads the nex
 \end{figure}
 
 \subsubsection {Resolving Entities}
+\label{lbl:entity_resolving}
 In the current implementation, creation procedures are instrumented in the same way as other routines, whereas the original implementation instruments creation procedures in a special way to maintain object ID's and register the objects in the reference map. To make sure that our technique can find objects to a given object ID, we use a different technique: everytime an object is passed to an unobserved routine, it is registered in the reference map. Objects only need to be resolved during replay phase, when the replay scaffolding needs to pass an observed object back to the observed set. Thus objects that never flow from the observed to the unobserved code are not interesting. During capture phase, the unobserved code must already have accessed an observed feature that returns that observed object before it can pass the object back to the observed code; or it must have created this observed object.
 Therefore there is always an outgoing event, or the target of an INCALL that contains that object.
 

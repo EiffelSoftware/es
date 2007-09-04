@@ -2,13 +2,7 @@
 %Should the motivation include a reference to cdd?
 Debugging applications is very tedious work. One of the hardest steps to find a fault in a program is to reproduce the steps that lead to the associated program failure. Capture and replay aims at making the run of a program repeatable, removing this burden from the developer. In order to be able to replay an application, it is necessary to isolate the deterministic part of the application that needs to be replayed (observed part) and the non-deterministic parts, like user input, storage or network (unobserved part). Once the behaviour of the unobserved part can be captured and replayed, it is also possible to replay the observed part. Although capture and replay is commonly known as capturing mouse and keyboard events, there are approaches that go further and capture events from all interactions with the environment. All these approaches have one thing in common: They have a fixed border between observed and unobserved part. Selective Capture and Replay \cite{orso05may} makes it possible to individually define the observed part, thus offers the possibility to optimize the amount of information that needs to be captured. Another unique feature of Selective Capture and Replay is that the amount of recorded data is linear to the number of variables passed over the border between the observed and unobserved part, whereas conventional systems record all the data that passes the border.
 
- The goal of this thesis is to implement Selective capture replay for Eiffel, which in contrast to Java, supports multiple inheritance. This makes it necessary to instrument the programs in a different way than in the original implementation. One benefit of this changed implementation is the possibility to switch between capture and replay phase without recompilation. To validate the implementation, an example will be presented and the performance of the technique will be measured using this example.
+%zwei unterschiede (nicht wertend): mi & ohne recompilation.
+ The goal of this thesis is to implement selective capture replay for Eiffel, which in contrast to Java, supports multiple inheritance. This makes it necessary to instrument the programs in a different way than in the original implementation. This changed implementation offers the possibility to switch between capture and replay phase without recompilation. To validate the implementation, an example will be presented and the performance of the technique will be measured using this example.
 
-%CDD [reference!] facilitates this step by providing the developer a testcase that results in the same failure. 
-%motivation
-%capture/replay
-%scope
-%-modifications
-%-implementation
-%-experimental results
 \end{abstract}

@@ -3,7 +3,7 @@ img_extIsRegExp=false
 img_extensions=.eps .pdf .dvi .ps .fig .gif .jpg .jpeg .png
 kileprversion=1
 kileversion=1.9.3
-lastDocument=thesis.tex
+lastDocument=preliminaries.tex
 masterDocument=
 name=thesis
 pkg_extIsRegExp=false
@@ -20,8 +20,16 @@ archive=true
 column=0
 encoding=UTF-8
 highlight=LaTeX
-line=0
+line=6
 open=false
+
+[item:acknowledgments.tex]
+archive=true
+column=1
+encoding=UTF-8
+highlight=LaTeX
+line=0
+open=true
 
 [item:appendix.tex]
 archive=true
@@ -33,26 +41,26 @@ open=true
 
 [item:conclusions.tex]
 archive=true
-column=21
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=0
+line=30
 open=true
 
 [item:eiffel_implementation.tex]
 archive=true
-column=452
+column=295
 encoding=UTF-8
 highlight=LaTeX
-line=290
+line=43
 open=true
 
 [item:introduction.tex]
 archive=true
-column=766
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=10
+line=9
 open=false
 
 [item:lstlang0.sty]
@@ -65,27 +73,27 @@ open=false
 
 [item:preliminaries.tex]
 archive=true
-column=132
+column=43
 encoding=UTF-8
 highlight=LaTeX
-line=196
-open=false
+line=96
+open=true
 
 [item:related_work.tex]
 archive=true
-column=188
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=43
-open=false
+line=53
+open=true
 
 [item:thesis.bib]
 archive=true
-column=57
+column=0
 encoding=UTF-8
 highlight=BibTeX
-line=100
-open=false
+line=69
+open=true
 
 [item:thesis.kilepr]
 archive=true
@@ -97,8 +105,8 @@ open=false
 
 [item:thesis.tex]
 archive=true
-column=20
+column=40
 encoding=UTF-8
 highlight=LaTeX
-line=114
+line=0
 open=true

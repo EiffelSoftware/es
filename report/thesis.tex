@@ -1,4 +1,4 @@
-\documentclass[a4paper,twoside,10pt]{report}
+\documentclass[a4paper,twoside,openright,10pt]{report}
 %picture imports
 \usepackage{graphicx}
 \usepackage{color}
@@ -74,6 +74,7 @@
 \newpage
 \pagenumbering{roman}
 \include{abstract}
+\include{acknowledgments}
 
 % table of contents
 \addtolength{\parskip}{-0.5\baselineskip} % reset paragraph spacing
@@ -105,10 +106,6 @@
 %-Eiffel compilation model (?)
 %-CDD (?)
 \include{eiffel_implementation}
-
-\chapter{Experimental Results}
-\section{Example Application}
-\section{Results}
 
 %Eiffel Vision Beispiel, mit unterschiedlichen observed sets
 
