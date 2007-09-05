@@ -1,10 +1,9 @@
-\chapter{Capture and Replay for Eiffel}
-%TODO: add text
+\chapter{Selective Capture and Replay for Eiffel}
+In the following we will describe how we implemented selective capture and replay for Eiffel with an emphasis on the differences to the original Java implementation. The chapter ends with a section that describes how to build our implementation from source and run an Eiffel example of selective capture and replay.
+
 \eiffellisting
 \section{Differences to Existing Implementation}
-Selective capture and replay as described by Joshi and Orso \cite{orso05may} can not be directly applied to Eiffel.
-%<TODO nicht was getan wurde, sondern was das Resultat ist!
-Although the core elements of the technique can be used in Eiffel too, we adapted  some parts. In this section the changes to the original implementation and reasons for these changes will be discussed.
+Selective capture and replay as described by Joshi and Orso \cite{orso05may} can not be directly applied to Eiffel. The core elements of the technique can be applied to Eiffel, but it is necessary to adjust some parts. In this section the changes to the original implementation and reasons for these changes will be discussed.
 
 \subsection{Language Aspects}
 Even though Java and Eiffel are both object oriented languages, there are differences between these two languages, syntax left aside. Eiffel offers a wider set of language constructs, many times trying to solve problems inherently object oriented, whereas Java reused solutions from its ancestors, mainly C++. One example for this difference are be the Eiffel basic types, which can be treated as objects with methods versus the Java basic types, which are no objects. This section focuses on the differences between Java and Eiffel that influenced our implementation of selective capture and replay.
@@ -36,12 +35,20 @@ If this assumption is translated to multiple inheritance, it would not be possib
 %\includegraphics{illustrations/capture_and_replay_generic_structure}
 \end{figure}
 
-%TODO our opinion raus.
-Multiple inheritance is extensively used in Eiffel, thus this assumption would be too restrictive in our opinion. It leads to big clusters that could not be divided into observed and unobserved set.
+Multiple inheritance is extensively used in Eiffel, thus this assumption is too restrictive, because it leads to big clusters of classes that either all must be observed or all unobserved.
 
-Although Java does not allow multiple inheritance, it supports multiple interface inheritance. Joshi and Orso \cite{orso05may} mention that they need to dynamically determine if the target of an event is observed or unobserved in certain cases. We assume that multiple interface inheritance with a class that both implements an observed and unobserved interface  is at least one of these cases. They use the \identifier{instanceof} operator to determine if an object is an instance of an observed class. %TODO: Beispiel dazu?
+Although Java does not allow multiple inheritance, it supports multiple interface inheritance. Joshi and Orso \cite{orso05may} mention that they need to dynamically determine if the target of an event is observed or unobserved in certain cases. We assume that multiple interface inheritance with a class that both implements an observed and unobserved interface  is at least one of these cases. They use the \identifier{instanceof} operator to determine if an object is an instance of an observed class. For example if in our application \class{ATM\_UI\_TEXTUAL} is observed and the class \class{ATM\_UI\_GRAPHICAL} is unobserved, variables of type \class{ATM\_UI} can reference an instance of an observed \emph{or} an unobserved class. In that case, it is possible determine with the following Java code whether the actual object is an instance of an observed class:
+\javalisting
+\begin{lstlisting}
+ if(ui instanceof ATM_UI_TEXTUAL){
+    /*Instrumentation for instance of observed class*/
+ }else{
+   /*Instrumentation for instance of unobserved class*/
+ }
+\end{lstlisting}
+\eiffellisting
 
-We will present a solution that always determines dynamically, if an object is an instance of an observed class (\emph{observed object}) or an instance of an unobserved class (\emph{unobserved object}), together with a proposal how to solve this problem without reflection. %TODO: together raus!
+We will present a solution that always determines dynamically, if an object is an instance of an observed class (\emph{observed object}) or an instance of an unobserved class (\emph{unobserved object}) and a proposal how to solve this problem without reflection.
 
 \subsubsection{Read Only Attributes}
 Eiffel strictly follows the \emph{uniform access principle} \cite{oosc2}. The principle states that it should not be visible to the clients whether features are implemented through storage or computation. This ensures that the implementation of a feature can be changed from attribute to function or vice versa. One of the consequences of this principle is that clients of a class cannot write to attributes, as these attributes could be implemented as a function as well.
@@ -67,6 +74,8 @@ All these limitations can be resolved using selective capture and replay:
 Prestate extraction using selective capture and replay requires an immediate rerun of the application under test. Because complete recompiles in Eiffel last for tens of minutes up to hours, we can not afford to instrument the application again before replaying it. Thus it is necessary to design the code instrumentation to be applicable for both capture \emph{and} replay phase. We pushed this approach even further to allow the user to disable the whole instrumentation. This allows execution with minimal overhead if capture and replay is not needed, without recompiling the application.
 
 \section{Code Instrumentation}
+One of the key elements of selective capture and replay code instrumentation, which is necessary to detect events that are relevant for the replay phase. In the following we will describe how application code is instrumented in order to detect events and how this instrumentation is inserted at compile time.
+
 \subsection{Outline}
 Due to differences between Eiffel and Java and a different use case, there are two main changes between the original implementation and our approach:
 
@@ -77,14 +86,14 @@ Due to differences between Eiffel and Java and a different use case, there are t
 
 The first requirement can be met by adding an additional query to every class so that it is possible to find out whether an object is an instance of an observed or an unobserved class. We ensure that every class has this query by adding it to ANY. In Section \ref{lbl:is_observed} we will discuss how this query can be implemented efficiently.
 
-In order to be able to switch between capture and replay mode, the class PROGRAM\_FLOW\_SINK was introduced. Program flow events are put into the PROGRAM\_FLOW\_SINK. It is both the ancestor class of RECORDER, the class that contains the management code for recording events and PLAYER, the class that provides the scaffolding for replaying events. The standard instance of a PROGRAM\_FLOW\_SINK is globally accessible. It is dynamically bound to an instance of RECORDER during capture phase and PLAYER during replay phase.
+In order to be able to switch between capture and replay mode, the class PROGRAM\hspace{0pt}\_FLOW\hspace{0pt}\_SINK was introduced. Program flow events are put into the PROGRAM\hspace{0pt}\_FLOW\_SINK. It is both the ancestor class of RECORDER, the class that contains the management code for recording events and PLAYER, the class that provides the scaffolding for replaying events. The standard instance of a PROGRAM\hspace{0pt}\_FLOW\_SINK is globally accessible. It is dynamically bound to an instance of RECORDER during capture phase and PLAYER during replay phase.
 
 To create placeholder objects from unobserved classes, their original routine bodies are disabled during replay phase. When replaying, the routines only execute instrumentation code that invokes the scaffolding and takes care of the return value if necessary.
 
 \subsection{Routines}
 Whereas the original implementation captures routine calls by instrumenting the call site (in the client), we decided to instrument the calee (the supplier). This simplifies code instrumentation, because there is no need to make changes inside existing routine bodies, it is sufficient to add some code at the beginning and the end of the routine bodies. %TODO Gibt es noch ein besseres Motiv?
 
-The routine instrumentation can be divided into three parts (\figref{fig:routine_instrumentation_structure}): Right at the beginning of the routine, code to detect call events is inserted. The original routine body is made conditional so that it is not executed for unobserved routines during the replay phase. Finally, code to detect callret events is inserted at the end of the routine.
+The routine instrumentation can be divided into three parts (\figref{fig:routine_instrumentation_structure}): right at the beginning of the routine, code to detect call events is inserted. The original routine body is made conditional so that it is not executed for unobserved routines during the replay phase. Finally, code to detect callret events is inserted at the end of the routine.
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.5\textwidth]{illustrations/routine_instrumentation_structure}
@@ -121,6 +130,8 @@ end
 Note that all the inserted code is part of the selective capture and replay management code, which does not belong to the code of the original application, thus these instructions must not trigger further events for the event log, for example the creation of the manifest string ``account\_exists'' should not create other call events on class \class{STRING}. To make sure, that this won't happen, the commands \feature{enter} to disable capture and replay and \feature{leave} to reenable capture and replay were introduced.
 
 To detect boundary crossing calls, the management code keeps an own stack that indicates whether the target objects of the calls on the call stack are observed or not. This stack is managed in parallel to the call stack; in the invocation instrumentation code, the result of the query \feature{is\_observed} is put onto the stack and in the exit instrumentation code, thes value is removed again. Using this stack, it is possible to find out, whether the caller object was observed or not.
+
+
 \subsubsection{Conditional Routine Body Execution}
 To be able to switch between the original and the placeholder routine body, the original routine body of unobserved routines is only executed during capture phase (\listref{lst:methodbody_instrumentation}). Placeholder routines are only needed for unobserved routines, thus the original body is always executed for observed routines . The query \feature{is\_replay\_phase} indicates if the program is running in replay mode; it always returns false, when capture and replay is disabled, therefore the management code will always use the original routine body.
 
@@ -129,6 +140,8 @@ if (not program_flow_sink.is_replay_phase) or is_observed then
 	Result := (the_bank.account_for_name (account_name) /= Void)
 end
 \end{lstlisting}
+
+
 \subsubsection{Capturing Callret Events}
 To capture and replay callret events, instrumentation code is inserted at the end of the routines. Again, the code only puts an event into the \feature{program\_flow\_sink} if the routine was called across the boundary. For functions, the code also restores the result to \feature{program\_flow\_sink\_.last\_result}, which has only an effect for unobserved functions during replay phase, otherwise the query \feature{last\_result} returns the same value that was put into the \feature{program\_flow\_sink} before. Thus functions can be used as placeholder functions without altering the instrumentation between capture and replay phase.
 \begin{lstlisting}[caption=Instrumentation to Capture Callret Events,label=lst:exit_instrumentation]
@@ -142,6 +155,7 @@ if program_flow_sink.is_capture_replay_enabled then
 	program_flow_sink.leave
 end
 \end{lstlisting}
+
 
 \subsubsection{Complete Routine Instrumentation}
 \listref{lst:account_exists_instrumented} shows the routine after combining all three parts of the instrumentation.
@@ -176,8 +190,9 @@ account_exists (account_name: STRING_8): BOOLEAN
 	end
 \end{lstlisting}
 
+
 \subsection{Attribute Accesses}
-Automated code instrumentation for attribute accesses could not be implemented as part of this thesis, because the part of the Eiffel compiler code, that was intended to be used for instrumentation, turned out to be unsuitable for the task. Emmanuel Stapf of Eiffel Software Inc. advised us to use the mechanism that generates wrapper code for attribute accesses to support expanded generic derivation reattachment (related to autoboxing). Unfortunately the compiler could not apply the mechanism to all attribute accesses and it was not possible to make the necessary changes in the compiler due to a lack of time.
+Automated code instrumentation for attribute accesses could not be developed as part of this thesis, because the part of the Eiffel compiler code, that was intended to be used for instrumentation, turned out to be unsuitable for the task. Emmanuel Stapf of Eiffel Software Inc. advised us to use the mechanism that generates wrapper code for attribute accesses to support expanded generic derivation reattachment (related to autoboxing). Unfortunately the compiler could not apply the mechanism to all attribute accesses and it was not possible to make the necessary changes in the compiler due to a lack of time.
 
 Here is a sketch how the instrumentation code for an access to \inlineeiffel{atm.ui} could look like:
 \begin{lstlisting}[caption=Instrumentation of an Attribute Access]
@@ -196,28 +211,31 @@ The whole instrumentation needs to be put into a function that is accessed inste
 \end{lstlisting}
 It does not suffice to execute the instrumentation for the access to \inlineeiffel{other.attribute} one instruction before the evaluation of the expression, because \inlineeiffel{other.function} could have a side effect that changes \inlineeiffel{other.attribute}; although this would violate the \emph{Command-Query Separation Principle} \cite{oosc2}, it can not forbidden.
 
+
 \subsection{Attribute Manipulation from C Level}
 One assumption of the original selective capture and replay implementation is that native code never manipulates observed fields. Eiffel allows integration of C code into classes, using the \identifier{external} keyword. In order to write to fields of Eiffel objects, the C code needs the address of that object, which is achieved by using the \identifier{\$} - operator.
 
 To find out the classes whose attributes are written from native code, we searched for the \identifier{\$} operator in the Eiffel base library. Only writes to \inlineeiffel{{STRING}.area} of type \class{SPECIAL [CHARACTER]} were identified to cause problems. Other than that, there were some write accesses to attributes of the class containing the C code, which is unproblematic because these accesses never cross the boundaries.
-Restricting the class \class{STRING} to be in the unobserved set was not an option, because it would imply serious performance penalties to applications that heavily use strings (e.g. a parser). To address this issue in a different way, the command \feature{note\_direct\_manipulation} was added to the class \class{SPECIAL}, which needs to be called whenever unobserved C code writes to the fields of \class{SPECIAL}. Due to the lack of other use cases, the command was only implemented to support \class{SPECIAL [CHARACTER]}. During the capture phase it writes down the new content of the object and when replaying the corresponding event, that content is restored; thus the objects are in the same state during replay as the were in the capture phase.
+Restricting the class \class{STRING} to be in the unobserved set was not an option, because it would imply serious performance penalties to applications that heavily use strings (e.g. a parser). To address this issue in a different way, the command \feature{note\_direct\_manipulation} was added to the class \class{SPECIAL}, which needs to be called whenever unobserved C code writes to the fields of \class{SPECIAL}. Due to the lack of other use cases, the command was only developed to support \class{SPECIAL [CHARACTER]}. During the capture phase it writes down the new content of the object and when replaying the corresponding event, that content is restored; thus the objects are in the same state during replay as the were in the capture phase.
 
-Manifest strings are another case where C code writes to strings, because the C code generated by Eiffel Studio allocates and initializes these strings directly. No automated instrumentation for manifest strings was implemented, but it could be added by modifying the C macro that is used to generate manifest strings.
+Manifest strings are another case where C code writes to strings, because the C code generated by Eiffel Studio allocates and initializes these strings directly. No automated instrumentation for manifest strings was developed, but it could be added by modifying the C macro that is used to generate manifest strings.
+
 
 \subsection{Compiler Integration}
-To insert the instrumentation code automatically, the compiler of Eiffel Studio was modified. The Eiffel Studio compiler has many backends: Finalized C code, workbench C code, workbench melted code, java bytecode and .net CIL. The generated code runs on a variety of platforms like Windows, Linux, several Unix operating systems, MacOS X and others \cite{eiffelsoftware}. To support as many backends as possible, one target was to keep the instrumentation code in Eiffel wherever possible, as the backend and platform independence is then guaranteed by the Eiffel compiler. To this end our modifications in the compiler change the abstract syntax tree (AST) before code generation, which is the approach that comes closest to changing the source code of the application directly.
+To insert the instrumentation code automatically, the compiler of Eiffel Studio was modified. The Eiffel Studio compiler has many backends: finalized C code, workbench C code, workbench melted code, java bytecode and .net CIL. The generated code runs on a variety of platforms like Windows, Linux, several Unix operating systems, MacOS X and others \cite{eiffelsoftware}. To support as many backends as possible, one target was to keep the instrumentation code in Eiffel wherever possible, as the backend and platform independence is then guaranteed by the Eiffel compiler. To this end our modifications in the compiler change the abstract syntax tree (AST) before code generation, which is the approach that comes closest to changing the source code of the application directly.
 
-Emmanuel Stapf advised us to make the modifications in the class \verb{AST\_FEATURE\_CHECKER\_GENERATOR{, which is used at the stage where the compiler checks the types of the program. Code instrumentation is inserted into the routines before their body is type checked, in the feature \feature{process\_routine\_as}. Our code generates additional AST nodes and replaces the original AST of the routine body. At the moment, only regular routines are instrumented, but it should be possible to support once routines, too, without much additional work. 
+Emmanuel Stapf advised us to make the modifications in the class \class{AST\hspace{0pt}\_FEATURE\hspace{0pt}\_CHECKER\hspace{0pt}\_GENERATOR}, which is used at the stage where the compiler checks the types of the program. Code instrumentation is inserted into the routines before their body is type checked, in the feature \feature{process\_routine\_as}. Our code generates additional AST nodes and replaces the original AST of the routine body. At the moment, only regular routines are instrumented, but it should be possible to support once routines, too, without much additional work. 
 
-A simple mechanism to exclude classes and routines from instrumentation was implemented, because some classes like \class{PROGRAM\_FLOW\_SINK} need a special treatment to avoid management code invoking itself through instrumentation code. There are also some features that need to be instrumented in a special way, for example \feature{SPECIAL.note\_direct\_manipulation} that needs to record the content of the instance during capture phase and restore that content during replay phase. To support classes and features that should not be instrumented, two arrays are initialized with the names of exceptional classes and features, but it is clear that at a later stage this needs to be controlled by a configuration file, to avoid recompiling Eiffel Studio, only because these exceptions changed.
+A simple mechanism to exclude classes and routines from instrumentation was developed, because some classes like \class{PROGRAM\_FLOW\_SINK} need a special treatment to avoid management code invoking itself through instrumentation code. There are also some features that need to be instrumented in a special way, for example \feature{SPECIAL.note\_direct\_manipulation} that needs to record the content of the instance during capture phase and restore that content during replay phase. To support classes and features that should not be instrumented, two arrays are initialized with the names of exceptional classes and features, but it is clear that at a later stage this needs to be controlled by a configuration file, to avoid recompiling Eiffel Studio, only because these exceptions changed.
 
 %TODO: Möglichkeit, instrumentierung ganz abzuschalten.
 
 \section{Implementation}
 In this chapter, we will explain the implementation of the management code. For a quick overview over our implementation, we will first outline the architecture of the solution and then go through the different parts of the management code in the subsequent sections.
 
+
 \subsection{Outline}
- \figref{fig:implementation_overall_architecture} shows the key classes of the implementation with the \class{PROGRAM\_FLOW\_SINK} as the entrance point to the management code. Program flow events are put into the standard instance of it, which all classes can access through the once function \feature{\{ANY\}.program\_flow\_sink}; during capture phase, it is set to an object of type \class{RECORDER} and during replay phase, it is set to an instance of \class{PLAYER}.
+ \figref{fig:implementation_overall_architecture} shows the key classes of the implementation with the \class{PROGRAM\hspace{0pt}\_FLOW\_SINK} as the entrance point to the management code. Program flow events are put into the standard instance of it, which all classes can access through the once function \feature{\{ANY\}.program\_flow\_sink}; during capture phase, it is set to an object of type \class{RECORDER} and during replay phase, it is set to an instance of \class{PLAYER}.
 
 \begin{figure}[ht]
   \centering
@@ -225,6 +243,7 @@ In this chapter, we will explain the implementation of the management code. For 
   \caption{Overall Architecture of the Management Code}
   \label{fig:implementation_overall_architecture}
 \end{figure}
+
 
 \subsection{The Event Log}
 First it was intended to use XML as the Format for the log files because there would be no need to write a parser and the format could be verified using XSD. For our parser, it was required to parse one event at a time, because the log files can become big when applications are captured over a long time. With the Gobo XML parser, it is not possible to request parsing of a single XML element at a time, there are only the options to use event based parsing or DOM parsing. Using the event based parser was mandatory, because the DOM based parser would parse the whole log file and overly allocate memory in order to store all nodes of the DOM tree. The event based mode did not fit, because this required to invoke the replay harnest from the parser and not vice versa. One possibility would have been to put the parser into an own thread and block this thread whenever one element is buffered and not yet consumed by the replay harnest. Because multithreading in Eiffel requires a compiler switch which causes alternative, incompatible libraries to be used, this was not an option, because it would render the capture/replay mechanism unusable for single threaded applications.
@@ -240,8 +259,8 @@ The classes related to the log were designed to allow addition of other log form
   \label{fig:implementation_serializer}
 \end{figure}
 
-The parser is divided into the class \class{EVENT\_PARSER} that reads from the log and \class{EVENT\_PARSER\_HANDLER} to handle events that were generated by the parser (\figref{fig:implementation_parser}). \inlineeiffel{\{EVENT\_PARSER\}.parse\_event} parses the next event from the log and then calls the apropriate handler from \class{EVENT\_PARSER\_HANDLER}, for example \feature{handle\_incall\_event}.  
-\class{TEXT\_EVENT\_PARSER} is a \emph{recursive descent parser} \cite{aho86} that parses the line based log file. To support other log formats, it is possible to implement other parsers that inherit from \class{EVENT\_PARSER}.
+The parser is divided into the class \class{EVENT\_PARSER} that reads from the log and \class{EVENT\hspace{0pt}\_PARSER\_HANDLER} to handle events that were generated by the parser (\figref{fig:implementation_parser}). \inlineeiffel{\{EVENT\_PARSER\}.parse\_event} parses the next event from the log and then calls the apropriate handler from \class{EVENT\hspace{0pt}\_PARSER\_HANDLER}, for example \feature{handle\_incall\_event}.  
+\class{TEXT\hspace{0pt}\_EVENT\_PARSER} is a \emph{recursive descent parser} \cite{aho86} that parses the line based log file. To support other log formats, it is possible to implement other parsers that inherit from \class{EVENT\_PARSER}.
 The player reads events from the class \class{EVENT\_INPUT}, which uses the parser to read the events from the log.
 
 \begin{figure}[ht]
@@ -250,6 +269,7 @@ The player reads events from the class \class{EVENT\_INPUT}, which uses the pars
   \caption{Architecture of the Event Log Parser}
   \label{fig:implementation_parser}
 \end{figure}
+
 
 \subsection{Object ID}
 Selective capture and replay relies on object IDs to be able to capture only partial data. To implement this for Eiffel, an object ID was added to the class \class{ANY} as an additional attribute, which is problematic, because the Eiffel runtime assumes a fixed size for all attributes of \class{ANY}, so it is only allowed to add routines to it. To circumvent this issue, the run-time was  changed to allocate more space for each object. The object ID is stored at the end of the allocated memory to prevent disrupting existing code (\figref{fig:any_object_id}).
@@ -291,17 +311,19 @@ It is not possible to make a standard implementation for unobserved classes in \
 
 Although this solution is more difficult to implement, it improves performance significantly, because accessing the query results in only one access to a feature instead of nested routine calls. It is possible that implementing this function as a once function could improve performance further.
 
+
 \subsubsection {Implemented Solution}
 Although the second solution has many advantages over the first solution, it was not chosen, because the implementation of the automatic instrumentation for it would have taken too much time. It is reasonable to replace our current implementation with this solution later, which should improve performance significantly.
+%TODO evtl. noch kurz die Loesung mit UNOBSERVED_SET erklaeren.
 
-%evtl. noch kurz die Loesung mit UNOBSERVED_SET erklaeren.
 
 \subsection{The Recorder}
 The recorder receives the events that were passed to the program flow sink and records them to the log. To determine whether a call is an incall or outcall, it uses the \feature{is\_observed\_stack} that indicates for all routines on the call stack whether they are observed or not. Then, the recorder writes the event to the log, using the \class{CAPTURE\_SERIALIZER}.
 
+
 \subsection{The Player}
 The player is far more complex than the recorder, because it has to drive the application execution in contrast to the recorder which acts only as a passive sink for events (\figref{fig:implementation_player}). 
-Every time the player is invoked from the instrumentation code, it reads the next event from the \class{EVENT\_INPUT} and compares that event to the one that has just occurred. \class{EVENT\_INPUT} instantiates a different class for each event type. The events contain the same information that was written to the event log, for example the class \class{INCALL\_EVENT} has three attributes: \feature{target}, \feature{feature\_name} and \feature{arguments}, a list of entities. An \class{ENTITY} is the representation of what is written to the log for objects (\class{NON\_BASIC\_ENTITY}) and scalar values \class{BASIC\_ENTITY}. The player uses these entities to check values received from the instrumentation code or to retrieve the corresponding values using \class{ENTITY\_RESOLVER} in order to pass them to the application code, for example when INCALL events are replayed. The deferred class \class{CALLER}, an abstraction of reflection is used to call observed routines using the routine name, the target object and the arguments. Because Eiffel lacks native reflection support, the current implementation of \class{CALLER}, \class{ERL\_CALLER} uses the reflection library generated by the Eiffel reflection library generator (Erl-G) \cite{erlg}. The reflection library adds one reflection class for each class in the universe and causes all classes of the universe and the reflection library to be part of the system, which results in vast compilation times even for small projects. To bypass this issue, it is also possible to implement an own caller specific for a project, that is able to call all observed routines; but this approach is only reasonable when the observed set is small.
+Every time the player is invoked from the instrumentation code, it reads the next event from the \class{EVENT\_INPUT} and compares that event to the one that has just occurred. \class{EVENT\_INPUT} instantiates a different class for each event type. The events contain the same information that was written to the event log, for example the class \class{INCALL\_EVENT} has three attributes: \feature{target}, \feature{feature\_name} and \feature{arguments}, a list of entities. An \class{ENTITY} is the representation of what is written to the log for objects (\class{NON\_BASIC\hspace{0pt}\_ENTITY}) and scalar values \class{BASIC\_ENTITY}. The player uses these entities to check values received from the instrumentation code or to retrieve the corresponding values using \class{ENTITY\hspace{0pt}\_RESOLVER} in order to pass them to the application code, for example when INCALL events are replayed. The deferred class \class{CALLER}, an abstraction of reflection is used to call observed routines using the routine name, the target object and the arguments. Because Eiffel lacks native reflection support, the current implementation of \class{CALLER}, \class{ERL\_CALLER} uses the reflection library generated by the Eiffel reflection library generator (Erl-G) \cite{erlg}. The reflection library adds one reflection class for each class in the universe and causes all classes of the universe and the reflection library to be part of the system, which results in vast compilation times even for small projects. To bypass this issue, it is also possible to implement an own caller specific for a project, that is able to call all observed routines; but this approach is only reasonable when the observed set is small.
 
 \begin{figure}[ht]
   \centering
@@ -310,12 +332,13 @@ Every time the player is invoked from the instrumentation code, it reads the nex
   \label{fig:implementation_player}
 \end{figure}
 
+
 \subsubsection {Resolving Entities}
 \label{lbl:entity_resolving}
 In the current implementation, creation procedures are instrumented in the same way as other routines, whereas the original implementation instruments creation procedures in a special way to maintain object ID's and register the objects in the reference map. To make sure that our technique can find objects to a given object ID, we use a different technique: everytime an object is passed to an unobserved routine, it is registered in the reference map. Objects only need to be resolved during replay phase, when the replay scaffolding needs to pass an observed object back to the observed set. Thus objects that never flow from the observed to the unobserved code are not interesting. During capture phase, the unobserved code must already have accessed an observed feature that returns that observed object before it can pass the object back to the observed code; or it must have created this observed object.
 Therefore there is always an outgoing event, or the target of an INCALL that contains that object.
 
-By the time of writing this report, we discovered a flaw related to this technique: Because INREAD events are not captured, it is possible that unobserved code accesses an observed object without triggering an event. This could lead to the situation where unobserved code needs to pass an observed object back to observed code, without being able to resolve its object id, which would result in a failure during replay. To fix that problem it is either necessary to capture INREAD events, too or to fall back to the original implementation and register objects in their creation procedure. The original solution would result in a better performance for most applications, because objects are registered only once and not every time they're passed to the unobserved set.
+By the time of writing this report, we discovered a flaw related to this technique: because INREAD events are not captured, it is possible that unobserved code accesses an observed object without triggering an event. This could lead to the situation where unobserved code needs to pass an observed object back to observed code, without being able to resolve its object id, which would result in a failure during replay. To fix that problem it is either necessary to capture INREAD events, too or to fall back to the original implementation and register objects in their creation procedure. The original solution would result in a better performance for most applications, because objects are registered only once and not every time they're passed to the unobserved set.
 
 
 \subsubsection{Replaying of Events}
@@ -338,8 +361,11 @@ OUTCALLRET
 \item[INCALLRET] The instrumentation code triggers INCALLRET events at the end of routines that caused an INCALL event. When the player receives an INCALLRET event, it compares the event to the next entry of the event log. If the events match, the player then registers the returned value and exits back to the observed routine.
 \end{description}
 
+
 \section{Building the Example from Source}
+\sloppy % don't write path names outside the boxes...
 In this section the process of building an example with capture and replay support under Linux will be described. Installing the necessary tools and setting up the modified version of Eiffel Studio, that is able to instrument applications in order to capture and replay them, will take the biggest part of this explanation.\\
+
 
 \subsection{Building the Preliminaries}
 The first tools we need are the  Eiffel Studio Tools \cite{estudiotools}. These will be used in many setup scripts in the examples or tests from the repository. Install these tools according to the description on the webpage.\\
@@ -421,3 +447,4 @@ geant install
 
 The example can now be opened with the modified version of Eiffel Studio. Make sure that the CFLAGS are still set to '-DCAPTURE\_REPLAY'. Otherwise it will not be possible to build the example.
 
+\fussy
