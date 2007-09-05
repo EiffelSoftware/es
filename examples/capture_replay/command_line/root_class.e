@@ -32,10 +32,11 @@ feature -- Initialization
 		do
 			--Initialize the rest of the PROGRAM_FLOW_SINK:
 --			create caller
-
-			create environment
-			ui_instance := environment.get("UI")
-			test_performance := ui_instance.is_equal("performance_test")
+			program_flow_sink.enter --disable c/r to make these settings...
+				create environment
+				ui_instance := environment.get("UI")
+				test_performance := (ui_instance /= Void) and then ui_instance.is_equal("performance_test")
+			program_flow_sink.leave
 
 			create config.make
 --no. use erl_g to call...			config.set_caller(caller)
