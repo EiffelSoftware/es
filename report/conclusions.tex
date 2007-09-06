@@ -2,8 +2,148 @@
 %TODO
 
 
-\section{Experimental Results}
-%TODO
+\section{Performance Measurements}
+To measure performance of the implementation, we used a slightly modified version of our example application. We introduced \class{PERFORMANCE\_TESTER\_ATM\_UI}, that inherits from \class{ATM\_UI}.The simulates user input by depositing and withdrawing repeatedly (10'000 times in our tests) an amount from a bank account. For the measurements, all classes were observed by default, only the classes \class{ATM}, \class{PERFORMANCE\_TESTER\_ATM\_UI}, \class{CONSOLE} and \class{STD\_FILES} were unobserved.
+
+We tested different scenarios for this application:
+
+\begin{description}
+ \item [Capture Phase] Running the application in capture mode.
+ \item [Capture Phase - no events] All classes in the observed set, capture mode.
+ \item [Replay Phase] Running the application in replay mode, based on the log that was generated during the capture phase with regular observed and unobserved sets.
+ \item [Capture and Replay Disabled] Running the application with disabled capture and replay.
+ \item [Uninstrumented] Running the application without instrumentation, with no capture and replay management code involved.
+\end{description}
+
+
+\subsection{Execution Times}
+The performance of the scenarios was measured using Eiffel Studio's built-in profiler, the results are in \tabref{tbl:execution_times}. The results show a significant increase in execution time; about 1000 times slower for the capture phase and more than 3000 times slower for the replay phase.
+
+\begin{center}
+ \begin{table}
+	\begin{tabular}[ht]{|l|l|} 
+	\hline
+	\textbf{Setup} & \textbf{Total Execution Time} \\ \hline
+	Uninstrumented & 0.5s \\ \hline 
+	Capture and Replay Disabled & 4s \\ \hline
+	Capture Phase & 9m \\ \hline
+	Capture Phase - no events & 4m 25s \\ \hline
+	Replay Phase & 27m 50s \\ \hline
+	\end{tabular}
+ \caption{Total Execution times of the Tested Setups}
+ \label{tbl:execution_times}
+ \end{table} 
+\end{center}
+
+\subsection{Possible Optimizations for the Capture Phase}
+In the following we will discuss how the performance of the implementation can be optimized. Improving the performance is more important for the capture phase than the replay phase, because ideally developers should enable capturing whenever they are testing an application, which is only realistic, if the performance is acceptable. \tabref{tbl:profiler_capture_phase} shows an excerpt of the profiler output for the capture phase.
+
+\begin{table}[htbp]
+\begin{tabular}{|l|r|r|r|}
+\hline
+\textbf{Feature} & \textbf{Calls} & \textbf{total time [s]} & \textbf{time [\%]} \\ \hline
+RECORDER.enter & 1890359 & 0.88 & 0.16 \\ \hline
+RECORDER.leave & 760147 & 0.38 & 0.07 \\ \hline
+RECORDER.observed\_stack\_item & 760146 & 1.3 & 0.24 \\ \hline
+RECORDER.put\_feature\_exit & 80019 & 52.32 & 9.74 \\ \hline
+RECORDER.put\_feature\_invocation & 80019 & 198.95 & 37.05 \\ \hline
+RECORDER.put\_to\_observed\_stack & 380073 & 0.76 & 0.14 \\ \hline
+RECORDER.remove\_from\_observed\_stack & 380074 & 0.71 & 0.13 \\ \hline
+TEXT\_SERIALIZER.basic\_types & 210041 & 0.08 & 0.01 \\ \hline
+TEXT\_SERIALIZER.is\_basic\_type & 210041 & 61.71 & 11.49 \\ \hline
+TEXT\_SERIALIZER.print\_debug & 770172 & 6.46 & 1.2 \\ \hline
+TEXT\_SERIALIZER.program\_flow\_sink & 7711689 & 3.14 & 0.58 \\ \hline
+TEXT\_SERIALIZER.write & 610134 & 13.78 & 2.57 \\ \hline
+TEXT\_SERIALIZER.write\_arguments & 80019 & 73.78 & 13.74 \\ \hline
+TEXT\_SERIALIZER.write\_basic & 40009 & 12.67 & 2.36 \\ \hline
+TEXT\_SERIALIZER.write\_call & 80019 & 177.1 & 32.98 \\ \hline
+TEXT\_SERIALIZER.write\_endline & 160038 & 8.64 & 1.61 \\ \hline
+TEXT\_SERIALIZER.write\_incall & 80018 & 180.64 & 33.64 \\ \hline
+TEXT\_SERIALIZER.write\_incallret & 80018 & 51.98 & 9.68 \\ \hline
+TEXT\_SERIALIZER.write\_non\_basic & 170032 & 117.67 & 21.91 \\ \hline
+TEXT\_SERIALIZER.write\_object & 210041 & 195.02 & 36.31 \\ \hline
+TEXT\_SERIALIZER.write\_return & 80019 & 48.26 & 8.99 \\ \hline
+UNOBSERVED\_SET.has\_class\_name & 1130212 & 191.32 & 35.63 \\ \hline
+UNOBSERVED\_SET.has\_object & 1130212 & 260.87 & 48.58 \\ \hline
+UNOBSERVED\_SET.program\_flow\_sink & 6781275 & 2.78 & 0.52 \\ \hline
+\end{tabular}
+\caption{Excerpt from the Profiler Output for the Capture Phase}
+\label{tbl:profiler_capture_phase}
+\end{table}
+
+
+\subsubsection{The feature is\_observed}
+During capture phase, more than 48\% of the time is spent in the feature \feature{has\_object} of class \class{UNOBSERVED\_SET}, which is called from \class{\{ANY\}}\feature{is\_observed}. As written in the implementation section, this implementation needs to be replaced by a better-performing, which should save at least 48\% execution time, because the execution of the feature \feature{is\_observed} itself is not included in the 48\%.
+
+\subsubsection{The class TEXT\_SERIALIZER}
+Another big amount of time (43\%) is spent in the class \class{TEXT\_SERIALIZER}, which writes the events to the event log. This class can be further optimized by reducing the number of strings it allocates and optimizing the feature \feature{is\_basic\_type}, which takes 10\% of the overall time. It is implemented highly inefficient by using a look up table to determine whether the class name represents a basic type. The time spent in \class{TEXT\_SERIALIZER} is proportional to the number of events that occur, in our example 160000. The number of generated events depends on the choice of observed and unobserved set. In our example two classes that communicate frequently, \class{BANK} and \class{ATM}, are divided by the boundary between observed and unobserved set, therefore many events are generated.\\
+A wise choice of observed and unobserved set together with a faster implementation of \class{TEXT\_SERIALIZER} will result in a significantly better performance.
+
+\subsubsection{Various Optimizations}
+After treating the parts with the biggest impact on performance, there are several further possible improvements:
+
+\begin{description}
+ \item [Minimize Allocation of Strings]
+ \item []
+\end{description}
+
+
+\subsection {Possible Optimizations for the Replay Phase}
+Not every time an application is captured, it will be replayed, too. In our use cases, an application will only be replayed when running a test or when trying to find a bug. Therefore optimizing the replay of applications is not as urgent as for the capture phase. Nonetheless we will point out some parts that slow down the replay of applications. 
+
+
+\begin{table}[htbp]
+\caption{Profiler Output of the Replay Phase}
+\begin{tabular}{|l|r|r|r|}
+\hline
+\textbf{Feature} & \textbf{Calls} & \textbf{total time [s]} & \textbf{time [\%]} \\ \hline
+BASIC\_ENTITY.resolve & 40009 & 6.73 & 0.4 \\ \hline
+ENTITY\_RESOLVER.resolve\_entities & 80018 & 10.87 & 0.65 \\ \hline
+ENTITY\_RESOLVER.resolve\_entity & 170032 & 12.73 & 0.76 \\ \hline
+ENTITY\_RESOLVER.visit\_basic\_entity & 40009 & 6.21 & 0.37 \\ \hline
+ENTITY\_RESOLVER.visit\_non\_basic\_entity & 130023 & 3.39 & 0.2 \\ \hline
+ERL\_CALLER.call & 80018 & 1650.2 & 98.92 \\ \hline
+EVENT\_INPUT.end\_of\_input & 240057 & 4.91 & 0.29 \\ \hline
+EVENT\_INPUT.read\_next\_event & 160039 & 1064 & 63.78 \\ \hline
+NON\_BASIC\_ENTITY.accept & 130023 & 4.68 & 0.28 \\ \hline
+PLAYER.consume\_event & 160039 & 1066.38 & 63.92 \\ \hline
+PLAYER.handle\_incall\_event & 80018 & 1666.09 & 99.87 \\ \hline
+PLAYER.play & 1 & 1668.26 & 100 \\ \hline
+PLAYER.put\_feature\_exit & 80019 & 857.37 & 51.39 \\ \hline
+PLAYER.put\_feature\_invocation & 80019 & 265.88 & 15.94 \\ \hline
+PLAYER.set\_error\_status\_for\_arguments & 80019 & 6.09 & 0.36 \\ \hline
+PLAYER.set\_error\_status\_for\_call & 80019 & 26.56 & 1.59 \\ \hline
+PLAYER.set\_error\_status\_for\_object & 130022 & 7.81 & 0.47 \\ \hline
+PLAYER.simulate\_unobserved\_body & 2 & 1668.26 & 100 \\ \hline
+TEXT\_EVENT\_PARSER.consume & 790161 & 70.96 & 4.25 \\ \hline
+TEXT\_EVENT\_PARSER.consume\_whitespaces & 1790369 & 136.47 & 8.18 \\ \hline
+TEXT\_EVENT\_PARSER.end\_of\_input & 400096 & 3.91 & 0.23 \\ \hline
+TEXT\_EVENT\_PARSER.end\_of\_line & 2750567 & 23.76 & 1.42 \\ \hline
+TEXT\_EVENT\_PARSER.forth & 710151 & 6.31 & 0.38 \\ \hline
+TEXT\_EVENT\_PARSER.item & 4600939 & 89.51 & 5.37 \\ \hline
+TEXT\_EVENT\_PARSER.matches & 700151 & 61.88 & 3.71 \\ \hline
+TEXT\_EVENT\_PARSER.parse\_basic & 40009 & 100.91 & 6.05 \\ \hline
+TEXT\_EVENT\_PARSER.parse\_call & 80019 & 610.78 & 36.61 \\ \hline
+TEXT\_EVENT\_PARSER.parse\_entity & 210041 & 621.16 & 37.23 \\ \hline
+TEXT\_EVENT\_PARSER.parse\_event & 160039 & 1062.22 & 63.67 \\ \hline
+TEXT\_EVENT\_PARSER.parse\_identifier & 290063 & 369.39 & 22.14 \\ \hline
+TEXT\_EVENT\_PARSER.parse\_incall & 80018 & 623.57 & 37.38 \\ \hline
+TEXT\_EVENT\_PARSER.parse\_incallret & 80018 & 134.42 & 8.06 \\ \hline
+TEXT\_EVENT\_PARSER.parse\_integer & 170032 & 178.22 & 10.68 \\ \hline
+TEXT\_EVENT\_PARSER.parse\_line & 160038 & 789.16 & 47.3 \\ \hline
+TEXT\_EVENT\_PARSER.parse\_non\_basic & 170032 & 429.9 & 25.77 \\ \hline
+TEXT\_EVENT\_PARSER.parse\_regex & 500104 & 524.14 & 31.42 \\ \hline
+TEXT\_EVENT\_PARSER.parse\_ret & 80019 & 125.09 & 7.5 \\ \hline
+TEXT\_EVENT\_PARSER.parse\_type & 210044 & 274.77 & 16.47 \\ \hline
+TEXT\_EVENT\_PARSER.parse\_value & 40009 & 45.16 & 2.71 \\ \hline
+TEXT\_EVENT\_PARSER.program\_flow\_sink & 42038769 & 16.76 & 1 \\ \hline
+UNOBSERVED\_SET.has\_class\_name & 1400263 & 210.29 & 12.61 \\ \hline
+UNOBSERVED\_SET.has\_object & 1400263 & 295.3 & 17.7 \\ \hline
+UNOBSERVED\_SET.program\_flow\_sink & 8401581 & 3.62 & 0.22 \\ \hline
+\end{tabular}
+\label{}
+\end{table}
+
 
 \section{Contribution}
 The main parts of our technique were taken from the Java implementation of selective capture and replay from Joshi and Orso \cite{orso05may}, however there are some aspects that differ from their implementation and are to the best of our knowledge new:
