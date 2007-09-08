@@ -20,12 +20,12 @@ archive=true
 column=0
 encoding=UTF-8
 highlight=LaTeX
-line=6
-open=false
+line=1
+open=true
 
 [item:acknowledgments.tex]
 archive=true
-column=163
+column=35
 encoding=UTF-8
 highlight=LaTeX
 line=19
@@ -33,26 +33,26 @@ open=false
 
 [item:appendix.tex]
 archive=true
-column=10
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=3
-open=false
+line=21
+open=true
 
 [item:conclusions.tex]
 archive=true
-column=733
+column=68
 encoding=UTF-8
 highlight=LaTeX
-line=29
+line=152
 open=true
 
 [item:eiffel_implementation.tex]
 archive=true
-column=443
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=295
+line=12
 open=true
 
 [item:introduction.tex]
@@ -73,10 +73,10 @@ open=false
 
 [item:preliminaries.tex]
 archive=true
-column=217
+column=163
 encoding=UTF-8
 highlight=LaTeX
-line=224
+line=220
 open=false
 
 [item:related_work.tex]
@@ -105,8 +105,8 @@ open=false
 
 [item:thesis.tex]
 archive=true
-column=56
+column=21
 encoding=UTF-8
 highlight=LaTeX
-line=24
+line=28
 open=true

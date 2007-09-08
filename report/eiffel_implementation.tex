@@ -203,7 +203,7 @@ Here is a sketch how the instrumentation code for an access to \inlineeiffel{atm
  end
  ui := atm.ui
 \end{lstlisting}
-Again, the instrumentation code could be used for both capture and replay phase. The condition makes sure, that only OUTREAD events are captured and replayed. During capture phase, the \class{RECORDER} would log the corresponding OUTREAD event and during replay phase, the \class{PLAYER} would ensure that value of the attribute read in the next statement corresponds to the value that was read during capture phase, by setting the attribute to the value from the log.
+Again, the instrumentation code can be used for both capture and replay phase. The condition makes sure, that only OUTREAD events are captured and replayed. During capture phase, the \class{RECORDER} would log the corresponding OUTREAD event and during replay phase, the \class{PLAYER} would ensure that value of the attribute read in the next statement corresponds to the value that was read during capture phase, by setting the attribute to the value from the log.
 
 The whole instrumentation needs to be put into a function that is accessed instead of the attribute, because the attribute could be accessed as part of a more complex expression:
 \begin{lstlisting}
@@ -228,7 +228,13 @@ Emmanuel Stapf advised us to make the modifications in the class \class{AST\hspa
 
 A simple mechanism to exclude classes and routines from instrumentation was developed, because some classes like \class{PROGRAM\_FLOW\_SINK} need a special treatment to avoid management code invoking itself through instrumentation code. There are also some features that need to be instrumented in a special way, for example \feature{SPECIAL.note\_direct\_manipulation} that needs to record the content of the instance during capture phase and restore that content during replay phase. To support classes and features that should not be instrumented, two arrays are initialized with the names of exceptional classes and features, but it is clear that at a later stage this needs to be controlled by a configuration file, to avoid recompiling Eiffel Studio, only because these exceptions changed.
 
-%TODO: Möglichkeit, instrumentierung ganz abzuschalten.
+
+\subsection{Alternative Instrumentation}
+\label{lbl:single-sided_instrumentation}
+One drawback of our implementation is that all the whole code is instrumented, whereas in the original implementation of selective capture and replay, only instructions that trigger an event are instrumented. Our implementation could result in a significant performance impairment therefore we will outline an alternative or extension to our current approach to code instrumentation.
+
+Andreas Leitner proposed to only instrument one of the two parts of the application: either the observed or the unobserved set. Assume in the following, that only the unobserved set is instrumented. With the existing instrumentation of routines, only OUTCALL and OUTCALLRET events would be captured. To capture INCALL and INCALLRET events, it is necessary to instrument all call sites in the unobserved routine bodies, in order to detect every routine call. When a routine call is detected, the instrumentation code first determines whether the routine crosses the boundary, in which case the management code logs the corresponding event. Before every INCALL, the code sets a global flag that indicates whether code execution is currently in the observed or unobserved set. This will help to identify further calls from observed code to unobserved routines.
+
 
 \section{Implementation}
 In this chapter, we will explain the implementation of the management code. For a quick overview over our implementation, we will first outline the architecture of the solution and then go through the different parts of the management code in the subsequent sections.
