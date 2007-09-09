@@ -3739,6 +3739,7 @@ report/lstlang0.sty -text
 report/performance_measurements.ods -text
 report/preliminaries.tex -text
 report/related_work.tex -text
+report/results.tex -text
 report/thesis.bib -text
 report/thesis.kilepr -text
 report/thesis.tex -text
