@@ -3742,6 +3742,7 @@ report/related_work.tex -text
 report/results.tex -text
 report/thesis.bib -text
 report/thesis.kilepr -text
+report/thesis.pdf -text
 report/thesis.tex -text
 tests/log/getest.cfg -text
 tests/log/test_generics.res -text

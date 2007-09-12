@@ -2,10 +2,9 @@
 \label{sec:log_file_grammar}
 
 log ::= event* \\
-event ::= call $\mid$ return $\mid$ outread\\
+event ::= call $\mid$ return\\
 call ::= calltype entity methodname entity* \texttt{“\%N”} \\
 return ::= returntype [entity]  \texttt{“\%N”}\\
-outread ::= \texttt{OUTREAD} entity attribute\_name entity
 calltype ::= \texttt{INCALL} $\mid$ \texttt{OUTCALL} \\
 returntype ::= \texttt{INCALLRET} $\mid$ \texttt{OUTCALLRET} \\
 methodname ::= identifier \\

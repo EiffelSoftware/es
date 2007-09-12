@@ -3,9 +3,7 @@ In this chapter we first present an example application that will be used throug
 
 
 \section{Example Application}
-In the following we will describe our example application, which will be used throughout the report, in detail.
-
-Consider a customer that wants to withdraw money from his account. He interacts with the user interface at an ATM (\figref{fig:example_class_diagram}). This user interface can be implemented in different ways (textual or graphical). The transactions that the customer executes at the user interface are first written to the ATM's journal and then dispatched to the bank. When the customer wants to withdraw money, the bank withdraws money from the customers bank account and the ATM then hands the money to the customer.
+Consider a customer that wants to withdraw money from his account. He interacts with the user interface at an ATM (\figref{fig:example_class_diagram}). This user interface can be implemented in different ways (textual or graphical). The transactions that the customer executes at the user interface are first written to the ATM's journal and then dispatched to the bank.
  \begin{figure}[ht]
    \centering
    \includegraphics[width=1\textwidth]{illustrations/example_class_diagram}
@@ -93,7 +91,7 @@ Although the rules for this approach are simple, it is not obvious that they suf
 %TODO: bei jedem Punkt 1 Szenario.
 \begin{enumerate}
   \item [1)] Instances of observed classes are fully populated during replay, because all actions from the unobserved set are replayed on them and the actions from the observed set are executed on them as in the original run.
-  \item [2)] During replay, observed code accesses to methods or fields can either return instances of observed classes or instances of unobserved classes.
+  \item [2)] During replay, accesses to methods or fields from observed code can either return instances of observed classes or instances of unobserved classes.
   \item [3)] When an object of an observed class is returned, it is fully populated due to 1) and therefore its fields and methods can safely be accessed.
   \item [4)] When an object of an unobserved class is returned, each further access to a field or method from observed code to that object results in the capturing of another boundary crossing event. Therefore the results of these accesses can be reconstructed during replay.
   \item [5)] Therefore, it is assured that during replay, it is possible for the observed code to access the fields and methods like it did in the original run.
@@ -102,15 +100,15 @@ Although the rules for this approach are simple, it is not obvious that they suf
 
 
 \subsubsection {Interactions between Observed and External Code}
-Method calls are an elementary way to communicate between observed and external part of the application. The technique captures calls in both directions: from observed to unobserved code and vice versa. The following events are related to method calls:
+Method calls are an elementary way to communicate between observed and external part of the application. The technique captures calls in both directions: from observed to unobserved code and vice versa. The following types of events are related to method calls:
 
 %TODO: Beispiel zu jedem event einführen!
 
 \begin{description}
- \item  [OUTCALL] Events that represent calls from observed code to unobserved methods.
- \item [INCALL] Events that represent calls from unobserved code to observed methods.
- \item [OUTCALLRET] Events that are triggered when returning from outcalls
- \item [INCALLRET] Events that are triggered when returning from incalls
+ \item  [OUTCALL] events represent calls from observed code to unobserved methods.
+ \item [INCALL] events represent calls from unobserved code to observed methods.
+ \item [OUTCALLRET] events are triggered when returning from outcalls
+ \item [INCALLRET] events are triggered when returning from incalls
 \end{description}
 
 OUTCALL and INCALL events (\emph {call events})  have the same attributes:
@@ -135,12 +133,12 @@ OUTCALL and OUTCALLRET events are captured by instrumenting the observed code. A
 
 To capture INCALL and INCALLRET events, proxy methods are introduced in a way that makes it unnecessary to instrument external code. It is ensured that calls inside the observed code don't use these proxy methods but the actual methods. Thus calls from observed code to observed methods can be executed without overhead.
 
-Field accesses are another source of interaction between observed and external classes. Read accesses from unobserved to observed code don't influence the execution behaviour of the observed code are therefore not captured. Thus three kinds of events are recorded:
+Field accesses are another source of interaction between observed and external classes. Read accesses from unobserved to observed code don't influence the execution behaviour of the observed code and are therefore not captured. Thus three kinds of events are recorded:
 
 \begin{description}
  \item [OUTREAD] events are generated when observed code reads the content of an unobserved field.
- \item [OUTWRITE] events denote write accesses from observed code to unobserved code.
- \item [INWRITE] events are write accesses from unobserved code to observed code.
+ \item [OUTWRITE] events denote write accesses from observed code to unobserved fields.
+ \item [INWRITE] events are write accesses from unobserved code to observed fields.
 \end{description}
 
 OUTREAD, OUTWRITE and INWRITE have the same attributes:
@@ -156,12 +154,12 @@ OUTREAD and OUTWRITE events are captured by adding probes in the observed code w
 Exceptions are another interaction mechanism that needs to be considered for capture and replay. Because exceptions were not implemented in our Eiffel implementation of selective capture and replay, we will describe them only briefly. For exceptions two more types of events were introduced:
 \begin{description}
  \item [EXCIN] events for exceptions that propagate from the external to the observed code.
- \item [EXCOUT] events for exceptions that propagate from the internal to the external code.
+ \item [EXCOUT] events for exceptions that propagate from the observed to the external code.
 \end{description}
 EXCOUT events are captured by wrapping all observed methods with a \identifier{try\--catch} block. By wrapping instructions that call an observed method with an exception handler,  EXCIN events are captured.
 
 \subsection{Replay Phase}
-During the replay phase, the observed code is re-executed based on the event log that was gathered during the capture phase. Before replaying the observed code, selective capture and replay instruments the code based on the interactions between observed and external code. 
+During the replay phase, the observed code is re-executed based on the event log that was gathered during the capture phase. Before replaying the observed code, selective capture and replay instruments the program based on the interactions between observed and external code. 
 
 \subsubsection{Object Creation}
 In the replay phase, object IDs are treated in a different way. Now it is necessary to find the object that matches a given object ID, not reverse. The technique uses a reference map that maps object IDs to all available objects in order to resolve object IDs to objects. The technique extracts the object IDs from the event's attributes and then retrieves the associated object or creates it, if the object does not exist. How these objects are created depends on whether they are instances of observed or external classes.
@@ -172,7 +170,7 @@ In the replay phase, object IDs are treated in a different way. Now it is necess
 \end{description}
 
 \subsubsection{Event Replaying}
-For the replay phase, a scaffolding is generated that imitates the behaviour of the external code, thus behaves both as a driver and stub. Whenever control returns to the scaffolding, it checks whether the received event matches the next event in the log. If the events don't match (\emph{out-of-sync events}), a message is displayed to the user, who can choose whether to ignore the discrepancy and continue, or to stop the replay. If the events from log and replay match, the event in the log is  consumed and replay continues. \\
+For the replay phase, a scaffolding is generated, which imitates the behaviour of the external code, and acts both as a driver and stub. Whenever control returns to the scaffolding, it checks whether the received event matches the next event in the log. If the events don't match (\emph{out-of-sync events}), a message is displayed to the user, who can choose whether to ignore the discrepancy and continue, or to stop the replay. If the events from log and replay match, the event in the log is  consumed and replay continues. \\
 Out-of-sync events can only occur, if the code was changed between capture and replay phase, for example because the technique is used for regression testing. 
 
 In contrast to INCALL, INWRITE, OUTREAD, OUTCALLRET and EXCIN, which are necessary to replay the observed code correctly, OUTCALL, INCALLRET, OUTWRITE, EXCOUT are not necessary to replay the observed code, but they can be used as oracles for regression testing. \\
@@ -181,7 +179,7 @@ For regression testing, the observed set is considered to be the system under te
 \begin{description}
 %TODO: example einweben!
  \item [INCALL Events] To replay INCALL events, the method first retrieves the target object from the reference map. If the target object is not in the reference map, it must be either a call to a constructor or a static call.\\
-Then, it retrieves the parameters from the reference map, or creates the scalar values corresponding to the parameters. If an object parameter can't be retrieved from the reference map, a placeholder object is created. Then, the technique can call the specified method with all arguments; the control flows to the observed code. 
+Then, it retrieves the parameters from the reference map, or creates the scalar values corresponding to the parameters. If an object parameter can't be retrieved from the reference map, a placeholder object is created. Afterwards, the technique can call the specified method with all arguments; the control flows to the observed code. 
  \item [INCALLRET Events] INCALLRET events are not essential for replaying the observed code. They occur as a result of INCALL events and are consumed by the replay scaffolding. To ensure a correct replay, the scaffolding checks if returned value conforms to the one of the next event in the event log.
  \item [OUTCALL Events] All invocations to unobserved methods from the observed code are replaced by two instructions: (1) The call to a special feature in the scaffolding (\identifier{consumeCall}) and (2) The assignment of the result of the invocation. For example \inlinejava{TIME t = atm_journal.time_of_last_entry()}, with TIME and ATM\_JOURNAL both being in the package \identifier{foo}, would be replaced by the following instructions:
 \begin{lstlisting}
@@ -194,7 +192,7 @@ Then, it retrieves the parameters from the reference map, or creates the scalar 
 \end{lstlisting}
 The scaffolding checks whether type, parameters, target and methodname of the next event from the log matches to the reported call. If the events match, replay continues with the next event, otherwise an error is reported to the user.
  \item [OUTCALLRET Events]As these events occur as a result of OUTCALL events, they are treated within \feature{consumeCall}. The method looks up the return value in the event log and retrieves it using the reference map. 
- \item [OUTREAD and OUTWRITE Events] To replay these events, accesses to unobserved fields are instrumented in the observed code, by calling associated methods from the scaffolding; \feature{consumeRead} for OUTREAD events and \feature{consumeWrite} for OUTWRITE events. For example the instruction \class{ATM\_JOURNAL journal = atm.journal}, with \class{ATM\_JOURNAL} and \class{ATM} both belonging to package \identifier{foo}, is replaced by the following instruction:
+ \item [OUTREAD and OUTWRITE Events] To replay these events, accesses to unobserved fields are instrumented in the observed code, by calling associated methods from the scaffolding; \feature{consumeRead} for OUTREAD events and \feature{consumeWrite} for OUTWRITE events. For example the instruction \inlinejava{ATM\_JOURNAL journal = atm.journal}, with \class{ATM\_JOURNAL} and \class{ATM} both belonging to package \identifier{foo}, is replaced by the following instruction:
 \begin{lstlisting}
  ATM_JOURNAL journal = scaffolding.consumeRead ("foo/ATM",
                 24,/*Object ID for atm*/
