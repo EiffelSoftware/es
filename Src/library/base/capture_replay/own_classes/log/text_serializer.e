@@ -223,9 +223,6 @@ feature {NONE} -- Implementation
 			file_is_open: file.is_open_write
 		do
 			file.put_string (content)
-			--XXX for debugging this is to make sure all events are in the file
-			--    just in case of crashes.
-			file.flush
 			print_debug(content)
 		end
 
