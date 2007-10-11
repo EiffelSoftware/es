@@ -1,5 +1,5 @@
 #######################################################################
-# Makeinc.VMS (EIFFEL_SRC:[C]Makeinc.VMS) - vms/axp (Eiffel 5.7.60489)
+# Makeinc.VMS (EIFFEL_SRC:[C]Makeinc.VMS) - vms/axp (Eiffel 5.7.65176)
 # top level Makeinc.VMS for Eiffel 5.7.xxx (32/64 bit)
 # $Id$
 #
@@ -271,4 +271,4 @@ endif
 	@write sys$$output "[C]Makeinc.VMS $@: $$(CFLAGS) = ""$(CFLAGS)"""
 	@write sys$$output "[C]Makeinc.VMS $@: $$(LOCAL_MAKEFILE): $(LOCAL_MAKEFILE)"
 
-# end EIFFEL_SRC:[C]Makeinc.VMS
+# end EIFFEL_SRC:[C]Makeinc.VMS (aka $(EIFFEL_SRC)/C/Makeinc.VMS)
