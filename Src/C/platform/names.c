@@ -48,8 +48,9 @@ rt_public EIF_REFERENCE eif_timeout_msg (void)
 	 */
 
 	char *eif_timeout;
+#ifndef EIF_VMS  	/* breaks on VMS, bad practice for all platforms; should use standard include file */
 	extern char *getenv(const char *);				/* Get environment variable value */
-
+#endif
 	char s[512];
 
 	strcpy(s, "Could not launch system in allotted time.\n");
