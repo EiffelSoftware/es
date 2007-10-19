@@ -70,11 +70,14 @@ ranlib: "echo"
 
 -- platform remove command
 rm: "del"
+safe_rm: "if exist @ del @"
 file_exist: "if exist"
 rmdir: "rd"
 
 -- make program
 make: "nmake -s -nologo"
+make_utility: "nmake"
+make_flags: "-s -nologo"
 command_makefile: "%"for %%i in ($(EXTERNAL_MAKEFILES)) do $(MAKE) -e ISE_EIFFEL=%"$(ISE_EIFFEL)%" -f %%i%""
 
 dpflags: ""
