@@ -37,12 +37,10 @@
 #ifndef _eif_misc_h_
 #define _eif_misc_h_
 
+#include "eif_portable.h"   /* eif_portable must be first include file */
 #include "eif_cecil.h"
-#include "eif_portable.h"
 #ifdef EIF_WINDOWS
 #include <stdlib.h>
-#endif	/* EIF_WINDOWS */
-#ifdef EIF_WINDOWS
 #include <windows.h> /* DLL declarations */
 #endif
 
@@ -81,6 +79,7 @@ RT_LNK EIF_INTEGER upintdiv(EIF_INTEGER n1, EIF_INTEGER n2);
 RT_LNK EIF_INTEGER eif_system (char *s);
 RT_LNK void eif_system_asynchronous (char *s);
 RT_LNK char * eif_getenv(char * k);
+RT_LNK char * eif_getenv_native(char * k);
 
 RT_LNK EIF_REFERENCE arycpy(EIF_REFERENCE area, EIF_INTEGER i, EIF_INTEGER j, EIF_INTEGER k);
 
