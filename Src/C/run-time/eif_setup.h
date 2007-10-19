@@ -34,6 +34,10 @@
 		]"
 */
 
+#ifndef _eif_setup_h_
+#define _eif_setup_h_
+
+
 #include "eif_except.h"		/* Exception vectors definition */
 #include "eif_sig.h"		/* initsig() */
 #include "eif_local.h"		/* initstk(), local stacks */
@@ -89,6 +93,23 @@ extern "C" {
  *    any thread, if you know what you are doing...
  *    If another thread still runs Eiffel after a call to this
  *    macro, it'll soon terminate execution with a panic.
+ *
+ *
+ ******************************************************************************
+ *
+ * The following macros are used for controlling signal handling 
+ * and dispatching in CECIL programs (currently, VMS only):
+ *
+ *  EIF_CECIL_SIGNAL_REGISTER
+ *	Registers exception vector jmp_buf (defined in EIF_INITIALIZE) with Eiffel signal
+ *	handler; indicates that signal handler will ignore any signals that do not occur
+ *	within the scope of EIF_CECIL_SIGNAL_ENABLE/_DISABLE pair. 
+ *	Should be called immediately after EIF_INITIALIZE.
+ *  EIF_CECIL_SIGNAL_ENABLE
+ *	Call before calling any Eiffel runtime or CECIL call to enable Eiffel signal handler.
+ *  EIF_CECIL_SIGNAL_DISABLE
+ *	Call after return from Eiffel runtime or CECIL call to disable Eiffel signal handler.
+ *
  */
 
 
@@ -190,7 +211,8 @@ extern void egc_init_plug (void);		/* Defined in E1/eplug.c, and
 }
 
 
-#else
+#else	/* EIF_THREADS */
+
 
 /* -------------------------------------------------------------
  * --    Definition of the macros in a traditional context    --
@@ -212,8 +234,18 @@ extern void egc_init_plug (void);		/* Defined in E1/eplug.c, and
 	EIF_RT_BASIC_CLEANUP \
 }
 
+#endif	/* EIF_THREADS */
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif	/* EIF_THREADS */
+
+#ifdef EIF_VMS
+/* how to define these when EIF_THREADS enabled? ***tbs*** */
+#define EIF_CECIL_SIGNAL_REGISTER esig_cecil_register(exvect)
+#define EIF_CECIL_SIGNAL_ENABLE	  esig_cecil_enter()
+#define EIF_CECIL_SIGNAL_DISABLE  esig_cecil_exit()
+#endif
+
+#endif  /* _eif_setup_h_ */
