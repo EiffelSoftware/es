@@ -108,24 +108,29 @@ rt_public EIF_INTEGER eif_system (char *s)
 {
 	EIF_INTEGER result;
 
-#ifdef EIF_VMS	/* if s contains any VMS filespec delimiters, prepend 'RUN ' command */
-	{ /* if it contains a '[' before a space (ie. no verb), prepend "run " */
+#ifdef EIF_VMS_V6_ONLY	
+	/* if s contains any VMS filespec delimiters, prepend 'RUN ' command */
+	{	/* if it contains a '[' before a space (ie. no verb), prepend "run " */
 		/* ***VMS FIXME*** revisit this for long filenames - may contain space in filename */
 		char *p = strchr (s, '[');
 		if ( (p) && p < strchr (s, ' ') ) {
 			char * run_cmd = eif_malloc (10 + strlen(s));
 			if ( (run_cmd) ) {
-			strcat (strcpy (run_cmd, "run "), s);
-			result = (EIF_INTEGER) system (run_cmd);
-			eif_free (run_cmd);
-			} else result = -1;
+				strcat (strcpy (run_cmd, "run "), s);
+				result = (EIF_INTEGER) system (run_cmd);
+				eif_free (run_cmd);
+			} 
+			else result = -1;
 		}
 		else result = (EIF_INTEGER) system (s);
 	}
 
-#else /* (not) EIF_VMS */
+#elif defined(EIF_VMS)
+	result = eifrt_vms_spawn (s, EIFRT_VMS_SPAWN_FLAG_TRANSLATE);	    /* synchronous spawn */
+
+#else
 	result = (EIF_INTEGER) system (s);
-#endif /* EIF_VMS */
+#endif
 
 	return result;
 }
@@ -193,9 +198,9 @@ rt_public void eif_system_asynchronous (char *cmd)
 	default:
 		return;				/* Parent returns immediately */
 	}
-#endif /* not VMS (skip fork/parent code if VMS) */
+#endif /* not VMS/VXWORKS (skip fork/parent code if VMS/VXWORKS) */
 
-/* child (except on VMS, where this code runs in the parent) */
+/* child (except on VMS/VXWORKS, where this code runs in the parent) */
 	meltpath = (char *) malloc (strlen(cmd) + 1);
 	meltpath = strcpy (meltpath, cmd);
 	if (!meltpath)
@@ -207,7 +212,7 @@ rt_public void eif_system_asynchronous (char *cmd)
 		*appname = 0;
 	else
 		strcpy (meltpath, "[]");
-#elif defined EIF_VMS
+#elif defined(EIF_VMS)
 	{
 	    size_t siz = eifrt_vms_dirname_len (meltpath);
 	    if (siz)
@@ -222,20 +227,17 @@ rt_public void eif_system_asynchronous (char *cmd)
 	else
 		strcpy (meltpath, ".");
 #endif
-	envstring = (char *)malloc (strlen (meltpath)
-		+ strlen ("MELT_PATH=") + 1);
+	envstring = (char *)malloc (strlen (meltpath) + strlen ("MELT_PATH=") + 1);
 	if (!envstring)
 		return;
 	sprintf (envstring, "MELT_PATH=%s", meltpath);
 	putenv (envstring);
 
-#ifndef EIF_VMS
-	status = system(cmd);				/* Run command via /bin/sh */
-#else	/* VMS */
-	status = eifrt_vms_spawn(cmd, 1);
-#endif	/* EIF_VMS */
-
 #ifdef EIF_VMS
+	status = eifrt_vms_spawn (cmd, EIFRT_VMS_SPAWN_FLAG_ASYNC);
+	/* ***VMS FIXME*** avoid memory leak: free meltpath, envstring */
+	/* free (meltpath); meltpath = NULL; */
+	/* putenv ("MELT_PATH="); free (envstring); envstring = NULL; */
 	if (status) {	/* command failed */
 		const char *pgmname = eifrt_vms_get_progname (NULL,0);
 		fprintf (stderr, "%s: %s: \n-- error from system() call: %d\n"
@@ -243,7 +245,9 @@ rt_public void eif_system_asynchronous (char *cmd)
 			pgmname, __FILE__, errno, cmd, strerror(errno));
 	}
 	return;		/* skip send ack packet, Fred says not done anymore */
-#else /* not VMS */
+
+#else
+	status = system(cmd);				/* Run command via /bin/sh */
 
 #ifdef VXWORKS
 	exit(0);
@@ -323,10 +327,29 @@ rt_public char * eif_getenv (char * k)
 		RegCloseKey (hkey);
 		return (char *) buf;
 	}
+
+#elif defined(EIF_VMS)
+	return eifrt_vms_getenv (k);
 #else
 	return (char *) getenv (k);
 #endif
 }
+
+/* Variant of eif_getenv() that bypasses the VMS-specific hack in	    */
+/* eifrt_vms_getenv(). This is intended to be used for programs that	    */
+/* require the real value of the environment variable (logical name) for    */
+/* reporting purposes. It is called by a variant of get in a VMS-specific   */
+/* descendant of EXECUTION_ENVIRONMENT.					    */
+/* For non-VMS platforms, it is the same as eif_getenv().		    */
+rt_public char* eif_getenv_native (char* nam)
+{
+#ifdef EIF_VMS
+#undef getenv
+#define getenv DECC$GETENV
+#endif
+	return getenv (nam);
+} /* end eif_getenv_native() */
+
 
 /***************************************/
 
