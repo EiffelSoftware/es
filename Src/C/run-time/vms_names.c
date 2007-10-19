@@ -38,34 +38,32 @@
 /* Uppercase entry points for cecil code. */
 /* $Id$ */
 
-#ifdef __VMS
+#ifdef __VMS  /* scope: here to end of file */
 #pragma module VMS_NAMES	/* force uppercase module name */
-#endif
 
 
-/* Native code on VMS defaults to coercing all external names to UPPERCASE. */
-/* In order to support code that cannot be recompiled to make external	    */
-/* names case sensitive (eg. CC /NAME=AS_IS), this module contains jacket   */
-/* routines that call the corresponding lower/mixed-case routine.	    */
-/*									    */
-/* Additionally, several X-related entry points that are not defined on VMS */
-/* are stubbed out here.						    */
-/*									    */
-/*									    */
-
+/* Native code on VMS defaults to coercing all external names to UPPERCASE.	*/
+/* In order to support code that cannot be compiled to make external names	*/
+/* case sensitive (i.e. CC/NAME=AS_IS), this module contains uppercase jacket	*/
+/* routines that call the corresponding lower/mixed-case routines.		*/
+/*										*/
+/* Additionally, several X-related entry points that are not defined on VMS	*/
+/* are stubbed out here, as well as any runtime functions that cannot be	*/
+/* supported on VMS (like fork).						*/
+/*										*/
 
 
 
 
-/* workaround problem: EIF_TYPE_ID is a typedef, needs to be a function	    */
-/* name here (jacket for eif_type_id function)				    */
+/* workaround problem: EIF_TYPE_ID is a typedef defined in eif_cecil.h, but	*/
+/* it needs to be a function name here (jacket for calling eif_type_id ().	*/
 #define EIF_TYPE_ID EIF_TYPE_ID_TYPEDEF
 
 
 #include "eif_portable.h"
 #include "eif_cecil.h"
 #include "eif_malloc.h"
-#include "eif_setup.h"	/* egc_init_plug() */
+#include "eif_setup.h"	/* for egc_init_plug() */
 
 
 /* The following entry points are defined in lower case:		    */
@@ -102,42 +100,22 @@
 */ 
 
 
-/*#ifdef moose_cecil*/
-/* dont mask cecil calls; some modules must use /NAME=AS for proper extern configuration */
 
-/* cecil.c */
+/*** cecil.c ***/
 rt_public EIF_OBJECT EIFCREATE (EIF_TYPE_ID cid)
     { return eifcreate (cid); }
-
-rt_public EIF_PROCEDURE EIFPROC (char *routine, EIF_TYPE_ID cid)
-    { return eifproc (routine, cid); }
-
-rt_public EIF_INTEGER_FUNCTION EIFLONG (char *routine, EIF_TYPE_ID cid)
-    { return eiflong (routine, cid); }
-
-rt_public EIF_CHARACTER_FUNCTION EIFCHAR (char *routine, EIF_TYPE_ID cid)
-    { return eifchar (routine, cid); }
-
-rt_public EIF_REAL_FUNCTION EIFREAL (char *routine, EIF_TYPE_ID cid)
-    { return eifreal (routine, cid); }
-
-rt_public EIF_DOUBLE_FUNCTION EIFDOUBLE (char *routine, EIF_TYPE_ID cid)
-    { return eifdouble (routine, cid); }
-
-rt_public EIF_BIT_FUNCTION EIFBIT (char *routine, EIF_TYPE_ID cid)
-    { return eifbit (routine, cid); }
-
-rt_public EIF_BOOLEAN_FUNCTION EIFBOOL (char *routine, EIF_TYPE_ID cid)
-    { return eifbool (routine, cid); }
-
-rt_public EIF_POINTER_FUNCTION EIFPTR (char *routine, EIF_TYPE_ID cid)
-    { return eifptr (routine, cid); }
 
 rt_public EIF_REFERENCE_FUNCTION EIFREF (char *routine, EIF_TYPE_ID cid)
     { return eifref (routine, cid); }
 
+rt_public EIFVISEX (void)
+    { eifvisex(); }
 
-/* hector.c */
+rt_public EIFUVISEX (void)
+    { eifuvisex(); }
+
+
+/*** hector.c ***/
 rt_public EIF_REFERENCE EWEAN (EIF_OBJECT object)
     { return ewean (object); }
 
@@ -145,12 +123,12 @@ rt_public EIF_OBJECT HENTER (EIF_REFERENCE object)
     { return henter (object); }
 
 
-/* plug.c */
+/*** plug.c ***/
 rt_public EIF_REFERENCE MAKESTR (register char *s, register int len)
     { return makestr (s, len); }
 
 
-/* main.c */
+/*** main.c ***/
 rt_public void EIF_RTINIT (int argc, char **argv, char **envp)
     { eif_rtinit (argc, argv, envp); }
 
@@ -158,7 +136,7 @@ rt_public void FAILURE (void)
     { failure(); }
 
 
-/* malloc.c */
+/*** malloc.c ***/
 rt_public EIF_REFERENCE CMALLOC (unsigned int nbytes) 
     { return cmalloc (nbytes); }
 #ifdef moose	/* conflicts with XFree (Xt library) */
@@ -167,25 +145,35 @@ rt_public void XFREE (EIF_REFERENCE ptr)
 #endif
 
 
-/* garcol.c */
+/*** garcol.c ***/
 rt_public int COLLECT (void) 
     { return collect(); }
 
 
-/* sig.c */
+/*** sig.c ***/
 void ESIGRESALL (void)
     { esigresall (); }
 
 void INITSIG (void)
     { initsig(); }
 
+/* New routines added for CECIL control of signal handling */
+rt_public ESIG_CECIL_REGISTER (struct ex_vect * exvect)
+    { esig_cecil_register (exvect); }
 
-/* local.c */
+rt_public ESIG_CECIL_ENTER (void)
+    { esig_cecil_enter(); }
+
+rt_public ESIG_CECIL_EXIT (void)
+    { esig_cecil_exit(); }
+
+
+/*** local.c ***/
 void INITSTK (void)
     { initstk(); }
 
 
-/* except.c */
+/*** except.c ***/
 rt_public struct ex_vect * EXSET (char *name, int origin, char *object)
     { return exset(name, origin, object); }
 
@@ -201,7 +189,7 @@ xxx rt_public int32 EIF_TYPE_ID (char *type_string)
 #endif
 
 
-/* These symbols are defined in the generated code. */
+/*** These symbols are defined in the generated code. ***/
 
 /* emain.c (in [.EIFGEN.%_Code.E1]) */
 rt_public void EGC_INIT_PLUG (void)
@@ -213,8 +201,6 @@ rt_public void EMAIN (int argc, char ** argv)
     { emain (argc, argv); }
 
 
-/*#endif *//* moose cecil */
-
 
 /*
 ** These symbols are referenced in Vision2 GTK implementation,
@@ -224,9 +210,29 @@ rt_public void EMAIN (int argc, char ** argv)
 #define XSTUB(fn) int fn() \
 { fprintf (stderr, "*** undefined X entry point " #fn " called *** \n"); return -1; }
 
-XSTUB (XKeysymToKeycode)
+/* XSTUB (XKeysymToKeycode) */
 XSTUB (XTestFakeButtonEvent)
 XSTUB (XTestFakeKeyEvent)
 XSTUB (XTestFakeMotionEvent)
 XSTUB (XTestQueryExtension)
 
+
+
+/*** Eiffel runtime calls that cannot be supported on VMS ***/
+
+rt_public pid_t eifrt_vms_fork_jacket (void)
+{
+    fprintf (stderr, "*** undefined %s()) called ***\n", __func__);
+    return (pid_t)-1;
+}
+
+
+#ifdef EIF_THREADS
+
+/*** TEMP: stub out PTHREAD routines ***/
+#define PTHREAD_STUB(fn) int fn() \
+{ fprintf (stderr, "*** undefined PTHREAD entry point " #fn " called *** \n"); return -1; }
+
+#endif /* EIF_THREADS */
+
+#endif /* __VMS */
