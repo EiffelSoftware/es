@@ -2638,6 +2638,9 @@ free_add_ons/gcc/windows/mingw/lib/libwsock32.a -text
 free_add_ons/gcc/windows/mingw/lib/libwst.a -text
 free_add_ons/gcc/windows/mingw/lib/libwtsapi32.a -text
 free_add_ons/gcc/windows/mingw/lib/txtmode.o -text
+free_add_ons/gcc/windows/mingw/libexec/gcc/mingw32/3.4.2/cc1.exe -text
+free_add_ons/gcc/windows/mingw/libexec/gcc/mingw32/3.4.2/cc1plus.exe -text
+free_add_ons/gcc/windows/mingw/libexec/gcc/mingw32/3.4.2/collect2.exe -text
 free_add_ons/gcc/windows/mingw/libexec/gcc/mingw32/3.4.5/cc1.exe -text
 free_add_ons/gcc/windows/mingw/libexec/gcc/mingw32/3.4.5/cc1plus.exe -text
 free_add_ons/gcc/windows/mingw/libexec/gcc/mingw32/3.4.5/collect2.exe -text
