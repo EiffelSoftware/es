@@ -236,16 +236,17 @@ extern void egc_init_plug (void);		/* Defined in E1/eplug.c, and
 
 #endif	/* EIF_THREADS */
 
-#ifdef __cplusplus
-}
-#endif
-
 
 #ifdef EIF_VMS
 /* how to define these when EIF_THREADS enabled? ***tbs*** */
 #define EIF_CECIL_SIGNAL_REGISTER esig_cecil_register(exvect)
 #define EIF_CECIL_SIGNAL_ENABLE	  esig_cecil_enter()
 #define EIF_CECIL_SIGNAL_DISABLE  esig_cecil_exit()
+#endif
+
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif  /* _eif_setup_h_ */
