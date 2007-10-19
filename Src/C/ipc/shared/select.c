@@ -68,10 +68,11 @@
 
 #else
 #include "bitmask.h"
-#ifdef EIF_VMS
-#include "ipcvms.h"		/* only affects VMS */
-#endif /* EIF_VMS */
 #endif /* (not) EIF_WINDOWS */
+
+#ifdef EIF_VMS
+#include "ipcvms.h"	/* VMS: force use of select jacket */
+#endif /* EIF_VMS */
 
 #define TMP_TIMEOUT	200000	/* Number of micro-seconds for temporary select */
 
@@ -136,7 +137,7 @@ rt_private char *s_nerrlist[] = {			/* Symbolic codes for errors */
 };
 rt_private int s_nerr = sizeof(s_errlist);	/* Number of error messages */
 
-#ifndef EIF_WINDOWS
+#if !defined(EIF_WINDOWS) && !defined(EIF_VMS)	/* shouldn not <errno.h> handle this for all platforms? */
 extern int errno;						/* System call error status */
 #endif
 
@@ -539,7 +540,6 @@ rt_public int do_select(struct timeval *timeout)
 	 * as ready for reading.
 	 */
 
-
 #ifdef EIF_WINDOWS
 	callback_array [nfd - WAIT_OBJECT_0](sp);	/* Wake up associated callback */
 #else
@@ -556,7 +556,6 @@ rt_public int do_select(struct timeval *timeout)
 	add_log(20, "select call returning %d", nfd);
 #endif
 #endif
-
 
 
 #ifdef EIF_WINDOWS
