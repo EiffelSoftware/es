@@ -13,30 +13,58 @@ class
 inherit
 	EV_ANY_HANDLER
 
+	WEL_SYSTEM_METRICS
+
+feature {NONE} -- Initialization
+
 feature -- Default pixmaps
+
+	Information_pixel_buffer: EV_PIXEL_BUFFER is
+			-- Pixel Buffer symbolizing a piece of information.
+		do
+			Result := build_default_pixel_buffer ({WEL_IDI_CONSTANTS}.Idi_information)
+		end
+
+	Error_pixel_buffer: EV_PIXEL_BUFFER is
+			-- Pixel Buffer symbolizing an error.
+		do
+			Result := build_default_pixel_buffer ({WEL_IDI_CONSTANTS}.Idi_error)
+		end
+
+	Warning_pixel_buffer: EV_PIXEL_BUFFER is
+			-- Pixel Buffer symbolizing a warning.
+		do
+			Result := build_default_pixel_buffer ({WEL_IDI_CONSTANTS}.Idi_warning)
+		end
+
+	Question_pixel_buffer: EV_PIXEL_BUFFER is
+			-- Pixel Buffer symbolizing a question.
+		do
+			Result := build_default_pixel_buffer ({WEL_IDI_CONSTANTS}.Idi_question)
+		end
 
 	Information_pixmap: EV_PIXMAP is
 			-- Pixmap symbolizing a piece of information.
 		do
-			Result := build_default_icon ({WEL_IDI_CONSTANTS}.Idi_information)
+			Result := build_default_pixmap ({WEL_IDI_CONSTANTS}.Idi_information)
 		end
 
 	Error_pixmap: EV_PIXMAP is
 			-- Pixmap symbolizing an error.
 		do
-			Result := build_default_icon ({WEL_IDI_CONSTANTS}.Idi_error)
+			Result := build_default_pixmap ({WEL_IDI_CONSTANTS}.Idi_error)
 		end
 
 	Warning_pixmap: EV_PIXMAP is
 			-- Pixmap symbolizing a warning.
 		do
-			Result := build_default_icon ({WEL_IDI_CONSTANTS}.Idi_warning)
+			Result := build_default_pixmap ({WEL_IDI_CONSTANTS}.Idi_warning)
 		end
 
 	Question_pixmap: EV_PIXMAP is
 			-- Pixmap symbolizing a question.
 		do
-			Result := build_default_icon ({WEL_IDI_CONSTANTS}.Idi_question)
+			Result := build_default_pixmap ({WEL_IDI_CONSTANTS}.Idi_question)
 		end
 
 	Default_window_icon: EV_PIXMAP is
@@ -55,7 +83,25 @@ feature -- Default pixmaps
 
 feature {NONE} -- Implementation
 
-	build_default_icon (Idi_constant: POINTER): EV_PIXMAP is
+	build_default_pixel_buffer (Idi_constant: POINTER): EV_PIXEL_BUFFER is
+			-- Create the pixel buffer corresponding to the
+			-- Windows Icon constants `Idi_constant'.
+		local
+			pixbuf_imp: EV_PIXEL_BUFFER_IMP
+			wel_icon: WEL_ICON
+		do
+				-- Create a default pixel buffer
+			create Result
+
+				-- Read the predefined Cursor.
+			create wel_icon.make_by_predefined_id (Idi_constant)
+			wel_icon.enable_reference_tracking
+			pixbuf_imp ?= Result.implementation
+			pixbuf_imp.set_from_icon (wel_icon)
+			wel_icon.decrement_reference
+		end
+
+	build_default_pixmap (Idi_constant: POINTER): EV_PIXMAP is
 			-- Create the pixmap corresponding to the
 			-- Windows Icon constants `Idi_constant'.
 		local

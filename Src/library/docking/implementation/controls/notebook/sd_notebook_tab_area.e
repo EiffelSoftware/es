@@ -55,7 +55,7 @@ feature {NONE}  -- Initlization
 			internal_auto_hide_indicator.select_actions.extend (agent on_tab_hide_indicator_selected)
 
 			set_minimum_width (0)
-			set_minimum_height (internal_shared.notebook_tab_height + 3)
+			update_size
 
 			if internal_docking_manager.tab_drop_actions.count > 0 then
 				drop_actions.extend (agent on_drop_actions)
@@ -83,7 +83,23 @@ feature -- Redefine
 			extended: tab_box.has (a_widget)
 		end
 
+	extend_tabs (a_tabs: ARRAYED_LIST [SD_NOTEBOOK_TAB]) is
+			-- Extend `a_tabs'
+			-- This feature is faster than extend one by one
+		require
+			not_void: a_tabs /= Void
+		do
+			tab_box.extend_tabs (a_tabs)
+			resize_tabs (tab_box_predered_width)
+		end
+
 feature -- Command
+
+	update_size is
+			--Update minimum size.
+		do
+			set_minimum_height (internal_shared.notebook_tab_height + 3)
+		end
 
 	set_gap (a_top: BOOLEAN) is
 			-- Set gap at top if a_top is True.

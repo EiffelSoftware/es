@@ -290,7 +290,6 @@ feature -- Actions
 		local
 			l_old_metric: EB_METRIC
 			l_new_metric: EB_METRIC
-			l_dlg: EB_ERROR_DIALOG
 			l_ok: BOOLEAN
 			l_message: STRING_32
 		do
@@ -327,9 +326,7 @@ feature -- Actions
 				set_is_up_to_date (False)
 				update_ui
 			else
-				create l_dlg.make_with_text (l_message + "%N" + metric_names.t_metric_not_saved)
-				l_dlg.set_buttons (<<metric_names.t_ok>>)
-				l_dlg.show_modal_to_window (metric_tool_window)
+				(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_error_prompt (l_message + "%N" + metric_names.t_metric_not_saved, metric_tool_window, Void)
 			end
 		end
 
@@ -347,20 +344,15 @@ feature -- Actions
 	on_remove_metric is
 			-- Action to be performed when user wants to remove selected metric
 		local
-			l_dlg: EB_DISCARDABLE_CONFIRMATION_DIALOG
+			l_question: ES_DISCARDABLE_QUESTION_PROMPT
 		do
 			check
 				original_metric /= Void
 				current_metric_editor /= Void
 			end
-			create l_dlg.make_initialized (
-				2, preferences.dialog_data.confirm_remove_metric_string,
-				metric_names.t_remove_metric (current_metric_editor.name_area.name),
-				metric_names.t_discard_remove_prompt,
-				preferences.preferences
-			)
-			l_dlg.set_ok_action (agent remove_current_metric)
-			l_dlg.show_modal_to_window (metric_tool_window)
+			create l_question.make_standard (metric_names.t_remove_metric (current_metric_editor.name_area.name), metric_names.t_discard_remove_prompt, preferences.dialog_data.confirm_remove_metric_string)
+			l_question.set_button_action (l_question.dialog_buttons.yes_button, agent remove_current_metric)
+			l_question.show (metric_tool_window)
 		end
 
 	on_group_selected is
@@ -474,23 +466,16 @@ feature {EB_CONTEXT_MENU_FACTORY} -- Implemetation
 
 	remove_metric_by_context_menu (a_metric: EB_METRIC) is
 			-- Remove metric by context menu.
-		require
-			a_metric_not_void: a_metric /= Void
 		local
-			l_dlg: EB_DISCARDABLE_CONFIRMATION_DIALOG
+			l_question: ES_DISCARDABLE_QUESTION_PROMPT
 		do
 			check
 				original_metric /= Void
 				current_metric_editor /= Void
 			end
-			create l_dlg.make_initialized (
-				2, preferences.dialog_data.confirm_remove_metric_string,
-				metric_names.t_remove_metric (a_metric.name),
-				metric_names.t_discard_remove_prompt,
-				preferences.preferences
-			)
-			l_dlg.set_ok_action (agent remove_metric (a_metric))
-			l_dlg.show_modal_to_window (metric_tool_window)
+			create l_question.make_standard (metric_names.t_remove_metric (a_metric.name), metric_names.t_discard_remove_prompt, preferences.dialog_data.confirm_remove_metric_string)
+			l_question.set_button_action (l_question.dialog_buttons.yes_button, agent remove_metric (a_metric))
+			l_question.show (metric_tool_window)
 		end
 
 feature{NONE} -- Implementation

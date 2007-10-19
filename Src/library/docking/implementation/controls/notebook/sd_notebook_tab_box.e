@@ -44,7 +44,8 @@ feature {NONE} -- Initialization
 			pointer_enter_actions.extend (agent on_pointer_enter)
 			pointer_leave_actions.extend (agent on_pointer_leave)
 			pointer_double_press_actions.force_extend (agent clear_pressed_flag)
-			set_minimum_height (internal_shared.Notebook_tab_height)
+
+			update_size
 
 			drop_actions.extend (agent on_drop_action)
 			drop_actions.set_veto_pebble_function (agent on_drop_actions_veto_pebble)
@@ -59,20 +60,47 @@ feature {NONE} -- Initialization
 
 feature -- Command
 
+	update_size is
+			--Update minimum height.
+		do
+			set_minimum_height (internal_shared.Notebook_tab_height)
+		end
+
 	extend (a_tab: SD_NOTEBOOK_TAB) is
 			-- Extend `a_tab' into Current
 		require
 			not_void: a_tab /= Void
+		local
+			l_refresh: BOOLEAN
 		do
 			if not internal_tabs.has (a_tab) then
-				-- It's behaviour like a set, but ARRAYED_SET don't have enough features we want.
-				internal_tabs.extend (a_tab)
-				a_tab.set_font (font)
-				a_tab.set_parent (Current)
+				l_refresh := True
+			end
+			extend_tab_imp (a_tab)
+			if l_refresh then
 				on_expose (0, 0, width, height)
 			end
 		ensure
 			has: has (a_tab)
+		end
+
+	extend_tabs (a_tabs: ARRAYED_LIST [SD_NOTEBOOK_TAB]) is
+			-- Extend `a_tabs'.
+			-- This feature is faster than extend one by one.
+		require
+			not_void: a_tabs /= Void
+		do
+			from
+				a_tabs.start
+			until
+				a_tabs.after
+			loop
+				extend_tab_imp (a_tabs.item)
+				if a_tabs.islast then
+					on_expose (0, 0, width, height)
+				end
+				a_tabs.forth
+			end
 		end
 
 	prune (a_tab: SD_NOTEBOOK_TAB) is
@@ -430,6 +458,19 @@ feature {NONE} -- Agents
 		end
 
 feature{NONE} -- Implementation
+
+	extend_tab_imp (a_tab: SD_NOTEBOOK_TAB) is
+			-- Set information for `a_tab'
+		require
+			not_void: a_tab /= Void
+		do
+			-- It behaviour like a set, but ARRAYED_SET don't have enough features we want.
+			if not internal_tabs.has (a_tab) then
+				internal_tabs.extend (a_tab)
+				a_tab.set_font (font)
+				a_tab.set_parent (Current)
+			end
+		end
 
 	pointer_entered: BOOLEAN
 			-- If pointer enter actions called?

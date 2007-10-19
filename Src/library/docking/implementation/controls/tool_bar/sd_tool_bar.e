@@ -21,7 +21,8 @@ inherit
 				  screen_y, hide, show, is_displayed,parent,
 					pointer_motion_actions, pointer_button_release_actions,
 					x_position, y_position, destroy, out,
-					set_minimum_width, set_minimum_height, is_destroyed
+					set_minimum_width, set_minimum_height, is_destroyed,
+					object_id
 			{SD_TOOL_BAR_DRAWER_I, SD_TOOL_BAR_ZONE, SD_TOOL_BAR} implementation, draw_pixmap, clear_rectangle
 			{SD_TOOL_BAR_ITEM, SD_TOOL_BAR} tooltip, set_tooltip, remove_tooltip, font
 			{SD_TOOL_BAR_DRAGGING_AGENTS, SD_TOOL_BAR_DOCKER_MEDIATOR, SD_TOOL_BAR, SD_TOOL_BAR_ITEM} set_pointer_style
@@ -32,7 +33,15 @@ inherit
 			{SD_TOOL_BAR} is_initialized
 		redefine
 			update_for_pick_and_drop,
-			initialize
+			initialize,
+			destroy
+		end
+
+	SD_WIDGETS_LISTS
+		undefine
+			default_create,
+			is_equal,
+			copy
 		end
 
 create
@@ -44,6 +53,7 @@ feature {NONE} -- Initlization
 			-- Creation method
 		do
 			default_create
+			add_tool_bar (Current)
 		end
 
 feature {SD_TOOL_BAR} -- Internal initlization
@@ -216,6 +226,13 @@ feature -- Command
 			disable_capture_vision2
 		end
 
+	destroy	is
+			-- Redefine
+		do
+			prune_tool_bar (Current)
+			Precursor {SD_DRAWING_AREA}
+		end
+
 feature {SD_TOOL_BAR_TITLE_BAR, SD_TITLE_BAR} -- Special setting
 
 	prefered_height: INTEGER is
@@ -284,7 +301,7 @@ feature -- Query
 
 	standard_height: INTEGER is
 			-- Standard tool bar height.
-		once
+		do
 			Result := internal_shared.tool_bar_size
 		end
 
@@ -396,7 +413,7 @@ feature -- Contract support
 								and a_screen_x < width + screen_x and a_screen_y < height + screen_y
 		end
 
-feature {SD_TOOL_BAR_DRAWER_IMP, SD_TOOL_BAR_ITEM, SD_TOOL_BAR} -- Internal issues
+feature {SD_TOOL_BAR_DRAWER_IMP, SD_TOOL_BAR_ITEM, SD_TOOL_BAR, SD_SIZES, SD_TOOL_BAR_ZONE} -- Internal issues
 
 	need_calculate_size is
 			-- Set if need recalculate `row_height'.
@@ -650,14 +667,18 @@ feature {NONE} -- Agents
 			l_items: like internal_items
 			l_item: SD_TOOL_BAR_ITEM
 		do
+			if a_button = {EV_POINTER_CONSTANTS}.left then
+				-- Reset state value and disable capture should not care about the pointer position. Otherwise capture will still enabled if end user released the pointer button outside current.
+				disable_capture
+				internal_pointer_pressed := False
+			end
+
 			-- We only handle press/release occurring in the widget (i.e. we ignore the one outside of the widget).			
-			-- Otherwise it will cause bug#12549.
+			-- Otherwise it will cause bug#12549.			
 			if a_screen_x >= screen_x and a_screen_x <= screen_x + width and
 				a_screen_y >= screen_y  and a_screen_y <= screen_y + height then
 
 				if a_button = {EV_POINTER_CONSTANTS}.left then
-					disable_capture
-					internal_pointer_pressed := False
 					from
 						l_items := items
 						l_items.start
@@ -891,8 +912,8 @@ feature {SD_TOOL_BAR, SD_TOOL_BAR_ZONE} -- Implementation
 			-- Need recalcualte current `row_height'? Because some thing changed?
 
 invariant
-	not_void: items /= Void
-	not_void: internal_items /= Void
+	items_not_void: items /= Void
+	internal_items_not_void: internal_items /= Void
 
 indexing
 	library:	"SmartDocking: Library of reusable components for Eiffel."

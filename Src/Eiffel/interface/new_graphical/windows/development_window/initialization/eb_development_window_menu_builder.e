@@ -416,8 +416,11 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 				-- Go to
 			create l_cmd.make
 			l_cmd.set_menu_name (develop_window.Interface_names.m_go_to)
-			l_cmd.add_agent (agent develop_window.goto)
 			l_cmd.set_is_for_main_editors (True)
+			l_shortcut := develop_window.preferences.editor_data.shortcuts.item ("show_goto_dialog")
+			l_cmd.set_accelerator ((create {EV_ACCELERATOR}.make_with_key_combination (l_shortcut.key, l_shortcut.is_ctrl, l_shortcut.is_alt, l_shortcut.is_shift)))
+			l_cmd.set_referred_shortcut (l_shortcut)
+			l_cmd.add_agent (agent develop_window.goto)
 			l_command_menu_item := l_cmd.new_menu_item
 			l_command_controller.add_edition_command (l_cmd)
 			develop_window.add_recyclable (l_command_menu_item)
@@ -733,6 +736,21 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			develop_window.add_recyclable (l_new_menu_item)
 
 			l_new_menu_item := develop_window.commands.lock_editor_docking_command.new_menu_item
+			develop_window.menus.view_menu.extend (l_new_menu_item)
+			develop_window.add_recyclable (l_new_menu_item)
+
+				-- Separator --------------------------------------
+			develop_window.menus.view_menu.extend (create {EV_MENU_SEPARATOR})
+
+			l_new_menu_item := develop_window.commands.maximize_editor_area_command.new_menu_item
+			develop_window.menus.view_menu.extend (l_new_menu_item)
+			develop_window.add_recyclable (l_new_menu_item)
+
+			l_new_menu_item := develop_window.commands.minimize_editors_command.new_menu_item
+			develop_window.menus.view_menu.extend (l_new_menu_item)
+			develop_window.add_recyclable (l_new_menu_item)
+
+			l_new_menu_item := develop_window.commands.restore_editors_command.new_menu_item
 			develop_window.menus.view_menu.extend (l_new_menu_item)
 			develop_window.add_recyclable (l_new_menu_item)
 		end

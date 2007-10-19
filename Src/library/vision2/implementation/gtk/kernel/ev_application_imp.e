@@ -94,9 +94,9 @@ feature {NONE} -- Initialization
 					-- This may fail if the X Server doesn't support the Shared extension, but if this is the case
 					-- then the display will be slow anyway so the usage of this function will remain the same.
 				is_display_remote := l_image = default_pointer
-				{EV_GTK_EXTERNALS}.object_unref (l_image)
-
-
+				if not is_display_remote then
+					{EV_GTK_EXTERNALS}.object_unref (l_image)
+				end
 			else
 				-- We are unable to launch the gtk toolkit, probably due to a DISPLAY issue.
 				print ("EiffelVision application could not launch, check DISPLAY environment variable%N")
@@ -255,6 +255,8 @@ feature {EV_ANY_I} -- Implementation
 			l_no_more_events: BOOLEAN
 			i, l_widget_x, l_widget_y, l_screen_x, l_screen_y, l_button_number: INTEGER
 			l_has_grab_widget: BOOLEAN
+			l_event_string: STRING
+			l_call_theme_events: BOOLEAN
 		do
 			from
 				l_motion_tuple := motion_tuple
@@ -502,7 +504,7 @@ feature {EV_ANY_I} -- Implementation
 						if
 							l_gdk_window /= default_pointer
 							and then {EV_GTK_EXTERNALS}.gdk_event_any_struct_send_event (gdk_event) = 0
-							and then {EV_GTK_EXTERNALS}.gdk_event_crossing_struct_mode (gdk_event) = 0
+--							and then {EV_GTK_EXTERNALS}.gdk_event_crossing_struct_mode (gdk_event) = 0
 						then
 							{EV_GTK_EXTERNALS}.gdk_window_get_user_data (l_gdk_window, $l_gtk_widget_ptr)
 
@@ -615,7 +617,21 @@ feature {EV_ANY_I} -- Implementation
 							print ("GDK_SETTING")
 					 	end
 						l_call_event := False
+						create l_event_string.make_from_c ({EV_GTK_EXTERNALS}.gdk_event_setting_struct_name (gdk_event))
+						if l_event_string.is_equal ("gtk-theme-name") then
+							-- Theme change
+							l_call_theme_events := True
+						elseif l_event_string.is_equal ("gtk-font-name") then
+							-- Font change
+							l_call_theme_events := True
+						end
+						l_event_string := Void
 						{EV_GTK_EXTERNALS}.gtk_main_do_event (gdk_event)
+
+						if l_call_theme_events and then theme_changed_actions_internal /= Void then
+							theme_changed_actions_internal.call (Void)
+						end
+						l_call_theme_events := False
 					else
 						l_call_event := False
 					end
@@ -1175,16 +1191,6 @@ feature {EV_ANY_I, EV_FONT_IMP, EV_STOCK_PIXMAPS_IMP, EV_INTERMEDIARY_ROUTINES} 
 		once
 			Result := default_window_imp.c_object
 			window_oids.prune_all (Default_window_imp.object_id)
-			default_window_imp.real_signal_connect (default_window_imp.c_object, "style-set", agent gtk_style_has_changed, Void)
-		end
-
-	gtk_style_has_changed is
-			-- The current gtk style has changed.
-		do
-			-- This is called when the user externally changes the gtk style.
-			if theme_changed_actions_internal /= Void then
-				theme_changed_actions_internal.call (Void)
-			end
 		end
 
 	default_gdk_window: POINTER is

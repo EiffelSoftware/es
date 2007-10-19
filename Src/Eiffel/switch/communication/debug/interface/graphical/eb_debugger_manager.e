@@ -10,7 +10,6 @@ class
 	EB_DEBUGGER_MANAGER
 
 inherit
-
 	DEBUGGER_MANAGER
 		redefine
 			make,
@@ -862,18 +861,11 @@ feature -- Output
 		end
 
 	debugger_warning_message (m: STRING_GENERAL) is
-		local
-			w_dlg: EB_WARNING_DIALOG
 		do
 			if ev_application = Void then
 				Precursor {DEBUGGER_MANAGER} (m)
 			else
-				create w_dlg.make_with_text (m)
-				if window_manager.last_focused_development_window /= Void then
-					w_dlg.show_modal_to_window (window_manager.last_focused_development_window.window)
-				else
-					w_dlg.show
-				end
+				prompts.show_warning_prompt (m, Void, Void)
 			end
 		end
 
@@ -1648,10 +1640,13 @@ feature -- Debugging events
 			--| Fixme: we might try to prevent debugging tools to refresh before poping up this dialog...				
 			ev_application.do_once_on_idle (agent
 					local
-						cd: EB_CONFIRMATION_DIALOG
+						l_warning: ES_WARNING_PROMPT
 					do
-						create cd.make_with_text_and_actions (Warning_messages.w_Overflow_detected, <<agent do_nothing, agent resume_application>>)
-						cd.show_modal_to_window (debugging_window.window)
+						create l_warning.make_standard_with_cancel (Warning_messages.w_Overflow_detected)
+						l_warning.set_button_text (l_warning.dialog_buttons.ok_button, interface_names.b_ok)
+						l_warning.set_button_text (l_warning.dialog_buttons.cancel_button, interface_names.b_ignore)
+						l_warning.set_button_action (l_warning.dialog_buttons.cancel_button, agent resume_application)
+						l_warning.show_on_active_window
 					end
 				)
 		end

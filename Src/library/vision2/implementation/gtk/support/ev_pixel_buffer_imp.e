@@ -265,13 +265,13 @@ feature -- Command
 			l_pixbuf_ptr2 := default_pointer
 		end
 
-	draw_pixel_buffer_with_rect (a_pixel_buffer: EV_PIXEL_BUFFER; a_rect: EV_RECTANGLE) is
-			-- Draw `a_pixel_buffer' to current at `a_rect'.
+	draw_pixel_buffer_with_x_y (a_x, a_y: INTEGER; a_pixel_buffer: EV_PIXEL_BUFFER) is
+			-- Draw `a_pixel_buffer' at `a_x', `a_y'.
 		local
 			l_pixel_buffer_imp: EV_PIXEL_BUFFER_IMP
 		do
 			l_pixel_buffer_imp ?= a_pixel_buffer.implementation
-			{EV_GTK_EXTERNALS}.gdk_pixbuf_copy_area (l_pixel_buffer_imp.gdk_pixbuf, 0, 0, a_rect.width, a_rect.height, gdk_pixbuf, a_rect.x, a_rect.y)
+			{EV_GTK_EXTERNALS}.gdk_pixbuf_copy_area (l_pixel_buffer_imp.gdk_pixbuf, 0, 0, a_pixel_buffer.width, a_pixel_buffer.height, gdk_pixbuf, a_x, a_y)
 		end
 
 feature -- Query
@@ -293,6 +293,34 @@ feature -- Query
 				Result := {EV_GTK_EXTERNALS}.gdk_pixbuf_get_height (gdk_pixbuf)
 			else
 				Result := internal_pixmap.height
+			end
+		end
+
+	data_ptr: POINTER is
+			--Memory acess point to image data.
+			-- This feature is NOT platform independent.
+		do
+			Result :={EV_GTK_EXTERNALS}.gdk_pixbuf_get_pixels (gdk_pixbuf)
+		end
+
+feature {EV_STOCK_PIXMAPS_IMP} -- Implementation
+
+	set_from_stock_id (a_stock_id: POINTER) is
+			-- Pixmap symbolizing a piece of information
+		require
+			a_stock_id_not_null: a_stock_id /= default_pointer
+		local
+			stock_pixbuf: POINTER
+			l_label: POINTER
+		do
+			l_label := {EV_GTK_EXTERNALS}.gtk_label_new (default_pointer)
+			stock_pixbuf := {EV_GTK_EXTERNALS}.gtk_widget_render_icon (l_label, a_stock_id, {EV_GTK_DEPENDENT_EXTERNALS}.gtk_icon_size_dialog_enum, default_pointer)
+			{EV_GTK_EXTERNALS}.object_unref (l_label)
+			l_label := default_pointer
+			if stock_pixbuf /= default_pointer then
+					-- If a stock pixmap can be found then set it, else do nothing.
+				set_gdkpixbuf ({EV_GTK_EXTERNALS}.gdk_pixbuf_copy (stock_pixbuf))
+				{EV_GTK_EXTERNALS}.object_unref (stock_pixbuf)
 			end
 		end
 
@@ -357,7 +385,7 @@ feature {NONE} -- Obsolete
 	draw_pixel_buffer (a_pixel_buffer: EV_PIXEL_BUFFER; a_rect: EV_RECTANGLE) is
 			-- Draw `a_pixel_buffer' to current at `a_rect'.
 		obsolete
-			"Use draw_pixel_buffer instead"
+			"Use draw_pixel_buffer_with_x_y instead"
 		local
 			l_pixel_buffer_imp: EV_PIXEL_BUFFER_IMP
 		do

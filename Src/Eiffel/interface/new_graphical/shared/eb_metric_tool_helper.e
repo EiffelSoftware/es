@@ -24,6 +24,11 @@ inherit
 
 	QL_SHARED_UNIT
 
+	ES_SHARED_PROMPT_PROVIDER
+		export
+			{NONE} all
+		end
+
 feature -- Access
 
 	show_error_message (a_error_agent: FUNCTION [ANY, TUPLE, EB_METRIC_ERROR]; a_clear_error_agent: PROCEDURE [ANY, TUPLE]; a_window: EV_WINDOW) is
@@ -35,13 +40,10 @@ feature -- Access
 			a_window_attached: a_window /= Void
 		local
 			l_error: EB_METRIC_ERROR
-			l_dlg: EB_ERROR_DIALOG
 		do
 			l_error := a_error_agent.item (Void)
 			if l_error /= Void then
-				create l_dlg.make_with_text (l_error.message_with_location)
-				l_dlg.set_buttons_and_actions (<<interface_names.b_Ok>>, <<agent do_nothing>>)
-				l_dlg.show_relative_to_window (a_window)
+				prompts.show_error_prompt (l_error.message_with_location, a_window, Void)
 				a_clear_error_agent.call (Void)
 			end
 		end

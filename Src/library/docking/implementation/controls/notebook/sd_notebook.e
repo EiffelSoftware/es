@@ -21,6 +21,13 @@ inherit
 			destroy
 		end
 
+	SD_WIDGETS_LISTS
+		undefine
+			default_create,
+			is_equal,
+			copy
+		end
+
 create
 	make
 
@@ -55,9 +62,7 @@ feature {NONE}  -- Initlization
 			extend_vertical_box (internal_border_for_tab_area)
 			set_minimum_width ({SD_SHARED}.Notebook_minimum_width)
 
-			-- set_minimum_height is not needed on Windows.
-			-- But on Linux, if we don't set it, docking (not tabbed) zone minimum height will be 1 when zone is minimized.
-			set_minimum_height (internal_shared.notebook_tab_height + 3)
+			update_size
 
 			internal_border_for_tab_area.extend (internal_tab_box)
 			internal_tab_box.set_gap (False)
@@ -71,6 +76,8 @@ feature {NONE}  -- Initlization
 
 			pointer_motion_actions.extend (agent on_pointer_motion)
 			pointer_button_release_actions.extend (agent on_pointer_release)
+
+			add_notebook (Current)
 		ensure
 			set: internal_docking_manager = a_docking_manager
 		end
@@ -111,6 +118,7 @@ feature -- Command
 			internal_contents.search (a_content)
 			internal_tabs.go_i_th (internal_contents.index)
 			internal_tabs.item.set_text (a_text)
+			internal_tabs.item.on_expose
 			-- The text let tab size changed, so it need resize.
 			internal_tab_box.resize_tabs (internal_tab_box.tab_box_predered_width)
 		ensure
@@ -127,6 +135,7 @@ feature -- Command
 			internal_contents.search (a_content)
 			internal_tabs.go_i_th (internal_contents.index)
 			internal_tabs.item.set_pixmap (a_pixmap)
+			internal_tabs.item.on_expose
 		ensure
 			set:
 		end
@@ -163,16 +172,42 @@ feature -- Command
 			l_tab: SD_NOTEBOOK_TAB
 		do
 			internal_contents.extend (a_content)
-			create l_tab.make (Current, internal_tab_box.is_gap_at_top, internal_docking_manager)
+			l_tab := tab_factory_method (a_content)
 			internal_tabs.extend (l_tab)
-			l_tab.set_drop_actions (a_content.drop_actions)
-			l_tab.select_actions.extend (agent on_tab_selected (l_tab))
-			l_tab.close_actions.extend (agent (a_content.close_request_actions).call (Void))
-			l_tab.drag_actions.extend (agent on_tab_dragging (?, ?, ?, ?, ?, ?, ?, l_tab))
-			l_tab.set_tool_tip (a_content.tab_tooltip)
+
 			internal_tab_box.extend (l_tab)
 
 			select_item (a_content, True)
+		end
+
+	extend_contents (a_contents: ARRAYED_LIST [SD_CONTENT]) is
+			-- Extend `a_contents'.
+			-- This feature is faster than extend content one by one.
+		require
+			not_void: a_contents /= Void
+		local
+			l_tab: SD_NOTEBOOK_TAB
+			l_new_tabs: ARRAYED_LIST [SD_NOTEBOOK_TAB]
+		do
+			from
+				a_contents.start
+				create l_new_tabs.make (a_contents.count)
+			until
+				a_contents.after
+			loop
+				if not has (a_contents.item) then
+					internal_contents.extend (a_contents.item)
+					l_tab := tab_factory_method (a_contents.item)
+					internal_tabs.extend (l_tab)
+					l_new_tabs.extend (l_tab)
+
+					if a_contents.islast then
+						internal_tab_box.extend_tabs (l_new_tabs)
+						select_item (a_contents.item, True)
+					end
+				end
+				a_contents.forth
+			end
 		end
 
 	prune (a_content: SD_CONTENT; a_focus: BOOLEAN) is
@@ -253,6 +288,7 @@ feature -- Command
 	destroy is
 			-- Redefine.
 		do
+			prune_notebook (Current)
 			from
 				internal_tabs.start
 			until
@@ -271,7 +307,7 @@ feature -- Command
 		end
 
 	set_content_position (a_content: SD_CONTENT; a_index: INTEGER) is
-			--
+			-- Position `a_content' at `a_index'.
 		require
 			has: has (a_content)
 			valid: a_index > 0 and a_index <= contents.count
@@ -310,6 +346,38 @@ feature -- Command
 			-- Enable client programmers' widget expand
 		do
 			enable_item_expand (internal_border_box)
+		end
+
+	update_size is
+			-- Update minimum height base on font size.
+		do
+				-- set_minimum_height is not needed on Windows.
+				-- But on Linux, if we don't set it, docking (not tabbed) zone minimum height will be 1 when zone is minimized.
+				set_minimum_height (internal_shared.notebook_tab_height + 3)
+		end
+
+	update_size_and_font is
+			-- Update tabs, tab box, tab area's size base on font size.
+		local
+			l_tabs: ARRAYED_LIST [SD_NOTEBOOK_TAB]
+		do
+			from
+				l_tabs := internal_tab_box.all_tabs
+				l_tabs.start
+			until
+				l_tabs.after
+			loop
+				l_tabs.item.set_font (internal_shared.tool_bar_font)
+				l_tabs.forth
+			end
+
+			internal_tab_box.tab_box.set_font (internal_shared.tool_bar_font)
+			internal_tab_box.tab_box.update_size
+			internal_tab_box.update_size
+
+			internal_tab_box.resize_tabs (internal_tab_box.width)
+
+			update_size
 		end
 
 feature -- Query
@@ -391,6 +459,14 @@ feature -- Query
 			l_index := selected_item_index
 			if internal_cell.readable and l_index /= 0 then
 				Result := internal_contents.i_th (l_index)
+			end
+		end
+
+	is_content_selected (a_content: SD_CONTENT): BOOLEAN is
+			-- If `a_content''s widget selected in notebook?
+		do
+			if a_content /= Void and then internal_cell.readable then
+				Result := internal_cell.item = a_content.user_widget
 			end
 		end
 
@@ -610,6 +686,24 @@ feature {NONE}  -- Implementation
 					l_tabs_snapshot.forth
 				end
 			end
+		end
+
+	tab_factory_method (a_content: SD_CONTENT): SD_NOTEBOOK_TAB is
+			-- Factory method for SD_NOTEBOOK_TAB.
+		require
+			not_void: a_content /= Void
+		do
+			create Result.make (Current, internal_tab_box.is_gap_at_top, internal_docking_manager)
+			Result.set_drop_actions (a_content.drop_actions)
+			Result.select_actions.extend (agent on_tab_selected (Result))
+			Result.close_actions.extend (agent (a_content.close_request_actions).call (Void))
+			Result.drag_actions.extend (agent on_tab_dragging (?, ?, ?, ?, ?, ?, ?, Result))
+			Result.set_tool_tip (a_content.tab_tooltip)
+
+			Result.set_text (a_content.short_title)
+			Result.set_pixmap (a_content.pixmap)
+		ensure
+			not_void: Result /= Void
 		end
 
 	tabs_rects: DS_HASH_TABLE [EV_RECTANGLE, SD_NOTEBOOK_TAB]

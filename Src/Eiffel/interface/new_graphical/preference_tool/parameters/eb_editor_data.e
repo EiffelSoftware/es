@@ -245,6 +245,12 @@ feature {EB_EDITORS_MANAGER, EB_SHARED_PREFERENCES, EDITOR_TOKEN} -- Value
 			Result := show_completion_disambiguated_name_preference.value
 		end
 
+	show_completion_obsolete_items: BOOLEAN is
+			-- Should obsolete items be shown in completion list?
+		do
+			Result := show_completion_obsolete_items_preference.value
+		end
+
 	syntax_complete_enabled: BOOLEAN is
 			-- should main keywords be completed ?
 		do
@@ -393,6 +399,9 @@ feature {EB_SHARED_PREFERENCES} -- Preference
 	show_completion_disambiguated_name_preference: BOOLEAN_PREFERENCE
 			-- Should disambiguated name be shown in completion list?
 
+	show_completion_obsolete_items_preference: BOOLEAN_PREFERENCE
+			-- Should obsolete items be shown in completion list?
+
 	syntax_complete_enabled_preference: BOOLEAN_PREFERENCE
 			-- should main keywords be completed ?
 
@@ -487,6 +496,9 @@ feature {NONE} -- Preference Strings
 	show_completion_disambiguated_name_string: STRING is "editor.eiffel.show_completion_disambiguated_name"
 			-- Should disambiguated name be shown in completion list?
 
+	show_completion_obsolete_items_string: STRING = "editor.eiffel.show_obsolete_items"
+			-- Should obsolete items be shown in completion list?
+
 	syntax_complete_enabled_string: STRING is "editor.eiffel.syntax_complete_enabled"
 			-- should main keywords be completed ?
 
@@ -501,7 +513,7 @@ feature {NONE} -- Preference Strings
 feature {NONE} -- Init colors and fonts.
 
 	init_colors is
-			--
+			-- Initialize colors.
 		do
 			Precursor
 			colors.put (breakpoint_background_color_preference.value, breakpoint_background_color_id)
@@ -608,6 +620,7 @@ feature {NONE} -- Initialization
 			show_completion_signature_preference := l_manager.new_boolean_preference_value (l_manager, show_completion_signature_string, True)
 			show_completion_type_preference := l_manager.new_boolean_preference_value (l_manager, show_completion_type_string, True)
 			show_completion_disambiguated_name_preference := l_manager.new_boolean_preference_value (l_manager, show_completion_disambiguated_name_string, False)
+			show_completion_obsolete_items_preference := l_manager.new_boolean_preference_value (l_manager, show_completion_obsolete_items_string, False)
 			customized_string_1_preference := l_manager.new_string_preference_value (l_manager, customized_string_1_string, "")
 			customized_strings.extend (customized_string_1_preference)
 			customized_string_2_preference := l_manager.new_string_preference_value (l_manager, customized_string_2_string, "")
@@ -675,6 +688,7 @@ feature {NONE} -- Initialization
 			show_completion_signature_preference.change_actions.extend (agent update)
 			show_completion_type_preference.change_actions.extend (agent update)
 			show_completion_disambiguated_name_preference.change_actions.extend (agent update)
+			show_completion_obsolete_items_preference.change_actions.extend (agent update)
 			customized_string_1_preference.change_actions.extend (agent update)
 			customized_string_2_preference.change_actions.extend (agent update)
 			customized_string_3_preference.change_actions.extend (agent update)
@@ -1061,6 +1075,8 @@ feature -- Keybord shortcuts Customization
 			l_hash.put ([False,  True, False, key_strings.item (Key_i).twin.as_string_8], "embed_if_clause")
 			l_hash.put ([False,  True, False, key_strings.item (Key_d).twin.as_string_8], "embed_debug_clause")
 
+			l_hash.put ([False, True, False, key_strings.item (Key_g).twin.as_string_8], "show_goto_dialog")
+
 			Result.extend ([l_hash, main_window_group])
 		end
 
@@ -1081,7 +1097,8 @@ feature -- Keybord shortcuts Customization
 			l_hash.put ([False, False, False, key_strings.item (Key_F2).twin.as_string_8], "toggle_show_type")
 			l_hash.put ([False, False, False, key_strings.item (Key_F3).twin.as_string_8], "toggle_show_signature")
 			l_hash.put ([False, False, False, key_strings.item (Key_F4).twin.as_string_8], "toggle_show_disambiguated_name")
-			l_hash.put ([False, False, False, key_strings.item (Key_F5).twin.as_string_8], "toggle_remember_size")
+			l_hash.put ([False, False, False, key_strings.item (Key_F5).twin.as_string_8], "toggle_show_obsolete_items")
+			l_hash.put ([False, False, False, key_strings.item (Key_F6).twin.as_string_8], "toggle_remember_size")
 			Result.extend ([l_hash, completion_window_group])
 		end
 
@@ -1138,6 +1155,7 @@ invariant
 	show_completion_signature_preference_not_void: show_completion_signature_preference /= Void
 	show_completion_type_preference_not_void: show_completion_type_preference /= Void
 	show_completion_disambiguated_name_preference_not_void: show_completion_disambiguated_name_preference /= Void
+	show_completion_obsolete_items_preference_not_void: show_completion_obsolete_items_preference /= Void
 	syntax_complete_enabled_preference_not_void: syntax_complete_enabled_preference /= Void
 	customized_string_1_preference_not_void: customized_string_1_preference /= Void
 	customized_string_2_preference_not_void: customized_string_2_preference /= Void

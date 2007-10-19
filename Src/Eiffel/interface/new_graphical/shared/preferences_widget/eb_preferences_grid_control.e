@@ -80,6 +80,14 @@ inherit
 			default_create
 		end
 
+	ES_SHARED_PROMPT_PROVIDER
+		export
+			{NONE} all
+		undefine
+			default_create,
+			copy
+		end
+
 create
 	make, make_with_hidden
 
@@ -224,15 +232,8 @@ feature {NONE} -- Events
 
 	on_restore is
 			-- Restore all preferences to their default values.
-		local
-			l_confirmation_dialog: EB_CONFIRMATION_DIALOG
 		do
-			create l_confirmation_dialog
-			l_confirmation_dialog.set_text (restore_preference_string)
-			show_dialog_modal (l_confirmation_dialog)
-			if l_confirmation_dialog.selected_button.is_equal (l_confirmation_dialog.ok) then
-				view_preferences.restore_defaults
-			end
+			(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_question_prompt (restore_preference_string, parent_window, agent view_preferences.restore_defaults, Void)
 		end
 
 feature {NONE} -- Implementation
@@ -333,12 +334,8 @@ feature {NONE} -- Implementation
 
 	on_shortcut_modification_denied (a_shortcut_pref: SHORTCUT_PREFERENCE) is
 			-- Shortcut modification denied.
-		local
-			l_error_dialog: EB_WARNING_DIALOG
 		do
-			create l_error_dialog
-			l_error_dialog.set_text (shortcut_modification_denied)
-			show_dialog_modal (l_error_dialog)
+			prompts.show_error_prompt (shortcut_modification_denied, Void, Void)
 		end
 
 feature {NONE} -- Widget initialization

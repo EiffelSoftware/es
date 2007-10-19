@@ -25,15 +25,18 @@ inherit
 			build_mini_toolbar,
 			icon,
 			icon_pixmap,
-			show
+			show,
+			build_docking_content
 		end
+
+-- inherit {NONE}
 
 	EV_SHARED_APPLICATION
 		export
 			{NONE} all
 		end
 
-	ES_SHARED_COLORS
+	ES_SHARED_FONTS_AND_COLORS
 		export
 			{NONE} all
 		end
@@ -58,6 +61,7 @@ feature {NONE} -- Initialization
 					widget.extend (user_widget)
 				end
 				build_tool_interface (user_widget)
+
 				is_initializing := False
 				is_initialized := True
 			end
@@ -70,6 +74,21 @@ feature {NONE} -- Initialization
 		do
 		end
 
+	build_docking_content (a_docking_manager: SD_DOCKING_MANAGER) is
+			-- Redefine
+		do
+			Precursor {EB_TOOL}(a_docking_manager)
+
+			-- Initialize when showing for the first time.
+			-- This is useful when `content' is auto hide.
+			content.show_actions.extend_kamikaze (agent
+													do
+														if not is_initialized then
+															initialize
+														end
+													end)
+		end
+
 feature {NONE} -- Clean up
 
 	internal_recycle is
@@ -78,7 +97,7 @@ feature {NONE} -- Clean up
 			l_site: SITE [EB_DEVELOPMENT_WINDOW]
 		do
 			Precursor {EB_TOOL}
-			l_site ?= user_widget
+			l_site ?= internal_user_widget
 			if l_site /= Void then
 					-- Invalidated site.
 				l_site.set_site (Void)
@@ -176,6 +195,29 @@ feature {NONE} -- Access
 		ensure then
 			result_attached: Result /= Void
 			result_consistent: Result = user_widget
+		end
+
+	development_window: EB_DEVELOPMENT_WINDOW
+			-- Access to top-level parent window
+		require
+			not_is_recycled: not is_recycled
+			user_widget_has_parent: user_widget.has_parent
+		local
+			l_window: EV_WINDOW
+			l_windows: BILINEAR [EB_WINDOW]
+		do
+			l_window := helpers.widget_top_level_window (user_widget, True)
+			if l_window /= Void then
+				l_windows := (create {EB_SHARED_WINDOW_MANAGER}).window_manager.windows
+				from l_windows.start until l_windows.after or Result /= Void loop
+					if l_window = l_windows.item.window then
+						Result ?= l_windows.item
+					end
+					l_windows.forth
+				end
+			end
+		ensure
+			not_result_is_recycled: Result /= Void implies not Result.is_recycled
 		end
 
 	frozen mini_tool_bar_widget: SD_TOOL_BAR
@@ -311,6 +353,22 @@ feature {NONE} -- Helpers
 			result_attached: Result /= Void
 		end
 
+	frozen pixmap_factory: EB_PIXMAPABLE_ITEM_PIXMAP_FACTORY
+			-- Factory for generating pixmaps for class data
+		once
+			create Result
+		ensure
+			result_attached: Result /= Void
+		end
+
+	frozen helpers: EVS_HELPERS
+			-- Helpers to extend the operations of EiffelVision2
+		once
+			create Result
+		ensure
+			result_attached: Result /= Void
+		end
+
 feature {NONE} -- Concealed access
 
 	frozen icon_pixmap: EV_PIXMAP
@@ -402,7 +460,7 @@ feature {NONE} -- Factory
 
 	create_widget: G
 			-- Create a new container widget upon request.
-			-- Note: You may build the tool elements here or in `build_too_interface'
+			-- Note: You may build the tool elements here or in `build_tool_interface'
 		deferred
 		ensure
 			result_attached: Result /= Void

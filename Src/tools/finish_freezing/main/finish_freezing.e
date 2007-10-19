@@ -111,6 +111,11 @@ feature -- Initialization
 					end
 
 					if not gen_only then
+							-- Reduce execution priority
+						if a_parser.use_low_priority_mode then
+							demote_execution_priority
+						end
+
 						if translator = Void then
 							l_msg := "Internal error during Makefile translation preparation.%N%N%
 									%Please report this problem to Eiffel Software at:%N%
@@ -175,6 +180,15 @@ feature -- Access
 			end
 		end
 
+feature {NONE} -- Basic operations
+
+	demote_execution_priority
+			-- Demotes execution priority for low-execution priority, yeilding to processes
+			-- with a normal or higher execution priority.
+		do
+			c_win_set_thread_priority (c_win_thread_priority_below_normal)
+		end
+
 feature -- Implementation
 
 	read_options_in (a_options: RESOURCE_TABLE) is
@@ -199,6 +213,36 @@ feature -- Externals
 			"C macro use %"eif_eiffel.h%""
 		alias
 			"EIF_IS_64_BITS"
+		end
+
+feature {NONE} -- Externals
+
+	c_win_set_thread_priority (a_priority: INTEGER)
+			-- Set executing thread's priority so below normal, if the priority
+			-- is set above that.
+		external
+			"C inline use <windows.h>"
+		alias
+			"[
+				// Set thread priority instead of process class so
+				// Windows will determine the relative priority based on a user set
+				// process class.
+				DWORD dwThreadPri;
+				dwThreadPri = GetThreadPriority(GetCurrentThread()); 
+				
+				if ((EIF_INTEGER) dwThreadPri >= $a_priority)
+				{
+					// Only set thread priority if it's not already below normal.
+					SetThreadPriority(GetCurrentThread(), (DWORD)$a_priority);
+				}
+			]"
+		end
+
+	c_win_thread_priority_below_normal: INTEGER
+		external
+			"C [macro <windows.h>] : EIF_INTEGER"
+		alias
+			"THREAD_PRIORITY_BELOW_NORMAL"
 		end
 
 indexing

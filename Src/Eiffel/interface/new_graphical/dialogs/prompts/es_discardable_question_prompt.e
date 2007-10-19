@@ -38,11 +38,13 @@ feature {NONE} -- Initialization
 			is_standard_prompt_with_cancel := True
 			make_standard (a_text, a_discard_message, a_pref_name)
 		ensure
-			text_set: a_text.is_equal (text)
+			text_set: format_text (a_text).is_equal (text)
 			default_button_set: default_button = standard_default_button
+			default_confirm_button_set: default_confirm_button = standard_default_confirm_button
+			default_cancel_button_set: default_cancel_button = standard_default_cancel_button
 			buttons_set: buttons = standard_buttons
-			discard_message_set: discard_message = a_discard_message
-			preference_name_set: preference_name = a_pref_name
+			discard_message_set: a_discard_message.is_equal (discard_message)
+			preference_name_set: a_pref_name.is_equal (preference_name)
 		end
 
 feature {NONE} -- User interface initialization
@@ -59,16 +61,10 @@ feature {NONE} -- User interface initialization
 
 feature {NONE} -- Access
 
-	icon: EV_PIXEL_BUFFER
-			-- The dialog's icon
-		do
-			Result := large_icon
-		end
-
 	large_icon: EV_PIXEL_BUFFER
 			-- The dialog's large icon, shown on the left
 		do
-			Result := os_stock_pixmaps.question_pixmap
+			Result := os_stock_pixmaps.question_pixel_buffer
 		end
 
 	standard_buttons: DS_HASH_SET [INTEGER]
@@ -83,6 +79,22 @@ feature {NONE} -- Access
 
 	standard_default_button: INTEGER
 			-- Standard buttons `standard_buttons' default button
+		do
+			if is_standard_prompt_with_cancel then
+				Result := dialog_buttons.cancel_button
+			else
+				Result := dialog_buttons.no_button
+			end
+		end
+
+	standard_default_confirm_button: INTEGER
+			-- Standard buttons `standard_buttons' default confirm button
+		do
+			Result := dialog_buttons.yes_button
+		end
+
+	standard_default_cancel_button: INTEGER
+			-- Standard buttons `standard_buttons' default cancel button
 		do
 			if is_standard_prompt_with_cancel then
 				Result := dialog_buttons.cancel_button

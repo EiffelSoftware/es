@@ -126,6 +126,8 @@ feature -- Command
 			l_lock_tool_bar_command: EB_LOCK_TOOL_BAR_COMMAND
 			l_lock_docking_command: EB_LOCK_DOCKING_COMMAND
 			l_lock_editor_docking_command: EB_LOCK_EDITOR_DOCKING_COMMAND
+			l_minimize_editors_command: EB_MINIMIZE_EDITORS_COMMAND
+			l_restore_editors_command: EB_RESTORE_EDITORS_COMMAND
 		do
 			-- Directly call a un-redefine init_commands in EB_DEVELOPMENT_WINDOW
 			-- Non-docking Eiffel Studio was call Precursor
@@ -311,6 +313,12 @@ feature -- Command
 			create l_lock_editor_docking_command.make (develop_window)
 			develop_window.commands.set_lock_editor_docking_command (l_lock_editor_docking_command)
 
+			create l_minimize_editors_command.make (develop_window)
+			develop_window.commands.set_minimize_editors_command (l_minimize_editors_command)
+
+			create l_restore_editors_command.make (develop_window)
+			develop_window.commands.set_restore_editors_command (l_restore_editors_command)
+
 			develop_window.commands.set_customized_formatter_command (create {EB_SETUP_CUSTOMIZED_FORMATTER_COMMAND})
 			develop_window.commands.set_customized_tool_command (create {EB_SETUP_CUSTOMIZED_TOOL_COMMAND})
 
@@ -333,6 +341,7 @@ feature -- Command
 			l_go_to_next_warning_cmd: ES_NEXT_WARNING_COMMAND
 			l_go_to_previous_warning_cmd: ES_PREVIOUS_WARNING_COMMAND
 			l_ear_commander: ES_ERRORS_AND_WARNINGS_COMMANDER_I
+			l_maximize_editor_area_command: EB_MAXIMIZE_EDITOR_AREA_COMMAND
 		do
 				-- Error navigation
 			l_ear_commander := develop_window.tools.errors_and_warnings_tool
@@ -340,7 +349,7 @@ feature -- Command
 				create l_go_to_previous_error_cmd.make (l_ear_commander)
 				develop_window.commands.set_go_to_previous_error_command (l_go_to_previous_error_cmd)
 				develop_window.commands.toolbarable_commands.extend (develop_window.commands.go_to_previous_error_command)
-				
+
 				create l_go_to_next_error_cmd.make (l_ear_commander)
 				develop_window.commands.set_go_to_next_error_command (l_go_to_next_error_cmd)
 				develop_window.commands.toolbarable_commands.extend (develop_window.commands.go_to_next_error_command)
@@ -352,6 +361,9 @@ feature -- Command
 				create l_go_to_next_warning_cmd.make (l_ear_commander)
 				develop_window.commands.set_go_to_next_warning_command (l_go_to_next_warning_cmd)
 				develop_window.commands.toolbarable_commands.extend (develop_window.commands.go_to_next_warning_command)
+
+				create l_maximize_editor_area_command.make (develop_window)
+				develop_window.commands.set_maximize_editor_area_command (l_maximize_editor_area_command)
 			end
 		end
 
@@ -659,8 +671,6 @@ feature -- Command
 	prepare_editor_tool is
 			-- Build address toolbar and docking manager.
 		local
-			l_icons: EB_SD_ICONS
-			l_shared: SD_SHARED
 			l_editors_widget_for_docking: EV_HORIZONTAL_BOX
 			l_editors_widget: EV_VERTICAL_BOX
 		do
@@ -670,9 +680,6 @@ feature -- Command
 			develop_window.ui.set_editors_widget (l_editors_widget)
 
 			l_editors_widget.extend (l_editors_widget_for_docking)
-			create l_icons.make
-			create l_shared
-			l_shared.set_icons (l_icons)
 		end
 
 	build_vision_window is

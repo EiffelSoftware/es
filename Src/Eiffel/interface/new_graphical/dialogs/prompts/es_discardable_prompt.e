@@ -22,17 +22,19 @@ inherit
 			build_discardable_check_interface,
 			on_close_requested,
 			show,
-			show_on_development_window
+			show_on_active_window
 		end
 
 feature {NONE} -- Initialization
 
-	make (a_text: like text; a_buttons: like buttons; a_default: like default_button; a_discard_message: like discard_message; a_pref_name: like preference_name)
+	make (a_text: like text; a_buttons: like buttons; a_default: like default_button; a_default_confirm: like default_confirm_button; a_default_cancel: like default_cancel_button; a_discard_message: like discard_message; a_pref_name: like preference_name)
 			-- Initialize a prompt using required information
 			--
 			-- `a_text': The text to display on the prompt.
 			-- `a_buttons': A list of button ids corresponding created from {ES_DIALOG_BUTTONS}.
-			-- `a_default': The prompt's default button.
+			-- `a_default': The prompt's default active button.
+			-- `a_default_confirm': The prompt's default confirmation button (selected using CTRL+ENTER).
+			-- `a_default_cancel': The prompt's default cancel button (selected using ESC).
 			-- `a_discard_message': A message to inform the user what the discard option will do as a default.
 			-- `a_pref_name': Name of preference resource.
 		require
@@ -41,19 +43,22 @@ feature {NONE} -- Initialization
 			not_a_buttons_is_empty: not a_buttons.is_empty
 			a_buttons_contains_valid_ids: a_buttons.for_all (agent dialog_buttons.is_valid_button_id)
 			a_buttons_contains_a_default: a_buttons.has (a_default)
+			a_buttons_contains_a_default_confirm: a_buttons.has (a_default_confirm)
+			a_buttons_contains_a_default_cancel: a_buttons.has (a_default_cancel)
 			a_discard_message_attached: a_discard_message /= Void
 			a_pref_name_attached: a_pref_name /= Void
 			not_a_pref_name_is_empty: not a_pref_name.is_empty
 		do
 			discard_message := a_discard_message
+			discard_button := a_default_confirm
 			preference_name := a_pref_name
-			make_prompt (a_text, a_buttons, a_default)
+			make_prompt (a_text, a_buttons, a_default, a_default_confirm, a_default_cancel)
 		ensure
-			text_set: a_text.is_equal (text)
+			text_set: format_text (a_text).is_equal (text)
 			default_button_set: default_button = a_default
 			buttons_set: buttons = a_buttons
-			discard_message_set: discard_message = a_discard_message
-			preference_name_set: preference_name = a_pref_name
+			discard_message_set: a_discard_message.is_equal (discard_message)
+			preference_name_set: a_pref_name.is_equal (preference_name)
 		end
 
 	make_standard (a_text: like text; a_discard_message: like discard_message; a_pref_name: like preference_name)
@@ -68,13 +73,13 @@ feature {NONE} -- Initialization
 			a_pref_name_attached: a_pref_name /= Void
 			not_a_pref_name_is_empty: not a_pref_name.is_empty
 		do
-			make_prompt (a_text, standard_buttons, standard_default_button)
+			make (a_text, standard_buttons, standard_default_button, standard_default_confirm_button, standard_default_cancel_button, a_discard_message, a_pref_name)
 		ensure
-			text_set: a_text.is_equal (text)
+			text_set: format_text (a_text).is_equal (text)
 			default_button_set: default_button = standard_default_button
 			buttons_set: buttons = standard_buttons
-			discard_message_set: discard_message = a_discard_message
-			preference_name_set: preference_name = a_pref_name
+			discard_message_set: a_discard_message.is_equal (discard_message)
+			preference_name_set: a_pref_name.is_equal (preference_name)
 		end
 
 feature {NONE} -- User interface initialization
@@ -83,17 +88,25 @@ feature {NONE} -- User interface initialization
 			-- Builds the dialog's user interface.
 			--
 			-- `a_container': The dialog's container where the user interface elements should be extended
+		local
+			l_message: STRING_32
 		do
 			Precursor {ES_PROMPT} (a_container)
 
 			build_prompt_interface (a_container)
 
 				-- Add discardable check
-			if discard_message.is_empty then
-				create discard_check.make_with_text ("Do not show this message again.")
-			else
-				create discard_check.make_with_text ("Do not show this message again (" + discard_message + ")")
+			l_message := interface_names.l_do_not_show_again.twin
+			if not l_message.is_empty and not discard_message.is_empty then
+				l_message.prune_all_trailing ('.')
+				l_message.append (" (" + discard_message + ")")
 			end
+			if not l_message.is_empty then
+				create discard_check.make_with_text (l_message)
+			else
+				create discard_check
+			end
+
 			discard_check.set_minimum_height (16)
 			a_container.extend (discard_check)
 		ensure then
@@ -112,6 +125,11 @@ feature {NONE} -- User interface initialization
 			is_initializing: is_initializing
 		do
 		end
+
+feature -- Access
+
+	discard_button: INTEGER assign set_discard_button
+			-- Default discard operation button
 
 feature {NONE} -- Access
 
@@ -149,7 +167,7 @@ feature {NONE} -- Access
 						-- No preference found, show error dialog
 					create l_error.make_standard ("There is no internal preference for " + full_preference_name + "!")
 					l_error.set_sub_title ("Missing preference")
-					l_error.show_on_development_window
+					l_error.show_on_active_window
 				end
 
 				l_cache.put (Result)
@@ -158,6 +176,20 @@ feature {NONE} -- Access
 			end
 		ensure
 			result_consistent: Result = discard_preference
+		end
+
+feature -- Element change
+
+	set_discard_button (a_id: like discard_button)
+			-- Sets discard button so when the dialog is automatically discard
+			-- it performs the actions of the specified button.
+			--
+			-- `a_id': A button id corrsponding to a dialog window button.
+			--         Use {ES_DIALOG_BUTTONS} or `dialog_buttons' to determine the id's correspondance.
+		do
+			discard_button := a_id
+		ensure
+			discard_button_set: discard_button = a_id
 		end
 
 feature {NONE} -- User interface elements
@@ -214,19 +246,19 @@ feature -- Basic operations
 			if not is_discarded then
 				Precursor {ES_PROMPT} (a_window)
 			else
-				dialog_result := default_button
+				on_dialog_button_pressed (discard_button)
 					-- No need to call close request actions because the dialog is shown modal
 					-- Also, the actions are not exported and the dialog was not actually shown!
 			end
 		end
 
-	show_on_development_window is
+	show_on_active_window is
 			-- Attempts to show the dialog parented to the last active window.
 		do
 			if not is_discarded then
 				Precursor {ES_PROMPT}
 			else
-				dialog_result := default_button
+				on_dialog_button_pressed (discard_button)
 					-- No need to call close request actions because the dialog is shown modal
 					-- Also, the actions are not exported and the dialog was not actually shown!
 			end
@@ -257,8 +289,9 @@ feature {NONE} -- Action handlers
 			--         Use {ES_DIALOG_BUTTONS} or `dialog_buttons' to determine the id's correspondance.
 		do
 			Precursor {ES_PROMPT} (a_id)
-			if not is_shown and is_discard_requested then
-					-- Set discarded state and perform any other data storage.
+			if not is_discarded and then not is_shown and is_discard_requested and dialog_result = discard_button then
+					-- Set discarded state and perform any other operations.
+					-- Note: only called when dialog is closed using the set discard button
 				surpress_future_dialogs
 			end
 		end
@@ -274,6 +307,7 @@ invariant
 	preference_name_attached: preference_name /= Void
 	not_preference_name_is_empty: not preference_name.is_empty
 	discard_check_attached: discard_check /= Void
+	buttons_contains_discard_button: buttons.has (discard_button)
 
 ;indexing
 	copyright:	"Copyright (c) 1984-2007, Eiffel Software"

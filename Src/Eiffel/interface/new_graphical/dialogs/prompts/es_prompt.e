@@ -18,23 +18,28 @@ inherit
 			{NONE} set_is_modal, is_modal, icon
 		redefine
 			dialog_border_width,
+			on_before_show,
 			on_handle_key
 		end
 
 feature {NONE} -- Initialization
 
-	make (a_text: like text; a_buttons: like buttons; a_default: like default_button)
+	make (a_text: like text; a_buttons: like buttons; a_default: like default_button; a_default_confirm: like default_confirm_button; a_default_cancel: like default_cancel_button)
 			-- Initialize a prompt using required information
 			--
 			-- `a_text': The text to display on the prompt; empty or void to display none
 			-- `a_buttons': A list of button ids corresponding created from {ES_DIALOG_BUTTONS}.
-			-- `a_default': The prompt's default button.
+			-- `a_default': The prompt's default active button.
+			-- `a_default_confirm': The prompt's default confirmation button (selected using CTRL+ENTER).
+			-- `a_default_cancel': The prompt's default cancel button (selected using ESC).
 		require
 			a_text_attached: a_text /= Void
 			a_buttons_attached: a_buttons /= Void
 			not_a_buttons_is_empty: not a_buttons.is_empty
 			a_buttons_contains_valid_ids: a_buttons.for_all (agent dialog_buttons.is_valid_button_id)
 			a_buttons_contains_a_default: a_buttons.has (a_default)
+			a_buttons_contains_a_default_confirm: a_buttons.has (a_default_confirm)
+			a_buttons_contains_a_default_cancel: a_buttons.has (a_default_cancel)
 		local
 			l_init: BOOLEAN
 		do
@@ -45,23 +50,18 @@ feature {NONE} -- Initialization
 
 				-- Set default buttons
 			set_default_button (a_default)
-			dialog_buttons.abort_retry_ignore_buttons.do_if (
-				agent set_default_cancel_button,
-				agent (a_item: INTEGER): BOOLEAN
-					do
-							-- Detemine if cancel button has already been set
-						Result := default_cancel_button = 0 and buttons.has (a_item)
-					end)
+			set_default_confirm_button (a_default_confirm)
+			set_default_cancel_button (a_default_cancel)
 
 			make_dialog
 			set_text (a_text)
 
-				-- Prompts cannot be resized
-			dialog.disable_user_resize
+				-- Prompts cannot be resized (can't do it here, there's a bug in EiffelVision2)
+			--dialog.disable_user_resize
 
 			is_initializing := l_init
 		ensure
-			text_set: a_text.is_equal (text)
+			text_set: format_text (a_text).is_equal (text)
 			default_button_set: default_button = a_default
 			buttons_set: buttons = a_buttons
 		end
@@ -73,9 +73,9 @@ feature {NONE} -- Initialization
 		require
 			a_text_attached: a_text /= Void
 		do
-			make (a_text, standard_buttons, standard_default_button)
+			make (a_text, standard_buttons, standard_default_button, standard_default_confirm_button, standard_default_cancel_button)
 		ensure
-			text_set: a_text.is_equal (text)
+			text_set: format_text (a_text).is_equal (text)
 			default_button_set: default_button = standard_default_button
 			buttons_set: buttons = standard_buttons
 		end
@@ -91,6 +91,7 @@ feature {NONE} -- User interface initialization
 			l_hbox: EV_HORIZONTAL_BOX
 			l_cell: EV_CELL
 			l_icon: EV_PIXMAP
+			l_large_icon: EV_PIXEL_BUFFER
 		do
 			create l_vbox
 			create l_hbox
@@ -99,11 +100,15 @@ feature {NONE} -- User interface initialization
 			a_container.set_background_color (colors.prompt_banner_color)
 
 				-- Prompt icon
-			l_icon := large_icon.to_pixmap
-			l_icon.set_minimum_size (l_icon.minimum_width.max (32), l_icon.minimum_height.max (32))
+			l_large_icon := large_icon
+			create l_icon.make_with_size (l_large_icon.width, l_large_icon.height)
+			l_icon.set_background_color (colors.prompt_banner_color)
+			l_icon.clear
+			l_icon.draw_sub_pixel_buffer (0, 0, l_large_icon, create {EV_RECTANGLE}.make (0, 0, l_large_icon.width, l_large_icon.height))
+			l_icon.set_minimum_size (l_large_icon.width, l_large_icon.height)
 			l_vbox.extend (l_icon)
 			l_vbox.disable_item_expand (l_icon)
-			l_vbox.extend (create {EV_CELL})
+			--l_vbox.extend (create {EV_CELL})
 
 				-- Box for icon with room for expansion
 			l_hbox.set_padding ({ES_UI_CONSTANTS}.prompt_horizontal_icon_spacing)
@@ -124,6 +129,11 @@ feature {NONE} -- User interface initialization
 
 			a_container.extend (l_hbox)
 			a_container.parent.extend (create {EV_HORIZONTAL_SEPARATOR})
+			l_vbox ?= a_container.parent
+			check l_vbox_attached: l_vbox /= Void end
+			if l_vbox /= Void then
+				l_vbox.disable_item_expand (l_vbox.last)
+			end
 
 			a_container.propagate_background_color
 		end
@@ -139,17 +149,19 @@ feature {NONE} -- User interface initialization
 			is_initializing: is_initializing
 		do
 				-- Prompt sub title
-			create prompt_sub_title_label
+			create prompt_sub_title_label.make
 			prompt_sub_title_label.align_text_left
-			prompt_sub_title_label.set_font (fonts_and_colors.prompt_sub_title_font)
-			prompt_sub_title_label.set_foreground_color (fonts_and_colors.prompt_sub_title_forground_color)
+			prompt_sub_title_label.set_font (fonts.prompt_sub_title_font)
+			prompt_sub_title_label.set_foreground_color (colors.prompt_sub_title_forground_color)
+			prompt_sub_title_label.set_is_text_wrapped (True)
 			prompt_sub_title_label.hide
 
 				-- Prompt text
-			create prompt_text
+			create prompt_text.make
 			prompt_text.align_text_left
-			prompt_text.set_font (fonts_and_colors.prompt_text_font)
-			prompt_text.set_foreground_color (fonts_and_colors.prompt_text_forground_color)
+			prompt_text.set_font (fonts.prompt_text_font)
+			prompt_text.set_foreground_color (colors.prompt_text_forground_color)
+			prompt_text.set_is_text_wrapped (True)
 			prompt_text.hide
 
 				-- Extend widgets
@@ -201,10 +213,19 @@ feature -- Access
 	default_button: INTEGER assign set_default_button
 			-- The dialog's default action button
 
+	default_confirm_button: INTEGER assign set_default_confirm_button
+			-- The dialog's default confirm button
+
 	default_cancel_button: INTEGER assign set_default_cancel_button
 			-- The dialog's default cancel button
 
 feature {NONE} -- Access
+
+	icon: EV_PIXEL_BUFFER
+			-- The dialog's large icon, shown on the left
+		do
+			Result := large_icon
+		end
 
 	large_icon: EV_PIXEL_BUFFER
 			-- The dialog's large icon, shown on the left
@@ -224,6 +245,22 @@ feature {NONE} -- Access
 
 	standard_default_button: INTEGER
 			-- Standard buttons `standard_buttons' default button
+		deferred
+		ensure
+			result_is_valid_button_id: dialog_buttons.is_valid_button_id (Result)
+			standard_buttons_contains_result: standard_buttons.has (Result)
+		end
+
+	standard_default_confirm_button: INTEGER
+			-- Standard buttons `standard_buttons' default confirm button
+		deferred
+		ensure
+			result_is_valid_button_id: dialog_buttons.is_valid_button_id (Result)
+			standard_buttons_contains_result: standard_buttons.has (Result)
+		end
+
+	standard_default_cancel_button: INTEGER
+			-- Standard buttons `standard_buttons' default cancel button
 		deferred
 		ensure
 			result_is_valid_button_id: dialog_buttons.is_valid_button_id (Result)
@@ -257,11 +294,11 @@ feature -- Element change
 				prompt_text.set_text ("")
 				prompt_text.hide
 			else
-				prompt_text.set_text (a_text)
+				prompt_text.set_text (format_text (a_text))
 				prompt_text.show
 			end
 		ensure
-			text_set: a_text.is_equal (text)
+			text_set: format_text (a_text).is_equal (text)
 			prompt_text_label_visible_respected: prompt_text.is_show_requested = not a_text.is_empty
 		end
 
@@ -301,14 +338,25 @@ feature -- Element change
 			default_button_set: default_button = a_id
 		end
 
-	set_default_cancel_button (a_id: INTEGER)
-			-- Sets prompt's default button
+	set_default_confirm_button (a_id: INTEGER)
+			-- Sets prompt's default confirmation button (when CTRL+ENTER is pressed)
 		require
 			a_id_is_valid_button_id: dialog_buttons.is_valid_button_id (a_id)
-			a_id_is_cancel_button: dialog_buttons.default_cancel_buttons.has (a_id)
+			buttons_contains_a_id: buttons.has (a_id)
+		do
+			default_confirm_button := a_id
+		ensure
+			default_confirm_button_set: default_confirm_button = a_id
+		end
+
+	set_default_cancel_button (a_id: INTEGER)
+			-- Sets prompt's default cancel button (when ESC is pressed)
+		require
+			a_id_is_valid_button_id: dialog_buttons.is_valid_button_id (a_id)
 			buttons_contains_a_id: buttons.has (a_id)
 		do
 			default_cancel_button := a_id
+			dialog.set_default_cancel_button (dialog_window_buttons.item (a_id))
 		ensure
 			default_cancel_button_set: default_cancel_button = a_id
 		end
@@ -325,10 +373,10 @@ feature {NONE} -- Helpers
 
 feature {NONE} -- User interface elements
 
-	prompt_sub_title_label: ES_LABEL
+	prompt_sub_title_label: EVS_LABEL
 			-- Label for prompts main text
 
-	prompt_text: ES_LABEL
+	prompt_text: EVS_LABEL
 			-- Label for prompts sub-text, if any
 
 feature {NONE} -- Basic operations
@@ -463,6 +511,22 @@ feature {NONE} -- Basic operations
 			end
 		end
 
+feature {NONE} -- Formatting
+
+	format_text (a_text: STRING_32): STRING_32
+			-- Format text to remove trailing new lines
+		require
+			a_text_attached: a_text /= Void
+		do
+			Result := a_text.twin
+			if not Result.is_empty then
+				Result.prune_all_trailing ('%N')
+			end
+		ensure
+			result_attached: Result /= Void
+			result_free_of_trailing_new_lines: not Result.is_empty implies Result.item (Result.count) /= '%N'
+		end
+
 feature {NONE} -- Action handlers
 
 	on_handle_key (a_key: EV_KEY; a_alt: BOOLEAN; a_ctrl: BOOLEAN; a_shift: BOOLEAN; a_released: BOOLEAN): BOOLEAN
@@ -493,10 +557,32 @@ feature {NONE} -- Action handlers
 			end
 		end
 
+feature {NONE} -- Action handlers
+
+	on_before_show
+			-- Called prior to the dialog being shown
+		local
+			l_width: INTEGER
+		do
+			Precursor {ES_DIALOG}
+
+				-- Adjust prompt text widths to ensure they are not too big for the screen.
+				-- This will cause long text to be wrapped.
+			l_width := prompt_text.font.string_width (prompt_text.text)
+			prompt_text.set_maximum_width (l_width.min (maximum_prompt_text_width))
+
+			l_width := prompt_sub_title_label.font.string_width (prompt_sub_title_label.text)
+			prompt_sub_title_label.set_maximum_width (l_width.min (maximum_prompt_text_width))
+		end
+
+feature {NONE} -- Constants
+
+	maximum_prompt_text_width: INTEGER = 500
+			-- Maximum width for prompt text (text is wrapped if it extends beyond the width)
+
 invariant
 	prompt_sub_title_label_attached: prompt_sub_title_label /= Void
 	prompt_text_attached: prompt_text /= Void
-
 
 ;indexing
 	copyright:	"Copyright (c) 1984-2007, Eiffel Software"

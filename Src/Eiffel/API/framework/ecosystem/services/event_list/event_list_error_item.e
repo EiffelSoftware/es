@@ -1,6 +1,6 @@
 indexing
 	description: "[
-
+		An implementation of an event list service ({EVENT_LIST_SERVICE_I}) item for Eiffel compiler {ERROR} objects.
 	]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class.";
@@ -11,73 +11,57 @@ class
 	EVENT_LIST_ERROR_ITEM
 
 inherit
-	EVENT_LIST_ITEM_I
+	EVENT_LIST_ERROR_ITEM_I
+
+	EVENT_LIST_ITEM
+		rename
+			make as make_event_list_item
+		end
 
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make (a_category: like category; a_description: like description; a_data: like data)
+	make (a_category: like category; a_description: like description; a_error: like data)
 			-- Initialize a new event list error item.
 			--
-			-- `a_category': Event item category, see {EVENT_LIST_ITEM_CATEGORIES}
-			-- `a_description': A textual representation of the error
-			-- `a_data': The error object associated with this event ite
+			-- `a_category': Event item category, see {ENVIRONMENT_CATEGORIES}.
+			-- `a_description': A textual representation of the error.
+			-- `a_error': The error object associated with this event item
 		require
 			a_category_is_valid_category: is_valid_category (a_category)
 			a_description_attached: a_description /= Void
 			not_a_description_is_empty: not a_description.is_empty
-			a_data_attached: a_data /= Void
-			a_data_is_error: (({ERROR}) #? a_data) /= Void
+			a_error_is_valid_data: is_valid_data (a_error)
 		do
-			category := a_category
+			make_event_list_item (a_category, {PRIORITY_LEVELS}.normal, a_error)
 			description := a_description
-			data := a_data
 		ensure
 			category_set: category = a_category
 			description_set: description = a_description
-			user_data_set: data = a_data
+			user_data_set: data = a_error
 		end
 
 feature -- Access
 
-	category: NATURAL_8
-			-- Event item category
-
-	priority: NATURAL_8
-			-- Event item priority
-
 	description: STRING_32
 			-- Event item description
 
-	data: ANY
-			-- Event item user data
-
 feature -- Query
 
-	is_valid_category (a_category: like category): BOOLEAN
-			-- Determines if category `a_category' is valid for the current event item.
+	is_valid_data (a_data: like data): BOOLEAN
+			-- Determines is the user data `a_data' is valid for the current event item.
 			--
-			-- `a_category': A category code to validate.
-			-- `Result': True if `a_category' is a valid category, False otherwise.
+			-- `a_data': The user data to validate.
+			-- `Result': True if the user data is valid; False otherwise.
 		do
-			Result := a_category = {EVENT_LIST_ITEM_CATEGORIES}.unknown  or
-				a_category = {EVENT_LIST_ITEM_CATEGORIES}.compilation
-		end
-
-	is_valid_priority (a_priority: like priority): BOOLEAN
-			-- Determines if priority `a_priority' is valid for the current event item.
-			--
-			-- `a_priority': A priority code to validate.
-			-- `Result': True if `a_priority' is a valid priority, False otherwise.
-		do
-			Result := True
+			Result := a_data /= Void and then (({ERROR}) #? a_data) /= Void
 		end
 
 invariant
-	user_data_attached: data /= Void
-	user_data_is_error: (({ERROR}) #? data) /= Void
+	description_attached: description /= Void
+	not_description_is_empty: not description.is_empty
 
 ;indexing
 	copyright:	"Copyright (c) 1984-2007, Eiffel Software"

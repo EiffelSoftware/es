@@ -398,7 +398,7 @@ feature -- Query
 			-- Has the content of the editor changed since it was
 			-- loaded or saved?
 		do
-			Result := text_displayed.is_modified
+			Result := text_displayed /= Void and then text_displayed.is_modified
 		end
 
 	line_numbers_enabled: BOOLEAN
@@ -791,10 +791,10 @@ feature -- Status Setting
 			-- Assign `an_offset' to `offset' and update scrollbar if necessary.
 		do
 			editor_viewport.set_x_offset (an_offset)
-			check
-				offset_within_bounds: horizontal_scrollbar.value_range.has (an_offset)
-			end
 			if horizontal_scrollbar.is_show_requested then
+				check
+					offset_within_bounds: horizontal_scrollbar.value_range.has (an_offset)
+				end
 				horizontal_scrollbar.set_value (offset.min (horizontal_scrollbar.value_range.upper))
 			end
 		end

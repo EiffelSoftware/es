@@ -19,7 +19,8 @@ inherit
 		undefine
 			create_implementation,
 			is_in_default_state,
-			is_equal
+			is_equal,
+			destroy
 		redefine
 			row_height,
 			extend,
@@ -62,14 +63,16 @@ inherit
 			on_pointer_release,
 			on_expose,
 			initialize,
-			item_at_position
+			item_at_position,
+			line_width,
+			drawing_mode
 		select
 			has_capture_vision2,
 			enable_capture_vision2,
 			disable_capture_vision2
 		end
 
-	EV_FIXED
+	SD_FIXED
 		rename
 			extend as extend_fixed,
 			wipe_out as wipe_out_fixed,
@@ -89,6 +92,8 @@ inherit
 			pointer_double_press_actions,
 			is_displayed,
 			initialize
+		redefine
+			destroy
 		select
 			implementation
 		end
@@ -114,6 +119,11 @@ feature {NONE} -- Initlization
 			extend_fixed (tool_bar)
 
 			tool_bar.expose_actions.extend (agent on_tool_bar_expose_actions)
+
+			-- We create this only for making sure the invariant not borken.
+			create internal_items.make (0)
+
+			internal_shared.widgets.add_tool_bar (Current)
 		ensure
 			set: tool_bar = a_tool_bar
 		end
@@ -342,6 +352,13 @@ feature -- Command
 			-- Assign `a_tooltip' to `tooltip'.
 		do
 			tool_bar.set_tooltip (a_tooltip)
+		end
+
+	destroy is
+			-- Redefine
+		do
+			internal_shared.widgets.prune_tool_bar (Current)
+			Precursor {SD_FIXED}
 		end
 
 feature -- Query
@@ -590,6 +607,20 @@ feature {NONE} -- Implementation
 				end
 				l_items.forth
 			end
+		end
+
+feature -- Contract support
+
+	line_width: INTEGER is
+			-- Redefine `line_width' from {EV_DRAWABLE} to make sure invariant not broken.
+			-- See bug#13387.
+		do
+		end
+
+	drawing_mode: INTEGER is
+			-- Redefine `drawing_mode' from {EV_DRAWABLE} to make sure invariant not broken.
+			-- See bug#13387.
+		do
 		end
 
 invariant

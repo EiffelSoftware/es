@@ -26,12 +26,18 @@ inherit
 		export
 			{NONE} all
 		end
+
 	EB_CONSTANTS
 		export
 			{NONE} all
 		end
 
 	EV_DIALOG_CONSTANTS
+		export
+			{NONE} all
+		end
+
+	ES_SHARED_PROMPT_PROVIDER
 		export
 			{NONE} all
 		end
@@ -62,7 +68,6 @@ feature -- Basic operations
 			new_file, tmp_file: RAW_FILE -- It should be PLAIN_TEXT_FILE, however windows will expand %R and %N as %N
 			aok, create_backup, new_created: BOOLEAN
 			tmp_name: STRING
-			wd: EB_WARNING_DIALOG
 			l_retry: BOOLEAN
 		do
 			if not l_retry then
@@ -75,8 +80,7 @@ feature -- Basic operations
 					if not new_file.is_creatable then
 						aok := False
 						last_saving_success := False
-						create wd.make_with_text (warning_messages.w_not_creatable (new_file.name))
-						wd.show_modal_to_window (window_manager.last_focused_development_window.window)
+						prompts.show_error_prompt (warning_messages.w_not_creatable (new_file.name), Void, Void)
 					else
 						new_created := True
 					end
@@ -84,13 +88,11 @@ feature -- Basic operations
 					if not new_file.is_plain then
 						aok := False
 						last_saving_success := False
-						create wd.make_with_text (warning_messages.w_not_a_plain_file (new_file.name))
-						wd.show_modal_to_window (window_manager.last_focused_development_window.window)
+						prompts.show_error_prompt (warning_messages.w_not_a_plain_file (new_file.name), Void, Void)
 					elseif not new_file.is_writable then
 						aok := False
 						last_saving_success := False
-						create wd.make_with_text (warning_messages.w_not_writable (new_file.name))
-						wd.show_modal_to_window (window_manager.last_focused_development_window.window)
+						prompts.show_error_prompt (warning_messages.w_not_writable (new_file.name), Void, Void)
 					end
 				end
 
@@ -136,8 +138,7 @@ feature -- Basic operations
 				if new_file /= Void and then not new_file.is_closed then
 					new_file.close
 				end
-				create wd.make_with_text (warning_messages.w_Not_creatable_choose_to_save (new_file.name))
-				wd.show_modal_to_window (window_manager.last_focused_development_window.window)
+				prompts.show_error_prompt (warning_messages.w_Not_creatable_choose_to_save (new_file.name), Void, Void)
 				file_save_as (a_text)
 				last_saving_success := False
 			end
@@ -172,25 +173,29 @@ feature {NONE} -- Implementation
 			a_new_name_ok: a_new_name /= Void and then not a_new_name.is_empty
 		local
 			l_retried, l_user_ask_for_retry: BOOLEAN
-			l_ed: EB_ERROR_DIALOG
+			l_ed: ES_ERROR_PROMPT
+			l_buttons: ES_DIALOG_BUTTONS
 			l_win: EV_WINDOW
 			l_editor: EB_SMART_EDITOR
 		do
 			if l_retried then
 				l_editor := window_manager.last_focused_development_window.editors_manager.current_editor
-				create l_ed.make_with_text (warning_messages.w_Not_rename_swp (a_file.name, a_new_name))
-				l_ed.set_buttons (<<ev_retry, ev_ignore>>)
+				create l_buttons
+				create l_ed.make (warning_messages.w_Not_rename_swp (a_file.name, a_new_name), l_buttons.ok_cancel_buttons, l_buttons.ok_button, l_buttons.ok_button, l_buttons.cancel_button)
+				l_ed.set_button_text (l_buttons.ok_button, interface_names.b_retry)
+				l_ed.set_button_text (l_buttons.cancel_button, interface_names.b_ignore)
+
 				l_win := window_manager.last_focused_development_window.window
 				l_win.focus_in_actions.block
 				if l_editor /= Void then
 					l_editor.editor_drawing_area.focus_in_actions.block
 				end
-				l_ed.show_modal_to_window (l_win)
+				l_ed.show (l_win)
 				l_win.focus_in_actions.resume
 				if l_editor /= Void then
 					l_editor.editor_drawing_area.focus_in_actions.resume
 				end
-				l_user_ask_for_retry := l_ed.selected_button.is_equal (ev_retry)
+				l_user_ask_for_retry := l_ed.dialog_result = l_buttons.ok_button
 				l_retried := False
 			else
 				l_user_ask_for_retry := True

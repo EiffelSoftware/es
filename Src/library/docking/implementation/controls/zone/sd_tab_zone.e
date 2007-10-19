@@ -57,12 +57,11 @@ create
 
 feature {NONE} -- Initlization
 
-	make (a_content: SD_CONTENT; a_target_zone: SD_DOCKING_ZONE) is
+	make (a_content: SD_CONTENT) is
 			-- Creation method. When first time insert a SD_CONTENT.
 			-- FIXIT: should add a_content and a_target_zone in this function?
 		require
 			a_content_not_void: a_content /= Void
-			a_target_zone_not_void: a_target_zone /= Void
 			a_content_parent_void: a_content.user_widget.parent = Void
 		do
 			create internal_shared
@@ -95,8 +94,8 @@ feature {NONE} -- Initlization
 
 			resize_actions.extend (agent internal_notebook.on_resize)
 
-			set_minimum_width (internal_shared.zone_minmum_width)
-			set_minimum_height (internal_shared.zone_minmum_height)
+			set_minimum_width (internal_shared.zone_minimum_width)
+			set_minimum_height (internal_shared.zone_minimum_height)
 		end
 
 feature -- Query
@@ -263,13 +262,21 @@ feature {SD_TAB_STATE} -- Internal issues.
 			-- Select `a_item' on the notebook.
 		require
 			a_content_not_void: a_content /= Void
-			has (a_content)
+			has: has (a_content)
 		do
 			internal_notebook.select_item (a_content, a_focus)
 			update_mini_tool_bar (a_content)
 			on_select_tab
 		ensure
 			selected: internal_notebook.selected_item_index = internal_notebook.index_of (a_content)
+		end
+
+	is_content_selected (a_content: SD_CONTENT): BOOLEAN is
+			-- If `a_content''s widget selected in notebook?
+		do
+			if a_content /= Void then
+				Result := internal_notebook.is_content_selected (a_content)
+			end
 		end
 
 feature {SD_FLOATING_STATE} -- Internal issues
@@ -297,7 +304,6 @@ feature -- Agents for user
 				internal_notebook.select_item (a_content, True)
 			end
 		ensure then
-			title_bar_focus: internal_title_bar.is_focus_color_enable
 			content_set: a_content /= Void implies internal_notebook.selected_item_index = internal_notebook.index_of (a_content)
 		end
 
@@ -307,8 +313,6 @@ feature -- Agents for user
 			Precursor {SD_MULTI_CONTENT_ZONE}
 			internal_title_bar.disable_focus_color
 			internal_notebook.set_focus_color (False)
-		ensure then
-			title_bar_not_focus: not internal_title_bar.is_focus_color_enable
 		end
 
 	on_stick is

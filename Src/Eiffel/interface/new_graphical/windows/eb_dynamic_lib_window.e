@@ -28,6 +28,9 @@ inherit
 		end
 
 	EB_PIXMAPABLE_ITEM_PIXMAP_FACTORY
+		export
+			{NONE} all
+		end
 
 	PLATFORM_CONSTANTS
 
@@ -318,49 +321,53 @@ feature {NONE} -- Initialization
 	build_tool_bar is
 			-- Create `toolbar' and display it.
 		local
-			tb: EV_TOOL_BAR
-			tbit: EB_COMMAND_TOOL_BAR_BUTTON
+			tb: SD_TOOL_BAR
+			tbit: EB_SD_COMMAND_TOOL_BAR_BUTTON
 			sep: EV_VERTICAL_SEPARATOR
 		do
 			create tool_bar
-			create tb
-			tbit := new_cmd.new_toolbar_item (False)
+			create tb.make
+			tbit := new_cmd.new_sd_toolbar_item (False)
 			tb.extend (tbit)
 			add_recyclable (tbit)
 
-			tbit := open_cmd.new_toolbar_item (False)
+			tbit := open_cmd.new_sd_toolbar_item (False)
 			tb.extend (tbit)
 			add_recyclable (tbit)
 
-			tbit := save_cmd.new_toolbar_item (False)
+			tbit := save_cmd.new_sd_toolbar_item (False)
 			tb.extend (tbit)
 			add_recyclable (tbit)
 
 			tool_bar.extend (tb)
 			tool_bar.disable_item_expand (tb)
+			tb.compute_minimum_size
+
 			create sep
 			tool_bar.extend (sep)
 			tool_bar.disable_item_expand (sep)
 
-			create tb
-			tbit := check_exports_cmd.new_toolbar_item (False)
+
+			create tb.make
+			tbit := check_exports_cmd.new_sd_toolbar_item (False)
 			tb.extend (tbit)
 			add_recyclable (tbit)
 
-			tbit := add_feature_cmd.new_toolbar_item (False)
+			tbit := add_feature_cmd.new_sd_toolbar_item (False)
 			tb.extend (tbit)
 			add_recyclable (tbit)
 
-			tbit := edit_feature_cmd.new_toolbar_item (False)
+			tbit := edit_feature_cmd.new_sd_toolbar_item (False)
 			tb.extend (tbit)
 			add_recyclable (tbit)
 
-			tbit := remove_feature_cmd.new_toolbar_item (False)
+			tbit := remove_feature_cmd.new_sd_toolbar_item (False)
 			tb.extend (tbit)
 			add_recyclable (tbit)
 
 			tool_bar.extend (tb)
 			tool_bar.disable_item_expand (tb)
+			tb.compute_minimum_size
 		end
 
 	enable_accelerators is
@@ -423,13 +430,10 @@ feature -- Status setting
 
 	destroy is
 			-- Destroy `Current'.
-		local
-			cd: EB_CONFIRMATION_DIALOG
 		do
 			if changed and not confirmed then
-				create cd.make_with_text (Warning_messages.w_Unsaved_changes)
-				cd.button (cd.OK).select_actions.extend (agent force_destroy)
-				cd.show_modal_to_window (window)
+				(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_warning_prompt_with_cancel (
+					Warning_messages.w_Unsaved_changes, window, agent force_destroy, Void)
 			else
 				Precursor {EB_WINDOW}
 			end
@@ -494,13 +498,10 @@ feature {NONE} -- Implementation: File operations
 	open_def_file is
 			-- Let the user select a `.def' file and open it.
 			-- Cancelling is possible.
-		local
-			cd: EB_CONFIRMATION_DIALOG
 		do
 			if changed then
-				create cd.make_with_text (Warning_messages.w_Unsaved_changes)
-				cd.button (cd.ok).select_actions.extend (agent ask_for_file_name (True, agent load_dynamic_lib))
-				cd.show_modal_to_window (window)
+				(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_warning_prompt_with_cancel (
+					Warning_messages.w_Unsaved_changes, window, agent ask_for_file_name (True, agent load_dynamic_lib), Void)
 			else
 				ask_for_file_name (True, agent load_dynamic_lib)
 			end
@@ -511,16 +512,14 @@ feature {NONE} -- Implementation: File operations
 			-- Prompt the user for a file name otherwise.
 			-- Cancelling is possible.
 		local
-			qd: EB_QUESTION_DIALOG
 			pb: INTEGER
 		do
 			pb := export_definition_problem
 			if pb = 0 then
 				actually_save
 			else
-				create qd.make_with_text (Warning_messages.w_Save_invalid_definition)
-				qd.button (interface_names.b_yes).select_actions.extend (agent actually_save)
-				qd.show_modal_to_window (window)
+				(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_warning_prompt_with_cancel (
+					Warning_messages.w_Save_invalid_definition, window, agent actually_save, Void)
 			end
 		end
 
@@ -528,29 +527,24 @@ feature {NONE} -- Implementation: File operations
 			-- Prompt the user for a file name and save the contents of `Current' to it.
 			-- Cancelling is possible.
 		local
-			qd: EB_QUESTION_DIALOG
 			pb: INTEGER
 		do
 			pb := export_definition_problem
 			if pb = 0 then
 				ask_for_file_name (False, agent actually_save)
 			else
-				create qd.make_with_text (Warning_messages.w_Save_invalid_definition)
-				qd.button (interface_names.b_yes).select_actions.extend (agent ask_for_file_name (False, agent actually_save))
-				qd.show_modal_to_window (window)
+				(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_warning_prompt_with_cancel (
+					Warning_messages.w_Save_invalid_definition, window, agent ask_for_file_name (False, agent actually_save), Void)
 			end
 		end
 
 	new_def_file is
 			-- Prompt the user for a file name and create a new `.def' file.
 			-- Cancelling is possible.
-		local
-			cd: EB_CONFIRMATION_DIALOG
 		do
 			if changed then
-				create cd.make_with_text (Warning_messages.w_Unsaved_changes)
-				cd.button (cd.ok).select_actions.extend (agent reset)
-				cd.show_modal_to_window (window)
+				(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_question_prompt (
+					Warning_messages.w_Unsaved_changes, window, agent reset, Void)
 			else
 				reset
 			end
@@ -591,17 +585,13 @@ feature {NONE} -- Implementation: Feature operations
 			-- Add the dropped feature associated to `fst' to the list.
 			-- Prompt the user for the creation routine, if necessary.
 			-- May be cancelled.
-		local
-			wd: EB_WARNING_DIALOG
 		do
 			current_class := fst.e_feature.associated_class
 			current_feature := fst.e_feature
 			if not valid_class (current_class) then
-				create wd.make_with_text (Warning_messages.w_Class_cannot_export)
-				wd.show_modal_to_window (window)
+				prompts.show_error_prompt (Warning_messages.w_Class_cannot_export, window, Void)
 			elseif not valid_feature (current_feature, current_class) then
-				create wd.make_with_text (Warning_messages.w_Feature_cannot_be_exported)
-				wd.show_modal_to_window (window)
+				prompts.show_error_prompt (Warning_messages.w_Feature_cannot_be_exported, window, Void)
 			else
 				current_creation_routine := Void
 				current_alias := Void
@@ -650,22 +640,20 @@ feature {NONE} -- Implementation: Feature operations
 			-- both one at a time and globally.
 		local
 			pb: INTEGER
-			id: EV_INFORMATION_DIALOG
 			err: EV_MULTI_COLUMN_LIST_ROW
 		do
 			pb := export_definition_problem
 			if pb = 0 then
-				create id.make_with_text (Warning_messages.w_No_errors_found)
+				(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_warning_prompt (Warning_messages.w_No_errors_found, window, Void)
 			elseif pb = -1 then
-				create id.make_with_text (Warning_messages.w_Conflicting_exports)
+				(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_error_prompt (Warning_messages.w_Conflicting_exports, window, Void)
 			else
 				err := exports_list.i_th (pb)
 				if err /= Void then
 					err.enable_select
 				end
-				create id.make_with_text (Warning_messages.w_Invalid_feature_exportation)
+				(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_error_prompt (Warning_messages.w_Invalid_feature_exportation, window, Void)
 			end
-			id.show_modal_to_window (window)
 		end
 
 	reset is
@@ -817,8 +805,6 @@ feature {NONE} -- Implementation: Creation routine selection
 			-- Call `next_action' iff a creation routine was chosen.
 		require
 			current_class_set: valid_class (current_class)
-		local
-			wd: EB_WARNING_DIALOG
 		do
 			call_back := next_action
 			creation_routine_list := valid_creation_routines (current_class)
@@ -830,13 +816,11 @@ feature {NONE} -- Implementation: Creation routine selection
 					display_creation_routine_choice
 				else
 						--| Nothing to choose.
-					create wd.make_with_text (Warning_messages.w_No_valid_creation_routine)
-					wd.show_modal_to_window (window)
+					prompts.show_error_prompt (Warning_messages.w_No_valid_creation_routine, window, Void)
 				end
 			else
 					--| Nothing to choose.
-				create wd.make_with_text (Warning_messages.w_No_valid_creation_routine)
-				wd.show_modal_to_window (window)
+				prompts.show_error_prompt (Warning_messages.w_No_valid_creation_routine, window, Void)
 			end
 		end
 
@@ -961,7 +945,6 @@ feature {NONE} -- Implementation: Low_level dialog, file operations
 		require
 			valid_dynamic_library: dynamic_library /= Void
 		local
-			wd: EB_WARNING_DIALOG
 			rescued: BOOLEAN
 			f: PLAIN_TEXT_FILE
 		do
@@ -979,8 +962,7 @@ feature {NONE} -- Implementation: Low_level dialog, file operations
 				end
 			else
 				if file_name /= Void then
-					create wd.make_with_text (Warning_messages.w_Cannot_save_library (file_name))
-					wd.show_modal_to_window (window)
+					prompts.show_error_prompt (Warning_messages.w_Cannot_save_library (file_name), window, Void)
 				end
 			end
 		rescue
@@ -997,7 +979,6 @@ feature {NONE} -- Implementation: Low_level dialog, file operations
 	load_dynamic_lib is
 			-- Initialize `dynamic_lib' from `file_name'.
 		local
-			wd: EB_WARNING_DIALOG
 			rescued: BOOLEAN
 			f: PLAIN_TEXT_FILE
 		do
@@ -1007,8 +988,7 @@ feature {NONE} -- Implementation: Low_level dialog, file operations
 					create f.make_open_read (file_name)
 					dynamic_library.parse_exports_from_file (f)
 					if not dynamic_library.is_content_valid then
-						create wd.make_with_text (Warning_messages.w_Error_parsing_the_library_file)
-						wd.show_modal_to_window (window)
+						prompts.show_error_prompt (Warning_messages.w_Error_parsing_the_library_file, window, Void)
 					end
 					f.close
 					load_ok := False
@@ -1021,8 +1001,7 @@ feature {NONE} -- Implementation: Low_level dialog, file operations
 				end
 			else
 				if file_name /= Void then
-					create wd.make_with_text (Warning_messages.w_Cannot_load_library (file_name))
-					wd.show_modal_to_window (window)
+					prompts.show_error_prompt (Warning_messages.w_Cannot_load_library (file_name), window, Void)
 				end
 			end
 		rescue
@@ -1433,7 +1412,6 @@ feature {NONE} -- Implementation: Properties dialog
 			al: STRING
 			ind: INTEGER
 			cc: STRING
-			cd: EB_WARNING_DIALOG
 		do
 			cl := modified_exported_feature.compiled_class
 			f := modified_exported_feature.routine
@@ -1445,23 +1423,22 @@ feature {NONE} -- Implementation: Properties dialog
 			end
 			if not valid_export_parameters (cl, cr, f, al, ind, cc) then
 				if cl = Void then
-					create cd.make_with_text (Warning_messages.w_Not_a_compiled_class (class_field.text))
+					prompts.show_error_prompt (Warning_messages.w_Not_a_compiled_class (class_field.text), properties_dialog, Void)
 				elseif not valid_class (cl) then
-					create cd.make_with_text (Warning_messages.w_Class_cannot_export)
+					prompts.show_error_prompt (Warning_messages.w_Class_cannot_export, properties_dialog, Void)
 				elseif f = Void then
-					create cd.make_with_text (Warning_messages.w_No_exported_feature (feature_field.text, class_field.text))
+					prompts.show_error_prompt (Warning_messages.w_No_exported_feature (feature_field.text, class_field.text), properties_dialog, Void)
 				elseif not valid_feature (f, cl) then
-					create cd.make_with_text (Warning_messages.w_Feature_cannot_be_exported)
+					prompts.show_error_prompt (Warning_messages.w_Feature_cannot_be_exported, properties_dialog, Void)
 				elseif not valid_creation_routine (cr, cl) then
-					create cd.make_with_text (Warning_messages.w_No_valid_creation_routine)
+					prompts.show_error_prompt (Warning_messages.w_No_valid_creation_routine, properties_dialog, Void)
 				elseif not al.is_empty and then not valid_alias (al) then
-					create cd.make_with_text (Warning_messages.w_Invalid_alias)
+					prompts.show_error_prompt (Warning_messages.w_Invalid_alias, properties_dialog, Void)
 				elseif is_windows and then ind /= 0 and then not valid_index (ind) then
-					create cd.make_with_text (Warning_messages.w_Invalid_index)
+					prompts.show_error_prompt (Warning_messages.w_Invalid_index, properties_dialog, Void)
 				else
-					create cd.make_with_text (Warning_messages.w_Invalid_parameters)
+					prompts.show_error_prompt (Warning_messages.w_Invalid_parameters, properties_dialog, Void)
 				end
-				cd.show_modal_to_window (properties_dialog)
 			else
 					-- Ah we can update the exported feature.
 				modified_exported_feature.set_creation_routine (cr)
@@ -1517,7 +1494,6 @@ feature {NONE} -- Implementation: Properties dialog
 			al: STRING
 			ind: INTEGER
 			cc: STRING
-			cd: EB_WARNING_DIALOG
 			tmp: STRING
 			exp: DYNAMIC_LIB_EXPORT_FEATURE
 			clist: LIST [CLASS_I]
@@ -1547,23 +1523,22 @@ feature {NONE} -- Implementation: Properties dialog
 			end
 			if not valid_export_parameters (cl, cr, f, al, ind, cc) then
 				if cl = Void then
-					create cd.make_with_text (Warning_messages.w_Not_a_compiled_class (class_field.text))
+					prompts.show_error_prompt (Warning_messages.w_Not_a_compiled_class (class_field.text), properties_dialog, Void)
 				elseif not valid_class (cl) then
-					create cd.make_with_text (Warning_messages.w_Class_cannot_export)
+					prompts.show_error_prompt (Warning_messages.w_Class_cannot_export, properties_dialog, Void)
 				elseif f = Void then
-					create cd.make_with_text (Warning_messages.w_No_exported_feature (feature_field.text, class_field.text))
+					prompts.show_error_prompt (Warning_messages.w_No_exported_feature (feature_field.text, class_field.text), properties_dialog, Void)
 				elseif not valid_feature (f, cl) then
-					create cd.make_with_text (Warning_messages.w_Feature_cannot_be_exported)
+					prompts.show_error_prompt (Warning_messages.w_Feature_cannot_be_exported, properties_dialog, Void)
 				elseif not valid_creation_routine (cr, cl) then
-					create cd.make_with_text (Warning_messages.w_No_valid_creation_routine)
+					prompts.show_error_prompt (Warning_messages.w_No_valid_creation_routine, properties_dialog, Void)
 				elseif not al.is_empty and then not valid_alias (al) then
-					create cd.make_with_text (Warning_messages.w_Invalid_alias)
+					prompts.show_error_prompt (Warning_messages.w_Invalid_alias, properties_dialog, Void)
 				elseif is_windows and then ind /= 0 and then not valid_index (ind) then
-					create cd.make_with_text (Warning_messages.w_Invalid_index)
+					prompts.show_error_prompt (Warning_messages.w_Invalid_index, properties_dialog, Void)
 				else
-					create cd.make_with_text (Warning_messages.w_Invalid_parameters)
+					prompts.show_error_prompt (Warning_messages.w_Invalid_parameters, properties_dialog, Void)
 				end
-				cd.show_modal_to_window (properties_dialog)
 			else
 					-- Ah we can create a new exported feature.
 				create exp.make (cl, cr, f)

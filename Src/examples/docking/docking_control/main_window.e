@@ -66,7 +66,6 @@ feature {NONE} -- Initialization
 		do
 				-- Build the Docking Manager.
 			create docking_manager.make (docking_container, Current)
-			sd_shared.set_icons (create {ICONS}.make)
 		end
 
 	is_in_default_state: BOOLEAN is
@@ -173,15 +172,15 @@ feature {NONE} -- Implementation / Constants
 			-- Initial height for this window.
 
 indexing
-	library:   "EiffelBase: Library of reusable components for Eiffel."
-	copyright: "Copyright (c) 1984-2006, Eiffel Software and others"
-	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			Eiffel Software
-			356 Storke Road, Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
+			 Eiffel Software
+			 356 Storke Road, Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
 		]"
+
 
 end -- class MAIN_WINDOW

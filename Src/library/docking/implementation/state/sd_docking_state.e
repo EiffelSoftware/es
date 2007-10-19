@@ -47,6 +47,7 @@ feature {NONE}-- Initlization
 			internal_docking_manager.zones.add_zone (zone)
 			last_floating_height := a_content.state.last_floating_height
 			last_floating_width := a_content.state.last_floating_width
+			initialized := True
 		ensure
 			set: internal_content = a_content
 			set: direction = a_direction
@@ -110,6 +111,7 @@ feature -- Redefine.
 			if zone /= Void then
 				update_floating_zone_visible (zone, a_data.is_visible)
 			end
+			initialized := True
 		end
 
 	record_state is
@@ -354,6 +356,7 @@ feature -- Redefine.
 			l_platform: PLATFORM
 			l_floating_zone: SD_FLOATING_ZONE
 			l_is_main_container: BOOLEAN
+			l_old_screen_y: INTEGER
 		do
 			l_multi_dock_area := internal_docking_manager.query.inner_container (zone)
 			l_is_main_container :=  l_multi_dock_area /= Void and then internal_docking_manager.query.is_main_inner_container (l_multi_dock_area)
@@ -371,8 +374,14 @@ feature -- Redefine.
 					-- On GTK, windows size will not be remembered after hide.
 					l_floating_zone.set_width (last_floating_width)
 					l_floating_zone.set_height (last_floating_height)
+					-- On GTK, screen y is not correct after shown sometimes, see bug#12375.
+					-- We have to set it again later.
+					l_old_screen_y := l_floating_zone.screen_y
 				end
 				l_floating_zone.show
+				if not l_platform.is_windows then
+					l_floating_zone.set_position (l_floating_zone.screen_x, l_old_screen_y)
+				end
 				l_multi_dock_area.update_title_bar
 			else
 				l_multi_dock_area.update_middle_container
@@ -551,7 +560,7 @@ feature {NONE} -- Implementation
 
 invariant
 
-	internal_zone_not_void: zone /= Void
+	internal_zone_not_void: initialized implies zone /= Void
 
 indexing
 	library:	"SmartDocking: Library of reusable components for Eiffel."

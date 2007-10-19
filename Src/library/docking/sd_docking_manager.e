@@ -136,6 +136,14 @@ feature -- Query
 	open_actions: ACTION_SEQUENCE [ TUPLE [ANY]]
 			-- Open actions when open a config.
 
+	restore_editor_area_actions: EV_NOTIFY_ACTION_SEQUENCE is
+			-- When whole editor area restored automatically, actions will be invoked.
+		do
+			Result := query.restore_whole_editor_area_actions
+		ensure
+			not_void: Result /= Void
+		end
+
 	focused_content: SD_CONTENT is
 			-- Current focused content. Maybe void.
 		do
@@ -155,6 +163,13 @@ feature -- Query
 
 	is_editor_locked: BOOLEAN
 			-- If editor type zone can be docked?
+
+	is_editor_area_maximized: BOOLEAN is
+			-- If editor area maximized?
+		do
+			Result := command.orignal_editor_parent /= Void
+			check two_item_exist_at_same_time: Result implies command.orignal_whole_item /= Void end
+		end
 
 	docker_mediator: SD_DOCKER_MEDIATOR is
 			-- Manager for user dragging events.
@@ -347,6 +362,30 @@ feature -- Command
 			unlocked: is_editor_locked = False
 		end
 
+	maximize_editor_area is
+			-- Maximize whole editor area.
+		do
+			command.maximize_editor_area
+		end
+
+	restore_editor_area is
+			-- Restore whole editor area if the editor area maximized.
+		do
+			command.restore_editor_area
+		end
+
+	minimize_editors is
+			-- Minimize all editors.
+		do
+			command.minimize_editors
+		end
+
+	restore_minimized_editors is
+			-- Restore all minimized editors to normal state.
+		do
+			command.restore_minimized_editors
+		end
+
 	destroy is
 			-- Destroy all underline objects.
 		local
@@ -416,7 +455,7 @@ feature {SD_TOOL_BAR_HOT_ZONE, SD_FLOATING_TOOL_BAR_ZONE, SD_CONTENT, SD_STATE,
 	  	SD_DOCKING_MANAGER_COMMAND, SD_DOCKING_MANAGER_ZONES, SD_AUTO_HIDE_ANIMATION,
 	  	SD_DOCKING_MANAGER_QUERY, SD_NOTEBOOK, SD_ZONE_NAVIGATION_DIALOG,
 	  	SD_TAB_STATE_ASSISTANT, SD_TOOL_BAR_HOT_ZONE, SD_TOOL_BAR_ZONE_ASSISTANT,
-		SD_DEBUG_ACCESS, SD_UPPER_ZONE, SD_DOCKING_MANAGER_PROPERTY, SD_TOOL_BAR_CONTENT} -- Library internals querys.
+		SD_DEBUG_ACCESS, SD_UPPER_ZONE, SD_DOCKING_MANAGER_PROPERTY, SD_TOOL_BAR_CONTENT, SD_SIZES} -- Library internals querys.
 
 	query: SD_DOCKING_MANAGER_QUERY
 			-- Manager helper Current for querys.

@@ -51,6 +51,11 @@ inherit
 
 	EB_SHARED_DEBUGGER_MANAGER
 
+	ES_SHARED_PROMPT_PROVIDER
+		export
+			{NONE} all
+		end
+
 feature {NONE} -- Initialization
 
 	init_size_and_position is
@@ -228,7 +233,6 @@ feature -- Window management / Status Setting
 	destroy is
 			-- Destroy Current window.
 		local
-			cd: EB_CONFIRMATION_DIALOG
 			l_window: EB_WINDOW
 		do
 			if not destroyed then
@@ -240,12 +244,12 @@ feature -- Window management / Status Setting
 				then
 					Exit_application_cmd.set_already_confirmed (True)
 					if Window_manager.development_windows_count > 1 then
-						create cd.make_with_text (Warning_messages.w_Closing_stops_debugger)
+						(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_warning_prompt_with_cancel (
+							Warning_messages.w_Closing_stops_debugger, window, agent window_manager.try_to_destroy_window (Current), Void)
 					else
-						create cd.make_with_text (Warning_messages.w_Exiting_stops_debugger)
+						(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_warning_prompt_with_cancel (
+							Warning_messages.w_Exiting_stops_debugger, window, agent window_manager.try_to_destroy_window (Current), Void)
 					end
-					cd.button (cd.ok).select_actions.extend (agent window_manager.try_to_destroy_window (Current))
-					cd.show_modal_to_window (window)
 				else
 					if Window_manager.development_windows_count > 1 and then
 						Eb_debugger_manager.debugging_window = l_window and then
@@ -418,13 +422,10 @@ feature {EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Implementation / Flags
 			-- Pop up the eiffelstudio chm at the URL corresponding to `ctxt'.
 		require
 			valid_ctxt: ctxt /= Void
-		local
-			wd: EB_WARNING_DIALOG
 		do
 			help_engine.show (ctxt)
 			if not help_engine.last_show_successful then
-				create wd.make_with_text (help_engine.last_error_message)
-				wd.show_modal_to_window (window)
+				prompts.show_error_prompt (help_engine.last_error_message, window, Void)
 			end
 		end
 

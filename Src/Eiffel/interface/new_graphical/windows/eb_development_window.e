@@ -106,6 +106,7 @@ inherit
 
 	EB_PIXMAPABLE_ITEM_PIXMAP_FACTORY
 		export
+			{NONE} all
 			{EB_STONE_FIRST_CHECKER} pixmap_from_class_i
 		end
 
@@ -419,7 +420,7 @@ feature -- Stone process
 	set_stone (a_stone: STONE) is
 			-- Change the currently focused stone.
 		local
-			cd: EB_DISCARDABLE_CONFIRMATION_DIALOG
+			l_warning: ES_DISCARDABLE_WARNING_PROMPT
 			cv_cst: CLASSI_STONE
 			ef_stone: EXTERNAL_FILE_STONE
 			l: LIST [EB_DEVELOPMENT_WINDOW]
@@ -441,13 +442,9 @@ feature -- Stone process
 						-- We're not editing the class in another window.
 					set_stone_after_first_check (a_stone)
 				else
-					create cd.make_initialized (2,
-						preferences.dialog_data.already_editing_class_string,
-						warning_messages.w_class_already_edited,
-						Interface_names.l_do_not_show_again,
-						preferences.preferences)
-					cd.set_ok_action (agent set_stone_after_first_check (a_stone))
-					cd.show_modal_to_window (window)
+					create l_warning.make_standard (warning_messages.w_class_already_edited, "", preferences.dialog_data.already_editing_class_string)
+					l_warning.set_button_action (l_warning.dialog_buttons.ok_button, agent set_stone_after_first_check (a_stone))
+					l_warning.show (window)
 				end
 			else
 				set_stone_after_first_check (a_stone)
@@ -715,8 +712,6 @@ feature -- Resource Update
 			-- Perform any pre-save operations with `a_editor'
 		require
 			a_editor_not_void: a_editor /= Void
-		local
-			dial: EB_CONFIRMATION_DIALOG
 		do
 				-- Remove trailing blanks.
 			if preferences.editor_data.auto_remove_trailing_blank_when_saving then
@@ -727,8 +722,8 @@ feature -- Resource Update
 			a_editor.refresh_now
 
 			if a_editor.open_backup then
-				dial := ui.save_backup_dialog
-				dial.show_modal_to_window (window)
+				(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_warning_prompt_with_cancel (
+					Warning_messages.w_save_backup, window, agent continue_save, agent cancel_save)
 			else
 				check_passed := True
 			end
@@ -2303,19 +2298,13 @@ feature {EB_DEVELOPMENT_WINDOW_BUILDER, EB_DEVELOPMENT_WINDOW_PART} -- EB_DEVELO
 
 	destroy is
 			-- check if current text has been saved and destroy
-		local
-			dialog_w: EB_WARNING_DIALOG
 		do
 			if Window_manager.development_windows_count > 1 and then process_manager.is_external_command_running and then Current = external_output_manager.target_development_window then
 				process_manager.confirm_external_command_termination (agent terminate_external_command_and_destroy, agent do_nothing, window)
 			else
 				if changed and then not confirmed then
 					if Window_manager.development_windows_count > 1 then
-						create dialog_w.make_with_text (Warning_messages.w_save_before_closing)
-						dialog_w.set_buttons_and_actions (<<interface_names.b_yes, interface_names.b_no, interface_names.b_cancel>>, <<agent save_and_destroy, agent force_destroy, agent do_nothing>>)
-						dialog_w.set_default_push_button (dialog_w.button(interface_names.b_yes))
-						dialog_w.set_default_cancel_button (dialog_w.button(interface_names.b_cancel))
-						dialog_w.show_modal_to_window (window)
+						(create {EB_EXIT_APPLICATION_COMMAND}).execute
 					else
 							-- We let the window manager handle the saving, along with other windows
 							-- (not development windows)

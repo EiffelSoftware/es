@@ -86,7 +86,10 @@ feature -- Project file/directory warnings
 			[dir_name, workbench_name, comp_version, incomp_version, comp_version])
 		end
 
-	w_project_build_precompile: STRING_GENERAL is do Result := locale.translation ("Project needs a precompile, should the precompile be built?") end
+	w_project_build_precompile: STRING_GENERAL is do Result := locale.translation (
+			"The project needs to use a precompile library, which has not been compiled.%N%
+			%Should the precompile be built?")
+		end
 
 	w_project_build_precompile_error: STRING_GENERAL is do Result := locale.translation ("Could not generate needed precompile.") end
 
@@ -264,29 +267,29 @@ feature -- Project settings warnings
 
 feature -- Debug warnings
 
-	w_apply_debugger_profiles_before_continuing: STRING_GENERAL is do Result := locale.translation ("Profiles are modified.%NDo you want to apply the changes before continuing?") end
+	w_apply_debugger_profiles_before_continuing: STRING_GENERAL is do Result := locale.translation ("The debug profiles have been modified.%NDo you want to apply the changes before continuing?") end
 
-	w_Compile_before_debug: STRING_GENERAL is do Result := locale.translation ("Do you want to compile before executing?") end
+	w_Compile_before_debug: STRING_GENERAL is do Result := locale.translation ("Do you want to compile before debugging?") end
 
-	w_Cannot_debug: STRING_GENERAL is do Result := locale.translation ("Current version of system has not been successfully compiled.%N%
-						%Cannot use debugging facilities.") end
+	w_Cannot_debug: STRING_GENERAL is do Result := locale.translation ("The current version of system has not been successfully compiled.%N%
+						%As a result, you cannot use the debugging facilities.") end
 
 	w_Debug_not_compiled: STRING_GENERAL is
 			-- The user tries to launch an application that is not fully compiled.
 		do
 			Result := locale.translation (
-				"The last compilation was not complete.%N%
-				%Running the last compiled application in these conditions%N%
-				%may lead to inconsistent information, or to an unexpected behavior.")
+				"The last compilation was not completed.%N%
+				%Running the last compiled application in these conditions can%N%
+				%lead to inconsistent information, or to exhibit unexpected behavior.")
 		end
 
 	w_Removed_class_debug: STRING_GENERAL is
 			-- The user tries to launch an application from which classes were removed.
 		do
 			Result := locale.translation (
-				"Classes were manually removed since last compilation.%N%
+				"Classes were manually removed since the last compilation.%N%
 				%Running the last compiled application in these conditions%N%
-				%may lead to inconsistent information, or to an unexpected behavior.")
+				%may lead to inconsistent information, or exhibit unexpected behavior.")
 		end
 
 	w_Invalid_working_directory (wd: STRING_GENERAL): STRING_GENERAL is
@@ -318,8 +321,7 @@ feature -- Debug warnings
 			end
 		end
 
-	w_Overflow_detected: STRING_GENERAL is	do Result := locale.translation ("Possible stack overflow detected.%N%
-									%The application was paused to let you%N%
+	w_Overflow_detected: STRING_GENERAL is	do Result := locale.translation ("Possible stack overflow detected. The application has been paused to let you%N%
 									%examine its current status.") end
 
 	w_Syntax_error_in_expression (expr: STRING_GENERAL): STRING_GENERAL is
@@ -336,11 +338,10 @@ feature -- Cluster tree warnings
 			-- A class involved in a move operation could not be moved.
 		do
 			Result := locale.translation (
-				"Source file cannot be moved.%N%
-				%Please make sure that:%N%
-				%the source file exists,%N%
-				%the source file is not being edited,%N%
-				%the destination directory can be written in.")
+				"Source file cannot be moved. Please make sure that:%N%
+				%- The source file exists,%N%
+				%- The source file is not being edited,%N%
+				%- The destination directory can be written in.")
 		end
 
 	w_Cannot_delete_read_only_class (class_name: STRING_GENERAL): STRING_GENERAL is
@@ -349,7 +350,7 @@ feature -- Cluster tree warnings
 		do
 			Result := locale.formatted_string (
 				locale.translation (
-					"Cannot delete class $1%Nbecause it is either precompiled%Nor in a library cluster."),
+					"Cannot delete class $1%Nbecause it is either precompiled or in a library cluster."),
 					[string_general_as_upper (class_name)]
 				)
 		end
@@ -360,7 +361,7 @@ feature -- Cluster tree warnings
 		do
 			Result := locale.formatted_string (
 				locale.translation (
-					"Cannot delete cluster $1%Nbecause it is read only."),
+					"Cannot delete cluster $1 because it is read only."),
 					[string_general_as_upper (cluster_name)]
 				)
 		end
@@ -371,7 +372,7 @@ feature -- Cluster tree warnings
 		do
 			Result := locale.formatted_string (
 				locale.translation (
-					"Cannot delete cluster $1%Nbecause cluster is not empty"),
+					"Cannot delete cluster $1 because cluster is not empty"),
 					[string_general_as_upper (cluster_name)]
 				)
 		end
@@ -382,7 +383,7 @@ feature -- Cluster tree warnings
 		do
 			Result := locale.formatted_string (
 				locale.translation (
-					"Cannot add a cluster to cluster%N$1%Nbecause it is read only."),
+					"Cannot add a cluster to cluster $1 because it is read only."),
 					[string_general_as_upper (cluster_name)]
 				)
 		end
@@ -403,7 +404,7 @@ feature -- Cluster tree warnings
 
 	w_Choose_class_or_cluster: STRING_GENERAL is
 			-- No class/cluster stone was selected in the development window.
-		do Result := locale.translation ("Please first select in the editor the class or cluster%Nthat you want to locate.") end
+		do Result := locale.translation ("Please first select in the editor the class or cluster that you want to locate.") end
 
 	w_Class_already_in_cluster (base_name: STRING_GENERAL): STRING_GENERAL is
 		require
@@ -558,8 +559,7 @@ feature -- Cluster tree warnings
 		%and that the last compilation was successful."
 
 	w_Files_not_saved_before_compiling: STRING_GENERAL is
-			do Result := locale.translation ("Some files have not been saved.%N%
-			%Do you want to save them before compiling?%N") end
+			do Result := locale.translation ("Some files have not been saved.%NDo you want to save them before compiling?") end
 
 	w_Degree_needed (n: INTEGER): STRING_GENERAL is
 			-- A command needs a certain degree during a compilation.
@@ -634,8 +634,7 @@ feature -- Dynamic library warnings
 			-- The `cl_name' does not represent a valid class.
 		do
 			if cl_name /= Void then
-				Result := locale.formatted_string (locale.translation ("%"$1%"%N%
-				%is not a compiled class."), [cl_name])
+				Result := locale.formatted_string (locale.translation ("%"$1%" is not a compiled class."), [cl_name])
 			else
 				Result := locale.translation ("Please specify a class name.")
 			end
@@ -645,8 +644,7 @@ feature -- Dynamic library warnings
 			-- The `cl_name' does not represent a valid class.
 		do
 			if cl_name /= Void then
-				Result := locale.formatted_string (locale.translation ("%"$1%" %
-				%is not a compiled class."), [cl_name])
+				Result := locale.formatted_string (locale.translation ("%"$1%" is not a compiled class."), [cl_name])
 			else
 				Result := locale.translation ("Please specify a class name.")
 			end
@@ -876,8 +874,7 @@ feature -- Warning messages
 				"Freezing implies some C compilation and linking.%N%
 				% - Click Yes to compile the Eiffel system (including C compilation)%N%
 				% - Click No  to compile the Eiffel system (no C compilation)%N%
-				% - Click Cancel to abort%N%
-				%%N")
+				% - Click Cancel to abort")
 		end
 
 	w_Finalize_warning: STRING_GENERAL is
@@ -886,8 +883,7 @@ feature -- Warning messages
 				"Finalizing implies some C compilation and linking.%N%
 				% - Click Yes to compile the C code after finalizing the system%N%
 				% - Click No  to skip the C compilation (no executable will be generated)%N%
-				% - Click Cancel to abort%N%
-				%%N")
+				% - Click Cancel to abort")
 		end
 
 	w_Load_configuration: STRING_GENERAL is
@@ -969,8 +965,7 @@ feature -- Warning messages
 
 	w_Not_a_positive_integer: STRING_GENERAL is do Result := locale.translation ("Please enter a positive integer value.") end
 
-	w_Select_class_cluster_to_remove: STRING_GENERAL is do Result := locale.translation ("Please select a class or a cluster %N%
-										%before calling this command.%N%
+	w_Select_class_cluster_to_remove: STRING_GENERAL is do Result := locale.translation ("Please select a class or a cluster before calling this command.%N%
 										%It will then be removed.") end
 
 	w_Specify_a_class: STRING_GENERAL is do Result := locale.translation ("Please specify a compiled class (or * for all classes).") end
@@ -1067,17 +1062,20 @@ feature -- Warning messages
 									%an optimized version as well as a workbench version.%N%
 									%Would you like to create a finalized version?") end
 
-	w_Replace_all: STRING_GENERAL is do Result := locale.translation ("This operation cannot be undone %N%
-									%to files not loaded in the editor.%N%
-									%Would you like to continue replacing all?") end
+	w_Replace_all: STRING_GENERAL is do Result := locale.translation ("This operation cannot be undone for files not loaded into the EiffelStudio editor.%N%
+									%Are you sure your would like to continue replacing all occurances?") end
 
-	w_No_system_defined: STRING_GENERAL is do Result := locale.translation ("No system was defined.%N") end
+	w_No_system_defined: STRING_GENERAL is do Result := locale.translation ("No project has been loaded.") end
 
-	w_Finalizing_running: STRING_GENERAL is do Result := locale.translation ("Finalizing is in progress, start Eiffel compilation%N%
-								    %may terminate current finalizing.%NContinue?") end
+	w_Finalizing_running: STRING_GENERAL is do Result := locale.translation (
+		"A finalizing C/C++ compilation is current in progress. Starting the Eiffel compilation?%N%
+		%may terminate current finalizing.%NDo you want to continue?")
+		end
 
-	w_Freezing_running: STRING_GENERAL is do Result := locale.translation ("Freezing is in progress, start Eiffel compilation%N%
-								  %may terminate current freezing.%NContinue?") end
+	w_Freezing_running: STRING_GENERAL is do Result := locale.translation (
+		"A freezing C/C++ compilation is current in progress. Starting the Eiffel compilation?%N%
+		%may terminate current freezing. Do you want to continue?")
+		end
 
 	w_cannot_clear_when_c_compilation_running: STRING_GENERAL is do Result := locale.translation ("Please clear this window after c compilation has exited.") end
 	w_cannot_save_when_c_compilation_running: STRING_GENERAL is do Result := locale.translation ("Please save output after c compilation has exited.") end

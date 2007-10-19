@@ -34,6 +34,7 @@ feature {NONE}  -- Initlization
 			not_void: a_hidden_items /= Void
 			not_void: a_tool_bar /= Void
 		do
+			parent_tool_bar := a_tool_bar
 			make_with_shadow
 			disable_user_resize
 			disable_border
@@ -49,8 +50,6 @@ feature {NONE}  -- Initlization
 			init_customize_label
 			init_close
 			internal_tool_bar.compute_minimum_size
-
-			parent_tool_bar := a_tool_bar
 
 			-- If we don't call this, the height will be 2 pixels less on Windows.
 			set_height (item.minimum_height)
@@ -133,11 +132,6 @@ feature {NONE}  -- Initlization
 			focus_out_actions.extend (agent on_focus_out)
 		end
 
-feature -- Query
-
-	content: SD_TOOL_BAR_CONTENT
-			-- Tool bar content that will customize.
-
 feature {SD_TOOL_BAR_MANAGER} -- Command
 
 	on_customize is
@@ -157,7 +151,8 @@ feature {SD_TOOL_BAR_MANAGER} -- Command
 				parent_tool_bar.set_customize_dialog (l_dialog)
 
 				l_items := parent_tool_bar.content.items
-				l_dialog.set_size (300, 300)
+
+				prepare_size (l_dialog, parent_tool_bar.assistant.last_state)
 
 				if parent_tool_bar.is_floating then
 					l_parent_window := parent_tool_bar.floating_tool_bar
@@ -166,6 +161,7 @@ feature {SD_TOOL_BAR_MANAGER} -- Command
 				end
 				l_dialog.customize_toolbar (l_parent_window, True, True, l_items)
 				parent_tool_bar.set_customize_dialog (Void)
+				parent_tool_bar.assistant.last_state.set_cutomize_dialog_size (l_dialog.w_width, l_dialog.w_height)
 				if l_dialog.valid_data then
 					l_assit := parent_tool_bar.assistant
 					l_assit.save_items_layout (l_dialog.final_toolbar)
@@ -186,7 +182,7 @@ feature {SD_TOOL_BAR_MANAGER} -- Command
 						l_docking_manager.command.resize (True)
 						l_docking_manager.command.unlock_update
 					end
-					
+
 					parent_tool_bar.compute_minmum_size
 				end
 			end
@@ -194,23 +190,42 @@ feature {SD_TOOL_BAR_MANAGER} -- Command
 
 feature {NONE} -- Implementation
 
+	prepare_size (a_dialog: EV_DIALOG; a_state: SD_TOOL_BAR_ZONE_STATE) is
+			-- Try to use last customize dialog width and height.
+		require
+			not_void: a_dialog /= Void
+			not_void: a_state /= Void
+		local
+			l_width, l_height: INTEGER
+		do
+			l_width := a_state.customize_dialog_width
+			if l_width <= 0 then
+				l_width := internal_shared.Tool_bar_customize_dialog_default_width
+			end
+			l_height := a_state.customize_dialog_height
+			if l_height <= 0 then
+				l_height := internal_shared.Tool_bar_customize_dialog_default_height
+			end
+			a_dialog.set_size (l_width, l_height)
+		end
+
 	save_items_layout (a_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]) is
 			-- Save `a_tool_bar' items layout to it's data.
 		require
 			not_void: a_items /= Void
 		local
-			l_datas: ARRAYED_LIST [TUPLE [STRING_GENERAL, BOOLEAN]]
+			l_data: ARRAYED_LIST [TUPLE [STRING_GENERAL, BOOLEAN]]
 		do
 			from
-				create l_datas.make (a_items.count)
+				create l_data.make (a_items.count)
 				a_items.start
 			until
 				a_items.after
 			loop
-				l_datas.extend ([a_items.item.name, a_items.item.is_displayed])
+				l_data.extend ([a_items.item.name, a_items.item.is_displayed])
 				a_items.forth
 			end
-			parent_tool_bar.assistant.last_state.set_items_layout (l_datas)
+			parent_tool_bar.assistant.last_state.set_items_layout (l_data)
 		ensure
 			saved: parent_tool_bar.assistant.last_state.items_layout /= Void
 		end
@@ -245,7 +260,7 @@ feature {NONE} -- Implementation
 			-- All singletons.
 
 invariant
-	not_void: parent_tool_bar /= Void
+	parent_tool_bar_not_void: parent_tool_bar /= Void
 
 indexing
 	library:	"SmartDocking: Library of reusable components for Eiffel."

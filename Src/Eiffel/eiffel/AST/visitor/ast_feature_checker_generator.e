@@ -4794,12 +4794,9 @@ feature -- Implementation
 					-- For better error reporting as we insert a dummy call for type checking.
 				l_call.feature_name.set_position (a_location.line, a_location.column,
 					a_location.position, a_location.location_count)
-				if l_is_formal_creation or else not l_feature.is_empty then
-						-- We want to generate a call only when needed:
-						-- 1 - In a formal generic creation call
-						-- 2 - When body of `default_create' is not empty
-					l_orig_call := l_call
-				end
+					-- The line below is to ensure that a call to `default_create' will be
+					-- generated (see eweasel test#exec280).
+				l_orig_call := l_call
 				l_call.set_routine_ids (l_feature.rout_id_set)
 				l_is_default_creation := True
 			else
@@ -4854,16 +4851,23 @@ feature -- Implementation
 					end
 				else
 						-- Type check the call
-	check l_creation_type_not_void_if_l_feature_is_available: l_feature /= Void implies l_creation_type /= Void end
+					check
+						l_creation_type_not_void_if_l_feature_is_available:
+							l_feature /= Void implies l_creation_type /= Void
+					end
 						-- We set last_calls_target_type in case we have a multi constrained formal.
 					last_calls_target_type := l_creation_type
 					process_call (last_type, Void, l_call.feature_name, l_feature, l_call.parameters, False, False, False, False)
 				end
 
-				check l_creation_class /= Void implies last_calls_target_type.associated_class.conform_to (l_creation_class) end
 				if not is_inherited then
 						-- Set some type informations		
 					if l_is_multi_constraint_case then
+						check
+							last_calls_target_not_void: last_calls_target_type /= Void 
+							conforming: l_creation_class /= Void implies 
+								last_calls_target_type.associated_class.conform_to (l_creation_class)
+						end
 						l_call.set_class_id (last_calls_target_type.associated_class.class_id)
 					else
 						l_call.set_class_id (l_creation_class.class_id)
@@ -5982,14 +5986,7 @@ feature {NONE} -- Implementation
 					assertion_info := assert_id_set.item (i)
 					if assertion_info.has_assertion then
 						body_index := assertion_info.body_index
-						if tmp_ast_server.body_has (body_index) then
-							precursor_feature := tmp_ast_server.body_item (body_index)
-						else
-							check
-								body_server.server_has (body_index)
-							end
-							precursor_feature := body_server.server_item (body_index)
-						end
+						precursor_feature := body_server.item (body_index)
 						check
 							precursor_feature_not_void: precursor_feature /= Void
 						end

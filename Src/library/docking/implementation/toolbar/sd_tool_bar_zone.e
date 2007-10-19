@@ -15,6 +15,16 @@ inherit
 			{NONE} all
 		end
 
+	SD_WIDGETS_LISTS
+		rename
+			dispose as destroy
+		undefine
+			is_equal,
+			copy
+		redefine
+			destroy
+		end
+
 create
 	make
 
@@ -42,6 +52,8 @@ feature {NONE} -- Initialization
 			create assistant.make (Current)
 
 			init_drag_area
+
+			add_tool_bar_zone (Current)
 		ensure
 			set: is_vertical = a_vertical
 			set: docking_manager = a_docking_manager
@@ -169,6 +181,17 @@ feature -- Command
 			end
 		end
 
+	update_drag_area is
+			--Update drag area sizes.
+		do
+			tool_bar.need_calculate_size
+			if not docking_manager.tool_bar_manager.is_locked then
+				set_drag_area (not is_vertical)
+			else
+				disable_drag_area
+			end
+		end
+
 	float (a_screen_x, a_screen_y: INTEGER; a_visible: BOOLEAN) is
 			-- Float to `a_screen_x' and `a_screen_y'.
 		local
@@ -223,8 +246,8 @@ feature -- Command
 		do
 			docking_manager.tool_bar_manager.floating_tool_bars.prune_all (floating_tool_bar)
 			-- On windows, following line is not needed,
-			-- But on Gtk, we need first disable_capture then enable capture,
-			-- because it's off-screen widget, it'll not have capture when it show again (in SD_TOOL_BAR_HOT_ZONE).
+			-- But on Gtk, we need first disable capture then enable capture,
+			-- because it's off-screen widget, it'll not have capture until it show again (in SD_TOOL_BAR_HOT_ZONE).
 			tool_bar.disable_capture
 
 			floating_tool_bar.prune (tool_bar)
@@ -308,7 +331,10 @@ feature -- Command
 	destroy is
 			-- Destroy
 		do
-			tool_bar.destroy
+			prune_tool_bar_zone (Current)
+			tool_bar := Void
+
+			Precursor {SD_WIDGETS_LISTS}
 		end
 
 	show is
@@ -563,13 +589,23 @@ feature {NONE} -- Implmentation
 			-- Restore hidden widget items
 		require
 			not_void: internal_hidden_widget_items /= Void
+		local
+			l_item: SD_TOOL_BAR_WIDGET_ITEM
+			l_parent: EV_CONTAINER
 		do
 			from
 				internal_hidden_widget_items.start
 			until
 				internal_hidden_widget_items.after
 			loop
-				tool_bar.force (internal_hidden_widget_items.item (internal_hidden_widget_items.key_for_iteration), internal_hidden_widget_items.key_for_iteration)
+				-- on GTK, when dragging a tool bar t swtich between the state of docking and floating constanly.
+				-- SD_TOOL_BAR_WIDGET_ITEM parent will not be void sometimes.
+				l_item := internal_hidden_widget_items.item (internal_hidden_widget_items.key_for_iteration)
+				l_parent := l_item.widget.parent
+				if l_parent /= Void then
+					l_parent.prune (l_item.widget)
+				end
+				tool_bar.force (l_item, internal_hidden_widget_items.key_for_iteration)
 				internal_hidden_widget_items.forth
 			end
 		end

@@ -48,20 +48,7 @@ feature -- Commands
 		deferred
 		end
 
-	type: INTEGER
-			-- Hot zone type.
-
-	set_type (a_type: INTEGER) is
-			-- Set `type'.
-		require
-			a_type_valid: a_type = {SD_ENUMERATION}.tool or a_type = {SD_ENUMERATION}.editor
-		do
-			type := a_type
-		ensure
-			set: type = a_type
-		end
-
-feature {NONE}
+feature {NONE} -- Implementations.
 
 	need_clear: BOOLEAN
 			-- If Current need clear indicator?
@@ -70,13 +57,12 @@ feature {NONE}
 			-- All singletons.
 
 	internal_zone: SD_ZONE
-			-- SD_ZONE which `Current' belong to.
+			-- SD_ZONE which `Current' managed.
 
 	internal_mediator: SD_DOCKER_MEDIATOR
 			-- Docker mediator which Current is managed by.
 invariant
 
-	type_valid: type = {SD_ENUMERATION}.editor or type = {SD_ENUMERATION}.tool
 	internal_shared_not_void: internal_shared /= Void
 
 indexing

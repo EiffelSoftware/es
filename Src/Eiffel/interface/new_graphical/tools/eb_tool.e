@@ -50,6 +50,11 @@ inherit
 
 	EB_METRIC_SHARED
 
+	ES_SHARED_PROMPT_PROVIDER
+		export
+			{NONE} all
+		end
+
 feature {NONE} -- Initialization
 
 	make (a_manager: like develop_window) is
@@ -184,9 +189,9 @@ feature -- Status report
 		end
 
 	is_auto_hide: BOOLEAN is
-			-- Is current auto hide status?
+			-- Is current auto hide status and content visible?
 		do
-			if content /= Void then
+			if content /= Void and then content.is_visible then
 				Result := content.state_value = {SD_ENUMERATION}.auto_hide
 			end
 		end

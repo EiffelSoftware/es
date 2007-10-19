@@ -328,7 +328,6 @@ feature {NONE} -- Actions
 			l_reader: ASSEMBLY_PROPERTIES_READER
 			l_properties: ASSEMBLY_PROPERTIES
 			l_file_name: STRING
-			l_error: EB_ERROR_DIALOG
 			l_added: BOOLEAN
 		do
 				-- get clr version
@@ -349,10 +348,7 @@ feature {NONE} -- Actions
 			end
 
 			if not l_added then
-
-				create l_error.make_with_text (warnings.w_file_not_valid_assembly (l_file_name))
-				l_error.set_buttons (<< names.b_ok >>)
-				l_error.show_modal_to_window (Current)
+				(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_error_prompt (warnings.w_file_not_valid_assembly (l_file_name), Current, Void)
 			end
 		end
 
@@ -366,26 +362,21 @@ feature {NONE} -- Actions
 			-- Add group and close the dialog.
 		local
 			l_local: STRING
-			wd: EB_WARNING_DIALOG
 		do
 			if not name.text.is_empty then
 				l_local := location.text
 
 				if not is_valid_group_name (name.text) then
-					create wd.make_with_text (conf_interface_names.invalid_group_name)
+					(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_error_prompt (conf_interface_names.invalid_group_name, Current, Void)
 				elseif group_exists (name.text, target) then
-					create wd.make_with_text (conf_interface_names.group_already_exists (name.text))
+					(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_error_prompt (conf_interface_names.group_already_exists (name.text), Current, Void)
 				elseif l_local.is_empty then
-					create wd.make_with_text (conf_interface_names.assembly_no_location)
+					(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_error_prompt (conf_interface_names.assembly_no_location, Current, Void)
 				else
 					last_group := factory.new_assembly (name.text, location.text, target)
 					last_group.set_classes (create {HASH_TABLE [CONF_CLASS, STRING]}.make (0))
 					target.add_assembly (last_group)
-				end
 
-				if wd /= Void then
-					wd.show_modal_to_window (Current)
-				else
 					is_ok := True
 					destroy
 				end

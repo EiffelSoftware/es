@@ -13,14 +13,21 @@ deferred class
 inherit
 	EB_RECYCLABLE
 
+	ES_SHARED_DIALOG_BUTTONS
+
+-- inherit {NONE}
+
+	EV_BUILDER
+		export
+			{NONE} all
+		end
+
 	EV_SHARED_APPLICATION
 		export
 			{NONE} all
 		end
 
-	ES_SHARED_DIALOG_BUTTONS
-
-	ES_SHARED_COLORS
+	ES_SHARED_FONTS_AND_COLORS
 		export
 			{NONE} all
 		end
@@ -31,7 +38,7 @@ convert
 feature {NONE} -- Initialization
 
 	make
-			-- Initialilze dialog
+			-- Initialize dialog
 		local
 			l_init: BOOLEAN
 		do
@@ -61,6 +68,7 @@ feature {NONE} -- Initialization
 		do
 			create show_actions
 			create close_actions
+			create button_actions.make_default
 		end
 
 feature {NONE} -- User interface initialization
@@ -84,7 +92,7 @@ feature {NONE} -- User interface initialization
 			build_dialog_interface (l_container)
 
  			create l_container
-			l_container.set_border_width (dialog_border_width)
+			l_container.set_border_width (dialog_button_border_width)
 			l_main_container.extend (l_container)
 			l_main_container.disable_item_expand (l_container)
 			l_container.extend (create_dialog_button_ribbon)
@@ -120,8 +128,13 @@ feature {NONE} -- Clean up
 			-- To be called when the button has became useless.
 		local
 			l_buttons: DS_SET_CURSOR [INTEGER]
+			l_recycled: BOOLEAN
 		do
 			if is_initialized then
+				l_recycled := is_recycled
+
+					-- We are not recycled yet!
+				is_recycled := False
 				l_buttons := buttons.new_cursor
 				from l_buttons.start until l_buttons.after loop
 					unbind_dialog_button (l_buttons.item, dialog_window_buttons.item (l_buttons.item))
@@ -132,8 +145,11 @@ feature {NONE} -- Clean up
 				dialog.key_release_actions.prune (agent on_key_release)
 				dialog.show_actions.prune (agent show_actions.call ([]))
 
+				button_actions.wipe_out
+
 				dialog.destroy
 				is_initialized := False
+				is_recycled := l_recycled
 			end
 		end
 
@@ -166,11 +182,25 @@ feature -- Access
 	default_button: INTEGER
 			-- The dialog's default action button
 		deferred
+		ensure
+			buttons_contains_result: buttons.has (Result)
+		end
+
+	default_confirm_button: INTEGER
+			-- The dialog's default confirm button
+		deferred
+		ensure
+			buttons_contains_result: buttons.has (Result)
 		end
 
 	default_cancel_button: INTEGER
 			-- The dialog's default cancel button
+			-- Note: The default cancel button is set on show, so if you want to change the
+			--       default cancel button after the dialog has been shown, please see the implmentation
+			--       of `show' to see how it is done.
 		deferred
+		ensure
+			buttons_contains_result: buttons.has (Result)
 		end
 
 	dialog_result: INTEGER
@@ -195,8 +225,39 @@ feature {NONE} -- Access
 			result_consistent: Result = dialog
 		end
 
+	development_window: EB_DEVELOPMENT_WINDOW
+			-- Access to top-level parent window
+		require
+			not_is_recycled: not is_recycled
+			dialog_has_parent: dialog.has_parent
+		local
+			l_window: EV_WINDOW
+			l_windows: BILINEAR [EB_WINDOW]
+		do
+			l_window := helpers.widget_top_level_window (dialog, True)
+			if l_window /= Void then
+				l_windows := (create {EB_SHARED_WINDOW_MANAGER}).window_manager.windows
+				from l_windows.start until l_windows.after or Result /= Void loop
+					if l_window = l_windows.item.window then
+						Result ?= l_windows.item
+					end
+					l_windows.forth
+				end
+			end
+		ensure
+			not_result_is_recycled: Result /= Void implies not Result.is_recycled
+		end
+
 	dialog_border_width: INTEGER
 			-- Dialog border width
+		do
+			Result := {ES_UI_CONSTANTS}.dialog_border
+		ensure
+			result_non_negative: Result >= 0
+		end
+
+	dialog_button_border_width: INTEGER
+			-- Dialog border width for buttons
 		do
 			Result := {ES_UI_CONSTANTS}.dialog_border
 		ensure
@@ -220,6 +281,9 @@ feature {NONE} -- Access
 			result_contains_attached_items: not Result.has_item (Void)
 			result_consistent: Result = dialog_window_buttons
 		end
+
+	frozen button_actions: DS_HASH_TABLE [like button_action, INTEGER]
+			-- Dialog button actions
 
 feature {NONE} -- Helpers
 
@@ -256,6 +320,14 @@ feature {NONE} -- Helpers
 			result_attached: Result /= Void
 		end
 
+	frozen helpers: EVS_HELPERS
+			-- Helpers to extend the operations of EiffelVision2
+		once
+			create Result
+		ensure
+			result_attached: Result /= Void
+		end
+
 feature -- Element change
 
 	set_button_text (a_id: INTEGER; a_text: STRING_32)
@@ -269,10 +341,30 @@ feature -- Element change
 			a_id_is_valid_button_id: dialog_buttons.is_valid_button_id (a_id)
 			a_text_attached: a_text /= Void
 			not_a_text_is_empty: not a_text.is_empty
+			not_is_shown: not is_shown
 		do
 			dialog_window_buttons.item (a_id).set_text (a_text)
+			if is_shown then
+				adjust_dialog_button_widths
+			end
 		ensure
 			button_text_set: dialog_window_buttons.item (a_id).text.is_equal (a_text)
+		end
+
+	set_button_action (a_id: INTEGER; a_action: PROCEDURE [ANY, TUPLE])
+			-- Assigns an action to a specific button.
+			--
+			-- `a_id': A button id corresponding to an actual dialog button.
+			--         Use {ES_DIALOG_BUTTONS} or `dialog_buttons' to determine the id's correspondance.
+			-- `a_action': An action to be performed when the button is pressed.
+		require
+			a_id_is_valid_button_id: dialog_buttons.is_valid_button_id (a_id)
+			buttons_contains_a_id: buttons.has (a_id)
+			a_action_attached: a_action /= Void
+		do
+			button_actions.force (a_action, a_id)
+		ensure
+			button_action_set: button_action (a_id) = a_action
 		end
 
 feature -- Status report
@@ -286,6 +378,14 @@ feature -- Status report
 	is_modal: BOOLEAN assign set_is_modal
 			-- Indicates if dialog is a modal dialog
 
+feature {NONE} -- Status report
+
+	is_initialized: BOOLEAN
+			-- Indicates if the user interface has been initialized
+
+	is_initializing: BOOLEAN
+			-- Indicates if the user interface is currently being initialized
+
 feature -- Status setting
 
 	set_is_modal (a_modal: BOOLEAN)
@@ -296,13 +396,22 @@ feature -- Status setting
 			is_modal_set: is_modal = a_modal
 		end
 
-feature {NONE} -- Status report
+feature -- Query
 
-	is_initialized: BOOLEAN
-			-- Indicates if the user interface has been initialized
-
-	is_initializing: BOOLEAN
-			-- Indicates if the user interface is currently being initialized
+	button_action (a_id: INTEGER): PROCEDURE [ANY, TUPLE]
+			-- Button action for a specific button
+			--
+			-- `a_id': A button id corresponding to an actual dialog button.
+			--         Use {ES_DIALOG_BUTTONS} or `dialog_buttons' to determine the id's correspondance.
+			-- `Result': An action to be performed when the button is pressed.
+		require
+			a_id_is_valid_button_id: dialog_buttons.is_valid_button_id (a_id)
+			buttons_contains_a_id: buttons.has (a_id)
+		do
+			if button_actions.has (a_id) then
+				Result := button_actions.item (a_id)
+			end
+		end
 
 feature {NONE} -- Query
 
@@ -348,6 +457,7 @@ feature -- Basic operations
 			a_window_not_void: a_window /= Void
 			a_window_not_current: a_window /= to_dialog
 		do
+			on_before_show
 			if is_modal then
 				dialog.show_modal_to_window (a_window)
 			else
@@ -358,10 +468,10 @@ feature -- Basic operations
 				-- halted until the dialog is closed or destroyed. Therefore,
 				-- this postcondition will only be executed after the dialog
 				-- is closed or destroyed.
-			dialog_closed_so_no_blocking_window: not dialog.is_destroyed implies dialog.blocking_window = Void
+			--dialog_closed_so_no_blocking_window: not dialog.is_destroyed implies dialog.blocking_window = Void
 		end
 
-	show_on_development_window is
+	show_on_active_window is
 			-- Attempts to show the dialog parented to the last active window.
 		require
 			not_is_recycled: not is_recycled
@@ -385,6 +495,7 @@ feature -- Basic operations
 			if l_window /= Void then
 				show (l_window)
 			else
+				on_before_show
 				dialog.show
 			end
 		ensure
@@ -392,10 +503,10 @@ feature -- Basic operations
 				-- halted until the dialog is closed or destroyed. Therefore,
 				-- this postcondition will only be executed after the dialog
 				-- is closed or destroyed.
-			dialog_closed_so_no_blocking_window: not dialog.is_destroyed implies dialog.blocking_window = Void
+			--dialog_closed_so_no_blocking_window: not dialog.is_destroyed implies dialog.blocking_window = Void
 		end
 
-feature {NONE} -- Basic operations
+feature {NONE} -- Basic operation
 
 	bind_dialog_button (a_id: INTEGER; a_button: EV_BUTTON)
 			-- Binds any other actions to a dialog button
@@ -428,6 +539,55 @@ feature {NONE} -- Basic operations
 		do
 		end
 
+	adjust_dialog_button_widths
+			-- Automatically adjusts dialog window button widths to fit the largest button text
+		require
+			dialog_window_buttons_attached: dialog_window_buttons /= Void
+			not_dialog_window_buttons_is_empty: not dialog_window_buttons.is_empty
+		local
+			l_padding_button: EV_BUTTON
+			l_buttons: DS_HASH_TABLE_CURSOR [EV_BUTTON, INTEGER]
+			l_button: EV_BUTTON
+			l_min_width: INTEGER
+			l_padding: INTEGER
+			l_allow_resize: BOOLEAN
+		do
+			l_allow_resize := dialog.user_can_resize
+			if not l_allow_resize then
+				dialog.enable_user_resize
+			end
+
+			l_min_width := {ES_UI_CONSTANTS}.dialog_button_width
+
+				-- Retrieve padding for buttons
+			create l_padding_button
+			l_padding_button.set_text ("dummy")
+			l_padding := l_padding_button.minimum_width - l_padding_button.font.string_width ("dummy")
+
+				-- Determine minimum width
+			l_buttons := dialog_window_buttons.new_cursor
+			from l_buttons.start until l_buttons.after loop
+				l_button := l_buttons.item
+				check l_button_attached: l_button /= Void end
+				l_min_width := l_min_width.max (l_button.font.string_width (l_button.text) + l_padding)
+				l_buttons.forth
+			end
+
+				-- Set min width
+			from l_buttons.start until l_buttons.after loop
+				l_button := l_buttons.item
+				check l_button_attached: l_button /= Void end
+				if l_min_width > l_button.minimum_width then
+					l_button.set_minimum_width (l_min_width)
+				end
+				l_buttons.forth
+			end
+
+			if not l_allow_resize then
+				dialog.disable_user_resize
+			end
+		end
+
 feature -- Actions
 
 	show_actions: EV_LITE_ACTION_SEQUENCE [TUPLE]
@@ -446,8 +606,14 @@ feature {NONE} -- Action handlers
 		require
 			a_id_is_valid_button_id: dialog_buttons.is_valid_button_id (a_id)
 			buttons_has_a_id: buttons.has (a_id)
+		local
+			l_action: like button_action
 		do
 			dialog_result := a_id
+			l_action := button_action (a_id)
+			if l_action /= Void then
+				l_action.call ([])
+			end
 		end
 
 	on_close_requested (a_id: INTEGER)
@@ -462,6 +628,18 @@ feature {NONE} -- Action handlers
 		do
 			dialog.hide
 			close_actions.call ([])
+		end
+
+	on_confirm_dialog
+			-- Called when the user presses CTRL+ENTER to discard the dialog
+		do
+			on_dialog_button_pressed (default_confirm_button)
+		end
+
+	on_cancel_dialog
+			-- Called when the user presses ESC
+		do
+			on_dialog_button_pressed (default_cancel_button)
 		end
 
 	frozen on_key_pressed (a_key: EV_KEY)
@@ -503,16 +681,13 @@ feature {NONE} -- Action handlers
 			-- `Result': True to indicate the key was handled
 		require
 			a_key_attached: a_key /= Void
-		local
-			l_button: EV_BUTTON
 		do
 			if a_released then
 				if not a_alt and not a_ctrl and not a_shift then
 					Result := True
 					inspect a_key.code
 					when {EV_KEY_CONSTANTS}.key_escape then
-						dialog_result := default_cancel_button
-						dialog.hide
+						on_cancel_dialog
 					else
 						Result := False
 					end
@@ -522,16 +697,19 @@ feature {NONE} -- Action handlers
 					Result := True
 					inspect a_key.code
 					when {EV_KEY_CONSTANTS}.key_enter then
-							-- Regular dialogs require CTRL+ENTER to exit
-						l_button := dialog_window_buttons.item (default_button)
-						if l_button /= Void then
-							l_button.select_actions.call ([])
-						end
+						on_confirm_dialog
 					else
 						Result := False
 					end
 				end
 			end
+		end
+
+	on_before_show
+			-- Called prior to the dialog being shown
+		do
+			adjust_dialog_button_widths
+			dialog.set_default_cancel_button (dialog_window_buttons.item (default_cancel_button))
 		end
 
 feature -- Conversion
@@ -600,12 +778,22 @@ feature {NONE} -- Factory
 		local
 			l_buttons: DS_SET_CURSOR [INTEGER]
 			l_button: EV_BUTTON
+			l_id: INTEGER
 		do
 			create Result.make (3)
 			l_buttons := buttons.new_cursor
 			from l_buttons.start until l_buttons.after loop
-				l_button := create_dialog_button (l_buttons.item)
-				Result.force (l_button, l_buttons.item)
+				l_id := l_buttons.item
+
+				l_button := create_dialog_button (l_id)
+					-- Add close action
+				l_button.select_actions.extend (agent on_close_requested (l_id))
+					-- Add action to ensure the dialog result is set
+				l_button.select_actions.extend (agent on_dialog_button_pressed (l_id))
+					-- Bind other actions
+				bind_dialog_button (l_id, l_button)
+
+				Result.force (l_button, l_id)
 				l_buttons.forth
 			end
 		ensure
@@ -630,15 +818,6 @@ feature {NONE} -- Factory
 			l_label := dialog_button_label (a_id)
 			create Result.make_with_text (l_label)
 			Result.set_minimum_size ({ES_UI_CONSTANTS}.dialog_button_width, {ES_UI_CONSTANTS}.dialog_button_height)
-
-				-- Add action to ensure the dialog result is set
-			Result.select_actions.extend (agent on_dialog_button_pressed (a_id))
-
-				-- Bind other actions
-			bind_dialog_button (a_id, Result)
-
-				-- Add close action
-			Result.select_actions.extend (agent on_close_requested (a_id))
 		ensure
 			result_attached: Result /= Void
 		end
@@ -660,10 +839,11 @@ feature {NONE} -- Internal implementation cache
 invariant
 	dialog_result_is_valid_button_id: buttons.has (dialog_result)
 	default_button_is_valid_button_id: buttons.has (default_button)
-	default_cancel_button_is_valid_button_id: dialog_buttons.default_cancel_buttons.has (default_cancel_button) and
-		buttons.has (default_cancel_button)
+	default_confirm_button_is_valid_button_id: buttons.has (default_confirm_button)
+	default_cancel_button_is_valid_button_id: buttons.has (default_cancel_button)
 	show_actions_attached: show_actions /= Void
 	close_actions_attached: close_actions /= Void
+	button_actions_attached: button_actions /= Void
 
 ;indexing
 	copyright:	"Copyright (c) 1984-2007, Eiffel Software"

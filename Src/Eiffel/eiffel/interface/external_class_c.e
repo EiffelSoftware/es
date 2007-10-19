@@ -164,7 +164,6 @@ feature -- Initialization
 
 			create l_feat_tbl.make (nb)
 			l_feat_tbl.set_feat_tbl_id (class_id)
-			l_feat_tbl.set_origin_table (create {SELECT_TABLE}.make (nb))
 
 				-- To store overloaded features.
 			create overloaded_names.make (10)
@@ -193,6 +192,9 @@ feature -- Initialization
 			clean_overloaded_names (l_feat_tbl)
 			l_feat_tbl.set_overloaded_names (overloaded_names)
 
+				-- Building lookup tables for the feature_table.
+			l_feat_tbl.compute_lookup_tables
+
 				-- Initialize `types'.
 			init_types
 
@@ -207,7 +209,8 @@ feature -- Initialization
 			set_skeleton (l_feat_tbl.skeleton)
 
 				-- Save freshly computed feature table on disk.
-			Tmp_feat_tbl_server.put (l_feat_tbl)
+			l_feat_tbl.flush
+			current_feature_table := l_feat_tbl
 			external_class := Void
 			is_built := True
 		ensure
@@ -560,12 +563,14 @@ feature {NONE} -- Initialization
 			-- Get all features of ANY and add them in `a_feat_tbl'.
 		require
 			a_feat_tbl_not_void: a_feat_tbl /= Void
+			any_compiled: system.any_class.is_compiled
+			any_has_feature_table: system.any_class.compiled_class.has_feature_table
 		local
 			l_any_tbl: like feature_table
 			l_feat: FEATURE_I
 			any_parent_type: LIKE_CURRENT
 		do
-			l_any_tbl := feat_tbl_server.item (system.any_id)
+			l_any_tbl := system.any_class.compiled_class.feature_table
 			create any_parent_type
 			any_parent_type.set_actual_type (any_type)
 			check
@@ -596,7 +601,6 @@ feature {NONE} -- Initialization
 		require
 			a_feat_not_void: a_feat /= Void
 			a_feat_tbl_not_void: a_feat_tbl /= Void
-			has_select_table: a_feat_tbl.origin_table /= Void
 		local
 			i: INTEGER
 			l_base_name, l_new_name, l_feat_name: STRING
@@ -628,14 +632,12 @@ feature {NONE} -- Initialization
 			end
 
 			a_feat_tbl.put (a_feat, a_feat.feature_name_id)
-			a_feat_tbl.origin_table.put (a_feat, a_feat.rout_id_set.first)
 		end
 
 	process_features (a_feat_tbl: like feature_table; a_features: ARRAYED_LIST [CONSUMED_ENTITY]) is
 			-- Get all features and make sure all referenced types are in system.
 		require
 			a_feat_tbl_not_void: a_feat_tbl /= Void
-			has_origin_table: a_feat_tbl.origin_table /= Void
 			a_features_not_void: a_features /= Void
 		local
 			l_member: CONSUMED_ENTITY
@@ -753,7 +755,7 @@ feature {NONE} -- Initialization
 
 				if l_member.is_static then
 					if l_member.is_attribute then
-						if l_return_type.associated_class.is_enum then
+						if l_member.is_literal and l_return_type.associated_class.is_enum then
 							l_ext.set_type ({SHARED_IL_CONSTANTS}.Enum_field_type)
 						else
 							l_ext.set_type ({SHARED_IL_CONSTANTS}.Static_field_type)
@@ -1134,7 +1136,6 @@ feature {NONE} -- Implementation
 			-- Set `written_feature_id'.
 		require
 			a_feat_tbl_not_void: a_feat_tbl /= Void
-			a_feat_tbl_has_origin_table: a_feat_tbl.origin_table /= Void
 			a_feat_not_void: a_feat /= Void
 			a_feat_with_no_rout_id_set: a_feat.rout_id_set = Void
 			a_member_not_void: a_member /= Void
@@ -1603,13 +1604,14 @@ feature {NONE} -- Implementation
 	new_family_export (written_in: INTEGER): EXPORT_SET_I is
 			-- New export clause to
 		local
-			l_clients: ARRAYED_LIST [STRING]
+			l_clients: ID_LIST
+			l_names_heap: like names_heap
 		do
-			create Result.make
-			Result.compare_objects
-			create l_clients.make (1)
-			l_clients.extend (system.class_of_id (written_in).name)
-			Result.put (create {CLIENT_I}.make (l_clients, written_in))
+			create l_clients.make
+			l_names_heap := names_heap
+			l_names_heap.put (system.class_of_id (written_in).name)
+			l_clients.extend (l_names_heap.found_item)
+			create Result.make (create {CLIENT_I}.make (l_clients, written_in))
 		ensure
 			Result_not_void: Result /= Void
 		end

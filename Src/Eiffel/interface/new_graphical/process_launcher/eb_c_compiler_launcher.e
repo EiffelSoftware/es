@@ -30,7 +30,9 @@ inherit
 
 	EB_SHARED_PREFERENCES
 
-	SHARED_SERVICE_PROVIDER
+--inherit {NONE}
+
+	EVENT_LIST_SERVICE_CONSUMER
 		export
 			{NONE} all
 		end
@@ -161,12 +163,9 @@ feature{NONE}  -- Actions
 
 	on_start is
 			-- Handler called before c compiler starts
-		local
-			l_service: EVENT_LIST_SERVICE_I
 		do
-			l_service ?= service_provider.query_service ({EVENT_LIST_SERVICE_I})
-			if l_service /= Void then
-				l_service.prune_event_items (c_compiiled_context)
+			if is_event_list_service_available then
+				event_list_service.prune_event_items (c_compiiled_context)
 			end
 			synchronize_on_c_compilation_start
 			start_actions.call (Void)
@@ -175,7 +174,6 @@ feature{NONE}  -- Actions
 	on_exit is
 			-- Handler called when c compiler exits
 		local
-			l_service: EVENT_LIST_SERVICE_I
 			l_error: C_COMPILER_ERROR
 		do
 			if launched then
@@ -190,12 +188,9 @@ feature{NONE}  -- Actions
 				if exit_code /= 0 then
 					window_manager.display_message (Interface_names.e_c_compilation_failed)
 					display_message_on_main_output (c_compilation_failed_msg, True)
-					l_service ?= service_provider.query_service ({EVENT_LIST_SERVICE_I})
-					if l_service /= Void then
+					if is_event_list_service_available then
 						create l_error.make ("Please review the C Output Pane.")
-						l_service.put_event_item (c_compiiled_context, create {EVENT_LIST_ERROR_ITEM}.make ({EVENT_LIST_ITEM_CATEGORIES}.compilation, l_error.message, l_error))
-					else
-						show_compilation_error_dialog
+						event_list_service.put_event_item (c_compiiled_context, create {EVENT_LIST_ERROR_ITEM}.make ({ENVIRONMENT_CATEGORIES}.compilation, l_error.message, l_error))
 					end
 				else
 					window_manager.display_message (Interface_names.e_c_compilation_succeeded)
@@ -215,19 +210,15 @@ feature{NONE}  -- Actions
 	on_launch_failed is
 			-- Handler called when c compiler launch failed
 		local
-			l_service: EVENT_LIST_SERVICE_I
 			l_error: C_COMPILER_ERROR
 		do
 			c_compilation_successful_cell.put (False)
 			synchronize_on_c_compilation_exit
 			window_manager.display_message (Interface_names.e_C_compilation_launch_failed)
 			display_message_on_main_output (c_compilation_launch_failed_msg, True)
-			l_service ?= service_provider.query_service ({EVENT_LIST_SERVICE_I})
-			if l_service /= Void then
+			if is_event_list_service_available then
 				create l_error.make ("Could not launch C/C++ compiler.")
-				l_service.put_event_item (c_compiiled_context, create {EVENT_LIST_ERROR_ITEM}.make ({EVENT_LIST_ITEM_CATEGORIES}.compilation, l_error.message, l_error))
-			else
-				show_compiler_launch_fail_dialog (window_manager.last_created_window.window)
+				event_list_service.put_event_item (c_compiiled_context, create {EVENT_LIST_ERROR_ITEM}.make ({ENVIRONMENT_CATEGORIES}.compilation, l_error.message, l_error))
 			end
 			launch_failed_actions.call (Void)
 			finished_actions.call (Void)
@@ -301,42 +292,6 @@ feature{NONE} -- Implementation
 	do_not_open_console is
 			-- Empty agent.
 		do
-		end
-
-	show_compilation_error_dialog is
-			-- Dialog box showed when c compilation generates any error
-		local
-			dlg: EB_CONFIRMATION_DIALOG
-			actions: ARRAY [PROCEDURE [ANY, TUPLE]]
-			maps: EV_STOCK_PIXMAPS
-		do
-				-- C compilation failed.
-				-- Ask user whether open a console.
-			create actions.make (1, 2)
-			actions.put (agent do_not_open_console, 1)
-			actions.put (agent open_console, 2)
-			create dlg.make_with_text_and_actions (interface_names.l_c_compilation_produced_errors (working_directory), actions)
-			dlg.set_title (interface_names.t_finish_freezing_status)
-			create maps
-			dlg.set_icon_pixmap (maps.warning_pixmap)
-			dlg.set_pixmap (maps.warning_pixmap)
-			dlg.show_modal_to_window (window_manager.last_focused_development_window.window)
-		end
-
-	show_compiler_launch_fail_dialog (win: EV_WINDOW) is
-			-- Dialog box showed when c compiler launch failed
-		local
-			dlg: EB_WARNING_DIALOG
-			--actions: ARRAY [PROCEDURE [ANY, TUPLE]]
-			maps: EV_STOCK_PIXMAPS
-		do
-				-- C compilation launch failed.
-			create dlg.make_with_text (interface_names.l_c_compilation_manager_launch_failed (platform_constants.is_windows))
-			dlg.set_title (interface_names.t_finish_freezing_launch_error)
-			create maps
-			dlg.set_icon_pixmap (maps.warning_pixmap)
-			dlg.set_pixmap (maps.warning_pixmap)
-			dlg.show_modal_to_window (win)
 		end
 
 	c_compilation_successful_cell: CELL [BOOLEAN] is

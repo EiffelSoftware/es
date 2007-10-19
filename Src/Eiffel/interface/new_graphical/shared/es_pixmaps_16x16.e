@@ -26,7 +26,6 @@ feature {NONE} -- Initialization
 			not_a_name_is_empty: not a_name.is_empty
 		local
 			l_file: FILE_NAME
-			l_warn: EV_WARNING_DIALOG
 			retried: BOOLEAN
 		do
 			if not retried then
@@ -39,8 +38,7 @@ feature {NONE} -- Initialization
 				create raw_buffer
 				raw_buffer.set_with_named_file (l_file)
 			else
-				create l_warn.make_with_text ("Cannot read pixmap file:%N" + l_file + ".%NPlease make sure the installation is not corrupted.")
-				l_warn.show
+				(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_warning_prompt ("Cannot read pixmap file:%N" + l_file + ".%N%NPlease make sure the installation is not corrupted.", Void, Void)
 
 					-- Fail safe, use blank pixmap
 				create raw_buffer.make_with_size ((33 * 16) + 1,(18 * 16) + 1)
@@ -2654,6 +2652,30 @@ feature -- Access
 			-- Access to 'filter active' pixmap pixel buffer.
 		once
 			Result := raw_buffer.sub_pixel_buffer (pixel_rectangle (29, 9))
+		end
+
+	frozen priority_high_icon: EV_PIXMAP is
+			-- Access to 'high' pixmap.
+		once
+			Result := raw_buffer.sub_pixmap (pixel_rectangle (30, 9))
+		end
+
+	frozen priority_high_icon_buffer: EV_PIXEL_BUFFER is
+			-- Access to 'high' pixmap pixel buffer.
+		once
+			Result := raw_buffer.sub_pixel_buffer (pixel_rectangle (30, 9))
+		end
+
+	frozen priority_low_icon: EV_PIXMAP is
+			-- Access to 'low' pixmap.
+		once
+			Result := raw_buffer.sub_pixmap (pixel_rectangle (31, 9))
+		end
+
+	frozen priority_low_icon_buffer: EV_PIXEL_BUFFER is
+			-- Access to 'low' pixmap pixel buffer.
+		once
+			Result := raw_buffer.sub_pixel_buffer (pixel_rectangle (31, 9))
 		end
 
 	frozen view_previous_icon: EV_PIXMAP is

@@ -12,6 +12,42 @@ class
 
 feature -- Access
 
+	frozen stock_colors: EV_STOCK_COLORS
+			-- Access to a shared instance of {EV_STOCK_COLORS}
+		once
+			create Result
+		ensure
+			result_attached: Result /= Void
+		end
+
+feature -- General colors
+
+	high_priority_foreground_color: EV_COLOR
+			-- High priority item foreground text color
+		once
+			Result := stock_colors.red
+		ensure
+			result_attached: Result /= Void
+		end
+
+	normal_priority_foreground_color: EV_COLOR
+			-- Normal priority item foreground text color
+		once
+			Result := stock_colors.black
+		ensure
+			result_attached: Result /= Void
+		end
+
+	low_priority_foreground_color: EV_COLOR
+			-- Low priority item foreground text color
+		once
+			Result := stock_colors.gray
+		ensure
+			result_attached: Result /= Void
+		end
+
+feature -- Grids
+
 	grid_line_color: EV_COLOR
 			-- Grid widget selection color when focused
 		once
@@ -68,11 +104,30 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-feature {NONE} -- Access
+feature -- Prompts
 
-	stock_colors: EV_STOCK_COLORS is
+	prompt_sub_title_forground_color: EV_COLOR
+			-- Forground color for title text on prompt dialogs
 		once
-			create Result
+			create Result.make_with_8_bit_rgb (117, 143, 198)
+		ensure
+			result_attached: Result /= Void
+		end
+
+	prompt_text_forground_color: EV_COLOR
+			-- Foreground color for all other text on prompt dialog
+		once
+			create Result.make_with_8_bit_rgb (107, 123, 138)
+		ensure
+			result_attached: Result /= Void
+		end
+
+	prompt_banner_color: EV_COLOR
+			-- Background banner color for prompt dialogs
+		once
+			create Result.make_with_8_bit_rgb (255, 255, 255)
+		ensure
+			result_attached: Result /= Void
 		end
 
 ;indexing

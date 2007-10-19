@@ -76,6 +76,14 @@ feature -- Access
 			result_positive: Result > 0
 		end
 
+	use_low_priority_mode: BOOLEAN is
+			-- Indicates if finish_freezing should execute in low priority mode.
+		require
+			successful: successful
+		once
+			Result := has_option (low_priority_switch)
+		end
+
 	is_for_library: BOOLEAN is
 			-- Is `finish_freezing' launched to compile the C code for an Eiffel library?
 		require
@@ -123,6 +131,7 @@ feature {NONE} -- Usage
 			Result.extend (create {ARGUMENT_DIRECTORY_SWITCH}.make (location_switch, "Alternative location to compile C code in.", True, False, "directory", "Location to compile C code in", False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (generate_only_switch, "Informs tool to only generate a Makefile.", True, False))
 			Result.extend (create {ARGUMENT_NATURAL_SWITCH}.make_with_range (nproc_switch, "Maximum number of processors to use", True, False, "n", "Number of processors", False, 1, {NATURAL_16}.max_value))
+			Result.extend (create {ARGUMENT_SWITCH}.make (low_priority_switch, "Executes finish freezing in low-execution priority mode.", True, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (x86_switch, "Generate 32bit lib DLLs for .NET projects.", True, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (silent_switch, "Supresses confirmation dialog", True, True))
 			Result.extend (create {ARGUMENT_SWITCH}.make (library_switch, "Compile the C code of an Eiffel library", True, True))
@@ -135,6 +144,7 @@ feature {NONE} -- Switches
 	library_switch: STRING is "library"
 	nproc_switch: STRING is "nproc"
 	x86_switch: STRING is "x86"
+	low_priority_switch: STRING is "low"
 			-- Argument switches
 
 	silent_switch: STRING is "silent";

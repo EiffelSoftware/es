@@ -235,8 +235,6 @@ feature {NONE} -- Actions
 			a_row_attached: a_row /= Void
 		local
 			l_name: STRING
-			l_error_dlg: EB_ERROR_DIALOG
-			l_warning_dlg: EB_WARNING_DIALOG
 		do
 			if not is_in_name_changing_mode then
 				l_name := a_row.name.twin
@@ -244,15 +242,11 @@ feature {NONE} -- Actions
 				if not has_metric (a_row.name) then
 					change_name (a_old_name, a_row.name)
 					if has_existing_metric (l_name) then
-						create l_warning_dlg.make_with_text (metric_names.wrn_metric_name_exists_in_your_metrics (l_name))
-						l_warning_dlg.show_modal_to_window (Current)
+						(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_warning_prompt (metric_names.wrn_metric_name_exists_in_your_metrics (l_name), Current, Void)
 					end
 					bind_grid (True)
 				else
-					create l_error_dlg.make_with_text (metric_names.err_metric_name_exists_in_import_metric_list (l_name, a_old_name))
-					l_error_dlg.set_buttons (<<metric_names.t_ok>>)
-					l_error_dlg.set_buttons_and_actions (<<metric_names.t_ok>>, <<agent do_nothing>>)
-					l_error_dlg.show_modal_to_window (Current)
+					(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_error_prompt (metric_names.err_metric_name_exists_in_import_metric_list (l_name, a_old_name), Current, Void)
 					a_row.set_name_editable_area_text (a_old_name)
 				end
 				is_in_name_changing_mode := False
@@ -371,7 +365,6 @@ feature {NONE} -- Actions
 		local
 			l_cursor: DS_ARRAYED_LIST_CURSOR [EB_METRIC_IMPORT_GRID_ROW]
 			l_library_tbl: like library_uuid_table
-			l_dlg: EV_INFORMATION_DIALOG
 		do
 			library_uuid_table_internal := Void
 			l_library_tbl := library_uuid_table
@@ -390,9 +383,9 @@ feature {NONE} -- Actions
 			metric_tool.store_metrics
 			metric_tool.load_metrics_and_display_error (True, metric_names.t_importing_metrics)
 			grid.disable_sensitive
-			import_btn.disable_sensitive
-			create l_dlg.make_with_text (metric_names.t_metrics_imported)
-			l_dlg.show_modal_to_window (Current)
+			import_btn.disable_sensitive;
+
+			(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_info_prompt (metric_names.t_metrics_imported, Current, Void)
 		end
 
 	on_backup_user_defined_metrics is
@@ -552,15 +545,11 @@ feature{NONE} -- Implementation
 			-- Load metrics from file `a_file_name'.
 		require
 			a_file_name_valid: a_file_name /= Void and then not a_file_name.is_empty
-		local
-			l_error_dlg: EB_ERROR_DIALOG
 		do
 			metric_manager.clear_last_error
 			Result := metric_manager.metrics_from_file (a_file_name)
 			if metric_manager.has_error then
-				create l_error_dlg.make_with_text (metric_names.err_metric_loading_error (metric_manager.last_error.message_with_location))
-				l_error_dlg.set_buttons_and_actions (<<metric_names.t_ok>>, <<agent do_nothing>>)
-				l_error_dlg.show_modal_to_window (Current)
+				(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_error_prompt (metric_manager.last_error.message_with_location, Current, Void)
 			end
 			metric_manager.clear_last_error
 		end

@@ -51,7 +51,6 @@ feature {NONE} -- Initlization
 			create bottom_rectangle.make (l_area.left + l_area.width // 2 - l_bottom_width // 2, l_area.bottom - l_bottom_height, l_bottom_width, l_bottom_height)
 			create left_rectangle.make (l_area.left, l_area.top + l_area.height // 2 - l_left_height // 2, l_left_width, l_left_height)
 			create right_rectangle.make (l_area.right - l_right_width, l_area.top + l_area.height // 2 - l_right_height // 2, l_right_width, l_right_height)
-			type := {SD_ENUMERATION}.tool
 
 			build_indicator
 		ensure
@@ -59,7 +58,7 @@ feature {NONE} -- Initlization
 			set: internal_docking_manager = a_docking_manager
 		end
 
-feature  -- Redefine
+feature  -- Command
 
 	apply_change (a_screen_x, a_screen_y: INTEGER): BOOLEAN is
 			-- Redefine.
@@ -241,6 +240,8 @@ feature  -- Redefine
 			left_indicator.show
 			right_indicator.show
 		end
+
+feature -- Query
 
 	has_x_y (a_screen_x, a_screen_y: INTEGER): BOOLEAN is
 			-- Redefine.

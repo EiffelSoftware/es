@@ -21,18 +21,9 @@ inherit
 			{ANY} exists
 		redefine
 			dispose
-		select
-			default_create,
-			copy
 		end
 
-	EV_ANY
-	-- Inherit for export features.	
-		rename
-			default_create as default_create_not_use,
-			copy as copy_not_use,
-			destroy as destroy_not_use
-		end
+	EV_ANY_HANDLER
 
 create
 	make,
@@ -52,6 +43,7 @@ feature {NONE} -- Initlization
 			make_dlg (l_composite_window)
 
 			init_common (a_pixel_buffer)
+
 		ensure
 			set: pixel_buffer = a_pixel_buffer
 		end
@@ -145,7 +137,7 @@ feature -- Command
 feature {NONE} -- Implementation
 
 	rgba_dib: WEL_BITMAP is
-			-- Load a image which has RGBA DIB datas.
+			-- Load a image which has RGBA DIB data.
 		local
 			l_imp: EV_PIXEL_BUFFER_IMP
 			l_pixmap: EV_PIXMAP_IMP
@@ -346,13 +338,6 @@ feature {NONE} -- Externals
 				}
 			}
 			]"
-		end
-
-feature {NONE} -- Features inherit from EV_ANY.
-
-	create_implementation is
-			-- Fake.
-		do
 		end
 
 indexing

@@ -195,6 +195,11 @@ feature {NONE} -- Implementation
 			add_boolean_setting_actions (l_bool_prop, s_check_vape, True)
 			properties.add_property (l_bool_prop)
 
+			l_bool_prop := new_boolean_property (conf_interface_names.target_check_for_void_target_name, current_target.setting_check_for_void_target)
+			l_bool_prop.set_description (conf_interface_names.target_check_for_void_target_description)
+			add_boolean_setting_actions (l_bool_prop, s_check_for_void_target, False)
+			properties.add_property (l_bool_prop)
+
 			l_bool_prop := new_boolean_property (conf_interface_names.target_console_application_name, current_target.setting_console_application)
 			l_bool_prop.set_description (conf_interface_names.target_console_application_description)
 			add_boolean_setting_actions (l_bool_prop, s_console_application, False)
@@ -574,19 +579,15 @@ feature {NONE} -- Validation and warning generation
 			a_name_not_void: a_name /= Void
 		local
 			l_targets: HASH_TABLE [CONF_TARGET, STRING]
-			wd: EB_WARNING_DIALOG
 		do
 			l_targets := conf_system.targets
 			l_targets.search (a_name.as_lower)
 			if not (create {EIFFEL_SYNTAX_CHECKER}).is_valid_target_name (a_name) then
-				create wd.make_with_text (conf_interface_names.target_name_invalid)
-				wd.show_modal_to_window (window)
+				prompts.show_error_prompt (conf_interface_names.target_name_invalid, window, Void)
 			elseif l_targets.found and then l_targets.found_item /= current_target then
-				create wd.make_with_text (conf_interface_names.target_name_duplicate)
-				wd.show_modal_to_window (window)
+				prompts.show_error_prompt (conf_interface_names.target_name_duplicate, window, Void)
 			elseif a_name.is_empty then
-				create wd.make_with_text (conf_interface_names.target_name_empty)
-				wd.show_modal_to_window (window)
+				prompts.show_error_prompt (conf_interface_names.target_name_empty, window, Void)
 			else
 				Result := True
 			end

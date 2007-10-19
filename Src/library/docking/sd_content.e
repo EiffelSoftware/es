@@ -91,6 +91,7 @@ feature -- Access
 
 	pixmap: like internal_pixmap is
 			-- Client programmer's widget's pixmap.
+			-- The icon showing on content notebook tab and auto hide tab if Gdi+ not available on Windows platform.
 		do
 			Result := internal_pixmap
 		ensure
@@ -183,6 +184,7 @@ feature -- Access
 
 	state_value: INTEGER is
 			-- Current state.
+			-- Note, it's possible result is {SD_ENUMERATION}.auto_hide, but `is_visible' return False. See bug#13339.
 		local
 			l_void: SD_STATE_VOID
 			l_docking: SD_DOCKING_STATE

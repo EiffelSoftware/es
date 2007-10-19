@@ -1,6 +1,6 @@
 indexing
 	description: "[
-		An event list service {EVENT_LIST_SERVICE_I} tool to show all errors and warning event items in a single list in the EiffelStudio UI
+		An event list service {EVENT_LIST_SERVICE_S} tool to show all errors and warning event items in a single list in the EiffelStudio UI
 	]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class.";
@@ -236,7 +236,9 @@ feature {NONE} -- Query
 	is_error_event (a_event_item: EVENT_LIST_ITEM_I): BOOLEAN
 			-- Determines if event `a_event_item' is an error event
 		do
-			Result := not is_warning_event (a_event_item) and then (({ERROR}) #? a_event_item.data) /= Void
+			if a_event_item.type = {EVENT_LIST_ITEM_TYPES}.error then
+				Result := not is_warning_event (a_event_item) and then (({ERROR}) #? a_event_item.data) /= Void
+			end
 		ensure
 			not_is_warning_event: Result implies not is_warning_event (a_event_item)
 		end
@@ -246,17 +248,9 @@ feature {NONE} -- Query
 		require
 			a_event_item_attached: a_event_item /= Void
 		do
-			Result := (({WARNING}) #? a_event_item.data) /= Void
-		ensure
-			not_is_error_event: Result implies not is_error_event (a_event_item)
-		end
-
-	is_event_context_available (a_event_item: EVENT_LIST_ITEM_I): BOOLEAN
-			-- Determines if event `a_event_item' has a context available
-		require
-			a_event_item_attached: a_event_item /= Void
-		do
-
+			if a_event_item.type = {EVENT_LIST_ITEM_TYPES}.error then
+				Result := (({WARNING}) #? a_event_item.data) /= Void
+			end
 		ensure
 			not_is_error_event: Result implies not is_error_event (a_event_item)
 		end
@@ -397,7 +391,7 @@ feature {NONE} -- Events
 			end
 		end
 
-	on_event_added (a_service: EVENT_LIST_SERVICE_I; a_event_item: EVENT_LIST_ITEM_I)
+	on_event_added (a_service: EVENT_LIST_SERVICE_S; a_event_item: EVENT_LIST_ITEM_I)
 			-- Called when a event item is added to the event service.
 			--
 			-- `a_service': Event service where event was added.
@@ -419,7 +413,7 @@ feature {NONE} -- Events
 			end
 		end
 
-	on_event_removed (a_service: EVENT_LIST_SERVICE_I; a_event_item: EVENT_LIST_ITEM_I) is
+	on_event_removed (a_service: EVENT_LIST_SERVICE_S; a_event_item: EVENT_LIST_ITEM_I) is
 			-- Called after a event item has been removed from the service `a_service'
 			--
 			-- `a_service': Event service where the event was removed.
@@ -786,7 +780,7 @@ feature {NONE} -- User interface manipulation
 
 				-- Set category pixmap item
 			create l_item
-			l_pixmap := category_pixmap_from_task (a_event_item)
+			l_pixmap := category_icon_from_event_item (a_event_item)
 			if l_pixmap /= Void then
 				l_item.set_pixmap (l_pixmap)
 
@@ -813,11 +807,11 @@ feature {NONE} -- User interface manipulation
 				else
 					check False end
 				end
-				l_editor_item.set_spacing (8)
+				l_editor_item.set_spacing ({ES_UI_CONSTANTS}.grid_editor_item_spacing)
 				a_row.set_item (error_column, l_editor_item)
 
 					-- Set row hieght
-				a_row.set_height (l_editor_item.label_font_height.max (15))
+				a_row.set_height (l_editor_item.label_font_height.max ({ES_UI_CONSTANTS}.grid_row_height))
 
 					-- Build full error text
 				create l_gen.make

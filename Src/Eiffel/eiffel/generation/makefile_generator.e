@@ -567,6 +567,11 @@ feature -- Generation, Header
 				make_file.put_string ("-DNO_ISE_GC ")
 			end
 
+			if not System.check_for_void_target then
+					-- Disable check for Void target.
+				make_file.put_string ("-DEIF_NO_RTCV ")
+			end
+
 			generate_specific_defines
 			make_file.put_string ("-I%"$rt_include%" ")
 			make_file.put_string ("-I. %H$(INCLUDE_PATH)%N")
@@ -590,6 +595,12 @@ feature -- Generation, Header
 			if not System.uses_ise_gc_runtime then
 				make_file.put_string ("-DNO_ISE_GC ")
 			end
+
+			if not System.check_for_void_target then
+					-- Disable check for Void target.
+				make_file.put_string ("-DEIF_NO_RTCV ")
+			end
+
 
 			generate_specific_defines
 
@@ -659,7 +670,10 @@ feature -- Generation, Header
 			if System.il_generation then
 				make_file.put_string ("IL_SYSTEM = lib")
 				make_file.put_string (system_name)
-				make_file.put_string ("$shared_suffix %N")
+				make_file.put_string ("$shared_suffix%N")
+				make_file.put_string ("IL_OBJECT = lib")
+				make_file.put_string (system_name)
+				make_file.put_string (".$obj_file_ext%N")
 				make_file.put_string ("IL_RESOURCE = ")
 				make_file.put_string (system_name)
 				make_file.put_new_line
@@ -869,9 +883,7 @@ feature -- Generation (Linking rules)
 			make_file.put_string ("all: $(IL_SYSTEM)")
 			make_file.put_new_line
 
-			make_file.put_string ("OBJECTS= lib")
-			make_file.put_string (system_name)
-			make_file.put_string (".obj")
+			make_file.put_string ("OBJECTS= $(IL_OBJECT)")
 			make_file.put_new_line
 			make_file.put_new_line
 

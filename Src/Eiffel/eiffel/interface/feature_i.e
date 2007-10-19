@@ -13,6 +13,8 @@ indexing
 deferred class FEATURE_I
 
 inherit
+	IDABLE
+
 	SHARED_WORKBENCH
 
 	SHARED_SERVER
@@ -143,8 +145,20 @@ feature -- Access
 	rout_id_set: ROUT_ID_SET
 			-- Routine table to which feature belongs to.
 
-	export_status: EXPORT_I
+	export_status: EXPORT_I is
 			-- Export status of feature
+		do
+			Result := internal_export_status
+			if Result = Void then
+				if (feature_flags & is_export_status_none_mask) = is_export_status_none_mask then
+					Result := export_none_status
+				else
+					Result := export_all_status
+				end
+			end
+		ensure
+			export_status_not_void: export_status /= Void
+		end
 
 	origin_feature_id: INTEGER
 			-- Feature ID of Current in associated CLASS_INTERFACE
@@ -389,7 +403,6 @@ feature -- Comparison
 			other_not_void: other /= Void
 			tbl_not_void: tbl /= Void
 		local
-			origin_table: HASH_TABLE [FEATURE_I, INTEGER]
 			assigner_command: FEATURE_I
 			other_assigner_command: FEATURE_I
 		do
@@ -398,7 +411,6 @@ feature -- Comparison
 			if assigner_name_id = 0 or else other.assigner_name_id = 0 then
 				Result := True
 			else
-				origin_table := tbl.origin_table
 				if written_in = system.current_class.class_id then
 					assigner_command :=  tbl.item_id (assigner_name_id)
 				else
@@ -408,7 +420,7 @@ feature -- Comparison
 						-- Assigner command is not found
 					error_handler.insert_error (create {VFAC1}.make (system.current_class, Current))
 				else
-					assigner_command := origin_table.item (assigner_command.rout_id_set.first)
+					assigner_command := tbl.feature_of_rout_id (assigner_command.rout_id_set.first)
 					if other.written_in = system.current_class.class_id then
 						other_assigner_command := tbl.item_id (other.assigner_name_id)
 					else
@@ -417,7 +429,7 @@ feature -- Comparison
 					check
 						other_assigner_command_not_void: other_assigner_command /= Void
 					end
-					other_assigner_command := origin_table.item (other_assigner_command.rout_id_set.first)
+					other_assigner_command := tbl.feature_of_rout_id (other_assigner_command.rout_id_set.first)
 					Result := assigner_command = other_assigner_command
 				end
 			end
@@ -541,16 +553,16 @@ feature -- Setting
 			feature_name_set: equal (feature_name, s)
 		end
 
-	set_feature_name_id, set_renamed_name_id (id: INTEGER; alias_id: INTEGER) is
-			-- Assign `id' to `feature_name_id'.
+	set_feature_name_id, set_renamed_name_id (a_id: INTEGER; alias_id: INTEGER) is
+			-- Assign `a_id' to `feature_name_id'.
 		require
-			valid_id: Names_heap.valid_index (id)
+			valid_id: Names_heap.valid_index (a_id)
 			valid_alias_id: Names_heap.valid_index (alias_id)
 		do
-			feature_name_id := id
+			feature_name_id := a_id
 			alias_name_id := alias_id
 		ensure
-			feature_name_id_set: feature_name_id = id
+			feature_name_id_set: feature_name_id = a_id
 			alias_name_id_set: alias_name_id = alias_id
 		end
 
@@ -596,10 +608,17 @@ feature -- Setting
 
 	set_export_status (e: EXPORT_I) is
 			-- Assign `e' to `export_status'.
+		require
+			e_not_void: e /= Void
 		do
-			export_status := e
+			if e.is_all or e.is_none then
+				internal_export_status := Void
+				feature_flags := feature_flags.set_bit_with_mask (e.is_none, is_export_status_none_mask)
+			else
+				internal_export_status := e
+			end
 		ensure
-			export_status_set: export_status = e
+			export_status_set: export_status.same_as (e)
 		end
 
 	frozen set_is_origin (b: BOOLEAN) is
@@ -739,10 +758,14 @@ feature -- Setting
 			has_property_setter_set: has_property_setter = v
 		end
 
-	set_rout_id_set (set: like rout_id_set) is
-			-- Assign `set' to `rout_id_set'.
+	set_rout_id_set (an_id_set: like rout_id_set) is
+			-- Assign `an_id_set' to `rout_id_set'.
+		require
+			an_id_set_not_void: an_id_set /= Void
 		do
-			rout_id_set := set
+			rout_id_set := an_id_set
+		ensure
+			rout_id_set: rout_id_set = an_id_set
 		end
 
 	set_private_external_name_id (n_id: like private_external_name_id) is
@@ -1111,7 +1134,7 @@ feature -- Conveniences
 		local
 			l_ext: IL_EXTENSION_I
 		do
-			Result := (is_constant and not is_once)
+			Result := is_constant
 			if not Result then
 				if System.il_generation then
 					l_ext ?= extension
@@ -1228,6 +1251,8 @@ feature -- Conveniences
 			-- Result type of feature
 		do
 			Result := void_type
+		ensure
+			type_not_void: Result /= Void
 		end
 
 	set_type (t: like type; a: like assigner_name_id) is
@@ -1324,15 +1349,13 @@ feature -- Export checking
 	suppliers: TWO_WAY_SORTED_SET [INTEGER] is
 			-- Class ids of all suppliers of feature
 		require
-			Tmp_depend_server.has (written_in) or else
-			Depend_server.has (written_in)
+			has_dependance: depend_server.has (written_in)
 		local
 			class_dependance: CLASS_DEPENDANCE
 		do
-			if Tmp_depend_server.has (written_in) then
-				class_dependance := Tmp_depend_server.item (written_in)
-			else
-				class_dependance := Depend_server.item (written_in)
+			class_dependance := depend_server.item (written_in)
+			check
+				class_dependance_not_void: class_dependance /= Void
 			end
 			Result := class_dependance.item (body_index).suppliers
 		end
@@ -1370,20 +1393,16 @@ feature -- Check
 			class_ast: CLASS_AS
 			bid: INTEGER
 		do
-			if body_index > 0 then
-				bid := body_index
-				if Tmp_ast_server.body_has (bid) then
-					Result := Tmp_ast_server.body_item (bid)
-				elseif Body_server.server_has (bid) then
-					Result := Body_server.server_item (bid)
-				end
+			bid := body_index
+			if bid > 0 then
+				Result := body_server.item (bid)
 			end
 			if Result = Void then
-				if Tmp_ast_server.has (written_in) then
 					-- Means a degree 4 error has occurred so the
 					-- best we can do is to search through the
 					-- class ast and find the feature as
-					class_ast := Tmp_ast_server.item (written_in)
+				class_ast := Tmp_ast_server.item (written_in)
+				if class_ast /= Void then
 					Result ?= class_ast.feature_with_name (feature_name_id)
 				end
 			end
@@ -1516,27 +1535,17 @@ feature -- Polymorphism
  		require
 			positive_rout_id: rout_id > 0
 			valid_rout_id: rout_id_set.has (rout_id)
-		local
-			seed: FEATURE_I
  		do
  			if not is_attribute or else not Routine_id_counter.is_attribute (rout_id) then
  					-- This is a routine.
  					-- The seed is a routine as well.
  				create {ROUT_TABLE} Result.make (rout_id)
- 			elseif has_formal then
- 					-- This is an attribute of a formal generic type.
- 					-- The seed is also of a formal generic type.
+ 			elseif system.seed_of_routine_id (rout_id).has_formal then
+ 					-- This is an attribute with a seed of a formal generic type.
  				create {GENERIC_ATTRIBUTE_TABLE} Result.make (rout_id)
  			else
- 				seed := system.seed_of_routine_id (rout_id)
- 				if seed = Current or else not seed.has_formal then
-	 					-- This is an attribute that is not of a formal generic type
-	 					-- and its seed is not of a formal generic type.
-	 				create {ATTR_TABLE [ATTR_ENTRY]} Result.make (rout_id)
- 				else
-	 					-- This is an attribute with a seed of a formal generic type.
-	 				create {GENERIC_ATTRIBUTE_TABLE} Result.make (rout_id)
- 				end
+ 					-- This is an attribute with a seed that is not of a formal generic type.
+ 				create {ATTR_TABLE [ATTR_ENTRY]} Result.make (rout_id)
  			end
  		end
 
@@ -1695,7 +1704,8 @@ feature -- Signature checking
 					vreg.set_entity_name (Names_heap.item (arg_id))
 					Error_handler.insert_error (vreg)
 				end
-				if feat_table.has_key_id (arg_id) then
+				feat_table.search_id (arg_id)
+				if feat_table.found then
 						-- An argument name is a feature name of the feature
 						-- table.
 					create vrfa
@@ -1764,7 +1774,7 @@ feature -- Signature checking
 
 			if
 				is_infix and then
-				((argument_count /= 1) or else (type = Void_type))
+				((argument_count /= 1) or else (type.is_void))
 			then
 					-- Infixed features should have only one argument
 					-- and must have a return type.
@@ -1775,7 +1785,7 @@ feature -- Signature checking
 			end
 			if
 				is_prefix and then
-				((argument_count /= 0) or else (type = Void_type))
+				((argument_count /= 0) or else (type.is_void))
 			then
 					-- Prefixed features shouldn't have any argument
 					-- and must have a return type.
@@ -2082,10 +2092,9 @@ end
 			il_generation: System.il_generation
 		local
 			old_type, new_type: TYPE_A
-			i, arg_count, id: INTEGER
+			i, arg_count: INTEGER
 			old_arguments: like arguments
 		do
-			id := a_written_type.class_id
 			old_type ?= old_feature.type
 			old_type := old_type.actual_argument_type (special_arguments).
 				instantiation_in (a_written_type, a_written_type.class_id).actual_type
@@ -2250,7 +2259,7 @@ end
 					-- Lookup feature in `feature_table' as feature table in the current class is not set yet.
 				assigner := feature_table.item_id (assigner_name_id)
 			else
-				assigner := feature_table.origin_table.item
+				assigner := feature_table.feature_of_rout_id
 					(written_class.feature_named (assigner_name).rout_id_set.first)
 			end
 			if assigner = Void or else assigner.has_return_value then
@@ -2571,10 +2580,9 @@ feature -- C code generation
 				generate_header (buffer)
 
 				tmp_body_index := body_index
-				if Tmp_opt_byte_server.has (tmp_body_index) then
-					byte_code := Tmp_opt_byte_server.disk_item (tmp_body_index)
-				else
-					byte_code := Byte_server.disk_item (tmp_body_index)
+				byte_code := tmp_opt_byte_server.disk_item (tmp_body_index)
+				if byte_code = Void then
+					byte_code := byte_server.disk_item (tmp_body_index)
 				end
 
 					-- Generation of C code for an Eiffel feature written in
@@ -2736,29 +2744,49 @@ feature {NONE} -- Implementation
 			non_void_result: Result /= Void
 		end
 
-	feature_flags: INTEGER_32
+	feature_flags: NATURAL_32
 			-- Property of Current feature, i.e. frozen,
 			-- infix, origin, prefix, selected...
 
-	is_frozen_mask: INTEGER_32 is 0x0001
-	is_origin_mask: INTEGER_32 is 0x0002
-	is_empty_mask: INTEGER_32 is 0x0004
-	is_infix_mask: INTEGER_32 is 0x0008
-	is_prefix_mask: INTEGER_32 is 0x0010
-	is_require_else_mask: INTEGER_32 is 0x0020
-	is_ensure_then_mask: INTEGER_32 is 0x0040
-	has_precondition_mask: INTEGER_32 is 0x0080
-	has_postcondition_mask: INTEGER_32 is 0x0100
-	is_bracket_mask: INTEGER_32 is 0x0200
-	is_binary_mask: INTEGER_32 is 0x0400
-	is_unary_mask: INTEGER_32 is 0x0800
-	has_convert_mark_mask: INTEGER_32 is 0x1000
-	has_property_mask: INTEGER_32 is 0x2000
-	has_property_getter_mask: INTEGER_32 is 0x4000
-	has_property_setter_mask: INTEGER_32 is 0x8000
-	is_fake_inline_agent_mask: INTEGER_32 is 0x10000
-	has_rescue_clause_mask: INTEGER_32 is 0x20000
+	is_frozen_mask: NATURAL_32 is 0x0001
+	is_origin_mask: NATURAL_32 is 0x0002
+	is_empty_mask: NATURAL_32 is 0x0004
+	is_infix_mask: NATURAL_32 is 0x0008
+	is_prefix_mask: NATURAL_32 is 0x0010
+	is_require_else_mask: NATURAL_32 is 0x0020
+	is_ensure_then_mask: NATURAL_32 is 0x0040
+	has_precondition_mask: NATURAL_32 is 0x0080
+	has_postcondition_mask: NATURAL_32 is 0x0100
+	is_bracket_mask: NATURAL_32 is 0x0200
+	is_binary_mask: NATURAL_32 is 0x0400
+	is_unary_mask: NATURAL_32 is 0x0800
+	has_convert_mark_mask: NATURAL_32 is 0x1000
+	has_property_mask: NATURAL_32 is 0x2000
+	has_property_getter_mask: NATURAL_32 is 0x4000
+	has_property_setter_mask: NATURAL_32 is 0x8000
+	is_fake_inline_agent_mask: NATURAL_32 is 0x10000
+	has_rescue_clause_mask: NATURAL_32 is 0x20000
+	is_export_status_none_mask: NATURAL_32 is 0x40000
 			-- Mask used for each feature property.
+
+	internal_export_status: like export_status
+			-- Internal export status object. When it is ANY or NONE
+			-- it is Void to save some space, what help us distinguish
+			-- is the `is_export_status_none_mask'.
+
+	export_all_status: EXPORT_ALL_I is
+		once
+			create Result
+		ensure
+			export_all_status_not_void: Result /= Void
+		end
+
+	export_none_status: EXPORT_NONE_I is
+		once
+			create Result
+		ensure
+			export_none_status_not_void: Result /= Void
+		end
 
 feature {INHERIT_TABLE} -- Access
 

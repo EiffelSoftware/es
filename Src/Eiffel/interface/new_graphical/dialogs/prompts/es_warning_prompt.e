@@ -18,7 +18,27 @@ inherit
 
 create
 	make,
-	make_standard
+	make_standard,
+	make_standard_with_cancel
+
+feature {NONE} -- Initialization
+
+	make_standard_with_cancel (a_text: like text)
+			-- Initialize a standard warning prompt, with an additional cancel button, using required information.
+			--
+			-- `a_text': The text to display on the prompt.
+		require
+			a_text_attached: a_text /= Void
+			not_a_text_is_empty: not a_text.is_empty
+		do
+			is_standard_prompt_with_cancel := True
+			make_standard (a_text)
+		ensure
+			text_set: format_text (a_text).is_equal (text)
+			default_button_set: default_button = standard_default_button
+			default_confirm_button_set: default_confirm_button = standard_default_confirm_button
+			default_cancel_button_set: default_cancel_button = standard_default_cancel_button
+		end
 
 feature {NONE} -- User interface initialization
 
@@ -34,29 +54,52 @@ feature {NONE} -- User interface initialization
 
 feature {NONE} -- Access
 
-	icon: EV_PIXEL_BUFFER
-			-- The dialog's icon
-		do
-			Result := large_icon
-		end
-
 	large_icon: EV_PIXEL_BUFFER
 			-- The dialog's large icon, shown on the left
 		do
-			Result := os_stock_pixmaps.warning_pixmap
+			Result := os_stock_pixmaps.warning_pixel_buffer
 		end
 
 	standard_buttons: DS_HASH_SET [INTEGER]
 			-- Standard set of buttons for a current prompt
 		do
-			Result := dialog_buttons.ok_cancel_buttons
+			if is_standard_prompt_with_cancel then
+				Result := dialog_buttons.ok_cancel_buttons
+			else
+				Result := dialog_buttons.ok_buttons
+			end
 		end
 
 	standard_default_button: INTEGER
 			-- Standard buttons `standard_buttons' default button
 		do
-			Result := dialog_buttons.cancel_button
+			if is_standard_prompt_with_cancel then
+				Result := dialog_buttons.cancel_button
+			else
+				Result := dialog_buttons.ok_button
+			end
 		end
+
+	standard_default_confirm_button: INTEGER
+			-- Standard buttons `standard_buttons' default confirm button
+		do
+			Result := dialog_buttons.ok_button
+		end
+
+	standard_default_cancel_button: INTEGER
+			-- Standard buttons `standard_buttons' default cancel button
+		do
+			if is_standard_prompt_with_cancel then
+				Result := dialog_buttons.cancel_button
+			else
+				Result := dialog_buttons.ok_button
+			end
+		end
+
+feature {NONE} -- Status report
+
+	is_standard_prompt_with_cancel: BOOLEAN
+			-- Indicates if a cancel button should be present
 
 ;indexing
 	copyright:	"Copyright (c) 1984-2007, Eiffel Software"

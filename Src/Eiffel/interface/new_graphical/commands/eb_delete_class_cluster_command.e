@@ -176,7 +176,6 @@ feature -- Basic operations
 		local
 			classst: CLASSI_STONE
 			clust: CLUSTER_STONE
-			wd: EB_WARNING_DIALOG
 		do
 			classst ?= window.stone
 			if classst /= Void then
@@ -187,8 +186,7 @@ feature -- Basic operations
 					drop_cluster (clust)
 					real_execute
 				else
-					create wd.make_with_text (Warning_messages.w_Select_class_cluster_to_remove)
-					wd.show_modal_to_window (window.window)
+					prompts.show_error_prompt (Warning_messages.w_Select_class_cluster_to_remove, window.window, Void)
 				end
 			end
 		end
@@ -207,8 +205,6 @@ feature {NONE} -- Implementation
 			-- Ask confirmation before removing `class_i' or `group'
 			-- from the system and from the disk.
 		local
-			cd: EB_CONFIRMATION_DIALOG
-			wd: EB_WARNING_DIALOG
 			str: STRING
 			l_cluster: CONF_CLUSTER
 			l_sort_cl: EB_SORTED_CLUSTER
@@ -222,17 +218,13 @@ feature {NONE} -- Implementation
 				then
 					str := class_i.name
 					if Debugger_manager.application_is_executing then
-						create cd.make_with_text_and_actions (Warning_messages.W_stop_debugger,	<<agent delete_class>>)
-						cd.show_modal_to_window (window.window)
+						prompts.show_warning_prompt_with_cancel (Warning_messages.W_stop_debugger, window.window, agent delete_class, Void)
 					else
-						create cd.make_with_text_and_actions (Warning_messages.w_Confirm_delete_class (str),
-												<<agent delete_class>>)
-						cd.show_modal_to_window (window.window)
+						prompts.show_question_prompt (Warning_messages.w_Confirm_delete_class (str), window.window, agent delete_class, Void)
 					end
 					class_i := Void
 				else
-					create wd.make_with_text (Warning_messages.w_cannot_delete_read_only_class (class_i.name))
-					wd.show_modal_to_window (window.window)
+					prompts.show_error_prompt (Warning_messages.w_cannot_delete_read_only_class (class_i.name), window.window, Void)
 					class_i := Void
 				end
 			elseif group /= Void then
@@ -260,27 +252,20 @@ feature {NONE} -- Implementation
 						l_empty
 					then
 						if group.target.system.date_has_changed then
-							create wd.make_with_text (Warning_messages.w_cannot_delete_need_recompile)
-							wd.show_modal_to_window (window.window)
+							prompts.show_warning_prompt (Warning_messages.w_cannot_delete_need_recompile, window.window, Void)
 						else
 							if Debugger_manager.application_is_executing then
-								create cd.make_with_text_and_actions (Warning_messages.W_Confirm_delete_cluster_debug (str),
-															<<agent delete_cluster>>)
-								cd.show_modal_to_window (window.window)
+								prompts.show_question_prompt (Warning_messages.W_Confirm_delete_cluster_debug (str), window.window, agent delete_cluster, Void)
 							else
-								create cd.make_with_text_and_actions (Warning_messages.w_Confirm_delete_cluster (str),
-															<<agent delete_cluster>>)
-								cd.show_modal_to_window (window.window)
+								prompts.show_question_prompt (Warning_messages.w_Confirm_delete_cluster (str), window.window, agent delete_cluster, Void)
 							end
 						end
 					else
-						create wd.make_with_text (Warning_messages.w_cannot_delete_none_empty_cluster (str))
-						wd.show_modal_to_window (window.window)
+						prompts.show_error_prompt (Warning_messages.w_cannot_delete_none_empty_cluster (str), window.window, Void)
 					end
 					group := Void
 				else
-					create wd.make_with_text (Warning_messages.w_Cannot_delete_library_cluster (str))
-					wd.show_modal_to_window (window.window)
+					prompts.show_error_prompt (Warning_messages.w_Cannot_delete_library_cluster (str), window.window, Void)
 					group := Void
 				end
 			end
@@ -293,7 +278,6 @@ feature {NONE} -- Implementation
 			could_not_delete_initialized: could_not_delete
 		local
 			file: PLAIN_TEXT_FILE
-			wd: EB_WARNING_DIALOG
 			retried: BOOLEAN
 		do
 			if not retried then
@@ -315,8 +299,7 @@ feature {NONE} -- Implementation
 			end
 			if could_not_delete then
 					-- We were not able to delete the file.
-				create wd.make_with_text (Warning_messages.w_Not_writable (class_i.file_name))
-				wd.show_modal_to_window (window.window)
+				(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_error_prompt (Warning_messages.w_Not_writable (class_i.file_name), window.window, Void)
 			end
 		rescue
 			retried := True
