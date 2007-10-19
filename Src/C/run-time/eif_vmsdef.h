@@ -1,6 +1,6 @@
 /* 
 	filename:	"eif_vmsdef.h"
-	description:    "OpenVMS platform specific definitions"
+	description: "OpenVMS platform specific definitions"
 	date:		"$Date$"
 	revision:	"$Revision$"
 	copyright:	"Copyright (c) 1985-2006, Eiffel Software."
@@ -245,6 +245,7 @@ __char_ptr32 DECC$GETENV (const char *name) ;	/* nicked from VMS unixlib.h */
 
 
 /*** VMS specific abstractions/jackets used in runtime ***/
+RT_LNK pid_t eifrt_vms_fork_jacket (void) ;
 RT_LNK char* eifrt_vms_getenv (const char* nam) ; 
 RT_LNK int eifrt_vms_putenv (const char* str) ;
 RT_LNK int eifrt_vms_setenv (const char* nam, const char*val, int overwrite) ;
@@ -281,7 +282,7 @@ extern const char eifrt_vms_valid_filename_chars[];
 
 
 #ifdef moose /* this was needed in prior versions of Eiffel compiler */
-#pragma message disable EXTRASEMI   // disable extraneous semicolon messages (in generated [.E?]epoly*.c modules) 
+#pragma message disable EXTRASEMI  	// disable extraneous semicolon messages (in generated [.E?]epoly*.c modules) 
 #endif
 
 
