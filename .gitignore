@@ -165,6 +165,7 @@ Src/C/run-time/wkbench/*.lib
 Src/C/run-time/wkbench/*.obj
 Src/C/run-time/wkbench/*.pdb
 Src/C/run-time/x2c
+Src/library/net/spec
 Src/tools/vms/ES5SH/*.wb
 Src/tools/vms/ES5SH/EIFGEN
 Src/tools/vms/ES5SH/EIFGENs
