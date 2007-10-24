@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<project name="build_vision2_clib" default="help">
+
+	<description>
+		description: "Vision2 Clib library compilation"
+		author: "Beat Herlig"
+	</description>
+
+	<inherit>
+		<parent location="${EIFFEL_SRC}/library/build.eant">
+			<redefine target="help"/>
+			<redefine target="clean"/>
+			<redefine target="clobber"/>
+		</parent>
+	</inherit>
+	
+	<target name="help">
+		<echo message="usage:"/>
+		<echo message=" geant compile_library"/>
+		<echo message="       ----------"/>
+
+		<echo message=" geant clean"/>
+		<echo message=" geant clobber"/>
+		<echo message="       ----------"/>
+	</target>
+	
+	<target name="compile_library" depend="init">
+		<echo message="Compile Vision2 clib" />
+
+		<geant target="build_windows" dir="${ISE_LIBRARY}/library/vision2/Clib" if="${is_windows}" />
+		<exec executable="finish_freezing -library" unless="${is_windows}" accept_errors="true" exit_code_variable="return_code" />
+		
+<!-- old version using makefiles
+		<exec executable="make_${ISE_C_COMPILER}.bat" if="${is_windows}" dir="${ISE_LIBRARY}/library/vision2/Clib" accept_errors="true" exit_code_variable="return_code" />
+		<echo message="done." />
+-->
+	</target>
+	
+	<target name="build_windows" depend="init" if="${is_windows}">
+		<geant target="make_msc" if="${ISE_C_COMPILER} = msc" />
+		<geant target="make_bcb" if="${ISE_C_COMPILER} = bcb" />
+	</target>
+	
+	<target name="make_msc" depend="init" if="${is_windows}">
+		<echo message="Compile Vision2 clib with Microsoft compiler" />
+		
+		<exec executable="nmake /f makefile.msc" accept_errors="true" exit_code_variable="return_code" />
+		<echo message="Eiffel Vision2 C-library compiled." />
+	</target>
+	
+	<target name="make_bcb" depend="init" if="${is_windows}">
+		<echo message="Compile Vision2 clib with Borland compiler" />
+
+		<exec executable="${ISE_EIFFEL}\BCC55\bin\make.exe /f makefile.bcb" accept_errors="true" exit_code_variable="return_code" />
+		<exec executable="${ISE_EIFFEL}\BCC55\bin\make.exe /f makefile.bcb.il" accept_errors="true" exit_code_variable="return_code" />
+		<echo message="Eiffel Vision2 C-library compiled." />
+	</target>	
+	
+	<target name="clean" depend="init">
+		<echo message="nothing to clean here."/>
+		<echo message=" "/>
+	</target>
+
+	<target name="clobber" depend="init">
+		<echo message="nothing to clobber here."/>
+		<echo message=" "/>
+	</target>	
+	
+	
+</project>

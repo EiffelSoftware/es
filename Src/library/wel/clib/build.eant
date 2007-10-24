@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<project name="build_wel_clib" default="help">
+
+	<description>
+		description: "WEL Clib library compilation"
+		author: "Beat Herlig"
+	</description>
+
+	<inherit>
+		<parent location="${EIFFEL_SRC}/library/build.eant">
+			<redefine target="help"/>
+			<redefine target="clean"/>
+			<redefine target="clobber"/>
+		</parent>
+	</inherit>
+	
+	<target name="help">
+		<echo message="usage:"/>
+		<echo message=" geant compile_library"/>
+		<echo message="       ----------"/>
+
+		<echo message=" geant clean"/>
+		<echo message=" geant clobber"/>
+		<echo message="       ----------"/>
+	</target>
+	
+	<target name="compile_library" depend="init">
+		<echo message="Compile WEL clib" />
+		
+		<geant target="make_msc" dir="${ISE_LIBRARY}/library/wel/Clib"  if="${ISE_C_COMPILER} = msc" />
+		<geant target="make_bcb" dir="${ISE_LIBRARY}/library/wel/Clib"  if="${ISE_C_COMPILER} = bcb" />
+
+<!-- old version using make files		
+		<exec executable="make_${ISE_C_COMPILER}.bat" if="${is_windows}" dir="${ISE_LIBRARY}/library/wel/Clib" accept_errors="true" exit_code_variable="return_code" />
+		<echo message="done." />
+-->
+	</target>
+	
+	<target name="make_msc" depend="init" if="${is_windows}">
+		<echo message="Compile WEL clib with Microsoft compiler" />
+		
+		<exec executable="nmake /NOLOGO /C /S /f makefile.msc > make.log" accept_errors="true" exit_code_variable="return_code" />
+		<exec executable="nmake /NOLOGO /C /S /f mt-makefile.msc >> make.log" accept_errors="true" exit_code_variable="return_code" />
+		<exec executable="nmake /NOLOGO /C /S /f makefile.il >> make.log" accept_errors="true" exit_code_variable="return_code" />
+		<exec executable="nmake /NOLOGO /C /S /f makefile_dll.msc >> make.log" accept_errors="true" exit_code_variable="return_code" />
+
+		<echo message="EiffelWEL C-library compiled." />
+		<echo message="The result of the compilation is available in 'make.log'" />
+	</target>
+
+	<target name="make_bcb" depend="init" if="${is_windows}">
+		<echo message="Compile WEL clib with Borland compiler" />
+
+		<exec executable="${ISE_EIFFEL}\BCC55\bin\make.exe /s /f makefile.bcb > make.log" accept_errors="true" exit_code_variable="return_code" />
+		<exec executable="${ISE_EIFFEL}\BCC55\bin\make.exe /s /f mt-makefile.bcb >> make.log" accept_errors="true" exit_code_variable="return_code" />
+		<exec executable="${ISE_EIFFEL}\BCC55\bin\make.exe /s /f makefile.bcb.il >> make.log" accept_errors="true" exit_code_variable="return_code" />
+		<exec executable="${ISE_EIFFEL}\BCC55\bin\make.exe /s /f makefile_dll.bcb >> make.log" accept_errors="true" exit_code_variable="return_code" />
+
+		<echo message="EiffelWEL C-library compiled." />
+		<echo message="The result of the compilation is available in 'make.log'" />
+	</target>
+	
+	<target name="clean" depend="init">
+		<echo message="nothing to clean here."/>
+		<echo message=" "/>
+	</target>
+
+	<target name="clobber" depend="init">
+		<echo message="nothing to clobber here."/>
+		<echo message=" "/>
+	</target>	
+</project>

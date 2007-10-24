@@ -1,0 +1,165 @@
+Only in /cygdrive/d/appz/dev/Eiffel60/C_library/libpng: libpng.LST
+Only in /cygdrive/d/appz/dev/Eiffel60/C_library/libpng: turboc.$ln
+
+Only in Eiffel60/C_library/zlib: build.eant
+Only in Eiffel60/C_library/zlib: example.exe
+
+Only in /cygdrive/d/appz/dev/Eiffel60/C_library/zlib: turboc.$ln
+Only in /cygdrive/d/appz/dev/Eiffel60/C_library/zlib: zlib.BAK
+
+Only in Eiffel60: INSTALL.readme
+Only in Eiffel60: VERSION
+Only in Eiffel60: build_es.log
+Only in Eiffel60: codedom_provider
+
+Only in Eiffel60/docs: HTMLSimpleFilterTemplate.html
+Only in Eiffel60/docs: default.css
+Only in Eiffel60/docs: docs.html
+Only in Eiffel60/docs: docs_no_content.html
+Only in Eiffel60/docs: docs_settings.xml
+Only in Eiffel60/docs: file.gif
+Only in Eiffel60/docs: folder.gif
+Only in Eiffel60/docs: folder_open.gif
+Only in Eiffel60/docs: general
+Only in Eiffel60/docs: go_up.gif
+Only in Eiffel60/docs: header.css
+Only in Eiffel60/docs: header.html
+Only in Eiffel60/docs: header_mainarea.jpg
+Only in Eiffel60/docs: images
+Only in Eiffel60/docs: index.html
+Only in Eiffel60/docs: installation
+Only in Eiffel60/docs: libraries
+Only in Eiffel60/docs: simple_toc.js
+Only in Eiffel60/docs: simple_toc_single.js
+Only in Eiffel60/docs: spacer.gif
+Only in Eiffel60/docs: sub_tocs
+Only in Eiffel60/docs: sync_button.gif
+Only in Eiffel60/docs: technologies
+Only in Eiffel60/docs: toc.css
+Only in Eiffel60/docs: tools
+
+Only in /cygdrive/d/appz/dev/Eiffel60/docs: eiffel.chm
+
+Only in /cygdrive/d/appz/dev/Eiffel60: dotnet
+Only in /cygdrive/d/appz/dev/Eiffel60: examples
+
+Only in Eiffel60/library: ActiveX_control_container
+Only in Eiffel60/library: GIF
+Only in Eiffel60/library: base_extension
+Only in Eiffel60/library: build.eant
+Only in Eiffel60/library: diff
+Only in Eiffel60/library: docking
+Only in Eiffel60/library: editor
+Only in Eiffel60/library: eiffeltest
+Only in Eiffel60/library: eldora
+Only in Eiffel60/library: elks
+Only in Eiffel60/library: encoding
+Only in Eiffel60/library: encryption
+Only in Eiffel60/library: event
+Only in Eiffel60/library: i18n
+Only in Eiffel60/library: patterns
+Only in Eiffel60/library: png
+Only in Eiffel60/library: regex
+Only in Eiffel60/library: text_editor
+Only in Eiffel60/library: vision2_for_gtk12
+Only in Eiffel60/library: wizard
+
+Only in Eiffel60/library/com: Clib
+Only in Eiffel60/library/com: Clib_runtime
+
+Only in /cygdrive/d/appz/dev/Eiffel60/library/com/spec: bcb
+Only in /cygdrive/d/appz/dev/Eiffel60/library/com/spec: msc
+
+Only in /cygdrive/d/appz/dev/Eiffel60/library/gobo: History.txt
+Only in /cygdrive/d/appz/dev/Eiffel60/library/gobo: License.txt
+Only in /cygdrive/d/appz/dev/Eiffel60/library/gobo: Readme.txt
+Only in /cygdrive/d/appz/dev/Eiffel60/library/gobo: Release_notes.txt
+Only in /cygdrive/d/appz/dev/Eiffel60/library/gobo: bin
+Only in /cygdrive/d/appz/dev/Eiffel60/library/gobo: build.eant
+Only in /cygdrive/d/appz/dev/Eiffel60/library/gobo: doc
+Only in /cygdrive/d/appz/dev/Eiffel60/library/gobo: example
+Only in /cygdrive/d/appz/dev/Eiffel60/library/gobo: forum.txt
+Only in /cygdrive/d/appz/dev/Eiffel60/library/gobo: misc
+Only in /cygdrive/d/appz/dev/Eiffel60/library/gobo: src
+Only in /cygdrive/d/appz/dev/Eiffel60/library/gobo: test
+Only in /cygdrive/d/appz/dev/Eiffel60/library/gobo: tool
+
+Only in Eiffel60/library/gobo: gobo.ecf.in
+
+Only in Eiffel60/library/net/Clib: build.eant
+
+Only in /cygdrive/d/appz/dev/Eiffel60/library/net/spec: bcb
+
+Only in /cygdrive/d/appz/dev/Eiffel60/library/store/dbms/rdbms/oracle/Clib: oracle.obj
+Only in /cygdrive/d/appz/dev/Eiffel60/library/store/dbms/rdbms/oracle/Clib: oracle_store.lib
+
+Only in Eiffel60/library/store/install: README
+Only in /cygdrive/d/appz/dev/Eiffel60/library/store/install: Readme
+Only in Eiffel60/library/store/interface: README
+Only in /cygdrive/d/appz/dev/Eiffel60/library/store/interface: Readme
+
+Only in /cygdrive/d/appz/dev/Eiffel60/library/store: spec
+
+Only in Eiffel60/library/vision: README
+Only in /cygdrive/d/appz/dev/Eiffel60/library/vision: Readme
+
+Only in Eiffel60/library/vision2/Clib: build.eant
+Only in Eiffel60/library/vision2/implementation: gtk
+
+Only in /cygdrive/d/appz/dev/Eiffel60/library/vision2/spec: bcb
+
+Only in Eiffel60/library/wel/clib: build.eant
+Only in Eiffel60/library/wel/clib: ilwel.lib
+Only in Eiffel60/library/wel/clib: make.log
+Only in Eiffel60/library/wel/clib: wel.lib
+
+Only in /cygdrive/d/appz/dev/Eiffel60/library/wel/spec: bcb
+
+Only in Eiffel60: make_install
+
+Only in /cygdrive/d/appz/dev/Eiffel60/precomp/spec/dotnet: EIFGENs
+Only in /cygdrive/d/appz/dev/Eiffel60/precomp/spec/dotnet: precomp_dotnet_base.rc
+
+Only in Eiffel60/precomp/spec: platform
+
+Only in /cygdrive/d/appz/dev/Eiffel60/precomp/spec: windows
+Only in /cygdrive/d/appz/dev/Eiffel60: rb
+
+Only in Eiffel60/studio/config: VMSAlpha32
+Only in Eiffel60/studio/config: VMSAlpha64
+Only in Eiffel60/studio/config: vxworks
+
+Only in Eiffel60/studio/help/errors: VTGC
+Only in Eiffel60/studio/help/errors: VTGD
+Only in Eiffel60/studio/help/errors: VTMC
+Only in Eiffel60/studio/help/errors/short: VTGC1
+Only in Eiffel60/studio/help/errors/short: VTGC2
+Only in Eiffel60/studio/help/errors/short: VTGC3
+Only in Eiffel60/studio/help/errors/short: VTGD1
+Only in Eiffel60/studio/help/errors/short: VTGD2
+Only in Eiffel60/studio/help/errors/short: VTGD3
+Only in Eiffel60/studio/help/errors/short: VTMC1
+Only in Eiffel60/studio/help/errors/short: VTMC2
+
+Only in Eiffel60/studio/lang: script
+
+Only in /cygdrive/d/appz/dev/Eiffel60/studio/spec/windows/bin: gdiplus.dll
+Only in /cygdrive/d/appz/dev/Eiffel60/studio/spec/windows/bin: legacy.exe
+
+Only in /cygdrive/d/appz/dev/Eiffel60/studio/spec/windows/lib: bcb
+
+Only in /cygdrive/d/appz/dev/Eiffel60/studio/spec/windows/lib/msc: dll_finalized.lib
+Only in /cygdrive/d/appz/dev/Eiffel60/studio/spec/windows/lib/msc: dll_mtfinalized.lib
+Only in /cygdrive/d/appz/dev/Eiffel60/studio/spec/windows/lib/msc: dll_mtwkbench.lib
+Only in /cygdrive/d/appz/dev/Eiffel60/studio/spec/windows/lib/msc: dll_wkbench.lib
+Only in /cygdrive/d/appz/dev/Eiffel60/studio/spec/windows/lib/msc: finalized.dll
+Only in /cygdrive/d/appz/dev/Eiffel60/studio/spec/windows/lib/msc: ise_desc.dll
+Only in /cygdrive/d/appz/dev/Eiffel60/studio/spec/windows/lib/msc: ise_desc.lib
+Only in /cygdrive/d/appz/dev/Eiffel60/studio/spec/windows/lib/msc: mtfinalized.dll
+Only in /cygdrive/d/appz/dev/Eiffel60/studio/spec/windows/lib/msc: mtwkbench.dll
+Only in /cygdrive/d/appz/dev/Eiffel60/studio/spec/windows/lib/msc: wkbench.dll
+
+Only in Eiffel60/studio/wizards/new_projects: wizard
+Only in Eiffel60/studio/wizards/new_projects: wizard.dsc
+
+Only in /cygdrive/d/appz/dev/Eiffel60/vision2_demo: tests

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<project name="es_compile" default="help">
+	<description>
+		description: "ec build"
+		author: "trosim, es-make Project Team, ETH Zurich"
+		note: "Root script"
+	</description>
+	
+	<target name="help">
+		<echo message="usage:"/>
+		<echo message=" geant check_setup" />
+		<echo message=" geant build_dev"/>
+		<echo message=" geant build_delivery"/>
+		<echo message=" geant clean"/>
+	</target>
+	<target name="check_setup">
+		<geant file="${EIFFEL_SRC}${path_separator}scripts${path_separator}build.eant" target="check_setup" reuse_variables="true" fork="false" />
+	</target>
+	<target name="build_dev">
+		<geant file="${EIFFEL_SRC}${path_separator}scripts${path_separator}build.eant" target="build_dev" reuse_variables="true" fork="false" />
+	</target>
+	<target name="build_delivery">
+		<geant file="${EIFFEL_SRC}${path_separator}scripts${path_separator}make_delivery.eant" target="build_delivery" reuse_variables="true" fork="false" />
+	</target>
+	<target name="clean">
+		<geant file="${EIFFEL_SRC}${path_separator}scripts${path_separator}build.eant" target="clean_all" reuse_variables="true" fork="false" />
+		<geant file="${EIFFEL_SRC}${path_separator}scripts${path_separator}make_delivery.eant" target="clean" reuse_variables="true" fork="false" />
+	</target>
+</project>

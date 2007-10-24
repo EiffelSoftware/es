@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<project name="build_net_clib" default="help">
+
+	<description>
+		description: "Network Clib library compilation"
+		author: "Beat Herlig"
+	</description>
+
+	<inherit>
+		<parent location="${EIFFEL_SRC}/library/build.eant">
+			<redefine target="help"/>
+			<redefine target="clean"/>
+			<redefine target="clobber"/>
+		</parent>
+	</inherit>
+	
+	<target name="help">
+		<echo message="usage:"/>
+		<echo message=" geant compile_library"/>
+		<echo message="       ----------"/>
+
+		<echo message=" geant clean"/>
+		<echo message=" geant clobber"/>
+		<echo message="       ----------"/>
+	</target>
+	
+	<target name="compile_library" depend="init">
+		<echo message="Compile Net clib" />
+		
+		<geant target="build_windows" dir="${ISE_LIBRARY}/library/net/Clib" if="${is_windows}" />
+		<exec executable="finish_freezing -library" unless="${is_windows}" 
+			accept_errors="true" exit_code_variable="return_code" />
+
+<!--	old code using the makefiles
+
+		<exec executable="make_${ISE_C_COMPILER}.bat" dir="${ISE_LIBRARY}/library/net/Clib"  if="${is_windows}" accept_errors="true" exit_code_variable="return_code" />
+		<echo message="done." />
+-->
+	</target>
+	
+	<target name="build_windows" depend="init" if="${is_windows}">
+		<geant target="make_msc" if="${ISE_C_COMPILER} = msc" />
+		<geant target="make_bcb" if="${ISE_C_COMPILER} = bcb" />
+		
+		<geant target="clean" />
+	</target>
+	
+	<target name="make_msc" depend="init" if="${is_windows}">
+		<echo message="Compile Net clib with Microsoft compiler" />
+		
+		<exec executable="nmake /NOLOGO /C /S /f makefile.m" accept_errors="true" exit_code_variable="return_code" />
+		<exec executable="nmake /NOLOGO /C /S /f makefile.il" accept_errors="true" exit_code_variable="return_code" />
+		<exec executable="nmake /NOLOGO /C /S /f makefile.mmt" accept_errors="true" exit_code_variable="return_code" />
+
+		<echo message="EiffelNET C-library compiled." />
+	</target>
+	
+	<target name="make_bcb" depend="init" if="${is_windows}">
+		<echo message="Compile Net clib with Borland compiler" />
+
+		<exec executable="${ISE_EIFFEL}\BCC55\bin\make -f makefile.b" accept_errors="true" exit_code_variable="return_code" />
+		<exec executable="${ISE_EIFFEL}\BCC55\bin\make -f makefile.b.il" accept_errors="true" exit_code_variable="return_code" />
+		<exec executable="${ISE_EIFFEL}\BCC55\bin\make -f makefile.bmt" accept_errors="true" exit_code_variable="return_code" />
+
+		<echo message="EiffelNET C-library compiled." />
+	</target>	
+	
+	<target name="clean" depend="init">
+		<exec executable="del *.obj" accept_errors="true" exit_code_variable="return_code" if="${is_windows}" />
+		<exec executable="del *.lib" accept_errors="true" exit_code_variable="return_code" if="${is_windows}" />
+		<echo message=" "/>
+	</target>
+
+	<target name="clobber" depend="init">
+		<geant target="clean" />
+	</target>	
+	
+	
+</project>

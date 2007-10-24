@@ -1,0 +1,16 @@
+test_name multi-constraint-infix-renamed
+test_description Checks convertibility to a generic which contains multi constraint generics.
+copy_sub 	Ace $TEST Ace
+copy_raw 	test.e $CLUSTER test.e
+copy_raw 	multi.e $CLUSTER multi.e
+
+
+compile_melted
+compile_result 	ok
+
+execute_work	NONE exec_output_melted
+execute_result	ok
+compare		exec_output_melted output
+
+test_end
+

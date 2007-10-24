@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+
+<project name="es_build_library" default="help">
+	<description>
+		description: "geant script to individually build libraries"
+		author: "Beat Herlig and others"
+		note: "this script is part of the ES build project. see http://eiffelsoftware.origo.ethz.ch/index.php/Build_tool"
+	</description>
+	
+	<inherit>
+		<parent location="${EIFFEL_SRC}/scripts/misc/_common_.eant">
+			<redefine target="help"/>
+		</parent>
+	</inherit>
+	
+	<target name="help">
+		<echo message="usage:"/>
+		<echo message="       ----------"/>
+		<echo message=" geant compile_all" />
+		<echo message="       ----------"/>
+		<echo message=" geant compile_net_lib" />
+		<echo message=" geant compile_vision2_lib" />
+		<echo message=" geant compile_wel_lib" if="${is_windows}"/>
+		<echo message=" geant compile_vision2_gtk_lib" unless="${is_windows}"/>
+		<echo message="       ----------"/>
+
+		<echo message=" geant clean"/>
+		<echo message=" geant clobber"/>
+		<echo message="       ----------"/>
+	</target>
+
+	<!-- check setup -->
+	<target name="check_setup" depent="init">
+		<geant file="${EIFFEL_SRC}/scripts/check_setup.eant" target="check_setup" reuse_variables="true" fork="false" />
+	</target>
+	
+	
+	<target name="compile_all" depend="init">
+		<description>
+			Compile all Clibs in subdirectories.
+		</description>
+		
+		<geant target="check_setup"/>
+		<geant target="do_all" arguments="compile_library"/>
+		
+		<!--
+		<available resource="${ISE_LIBRARY}${path_separator}library${path_separator}gobo${path_separator}library" variable="gobo_available"/>
+		<echo message="GOBO is already installed ${ISE_LIBRARY}${path_separator}library${path_separator}gobo${path_separator}library" if="${gobo_available}=true" />
+		<geant target="extract_gobo" if="${gobo_available}=false" />
+		<unset name="gobo_available" />
+		-->
+	</target>
+	
+	
+	<target name="compile_net_lib" depend="init">
+		<geant file="net/Clib/build.eant" target="compile_library" reuse_variables="true" fork="false" />
+	</target>
+	
+	<target name="compile_vision2_lib" depend="init">
+		<geant file="vision2/Clib/build.eant" target="compile_library" reuse_variables="true" fork="false" />
+	</target>
+	
+		<target name="compile_wel_lib" depend="init" if="${is_windows}">
+		<geant file="wel/clib/build.eant" target="compile_library" reuse_variables="true" fork="false" if="${is_windows}"/>
+	</target>
+	
+	<target name="compile_vision2_gtk_lib" depend="init" unless="${is_windows}">
+		<geant file="vision2/implementation/gtk/Clib/build.eant" target="compile_library" reuse_variables="true" fork="false" unless="${is_windows}"/>
+	</target>
+	
+	<target name="clean" depend="init">
+		<description>
+			Remove intermediary generated files.
+		</description>
+
+		<geant target="do_all" arguments="clean"/>
+	</target>
+
+	<target name="clobber" depend="init">
+		<description>
+			Remove all generated files.
+		</description>
+
+		<geant target="do_all" arguments="clobber"/>
+	</target>
+	
+	<!-- implementation -->
+	
+	<target name="do_all" depend="init">
+		<description>
+			Call 'geant' with the same target ${target} (first argument)
+			in all subdirectories.
+		</description>
+		<argument name="target"/>
+
+		<geant file="build.eant" target="${target}" dir="net/Clib"/>
+		<geant file="build.eant" target="${target}" dir="vision2/Clib"/>
+		<geant file="build.eant" target="${target}" dir="wel/clib" if="${is_windows}"/>
+		<geant file="build.eant" target="${target}" dir="vision2/implementation/gtk/Clib" unless="${is_windows}"/>
+	</target>
+	
+</project>

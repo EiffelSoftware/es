@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<project name="build_vision2_gtk_clib" default="help">
+
+	<description>
+		description: "Vision2-GTK Clib library compilation"
+		author: "Beat Herlig"
+	</description>
+
+	<inherit>
+		<parent location="${EIFFEL_SRC}/library/build.eant">
+			<redefine target="help"/>
+			<redefine target="clean"/>
+			<redefine target="clobber"/>
+		</parent>
+	</inherit>
+	
+	<target name="help">
+		<echo message="usage:"/>
+		<echo message=" geant compile_library"/>
+		<echo message="       ----------"/>
+
+		<echo message=" geant clean"/>
+		<echo message=" geant clobber"/>
+		<echo message="       ----------"/>
+	</target>
+	
+	<target name="compile_library" depend="init">
+		<echo message="Compile Vision2 clib" />
+		
+		<echo message="Fixing bug: copying a new config.sh file..." />
+		<exec executable="cp ${EIFFEL_SRC}/C/CONFIGS/${ISE_PLATFORM} ./config.sh" dir="${ISE_LIBRARY}/vision2/implementation/gtk/Clib" unless="${is_windows}" accept_errors="true" exit_code_variable="return_code" />
+		<exec executable="finish_freezing -library" dir="${ISE_LIBRARY}/vision2/implementation/gtk/Clib" unless="${is_windows}" accept_errors="true" exit_code_variable="return_code" />
+		<echo message="done." />
+	</target>
+	
+	<target name="clean" depend="init">
+		<echo message="nothing to clean here."/>
+		<echo message=" "/>
+	</target>
+
+	<target name="clobber" depend="init">
+		<echo message="nothing to clobber here."/>
+		<echo message=" "/>
+	</target>	
+	
+	
+</project>

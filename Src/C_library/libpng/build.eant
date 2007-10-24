@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<project name="build_libpng" default="help">
+
+	<description>
+		description: "C compilation of libpng"
+		author: "Beat Herlig, Jocelyn Fiat"
+	</description>
+
+	<inherit>
+		<parent location="${EIFFEL_SRC}/make_library.eant">
+			<redefine target="build_c_library"/>
+		</parent>
+	</inherit>
+	
+	<target name="build_c_library" depend="init">
+		<echo message="Compile libpng" />
+		
+		<echo message="Compiler libpng" />
+		<exec executable="make_${ISE_C_COMPILER}.bat" dir="${ISE_LIBRARY}/C_library/libpng" if="${is_windows}"
+			accept_errors="true" exit_code_variable="return_code" />
+			
+		<echo message="done." />
+	</target>
+	
+	
+	
+</project>
