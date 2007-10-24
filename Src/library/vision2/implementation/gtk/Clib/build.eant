@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<project name="build_vision2_gtk_clib" default="help">
+
+	<description>
+		description: "Vision2-GTK Clib library compilation"
+		author: "Beat Herlig"
+	</description>
+
+	<inherit>
+		<parent location="${EIFFEL_SRC}/scripts/_common_.eant">
+			<redefine target="help"/>
+		</parent>
+	</inherit>
+	
+	<target name="help">
+		<echo message="usage:"/>
+		<echo message=" geant compile"/>
+		<echo message=" geant clean"/>
+		<echo message=" geant clobber"/>
+	</target>
+	
+	<target name="compile" depend="init">
+		<exec executable="finish_freezing -library" dir="${ISE_LIBRARY}/library/vision2/implementation/gtk/Clib" unless="${is_windows}" />
+	</target>
+	
+	<target name="clean" depend="init">
+	</target>
+
+	<target name="clobber" depend="clean" />
+	
+</project>

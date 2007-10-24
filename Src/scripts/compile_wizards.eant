@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+
+<project name="compile_wizards" default="help">
+	<description>
+		description: "wizards compilation"
+		author: "trosim, es-make Project Team, ETH Zurich"
+		note: "This script provides features to compile the wizards."
+	</description>
+	<inherit>
+		<parent location="${EIFFEL_SRC}/scripts/_common_.eant">
+			<redefine target="help"/>
+		</parent>
+	</inherit>
+	
+	<target name="help">
+		<echo message="usage:"/>
+		<echo message=" geant finalize_vision2_wizard" />
+		<echo message=" geant finalize_wizard_wizard" />
+		<echo message=" geant finalize_wel_wizard" />
+		<echo message=" geant finalize_dotnet_wizard" />
+		<echo message=" geant finalize_precompile_wizard" />
+	</target>
+
+	<!--
+	**************************************************************************************
+	***  INIT/SETTINGS                         *******************************************
+	**************************************************************************************
+	-->
+	<target name="init_system" depend="init" once="true">
+		<echo message="System init" />
+
+		<!-- compilation related -->
+		<set name="compile_dir" value="${cwd}"/>
+
+		<!-- environment related -->
+		<setenv name="ISE_LIBRARY" value="${EIFFEL_SRC}" />
+
+		<!-- wizard compilation -->
+		<set name="system" value="wizard"/>
+		<set name="system_target" value="wizard" />
+		<set name="system_dir" value="${compile_dir}" />
+	</target>
+
+	<!--
+	**************************************************************************************
+	***  COMPILE : wizards ...                ********************************************
+	**************************************************************************************
+	-->
+
+	<!-- vision2 wizard -->
+	<target name="finalize_vision2_wizard" depend="init_system">
+                <set name="wizard_dir" value="${INSTALL_DIR}${path_separator}studio${path_separator}wizards${path_separator}new_projects${path_separator}vision2" />
+                <set name="system_ecf" value="${EIFFEL_SRC}${path_separator}help${path_separator}wizards${path_separator}vision2_wizard.ecf" />
+		<set name="wizard_name" value="vision2" />
+		<geant target="finalize_wizard" reuse_variables="true" fork="false"/>
+	</target>
+
+	<!-- wizard wizard -->
+	<target name="finalize_wizard_wizard" depend="init_system">
+                <set name="wizard_dir" value="${INSTALL_DIR}${path_separator}studio${path_separator}wizards${path_separator}new_projects${path_separator}wizard" />
+                <set name="system_ecf" value="${EIFFEL_SRC}${path_separator}help${path_separator}wizards${path_separator}wizard_wizard.ecf" />
+		<set name="wizard_name" value="wizard" />
+		<geant target="finalize_wizard" reuse_variables="true" fork="false"/>
+	</target>
+
+	<!-- precompile wizard -->
+	<target name="finalize_precompile_wizard" depend="init_system">
+                <set name="wizard_dir" value="${INSTALL_DIR}${path_separator}studio${path_separator}wizards${path_separator}others${path_separator}precompile" />
+                <set name="system_ecf" value="${EIFFEL_SRC}${path_separator}help${path_separator}wizards${path_separator}precompile_wizard.ecf" />
+		<set name="wizard_name" value="precompile" />
+		<geant target="finalize_wizard" reuse_variables="true" fork="false"/>
+	</target>
+
+	<!-- wel wizard -->
+	<target name="finalize_wel_wizard" depend="init_system">
+                <set name="wizard_dir" value="${INSTALL_DIR}${path_separator}studio${path_separator}wizards${path_separator}new_projects${path_separator}wel" />
+                <set name="system_ecf" value="${EIFFEL_SRC}${path_separator}help${path_separator}wizards${path_separator}wel_wizard.ecf" />
+		<set name="wizard_name" value="wel" />
+		<geant target="finalize_wizard" reuse_variables="true" fork="false"/>
+	</target>
+
+	<!-- dotnet wizard -->
+	<target name="finalize_dotnet_wizard" depend="init_system">
+                <set name="wizard_dir" value="${INSTALL_DIR}${path_separator}studio${path_separator}wizards${path_separator}new_projects${path_separator}dotnet" />
+                <set name="system_ecf" value="${EIFFEL_SRC}${path_separator}help${path_separator}wizards${path_separator}dotnet_wizard.ecf" />
+		<set name="wizard_name" value="dotnet" />
+		<geant target="finalize_wizard" reuse_variables="true" fork="false"/>
+	</target>
+
+	<!--
+	**************************************************************************************
+	***  IMPLEMENTATION                       ********************************************
+	**************************************************************************************
+	-->
+
+	<target name="finalize_wizard" depend="init_system">
+		<echo message="Finalization: ${wizard_name} wizard in $system_dir"/>
+                <exec executable="rmdir /q/s ${compile_dir}${path_separator}EIFGENs${path_separator}${system_target}" accept_errors="true" if="${is_windows}" />
+                <exec executable="rm -rf ${compile_dir}${path_separator}EIFGENs${path_separator}${system_target}" accept_errors="true" unless="${is_windows}" />
+		<geant file="ise_eiffel.eant" target="finalize" reuse_variables="true" dir="${scripts_dir}"  fork="false"/>
+	</target>
+	<target name="delivery_wizard" depend="init_system">
+                <mkdir directory="${wizard_dir}${path_separator}spec" />
+                <mkdir directory="${wizard_dir}${path_separator}spec${path_separator}${ISE_PLATFORM}" />
+                <copy file="${compile_dir}${path_separator}EIFGENs${path_separator}${system_target}${path_separator}F_code${path_separator}wizard${exe}" to_file="${wizard_dir}${path_separator}spec${path_separator}${ISE_PLATFORM}${path_separator}wizard${exe}" if="${return_code}=0"/>
+                <exec executable="chmod a+x ${wizard_dir}${path_separator}spec${path_separator}${ISE_PLATFORM}${path_separator}wizard${exe}" accept_errors="true" exit_code_variable="return_code" />
+	</target>
+</project>

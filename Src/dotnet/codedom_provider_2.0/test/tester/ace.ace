@@ -1,0 +1,162 @@
+system
+	"ecd_test"
+
+root
+	TESTER_ROOT_CLASS: make_and_launch
+
+default
+	il_verifiable (yes)
+	cls_compliant (yes)
+	dotnet_naming_convention (yes)
+	use_cluster_name_as_namespace (no)
+	use_all_cluster_name_as_namespace (yes)
+	msil_generation(yes)
+	msil_generation_type ("exe")
+	version ("2.0.1215.0")
+	msil_clr_version ("v2.0.50727")
+	assertion (no)
+	disabled_debug (yes)
+	debug (no)
+	line_generation (yes)
+	profile (no)
+	trace (no)
+	check_vape (yes)
+	console_application (no)
+	syntax_warning (no)
+	address_expression (no)
+	array_optimization (no)
+	dead_code_removal (yes)
+	dynamic_runtime (no)
+	exception_trace (no)
+	inlining (no)
+	multithreaded (no)
+
+
+cluster
+	all root_cluster:		"$EIFFEL_SRC\dotnet\codedom_provider_2.0\test\tester\gui"
+
+
+	library base_net:		"$EIFFEL_SRC\library.net\base"
+		exclude
+			".svn"; 
+		default
+			namespace ("EiffelSoftware.Library.BaseNet")
+		end
+
+	library base:		"$EIFFEL_SRC\library\base"
+		exclude
+			"table_eiffel3"; "desc"; "classic"; ".svn"; 
+		default
+			namespace ("EiffelSoftware.Library.Base")
+		end
+
+	all wel:		"$EIFFEL_SRC\library\wel"
+		exclude
+			"spec"; "clib"; "classic"; "CVS"; 
+		default
+			assertion (no)
+			assertion (check)
+			assertion (require)
+			assertion (ensure)
+		end
+
+	all wel_net:		"$EIFFEL_SRC\library.net\wel"
+		exclude
+			"CVS"; 
+		default
+			namespace ("EiffelSoftware.Library.WELNet")
+			assertion (no)
+			assertion (check)
+		end
+
+	all vision2:		"$EIFFEL_SRC\library\vision2"
+		exclude
+			"Clib"; "gtk"; "gtk2"; "assign_attempt.e"; "ev_pixmap_imp_delegate.e"; "ev_pixmap_imp_loader.e"; "CVS"; 
+		default
+			assertion (no)
+			assertion (check)
+			assertion (require)
+		end
+
+	all vision2_net:		"$EIFFEL_SRC\library.net\vision2"
+		exclude
+			"CVS"; 
+		default
+			namespace ("EiffelSoftware.Library.Vision2Net")
+			assertion (no)
+			assertion (check)
+		end
+
+	all vision2_extensions:		"$EIFFEL_SRC\library\vision2_extension"
+		exclude
+			"CVS"; "gtk"; 
+		default
+			assertion (no)
+			assertion (check)
+		end
+
+	common:		"$EIFFEL_SRC\dotnet\codedom_provider_2.0\common"
+
+assembly
+	"mscorlib":	"$ISE_DOTNET_FRAMEWORK\mscorlib.dll"
+
+	"system_":	"$ISE_DOTNET_FRAMEWORK\System.dll"
+		prefix
+			"SYSTEM_DLL_"
+		end
+
+	"system_xml":	"$ISE_DOTNET_FRAMEWORK\System.Xml.dll"
+		prefix
+			"XML_"
+		end
+
+	"System.Security, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a":	"c:\windows\assembly\gac_msil\system.security\2.0.0.0__b03f5f7f11d50a3a\system.security.dll"
+		prefix
+			"SYSTEM_SECURITY_"
+		end
+
+	"System.Data.SqlXml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089":	"c:\windows\assembly\gac_msil\system.data.sqlxml\2.0.0.0__b77a5c561934e089\system.data.sqlxml.dll"
+		prefix
+			"SYSTEM_DATA_SQLXML_"
+		end
+
+	"System.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a":	"c:\windows\assembly\gac_msil\system.configuration\2.0.0.0__b03f5f7f11d50a3a\system.configuration.dll"
+		prefix
+			"SYSTEM_CONFIGURATION_"
+		end
+
+	"System.Runtime.Serialization.Formatters.Soap":	"$ISE_DOTNET_FRAMEWORK\system.runtime.serialization.formatters.soap.dll"
+
+	"Accessibility":	"$ISE_DOTNET_FRAMEWORK\Accessibility.dll"
+
+	"System.Drawing":	"$ISE_DOTNET_FRAMEWORK\system.drawing.dll"
+		prefix
+			"DRAWING_"
+		end
+
+	"System.Windows.Forms":	"$ISE_DOTNET_FRAMEWORK\system.windows.forms.dll"
+		prefix
+			"WINFORMS_"
+		end
+
+	"eiffelsoftware_runtime":	"$ISE_EIFFEL\studio\spec\$ISE_PLATFORM\bin\EiffelSoftware.Runtime.dll"
+
+	"System.Deployment, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a":	"c:\windows\assembly\gac_msil\system.deployment\2.0.0.0__b03f5f7f11d50a3a\system.deployment.dll"
+		prefix
+			"SYSTEM_DEPLOYMENT_"
+		end
+
+
+external
+
+	include_path:
+		"$(EIFFEL_SRC)\library\wel\spec\windows\include",
+		"$(EIFFEL_SRC)\library\vision2\spec\include"
+
+	object:
+		"$(EIFFEL_SRC)\library\wel\spec\$(ISE_C_COMPILER)\lib\ilwel.lib",
+		"$(EIFFEL_SRC)\library\vision2\spec\$(ISE_C_COMPILER)\lib\ilvision2.lib",
+		"$(EIFFEL_SRC)\library\vision2\spec\$(ISE_C_COMPILER)\lib\zlib.lib",
+		"$(EIFFEL_SRC)\library\vision2\spec\$(ISE_C_COMPILER)\lib\libpng.lib"
+
+end

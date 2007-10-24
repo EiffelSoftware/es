@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<project name="es_build_library" default="help">
+	<description>
+		description: "geant script to individually build libraries"
+		author: "Beat Herlig and others"
+		note: "this script is part of the ES build project. see http://eiffelsoftware.origo.ethz.ch/index.php/Build_tool"
+	</description>
+	
+	<inherit>
+		<parent location="${EIFFEL_SRC}/scripts/_common_.eant">
+			<redefine target="help"/>
+		</parent>
+	</inherit>
+	
+	<target name="help">
+		<echo message="usage:"/>
+		<echo message=" geant compile"/>
+		<echo message=" geant clean"/>
+		<echo message=" geant clobber"/>
+	</target>
+	
+	<target name="compile" depend="init">
+		<geant dir="${ISE_LIBRARY}/library/net/Clib" file="${ISE_LIBRARY}/library/net/Clib/build.eant" target="compile" />
+		<geant dir="${ISE_LIBRARY}/library/vision2/Clib" file="${ISE_LIBRARY}/library/vision2/Clib/build.eant" target="compile" />
+		<geant dir="${ISE_LIBRARY}/library/vision2/implementation/gtk/Clib" file="${ISE_LIBRARY}/library/vision2/implementation/gtk/Clib/build.eant" target="compile" />
+		<geant dir="${ISE_LIBRARY}/library/wel/clib" file="${ISE_LIBRARY}/library/wel/clib/build.eant" target="compile" />
+	</target>
+	
+	<target name="clean" depend="init">
+		<geant dir="${ISE_LIBRARY}/library/net/Clib" file="${ISE_LIBRARY}/library/net/Clib/build.eant" target="clean" />
+		<geant dir="${ISE_LIBRARY}/library/vision2/Clib" file="${ISE_LIBRARY}/library/vision2/Clib/build.eant" target="clean" />
+		<geant dir="${ISE_LIBRARY}/library/vision2/implementation/gtk/Clib" file="${ISE_LIBRARY}/library/vision2/implementation/gtk/Clib/build.eant" target="clean" />
+		<geant dir="${ISE_LIBRARY}/library/wel/clib" file="${ISE_LIBRARY}/library/wel/clib/build.eant" target="clean" />
+	</target>
+
+	<target name="clobber" depend="clean" />
+	
+
+</project>

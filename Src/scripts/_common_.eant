@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+
+<project name="_common_" default="help">
+
+	<description>
+		description: "Common script code"
+		author: "Jocelyn Fiat and others"
+	</description>
+
+	<target name="help">
+		<echo message="usage:" />
+		<echo message="  Do not call this script directly" />
+	</target>	
+
+	<!-- 
+	**************************************************************************************
+	*** INIT/Settings      ***************************************************************
+	**************************************************************************************
+	-->
+
+	<target name="init" once="true">
+		<!-- scripts and compilation related -->
+		<set name="scripts_dir" value="${EIFFEL_SRC}${path_separator}scripts${path_separator}" />
+		
+		<!-- Which version of ISE Eiffel Compiler do we check for? -->
+		<set name="ec_major_version" value="5" />
+		<set name="ec_minor_version" value="7" />
+		<set name="ec_version_string" value="version 5.7" />
+		
+		<!-- We compile binaries in the following directory: -->
+		<set name="compile_dir" value="${cwd}${path_separator}compile_dir" unless="$compile_dir"/>
+		
+		<!-- The delivery is generated here: -->
+		<set name="delivery_dir" value="${cwd}${path_separator}Eiffel${ec_major_version}${ec_minor_version}" />
+		
+		<!-- Log messages are stored here: -->
+		<set name="build_es_logfile" value="${cwd}${path_separator}build_es.log" />
+	</target>
+
+	<target name="logger">
+		<description>
+			writes the logmessage ${msg} to the file ${to_file}
+			call this target like this: 
+				geant target="logger" arguments="${logfile},${message_string}"
+		</description>
+		
+		<argument name="to_file" />
+		<argument name="msg" />
+
+		<!-- unix -->
+		<exec executable="echo &quot;`date +%H:%M` ${msg}&quot; >> ${to_file}" accept_errors="true" unless="${is_windows}" />
+		
+		<!-- windows -->
+		<exec executable="time /T HH:SS >> ${to_file}" accept_errors="true" if="${is_windows}" />
+		<echo message="${msg}" to_file="${to_file}" append="true" if="${is_windows}" />
+	</target>
+	
+</project>

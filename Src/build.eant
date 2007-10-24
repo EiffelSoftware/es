@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<project name="es_compile" default="help">
+	<description>
+		description: "ec build"
+		author: "trosim, es-make Project Team, ETH Zurich"
+		note: "Root script"
+	</description>
+	
+	<inherit>
+		<parent location="${EIFFEL_SRC}/scripts/_common_.eant">
+			<redefine target="help" />
+		</parent>
+	</inherit>
+
+	<target name="help" depend="init">
+		<echo message="EiffelStudio automated build scripts" />
+		<echo message="------------------------------------"/>
+		<echo message="" />
+		<echo message="usage:"/>
+		<echo message=" geant check_setup" />
+		<echo message=" geant build_workbench"/>
+		<echo message=" geant make_delivery"/>
+		<echo message=" geant clean"/>
+	</target>
+
+	<target name="check_setup" depend="init">
+		<geant file="${scripts_dir}check_setup.eant" target="check_setup" />
+	</target>
+
+	<target name="build_workbench" depend="init">
+		<geant file="${scripts_dir}compile_runtime.eant" target="compile_runtime"/>
+		<geant file="${scripts_dir}compile_library.eant" target="compile_all" />
+		<geant file="${scripts_dir}compile_executables.eant" target="compile_ec" />
+	</target>
+
+	<target name="make_delivery" depend="init">
+		<geant file="${scripts_dir}make_delivery.eant" target="make_delivery" />
+	</target>
+
+	<target name="clean" depend="init">
+		<geant file="${scripts_dir}compile_runtime.eant" target="clean_runtime" />
+		<geant file="${scripts_dir}compile_library.eant" target="clean_library" />
+		<geant file="${scripts_dir}compile_executables.eant" target="clean_ec" />
+	</target>
+
+</project>

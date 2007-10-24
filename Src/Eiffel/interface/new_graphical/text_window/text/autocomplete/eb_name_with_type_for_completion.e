@@ -1,0 +1,95 @@
+indexing
+	description: "'name: TYPE' as one of completion possiblities."
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
+	author: ""
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	EB_NAME_WITH_TYPE_FOR_COMPLETION
+
+inherit
+	EB_NAME_FOR_COMPLETION
+		rename
+			make as old_make
+		redefine
+			grid_item
+		end
+
+create
+	make
+
+feature {NONE} -- Initialization
+
+	make (a_name: STRING; a_type: TYPE_A; a_feature: FEATURE_I) is
+			-- Init
+		require
+			a_name_not_void: a_name /= Void
+			a_type_not_void: a_type /= Void
+		do
+			old_make (a_name)
+			return_type := a_type
+			feature_i := a_feature
+			if show_type then
+				append (completion_type)
+			end
+		end
+
+feature -- Access
+
+	grid_item: EB_GRID_LOCAL_ITEM is
+			-- Grid item
+		local
+			l_style: EB_GRID_LOCAL_ITEM_STYLE
+		do
+			if show_type then
+				create {EB_GRID_LOCAL_ITEM_NAME_TYPE_STYLE}l_style
+			else
+				create {EB_GRID_LOCAL_ITEM_NAME_STYLE}l_style
+			end
+			create Result.make_with_type (name, return_type, feature_i, l_style)
+			Result.set_tooltip_display_function (agent display_colorized_tooltip)
+			Result.enable_pixmap
+			if has_child then
+				Result.set_pixmap (pixmaps.icon_pixmaps.feature_group_icon)
+			end
+			Result.set_overriden_fonts (label_font_table)
+		end
+
+	feature_i: FEATURE_I;
+			-- Feature used to print types
+
+indexing
+	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options:	"http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful,	but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the	GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+		]"
+	source: "[
+			 Eiffel Software
+			 356 Storke Road, Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
+		]"
+
+end

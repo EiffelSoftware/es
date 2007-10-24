@@ -1,0 +1,354 @@
+<?xml version="1.0"?>
+
+<project name="compile_executables" default="help">
+	<description>
+		description: "executables compilation"
+		author: "Jocelyn Fiat and others"
+		note: "This script could be split into severals scripts, one for each product"
+	</description>
+	<inherit>
+		<parent location="${EIFFEL_SRC}/scripts/_common_.eant">
+			<redefine target="help"/>
+		</parent>
+	</inherit>
+	
+	<target name="help">
+		<echo message="usage:"/>
+		<echo message=" geant clean_ec"/>
+		<echo message=" geant compile_ec"/>
+		<echo message=" geant finalize_ec"/>
+		<echo message="       ----------"/>
+		<echo message=" geant clean_ec_batch"/>
+		<echo message=" geant compile_ec_batch"/>
+		<echo message=" geant finalize_ec_batch"/>
+		<echo message="       ----------"/>
+		<echo message=" geant compile_ec_unix_on_windows"/>
+		<echo message="       ----------"/>
+		<echo message=" geant clean_estudio"/>
+		<echo message=" geant finalize_estudio"/>
+		<echo message="       ----------"/>
+		<echo message=" geant clean_finish_freezing"/>
+		<echo message=" geant finalize_finish_freezing"/>
+		<echo message="       ----------"/>
+		<echo message=" geant clean_quick_finalize"/>
+		<echo message=" geant finalize_quick_finalize"/>
+		<echo message="       ----------"/>
+		<echo message=" geant clean_h2e"/>
+		<echo message=" geant finalize_h2e"/>
+		<echo message="       ----------"/>
+		<echo message=" geant clean_emake"/>
+		<echo message=" geant finalize_emake"/>
+		<echo message="       ----------"/>
+		<echo message=" geant clean_mdconsumer"/>
+		<echo message=" geant compile_mdconsumer"/>
+		<echo message=" geant finalize_mdconsumer"/>
+		<echo message="       ----------"/>
+		<echo message=" geant clean_emdc"/>
+		<echo message=" geant finalize_emdc"/>
+		<echo message="       ----------"/>
+		<echo message=" geant clean_esbuilder"/>
+		<echo message=" geant compile_esbuilder"/>
+		<echo message=" geant finalize_esbuilder"/>
+		<echo message="       ----------"/>
+		<echo message=" geant clean_docbuilder"/>
+		<echo message=" geant finalize_docbuilder"/>
+		<echo message="       ----------"/>
+		<echo message=" geant clean_compile_all"/>
+		<echo message=" geant finalize_compile_all"/>
+		<echo message="       ----------"/>
+		<echo message=" geant clean_es_cleaner"/>
+		<echo message=" geant finalize_es_cleaner"/>
+	</target>
+
+	<!--
+	**************************************************************************************
+	***  COMPILE : ec, batch, unix ...   ********************************************
+	**************************************************************************************
+	-->
+	
+	<target name="init_system" depend="init">
+		<available resource="${compile_dir}" variable="compile_dir_available" />
+		<mkdir directory="${compile_dir}" if="${compile_dir_available}=false" />
+	</target>
+
+	<!-- bench ec -->
+	<target name="init_ec" depend="init_system">
+		<set name="system" value="ec"/>
+		<set name="system_target" value="bench" />
+		<set name="system_ecf" value="${EIFFEL_SRC}${path_separator}Eiffel${path_separator}Ace${path_separator}ec.ecf" />
+		<set name="system_dir" value="${compile_dir}" />
+	</target>
+	<target name="clean_ec" depend="init_ec">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="clean" reuse_variables="true" fork="false"/>
+	</target>
+	<target name="compile_ec" depend="init_ec">
+		<copy file="ec.rc" to_file="${compile_dir}${path_separator}ec.rc" dir="${EIFFEL_SRC}${path_separator}Eiffel${path_separator}Ace" if="${is_windows}" />
+		<copy file="ec.ico" to_file="${compile_dir}${path_separator}ec.ico" dir="${EIFFEL_SRC}${path_separator}Eiffel${path_separator}Ace" if="${is_windows}" />
+		<copy file="ec.exe.manifest" to_file="${compile_dir}${path_separator}ec.exe.manifest" dir="${EIFFEL_SRC}${path_separator}Eiffel${path_separator}Ace" if="${is_windows}" />
+		<geant file="${scripts_dir}ise_eiffel.eant" target="compile" reuse_variables="true" fork="false"/>
+	</target>
+	<target name="finalize_ec" depend="init_ec">
+		<copy file="ec.rc" to_file="${compile_dir}${path_separator}ec.rc" dir="${EIFFEL_SRC}${path_separator}Eiffel${path_separator}Ace" if="${is_windows}" />
+		<copy file="ec.ico" to_file="${compile_dir}${path_separator}ec.ico" dir="${EIFFEL_SRC}${path_separator}Eiffel${path_separator}Ace" if="${is_windows}" />
+		<copy file="ec.exe.manifest" to_file="${compile_dir}${path_separator}ec.exe.manifest" dir="${EIFFEL_SRC}${path_separator}Eiffel${path_separator}Ace" if="${is_windows}" />
+		<geant file="${scripts_dir}ise_eiffel.eant" target="finalize" reuse_variables="true" fork="false"/>
+	</target>
+
+	<!-- batch ec -->
+	<target name="init_ec_batch" depend="init_ec">
+		<set name="system_target" value="batch" />
+	</target>
+	<target name="clean_ec_batch" depend="init_ec_batch">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="clean" reuse_variables="true" fork="false"/>
+	</target>
+	<target name="compile_ec_batch" depend="init_ec_batch">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="compile" reuse_variables="true" fork="false"/>
+	</target>
+	<target name="finalize_ec_batch" depend="init_ec_batch">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="finalize" reuse_variables="true" fork="false"/>
+	</target>
+
+	<!-- final estudio -->
+	<target name="init_estudio" depend="init_system">
+		<set name="system" value="estudio"/>
+		<set name="system_target" value="estudio" />
+		<set name="system_ecf" value="${EIFFEL_SRC}${path_separator}tools${path_separator}estudio${path_separator}config${path_separator}estudio.ecf" />
+		<set name="system_dir" value="${compile_dir}" />
+	</target>
+	<target name="clean_estudio" depend="init_estudio">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="clean" reuse_variables="true" fork="false"/>
+	</target>
+	<target name="finalize_estudio" depend="init_estudio">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="finalize" reuse_variables="true" fork="false"/>
+	</target>
+
+	<!-- finish_freezing -->
+	<target name="init_finish_freezing" depend="init_system">
+		<set name="system" value="finish_freezing"/>
+		<set name="system_target" value="finish_freezing" />
+		<set name="system_ecf" value="${EIFFEL_SRC}${path_separator}tools${path_separator}finish_freezing${path_separator}finish_freezing.ecf" />
+		<set name="system_dir" value="${compile_dir}" />
+	</target>
+	<target name="clean_finish_freezing" depend="init_finish_freezing">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="clean" reuse_variables="true" fork="false"/>
+	</target>
+	<target name="finalize_finish_freezing" depend="init_finish_freezing">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="finalize" reuse_variables="true" fork="false"/>
+	</target>
+
+	<!-- h2e -->
+	<target name="init_h2e" depend="init_system">
+		<set name="system" value="h2e"/>
+		<set name="system_target" value="h2e" />
+		<set name="system_ecf" value="${EIFFEL_SRC}${path_separator}library${path_separator}wel${path_separator}extra${path_separator}h2e.ecf" />
+		<set name="system_dir" value="${compile_dir}" />
+	</target>
+	<target name="clean_h2e" depend="init_h2e">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="clean" reuse_variables="true" fork="false"/>
+	</target>
+	<target name="finalize_h2e" depend="init_h2e">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="finalize" reuse_variables="true" fork="false"/>
+	</target>
+
+	<!-- quick_finalize -->
+	<target name="init_quick_finalize" depend="init_system">
+		<set name="system" value="quick_finalize"/>
+		<set name="system_target" value="quick_finalize" />
+		<set name="system_ecf" value="${EIFFEL_SRC}${path_separator}tools${path_separator}quick_finalize${path_separator}quick_finalize.ecf" />
+		<set name="system_dir" value="${compile_dir}" />
+	</target>
+	<target name="clean_quick_finalize" depend="init_quick_finalize">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="clean" reuse_variables="true" fork="false"/>
+	</target>
+	<target name="finalize_quick_finalize" depend="init_quick_finalize">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="finalize" reuse_variables="true" fork="false"/>
+	</target>
+
+	<!-- emake -->
+	<target name="init_emake" depend="init_system">
+		<set name="system" value="emake"/>
+		<set name="system_target" value="emake" />
+		<set name="system_ecf" value="${EIFFEL_SRC}${path_separator}tools${path_separator}eiffel_make${path_separator}emake.ecf" />
+		<set name="system_dir" value="${compile_dir}" />
+	</target>
+	<target name="clean_emake" depend="init_emake">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="clean" reuse_variables="true" fork="false"/>
+	</target>
+	<target name="finalize_emake" depend="init_emake">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="finalize" reuse_variables="true" fork="false"/>
+	</target>
+
+	<!-- unix ec -->
+	<target name="init_ec_unix_on_windows" depend="init_ec">
+		<set name="system_target" value="bench_unix" if="${is_windows}" />
+		<setenv name="ISE_PLATFORM" value="linux-x86" />
+	</target>
+	<target name="compile_ec_unix_on_windows" depend="init_ec_unix_on_windows">
+		<set name="c_compile" value="false" />
+		<geant file="${scripts_dir}ise_eiffel.eant" target="compile" reuse_variables="true" fork="false"/>
+	</target>
+
+	<!-- Consumer -->
+	<target name="init_mdconsumer" depend="init_system">
+		<set name="system" value="EiffelSoftware.MetadataConsumer"/>
+		<set name="system_target" value="consumer_20" />
+		<set name="system_ecf" value="${EIFFEL_SRC}${path_separator}dotnet${path_separator}consumer${path_separator}consumer.ecf" />
+		<set name="system_dir" value="${compile_dir}" />
+	</target>
+	<target name="clean_mdconsumer" depend="init_mdconsumer">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="clean" reuse_variables="true" fork="false"/>
+	</target>
+	<target name="compile_mdconsumer" depend="init_mdconsumer">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="compile" reuse_variables="true" fork="false"/>
+	</target>
+	<target name="finalize_mdconsumer" depend="init_mdconsumer">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="finalize" reuse_variables="true" fork="false"/>
+	</target>
+
+	<!-- emdc -->
+	<target name="init_emdc" depend="init_mdconsumer">
+		<set name="system" value="emdc" />
+		<set name="system_target" value="emdc" />
+	</target>
+	<target name="clean_emdc" depend="init_emdc">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="clean" reuse_variables="true" fork="false"/>
+	</target>
+	<target name="finalize_emdc" depend="init_emdc">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="finalize" reuse_variables="true" fork="false"/>
+	</target>
+
+	<!-- eBuild -->
+	<target name="init_esbuilder" depend="init_system">
+		<set name="system" value="esbuilder"/>
+		<set name="system_target" value="esbuilder" />
+		<set name="system_ecf" value="${EIFFEL_SRC}${path_separator}build${path_separator}esbuilder.ecf" />
+		<set name="system_dir" value="${compile_dir}" />
+	</target>
+	<target name="clean_esbuilder" depend="init_esbuilder">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="clean" reuse_variables="true" fork="false"/>
+	</target>
+	<target name="compile_esbuilder" depend="init_esbuilder">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="compile" reuse_variables="true" fork="false"/>
+	</target>
+	<target name="finalize_esbuilder" depend="init_esbuilder">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="finalize" reuse_variables="true" fork="false"/>
+	</target>
+
+	<!-- compile_docbuilder -->
+	<target name="init_docbuilder" depend="init_system">
+		<set name="system" value="doc_builder"/>
+		<set name="system_target" value="doc_builder" />
+		<set name="system_ecf" value="${EIFFEL_SRC}${path_separator}tools${path_separator}doc_builder${path_separator}doc_builder.ecf" />
+		<set name="system_dir" value="${compile_dir}" />
+	</target>
+	<target name="clean_docbuilder" depend="init_docbuilder">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="clean" reuse_variables="true" fork="false"/>
+	</target>
+	<target name="finalize_docbuilder" depend="init_docbuilder">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="finalize" reuse_variables="true" fork="false"/>
+	</target>
+
+	<!-- compile_all -->
+	<target name="init_compile_all" depend="init_system">
+		<set name="system" value="compile_all"/>
+		<set name="system_target" value="compile_all" />
+		<set name="system_ecf" value="${EIFFEL_SRC}${path_separator}tools${path_separator}compile_all${path_separator}compile_all.ecf" />
+		<set name="system_dir" value="${compile_dir}" />
+	</target>
+	<target name="clean_compile_all" depend="init_compile_all">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="clean" reuse_variables="true" fork="false"/>
+	</target>
+	<target name="finalize_compile_all" depend="init_compile_all">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="finalize" reuse_variables="true" fork="false"/>
+	</target>
+
+	<!-- es_cleaner -->
+	<target name="init_es_cleaner" depend="init_system">
+		<set name="system" value="escln"/>
+		<set name="system_target" value="escln_graphical" />
+		<set name="system_ecf" value="${EIFFEL_SRC}${path_separator}tools${path_separator}es_cleaner${path_separator}escln.ecf" />
+		<set name="system_dir" value="${compile_dir}" />
+	</target>
+	<target name="clean_es_cleaner" depend="init_es_cleaner">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="clean" reuse_variables="true" fork="false"/>
+	</target>
+	<target name="finalize_es_cleaner" depend="init_es_cleaner">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="finalize" reuse_variables="true" fork="false"/>
+	</target>
+
+	<!-- vision2 wizard -->
+	<target name="init_vision2_wizard" depend="init_system">
+		<set name="system" value="wizard"/>
+		<set name="system_target" value="wizard" />
+		<set name="system_ecf" value="${EIFFEL_SRC}${path_separator}help${path_separator}wizards${path_separator}vision2_wizard.ecf" />
+		<set name="system_dir" value="${compile_dir}${path_separator}vision2_wizard" />
+		<mkdir directory="${system_dir}" />
+	</target>
+	<target name="clean_vision2_wizard" depend="init_vision2_wizard">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="clean" reuse_variables="true" fork="false"/>
+	</target>
+	<target name="finalize_vision2_wizard" depend="init_vision2_wizard">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="finalize" reuse_variables="true" fork="false"/>
+	</target>
+
+	<!-- wizard wizard -->
+	<target name="init_wizard_wizard" depend="init_system">
+		<set name="system" value="wizard"/>
+		<set name="system_target" value="wizard" />
+		<set name="system_ecf" value="${EIFFEL_SRC}${path_separator}help${path_separator}wizards${path_separator}wizard_wizard.ecf" />
+		<set name="system_dir" value="${compile_dir}${path_separator}wizard_wizard" />
+		<mkdir directory="${system_dir}" />
+	</target>
+	<target name="clean_wizard_wizard" depend="init_wizard_wizard">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="clean" reuse_variables="true" fork="false"/>
+	</target>
+	<target name="finalize_wizard_wizard" depend="init_wizard_wizard">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="finalize" reuse_variables="true" fork="false"/>
+	</target>
+
+	<!-- precompile wizard -->
+	<target name="init_precompile_wizard" depend="init_system">
+		<set name="system" value="wizard"/>
+		<set name="system_target" value="wizard" />
+		<set name="system_ecf" value="${EIFFEL_SRC}${path_separator}help${path_separator}wizards${path_separator}precompile_wizard.ecf" />
+		<set name="system_dir" value="${compile_dir}${path_separator}precompile_wizard" />
+		<mkdir directory="${system_dir}" />
+	</target>
+	<target name="clean_precompile_wizard" depend="init_precompile_wizard">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="clean" reuse_variables="true" fork="false"/>
+	</target>
+	<target name="finalize_precompile_wizard" depend="init_precompile_wizard">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="finalize" reuse_variables="true" fork="false"/>
+	</target>
+
+	<!-- wel wizard -->
+	<target name="init_wel_wizard" depend="init_system">
+		<set name="system" value="wizard"/>
+		<set name="system_target" value="wizard" />
+		<set name="system_ecf" value="${EIFFEL_SRC}${path_separator}help${path_separator}wizards${path_separator}wel_wizard.ecf" />
+		<set name="system_dir" value="${compile_dir}${path_separator}wel_wizard" />
+		<mkdir directory="${system_dir}" />
+	</target>
+	<target name="clean_wel_wizard" depend="init_wel_wizard">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="clean" reuse_variables="true" fork="false"/>
+	</target>
+	<target name="finalize_wel_wizard" depend="init_wel_wizard">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="finalize" reuse_variables="true" fork="false"/>
+	</target>
+
+	<!-- dotnet wizard -->
+	<target name="init_dotnet_wizard" depend="init_system">
+		<set name="system" value="wizard"/>
+		<set name="system_target" value="wizard" />
+		<set name="system_ecf" value="${EIFFEL_SRC}${path_separator}help${path_separator}wizards${path_separator}dotnet_wizard.ecf" />
+		<set name="system_dir" value="${compile_dir}${path_separator}dotnet_wizard" />
+		<mkdir directory="${system_dir}" />
+	</target>
+	<target name="clean_dotnet_wizard" depend="init_dotnet_wizard">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="clean" reuse_variables="true" fork="false"/>
+	</target>
+	<target name="finalize_dotnet_wizard" depend="init_dotnet_wizard">
+		<geant file="${scripts_dir}ise_eiffel.eant" target="finalize" reuse_variables="true" fork="false"/>
+	</target>
+
+</project>
