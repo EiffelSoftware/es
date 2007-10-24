@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+
+<project name="example" default="help">
+
+	<description>
+		description: "Eiffel Ant file for cdd test cases"
+		copyright: "Copyright (c) 2006, Andreas Leitner and others"
+		license: "Eiffel Forum License v2 (see forum.txt)"
+		date: "$Date$"
+		revision: "$Revision$"
+	</description>
+
+	<target name="help">
+		<echo message="usage:"/>
+		<echo message="   geant compile"/>
+		<echo message="   geant clean"/>
+		<echo message="   geant clobber"/>
+	</target>
+
+	<target name="compile" depend="init">
+		<description>
+			Compile the test cases.
+		</description>
+		<geant target="do_all" arguments="compile"/>
+	</target>
+
+	<target name="clean" depend="init">
+		<description>
+			Remove intermediary generated files.
+		</description>
+		<geant target="do_all" arguments="clean"/>
+	</target>
+
+	<target name="clobber" depend="init">
+		<description>
+			Remove all generated files.
+		</description>
+		<geant target="do_all" arguments="clobber"/>
+	</target>
+
+<!-- Implementation -->
+
+	<target name="init">
+		<!-- do nothing -->
+	</target>
+
+	<target name="do_all" depend="init">
+		<description>
+			Call 'geant' with the same target ${target} (first argument)
+			in all subdirectories.
+		</description>
+		<argument name="target"/>
+
+		<geant file="build.eant" target="${target}" dir="creation_1"/>
+		<geant file="build.eant" target="${target}" dir="creation_2"/>
+		<geant file="build.eant" target="${target}" dir="creation_3"/>
+		<geant file="build.eant" target="${target}" dir="export_1"/>
+		<geant file="build.eant" target="${target}" dir="void_call_1"/>
+		<geant file="build.eant" target="${target}" dir="false_precondition_1"/>
+		<geant file="build.eant" target="${target}" dir="infix_1"/>
+		<geant file="build.eant" target="${target}" dir="agent_1"/>
+	</target>
+
+</project>

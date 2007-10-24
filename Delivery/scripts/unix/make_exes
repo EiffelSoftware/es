@@ -1,0 +1,136 @@
+#!/bin/sh
+
+# Setup environment
+INIT_DIR=`pwd`
+
+# These directories should already have been created by make_delivery. Whatever...
+safe_md $INSTALL_DIR/studio/spec
+safe_md $INSTALL_DIR/studio/spec/unix
+safe_md $INSTALL_DIR/studio/spec/unix/bin
+safe_md $INSTALL_DIR/studio/spec/unix/include
+safe_md $INSTALL_DIR/studio/spec/unix/lib
+safe_md $INSTALL_DIR/build/spec
+safe_md $INSTALL_DIR/build/spec/unix
+safe_md $INSTALL_DIR/build/spec/unix/bin
+
+remtrace Recompile Vision2 Tour
+cd $EIFFEL_SRC
+exprt $DEFAULT_ORIGO_SVN/Src/examples/vision2/widget_test vision2_tour
+cd $EIFFEL_SRC/vision2_tour
+safe_md $EXPORT_DIR/vision2_tour
+. retrieve_build_files $DEFAULT_ORIGO_SVN >> $INSTALL_LOG 2>&1
+. retrieve_flat_short >> $INSTALL_LOG 2>&1
+cd $EIFFEL_SRC/vision2_tour
+clean_project
+finalize vision2_tour.ecf vision2_tour
+tgz_ccode vision2_tour vision2_tour.tar.gz
+if [ ! -f vision2_tour.tar.gz ]; then
+	echo Could not finalize a new Vision2 tour
+	CANCEL
+fi
+clean_project
+move $EIFFEL_SRC/vision2_tour/flatshort $INSTALL_DIR/vision2_tour
+move $EIFFEL_SRC/vision2_tour/tests $INSTALL_DIR/vision2_tour
+move $EIFFEL_SRC/vision2_tour/bitmaps/png/*.png $INSTALL_DIR/vision2_tour/bitmaps/png
+move vision2_tour.tar.gz $EXPORT_DIR/vision2_tour
+
+
+remtrace Recompile EiffelBuild
+cd $EIFFEL_SRC/build/Constants
+. $INIT_DIR/set_version.sh $DEFAULT_ORIGO_SVN 0000 gb_about_dialog_constants.e
+cd $EIFFEL_SRC/build
+remtrace Enterprise Build
+clean_project
+finalize build.ecf build
+tgz_ccode build build.tar.gz
+if [ ! -f build.tar.gz ]; then
+	echo Could not finalize a new EiffelBuild
+	CANCEL
+fi
+clean_project
+safe_md $EXPORT_DIR/build
+move build.tar.gz $EXPORT_DIR/build
+
+if [ ! "$NO_NEW_EC" ]; then
+	remtrace Recompile EiffelStudio
+	remtrace GPL edition
+	if [ ! -d $FINALIZATION_DIR ]; then
+		md $FINALIZATION_DIR
+	fi
+	cd $EIFFEL_SRC/Eiffel/API/constants
+	. $INIT_DIR/set_version.sh $DEFAULT_ORIGO_SVN 0000 system_constants.e
+	cd $FINALIZATION_DIR
+	copy $EIFFEL_SRC/Eiffel/Ace/ec.ecf ec.ecf
+	clean_project
+	finalize ec.ecf bench
+	tgz_ccode bench ec.tar.gz
+	if [ ! -f ec.tar.gz ]; then
+		echo Could not finalize a new EiffelStudio
+		CANCEL
+	fi
+	clean_project
+	move ec.tar.gz $EXPORT_DIR/ec_gpl.tar.gz
+
+	if [ "$MULTIPLE_EDITIONS" ]; then
+		remtrace Enterprise version edition
+		cd $FINALIZATION_DIR
+		cd $EIFFEL_SRC/Eiffel/API/constants
+		sed -e "s/Version_type_name:\ STRING\ is\ \"GPL\ Edition\"/Version_type_name:\ STRING\ is\ \"Enterprise\ Edition\"/g" system_constants.e >> new_system_constants.e
+		move new_system_constants.e system_constants.e
+		cd $FINALIZATION_DIR
+		clean_project
+		finalize ec.ecf bench
+		tgz_ccode bench ec.tar.gz
+		if [ ! -f ec.tar.gz ]; then
+			echo Could not finalize a new EiffelStudio
+			CANCEL
+		fi
+		clean_project
+		move ec.tar.gz $EXPORT_DIR/ec_ent.tar.gz
+	fi
+else
+	# FIXME doesn't work.
+	quick_move studio/spec/$ISE_PLATFORM/bin/ec
+fi
+
+remtrace Recompile quick_finalize
+cd $EIFFEL_SRC/tools/quick_finalize
+clean_project
+finalize quick_finalize.ecf quick_finalize
+tgz_ccode quick_finalize quick_finalize.tar.gz
+if [ ! -f quick_finalize.tar.gz ]; then
+	echo Could not finalize a new quick_finalize
+	CANCEL
+fi
+clean_project
+move quick_finalize.tar.gz $EXPORT_DIR
+
+if [ "$MULTIPLE_EDITIONS" ]; then
+	remtrace Compiling CD key validator
+	cd $EIFFEL_SRC/tools
+	co $DEFAULT_ISE_SVN/Src/tools/cd_key_validator cd_key_validator 
+	if [ -d cd_key_validator ]; then
+		cd cd_key_validator/eiffel_studio_52
+		clean_project
+		finalize setup.ecf setup
+		tgz_ccode setup setup.tar.gz
+		if [ ! -f setup.tar.gz ]; then
+			echo Could not finalize a new setup
+		else
+			move setup.tar.gz $EXPORT_DIR
+		fi
+		clean_project
+	fi
+fi
+
+remtrace Recompile estudio
+cd $EIFFEL_SRC/tools/estudio/config
+clean_project
+finalize estudio.ecf estudio
+tgz_ccode estudio estudio.tar.gz
+if [ ! -f estudio.tar.gz ]; then
+	echo Could not finalize a new estudio
+	CANCEL
+fi
+clean_project
+move estudio.tar.gz $EXPORT_DIR

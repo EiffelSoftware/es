@@ -1,0 +1,2 @@
+????
+test case should be created for bar2, since bar1 is not exported to ANY

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><system xmlns="http://www.eiffel.com/developers/xml/configuration-1-0-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-0-0 http://www.eiffel.com/developers/xml/configuration-1-0-0.xsd" name="process" uuid="228AFC09-21BC-47C8-A0A2-54A69274CD32" library_target="cdd">
+	<target name="cdd">
+		<description>CDD testing library: used for test case execution.</description>
+		<file_rule>
+			<exclude>/\.svn</exclude>
+		</file_rule>
+		<option>
+			<assertions precondition="true" postcondition="false" check="false" invariant="false" loop="false"/>
+		</option>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf" readonly="true"/>
+		<cluster name="cdd" location=".\"/>
+	</target>
+</system>

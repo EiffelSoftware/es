@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><system xmlns="http://www.eiffel.com/developers/xml/configuration-1-0-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-0-0 http://www.eiffel.com/developers/xml/configuration-1-0-0.xsd" name="sut" uuid="E20B027E-E3C2-4A19-88F3-CCC1E6E877E3">
+	<target name="sut">
+		<root class="ROOT_CLASS" feature="make"/>
+		<option warning="true">
+			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true"/>
+		</option>
+		<precompile name="base_pre" location="$ISE_PRECOMP\base.ecf"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="cdd" location="$ISE_LIBRARY\library\cdd\cdd.ecf"/>
+		<cluster name="root_cluster" location=".\" recursive="true">
+			<file_rule>
+				<exclude>EIFGENs</exclude>
+				<exclude>.svn</exclude>
+				<exclude>CVS</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>cdd_test_suite</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>cdd_test_suite</exclude>
+			</file_rule>
+		</cluster>
+	</target>
+</system>
