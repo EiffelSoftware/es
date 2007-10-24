@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<project name="mml_example">
+
+  <description>
+    MML - the mathematical model library example
+  </description>
+
+  <inherit>
+    <parent location="${GOBO}/misc/eiffel.eant">
+      <redefine target="init_system"/>
+    </parent>
+  </inherit>
+  
+  <target name="init_system">	
+    <set name="system" value="mml_example"/>
+    <set name="system_dir" value="."/>
+  </target>
+
+</project>

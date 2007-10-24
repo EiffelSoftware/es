@@ -1,0 +1,156 @@
+system
+	"doc_builder"
+
+root
+	DOC_BUILDER: make_and_launch
+
+default
+	assertion (no)
+	disabled_debug (yes)
+	debug ("console_output")
+	disabled_debug ("ev_gtk_creation")
+	disabled_debug ("gelex")
+	disabled_debug ("geyacc")
+	disabled_debug ("regexp")
+	disabled_debug ("xml_input_stream")
+	disabled_debug ("xml_parser")
+	line_generation (no)
+	profile (no)
+	trace (no)
+	check_vape (yes)
+	console_application (no)
+	syntax_warning (no)
+	address_expression (no)
+	array_optimization (no)
+	dead_code_removal (yes)
+	dynamic_runtime (no)
+	exception_trace (yes)
+	inlining (yes)
+	inlining_size ("0")
+	multithreaded (no)
+	override_cluster ("override")
+
+
+cluster
+	all override:		"$EIFFEL_SRC/Eiffel/override"
+
+	root_cluster:		"$EIFFEL_SRC/tools/doc_builder"
+		exclude
+			"doc_builder.e"; 
+		end
+
+	project (root_cluster):		"$/project"
+
+	managers (project):		"$/managers"
+		exclude
+			"help_manager.e";
+		end
+
+	filters (project):		"$/filter"
+
+	templates (project):		"$/templates"
+
+	interface (root_cluster):		"$/interface"
+
+	interface_widgets (interface):		"$/widgets"
+		exclude
+			"document_browser.e"; 
+		end
+
+	interface_app (interface):		"$/application"
+		exclude
+			"web_browser_widget.e";
+		end
+
+	interface_icons (interface):		"$/icons"
+
+	interface_wizard (interface):		"$/wizard"
+
+	shared (root_cluster):		"$/shared"
+
+	shared_constants (shared):		"$/constants"
+		exclude
+			"help_setting_constants.e";
+		end
+
+	shared_misc (shared):		"$/miscellaneous"
+
+	misc (root_cluster):		"$/miscellaneous"
+
+	patterns (misc):		"$/patterns"
+
+	observer (patterns):		"$/observer"
+
+	xml (root_cluster):		"$/xml"
+
+	xsl (xml):		"$/xslt"
+		exclude
+			"xsl_transform.e"; 
+		end
+
+	help (root_cluster):		"$/help"
+
+	help_shared (help):		"$/shared"
+
+	help_project (help):		"$/project"
+
+	help_toc (help):		"$/toc"
+
+	facade (root_cluster):		"$/facade"
+
+	all base:		"$EIFFEL_SRC/library/base"
+		exclude
+			"CVS"; "table_eiffel3"; "desc"; 
+		end
+
+	all vision2:		"$EIFFEL_SRC/library/vision2"
+		exclude
+			"mswin"; "gtk2";
+		end
+
+	all time:		"$EIFFEL_SRC/library/time"
+		exclude
+			"french"; "german"; 
+		end
+
+	all gobo:		"$EIFFEL_SRC/library/gobo/library"
+		exclude
+			"hact"; "ve"; "se"; "expat"; "EiffelBase"; "other"; 
+		default
+			assertion (no)
+		end
+
+	all preferences:		"$EIFFEL_SRC/library/preferences"
+		exclude
+			"CVS"; "registry_implementation";
+		end
+
+	all env:		"$EIFFEL_SRC/Eiffel/lace/env"
+		exclude
+			"CVS"; 
+		end
+		
+	all compiler_shared:		"$EIFFEL_SRC/Eiffel/eiffel/shared"
+		exclude
+			"CVS"; 
+		end
+
+	all editor:		"$EIFFEL_SRC/library/editor"
+		exclude
+			"constants.e"; "constants_imp.e"; 
+		end
+		
+	all lex:		"$ISE_EIFFEL/library/lex"
+
+external
+
+	include_path:
+		"\$(EIFFEL_SRC)/library/vision2/implementation/gtk/Clib `$EIFFEL_SRC/library/vision2/implementation/gtk/Clib/vision2-gtk-config --devel --include_path`",
+		"\$(EIFFEL_SRC)/C_library/libpng",
+		"\$(EIFFEL_SRC)/C_library/zlib",
+		"\$(EIFFEL_SRC)/library/vision2/spec/include"
+
+	object:
+		"`$(EIFFEL_SRC)/library/vision2/implementation/gtk/Clib/vision2-gtk-config --devel --object`"
+
+end

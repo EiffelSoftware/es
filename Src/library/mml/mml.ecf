@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><system xmlns="http://www.eiffel.com/developers/xml/configuration-1-0-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-0-0 http://www.eiffel.com/developers/xml/configuration-1-0-0.xsd" name="mml" uuid="CCB152F0-2D87-42AF-AD4A-0D5534131C1A" library_target="mml">
+
+	<target name="mml">
+		<description>mml library</description>
+		<file_rule>
+			<exclude>/\.svn</exclude>
+			<exclude>/hact$</exclude>
+			<exclude>/se$</exclude>
+			<exclude>/ve$</exclude>
+			<exclude>/ge$</exclude>
+			<exclude>/base$</exclude>
+			<exclude>/cvs$</exclude>
+			<exclude>/other$</exclude>
+			<exclude>/free_elks$</exclude>
+			<exclude>/EIFGENs$</exclude>
+			<exclude>/Documentation$</exclude>
+		</file_rule>
+		<option>
+		<assertions precondition="true" postcondition="true" check="true" invariant="false" loop="false"/>
+		</option>
+		<library name="base" location="$ISE_LIBRARY/library/base/base.ecf"/>
+		<cluster name="framework" location="./framework"/>
+		<cluster name="models" location="./models\"/>
+		<cluster name="implementation" location="./implementation" recursive="true"/>
+	</target>
+</system>
