@@ -1,0 +1,80 @@
+system
+
+	simple_appl
+
+	-- Replace 'template_application' by the name of the executable file
+	-- to be generated for your system.
+
+root
+
+	simple (root_cluster): "make"
+
+	-- Replace 'get_info', 'root_cluster' and creation_procedure 'make'
+	-- by the names of the root class, root class cluster and
+	-- root creation procedure for your system.
+
+default
+
+	assertion (require);
+
+		-- Check all assertions
+
+	precompiled ("$ISE_LIBRARY/precomp/spec/$ISE_PLATFORM/base")
+
+		-- Use precompiled base library
+
+cluster
+
+	root_cluster: 	"$ISE_LIBRARY/examples/store/matisse/simple";
+
+		-- Replace 'root_cluster' and path '.' by the names of the
+		-- root class cluster and corresponding path for your system.
+		-- Add any other clusters that your system will need.
+
+	-- EiffelBase
+
+	access:             "$ISE_LIBRARY/library/base/structures/access";
+	cursors:            "$ISE_LIBRARY/library/base/structures/cursors";
+	cursor_tree:        "$ISE_LIBRARY/library/base/structures/cursor_tree";
+	dispenser:          "$ISE_LIBRARY/library/base/structures/dispenser";
+	iteration:          "$ISE_LIBRARY/library/base/structures/iteration";
+	kernel:             "$ISE_LIBRARY/library/base/kernel";
+	list:               "$ISE_LIBRARY/library/base/structures/list";
+	--obsolete:           "$ISE_LIBRARY/library/base/structures/obsolete";
+	set:                "$ISE_LIBRARY/library/base/structures/set";
+	sort:               "$ISE_LIBRARY/library/base/structures/sort";
+	storage:            "$ISE_LIBRARY/library/base/structures/storage";
+	support:            "$ISE_LIBRARY/library/base/support";
+	table:              "$ISE_LIBRARY/library/base/structures/table";
+	traversing:         "$ISE_LIBRARY/library/base/structures/traversing";
+	tree:               "$ISE_LIBRARY/library/base/structures/tree";
+
+
+	-- EiffelStore
+
+	estore_support:		"$ISE_LIBRARY/library/store/support";
+	estore_interface:	"$ISE_LIBRARY/library/store/interface";
+	estore_db_support:	"$ISE_LIBRARY/library/store/dbms/support";
+	all generation:		"$ISE_LIBRARY/library/store/generation";
+
+	-- EiffelTime
+
+	time: "$ISE_LIBRARY/library/time";
+
+	-- Matisse for EiffelStore
+    matisse_interface : "$ISE_LIBRARY/library/store/dbms/oodbms/matisse/matisse_interface";
+    matisse_entities : "$ISE_LIBRARY/library/store/dbms/oodbms/matisse/matisse_entities";
+    matisse_entities_externals : "$ISE_LIBRARY/library/store/dbms/oodbms/matisse/matisse_entities/externals";
+    matisse_entities_streams : "$ISE_LIBRARY/library/store/dbms/oodbms/matisse/matisse_entities/streams";
+	matisse_sr : "$ISE_LIBRARY/library/store/dbms/oodbms/matisse/matisse_sr";
+	matisse_odl : "$ISE_LIBRARY/library/store/dbms/oodbms/matisse/matisse_odl";
+
+external
+
+	object:	
+			"$(ISE_LIBRARY)/library/store/spec/$(ISE_C_COMPILER)/lib/matisse_store.lib",
+			"$(ISE_LIBRARY)/library/store/spec/$(ISE_C_COMPILER)/lib/matisse.lib",	
+			"$(ISE_LIBRARY)/library/store/spec/$(ISE_C_COMPILER)/lib/special.lib",	
+			"matisse.lib" -- in your system
+
+end

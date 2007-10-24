@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+
+<project name="compile_library" default="help">
+
+	<description>
+		description: "Clib library compilation"
+		author: "Jocelyn Fiat and others"
+	</description>
+
+	<inherit>
+		<parent location="${EIFFEL_SRC}/scripts/_common_.eant" />
+	</inherit>
+
+	<target name="compile_all" depend="compile_c_library,compile_library,compile_eiffel_framework" />
+	<target name="clean_all" depend="clean_c_library,clean_library,clean_eiffel_framework" />
+
+	<!-- C_library -->
+	<target name="compile_c_library" depend="init" if="${is_windows}">
+		<exec executable="make_${ISE_C_COMPILER}.bat" dir="${ISE_LIBRARY}/C_library/zlib" />
+		<exec executable="make_${ISE_C_COMPILER}.bat" dir="${ISE_LIBRARY}/C_library/libpng" />
+	</target>
+
+	<target name="clean_c_library" depend="init" if="${is_windows}" >
+		<!-- TODO: stuff gets copied into vision2 spec directory, we have to remove it from there. -->
+	</target>
+
+	<!-- library -->
+	<target name="compile_library" depend="init">
+		<geant dir="${ISE_LIBRARY}/library" file="${ISE_LIBRARY}/library/build.eant" target="compile" />
+	</target>
+
+	<target name="clean_library" depend="init">
+		<geant dir="${ISE_LIBRARY}/library" file="${ISE_LIBRARY}/library/build.eant" target="clean" />
+	</target>
+
+	<!-- .NET framework -->
+	<target name="compile_eiffel_framework" depend="init" if="${is_windows}">
+		<exec executable="nmake /f Makefile" dir="${EIFFEL_SRC}\Eiffel\eiffel\com_il_generation\Core\run-time" />
+		<exec executable="nmake /f Makefile" dir="${EIFFEL_SRC}\framework\cli_writer\Clib" />
+		<exec executable="nmake /f Makefile" dir="${EIFFEL_SRC}\framework\cli_debugger\Clib" />
+	</target>
+	
+	<target name="clean_eiffel_framework" depend="init" if="${is_windows}">
+		<!-- TODO: do some cleanup here, too. -->
+	</target>
+</project>

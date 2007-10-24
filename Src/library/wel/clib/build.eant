@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<project name="build_wel_clib" default="help">
+
+	<description>
+		description: "WEL Clib library compilation"
+		author: "Beat Herlig"
+	</description>
+
+	<inherit>
+		<parent location="${EIFFEL_SRC}/scripts/_common_.eant">
+			<redefine target="help"/>
+		</parent>
+	</inherit>
+	
+	<target name="help">
+		<echo message="usage:"/>
+		<echo message=" geant compile"/>
+		<echo message=" geant clean"/>
+		<echo message=" geant clobber"/>
+	</target>
+	
+	<target name="compile" depend="init" if="${is_windows}">
+		<exec executable="nmake /NOLOGO /C /S /f makefile.msc > make.log" accept_errors="true" exit_code_variable="return_code" />
+		<exec executable="nmake /NOLOGO /C /S /f mt-makefile.msc >> make.log" accept_errors="true" exit_code_variable="return_code" />
+		<exec executable="nmake /NOLOGO /C /S /f makefile.il >> make.log" accept_errors="true" exit_code_variable="return_code" />
+		<exec executable="nmake /NOLOGO /C /S /f makefile_dll.msc >> make.log" accept_errors="true" exit_code_variable="return_code" />
+	</target>
+	
+	<target name="clean" depend="init">
+		<delete directory="${EIFFEL_SRC}/library/wel/spec/msc" />
+	</target>
+
+	<target name="clobber" depend="clean"/>
+</project>

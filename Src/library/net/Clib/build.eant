@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<project name="build_net_clib" default="help">
+
+	<description>
+		description: "Network Clib library compilation"
+		author: "Beat Herlig"
+	</description>
+
+	<inherit>
+		<parent location="${EIFFEL_SRC}/scripts/_common_.eant">
+			<redefine target="help"/>
+		</parent>
+	</inherit>
+	
+	<target name="help">
+		<echo message="usage:"/>
+		<echo message=" geant compile"/>
+		<echo message=" geant clean"/>
+		<echo message=" geant clobber"/>
+	</target>
+	
+	<target name="compile" depend="init">
+		<exec executable="make_${ISE_C_COMPILER}.bat" dir="${ISE_LIBRARY}/library/net/Clib"  if="${is_windows}" />
+		<exec executable="finish_freezing -library" dir="${ISE_LIBRARY}/library/net/Clib" unless="${is_windows}" />
+	</target>
+
+	<target name="clean" depend="init">
+		<delete directory="${EIFFEL_SRC}/library/net/spec"/>
+	</target>
+
+	<target name="clobber" depend="clean"/>
+</project>

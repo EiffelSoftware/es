@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+
+<project name="ise_eiffel">
+	<description>
+		description: "Eiffel compilation"
+		author: "Jocelyn Fiat"
+	</description>
+	
+	<inherit>
+		<parent location="${EIFFEL_SRC}/scripts/_common_.eant"/>
+	</inherit>
+	
+	<target name="init_arguments">
+		<!--
+			Values to be defined:
+				. ${system} : name of the system to be compiled
+				. ${system_dir} : directory for the compilation
+				. ${system_ecf} : config file for the compilation
+				. ${system_target} : target for the compilation
+		-->
+		<echo message="var [system] is missing !" unless="$system" />
+		<exit code="1" unless="$system" />
+		<echo message="var [system_dir] is missing !" unless="$system_dir" />
+		<exit code="1" unless="$system_dir" />
+		<echo message="var [system_ecf] is missing !" unless="$system_ecf" /> 
+		<exit code="1" unless="$system_ecf" />
+		<echo message="var [system_target] is missing !" unless="$system_target" />
+		<exit code="1" unless="$system_target" />
+
+		<set name="force_clean" value="false" unless="$force_clean=true" />
+		<set name="force_batch" value="false" unless="$force_batch=true" />
+		<set name="use_settings" value="false" unless="$use_settings=true" />
+		<set name="c_compile" value="true" unless="$c_compile=false" />
+	</target>
+
+	<target name="finalize" depend="init_arguments">
+		<set name="c_compile" value="true" />
+		<set name="finalize" value="true" />
+		<geant target="compile" reuse_variables="true" fork="false" />
+		<copy file="${system_dir}${path_separator}EIFGENs${path_separator}${system_target}${path_separator}F_code${path_separator}${system}${exe}" to_file="${system_dir}${path_separator}${system}${exe}"/>
+	</target>
+
+	<target name="compile" depend="init_arguments">
+		<mkdir directory="${system_dir}"/>
+		<geant target="clean" if="${force_clean}=true"/>
+		<set name="eccmd" value="${ISE_EIFFEL}${path_separator}studio${path_separator}spec${path_separator}${ISE_PLATFORM}${path_separator}bin${path_separator}ec${exe} " />
+		<set name="eccmd" value="${eccmd} -config ${system_ecf}" />
+		<set name="eccmd" value="${eccmd} -target ${system_target}" />
+		<set name="eccmd" value="${eccmd} -project_path ${system_dir}" />
+		<set name="eccmd" value="${eccmd} -finalize" if="${finalize}=true"/>
+		<set name="eccmd" value="${eccmd} -freeze" unless="${finalize}=true"/>
+		<set name="eccmd" value="${eccmd} -c_compile" if="${c_compile}=true" />
+		<set name="eccmd" value="${eccmd} -clean" if="${force_clean}=true" />
+		<set name="eccmd" value="${eccmd} -batch" if="${force_batch}=true" />
+		<set name="eccmd" value="${eccmd} -use_settings" if="${usesettings}=true" />
+		<exec executable="${eccmd}" dir="${system_dir}"/>
+	</target>
+
+	<target name="clean" depend="init_arguments">
+		<ise clean="${system}" dir="${system_dir}" />
+	</target>
+
+</project>
