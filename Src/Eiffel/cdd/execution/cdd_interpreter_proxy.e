@@ -53,7 +53,12 @@ feature {NONE} -- Initialization
 feature -- Status
 
 	is_running: BOOLEAN is
-			-- Is the client currently running?
+			-- Is the client currently running? Note that the value of
+			-- `is_running' changes to `False' as soon as the interpreter
+			-- quits. In particular this means that nobody can guarantee
+			-- `is_running' (i.e. as part of a precondtion), because the
+			-- interpreter can always just crash. See `is_launched' for a
+			-- weaker alternative that can be guaranteed.
 		do
 			Result := process /= Void and then process.is_running
 		end
@@ -61,13 +66,17 @@ feature -- Status
 	is_launched: BOOLEAN is
 			-- Has the client been launched?
 			-- Note that `is_launched' will be True also when the child has
-			-- terminated in the meanwhile.
+			-- terminated in the meanwhile. This is a weaker alternative to
+			-- `is_running'.
 		do
 			Result := process /= Void and then process.launched
 		end
 
 	is_ready: BOOLEAN
-			-- Is interpreter ready for new commands?
+			-- Is interpreter ready for a new request? The interpreter processes
+			-- one reqyest after the next. Once asked to execute a request one
+			-- has to call `process_result' until it is has finished processing the
+			-- request and the proxy has parsed the result.
 
 	is_executing_request: BOOLEAN
 			-- Is the interpreter currently executing a request?
@@ -177,7 +186,6 @@ feature -- Execution
 			-- If the results are not available set `last_result' to Void.
 		require
 			is_launched: is_launched
-			is_ready: is_ready
 			is_executing_request: is_executing_request
 		do
 			last_result := Void
@@ -337,8 +345,7 @@ invariant
 	not_running_implies_not_ready: not is_running implies not is_ready
 	not_running_implies_not_executing_request: not is_running implies not is_executing_request
 	executing_request_implies_running: is_executing_request implies is_running
-	is_ready_implies_is_running: is_ready implies is_running
-	is_ready_implies_not_is_executing_request: is_ready implies not is_executing_request
+	is_executing_request_implies_not_ready: is_executing_request implies not is_ready
 	is_jammed_implies_is_running: is_jammed implies is_running
 	proxy_log_file_not_void: proxy_log_file /= Void
 
