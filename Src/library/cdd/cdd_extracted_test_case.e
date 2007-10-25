@@ -50,7 +50,7 @@ feature -- Basic operations
 			set_up_context
 		end
 
-	run is
+	test_routine_under_test is
 			-- Call `routine_under_test'. This is the default
 			-- test feature of extracted test cases.
 		require
