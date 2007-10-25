@@ -53,41 +53,10 @@ feature -- Execution
 					localized_print ("%T%T%T" + l_cursor.item.test_class.name_in_upper + "%N")
 					l_cursor.forth
 				end
-				localized_print ("%NCurrently " + l_cursor.index.out + " test cases in system%N%N")
+				localized_print ("%NCurrently " + (l_cursor.index - 1).out + " test cases in system%N%N")
 			else
 				io.put_string ("CDD is currently not enabled. To view or create%Ntest cases enable CDD through `Status' menu.")
 			end
 		end
-
-feature -- Status report
-
-feature -- Status setting
-
-feature -- Cursor movement
-
-feature -- Element change
-
-feature -- Removal
-
-feature -- Resizing
-
-feature -- Transformation
-
-feature -- Conversion
-
-feature -- Duplication
-
-feature -- Miscellaneous
-
-feature -- Basic operations
-
-feature -- Obsolete
-
-feature -- Inapplicable
-
-feature {NONE} -- Implementation
-
-invariant
-	invariant_clause: True -- Your invariant here
 
 end

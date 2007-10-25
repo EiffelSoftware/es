@@ -38,28 +38,6 @@ feature -- Access
 	test_suite: CDD_TEST_SUITE
 			-- Test suite containing test cases for root class
 
-feature -- Measurement
-
-feature -- Status report
-
-feature -- Status setting
-
-feature -- Cursor movement
-
-feature -- Element change
-
-feature -- Removal
-
-feature -- Resizing
-
-feature -- Transformation
-
-feature -- Conversion
-
-feature -- Duplication
-
-feature -- Miscellaneous
-
 feature -- Basic operations
 
 	print_root_class is
@@ -99,15 +77,7 @@ feature -- Basic operations
 				put_footer
 				l_output_file.close
 			end
-
-			--test_suite.target.loca
-			--l_root := target.root
-			--l_directory := target.project
 		end
-
-feature -- Obsolete
-
-feature -- Inapplicable
 
 feature {NONE} -- Implementation
 

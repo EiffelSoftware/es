@@ -117,9 +117,10 @@ feature -- Status setting
 				test_cases.wipe_out
 				l_changed := True
 			end
-			if l_changed then
+			if l_changed or not has_refreshed then
 				refresh_actions.call ([])
 			end
+			has_refreshed := True
 		end
 
 feature -- Event handling
@@ -168,6 +169,9 @@ feature -- Basic operations
 		end
 
 feature {NONE} -- Implementation
+
+	has_refreshed: BOOLEAN
+			-- Have we already done refresh before?
 
 	has_test_case_with_property (a_prop: FUNCTION [ANY, TUPLE [CDD_TEST_CASE], BOOLEAN]): BOOLEAN is
 			-- Does `test_cases' contain an item, for which `a_prop' returns True?
@@ -226,7 +230,7 @@ feature {NONE} -- Implementation
 			last_sort_result.sort (l_ss)
 		ensure
 			last_sort_result_not_void: last_sort_result /= Void
-			last_sort_result_sorted: not last_sort_result.sorted (create {DS_SHELL_SORTER [CDD_TEST_CASE]}.make (create {AGENT_BASED_EQUALITY_TESTER [CDD_TEST_CASE]}.make (a_comp)))
+			last_sort_result_sorted: last_sort_result.sorted (create {DS_SHELL_SORTER [CDD_TEST_CASE]}.make (create {AGENT_BASED_EQUALITY_TESTER [CDD_TEST_CASE]}.make (a_comp)))
 		end
 
 invariant

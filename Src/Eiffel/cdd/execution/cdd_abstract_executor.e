@@ -7,26 +7,12 @@ indexing
 deferred class
 	CDD_ABSTRACT_EXECUTOR
 
-feature {NONE} -- Initialization
-
-	make_with_manager (a_manager: CDD_MANAGER) is
-			-- Set `manager' to `a_manager'.
-		require
-			a_manager_not_void: a_manager /= Void
-		do
-			manager := a_manager
-		ensure
-			manager_set: manager = a_manager
-		end
-
 feature -- Access
 
-	manager: CDD_MANAGER
-			-- Manager responsible for running `Current'.
-
-	can_execute: BOOLEAN is
+	can_start: BOOLEAN is
 			-- Can `Current' be executed?
-		deferred
+		do
+			Result := not is_executing
 		end
 
 	is_executing: BOOLEAN is
@@ -34,17 +20,12 @@ feature -- Access
 		deferred
 		end
 
-
-feature -- Measurement
-
-feature -- Status report
-
 feature -- Status setting
 
-	execute is
+	start is
 			-- Run `Current'.
 		require
-			can_execute: can_execute
+			can_start: can_start
 		deferred
 		end
 
@@ -52,8 +33,5 @@ feature -- Status setting
 			-- Stop current execution.
 		deferred
 		end
-
-invariant
-	manager_no_void: manager /= Void
 
 end

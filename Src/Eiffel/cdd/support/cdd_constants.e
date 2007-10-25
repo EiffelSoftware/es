@@ -25,6 +25,10 @@ feature -- Project constants
 
 	cluster_name_suffix: STRING is "_tests"
 
+	tester_target_suffix: STRING is "_tester"
+
+	test_routine_prefix: STRING is "test_"
+
 	default_cluster_name: STRING is "cdd_test_suite"
 			-- Name of cdd cluster
 
@@ -33,6 +37,9 @@ feature -- Project constants
 
 	max_reference_depth: INTEGER is 5
 			-- Max depth capturer will follow object references when extracting
+
+	max_execution_attempts: INTEGER is 3
+			-- How many time do we try to execute a test case which has killed or jammed to interpreter?
 
 feature -- TTY
 

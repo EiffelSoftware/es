@@ -155,6 +155,7 @@ feature -- Status setting (CDD)
 			target.system.store
 			create test_suite.make_with_target (target)
 			create l_root_printer.make (test_suite)
+			create executor.make (test_suite)
 		ensure
 			enabled: is_cdd_enabled
 			correct_config: cdd_conf.is_enabled
@@ -169,12 +170,13 @@ feature -- Status setting (CDD)
 		do
 			instantiate_cdd_configuration
 			cdd_conf.set_is_enabled (False)
-			if target.libraries.has (library_name) then
-				target.remove_library (library_name)
-			end
-			remove_file_rule
-			target.system.store
+			--if target.libraries.has (library_name) then
+			--	target.remove_library (library_name)
+			--end
+			--remove_file_rule
+			--target.system.store
 			test_suite := Void
+			executor := Void
 		ensure
 			cdd_disabled: not is_cdd_enabled
 			correct_config: not cdd_conf.is_enabled
@@ -238,6 +240,11 @@ feature -- Status setting (CDD)
 		ensure
 			correct_config: not cdd_conf.is_capture_replay_activated
 		end
+
+feature -- Execution
+
+	executor: CDD_TEST_EXECUTOR
+			-- Test executor for executing test cases in `test_suite'.
 
 	start_execution is
 			--
@@ -417,4 +424,6 @@ feature {NONE} -- Implementation
 
 invariant
 	extracting_implies_cdd_enabled: is_extracting_enabled implies is_cdd_enabled
+	cdd_enabled_implies_executor_not_void: is_cdd_enabled implies (executor /= Void)
+
 end
