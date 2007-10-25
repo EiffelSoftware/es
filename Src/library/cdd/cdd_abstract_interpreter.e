@@ -255,6 +255,7 @@ feature {NONE} -- Implementation
 				execute_protected (l_tr)
 				execute_protected (agent l_tc.tear_down)
 			end
+			print_line_and_flush ("done")
 		end
 
 	execute_protected (procedure: PROCEDURE [ANY, TUPLE]) is
