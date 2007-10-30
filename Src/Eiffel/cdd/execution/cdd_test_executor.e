@@ -240,7 +240,7 @@ feature {NONE} -- Idle action
 					proxy = Void or l_idle
 				loop
 					if proxy.is_executing_request or not proxy.is_ready then
-						if proxy.is_jammed or not proxy.is_running then
+						if not proxy.is_running then
 							execution_attempts := execution_attempts + 1
 							proxy.stop
 							if execution_attempts > max_execution_attempts then
@@ -250,8 +250,8 @@ feature {NONE} -- Idle action
 								proxy.start
 							end
 						else
-							proxy.process_result
-							if proxy.last_result /= Void then
+							proxy.process_response
+							if proxy.last_response /= Void then
 								-- TODO: do something with the result
 								next_test_routine
 							end

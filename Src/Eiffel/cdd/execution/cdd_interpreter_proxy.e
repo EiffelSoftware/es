@@ -8,6 +8,11 @@ class CDD_INTERPRETER_PROXY
 
 inherit
 
+	THREAD_CONTROL
+		export
+			{NONE} all
+		end
+
 	PROCESS_FACTORY
 		export {NONE} all end
 
@@ -21,9 +26,6 @@ inherit
 		export {NONE} all end
 
 	UNIX_SIGNALS
-		export {NONE} all end
-
-	THREAD_CONTROL
 		export {NONE} all end
 
 create
@@ -45,6 +47,8 @@ feature {NONE} -- Initialization
 			create proxy_log_file.make (a_proxy_log_filename)
 			proxy_log_file.open_append
 			log_line ("-- A new proxy has been created.")
+			create parser.make
+			create response_buffer.make (1024 * 50)
 		ensure
 			executable_file_name_set: executable_file_name = an_executable_file_name
 			proxy_log_file_created: proxy_log_file /= Void
@@ -72,19 +76,20 @@ feature -- Status
 			Result := process /= Void and then process.launched
 		end
 
-	is_ready: BOOLEAN
+	is_ready: BOOLEAN is
 			-- Is interpreter ready for a new request? The interpreter processes
-			-- one reqyest after the next. Once asked to execute a request one
-			-- has to call `process_result' until it is has finished processing the
-			-- request and the proxy has parsed the result.
+			-- one request after the next.
+		do
+			Result := is_launched and not is_executing_request and (last_response /= Void implies not last_response.is_bad)
+		end
 
 	is_executing_request: BOOLEAN
 			-- Is the interpreter currently executing a request?
 
-	is_jammed: BOOLEAN
-			-- Is interpreter in an unknown and unresponsive state?
-
 feature -- Access
+
+	last_response: CDD_TEST_EXECUTION_RESPONSE
+			-- Last response received from interpreter
 
 	proxy_log_filename: STRING is
 			-- File name of proxy log
@@ -95,7 +100,7 @@ feature -- Access
 			valid_filename: Result.is_equal (proxy_log_file.name)
 		end
 
-	last_result: STRING-- CDD_TEST_EXECUTION
+	last_result: CDD_TEST_EXECUTION
 			-- Execution results and log of last test case
 
 feature -- Settings
@@ -125,7 +130,6 @@ feature -- Execution
 			launch_process
 			if is_running then
 				output_stream.string.wipe_out
-				is_ready := is_running
 			else
 				process := Void
 				log_line ("-- Error: Could not start and connect to interpreter.")
@@ -156,10 +160,48 @@ feature -- Execution
 		end
 
 	execute_test (a_class_name: STRING; a_routine_name: STRING) is
+			-- Execute test routine `a_routine_name' from class
+			-- `a_class_name' in interpreter. This routine blocks.
+		require
+			is_launched: is_launched
+			is_ready: is_ready
+			not_executing_request: not is_executing_request
+			a_class_name_not_void: a_class_name /= Void
+			a_routine_name_not_void: a_routine_name /= Void
+		local
+			end_time: DATE_TIME
+			current_time: DATE_TIME
+			stream: KL_STRING_INPUT_STREAM
+		do
+			execute_test_async (a_class_name, a_routine_name)
+			from
+				create end_time.make_now
+				end_time.second_add (timeout)
+				create current_time.make_now
+			until
+				current_time > end_time or last_response /= Void
+			loop
+				process_response
+				sleep (3000)
+				current_time.make_now
+			end
+			if last_response = Void then
+				-- This means a timeout occured, so let's take what we have anyways ...
+					create stream.make (response_buffer)
+					parser.parse (stream)
+					last_response := parser.last_response
+					is_executing_request := False
+			end
+		ensure
+			last_response_is_void: last_response /= Void
+		end
+
+	execute_test_async (a_class_name: STRING; a_routine_name: STRING) is
 			-- Triggers the execution of test routine `a_routine_name' from class
 			-- `a_class_name' in interpreter. This routine does not block. In particular
-			-- it does not wait to parse the result of the interpreter. In order to do that
-			-- invoke `process_result'.
+			-- it does not wait to parse the result of the interpreter. In order to
+			-- create the response `process_response' needs to be called until
+			-- `last_response /= Void'.
 		require
 			is_launched: is_launched
 			is_ready: is_ready
@@ -167,36 +209,43 @@ feature -- Execution
 			a_class_name_not_void: a_class_name /= Void
 			a_routine_name_not_void: a_routine_name /= Void
 		do
+			last_response := Void
 			output_stream.put_string (a_class_name)
 			output_stream.put_character ('.')
 			output_stream.put_line (a_routine_name)
 			flush_process
-			last_result := Void
 			is_executing_request := True
-			try_read_line_internal
-			try_read_line_internal
-		ensure
-			last_result_is_void: last_result = Void
-			is_executing_request: is_executing_request
+			response_buffer.wipe_out
 		end
 
-	process_result is
-			-- Process results from interpreter (if it is already available).
-			-- If the results are complete make them available via `last_result'.
-			-- If the results are not available set `last_result' to Void.
+	process_response is
+			-- Process the response of the interpreter. If the response is complete
+			-- parse it and make it available via `last_response'.
 		require
-			is_launched: is_launched
 			is_executing_request: is_executing_request
+		local
+			stream: KL_STRING_INPUT_STREAM
 		do
-			last_result := Void
-			sleep (10000)
 			try_read_line_internal
-			--try_read_line_internal
-			-- TODO: parse response
-
+			if last_string /= Void then
+				response_buffer.append_string (last_string)
+				response_buffer.append_character ('%N')
+				if last_string.is_equal ("done:%N") then
+					create stream.make (response_buffer)
+					parser.parse (stream)
+					last_response := parser.last_response
+					is_executing_request := False
+				end
+			end
 		end
 
 feature {NONE} -- Implementation
+
+	parser: CDD_RESPONSE_PARSER
+			-- Response parser
+
+	response_buffer: STRING
+			-- Buffer for interpreter response
 
 	process: PROCESS
 			-- Client process
@@ -207,7 +256,7 @@ feature {NONE} -- Implementation
 	stderr_reader: AUT_THREAD_SAFE_LINE_READER
 			-- Non blocking reader for client-stderr
 
-	timeout: INTEGER is 2
+	timeout: INTEGER is 4
 			-- Client timeout in seconds
 
 	flush_process is
@@ -216,7 +265,6 @@ feature {NONE} -- Implementation
 			failed: BOOLEAN
 		do
 			if not failed then
-				is_ready := False
 				if process.input_direction = {PROCESS_REDIRECTION_CONSTANTS}.to_stream then
 					process.put_string (output_stream.string)
 					log (output_stream.string)
@@ -230,36 +278,20 @@ feature {NONE} -- Implementation
 			retry
 		end
 
+	last_string: STRING
+			-- Last string parsed via `try_read_line_internal'
+
 	try_read_line_internal is
-			-- Try to read a line from the interpreter or time out.
-		local
-			start_time: DATE_TIME
-			l_current_time: DATE_TIME
+			-- Try to read a line from the interpreter (if something is available).
 		do
 			if is_launched then
 				check
 					not_ready: not is_ready
 				end
-				create start_time.make_now
-				start_time.second_add (timeout)
-				create l_current_time.make_now
-				from
-					stderr_reader.reset_last_line
-					stdout_reader.try_read_line
-					if not stdout_reader.has_read_line then
-						stderr_reader.try_read_line
-					end
-				until
-					stdout_reader.has_read_line or stderr_reader.has_read_line or (l_current_time > start_time)
-				loop
-					stdout_reader.try_read_line
-					if not stdout_reader.has_read_line then
-						stderr_reader.try_read_line
-						if not stderr_reader.has_read_line then
-							l_current_time.make_now
-							sleep (1000)
-						end
-					end
+				stderr_reader.reset_last_line
+				stdout_reader.try_read_line
+				if not stdout_reader.has_read_line then
+					stderr_reader.try_read_line
 				end
 				check
 					stdout_or_stderr_read: not (stdout_reader.has_read_line and stderr_reader.has_read_line)
@@ -280,15 +312,11 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation
 
-	last_string: STRING
-			-- Last string read by `try_read_line_internal'
-
 	executable_file_name: STRING
 			-- File name of interpreter executable
 
 	output_stream: KL_STRING_OUTPUT_STREAM
 			-- Output stream used by `request_printer'
-
 
 	launch_process is
 			-- Launch `process'.
@@ -298,8 +326,8 @@ feature {NONE} -- Implementation
 			process := process_launcher (executable_file_name, Void, ".")
 			process.enable_launch_in_new_process_group
 			process.redirect_input_to_stream
-			--process.redirect_output_to_agent (agent stdout_reader.put_string)
-			--process.redirect_error_to_agent (agent stderr_reader.put_string)
+			process.redirect_output_to_agent (agent stdout_reader.put_string)
+			process.redirect_error_to_agent (agent stderr_reader.put_string)
 			process.launch
 			-- TODO: both process.launch and process.is_running must be true, otherwise report error.
 		end
@@ -346,7 +374,7 @@ invariant
 	not_running_implies_not_executing_request: not is_running implies not is_executing_request
 	executing_request_implies_running: is_executing_request implies is_running
 	is_executing_request_implies_not_ready: is_executing_request implies not is_ready
-	is_jammed_implies_is_running: is_jammed implies is_running
 	proxy_log_file_not_void: proxy_log_file /= Void
+	response_buffer_not_void: response_buffer /= Void
 
 end
