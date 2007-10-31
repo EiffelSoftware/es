@@ -44,6 +44,7 @@ feature {NONE} -- Initialization
 		do
 			create output_stream.make_empty
 			executable_file_name := an_executable_file_name
+			melt_path := file_system.dirname (executable_file_name)
 			create proxy_log_file.make (a_proxy_log_filename)
 			proxy_log_file.open_append
 			log_line ("-- A new proxy has been created.")
@@ -312,6 +313,11 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation
 
+	melt_path: STRING
+			-- Path where melt file resides. Needed because
+			-- EiffelStudio debugger doesn't allow recursive debugging
+			-- of EiffelStudio at the moment. Should be soleved with 6.2.
+
 	executable_file_name: STRING
 			-- File name of interpreter executable
 
@@ -323,6 +329,8 @@ feature {NONE} -- Implementation
 		do
 			create stdout_reader.make
 			create stderr_reader.make
+				-- $MELT_PATH needs to be set here in only to allow debugging.
+			execution_environment.set_variable_value ("MELT_PATH", melt_path)
 			process := process_launcher (executable_file_name, Void, ".")
 			process.enable_launch_in_new_process_group
 			process.redirect_input_to_stream
@@ -368,6 +376,7 @@ feature {NONE} -- Constants
 invariant
 
 	process_not_void: is_running implies process /= Void
+	melt_path_not_void: melt_path /= Void
 	is_running_implies_reader: is_running implies (stdout_reader /= Void and stderr_reader /= Void)
 	executable_file_name_not_void: executable_file_name /= Void
 	not_running_implies_not_ready: not is_running implies not is_ready
