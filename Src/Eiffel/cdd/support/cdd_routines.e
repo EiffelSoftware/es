@@ -47,8 +47,48 @@ feature {NONE} -- Implementation
 			not_void: Result /= Void
 		end
 
-	test_routines (a_class: CLASS_C): DS_LINKED_LIST [STRING] is
+	is_extracted_test_class (a_class: EIFFEL_CLASS_C): BOOLEAN is
+			-- Does `a_class' represent an extracted test class?
+		require
+			a_class_not_void: a_class /= Void
+		do
+			Result := is_descendant_of_class (a_class, extracted_test_class_name)
+		end
+
+	is_manual_test_class (a_class: EIFFEL_CLASS_C): BOOLEAN is
+			-- Does `a_class' represent a manual test class?
+		require
+			a_class_not_void: a_class /= Void
+		do
+			Result := is_descendant_of_class (a_class, manual_test_class_name)
+		end
+
+	is_descendant_of_class (a_class: EIFFEL_CLASS_C; a_class_name: STRING): BOOLEAN is
+			-- Is `a_class' a descendant of a class named `a_class_name'?
+		require
+			a_class_not_void: a_class /= Void
+			a_class_name_not_void: a_class_name /= Void
+		local
+			l_class_list: FIXED_LIST [CLASS_C]
+		do
+			l_class_list := a_class.parents_classes
+			from
+				l_class_list.start
+			until
+				l_class_list.after or Result
+			loop
+				if l_class_list.item.name.is_case_insensitive_equal (a_class_name) then
+					Result := True
+				else
+					l_class_list.forth
+				end
+			end
+		end
+
+	test_routines_old (a_class: CLASS_C): DS_LINKED_LIST [STRING] is
 			--
+		obsolete
+			"routines stored in test classes"
 		require
 			a_class_not_void: a_class /= Void
 		local

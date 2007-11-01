@@ -27,8 +27,6 @@ feature {NONE} -- Initialization
 			a_test_suite_not_void: a_test_suite /= Void
 		do
 			test_suite := a_test_suite
-			internal_refresh_agent := agent print_root_class
-			test_suite.refresh_actions.extend (internal_refresh_agent)
 		ensure
 			test_suite_set: test_suite = a_test_suite
 		end
@@ -38,20 +36,34 @@ feature -- Access
 	test_suite: CDD_TEST_SUITE
 			-- Test suite containing test cases for root class
 
+	last_print_succeeded: BOOLEAN
+			-- Has last call to `print_root_class' printed a new root class?
+
+	root_class_file_name: STRING is
+			-- Path to root class file
+			-- Note: file nor directory necessarilly exist
+		local
+			l_loc: CONF_DIRECTORY_LOCATION
+			l_target: CONF_TARGET
+		do
+			if last_root_class_name = Void then
+				l_target := test_suite.target
+				l_loc := conf_factory.new_location_from_path (".\cdd_tests\" + l_target.name, l_target)
+				last_root_class_name := l_loc.build_path ("", "cdd_interpreter.e")
+			end
+			Result := last_root_class_name
+		end
+
 feature -- Basic operations
 
 	print_root_class is
 			-- Print a new root class containing all test cases in `test_suite'.
 		local
-			l_loc: CONF_DIRECTORY_LOCATION
 			l_output_file: KL_TEXT_OUTPUT_FILE
-			l_failed: BOOLEAN
-			l_target: CONF_TARGET
 			l_cursor: DS_LINKED_LIST_CURSOR [CDD_TEST_CASE]
 		do
-			l_target := test_suite.target
-			l_loc := conf_factory.new_location_from_path (".\cdd_tests\" + l_target.name, l_target)
-			create l_output_file.make (l_loc.build_path ("", "cdd_interpreter.e"))
+			last_print_succeeded := True
+			create l_output_file.make (root_class_file_name)
 			l_output_file.open_write
 			if l_output_file.is_open_write then
 				initialize (l_output_file)
@@ -59,7 +71,6 @@ feature -- Basic operations
 				put_class_header
 				put_test_setting_header
 				put_line ("create Result.make (" + test_suite.test_cases.count.out + ")")
-
 				from
 					l_cursor := test_suite.test_cases.new_cursor
 					l_cursor.start
@@ -76,12 +87,20 @@ feature -- Basic operations
 
 				put_footer
 				l_output_file.close
+			else
+				last_print_succeeded := False
 			end
+		ensure
+			succeeded_implies_file_exists: last_print_succeeded implies
+				(create {KL_TEXT_OUTPUT_FILE}.make (root_class_file_name)).exists
 		end
 
-feature {NONE} -- Implementation
+feature {NONE} -- Access implementation
 
-	internal_refresh_agent: PROCEDURE [like Current, TUPLE]
+	last_root_class_name: STRING
+			-- Last computed root class name
+
+feature {NONE} -- Implementation
 
 	put_indexing is
 			-- Append indexing clause.
@@ -184,7 +203,5 @@ feature {NONE} -- Implementation
 
 invariant
 	test_suite_not_void: test_suite /= Void
-	internal_refresh_agent_not_void: internal_refresh_agent /= Void
-	subscribed: test_suite.refresh_actions.has (internal_refresh_agent)
 
 end

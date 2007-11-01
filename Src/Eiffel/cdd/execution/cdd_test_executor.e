@@ -10,6 +10,9 @@ class
 inherit
 
 	CDD_ABSTRACT_EXECUTOR
+		rename
+			start as test_all
+		end
 
 	CDD_ROUTINES
 		export
@@ -49,8 +52,8 @@ feature {NONE} -- Initialization
 			a_test_suite: a_test_suite /= Void
 		do
 			test_suite := a_test_suite
-			test_suite.refresh_actions.extend (agent test_all)
 			create output.make
+			create root_class_printer.make (test_suite)
 		ensure
 			test_suite_set: test_suite = a_test_suite
 		end
@@ -107,41 +110,43 @@ feature -- Access
 		end
 
 	current_test_feature: STRING is
-			--
+			-- Test routine in `current_test_case' beeing tested
 		require
 			executing: is_testing
 		do
 			Result := test_feature_cursor.item
 		end
 
-
 feature -- Basic operations
 
-	start is
+	test_all is
 			-- Start compiling and testing in background.
 		local
 			l_target: CONF_TARGET
 			l_system: CONF_SYSTEM
 		do
-			create compiler.make
-			-- TODO: notify gui that compiling has started...
-			l_target := test_suite.target
-			l_system := l_target.system
-			if is_gui then
-				-- TODO: what to do with compiler output?
-				compiler.set_output_handler (agent output_handler)
+			root_class_printer.print_root_class
+			if not root_class_printer.last_print_succeeded then
+				create compiler.make
+				-- TODO: notify gui that compiling has started...
+				l_target := test_suite.target
+				l_system := l_target.system
+				if is_gui then
+					-- TODO: what to do with compiler output?
+					compiler.set_output_handler (agent output_handler)
+				else
+					compiler.set_output_handler (agent io.put_string)
+				end
+				compiler.run (l_system.directory, l_system.file_name, tester_target_name (l_target))
+				if is_gui then
+					add_idle_action
+				else
+					compiler.block
+					idle_action
+				end
 			else
-				compiler.set_output_handler (agent io.put_string)
+				-- TODO: notify observers that printing the root class has failed
 			end
-			compiler.run (l_system.directory, l_system.file_name, tester_target_name (l_target))
-			if is_gui then
-				add_idle_action
-			else
-				compiler.block
-				idle_action
-			end
-		ensure then
-			executing: is_executing
 		end
 
 	stop is
@@ -160,17 +165,14 @@ feature -- Basic operations
 			-- TODO: notify log that we have stoped testing
 		end
 
-feature {NONE} -- Testing status settings
+feature {NONE} -- Internal execution
 
-	test_all is
-			-- Recompile and test all test cases.
-			-- Note: this requires that new interpreter has been
-			-- printed since test suite has changed!
+	internal_start is
+			-- Start compiling and testing in background.
 		do
-
+		ensure then
+			executing: is_executing
 		end
-
-feature {NONE} -- Idle action
 
 	idle_action_agent: PROCEDURE [ANY, TUPLE]
 			-- Agent for 'idle_action'
@@ -228,7 +230,9 @@ feature {NONE} -- Idle action
 						proxy.start
 					else
 						-- TODO: notify observers that compiling has failed
-						remove_idle_action
+						if is_gui then
+							remove_idle_action
+						end
 					end
 					compiler := Void
 				end
@@ -303,7 +307,7 @@ feature {NONE} -- Implementation
 			end
 			if test_feature_cursor = Void then
 				if not test_case_cursor.after then
-					test_feature_cursor := test_routines (test_case_cursor.item.test_class).new_cursor
+					test_feature_cursor := test_routines_old (test_case_cursor.item.test_class).new_cursor
 					test_feature_cursor.start
 				else
 					test_feature_cursor := (create {DS_LINKED_LIST [STRING]}.make).new_cursor
@@ -315,7 +319,7 @@ feature {NONE} -- Implementation
 				if test_feature_cursor.after then
 					test_case_cursor.forth
 					if not test_case_cursor.after then
-						test_feature_cursor := test_routines (test_case_cursor.item.test_class).new_cursor
+						test_feature_cursor := test_routines_old (test_case_cursor.item.test_class).new_cursor
 					end
 				else
 					test_feature_cursor.forth
@@ -425,9 +429,13 @@ feature {NONE} -- Implementation
 	testing_output_buffer: STRING
 			-- Output from testing process
 
+	root_class_printer: CDD_ROOT_CLASS_PRINTER
+			-- Prints root class
+
 invariant
 
 	test_suite_not_void: test_suite /= Void
+	root_class_printer_not_void: root_class_printer /= Void
 	--executing_equals_idle_action_added: is_executing = is_idle_action_added
 	executing_implies_compiling_xor_testing: is_executing implies (is_compiling xor is_testing)
 	is_testing_implies_correct_cursor: is_testing implies (test_case_cursor /= Void and then not test_case_cursor.off)
