@@ -1,0 +1,5 @@
+Those are the remaining tasks to make sure the runtime compiles correctly for EFI
+
+- Select the Unix console instead of windows' (or, alternatively, implement one to run on EFI)
+- Disable the compilation of the multithreading code
+- Make sure the single file programs are linked with the right libraries

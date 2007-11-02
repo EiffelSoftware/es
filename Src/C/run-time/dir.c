@@ -69,6 +69,10 @@ doc:<file name="dir.c" header="eif_dir.h" version="$Id$" summary="Externals for 
 #else
 	/* FIXME: write dummy unit */
 #include <unistd.h>
+#if defined EIF_EFI
+#include <dirent.h>
+#define DIRENTRY struct dirent
+#endif
 #endif
 
 #include "rt_dir.h"
@@ -297,7 +301,7 @@ rt_public EIF_REFERENCE dir_current(void)
 
 rt_public EIF_CHARACTER eif_dir_separator (void)
 {
-#if defined EIF_WINDOWS
+#if defined EIF_WINDOWS || defined EIF_EFI
 	return '\\';
 #elif defined EIF_VMS_V6_ONLY
 	/** return '.'; **/	/* should cause error (no return) */
@@ -446,7 +450,7 @@ rt_public EIF_BOOLEAN eif_dir_is_readable(char *name)
 	int result = access(eifrt_vms_directory_file_name (name, vms_path), R_OK);
 	return (EIF_BOOLEAN) (result != -1);
 
-#elif defined EIF_WINDOWS
+#elif defined EIF_WINDOWS || defined EIF_EFI
 
 	return (EIF_BOOLEAN) (access (name, 04) != -1);
 
@@ -505,7 +509,7 @@ rt_public EIF_BOOLEAN eif_dir_is_writable(char *name)
 	int result = access(eifrt_vms_directory_file_name (name, vms_path), W_OK);
 	return (EIF_BOOLEAN) (result != -1);
 
-#elif defined EIF_WINDOWS
+#elif defined EIF_WINDOWS || defined EIF_EFI
 
 	return (EIF_BOOLEAN) (access (name, 02) != -1);
 
@@ -566,7 +570,7 @@ rt_public EIF_BOOLEAN eif_dir_is_executable(char *name)
 	int result = access(eifrt_vms_directory_file_name (name, vms_path), X_OK);
 	return (EIF_BOOLEAN) (result != -1);
 
-#elif defined EIF_WINDOWS
+#elif defined EIF_WINDOWS || defined EIF_EFI
 	return (EIF_BOOLEAN) (access (name, 0) != -1);
 #else
 #ifdef HAS_GETEUID

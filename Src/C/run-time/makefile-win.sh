@@ -3,6 +3,7 @@ DIR = $dir_sep
 OUTDIR = .$(DIR)LIB$(DIR)
 INDIR = .$(DIR)OBJDIR$(DIR)
 RTSRC = .$(DIR)
+CONSOLE_DIR = $console_dir
 CC = $cc
 CTAGS = ctags
 OUTPUT_EXE_CMD = $output_exe_cmd
@@ -16,7 +17,7 @@ LINK32 = $link32
 DLL_FLAGS = $dll_flags
 DLL_LIBS = $dll_libs
 
-CFLAGS = -I. -I./include -I$(TOP) -I$(TOP)/idrs -I$(TOP)/console -I$(TOP)/ipc/app
+CFLAGS = -I. -I./include -I$(TOP) -I$(TOP)/idrs -I$(CONSOLE_DIR)/console -I$(TOP)/ipc/app
 NETWORK = $(TOP)$(DIR)ipc$(DIR)app$(DIR)network.$lib
 MT_NETWORK = $(TOP)$(DIR)ipc$(DIR)app$(DIR)mtnetwork.$lib
 LIBNAME = ipc.$lib

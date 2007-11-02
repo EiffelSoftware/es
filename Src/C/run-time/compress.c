@@ -118,7 +118,8 @@ clearness. In this example there are six padding bits.
 
 #include <stdio.h>
 #include <string.h>
-#ifndef VXWORKS
+#include "eif_config.h"
+#if !defined (VXWORKS) && !defined (EIF_EFI)
 #include <memory.h>
 #endif
 #ifdef DEBUG_CMPS

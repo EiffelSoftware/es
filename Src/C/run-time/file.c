@@ -1109,19 +1109,19 @@ rt_public EIF_BOOLEAN file_eaccess(struct stat *buf, int op)
 #endif
 			return (EIF_BOOLEAN) ((mode & S_IXOTH) ? '\01' : '\0');
 	case 3: /* Is file setuid */
-#if defined EIF_WINDOWS || defined EIF_OS2
+#if defined EIF_WINDOWS || defined EIF_OS2 || defined EIF_EFI
 		return (EIF_BOOLEAN) ('\0');
 #else
 		return (EIF_BOOLEAN) ((mode & S_ISUID) ? '\01' : '\0');
 #endif
 	case 4: /* Is file setgid */
-#if defined EIF_WINDOWS || defined EIF_OS2
+#if defined EIF_WINDOWS || defined EIF_OS2 || defined EIF_EFI
 		return (EIF_BOOLEAN) ('\0');
 #else
 		return (EIF_BOOLEAN) ((mode & S_ISGID) ? '\01' : '\0');
 #endif
 	case 5: /* Is file sticky */
-#if defined EIF_WINDOWS || defined EIF_OS2 || defined VXWORKS
+#if defined EIF_WINDOWS || defined EIF_OS2 || defined VXWORKS || defined EIF_EFI
 		return (EIF_BOOLEAN) ('\0');
 #else
 		return (EIF_BOOLEAN) ((mode & S_ISVTX) ? '\01' : '\0');
@@ -1357,7 +1357,7 @@ rt_public void file_mkdir(char *path)
 		errno = 0;			/* Reset error condition */
 #ifdef EIF_OS2 
 		status = mkdir(path);		/* Create directory `path' */
-#elif defined EIF_WINDOWS || defined VXWORKS
+#elif defined EIF_WINDOWS || defined VXWORKS || defined EIF_EFI
 		status = mkdir(path);		/* Create directory `path' */ /* %%ss above line added */
 #else
 		status = mkdir(path, 0777);	/* Create directory `path' */
@@ -1501,7 +1501,7 @@ rt_public void file_perm(char *name, char *who, char *what, int flag)
 	case 'u':
 		while (*what)
 			switch (*what++) {
-#if defined EIF_WINDOWS
+#if defined EIF_WINDOWS || defined EIF_EFI
 			case 's': break;
 			case 'r': break;
 			case 'w': break;
@@ -1533,7 +1533,7 @@ rt_public void file_perm(char *name, char *who, char *what, int flag)
 		while (*what)
 			switch (*what++) {
 			case 's':
-#if defined EIF_WINDOWS || defined EIF_OS2
+#if defined EIF_WINDOWS || defined EIF_OS2 || defined EIF_EFI
 #else
 				if (flag) fmode |= S_ISGID; else fmode &= ~S_ISGID;
 #endif
@@ -1555,7 +1555,7 @@ rt_public void file_perm(char *name, char *who, char *what, int flag)
 		while (*what)
 			switch (*what++) {
 			case 't':
-#if defined EIF_WINDOWS || defined EIF_OS2 || defined VXWORKS
+#if defined EIF_WINDOWS || defined EIF_OS2 || defined VXWORKS || defined EIF_EFI
 #else
 				if (flag) fmode |= S_ISVTX; else fmode &= ~S_ISVTX;
 #endif
@@ -1689,14 +1689,14 @@ rt_public EIF_BOOLEAN file_creatable(char *path, EIF_INTEGER length)
 
 	temp = (char *) eif_malloc (length + 1);
 	strcpy (temp, path);
-#if defined EIF_WINDOWS || defined EIF_OS2
+#if defined EIF_WINDOWS || defined EIF_OS2 || defined EIF_EFI
 	ptr = strrchr (temp, '\\');
 #else
 	ptr = strrchr (temp, '/');
 #endif
 	if (ptr != (char *) 0) {
 		*ptr = '\0';
-#if defined EIF_WINDOWS || defined EIF_OS2
+#if defined EIF_WINDOWS || defined EIF_OS2 || defined EIF_EFI
 		if ((ptr == temp) || (*(ptr -1) == ':'))
 				/* path is of the form a:\bbb or \bbb, parent is a:\ or \ */
 			strcat (ptr, "\\");

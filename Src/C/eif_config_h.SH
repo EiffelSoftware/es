@@ -15,6 +15,9 @@ case "$0" in
 */*) cd `expr X$0 : 'X\(.*\)/'` ;;
 esac
 echo "Extracting eif_config.h (with variable substitutions)"
+
+if [ -z $eif_efi ]; then eif_efi='undef'; fi
+
 sed <<!GROK!THIS! >eif_config.h -e 's!^#undef\(.*\)/\*!/\*#define \1 \*/ /\*!' -e 's!^#un-def!#undef!'
 /*
 	description: "Portability information for the Eiffel Software's Runtime."
@@ -717,6 +720,9 @@ $inttypes_include
 
 /* Is windows platform? */
 #$eif_windows EIF_WINDOWS	/* NC */
+
+/* is this the EFI environment? */
+#$eif_efi EIF_EFI                     /* NC */
 
 /* Is SGI platform? */
 #$eif_sgi	EIF_SGI		/* NC */

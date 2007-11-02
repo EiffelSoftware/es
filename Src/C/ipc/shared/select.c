@@ -50,7 +50,7 @@
 #ifdef I_SYS_TIMES
 #include <sys/times.h>
 #elif defined(I_SYS_TIME)
-#include <sys/times.h>
+#include <sys/time.h>
 #endif
 #include <sys/types.h> /* for Cray */
 #include <errno.h>

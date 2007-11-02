@@ -2,10 +2,11 @@
 set OLD_PATH=%PATH%
 set OLD_COMSPEC=%COMSPEC%
 set PATH=%~dp0\shell\bin;%PATH%
-
+set CONSOLE_DIR=..
 if .%1. == .clean. goto clean
 if .%1. == .win32. goto win32
 if .%1. == .win64. goto win64
+if .%1. == .efi. goto efi
 :usage
 echo make ...
 echo     Options:
@@ -15,7 +16,7 @@ echo        win32 g        - build a Win32 run-time for MinGW
 echo        win32 m  [dll] - build a Win32 run-time for Microsoft C++ 2005 [as DLL if specified]
 echo        win32 m6 [dll] - build a Win32 run-time for Microsoft C++ 6.0 [as DLL if specified]
 echo        win64 m  [dll] - build a Win64 run-time for Microsoft C++ 2005 [as DLL if specified]
-echo        win64 l        - build a Win64 run-time for LCC
+echo        efi m [dll] - build a EFI run-time for Microsoft C++ 2005 [as DLL if specified]
 goto end
 :win32
 if .%2. == .. goto usage
@@ -37,16 +38,18 @@ goto process
 if NOT .%2. == .m6. goto usage
 copy CONFIGS\windows-x86-msc6 config.sh
 goto process
+:efi
+if .%2. == .. goto usage
+if NOT .%2. == .m. goto usage
+set CONSOLE_DIR=.
+copy CONFIGS\efi-x86-msc config.sh
+goto process
 :win64
 if .%2. == .. goto usage
-if NOT .%2. == .m. goto lcc
+if NOT .%2. == .m. goto usage
 copy CONFIGS\windows-x86-64-msc config.sh
 set remove_desc=1
 goto process
-:lcc
-if NOT .%2. == .l. goto usage
-copy CONFIGS\windows-x86-64-lcc config.sh
-set remove_desc=1
 :process
 
 rem A workaround for getting MSYS tools run on all x64 Windows platform.
@@ -91,8 +94,10 @@ copy eif_config.h run-time
 copy eif_portable.h run-time
 copy config.sh bench
 copy make.w32 bench\make.bat
-copy config.sh console
-copy make.w32 console\make.bat
+rem if not .%1.==.efi. (
+	copy config.sh console
+	copy make.w32 console\make.bat
+rem )
 if not "%remove_desc%" == "1" (
 	copy config.sh desc
 	copy make.w32 desc\make.bat
@@ -130,8 +135,10 @@ cd ..\platform
 ..\shell\bin\rt_converter.exe makefile-win.sh Makefile
 cd ..\idrs
 ..\shell\bin\rt_converter.exe makefile-win.sh Makefile
-cd ..\console
-..\shell\bin\rt_converter.exe makefile-win.sh Makefile
+rem if not .%1. == .efi. (
+	cd ..\console
+	..\shell\bin\rt_converter.exe makefile-win.sh Makefile
+rem )
 cd ..\bench
 ..\shell\bin\rt_converter.exe makefile-win.sh Makefile
 if not "%remove_desc%" == "1" (
@@ -151,8 +158,10 @@ rem
 rem Call make
 rem
 echo @echo off > make.bat
-echo cd console>> make.bat
-echo call make>> make.bat
+rem if not .%1. == .efi. (
+	echo cd console>> make.bat
+	echo call make>> make.bat
+rem )
 echo cd ..\idrs>> make.bat
 echo call make>> make.bat
 echo cd ..\ipc\shared>> make.bat

@@ -39,7 +39,9 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#ifndef EFI32
 #include <memory.h>
+#endif
 #include "eif_interp.h"
 
 #define BCDB_TAG    't'

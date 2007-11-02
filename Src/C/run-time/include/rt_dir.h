@@ -52,16 +52,20 @@
 #include <descrip.h>
 #include "eif_vmsdirent.h"		/* local to run-time */
 #define DIRENTRY struct dirent
-#elif defined EIF_WINDOWS
+#elif defined EIF_WINDOWS || defined EIF_EFI
 #else
 	Sorry! You have to find a directory package...
 #endif
 
-#ifdef EIF_WINDOWS
-#include <windows.h>
-#include <direct.h>	/* In order to use chdir and getcwd */
+#if defined EIF_WINDOWS
+#	include <windows.h>
+#	include <direct.h>	/* In order to use chdir and getcwd */
 #else
-#include <unistd.h>	/* In order to use chdir and getcwd */
+#	if defined EIF_EFI
+#		include <efi.h>
+#		include <efilib.h>
+#	endif	
+#	include <unistd.h>	/* In order to use chdir and getcwd */
 #endif
 
 #endif
