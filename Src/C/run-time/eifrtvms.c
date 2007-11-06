@@ -515,7 +515,7 @@ rt_public char* eifrt_vms_getenv (const char* name)
 	    sts = sys$trnlnm (&tran_attr, (void*)&tab_dx, &lnm_dx, 0, &items);
 	    if (VMS_FAILURE(sts)) break;
 	    valbuf[vallen] = '\0';
-	    if (name_attr & LNM$M_CONCEALED || strchr (valbuf, ':')) {
+	    if (name_attr & LNM$M_CONCEALED /*** || strchr (valbuf, ':') ***/ ) {
 #ifdef moose	/* this was a bad idea, it causes all sorts of other problems; it is preserved here as a reminder. */
 		/* return colon terminated name */
 		static char badidea[LNM$C_NAMLENGTH +2];    /* NOT THREAD SAFE! */
