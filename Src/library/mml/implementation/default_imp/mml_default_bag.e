@@ -103,7 +103,7 @@ feature -- Measurement
 			end
 		end
 
-feature -- Conversion	
+feature -- Conversion
 
 	randomly_ordered: MML_SEQUENCE [G] is
 			-- The bag `current' as random sequence.

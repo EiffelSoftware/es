@@ -60,7 +60,7 @@ feature -- Access
 		end
 
 	occurrences (v: G): INTEGER is
-			-- The number of times that `v' occures in the bag.
+			-- The number of times that `v' occurs in the bag.
 		deferred
 		ensure
 			is_member_then_item: contains(v) implies Result = item(v)
