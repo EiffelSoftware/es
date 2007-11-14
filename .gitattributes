@@ -1874,10 +1874,6 @@ Src/library/editor/bitmaps/left_scroll_arrow.png -text
 Src/library/editor/bitmaps/right_scroll_arrow.png -text
 Src/library/gobo_extension/gobo_extension.ecf -text
 Src/library/memory_analyzer/memory_analyzer_icon_matrix.png -text
-Src/library/mml/License.txt -text
-Src/library/mml/Readme.txt -text
-Src/library/mml/documentation/model-howto.odt -text
-Src/library/mml/documentation/model-howto.pdf -text
 Src/library/process/classic/unix/process_error_listener_thread.e -text
 Src/library/process/classic/unix/process_output_listener_thread.e -text
 Src/library/process/classic/unix/process_thread_timer.e -text
