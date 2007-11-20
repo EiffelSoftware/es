@@ -1,0 +1,48 @@
+#!/bin/sh
+
+echo Welcome to the EiffelStudio installer
+
+ERROR_ENV=""
+if [ ! "$ISE_EIFFEL" ]; then
+	echo "The environment variable ISE_EIFFEL should be set to the directory where EiffelStudio is installed (typically the current directory: `pwd`)"
+	ERROR_ENV=TRUE
+fi
+if [ ! "$ISE_PLATFORM" ]; then
+	echo The environment variable ISE_PLATFORM should be set to one of these values, depending on your platform:
+	echo linux-x86, linux-x86-64 irix-mips, irix-mips-64, solaris-sparc, solaris-sparc-64, solaris-x86, ...
+	ERROR_ENV=TRUE
+fi
+if [ "$ERROR_ENV" = "TRUE" ]; then
+	echo "When the needed environment variable(s) are set, launch $0 again."
+	exit
+fi
+
+echo "Do you want to precompile EiffelBase (required to compile examples) ? [y/n]"
+read prec_base
+echo "Do you want to precompile EiffelVision (might take a while) ? [y/n]"
+read prec_vision2
+
+INIT_DIR=`pwd`
+
+if [ "$prec_base" != "n" ]; then
+	echo Precompile EiffelBase
+	cd $ISE_EIFFEL/precomp/spec/$ISE_PLATFORM
+	$ISE_EIFFEL/studio/spec/$ISE_PLATFORM/bin/ec -precompile -config base.ecf -c_compile -clean
+fi
+if [ "$prec_vision2" = "y" ]; then
+	if which pkg-config > /dev/null 2>&1 ; then
+		if pkg-config --atleast-version=2.4 gtk+-2.0 ; then
+			echo Precompile EiffelVision
+			cd $ISE_EIFFEL/precomp/spec/$ISE_PLATFORM
+			$ISE_EIFFEL/studio/spec/$ISE_PLATFORM/bin/ec -precompile -config vision2.ecf -c_compile -clean
+		else
+			echo "GTK 2.4 does not seem to be installed"
+			echo "Precompilation of EiffelVision interrupted."
+		fi
+	else
+		echo "GTK 2.4 does not seem to be installed"
+		echo "Precompilation of EiffelVision interrupted."
+	fi
+fi
+
+cd $INIT_DIR
