@@ -1,0 +1,12 @@
+<document output="studio" title="Lex Sample">
+	<meta_data/>
+	<paragraph>
+		<list ordered="false">
+			<item>
+				<link>
+					<url>eiffel_scan/index.xml</url>
+					<label>Eiffel scanner</label>
+				</link>
+			</item>
+		</list>
+	</paragraph></document>
