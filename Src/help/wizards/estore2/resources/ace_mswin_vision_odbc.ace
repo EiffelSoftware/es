@@ -1,0 +1,87 @@
+--- Generated Ace file, using the EiffelStore Wizard.
+
+system
+	SAMPLE
+
+root
+	APPLICATION: make
+
+default
+	assertion(require)
+	assertion(ensure)
+	address_expression(no)
+	array_optimization(no)
+	console_application(yes)
+	dead_code_removal(yes)
+	dynamic_runtime(no)
+	exception_trace(no)
+	inlining(no)
+	multithreaded(no)
+	check_vape(no)
+	arguments(" ")
+	disabled_debug(yes)
+	disabled_debug("wel")
+	disabled_debug("win_dispatcher")
+	disabled_debug("gdi_count")
+	disabled_debug("vision2_windows_gdi")
+	disabled_debug("vision2_windows")
+	disabled_debug("wel_gdi_count")
+	disabled_debug("wel_gdi_references")
+	disabled_debug("dlg_dispatcher")
+	debug(no)
+	line_generation(no)
+	profile(no)
+	trace(no)
+	<FL_TAG_PRECOMPILED>precompiled ("$ISE_EIFFEL/precomp/spec/$ISE_PLATFORM/base");
+
+cluster
+	all root_cluster:		"<FL_PATH>"
+		exclude
+			"EIFGEN"; 
+		end
+
+	all base:		"$ISE_EIFFEL/library/base"
+		exclude
+			"desc"; "table_eiffel3"; 
+		end
+
+	all wel:		"$ISE_EIFFEL\library\wel"
+
+	all vision2:		"$ISE_EIFFEL\library\vision2"
+		exclude
+			"gtk"; "test"; 
+		end
+
+	time:		"$ISE_EIFFEL\library\time"
+
+	time_format (time):		"$\format"
+
+	time_english (time):		"$\format\english"
+
+	estore_support:		"$ISE_EIFFEL\library\store\support"
+
+	estore_interface:		"$ISE_EIFFEL\library\store\interface"
+
+	estore_db_support:		"$ISE_EIFFEL\library\store\dbms\support"
+
+	estore_rdbms:		"$ISE_EIFFEL\library\store\dbms\rdbms\odbc"
+
+	all estore_generation:		"$ISE_EIFFEL\library\store\generation"
+
+	all dataview:		"$ISE_EIFFEL\library\store\dataview"
+
+external
+	include_path:
+						"$ISE_EIFFEL\library\store\dbms\rdbms\odbc\Clib",
+						"$ISE_EIFFEL\library\wel\spec\windows\include",
+						"$ISE_EIFFEL\library\vision2\spec\include"
+
+	object:						
+						"odbc32.lib", -- Specify correct path (or add to your $PATH)
+						"$ISE_EIFFEL\library\\store\spec\msc\lib\odbc_store.lib",
+						"$ISE_EIFFEL\library\wel\spec\msc\lib\wel.lib",
+						"$ISE_EIFFEL\library\vision2\spec\$(ISE_C_COMPILER)\lib\vision2.lib",
+						"$ISE_EIFFEL\library\vision2\spec\$(ISE_C_COMPILER)\lib\libpng.lib",
+						"$ISE_EIFFEL\library\vision2\spec\$(ISE_C_COMPILER)\lib\zlib.lib"
+end
+

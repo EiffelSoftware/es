@@ -1,0 +1,54 @@
+body 
+{
+	font-family: verdana;
+	margin: 0px 0px 0px 0px;
+	width: 100%;
+	font-size: 70%;
+	color: white;
+}
+
+img 
+{
+	border: 0px; 
+}
+
+/* level 0 outer */
+.nav_bar
+{
+	text-decoration : none;	
+	background-color: #003063;
+	width: 100%;	
+	border:0px;
+}
+
+.nav_bar_item
+{
+	text-decoration : none;
+	background: #003063;
+	font-size: 70%;
+}
+
+a
+{
+	text-decoration : none;
+	color: white;
+}
+
+a:hover
+{
+	text-decoration : none;
+	color: red;
+}
+
+td.header_filler
+{	
+	text-align: right;
+	background-color: #6699cc;
+	color: white;	
+	font-size: 70%;
+}
+
+table.outer_table
+{		
+	width: 100%;
+}
