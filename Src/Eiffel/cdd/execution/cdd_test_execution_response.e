@@ -102,13 +102,6 @@ invariant
 	setup_normal_equals_test_not_void: (setup_response /= Void and then setup_response.is_normal) = (test_response /= Void)
 	test_normal_equals_teardown_not_void: (test_response /= Void and then not test_response.is_bad) = (teardown_response /= Void)
 	unresolved_implies_maintenance: is_unresolved implies requires_maintenance
-	one_of_fail_pass_unresolved: (is_pass xor is_fail xor is_unresolved) and
-		not (is_pass and is_fail and is_unresolved)
-	maintenance_implies_one_error: requires_maintenance implies ((has_compile_error xor has_bad_context xor has_bad_communication) and
-		not (has_compile_error and has_bad_context and has_bad_communication))
-	not_requires_maintenance_implies_no_error: not requires_maintenance implies not (has_compile_error or has_bad_context or has_bad_communication)
-
-	unresolved_implies_maintenance: is_unresolved implies requires_maintenance
 	one_of_fail_pass_unresolved: one_of (is_pass, is_fail, is_unresolved)
 	maintenance_implies_one_error: requires_maintenance implies (one_of (has_compile_error, has_bad_context, has_bad_communication))
 	not_requires_maintenance_implies_no_error: not requires_maintenance implies not (has_compile_error or has_bad_context or has_bad_communication)
