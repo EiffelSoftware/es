@@ -63,9 +63,11 @@ feature {NONE} -- Initialization
 			l_prj_manager.compile_stop_agents.extend (agent refresh_status)
 			eb_cluster_manager.add_observer (Current)
 
-			if l_prj_manager.initialized then
-				refresh_status
-			end
+				-- NOTE: Looked like following code was redundant,
+				-- since `on_project_loaded' gets called anyway.
+			--if l_prj_manager.initialized then
+			--	refresh_status
+			--end
 		end
 
 feature -- Access (CDD Status)

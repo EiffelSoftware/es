@@ -12,12 +12,18 @@ inherit
 	CDD_ROUTINES
 		export
 			{NONE} all
+		undefine
+			is_equal
 		end
 
 	SHARED_EIFFEL_PROJECT
 		export
 			{NONE} all
+		undefine
+			is_equal
 		end
+
+	COMPARABLE
 
 feature {NONE} -- Initialization
 

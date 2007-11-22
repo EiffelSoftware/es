@@ -60,7 +60,7 @@ feature -- Basic operations
 			-- Print a new root class containing all test cases in `test_suite'.
 		local
 			l_output_file: KL_TEXT_OUTPUT_FILE
-			l_cursor: DS_LINKED_LIST_CURSOR [CDD_TEST_CASE]
+			l_count: INTEGER
 		do
 			last_print_succeeded := True
 			create l_output_file.make (root_class_file_name)
@@ -70,20 +70,11 @@ feature -- Basic operations
 				put_indexing
 				put_class_header
 				put_test_setting_header
-				put_line ("create Result.make (" + test_suite.test_cases.count.out + ")")
-				from
-					l_cursor := test_suite.test_cases.new_cursor
-					l_cursor.start
-				until
-					l_cursor.after
-				loop
-					put_line ("create l_fht.make (1)")
-					put_feature_table (l_cursor.item.test_class)
-					put_line ("Result.put ([create {" + l_cursor.item.test_class.name_in_upper +
-						"}, l_fht], %"" + l_cursor.item.test_class.name_in_upper + "%")")
-					put_line ("")
-					l_cursor.forth
-				end
+				l_count := test_suite.extracted_test_classes.count + test_suite.manual_test_classes.count
+				put_line ("create Result.make (" + l_count.out + ")")
+
+				put_test_class_table (test_suite.extracted_test_classes)
+				put_test_class_table (test_suite.manual_test_classes)
 
 				put_footer
 				l_output_file.close
@@ -190,6 +181,28 @@ feature {NONE} -- Implementation
 				l_ft.forth
 			end
 			put_line ("")
+		end
+
+	put_test_class_table (a_list: DS_LINKED_LIST [CDD_TEST_CLASS]) is
+			-- Print hash tables for all test classes and test routines in `a_list'.
+		require
+			initialized: is_output_stream_valid
+		local
+			l_cursor: DS_LINKED_LIST_CURSOR [CDD_TEST_CLASS]
+		do
+			from
+				create l_cursor.make (a_list)
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				put_line ("create l_fht.make (1)")
+				put_feature_table (l_cursor.item.test_class)
+				put_line ("Result.put ([create {" + l_cursor.item.test_class.name_in_upper +
+					"}, l_fht], %"" + l_cursor.item.test_class.name_in_upper + "%")")
+				put_line ("")
+				l_cursor.forth
+			end
 		end
 
 	conf_factory: CONF_COMP_FACTORY is

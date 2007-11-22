@@ -81,7 +81,7 @@ feature -- Status
 			-- Is interpreter ready for a new request? The interpreter processes
 			-- one request after the next.
 		do
-			Result := is_launched and not is_executing_request and (last_response /= Void implies not last_response.is_bad)
+			Result := is_launched and not is_executing_request and (last_response /= Void implies not last_response.has_bad_communication)
 		end
 
 	is_executing_request: BOOLEAN
@@ -100,9 +100,6 @@ feature -- Access
 			filename_not_void: Result /= Void
 			valid_filename: Result.is_equal (proxy_log_file.name)
 		end
-
-	last_result: CDD_TEST_EXECUTION
-			-- Execution results and log of last test case
 
 feature -- Settings
 
@@ -194,7 +191,7 @@ feature -- Execution
 					is_executing_request := False
 			end
 		ensure
-			last_response_is_void: last_response /= Void
+			last_response_is_not_void: last_response /= Void
 		end
 
 	execute_test_async (a_class_name: STRING; a_routine_name: STRING) is

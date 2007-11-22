@@ -16,8 +16,7 @@ feature {NONE} -- Initialization
 			a_teardown_response: CDD_ROUTINE_INVOCATION_RESPONSE) is
 					-- Create a new response.
 		require
-			a_setup_response_not_void: a_setup_response /= Void
-			a_test_response_good: a_setup_response.is_normal = (a_test_response /= Void)
+			a_test_response_good: (a_setup_response /= Void and then a_setup_response.is_normal) = (a_test_response /= Void)
 			a_teardonwn_response_good: (a_test_response /= Void and then not a_test_response.is_bad) = (a_teardown_response /= Void)
 		do
 			setup_response := a_setup_response
@@ -31,11 +30,50 @@ feature {NONE} -- Initialization
 
 feature {ANY} -- Status
 
-	is_bad: BOOLEAN is
-			-- Is the test execution as a whole considered bad?
+	is_pass: BOOLEAN is
+			-- Did the implementation under test pass the test case?
 		do
-			Result := (setup_response /= Void and then setup_response.is_bad) or
-						(test_response /= Void and then (test_response.is_bad or teardown_response.is_bad))
+			Result := test_response /= Void and then test_response.is_normal
+		end
+
+	is_fail: BOOLEAN is
+			-- Did the implementation under test fail the test case?
+		do
+			Result := test_response /= Void and then test_response.is_exceptional and not has_bad_context
+		end
+
+	is_unresolved: BOOLEAN is
+			-- Is the test judgment unresolvable?
+		do
+			Result := not (is_fail or is_pass)
+		end
+
+	requires_maintenance: BOOLEAN is
+			-- Does the test case need to be fixed?
+		do
+			Result := has_compile_error or has_bad_context or has_bad_communication
+		end
+
+	has_compile_error: BOOLEAN is
+			-- Does the test case produce a compiler error?
+		do
+			Result := setup_response = Void
+		end
+
+	has_bad_context: BOOLEAN is
+			-- Does the test case seem to have an invalid context?
+			-- (e.g. are the preconditions of the feature under test not satisfied?)
+		do
+			if test_response /= Void and then test_response.is_exceptional then
+				-- TODO: need test class/routine information...
+			end
+		end
+
+	has_bad_communication: BOOLEAN is
+			-- Was the communication between master and client outside of its specification?
+		do
+			Result := setup_response /= Void and then (setup_response.is_bad or
+				(setup_response.is_normal and then (test_response.is_bad or else teardown_response.is_bad)))
 		end
 
 feature {ANY} -- Access
@@ -51,8 +89,13 @@ feature {ANY} -- Access
 
 invariant
 
-	setup_response_not_void: setup_response /= Void
-	setup_normal_equals_test_not_void: setup_response.is_normal = (test_response /= Void)
+	setup_normal_equals_test_not_void: (setup_response /= Void and then setup_response.is_normal) = (test_response /= Void)
 	test_normal_equals_teardown_not_void: (test_response /= Void and then not test_response.is_bad) = (teardown_response /= Void)
+	unresolved_implies_maintenance: is_unresolved implies requires_maintenance
+	one_of_fail_pass_unresolved: (is_pass xor is_fail xor is_unresolved) and
+		not (is_pass and is_fail and is_unresolved)
+	maintenance_implies_one_error: requires_maintenance implies ((has_compile_error xor has_bad_context xor has_bad_communication) and
+		not (has_compile_error and has_bad_context and has_bad_communication))
+	not_requires_maintenance_implies_no_error: not requires_maintenance implies not (has_compile_error or has_bad_context or has_bad_communication)
 
 end

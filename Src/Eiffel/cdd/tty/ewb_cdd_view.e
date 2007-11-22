@@ -27,7 +27,7 @@ feature -- Execution
 			l_count: INTEGER
 		do
 			if cdd_manager.is_cdd_enabled then
-				localized_print ("Extracted test classes")
+				localized_print ("%NExtracted test classes")
 
 				create last_cluster_name.make_empty
 				create last_class_name.make_empty
@@ -38,14 +38,12 @@ feature -- Execution
 					end)
 
 				l_count := test_class_count
-				localized_print ("%N" + test_class_count.out + " extracted test cases%N%N")
-				localized_print ("Manual test classes")
+				localized_print ("%NManual test classes")
 				cdd_manager.test_suite.manual_test_classes.do_all (agent (a_tc: CDD_MANUAL_TEST_CLASS)
 					do
 						print_manual_test_class (a_tc)
 					end)
-				localized_print ("%N" + (test_class_count - l_count).out + " manual test cases%N%N")
-				localized_print ("Total " + test_class_count.out + " test classes with " + test_routine_count.out + " test routines%N%N")
+				localized_print ("%NTotal " + test_class_count.out + " test classes with " + test_routine_count.out + " test routines%N%N")
 			else
 				io.put_string ("CDD is currently not enabled. To view or create%Ntest cases enable CDD through `Status' menu.")
 			end
@@ -117,9 +115,17 @@ feature {NONE} -- Implementation
 			-- Print details for `a_test_routine'
 		require
 			a_test_routine_not_void: a_test_routine /= Void
+		local
+			l_resp: CDD_ROUTINE_INVOCATION_RESPONSE
 		do
 			test_routine_count := test_routine_count + 1
-			localized_print ("%T" + a_test_routine.routine_name + "%N")
+			localized_print ("%T" + a_test_routine.routine_name)
+			if not a_test_routine.outcomes.is_empty then
+				l_resp := a_test_routine.outcomes.first.setup_response
+				localized_print (": " + l_resp.response_text + "%N")
+			else
+				localized_print (": not tested yet%N")
+			end
 		end
 
 end

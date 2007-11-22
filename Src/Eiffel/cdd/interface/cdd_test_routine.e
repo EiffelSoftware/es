@@ -22,6 +22,7 @@ feature {NONE} -- Initialization
 			test_class := a_test_class
 			routine_name := a_routine_name
 			create outcomes.make
+			create refresh_actions
 		ensure
 			test_class_set: test_class = a_test_class
 			routine_name_set: routine_name = a_routine_name
@@ -35,12 +36,31 @@ feature -- Access
 	routine_name: STRING
 			-- Name of testable routine in `test_class'
 
-	outcomes: DS_LINKED_LIST [ANY]
-			-- Outcomes from previous testing
+	outcomes: DS_LINKED_LIST [CDD_TEST_EXECUTION_RESPONSE]
+			-- List of recorded test execution responses where last item
+			-- is most recent.
+
+feature -- Element change
+
+	add_outcome (an_outcome: CDD_TEST_EXECUTION_RESPONSE) is
+			-- Add `an_outcome' to `outcomes' and notify observers.
+		require
+			an_outcome_not_void: an_outcome /= Void
+		do
+			outcomes.put_last (an_outcome)
+			refresh_actions.call ([])
+		ensure
+			added: outcomes.last = an_outcome
+		end
+
+feature -- Event handling	
+
+	refresh_actions: ACTION_SEQUENCE [TUPLE]
+			-- Agents called when test classes or routines have been removed or added	
 
 invariant
 	test_class_not_void: test_class /= Void
 	routine_name_not_void: routine_name /= Void
-	outcomes_not_void: outcomes /= Void
+	outcomes_valid: outcomes /= Void and then not outcomes.has (Void)
 
 end
