@@ -60,32 +60,17 @@ feature -- Access
 			end
 		end
 
-	associate_object_to_object_id (object: ANY; id: INTEGER) is
-			-- Register `object' for `id' in the object lookup table.
-		require
-			object_not_void: object /= Void
-			entity_not_void: id /= Void
-			no_different_object_for_same_id: (entities.upper>id and then entities[id] /= Void) implies object = entities[id]
-		do
-			if id > entities.upper then
-				entities.grow (id*2)
-			end
-			if entities[id] = Void then
-				entities[id] := object
-				object.cr_set_object_id (id)
-			end
-		ensure
-			entity_registered: entities[id] = object
-		end
-
-	associate_object_to_entity (object: ANY; entity: NON_BASIC_ENTITY) is
+	register_object (object: ANY; entity: NON_BASIC_ENTITY) is
 			-- Register `object' in the object lookup table.
 		require
 			object_not_void: object /= Void
 			entity_not_void: entity /= Void
-			no_different_object_for_same_id: (entities.upper>entity.id and then entities[entity.id] /= Void) implies object = entities[entity.id]
+			no_different_object_for_same_id: entities[entity.id] /= Void implies object = entities[entity.id]
 		do
-			associate_object_to_object_id (object, entity.id)
+			if entities[entity.id] = Void then
+				entities[entity.id] := object
+				object.cr_set_object_id (entity.id)
+			end
 		ensure
 			entity_registered: entities[entity.id] = object
 		end
@@ -109,14 +94,12 @@ feature -- Access
 				elseif basic.type.substring_index ("MANIFEST_SPECIAL",1) = 1 then
 					-- Although this is no basic type, there's no need to register this object, because
 					-- it's only used as manifest type --> no references will be passed beyond the border.
-					-- NOTE: Manifest specials are only used for capturing phase. During replay they're
-					-- restored as SPECIAL's.
 					manifest_special ?= new_instance_of (dynamic_type_from_string(basic.type))
 					check
 						instance_of_manifest_special_created: manifest_special /= Void
 					end
 					manifest_special.restore (basic.value)
-					Result := manifest_special.item
+					Result := manifest_special
 				else
 					report_and_set_error ("unable to instanciate basic entity of type " + basic.type)
 				end
@@ -128,7 +111,7 @@ feature -- Access
 			-- Resolve `non_basic' to an object representing a non basic type.
 			do
 				if entities.upper < non_basic.id then
-					entities.grow (non_basic.id * 2)
+					entities.resize (0, non_basic.id * 2)
 				end
 
 				if entities[non_basic.id] = Void then
@@ -154,7 +137,7 @@ feature -- Access
 			if not is_special_type (dtype) then
 				new_object := new_instance_of (dtype)
 
-				associate_object_to_entity (new_object, non_basic)
+				register_object (new_object, non_basic)
 			else
 				report_and_set_error("creation of SPECIALs not implemented yet.")
 				-- XXX not implemented yet. how can the size of the special
@@ -179,4 +162,5 @@ feature -- Implementation
 
 invariant
 	invariant_clause: True -- Your invariant here
+
 end

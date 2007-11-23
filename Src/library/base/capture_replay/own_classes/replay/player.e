@@ -34,7 +34,7 @@ create
 feature -- Initialization
 
 
-	setup_on_text_file (filename: STRING; a_caller: CALLER)
+		setup_on_text_file (filename: STRING; a_caller: CALLER)
 			-- Set the player up to the the replay of the text-log `filename'
 		require
 			filename_not_void: filename /= Void
@@ -43,43 +43,19 @@ feature -- Initialization
 			parser: TEXT_EVENT_PARSER
 			input_file: KL_TEXT_INPUT_FILE
 		do
-			create input_file.make (filename)
-			input_file.open_read
-			setup_on_input_stream (input_file, a_caller)
-		ensure
-			capture_replay_enabled: is_capture_replay_enabled
-			replay_phase_enabled: is_replay_phase
-		end
-
-	setup_on_string(log: STRING; a_caller:CALLER)
-			-- Set the player up to replay the log from `log'
-		require
-			log_not_void: log /= Void
-			a_caller_not_void: a_caller /= Void
-		local
-			string_input: KL_STRING_INPUT_STREAM
-		do
-			create string_input.make(log)
-			setup_on_input_stream(string_input, a_caller)
-		end
-
-	setup_on_input_stream(an_input_stream: KI_TEXT_INPUT_STREAM; a_caller: CALLER) is
-			-- Set the player up to replay the log coming from `an_input_stream'
-		require
-			an_input_stream_not_void: an_input_stream /= Void
-			an_input_stream_open: an_input_stream.is_open_read
-			a_caller_not_void: a_caller /= Void
-		local
-			parser: TEXT_EVENT_PARSER
-		do
 			create resolver.make
 			create event_input
-			create parser.make (an_input_stream, event_input)
+			create input_file.make (filename)
+			input_file.open_read
+			create parser.make (input_file, event_input)
 
 			caller := a_caller
 
 			set_capture_replay_enabled (True)
 			set_replay_phase (True)
+		ensure
+			capture_replay_enabled: is_capture_replay_enabled
+			replay_phase_enabled: is_replay_phase
 		end
 
 feature -- Access
@@ -150,7 +126,7 @@ feature -- Basic operations
 								if non_basic_return_entity /= Void then
 									if res /= Void then
 										-- This return value must be registered.
-										resolver.associate_object_to_entity (res, non_basic_return_entity)
+										resolver.register_object (res, non_basic_return_entity)
 									else
 										report_and_set_error ("Received non-basic return value that is not observable")
 									end
@@ -191,7 +167,7 @@ feature -- Basic operations
 							else
 								call_event ?= event_input.last_event
 								--OUTCALL
-								resolver.associate_object_to_entity (target, call_event.target)
+								resolver.register_object (target, call_event.target)
 								index_arguments (call_event.arguments, arguments)
 								consume_event
 								if not has_error then
@@ -245,8 +221,7 @@ feature -- Basic operations
 			enter
 				-- Grab first event...
 			consume_event
-
-			if not has_error and not event_input.end_of_input then
+			if not has_error then
 				simulate_unobserved_body
 			end
 			leave
@@ -267,8 +242,7 @@ feature {NONE} -- Implementation
 			message_not_void: message /= Void
 		do
 			has_error := True
-			error_message :=  "replay error on event " + event_input.event_number.out + ": "+ message
-			print(error_message + "%N")
+			print("replay error on event " + event_input.event_number.out + ": "+ message + "%N")
 		ensure
 			error_message_not_void: error_message /= Void
 		end
@@ -295,7 +269,7 @@ feature {NONE} -- Implementation
 				non_basic ?= expected_arguments @ i
 				actual := actual_arguments @ i
 				if non_basic /= Void and actual /= Void then
-					resolver.associate_object_to_entity (actual, non_basic)
+					resolver.register_object (actual, non_basic)
 				end
 				i := i + 1
 			end

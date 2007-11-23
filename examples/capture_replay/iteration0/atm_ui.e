@@ -177,7 +177,7 @@ feature {NONE} -- Implementation
 				print ("please enter the name of your account %N")
 				io.readline
 				Result := io.last_string
-				Result.get_area.note_direct_manipulation (Result.area)
+
 				if not atm.account_exists (Result) then
 					print ("unknown account. hint: 'test' %N")
 				end
@@ -195,12 +195,8 @@ feature {NONE} -- Implementation
 	print_balance_for_account_name (account_name: STRING)
 			-- Print the balance for the Account with name 'account_name'.
 		do
-			print ("Account ")
-			print(account_name)
-			print("%N")
-			print ("balance: ")
-			print(atm.balance_for_account_name (account_name).out)
-			print("%N")
+			print ("Account " + account_name + "%N")
+			print ("balance: " + atm.balance_for_account_name (account_name).out + "%N")
 		end
 
 invariant

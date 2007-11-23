@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-2-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-2-0 http://www.eiffel.com/developers/xml/configuration-1-2-0.xsd" name="iteration0_example" uuid="9D47B610-776E-419C-A11C-E3938B1EB625">
+<?xml version="1.0" encoding="ISO-8859-1"?><system xmlns="http://www.eiffel.com/developers/xml/configuration-1-2-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-2-0 http://www.eiffel.com/developers/xml/configuration-1-2-0.xsd" name="iteration0_example" uuid="9D47B610-776E-419C-A11C-E3938B1EB625">
 	<target name="iteration0_example">
 		<root class="ROOT_CLASS" feature="make"/>
 		<option profile="false" warning="true">
@@ -7,25 +6,25 @@
 		</option>
 		<setting name="console_application" value="true"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf" readonly="false"/>
-		<library name="gobo" location="$ISE_LIBRARY\library\gobo_vanilla.ecf"/>
-		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
-		<cluster name="additional_base_classes" location="..\..\..\Src\library\base\capture_replay\own_classes\" recursive="true">
+		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
+		<cluster name="additional_base_classes" location="..\..\Src\library\base\capture_replay\own_classes\" recursive="true">
 			<option>
 				<assertions/>
 			</option>
 		</cluster>
-		<cluster name="erl_g" location="$ERL_G\library\runtime\"/>
 		<cluster name="root_cluster" location=".\" recursive="true">
 			<option>
-				<assertions/>
+				<assertions precondition="true" postcondition="true" check="true"/>
 			</option>
 			<file_rule>
 				<exclude>/EIFGENs$</exclude>
 				<exclude>/.svn$</exclude>
 				<exclude>/CVS$</exclude>
+				<exclude>/cdd_test_suite$</exclude>
 			</file_rule>
+			<cluster name="cdd_test_suite" location=".\cdd_test_suite\"/>
 		</cluster>
-		<override name="elks_overrides" location="..\..\..\Src\library\base\capture_replay\elks_overrides\" recursive="true">
+		<override name="elks_overrides" location="..\..\Src\library\base\capture_replay\elks_overrides\" recursive="true">
 			<option>
 				<assertions/>
 			</option>

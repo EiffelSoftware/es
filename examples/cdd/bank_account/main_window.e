@@ -150,8 +150,6 @@ feature {NONE} -- Implementation
 
 	read_amount is
 			--
-		local
-			l_label: EV_LABEL
 		do
 			last_amount := 0
 			status_label.text.wipe_out
@@ -182,8 +180,6 @@ feature {NONE} -- Bank account operations
 
 	withdraw_amount is
 			--
-		local
-			l_amount: INTEGER
 		do
 			read_amount
 			if last_amount /= 0 then

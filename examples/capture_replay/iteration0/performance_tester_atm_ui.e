@@ -30,7 +30,6 @@ feature -- Basic operations
 			create clock.make
 			time_before := clock.time_now
 			acc_name := "test"
-			acc_name.get_area.note_direct_manipulation (acc_name.area)
 			from
 				i := 0
 			until
@@ -45,8 +44,7 @@ feature -- Basic operations
 			end
 			time_after := clock.time_now
 			duration := time_after.time_duration (time_before)
-			print ("duration: ")
-			print (duration.out)
+			print("duration: " + duration.out)
 		end
 
 

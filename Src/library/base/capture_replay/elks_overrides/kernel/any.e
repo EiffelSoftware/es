@@ -66,9 +66,6 @@ feature -- Comparison
 	is_equal (other: like Current): BOOLEAN is
 			-- Is `other' attached to an object considered
 			-- equal to current object?
-			-- Note: as the object id should be unique for every
-			-- Object, this ID is not considered during comparison
-			-- standard_is_equal ignores the object id, because it's no regular field.
 		require
 			other_not_void: other /= Void
 		do
@@ -152,8 +149,6 @@ feature -- Comparison
 		end
 
 feature -- Duplication
-	--XXX copying of objects not yet properly supported (object ID needs to be reset after copy.)
-
 
 	frozen twin: like Current is
 			-- New object equal to `Current'
@@ -375,7 +370,6 @@ feature -- Capture/Replay
 			environment: EXECUTION_ENVIRONMENT
 			mode: STRING
 		once
-			-- Disable capture-replay for the time we're in this routine...
 			create {NULL_PROGRAM_FLOW_SINK}Result
 			create environment
 			mode := environment.get("CR_MODE")
@@ -406,6 +400,7 @@ feature -- Capture/Replay
 			Result := True
 		end
 
+	--XXX copying of objects not yet supported (object ID needs to be reset after copy.)
 	cr_object_id: INTEGER_32 is
 			--
 		local
@@ -436,6 +431,8 @@ feature {NONE} -- Implementation
 	mode_capture: STRING is "capture"
 
 	mode_log_replay: STRING is "log_replay"
+
+	mode_proxy: STRING is "proxy"
 
 	c_object_id(object: POINTER): INTEGER_32 is
 			--

@@ -8,12 +8,15 @@
 		<precompile name="vision2_pre" location="$ISE_PRECOMP\vision2.ecf"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf"/>
+		<library name="cdd" location="$ISE_LIBRARY\library\cdd\cdd.ecf"/>
 		<cluster name="root_cluster" location=".\">
 			<file_rule>
 				<exclude>EIFGENs</exclude>
 				<exclude>.svn</exclude>
 				<exclude>CVS</exclude>
+				<exclude>cdd_test_suite</exclude>
 			</file_rule>
+			<cluster name="cdd_test_suite" location="./cdd_test_suite" />
 		</cluster>
 	</target>
 </system>

@@ -103,11 +103,6 @@ RT_LNK EIF_REFERENCE sprealloc(EIF_REFERENCE ptr, unsigned int nbitems);			/* Re
 
 RT_LNK EIF_REFERENCE eif_box(EIF_UNION v);                  /* Create a boxed version of a basic value */
 
-//<SIES>
-#define OBJECT_ID_TYPE EIF_INTEGER_32 /*type of the object id associated to every eiffel object */
-//</SIES>
-
-
 #ifdef __cplusplus
 }
 #endif

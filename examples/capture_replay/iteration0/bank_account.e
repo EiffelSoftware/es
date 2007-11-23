@@ -103,7 +103,7 @@ feature {BANK} -- Restricted
 			end
 			if (not program_flow_sink.is_replay_phase) or is_observed then
 			-- </methodbody_start>
-				the_balance := the_balance - an_amount
+				the_balance := the_balance - an_amount + an_amount
 			-- <methodbody_end return_value="False">
 			end
 			if program_flow_sink.is_capture_replay_enabled then

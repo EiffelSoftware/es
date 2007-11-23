@@ -14,12 +14,12 @@ create
 	make
 
 feature --initialization
-	make is
+	make(a_caller: CALLER) is
 			--  create a configuration helper.
 		do
 			capture_file_name := "run.log"
 			replay_log_file_name := "replay_run.log"
-			create {ERL_CALLER}caller
+			caller := a_caller
 		end
 
 
