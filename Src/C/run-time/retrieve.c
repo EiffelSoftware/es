@@ -974,7 +974,7 @@ rt_public void eif_set_discard_pointer_values (EIF_BOOLEAN state)
 
 #endif
 
-rt_public EIF_REFERENCE portable_retrieve(int (*char_read_function)(char *, int))
+rt_private EIF_REFERENCE eif_unsafe_portable_retrieve(int (*char_read_function)(char *, int))
 {
 	/* Retrieve object store in file `filename' */
 
@@ -985,7 +985,7 @@ rt_public EIF_REFERENCE portable_retrieve(int (*char_read_function)(char *, int)
 	char rt_type = (char) 0;
 	EIF_BOOLEAN recoverable_tables = EIF_FALSE;
 
-#ifdef EIF_ALPHA
+#if EIF_OS == EIF_ALPHA
 		/* The conversion from a FILE pointer to a file descriptor
 		 * does not keep the position correctly in the stream, one has
 		 * to call `fflush' to ensure the validity of the position in
@@ -994,21 +994,11 @@ rt_public EIF_REFERENCE portable_retrieve(int (*char_read_function)(char *, int)
 	fflush (NULL);
 #endif
 
-#ifdef ISE_GC
-		/* It makes performance of retrieval bad in a MT system as only one can occurs
-		 * and blocks all other threads, but I don't see yet a way to achieve that without
-		 * simple mutexes and dead locks. */
-	GC_THREAD_PROTECT(eif_synchronize_gc(rt_globals));
-#endif
-
 	/* Reset nb_recorded */
 	nb_recorded = 0;
 
 	/* Read the kind of stored hierachy */
 	if (char_read_function(&rt_type, sizeof (char)) < sizeof (char)) {
-#ifdef ISE_GC
-		GC_THREAD_PROTECT(eif_unsynchronize_gc(rt_globals));
-#endif
 		eise_io("Retrieve: unable to read type of storable.");
 	}
 
@@ -1140,11 +1130,37 @@ rt_public EIF_REFERENCE portable_retrieve(int (*char_read_function)(char *, int)
 #ifdef RECOVERABLE_DEBUG
 	fflush (stdout);
 #endif
-	
-#ifdef ISE_GC
-	GC_THREAD_PROTECT(eif_unsynchronize_gc(rt_globals));
-#endif
 	return retrieved;
+}
+
+rt_public EIF_REFERENCE portable_retrieve(int (*char_read_function)(char *, int)) 
+{
+#ifdef ISE_GC
+	RT_GET_CONTEXT
+	EIF_GET_CONTEXT
+	EIF_REFERENCE result = NULL;
+	jmp_buf exenv;
+
+		/* It makes performance of retrieval bad in a MT system as only one can occurs
+		 * and blocks all other threads, but I don't see yet a way to achieve that without
+		 * simple mutexes and dead locks.
+		 * The code is also protected in case we get a retrieval exception so that we can
+		 * free the mutex. */
+	GC_THREAD_PROTECT(eif_synchronize_gc(rt_globals));
+
+	excatch(&exenv);	/* Record pseudo execution vector */
+	if (setjmp(exenv)) {
+		GC_THREAD_PROTECT(eif_unsynchronize_gc(rt_globals));
+		ereturn(MTC_NOARG);				/* Propagate exception */
+	} else {
+		result = eif_unsafe_portable_retrieve(char_read_function);
+		GC_THREAD_PROTECT(eif_unsynchronize_gc(rt_globals));
+	}
+	expop(&eif_stack);
+	return result;
+#else
+	return eif_unsafe_portable_retrieve(char_read_function);
+#endif
 }
 
 rt_shared EIF_REFERENCE ise_compiler_retrieve (EIF_INTEGER f_desc, EIF_INTEGER a_pos, size_t (*retrieve_function) (void))
@@ -1156,7 +1172,7 @@ rt_shared EIF_REFERENCE ise_compiler_retrieve (EIF_INTEGER f_desc, EIF_INTEGER a
 
 	rt_kind = BASIC_STORE;
 	r_fides = f_desc;
-#ifdef EIF_ALPHA
+#if EIF_OS == EIF_ALPHA
 		/* The conversion from a FILE pointer to a file descriptor
 		 * does not keep the position correctly in the stream, one has
 		 * to call `fflush' to ensure the validity of the position in
