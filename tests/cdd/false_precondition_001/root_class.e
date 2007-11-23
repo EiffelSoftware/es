@@ -28,7 +28,7 @@ feature -- Initialization
 	bar is
 			-- Fail with a precondition violation.
 		require
-			False
+			false_precondition: False
 		do
 		end
 
