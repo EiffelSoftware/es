@@ -128,6 +128,7 @@ feature -- Execution
 			launch_process
 			if is_running then
 				output_stream.string.wipe_out
+				log_line (proxy_has_started_and_connected_message)
 			else
 				process := Void
 				log_line ("-- Error: Could not start and connect to interpreter.")
