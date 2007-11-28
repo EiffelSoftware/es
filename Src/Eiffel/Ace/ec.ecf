@@ -253,6 +253,11 @@
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf" readonly="false"/>
 		<library name="vision2_extension" location="$ISE_LIBRARY\library\vision2_extension\vision2_extension.ecf" readonly="false" use_application_options="true"/>
 		<cluster name="beurk" location="$EIFFEL_SRC\Eiffel\beurk\" recursive="true"/>
+		<cluster name="cdd_plugin" location="$EIFFEL_SRC\Eiffel\cdd\" recursive="true"> 	 
+	              <option> 	 
+	                     <assertions precondition="true" postcondition="true" check="true" invariant="true"/> 	 
+                     </option> 	 
+              </cluster>
 		<cluster name="compiler" location="$EIFFEL_SRC\Eiffel\eiffel\" recursive="true">
 			<file_rule>
 				<exclude>/kernel$</exclude>
