@@ -3694,7 +3694,6 @@ eweasel/tests/vd01001/file -text
 eweasel/tests/vd10001/weasel -text
 eweasel/tests/vd13001/weasel -text
 eweasel/tests/warn001/Ace -text
-examples/capture_replay/direct_manipulation/input.txt -text
 free_add_ons/eclop/doc/eclop.pdf -text
 free_add_ons/gobo/gobo_35_unix.tbz2 -text
 free_add_ons/gobo/gobo_35_win.tbz2 -text
