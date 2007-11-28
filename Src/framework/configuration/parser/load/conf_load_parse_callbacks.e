@@ -308,9 +308,8 @@ feature -- Callbacks
 						end
 					end
 
-					-- TODO: add cdd target & library
 					if current_target.cdd /= Void and then current_target.cdd.is_enabled then
-						-- TODO: might not be sufficient to check if there is no target with that name
+						-- note: might not be sufficient to check if there is no target with that name
 						if not current_target.system.targets.has (current_target.name + "_tester") then
 							l_cdd_target := factory.new_cdd_target (current_target.name + "_tester", current_target.system)
 							l_cdd_target.set_parent (current_target)
@@ -2287,19 +2286,19 @@ indexing
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
-			
+
 			Eiffel Software's Eiffel Development Environment is free
 			software; you can redistribute it and/or modify it under
 			the terms of the GNU General Public License as published
 			by the Free Software Foundation, version 2 of the License
 			(available at the URL listed under "license" above).
-			
+
 			Eiffel Software's Eiffel Development Environment is
 			distributed in the hope that it will be useful,	but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 			See the	GNU General Public License for more details.
-			
+
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,

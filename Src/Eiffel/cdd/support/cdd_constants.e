@@ -57,37 +57,4 @@ feature -- TTY
 
 	confirm_capture_replay: STRING is "Would you like to use capture/replay for%Nextracting and executing test cases%N(Warning: this tool is experimental)"
 
-feature -- Error constants
-
-feature -- Status report
-
-feature -- Status setting
-
-feature -- Cursor movement
-
-feature -- Element change
-
-feature -- Removal
-
-feature -- Resizing
-
-feature -- Transformation
-
-feature -- Conversion
-
-feature -- Duplication
-
-feature -- Miscellaneous
-
-feature -- Basic operations
-
-feature -- Obsolete
-
-feature -- Inapplicable
-
-feature {NONE} -- Implementation
-
-invariant
-	invariant_clause: True -- Your invariant here
-
 end
