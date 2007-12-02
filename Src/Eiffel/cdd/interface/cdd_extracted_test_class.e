@@ -12,13 +12,9 @@ inherit
 	CDD_TEST_CLASS
 		rename
 			is_valid_test_class as is_extracted_test_class
-		undefine
-			is_equal
 		redefine
 			make_with_class
 		end
-
-	COMPARABLE
 
 create
 	make_with_class
@@ -104,29 +100,6 @@ feature -- Access
 			end
 		ensure
 			not_void_equals_class_not_void: Result /= Void = class_under_test /= Void
-		end
-
-feature -- Comparism
-
-	infix "<" (other: like Current): BOOLEAN is
-			-- Is Current less then `other'?
-			-- Test classes with Void clusters are always greater.
-		do
-			if (cluster = Void) = (other.cluster = Void) then
-				if cluster = Void or else not (cluster > other.cluster) then
-					if cluster /= Void and then cluster < other.cluster then
-						Result := True
-					else
-						if class_name < other.class_name then
-							Result := True
-						elseif not (class_name > other.class_name) then
-							Result := feature_name < other.feature_name
-						end
-					end
-				end
-			elseif other.cluster = Void then
-				Result := True
-			end
 		end
 
 feature -- Not implemented

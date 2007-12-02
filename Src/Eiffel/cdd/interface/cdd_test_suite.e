@@ -106,6 +106,13 @@ feature {NONE} -- Implementation
 			l_tccur: DS_LINKED_LIST_CURSOR [CDD_TEST_CLASS]
 			l_eccur: DS_LINKED_LIST_CURSOR [EIFFEL_CLASS_C]
 			l_test_class: CDD_TEST_CLASS
+
+
+			-- Temporary locals for compilation
+			l_f: CDD_FILTER
+			l_fnc: CDD_TEST_CLASS_NODE
+			l_fnr: CDD_TEST_ROUTINE_NODE
+			l_fv: CDD_FILTER_NODE_VISITOR
 		do
 			create l_eccur.make (descendants_of_class (an_ancestor))
 			create l_tccur.make (a_list)

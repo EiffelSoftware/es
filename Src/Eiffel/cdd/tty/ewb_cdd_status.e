@@ -35,31 +35,26 @@ feature -- Execution
 			if l_manager.is_cdd_enabled then
 				if not command_line_io.confirmed_with_default (confirm_enabling, True) then
 					l_manager.disable_cdd
-				else
-					if command_line_io.confirmed_with_default (confirm_extracting, True) then
+				end
+			elseif command_line_io.confirmed_with_default (confirm_disabling, True) then
+				l_manager.enable_cdd
+			end
+
+			if l_manager.is_cdd_enabled then
+				if command_line_io.confirmed_with_default (confirm_extracting, True) then
+					if not l_manager.is_extracting_enabled then
 						l_manager.enable_extracting
-					else
-						l_manager.disable_extracting
 					end
-					if command_line_io.confirmed_with_default (confirm_capture_replay, False) then
-						l_manager.enable_capture_replay
-					else
-						l_manager.disable_capture_replay
+				else
+					if l_manager.is_extracting_enabled then
+						l_manager.disable_extracting
 					end
 				end
-			else
-				if command_line_io.confirmed_with_default (confirm_disabling, True) then
-					l_manager.enable_cdd
-					if command_line_io.confirmed_with_default (confirm_extracting, True) then
-						l_manager.enable_extracting
-					else
-						l_manager.disable_extracting
-					end
-					if command_line_io.confirmed_with_default (confirm_capture_replay, False) then
-						l_manager.enable_capture_replay
-					else
-						l_manager.disable_capture_replay
-					end
+
+				if command_line_io.confirmed_with_default (confirm_capture_replay, False) then
+					l_manager.enable_capture_replay
+				else
+					l_manager.disable_capture_replay
 				end
 			end
 		end

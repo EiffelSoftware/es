@@ -58,6 +58,14 @@ feature -- Access
 		deferred
 		end
 
+feature -- Comparism
+
+	infix "<" (other: like Current): BOOLEAN is
+			-- Is `Current' less than `other'?
+		do
+			Result := test_class < other.test_class
+		end
+
 feature -- Status change
 
 	refresh is
