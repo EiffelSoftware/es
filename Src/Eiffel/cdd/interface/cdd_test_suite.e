@@ -132,6 +132,8 @@ feature {NONE} -- Implementation
 						if l_test_class < l_tccur.item then
 							l_tccur.put_left (l_test_class)
 							l_test_class := Void
+						else
+							l_tccur.forth
 						end
 					end
 					if l_test_class /= Void then
