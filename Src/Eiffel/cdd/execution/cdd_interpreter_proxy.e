@@ -229,7 +229,7 @@ feature -- Execution
 			if last_string /= Void then
 				response_buffer.append_string (last_string)
 				response_buffer.append_character ('%N')
-				if last_string.is_equal ("done:%N") then
+				if last_string.is_equal ("done:") then
 					create stream.make (response_buffer)
 					parser.parse (stream)
 					last_response := parser.last_response

@@ -27,6 +27,7 @@ feature {NONE} -- Initialization
 			a_test_suite_not_void: a_test_suite /= Void
 		do
 			test_suite := a_test_suite
+			test_suite.full_refresh_actions.extend (agent print_root_class)
 		ensure
 			test_suite_set: test_suite = a_test_suite
 		end

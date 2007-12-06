@@ -44,6 +44,7 @@ feature {NONE} -- Initialization
 			a_target_not_void: a_target /= Void
 		do
 			make
+			create full_refresh_actions
 			target := a_target
 		ensure
 			target_set: target = a_target
@@ -57,11 +58,30 @@ feature -- Access
 feature -- Status settings
 
 	refresh is
-			-- Refresh test suite.
+			-- Refresh test suite and .
+		local
+			l_cursor: DS_LINKED_LIST_CURSOR [CDD_TEST_CLASS]
+			l_modified: BOOLEAN
 		do
 			Precursor
-			test_classes.do_all (agent {CDD_TEST_CLASS}.refresh)
+			create l_cursor.make (test_classes)
+			from
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_cursor.item.refresh
+				l_modified := l_modified or l_cursor.item.is_modified
+				l_cursor.forth
+			end
+			if is_modified or l_modified then
+				full_refresh_actions.call ([])
+			end
 		end
+
+feature -- Event handling
+
+	full_refresh_actions: ACTION_SEQUENCE [TUPLE]
 
 feature {NONE} -- Implementation
 
@@ -138,5 +158,6 @@ feature {NONE} -- Implementation
 
 invariant
 	target_not_void: target /= Void
+	full_refresh_actions_not_void: full_refresh_actions /= Void
 
 end

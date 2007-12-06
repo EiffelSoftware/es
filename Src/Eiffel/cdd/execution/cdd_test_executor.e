@@ -127,7 +127,6 @@ feature -- Basic operations
 			l_system: CONF_SYSTEM
 		do
 			if not test_suite.test_classes.is_empty then
-				root_class_printer.print_root_class
 				if root_class_printer.last_print_succeeded then
 					test_class_cursor := test_suite.test_classes.new_cursor
 					create compiler.make

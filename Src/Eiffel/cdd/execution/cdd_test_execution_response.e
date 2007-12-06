@@ -87,7 +87,7 @@ feature {ANY} -- Access
 	teardown_response: CDD_ROUTINE_INVOCATION_RESPONSE
 			-- Response from test teardown
 
-feature {ANY} -- Assertion helpers
+feature {NONE} -- Assertion helpers
 
 	one_of (a: BOOLEAN; b: BOOLEAN; c: BOOLEAN): BOOLEAN
 		-- Is exactly one out of the three variables `a', `b', `c' true?

@@ -35,6 +35,9 @@ feature -- Access
 	is_refreshing: BOOLEAN
 			-- Are we currently refreshing?
 
+	is_modified: BOOLEAN
+			-- Has `items' been modified since last call to `refresh'?
+
 feature -- Status setting
 
 	refresh is
@@ -115,9 +118,6 @@ feature -- Event handling
 			-- Agents to be called after a refresh and `Current' has been modified
 
 feature {NONE} -- Implementation
-
-	is_modified: BOOLEAN
-			-- Has `items' been modified since last call to `refresh'?
 
 	items_cursor: DS_LINKED_LIST_CURSOR [G]
 			-- Cursor for traversing `items'
