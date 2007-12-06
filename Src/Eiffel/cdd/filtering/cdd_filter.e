@@ -15,7 +15,7 @@ feature {NONE} -- Initialization
 			a_test_suite_not_void: a_test_suite /= Void
 		do
 			test_suite := a_test_suite
-			create result_nodes.make
+			create filter_patterns.make
 		ensure
 			test_suite_set: test_suite = a_test_suite
 		end
@@ -25,46 +25,54 @@ feature -- Access
 	test_suite: CDD_TEST_SUITE
 			-- Test suite containing test cases to be filtered
 
-	result_nodes: DS_LINKED_LIST [CDD_FILTER_NODE]
+	result_nodes: DS_LINKED_LIST [CDD_FILTER_NODE] is
 			-- Selection of test routines according to `filter_text'
 			-- represented in a tree structure according to `grouping_text'
+		do
+			if cached_result_nodes = Void then
+			end
+			Result := cached_result_nodes
+		end
 
-	grouping_text: STRING
-			-- String characterising grouping of `result_nodes'
+	grouping_code: INTEGER
+			-- Code characterising grouping of `result_nodes'
 
-	filter_text: STRING
+	none_code, cnf_code, outcome_code: INTEGER is unique
+			-- Valid codes for `grouping_code'
+
+	is_valid_code (a_code: like grouping_code): BOOLEAN is
+			-- Is `a_code' a valid code for `grouping_code'?
+		do
+			Result := a_code = none_code or a_code = cnf_code or a_code = outcome_code
+		end
+
+	filter_patterns: DS_LINKED_LIST [CDD_FILTER_PATTERN]
 			-- String characterising `result_nodes'
 
 feature -- Settings
 
-	set_grouping_text (a_text: like grouping_text) is
-			-- Set `grouping_text' to `a_text' and reevaluate `result_nodes'.
+	set_grouping_code (a_code: like grouping_code) is
+			-- Set `grouping_code' to `a_code' and clear cached `result_nodes'.
 		require
-			a_text_not_void: a_text /= Void
+			a_code_valid: is_valid_code (a_code)
 		do
-			grouping_text := a_text
+			grouping_code := a_code
 		ensure
-			grouping_text_set: grouping_text = a_text
-		end
-
-	set_filter_text (a_text: like filter_text) is
-			-- Set `filter_text' to `a_text' and reevaluate `result_nodes'.
-		require
-			a_text_nod_void: a_text /= Void
-		do
-			filter_text := a_text
-		ensure
-			filter_text_not_void: filter_text /= Void
+			grouping_code_set: grouping_code = a_code
+			cache_cleared: cached_result_nodes = Void
 		end
 
 feature {NONE} -- Implementation
 
-	internal_result_nodes: like result_nodes
+	cached_result_nodes: like result_nodes
+
+	internal_refresh_action: PROCEDURE [like Current, TUPLE]
+
+
 
 invariant
 	test_suite_not_void: test_suite /= Void
-	result_nodes_not_void: result_nodes /= Void
-	filter_text_not_void: filter_text /= Void
-	grouping_text_not_void: grouping_text /= Void
+	filter_patterns_not_void: filter_patterns /= Void
+	grouping_code_vliad: is_valid_code (grouping_code)
 
 end
