@@ -3701,5 +3701,7 @@ free_add_ons/wex/examples/wex/Framework_example/TOOLBAR.BMP svneol=native#unset
 free_add_ons/wex/examples/wex/Framework_example/app.ico svneol=native#unset
 free_add_ons/wex/examples/wex/MCI_Splash/APP.ICO svneol=native#unset
 free_add_ons/wex/library/wex/clib/cwex.lib svneol=native#unset
+tests/cdd/failure_in_infix/input.txt -text
+tests/cdd/false_postcondition_001/input.txt -text
 tests/cdd/false_precondition_001/extract.sh -text
 tests/cdd/false_precondition_001/input.txt -text

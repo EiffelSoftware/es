@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-2-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-2-0 http://www.eiffel.com/developers/xml/configuration-1-2-0.xsd" name="false_postcondition" uuid="87597A85-0813-4584-86FD-A2A47D4A41D5">
+	<target name="false_postcondition">
+		<root class="ROOT_CLASS" feature="make"/>
+		<cdd enabled="true" extracting="true" capture_replay="false"/>
+		<option warning="true">
+			<assertions precondition="true" postcondition="true" check="true" supplier_precondition="true"/>
+		</option>
+		<precompile name="base_pre" location="$ISE_PRECOMP\base.ecf"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<cluster name="root_cluster" location=".\" recursive="true">
+			<file_rule>
+				<exclude>/EIFGENs$</exclude>
+				<exclude>/.svn$</exclude>
+				<exclude>/CVS$</exclude>
+				<exclude>/cdd_tests$</exclude>
+			</file_rule>
+		</cluster>
+	</target>
+</system>
