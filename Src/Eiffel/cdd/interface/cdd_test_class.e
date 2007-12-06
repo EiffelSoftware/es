@@ -4,10 +4,24 @@ indexing
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
+class
 	CDD_TEST_CLASS
 
 inherit
+
+	CDD_OBSERVED_CONTAINER [CDD_TEST_ROUTINE, STRING]
+		rename
+			items as test_routines,
+			add_item as add_test_routine,
+			remove_item as remove_test_routine,
+			add_item_actions as add_test_routine_actions,
+			remove_item_actions as remove_test_routine_actions,
+			corresponds_to_item as is_cdd_test_routine_for_feature_name,
+			compute_object_list as retrieve_test_routines,
+			create_new_item as create_new_test_routine
+		undefine
+			is_equal
+		end
 
 	CDD_ROUTINES
 		export
@@ -25,6 +39,9 @@ inherit
 
 	COMPARABLE
 
+create
+	make_with_class
+
 feature {NONE} -- Initialization
 
 	make_with_class (a_class: like test_class) is
@@ -33,9 +50,8 @@ feature {NONE} -- Initialization
 			a_class_not_void: a_class /= Void
 			a_class_valid: is_valid_test_class (a_class)
 		do
+			make
 			test_class := a_class
-			create test_routines.make
-			refresh
 		ensure
 			test_class_set: test_class = a_class
 		end
@@ -45,17 +61,12 @@ feature -- Access
 	test_class: EIFFEL_CLASS_C
 			-- Compiled instance of test class
 
-	test_routines: DS_LINKED_LIST [CDD_TEST_ROUTINE]
-			-- List of testable routines routines in `test_class'
-
-	is_modified: BOOLEAN
-			-- Has `test_routines' been modified by last call to `refresh'?
-
-	is_valid_test_class (a_class: like test_class): BOOLEAN
+	is_valid_test_class (a_class: like test_class): BOOLEAN is
 			-- Is `a_class' a descendant of a test class?
 		require
 			a_class_not_void: a_class /= Void
-		deferred
+		do
+			Result := is_descendant_of_class (a_class, abstract_test_class_name) and then not a_class.is_deferred
 		end
 
 feature -- Comparism
@@ -66,46 +77,40 @@ feature -- Comparism
 			Result := test_class < other.test_class
 		end
 
-feature -- Status change
+feature {NONE} -- Implementation
 
-	refresh is
-			-- Look in `test_class' for testable features and update `test_routines' appropriately.
+	is_cdd_test_routine_for_feature_name (a_routine: CDD_TEST_ROUTINE; a_name: STRING): BOOLEAN is
+			-- Is `a_name' feature name of `a_routine'?
+		do
+			Result := a_routine.routine_name.is_equal (a_name)
+		end
+
+	retrieve_test_routines is
+			-- Store a list of all features starting with `test_routine_prefix' in `last_object_list'.
 		local
-			l_feature_table: FEATURE_TABLE
-			l_cursor: DS_LINKED_LIST_CURSOR [CDD_TEST_ROUTINE]
+			l_ft: FEATURE_TABLE
 			l_name: STRING
 		do
-			is_modified := False
-			l_feature_table := test_class.feature_table
-
-				-- Remove all routines for which feature table does not have an entry
+			l_ft := test_class.feature_table
+			create last_object_list.make
 			from
-				create l_cursor.make (test_routines)
-				l_cursor.start
+				l_ft.start
 			until
-				l_cursor.after
+				l_ft.after
 			loop
-				if not l_feature_table.has (l_cursor.item.routine_name) then
-					is_modified := True
-					l_cursor.remove
-				end
-				l_cursor.forth
-			end
-
-				-- Make sure there is a routine for each test routine in feature table
-			from
-				l_feature_table.start
-			until
-				l_feature_table.after
-			loop
-				l_name := l_feature_table.item_for_iteration.feature_name
+				l_name := l_ft.item_for_iteration.feature_name
 				if l_name.count >= test_routine_prefix.count and then
 					l_name.substring (1, test_routine_prefix.count).is_case_insensitive_equal (test_routine_prefix) then
-					test_routines.put_last (create {CDD_TEST_ROUTINE}.make (Current, l_name))
-					is_modified := True
+					last_object_list.put_last (l_name)
 				end
-				l_feature_table.forth
+				l_ft.forth
 			end
+		end
+
+	create_new_test_routine (a_name: STRING) is
+			-- Create a new cdd test routine for `a_name' and store it in `last_created_item'.
+		do
+			last_created_item := create {CDD_TEST_ROUTINE}.make (Current, a_name)
 		end
 
 invariant

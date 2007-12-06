@@ -63,7 +63,7 @@ feature {NONE} -- Implementation
 			Result := is_descendant_of_class (a_class, manual_test_class_name)
 		end
 
-	is_descendant_of_class (a_class: EIFFEL_CLASS_C; a_class_name: STRING): BOOLEAN is
+	is_descendant_of_class (a_class: CLASS_C; a_class_name: STRING): BOOLEAN is
 			-- Is `a_class' a descendant of a class named `a_class_name'?
 		require
 			a_class_not_void: a_class /= Void
@@ -78,6 +78,8 @@ feature {NONE} -- Implementation
 				l_class_list.after or Result
 			loop
 				if l_class_list.item.name.is_case_insensitive_equal (a_class_name) then
+					Result := True
+				elseif is_descendant_of_class (l_class_list.item, a_class_name) then
 					Result := True
 				else
 					l_class_list.forth

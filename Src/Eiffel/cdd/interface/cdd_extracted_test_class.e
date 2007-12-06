@@ -10,8 +10,6 @@ class
 inherit
 
 	CDD_TEST_CLASS
-		rename
-			is_valid_test_class as is_extracted_test_class
 		redefine
 			make_with_class
 		end

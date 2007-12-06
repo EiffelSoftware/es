@@ -126,22 +126,27 @@ feature -- Basic operations
 			l_target: CONF_TARGET
 			l_system: CONF_SYSTEM
 		do
-			root_class_printer.print_root_class
-			if root_class_printer.last_print_succeeded then
-				create compiler.make
-				starting_compiling_actions.call ([])
-				l_target := test_suite.target
-				l_system := l_target.system
-				compiler.set_output_handler (agent io.put_string)
-				compiler.run (l_system.directory, l_system.file_name, tester_target_name (l_target))
-				if is_gui then
-					add_idle_action
+			if not test_suite.test_classes.is_empty then
+				root_class_printer.print_root_class
+				if root_class_printer.last_print_succeeded then
+					test_class_cursor := test_suite.test_classes.new_cursor
+					create compiler.make
+					starting_compiling_actions.call ([])
+					l_target := test_suite.target
+					l_system := l_target.system
+					compiler.set_output_handler (agent io.put_string)
+					compiler.run (l_system.directory, l_system.file_name, tester_target_name (l_target))
+					if is_gui then
+						add_idle_action
+					else
+						compiler.block
+						idle_action
+					end
 				else
-					compiler.block
-					idle_action
+					-- TODO: notify observers that printing the root class has failed
 				end
 			else
-				-- TODO: notify observers that printing the root class has failed
+				finished_testing_actions.call ([])
 			end
 		end
 
@@ -246,6 +251,7 @@ feature {NONE} -- Implementation (execution)
 						starting_testing_actions.call ([])
 						create proxy.make (interpreter_pathname, interpreter_pathname + "_log.txt")
 						proxy.start
+						next_test_routine
 					else
 						error_actions.call ([])
 						if is_gui then
@@ -257,7 +263,7 @@ feature {NONE} -- Implementation (execution)
 			end
 			if is_testing then
 				from
-					next_test_routine
+
 				until
 					not is_testing or l_go_idle
 				loop
@@ -266,14 +272,16 @@ feature {NONE} -- Implementation (execution)
 					end
 					if proxy.last_response /= Void or proxy.is_ready then
 						if proxy.last_response /= Void then
-							if proxy.last_response.has_bad_communication then
-									-- TODO: Proxy is jammed, do something about it
-								check not_implemented: false end
+							if proxy.last_response.has_bad_communication and execution_attempts < 3 then
+									-- Proxy seems jammed, restart and try again
+								proxy.stop
+								proxy.start
+								execution_attempts := execution_attempts + 1
 							else
 								current_test_routine.add_outcome (proxy.last_response)
 								finished_testing_routine_actions.call ([current_test_routine])
+								next_test_routine
 							end
-							next_test_routine
 						end
 						if test_class_cursor.after then
 							proxy.stop
@@ -301,47 +309,33 @@ feature {NONE} -- Implementation (execution)
 		end
 
 	next_test_routine is
-			-- Move `test_case_cursor' and `test_feature_cursor' to forward
-		local
-			l_done: BOOLEAN
+			-- Move `test_class_cursor' and `test_routine_cursor' forward
+		require
+			valid_test_class_cursor: test_class_cursor /= Void and then not test_class_cursor.after
 		do
 			execution_attempts := 0
-			if test_class_cursor = Void then
-					-- Initialize cursors
-				if test_suite.manual_test_classes.count > 0 then
-					test_class_cursor := test_suite.manual_test_classes.new_cursor
-				else
-					test_class_cursor := test_suite.extracted_test_classes.new_cursor
+			if test_routine_cursor = Void or else test_routine_cursor.after or else test_routine_cursor.is_last then
+				from
+					test_class_cursor.forth
+				until
+					test_class_cursor.after or not test_class_cursor.item.test_routines.is_empty
+				loop
+					test_class_cursor.forth
 				end
-				test_class_cursor.start
-				if not test_class_cursor.after then
+				if test_class_cursor.after then
+					test_routine_cursor := Void
+				else
 					test_routine_cursor := test_class_cursor.item.test_routines.new_cursor
 					test_routine_cursor.start
-				else
-					test_routine_cursor := (create {DS_LINKED_LIST [CDD_TEST_ROUTINE]}.make).new_cursor
 				end
-			end
-			from until
-				test_class_cursor.after or l_done
-			loop
-				if test_routine_cursor.after then
-					test_class_cursor.forth
-					if test_class_cursor.after and test_class_cursor.container = test_suite.manual_test_classes then
-						test_class_cursor := test_suite.extracted_test_classes.new_cursor
-						test_class_cursor.start
-					end
-					if not test_class_cursor.after then
-						test_routine_cursor := test_class_cursor.item.test_routines.new_cursor
-					end
-				else
-					test_routine_cursor.forth
-				end
-				l_done := not test_routine_cursor.after
+			else
+				test_routine_cursor.forth
 			end
 		ensure
+			execution_attempts_zero: execution_attempts = 0
 			test_class_cursor_not_void: test_class_cursor /= Void
-			test_routine_cursor_not_void: test_routine_cursor /= Void
-			same_state: test_class_cursor.off = test_routine_cursor.off
+			test_class_cursor_after_equals_test_routine_cursor_void: test_class_cursor.after = (test_routine_cursor = Void)
+			test_routine_cursor_not_void_equals_not_off: (test_routine_cursor /= Void) implies not test_routine_cursor.off
 		end
 
 	interpreter_pathname: FILE_NAME is
@@ -396,8 +390,7 @@ invariant
 	test_suite_not_void: test_suite /= Void
 	root_class_printer_not_void: root_class_printer /= Void
 	executing_implies_compiling_xor_testing: is_executing implies (is_compiling xor is_testing)
-	is_testing_implies_correct_cursor: is_testing implies (test_class_cursor /= Void and then not test_class_cursor.off)
-	is_testing_implies_correct_cursor: is_testing implies (test_routine_cursor /= Void and then not test_routine_cursor.off)
+	is_executing_implies_correct_cursor: is_executing implies (test_class_cursor /= Void and then not test_class_cursor.off)
 
 	starting_compiling_actions_not_void: starting_compiling_actions /= Void
 	compiler_output_actions_not_void: compiler_output_actions /= Void

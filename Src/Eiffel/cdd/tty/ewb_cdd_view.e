@@ -27,21 +27,11 @@ feature -- Execution
 			l_count: INTEGER
 		do
 			if cdd_manager.is_cdd_enabled then
-				localized_print ("%NExtracted test classes")
+				localized_print ("%NAll test classes")
 
-				create last_cluster_name.make_empty
-				create last_class_name.make_empty
-				create last_feature_name.make_empty
-				cdd_manager.test_suite.extracted_test_classes.do_all (agent (a_tc: CDD_EXTRACTED_TEST_CLASS)
+				cdd_manager.test_suite.test_classes.do_all (agent (a_tc: CDD_TEST_CLASS)
 					do
-						print_extracted_test_class (a_tc)
-					end)
-
-				l_count := test_class_count
-				localized_print ("%NManual test classes")
-				cdd_manager.test_suite.manual_test_classes.do_all (agent (a_tc: CDD_MANUAL_TEST_CLASS)
-					do
-						print_manual_test_class (a_tc)
+						print_test_class (a_tc)
 					end)
 				localized_print ("%NTotal " + test_class_count.out + " test classes with " + test_routine_count.out + " test routines%N%N")
 			else
@@ -57,41 +47,7 @@ feature {NONE} -- Implementation
 	test_routine_count: INTEGER
 			-- Number of test routines printed so far
 
-	last_cluster_name: STRING
-			-- Name of last cluster for which extracted test class details have been printed
-
-	last_class_name: STRING
-			-- Name of last class for which extracted test class details have been printed
-
-	last_feature_name: STRING
-			-- Name of last feature for which extracted test class details have been printed
-
-	print_extracted_test_class (a_test_class: CDD_EXTRACTED_TEST_CLASS) is
-			-- Print details for `a_test_class'.
-		require
-			a_test_class_not_void: a_test_class /= Void
-			last_cluster_name_not_void: last_cluster_name /= Void
-			last_class_name_not_void: last_class_name /= Void
-			last_feature_name_not_void: last_feature_name /= Void
-		do
-			test_routine_count := test_routine_count + 1
-			test_class_count := test_class_count + 1
-			if not last_feature_name.is_equal (a_test_class.feature_name) then
-				last_feature_name := a_test_class.feature_name
-				if not last_class_name.is_equal (a_test_class.class_name) then
-					last_class_name := a_test_class.class_name
-					if a_test_class.cluster/= Void and then not last_cluster_name.is_equal (a_test_class.cluster.cluster_name) then
-						last_cluster_name := a_test_class.cluster.cluster_name
-						localized_print ("%N" + last_cluster_name + "%N")
-					end
-					localized_print ("%T" + last_class_name + "%N")
-				end
-				localized_print ("%T%T" + last_feature_name + "%N")
-			end
-			localized_print ("%T%T%T" + a_test_class.test_class.name_in_upper + "%N")
-		end
-
-	print_manual_test_class (a_test_class: CDD_MANUAL_TEST_CLASS) is
+	print_test_class (a_test_class: CDD_TEST_CLASS) is
 			-- Print details for `a_test_class'.
 		require
 			a_test_class_not_void: a_test_class /= Void

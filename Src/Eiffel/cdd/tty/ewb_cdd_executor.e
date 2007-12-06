@@ -30,7 +30,7 @@ feature -- Execution
 			l_tested: PROCEDURE [ANY, TUPLE [CDD_TEST_ROUTINE]]
 		do
 			if cdd_manager.is_cdd_enabled then
-				if cdd_manager.test_suite.extracted_test_classes.count + cdd_manager.test_suite.manual_test_classes.count > 0 then
+				if cdd_manager.test_suite.test_classes.count > 0 then
 					if cdd_manager.executor.can_start then
 						l_executor := cdd_manager.executor
 

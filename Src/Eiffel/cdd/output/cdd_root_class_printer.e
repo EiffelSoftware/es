@@ -70,11 +70,10 @@ feature -- Basic operations
 				put_indexing
 				put_class_header
 				put_test_setting_header
-				l_count := test_suite.extracted_test_classes.count + test_suite.manual_test_classes.count
+				l_count := test_suite.test_classes.count
 				put_line ("create Result.make (" + l_count.out + ")")
 
-				put_test_class_table (test_suite.extracted_test_classes)
-				put_test_class_table (test_suite.manual_test_classes)
+				put_test_class_table (test_suite.test_classes)
 
 				put_footer
 				l_output_file.close
