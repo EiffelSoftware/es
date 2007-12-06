@@ -809,25 +809,17 @@ feature -- tools management
 
 	create_and_show_new_watch_tool is
 			-- Create a new watch tool attached to current debugging window
-		local
-			t: EB_TOOL
-			l_wt_lst: like watch_tool_list
 		do
 			if debugging_window /= Void then
-				l_wt_lst := watch_tool_list
-				if not l_wt_lst.is_empty then
-					t := l_wt_lst.last
-				else
-					t := objects_tool
-				end
-				create_new_watch_tool_inside_notebook (debugging_window, t)
-					--| use `watch_tool_list' since this is a new list
+				create_new_watch_tool_tabbed_with (debugging_window, Void)
 				watch_tool_list.last.show
 			end
 		end
 
-	create_new_watch_tool_inside_notebook (a_manager: EB_DEVELOPMENT_WINDOW; a_tool: EB_TOOL) is
-			-- Create a new watch tool.
+	create_new_watch_tool_tabbed_with (a_manager: EB_DEVELOPMENT_WINDOW; a_tool: EB_TOOL) is
+			-- Create a new watch tool and set it tabbed with `a_tool'
+			-- if `a_tool' is not Void
+			-- Note: the new watch tool is not shown yet.
 		require
 			a_manager /= Void
 		local
@@ -836,9 +828,18 @@ feature -- tools management
 			if debugging_window /= Void then
 					--| IMPORTANT: The following call has the side affect of creating the tool, do not remove it!				
 				l_watch_tool ?= debugging_window.shell_tools.tool_next_available_edition ({ES_WATCH_TOOL}, False).panel
+				if
+					a_tool /= Void
+					and then a_tool.content /= Void
+					and then l_watch_tool.content /= Void
+					and then l_watch_tool.content.manager_has_content (a_tool.content)
+				then
+					l_watch_tool.content.set_tab_with (a_tool.content, False)
+				end
 				update_all_debugging_tools_menu
 			end
 		end
+
 feature -- Windows observer
 
 	on_window_removed (a_item: EB_WINDOW) is
@@ -1255,7 +1256,7 @@ feature -- Status setting
 				until
 					watch_tool_list.count >= nwt --| Be sure to use `watch_tool_list' and not the cached list
 				loop
-					create_new_watch_tool_inside_notebook (debugging_window, l_tool)
+					create_new_watch_tool_tabbed_with (debugging_window, l_tool)
 				end
 					-- `watch_tool_list' has changed, so fetch a new cache
 				l_wt_lst := watch_tool_list
@@ -1272,6 +1273,7 @@ feature -- Status setting
 
 				-- Show Tools and final visual settings
 			debugging_window.show_tools
+			attach_tools
 			restore_debug_docking_layout
 
 				--| Set the Grid Objects tool split position to 200 which is the default size of the local tree.
@@ -1304,7 +1306,6 @@ feature -- Status setting
 		local
 			l_result: BOOLEAN
 			l_file: RAW_FILE
-
 		do
 			create l_file.make (debugging_window.docking_debug_config_file)
 			if l_file.exists then
@@ -1373,6 +1374,7 @@ feature -- Status setting
 			end
 
 			save_debug_docking_layout
+			detach_tools
 			Preferences.debug_tool_data.number_of_watch_tools_preference.set_value (watch_tool_list.count)
 
 				-- Free and recycle tools
@@ -2263,6 +2265,94 @@ feature {NONE} -- Implementation
 			-- Show watch tool preference
 		do
 			Result := preferences.misc_shortcut_data.shortcuts.item ("show_watch_tool")
+		end
+
+	attach_tools is
+			-- Attach debug tools to docking manager.
+		do
+			attach_a_tool ({ES_CALL_STACK_TOOL})
+			attach_a_tool ({ES_OBJECTS_TOOL})
+			attach_a_tool ({ES_OBJECT_VIEWER_TOOL})
+			attach_a_tool ({ES_WATCH_TOOL})
+			attach_a_tool ({ES_THREADS_TOOL})
+			attach_a_tool ({ES_BREAKPOINTS_TOOL})
+		end
+
+	detach_tools is
+			-- Detach debug tools from docking manager
+		do
+			detach_a_tool ({ES_CALL_STACK_TOOL})
+			detach_a_tool ({ES_OBJECTS_TOOL})
+			detach_a_tool ({ES_OBJECT_VIEWER_TOOL})
+			detach_a_tool ({ES_WATCH_TOOL})
+			detach_a_tool ({ES_THREADS_TOOL})
+			detach_a_tool ({ES_BREAKPOINTS_TOOL})
+		end
+
+	attach_a_tool (a_type: TYPE [ES_TOOL [EB_TOOL]]) is
+			-- Attach tool which type is `a_type' to docking manager.
+		require
+			not_void: a_type /= Void
+		local
+			l_manager: SD_DOCKING_MANAGER
+			l_tool: EB_DOCKING_MANAGER_ATTACHABLE
+			l_tools: DS_ARRAYED_LIST [ES_TOOL [EB_TOOL]]
+			l_active_count: INTEGER
+			l_shell_tools: ES_SHELL_TOOLS
+		do
+			l_manager := debugging_window.docking_manager
+			if l_manager /= Void then
+				l_shell_tools := debugging_window.shell_tools
+				l_active_count := l_shell_tools.editions_of_tool (a_type, True)
+				if l_active_count > 0 then
+					check only_one_tool_except_watch_tool: not a_type.is_equal ({ES_WATCH_TOOL}) implies l_active_count = 1 end
+						from
+						l_tools := l_shell_tools.tools (a_type)
+						l_tools.start
+					until
+						l_tools.after
+					loop
+						l_tool := l_tools.item_for_iteration.panel
+						if not l_manager.contents.has (l_tool.content) then
+							l_manager.contents.extend (l_tool.content)
+						end
+						l_tools.forth
+					end
+				end
+			end
+		end
+
+	detach_a_tool (a_type: TYPE [ES_TOOL [EB_TOOL]]) is
+			-- Detach tool which type is `a_type' from docking manager.
+		require
+			not_void: a_type /= Void
+		local
+			l_manager: SD_DOCKING_MANAGER
+			l_tool: EB_DOCKING_MANAGER_ATTACHABLE
+			l_tools: DS_ARRAYED_LIST [ES_TOOL [EB_TOOL]]
+			l_active_count: INTEGER
+			l_shell_tools: ES_SHELL_TOOLS
+		do
+			l_manager := debugging_window.docking_manager
+			if l_manager /= Void then
+				l_shell_tools := debugging_window.shell_tools
+				l_active_count := l_shell_tools.editions_of_tool (a_type, True)
+				if l_active_count > 0 then
+					check only_one_tool_except_watch_tool: not a_type.is_equal ({ES_WATCH_TOOL}) implies l_active_count = 1 end
+					from
+						l_tools := l_shell_tools.tools (a_type)
+						l_tools.start
+					until
+						l_tools.after
+					loop
+						l_tool := l_tools.item_for_iteration.panel
+						if l_manager.contents.has (l_tool.content) then
+							l_manager.contents.prune_all (l_tool.content)
+						end
+						l_tools.forth
+					end
+				end
+			end
 		end
 
 feature {NONE} -- Memory management

@@ -309,6 +309,10 @@ feature -- Commands
 			l_editor_area: SD_MULTI_DOCK_AREA
 			l_has_maximized_zone: BOOLEAN
 		do
+			-- We have to restore minimized editors first if all editors minimized.
+			-- See bug#13648.
+			restore_minimized_editors_for_maximize_editor_area
+
 			l_editor_parent := internal_docking_manager.query.inner_container_main.editor_parent
 			l_editor_area := internal_docking_manager.query.inner_container_main
 
@@ -383,7 +387,7 @@ feature -- Commands
 			end
 		end
 
-	restore_minimized_editors IS
+	restore_minimized_editors is
 			-- Restore all minimized editors
 			local
 				l_upper_zones: ARRAYED_LIST [SD_UPPER_ZONE]
@@ -402,6 +406,16 @@ feature -- Commands
 					end
 				end
 			end
+
+	show_displayed_floating_windows_in_idle is
+			-- Show all displayed floating windows again for Solaris CDE.
+			-- This feature fix bug#13645
+		local
+			l_env: EV_ENVIRONMENT
+		do
+			create l_env
+			l_env.application.do_once_on_idle (agent show_all_floating_zones)
+		end
 
 feature -- Query
 
@@ -431,6 +445,31 @@ feature -- Contract Support
 		end
 
 feature {NONE}  -- Implementation
+
+	restore_minimized_editors_for_maximize_editor_area is
+			-- Restore all minimized editors if all editors minimized.
+			local
+				l_upper_zones: ARRAYED_LIST [SD_UPPER_ZONE]
+				l_all_editors_minimized: BOOLEAN
+			do
+				if not internal_docking_manager.is_editor_area_maximized then
+					from
+						l_all_editors_minimized := True
+						l_upper_zones := internal_docking_manager.zones.upper_zones
+						l_upper_zones.finish
+					until
+						l_upper_zones.before or not l_all_editors_minimized
+					loop
+						if not l_upper_zones.item.is_minimized then
+							l_all_editors_minimized := False
+						end
+						l_upper_zones.back
+					end
+				end
+				if l_all_editors_minimized then
+					restore_minimized_editors
+				end
+			end
 
 	internal_shared: SD_SHARED
 			-- All Singletons.
@@ -485,6 +524,39 @@ feature {NONE}  -- Implementation
 					if not locked_windows.last.is_destroyed then
 						locked_windows.last.lock_update
 					end
+				end
+			end
+		end
+
+	show_all_floating_zones is
+			-- This fix bug#13645 which only happens on Solaris CDE.
+			-- The bug is a floating tool `is_displayed' is true but actually not displayed. We have to call show again in idle actions.
+		local
+			l_floating_zones: ARRAYED_LIST [SD_FLOATING_ZONE]
+			l_item: SD_FLOATING_ZONE
+			l_width, l_height: INTEGER
+			l_checker: SD_DEPENDENCY_CHECKER
+		do
+			create {SD_DEPENDENCY_CHECKER_IMP} l_checker
+			if l_checker.is_solaris_cde then
+
+				from
+					l_floating_zones := internal_docking_manager.query.floating_zones
+					l_floating_zones.start
+				until
+					l_floating_zones.after
+				loop
+					l_item := l_floating_zones.item
+					if not l_item.is_destroyed and then l_item.is_displayed then
+						l_width := l_item.width
+						l_height := l_item.height
+						l_item.hide
+
+						l_item.show
+						l_item.set_size (l_width, l_height)
+					end
+
+					l_floating_zones.forth
 				end
 			end
 		end
