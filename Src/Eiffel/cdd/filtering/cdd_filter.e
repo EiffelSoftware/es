@@ -68,8 +68,6 @@ feature {NONE} -- Implementation
 
 	internal_refresh_action: PROCEDURE [like Current, TUPLE]
 
-
-
 invariant
 	test_suite_not_void: test_suite /= Void
 	filter_patterns_not_void: filter_patterns /= Void

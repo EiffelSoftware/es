@@ -70,9 +70,8 @@ feature -- Access
 			Result := is_descendant_of_class (a_class, abstract_test_class_name) and then not a_class.is_deferred
 		end
 
-	tags: DS_LIST [STRING]
+	tags: DS_LIST [CDD_TAG]
 			-- Tags associated with this class
-			-- TODO: type of tag should not be string, but something that doesnt exist yet.
 
 feature -- Comparism
 
@@ -127,7 +126,7 @@ feature {NONE} -- Implementation
 			l_value_list: EIFFEL_LIST [ATOMIC_AS]
 			v: STRING
 		do
-			create {DS_ARRAYED_LIST [STRING]} tags.make (3)
+			create {DS_ARRAYED_LIST [CDD_TAG]} tags.make (3)
 			l_ast := test_class.ast
 			l_ilist := l_ast.top_indexes
 			from
@@ -143,15 +142,23 @@ feature {NONE} -- Implementation
 					until
 						l_value_list.after
 					loop
-						v := l_value_list.item.string_value.twin
-						v.prune_all_leading ('"')
-						v.prune_all_trailing ('"')
-						tags.force_last (v)
+						parser.parse (l_value_list.item.string_value)
+						if parser.last_tag /= Void then
+							tags.force_last (parser.last_tag)
+						end
 						l_value_list.forth
 					end
 				end
 				l_ilist.forth
 			end
+		end
+
+	parser: CDD_TAG_PARSER is
+			-- Parser for tags
+		once
+			create Result
+		ensure
+			parser_not_void: Result /= Void
 		end
 
 invariant
