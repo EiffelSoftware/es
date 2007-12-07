@@ -114,7 +114,7 @@ feature {NONE} -- Implementation
 				l_class_list.forth
 			end
 			if l_ancestor /= Void then
-				descendants_of_class_recursive (l_ancestor)
+				build_descdeants_list_from_class (l_ancestor)
 			end
 		end
 
@@ -130,8 +130,8 @@ feature {NONE} -- Implementation
 				end (?, a_class))
 		end
 
-	descendants_of_class_recursive (a_class: EIFFEL_CLASS_C) is
-			-- Put all non-void descendants of `a_class' into `a_list' recursive.
+	build_descdeants_list_from_class (a_class: EIFFEL_CLASS_C) is
+			-- Put all non-void descendants of `a_class' into `last_object_list' recursive.
 		require
 			a_class_not_void: a_class /= Void
 			last_object_list_not_void: last_object_list /= Void
@@ -150,7 +150,7 @@ feature {NONE} -- Implementation
 					if not l_ec.is_deferred then
 						last_object_list.put_last (l_ec)
 					end
-					descendants_of_class_recursive (l_ec)
+					build_descdeants_list_from_class (l_ec)
 				end
 				l_list.forth
 			end
