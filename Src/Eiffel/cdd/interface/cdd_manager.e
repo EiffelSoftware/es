@@ -33,11 +33,6 @@ inherit
 			{NONE} all
 		end
 
---	EB_CONSTANTS
---		export
---			{NONE} all
---		end
-
 	CONF_ACCESS
 		export
 			{NONE} all
@@ -146,7 +141,7 @@ feature -- Status setting (CDD)
 		do
 			instantiate_cdd_configuration
 			cdd_conf.set_is_enabled (True)
-
+-- TODO: what to do with the following commented code?
 --			if not target.libraries.has (library_name) then
 --				l_loc := conf_factory.new_location_from_full_path ("$ISE_LIBRARY\library\cdd\cdd.ecf", target)
 --				l_lib := conf_factory.new_library (library_name, l_loc, target)
@@ -170,6 +165,7 @@ feature -- Status setting (CDD)
 		do
 			instantiate_cdd_configuration
 			cdd_conf.set_is_enabled (False)
+			-- TODO: what to do with the following commented code?
 			--if target.libraries.has (library_name) then
 			--	target.remove_library (library_name)
 			--end
