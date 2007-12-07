@@ -52,6 +52,7 @@ feature {NONE} -- Initialization
 		do
 			make
 			test_class := a_class
+			update_tags
 		ensure
 			test_class_set: test_class = a_class
 		end
@@ -68,6 +69,10 @@ feature -- Access
 		do
 			Result := is_descendant_of_class (a_class, abstract_test_class_name) and then not a_class.is_deferred
 		end
+
+	tags: DS_LIST [STRING]
+			-- Tags associated with this class
+			-- TODO: type of tag should not be string, but something that doesnt exist yet.
 
 feature -- Comparism
 
@@ -113,8 +118,45 @@ feature {NONE} -- Implementation
 			last_created_item := create {CDD_TEST_ROUTINE}.make (Current, a_name)
 		end
 
+	update_tags is
+			-- Update `tags' with data from the indexing clause.
+		local
+			l_ast: CLASS_AS
+			l_ilist: INDEXING_CLAUSE_AS
+			l_item: INDEX_AS
+			l_value_list: EIFFEL_LIST [ATOMIC_AS]
+			v: STRING
+		do
+			create {DS_ARRAYED_LIST [STRING]} tags.make (3)
+			l_ast := test_class.ast
+			l_ilist := l_ast.top_indexes
+			from
+				l_ilist.start
+			until
+				l_ilist.after
+			loop
+				l_item := l_ilist.item
+				if l_item.tag.name.is_equal ("tag") then
+					from
+						l_value_list := l_item.index_list
+						l_value_list.start
+					until
+						l_value_list.after
+					loop
+						v := l_value_list.item.string_value.twin
+						v.prune_all_leading ('"')
+						v.prune_all_trailing ('"')
+						tags.force_last (v)
+						l_value_list.forth
+					end
+				end
+				l_ilist.forth
+			end
+		end
+
 invariant
 	test_class_not_void: test_class /= Void
+	test_class_has_ast: test_class.has_ast
 	test_class_valid: is_valid_test_class (test_class)
 	test_routines_not_void: test_routines /= Void
 	test_routines_valid: test_routines.for_all (agent (a_routine: CDD_TEST_ROUTINE): BOOLEAN
@@ -122,5 +164,7 @@ invariant
 			Result := a_routine /= Void and then
 				a_routine.test_class = Current
 		end)
+	tags_not_void: tags /= Void
+	tags_doesnt_have_void: not tags.has (Void)
 
 end
