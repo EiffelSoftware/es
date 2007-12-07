@@ -375,7 +375,7 @@ feature {NONE} -- Implementation
 					l_agent.append (")")
 				end
 				if a_feature.has_return_value then
-					l_agent.append (": " + a_feature.associated_class.name_in_upper)
+					l_agent.append (": " + a_feature.type.dump)
 				else
 					l_agent.append (": " + l_class)
 				end
