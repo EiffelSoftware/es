@@ -70,9 +70,6 @@ feature -- Access
 			Result := is_descendant_of_class (a_class, abstract_test_class_name) and then not a_class.is_deferred
 		end
 
-	tags: DS_LIST [CDD_TAG]
-			-- Tags associated with this class
-
 feature -- Comparism
 
 	infix "<" (other: like Current): BOOLEAN is
@@ -126,7 +123,7 @@ feature {NONE} -- Implementation
 			l_value_list: EIFFEL_LIST [ATOMIC_AS]
 			v: STRING
 		do
-			create {DS_ARRAYED_LIST [CDD_TAG]} tags.make (3)
+--			create {DS_ARRAYED_LIST [CDD_TAG]} tags.make (3)
 			l_ast := test_class.ast
 			l_ilist := l_ast.top_indexes
 			from
@@ -144,7 +141,8 @@ feature {NONE} -- Implementation
 					loop
 						parser.parse (l_value_list.item.string_value)
 						if parser.last_tag /= Void then
-							tags.force_last (parser.last_tag)
+-- TODO: tags are strings now and they must be added to routines not classes.
+--							tags.force_last (parser.last_tag)
 						end
 						l_value_list.forth
 					end
@@ -171,7 +169,5 @@ invariant
 			Result := a_routine /= Void and then
 				a_routine.test_class = Current
 		end)
-	tags_not_void: tags /= Void
-	tags_doesnt_have_void: not tags.has (Void)
 
 end

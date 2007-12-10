@@ -12,40 +12,39 @@ feature {NONE} -- Initialization
 	initialize is
 			-- Initialize `Current'.
 		do
-			if not is_leaf then
-				create children.make
-			end
+			create children.make
+		end
+
+feature -- Status
+
+	is_leaf: BOOLEAN is
+			-- Is this node a leaf node?
+		do
+			Result := children.is_empty
+		ensure
+			definition: Result = children.is_empty0
 		end
 
 feature -- Access
 
-	is_leaf: BOOLEAN is
-			-- Is `Current' a leave within the filter result tree?
-		deferred
-		end
-
-	children: DS_LINKED_LIST [CDD_FILTER_NODE]
-			-- Child nodes of `Current'
+	children: DS_LINEAR [CDD_FILTER_NODE]
+			-- Childnodes of this node
 
 	tag: STRING is
-			-- Tag describing `Current'
+			-- Tag matched by all leaves of this node
 		deferred
 		ensure
 			not_empty: Result /= Void and then not Result.is_empty
 		end
 
-feature -- Processing
-
-	process (a_visitor: CDD_FILTER_NODE_VISITOR) is
-			-- Call appropriate processor for `Current'.
-		require
-			a_visitor_not_void: a_visitor /= Void
-		deferred
-		end
-
+	test_routine:  CDD_TEST_ROUTINE
+			-- Test routine associated with this node; only applies
+			-- to leaf nodes.
 invariant
 
 	tag_not_void: tag /= Void
-	children_void_equals_is_leaf: (children = Void) = is_leaf
+	children_not_void: children /= Void
+	children_doesnt_have_void: not children.has (Void)
+	test_routine_validity: not is_leaf implies (test_routine = Void)
 
 end

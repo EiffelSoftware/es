@@ -36,6 +36,9 @@ feature -- Access
 	routine_name: STRING
 			-- Name of testable routine in `test_class'
 
+	tags: DS_LIST [STRING]
+			-- Tags associated with this test routine
+
 	outcomes: DS_LINKED_LIST [CDD_TEST_EXECUTION_RESPONSE]
 			-- List of recorded test execution responses where last item
 			-- is most recent.
@@ -62,5 +65,7 @@ invariant
 	test_class_not_void: test_class /= Void
 	routine_name_not_void: routine_name /= Void
 	outcomes_valid: outcomes /= Void and then not outcomes.has (Void)
+	tags_not_void: tags /= Void
+	tags_doesnt_have_void: not tags.has (Void)
 
 end

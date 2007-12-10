@@ -25,52 +25,36 @@ feature -- Access
 	test_suite: CDD_TEST_SUITE
 			-- Test suite containing test cases to be filtered
 
-	result_nodes: DS_LINKED_LIST [CDD_FILTER_NODE] is
-			-- Selection of test routines according to `filter_text'
-			-- represented in a tree structure according to `grouping_text'
+	nodes: DS_LINEAR [CDD_FILTER_NODE] is
+			-- Test routines from `test_suite' matching the criteria from
+			-- `filters'.
 		do
-			if cached_result_nodes = Void then
+			if cached_nodes = Void then
+				-- TODO: Implement
 			end
-			Result := cached_result_nodes
-		end
-
-	grouping_code: INTEGER
-			-- Code characterising grouping of `result_nodes'
-
-	none_code, cnf_code, outcome_code: INTEGER is unique
-			-- Valid codes for `grouping_code'
-
-	is_valid_code (a_code: like grouping_code): BOOLEAN is
-			-- Is `a_code' a valid code for `grouping_code'?
-		do
-			Result := a_code = none_code or a_code = cnf_code or a_code = outcome_code
-		end
-
-	filter_patterns: DS_LINKED_LIST [CDD_FILTER_PATTERN]
-			-- String characterising `result_nodes'
-
-feature -- Settings
-
-	set_grouping_code (a_code: like grouping_code) is
-			-- Set `grouping_code' to `a_code' and clear cached `result_nodes'.
-		require
-			a_code_valid: is_valid_code (a_code)
-		do
-			grouping_code := a_code
+			Result := cached_nodes
 		ensure
-			grouping_code_set: grouping_code = a_code
-			cache_cleared: cached_result_nodes = Void
+			nodes_not_void: Result /= Void
+			nodes_doesnt_have_void: not Result.has (Void)
 		end
+
+	filters: DS_LINEAR [STRING]
+			-- List of tag patterns, restricting what routines should
+			-- be in this view of the test suite.
 
 feature {NONE} -- Implementation
 
-	cached_result_nodes: like result_nodes
+	cached_nodes: like nodes
+			-- Cache for `nodes'
 
 	internal_refresh_action: PROCEDURE [like Current, TUPLE]
+			-- Agent subscribed in test suite. Needed for
+			-- unsubscription.
 
 invariant
+
 	test_suite_not_void: test_suite /= Void
-	filter_patterns_not_void: filter_patterns /= Void
-	grouping_code_vliad: is_valid_code (grouping_code)
+	filters_not_void: filters /= Void
+	filters_doesnt_have_void: not filters.has (Void)
 
 end
