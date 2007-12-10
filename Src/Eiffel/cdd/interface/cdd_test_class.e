@@ -117,13 +117,23 @@ feature {NONE} -- Implementation
 	update_tags is
 			-- Update `tags' with data from the indexing clause.
 		local
+			r_cs: DS_LINEAR_CURSOR [CDD_TEST_ROUTINE]
 			l_ast: CLASS_AS
 			l_ilist: INDEXING_CLAUSE_AS
 			l_item: INDEX_AS
 			l_value_list: EIFFEL_LIST [ATOMIC_AS]
 			v: STRING
 		do
---			create {DS_ARRAYED_LIST [CDD_TAG]} tags.make (3)
+			from
+				r_cs := test_routines.new_cursor
+				r_cs.start
+			until
+				r_cs.off
+			loop
+				r_cs.item.tags.wipe_out
+				r_cs.forth
+			end
+
 			l_ast := test_class.ast
 			l_ilist := l_ast.top_indexes
 			from
@@ -139,24 +149,23 @@ feature {NONE} -- Implementation
 					until
 						l_value_list.after
 					loop
-						parser.parse (l_value_list.item.string_value)
-						if parser.last_tag /= Void then
--- TODO: tags are strings now and they must be added to routines not classes.
---							tags.force_last (parser.last_tag)
+						v := l_value_list.item.string_value.twin
+						v.prune_all_leading ('"')
+						v.prune_all_trailing ('"')
+						from
+							r_cs := test_routines.new_cursor
+							r_cs.start
+						until
+							r_cs.off
+						loop
+							r_cs.item.tags.force_last (v)
+							r_cs.forth
 						end
 						l_value_list.forth
 					end
 				end
 				l_ilist.forth
 			end
-		end
-
-	parser: CDD_TAG_PARSER is
-			-- Parser for tags
-		once
-			create Result
-		ensure
-			parser_not_void: Result /= Void
 		end
 
 invariant

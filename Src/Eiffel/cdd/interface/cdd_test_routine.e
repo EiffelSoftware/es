@@ -1,5 +1,5 @@
 indexing
-	description: "Objects that represents a test routine in some test class"
+	description: "Meta information (name, outcomes, but not the actual implementation) of a CDD test routine"
 	author: "fivaa"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -23,6 +23,7 @@ feature {NONE} -- Initialization
 			routine_name := a_routine_name
 			create outcomes.make
 			create refresh_actions
+			create {DS_ARRAYED_LIST[STRING]} tags.make (3)
 		ensure
 			test_class_set: test_class = a_test_class
 			routine_name_set: routine_name = a_routine_name
