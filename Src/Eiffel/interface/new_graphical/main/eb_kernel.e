@@ -47,6 +47,9 @@ create
 
 feature {NONE} -- Initialization
 
+	filter: CDD_FILTER
+			-- TODO: remove me. made live just for debugging
+
 	make is
 			-- Create and map the first window: the system window.
 		local

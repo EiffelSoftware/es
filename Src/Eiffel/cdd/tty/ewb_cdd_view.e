@@ -75,7 +75,7 @@ feature {NONE} -- Implementation
 			l_resp: CDD_TEST_EXECUTION_RESPONSE
 		do
 			test_routine_count := test_routine_count + 1
-			localized_print ("%T" + a_test_routine.routine_name)
+			localized_print ("%T" + a_test_routine.name)
 			if not a_test_routine.outcomes.is_empty then
 				l_resp := a_test_routine.outcomes.last
 				if l_resp.is_pass then

@@ -4,16 +4,34 @@ indexing
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
+class
 	CDD_FILTER_NODE
+
+create
+	make, make_leaf
 
 feature {NONE} -- Initialization
 
-	initialize is
-			-- Initialize `Current'.
+	make is
+			-- Create new non leaf node.
 		do
-			create children.make
+			create children.make_default
 		end
+
+	make_leaf (a_test_routine: like test_routine) is
+			-- Create new leaf node with `a_test_routine' as
+			-- `test_routine'. Set `tag' to the name of
+			-- `test_routine'.
+		require
+			a_test_routine_not_void: test_routine /= Void
+		do
+			test_routine := a_test_routine
+			tag := test_routine.name
+		ensure
+			test_routine_set: test_routine = a_test_routine
+			tag_set: tag = test_routine.name
+		end
+
 
 feature -- Status
 
@@ -22,24 +40,21 @@ feature -- Status
 		do
 			Result := children.is_empty
 		ensure
-			definition: Result = children.is_empty0
+			definition: Result = children.is_empty
 		end
 
 feature -- Access
 
-	children: DS_LINEAR [CDD_FILTER_NODE]
+	children: DS_ARRAYED_LIST [CDD_FILTER_NODE]
 			-- Childnodes of this node
 
-	tag: STRING is
+	tag: STRING
 			-- Tag matched by all leaves of this node
-		deferred
-		ensure
-			not_empty: Result /= Void and then not Result.is_empty
-		end
 
 	test_routine:  CDD_TEST_ROUTINE
 			-- Test routine associated with this node; only applies
 			-- to leaf nodes.
+
 invariant
 
 	tag_not_void: tag /= Void

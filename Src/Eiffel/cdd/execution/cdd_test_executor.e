@@ -294,10 +294,10 @@ feature {NONE} -- Implementation (execution)
 						else
 							starting_testing_routine_actions.call ([current_test_routine])
 							if is_gui then
-								proxy.execute_test_async (current_test_class.test_class.name, current_test_routine.routine_name)
+								proxy.execute_test_async (current_test_class.test_class.name, current_test_routine.name)
 								l_go_idle := True
 							else
-								proxy.execute_test (current_test_class.test_class.name, current_test_routine.routine_name)
+								proxy.execute_test (current_test_class.test_class.name, current_test_routine.name)
 							end
 						end
 					elseif proxy.is_executing_request then
