@@ -266,39 +266,38 @@ feature {EB_CLUSTERS} -- Status setting (Eiffel Project)
 			-- Check configuration if cdd status has changed and update if so.
 			-- Note: This is usually called when project is opened or compiled.
 		do
-			instantiate_cdd_configuration
-			if cdd_conf.is_enabled then
-				if not is_cdd_enabled then
-					enable_cdd
-				end
-				test_suite.refresh
-				if cdd_conf.is_extracting and not is_extracting_enabled then
-					enable_extracting
-				elseif not cdd_conf.is_extracting and is_extracting_enabled then
-					disable_extracting
-				end
-			else
-				if is_extracting_enabled then
-					disable_extracting
-				end
-				if is_cdd_enabled then
-					disable_cdd
+			if project.initialized and target /= Void then
+				instantiate_cdd_configuration
+				if cdd_conf.is_enabled then
+					if not is_cdd_enabled then
+						enable_cdd
+					end
+					test_suite.refresh
+					if cdd_conf.is_extracting and not is_extracting_enabled then
+						enable_extracting
+					elseif not cdd_conf.is_extracting and is_extracting_enabled then
+						disable_extracting
+					end
+				else
+					if is_extracting_enabled then
+						disable_extracting
+					end
+					if is_cdd_enabled then
+						disable_cdd
+					end
 				end
 			end
 		ensure
-			correct_status: cdd_conf.is_enabled = is_cdd_enabled and
-				(is_cdd_enabled implies (cdd_conf.is_extracting = is_extracting_enabled))
+			correct_status: (project.initialized and target /= Void) implies (cdd_conf.is_enabled = is_cdd_enabled and
+				(is_cdd_enabled implies (cdd_conf.is_extracting = is_extracting_enabled)))
 		end
-
---	refresh is
---			-- Refresh all CDD components.
---		do
---		end
 
 	remove_test_case_for_class (a_class: CLASS_I) is
 			-- Check if there is a test case for `a_class'. If this is
 			-- the case, remove the test case.
 		do
+			-- TODO: remove corresponding test class from test
+			-- suite for `a_class' if it represents a cdd test class.
 		end
 
 feature -- Status change
@@ -331,8 +330,6 @@ feature {NONE} -- Implementation
 			project_initialized: project.initialized
 		do
 			Result := eiffel_universe.target
-		ensure
-			not_void: Result /= Void
 		end
 
 	cdd_conf: CONF_CDD
