@@ -612,6 +612,9 @@ feature -- Command
 			build_errors_tool
 			build_warnings_tool
 
+				-- CDD tool
+			build_cdd_tool
+
 				-- Build the refactoring tools
 			develop_window.commands.toolbarable_commands.extend (develop_window.refactoring_manager.pull_command)
 			develop_window.commands.toolbarable_commands.extend (develop_window.refactoring_manager.rename_command)
@@ -1017,6 +1020,16 @@ feature{NONE} -- Implementation
 			create l_windows_tool.make (develop_window)
 			develop_window.tools.set_windows_tool (l_windows_tool)
 			setup_tool (l_windows_tool, "show_windows_tool")
+		end
+
+	build_cdd_tool is
+			-- Build CDD tool.
+		local
+			l_tool: CDD_TOOL
+		do
+			create l_tool.make (develop_window)
+			develop_window.tools.set_cdd_tool (l_tool)
+			setup_tool (l_tool, "show_cdd_tool")
 		end
 
 	build_customized_tools is

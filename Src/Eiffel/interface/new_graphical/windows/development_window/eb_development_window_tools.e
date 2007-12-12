@@ -213,7 +213,7 @@ feature -- Query
 	all_tools: ARRAYED_LIST [EB_TOOL] is
 			-- All tools
 		do
-			create Result.make (17)
+			create Result.make (18)
 			if favorites_tool /= Void then
 				Result.extend (favorites_tool)
 			end
@@ -267,6 +267,9 @@ feature -- Query
 			end
 			if warnings_tool /= Void then
 				Result.extend (warnings_tool)
+			end
+			if cdd_tool /= Void then
+				Result.extend (cdd_tool)
 			end
 			Result.append (develop_window.eb_debugger_manager.all_tools)
 			Result.append (customized_tools)
@@ -336,6 +339,9 @@ feature -- Query
 	warnings_tool: EB_WARNINGS_TOOL
 			-- Warnings tool
 			-- This tool was orignal belong to context_tool
+
+	cdd_tool: CDD_TOOL
+			-- CDD tool
 
 	customized_tools: LIST [EB_CUSTOMIZED_TOOL] is
 			-- Customized tools
@@ -600,6 +606,15 @@ feature {EB_DEVELOPMENT_WINDOW_MAIN_BUILDER, EB_DEVELOPMENT_WINDOW} -- Setting
 		ensure
 			set: windows_tool = a_tool
 		end
+
+	set_cdd_tool (a_tool: like cdd_tool) is
+			-- Set `cdd_tool' to `a_tool'.
+		do
+			cdd_tool := a_tool
+		ensure
+			cdd_tool_set: cdd_tool = a_tool
+		end
+
 
 feature{NONE} -- Implementation
 
