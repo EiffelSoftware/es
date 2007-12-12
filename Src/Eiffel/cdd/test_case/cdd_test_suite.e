@@ -82,8 +82,6 @@ feature {NONE} -- Implementation
 			-- Void if class not found.
 		local
 			ancestors: LIST [CLASS_I]
-			l_ancestor: EIFFEL_CLASS_C
-			l_class_list: LIST [CLASS_I]
 			old_cs: CURSOR
 		do
 			if test_class_ancestor = Void then
@@ -94,7 +92,7 @@ feature {NONE} -- Implementation
 				until
 					ancestors.after or test_class_ancestor /= Void
 				loop
-					test_class_ancestor ?= l_class_list.item.compiled_class
+					test_class_ancestor ?= ancestors.item
 					ancestors.forth
 				end
 				ancestors.go_to (old_cs)
