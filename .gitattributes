@@ -252,7 +252,6 @@ Delivery/studio/bitmaps/png/splash.png -text
 Delivery/studio/bitmaps/png/splash_shadow.png -text
 Delivery/studio/config/vxworks/templates/egc_dynlib.template -text
 Delivery/studio/config/windows/bcb/appl.ico -text
-Delivery/studio/config/windows/mingw/gnu.ico -text
 Delivery/studio/config/windows/msc/appl.ico -text
 Delivery/studio/help/errors/ECMA-VHPR -text
 Delivery/studio/help/errors/VIIN -text
