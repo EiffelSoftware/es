@@ -27,7 +27,7 @@ feature {NONE} -- Initialization
 			a_test_suite_not_void: a_test_suite /= Void
 		do
 			test_suite := a_test_suite
-			test_suite.full_refresh_actions.extend (agent print_root_class)
+			test_suite.change_actions.extend (agent print_root_class)
 		ensure
 			test_suite_set: test_suite = a_test_suite
 		end
@@ -183,15 +183,15 @@ feature {NONE} -- Implementation
 			put_line ("")
 		end
 
-	put_test_class_table (a_list: DS_LINKED_LIST [CDD_TEST_CLASS]) is
+	put_test_class_table (a_list: DS_LINEAR [CDD_TEST_CLASS]) is
 			-- Print hash tables for all test classes and test routines in `a_list'.
 		require
 			initialized: is_output_stream_valid
 		local
-			l_cursor: DS_LINKED_LIST_CURSOR [CDD_TEST_CLASS]
+			l_cursor: DS_LINEAR_CURSOR [CDD_TEST_CLASS]
 		do
 			from
-				create l_cursor.make (a_list)
+				l_cursor := a_list.new_cursor
 				l_cursor.start
 			until
 				l_cursor.after

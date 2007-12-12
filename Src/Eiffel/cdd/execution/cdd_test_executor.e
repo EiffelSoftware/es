@@ -372,17 +372,17 @@ feature {NONE} -- Implementation
 	execution_attempts: INTEGER
 			-- How many times have we attempted to test `current_test_feature'?
 
-	test_class_cursor: DS_LIST_CURSOR [CDD_TEST_CLASS]
+	test_class_cursor: DS_BILINEAR_CURSOR [CDD_TEST_CLASS]
 			-- Cursor pointing to current test case beeing tested
 
-	test_routine_cursor: DS_LIST_CURSOR [CDD_TEST_ROUTINE]
+	test_routine_cursor: DS_BILINEAR_CURSOR [CDD_TEST_ROUTINE]
 			-- Cursor pointing to current routines beeing tested
 
 	testing_output_buffer: STRING
 			-- Output from testing process
 
 	root_class_printer: CDD_ROOT_CLASS_PRINTER
-			-- Prints root class
+			-- Printer for root class (interpreter)
 
 invariant
 

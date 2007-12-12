@@ -52,11 +52,11 @@ feature {NONE} -- Implementation
 		require
 			a_test_class_not_void: a_test_class /= Void
 		local
-			l_cursor: DS_LINKED_LIST_CURSOR [CDD_TEST_ROUTINE]
+			l_cursor: DS_LINEAR_CURSOR [CDD_TEST_ROUTINE]
 		do
 			test_class_count := test_class_count + 1
 			localized_print (a_test_class.test_class.name + "%N")
-			create l_cursor.make (a_test_class.test_routines)
+			l_cursor := a_test_class.test_routines.new_cursor
 			from
 				l_cursor.start
 			until
