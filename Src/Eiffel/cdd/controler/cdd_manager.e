@@ -113,7 +113,7 @@ feature {DEBUGGER_MANAGER} -- Status setting (Application)
 			valid_app_status: a_dbg_manager.application_is_executing and
 				a_dbg_manager.application_is_stopped
 		do
-			if is_extracting_enabled then
+			if is_extracting_enabled and a_dbg_manager.application_status.exception_occurred then
 				capturer.capture_call_stack (a_dbg_manager.application_status)
 			end
 		end
