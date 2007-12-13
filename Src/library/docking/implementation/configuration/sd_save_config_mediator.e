@@ -199,6 +199,7 @@ feature {NONE} -- Implementation
 			l_inner_containers: ARRAYED_LIST [SD_MULTI_DOCK_AREA]
 			l_datum: SD_INNER_CONTAINER_DATA
 			l_data: ARRAYED_LIST [SD_INNER_CONTAINER_DATA]
+			l_floating_zone: SD_FLOATING_ZONE
 		do
 			l_inner_containers := internal_docking_manager.inner_containers
 			from
@@ -210,11 +211,20 @@ feature {NONE} -- Implementation
 				if l_inner_containers.item.readable then
 					create l_datum
 					save_inner_container_data (l_inner_containers.item.item, l_datum)
-					if l_inner_containers.item.parent_floating_zone /= Void then
-						l_datum.set_screen_x (l_inner_containers.item.parent_floating_zone.screen_x)
-						l_datum.set_screen_y (l_inner_containers.item.parent_floating_zone.screen_y)
-						l_datum.set_width (l_inner_containers.item.parent_floating_zone.width)
-						l_datum.set_height (l_inner_containers.item.parent_floating_zone.height)
+					l_floating_zone := l_inner_containers.item.parent_floating_zone
+					if l_floating_zone /= Void then
+						if not l_floating_zone.is_displayed and then l_floating_zone.is_last_sizes_record then
+							-- See bug#13685 which only happens on GTK.
+							l_datum.set_screen_x (l_floating_zone.last_screen_x)
+							l_datum.set_screen_y (l_floating_zone.last_screen_y)
+							l_datum.set_width (l_floating_zone.last_width)
+							l_datum.set_height (l_floating_zone.last_height)
+						else
+							l_datum.set_screen_x (l_floating_zone.screen_x)
+							l_datum.set_screen_y (l_floating_zone.screen_y)
+							l_datum.set_width (l_floating_zone.width)
+							l_datum.set_height (l_floating_zone.height)
+						end
 					end
 				else
 					l_datum := Void
@@ -411,6 +421,7 @@ feature {NONE} -- Implementation
 				l_tool_bar_data.set_floating (True)
 				l_tool_bar_data.set_title (l_tool_bar_zone.content.unique_title)
 				l_tool_bar_data.set_screen_x_y (l_float_tool_bars_item.screen_x, l_float_tool_bars_item.screen_y)
+				l_tool_bar_zone.assistant.save_items_layout (Void)
 				l_tool_bar_data.set_last_state (l_tool_bar_zone.assistant.last_state)
 				l_tool_bar_data.set_visible (l_tool_bar_zone.content.is_visible)
 				a_tool_bar_data.extend (l_tool_bar_data)

@@ -25,7 +25,12 @@ inherit
 			show
 		redefine
 			type,
-			state
+			state,
+			hide,
+			screen_y,
+			screen_x,
+			width,
+			height
 		end
 
 	SD_DOCKER_SOURCE
@@ -44,6 +49,14 @@ inherit
 			{SD_DOCKING_MANAGER_COMMAND} accelerators
 			{SD_DOCKING_STATE} set_width, set_height
 			{SD_DOCKING_MANAGER_COMMAND} hide
+		redefine
+			hide,
+			screen_y,
+			screen_x,
+			width,
+			height,
+			set_position,
+			set_size
 		select
 			implementation,
 			show_allow_to_back
@@ -154,6 +167,17 @@ feature -- Command
 			showed: is_displayed
 		end
 
+	hide is
+			-- Redefine.
+		do
+			last_screen_x := screen_x
+			last_screen_y := screen_y
+			last_width := width
+			last_height := height
+
+			Precursor {SD_SIZABLE_POPUP_WINDOW}
+		end
+
 	set_title_focus (a_focus: BOOLEAN) is
 			-- Set title focus color?
 		do
@@ -175,7 +199,7 @@ feature -- Command
 			Result := has_recursive (a_content.user_widget)
 		end
 
-feature -- Properties
+feature -- Query
 
 	type: INTEGER is
 			-- Redefine.
@@ -240,6 +264,78 @@ feature -- Properties
 			-- If `internal_inner_container' readable?
 		do
 			Result := internal_inner_container.readable
+		end
+
+	last_width, last_height, last_screen_x, last_screen_y: INTEGER
+			-- On GTK, `width', `height', `screen_x' and `screen_y' are 0 if Current hidden.
+			-- See bug#13685 which only happens on GTK.
+
+	set_position (a_screen_x, a_screen_y: INTEGER) is
+			-- Redefine
+		do
+			last_screen_x := a_screen_x
+			last_screen_y := a_screen_y
+			Precursor {SD_SIZABLE_POPUP_WINDOW}(a_screen_x, a_screen_y)
+		ensure then
+			set: last_screen_x = a_screen_x
+			set: last_screen_y = a_screen_y
+		end
+
+	set_size (a_width, a_height: INTEGER) is
+			-- Redefine
+		do
+			last_width := a_width
+			last_height := a_height
+			Precursor {SD_SIZABLE_POPUP_WINDOW}(a_width, a_height)
+		end
+
+	is_last_sizes_record: BOOLEAN is
+			-- If `last_width', `last_height', `last_screen_x' and `last_screen_y' have been set?
+		do
+			Result := 	last_width /= 0 or
+						last_height /= 0 or
+						last_screen_x /= 0 or
+						last_screen_y /= 0
+		end
+
+	screen_y: INTEGER is
+			-- Redefine
+		do
+			if not is_displayed and then is_last_sizes_record then
+				Result := last_screen_y
+			else
+				Result := Precursor {SD_SIZABLE_POPUP_WINDOW}
+			end
+		end
+
+	screen_x: INTEGER is
+			-- Redefine
+		do
+			if not is_displayed and then is_last_sizes_record then
+				Result := last_screen_x
+			else
+				Result := Precursor {SD_SIZABLE_POPUP_WINDOW}
+			end
+		end
+
+	width: INTEGER is
+			-- Redefine
+		do
+			if not is_displayed and then is_last_sizes_record then
+				Result := last_width
+			else
+				Result := Precursor {SD_SIZABLE_POPUP_WINDOW}
+			end
+		end
+
+	height: INTEGER is
+			-- Redefine
+		do
+			if not is_displayed and then is_last_sizes_record then
+				Result := last_height
+			else
+				Result := Precursor {SD_SIZABLE_POPUP_WINDOW}
+			end
 		end
 
 feature {NONE} -- Implementation

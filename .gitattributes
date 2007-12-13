@@ -3073,7 +3073,6 @@ Src/Eiffel/eiffel/AST/factory/ast_roundtrip_compiler_factory.e -text
 Src/Eiffel/eiffel/AST/factory/ast_roundtrip_compiler_light_factory.e -text
 Src/Eiffel/eiffel/byte_code/visitor/assignment_generator.e -text
 Src/Eiffel/eiffel/byte_code/visitor/il_access_address_generator.e -text
-Src/Eiffel/eiffel/byte_code/visitor/il_node_generator.e -text
 Src/Eiffel/eiffel/com_il_generation/Core/run-time/rt_custom_attribute_data.cs -text
 Src/Eiffel/eiffel/com_il_generation/Core/run-time/rt_extension.cs -text
 Src/Eiffel/interface/new_graphical/managers/eb_text_output_factory.e -text
