@@ -214,8 +214,6 @@ remtrace "Putting the Eiffel libraries in the delivery"
 . ./make_libraries $GTK_DIR
 cd $INIT_DIR
 
-cd $INIT_DIR
-
 if [ ! "$NO_INSTALL" ]; then
 	remtrace Compress everything
 	if [ ! "$NO_COMPILE" ]; then
