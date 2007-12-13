@@ -32,6 +32,7 @@ feature {NONE} -- Initialization
 			create change_actions.make
 			target := a_target
 			create test_class_table.make_default
+			create test_classes.make_default
 			refresh
 		ensure
 			target_set: target = a_target
@@ -42,13 +43,10 @@ feature -- Access
 	target: CONF_TARGET
 			-- Target in which we look for test cases
 
-	test_classes: DS_BILINEAR [CDD_TEST_CLASS] is
-			-- All test classes in this suite
-		do
-			Result := test_class_table
-		ensure
-			test_classes_not_void: Result /= Void and not Result.has (Void)
-		end
+	test_classes: DS_ARRAYED_LIST [CDD_TEST_CLASS]
+			-- All test classes in this suite;
+			-- this list is updated whenever `test_class_table',
+			-- is updated.
 
 feature -- State change
 
@@ -56,6 +54,11 @@ feature -- State change
 			-- Refresh information from system under test.
 		do
 			update_test_class_ancestor
+			if test_class_ancestor /= Void then
+				update_class_table
+			else
+				test_class_table.wipe_out
+			end
 			change_actions.call (Void)
 		end
 
@@ -64,7 +67,7 @@ feature -- Event handling
 	change_actions: ACTION_SEQUENCE [TUPLE]
 			-- Actions to be executed whenever test suite has changed;
 			-- E.g.: test routine added, removed, changed
-			-- For efficiency reasons changes are grouped together in transactions
+			-- For efficiency reasons changes are grouped together in transactions.
 			-- TODO: Add list of changes as arguments so observers can be more
 			-- efficient in updating their state.
 
@@ -79,7 +82,7 @@ feature {NONE} -- Implementation
 	update_test_class_ancestor is
 			-- Find ancestor of all test cases (CDD_TEST_CASE) and make it
 			-- available via `test_class_ancestor'. Set `test_class_ancestor' to
-			-- Void if class not found.
+			-- Void if class not found or not completely compiled.
 		local
 			ancestors: LIST [CLASS_I]
 			old_cs: CURSOR
@@ -92,7 +95,7 @@ feature {NONE} -- Implementation
 				until
 					ancestors.after or test_class_ancestor /= Void
 				loop
-					test_class_ancestor ?= ancestors.item
+					test_class_ancestor ?= ancestors.item.compiled_class
 					ancestors.forth
 				end
 				ancestors.go_to (old_cs)
@@ -101,12 +104,15 @@ feature {NONE} -- Implementation
 
 	update_class_table is
 			-- Update `test_class_tbale' with current information from system.
+		require
+			test_class_ancestor_not_void: test_class_ancestor /= Void
 		local
 			old_table: like test_class_table
 		do
 			old_table := test_class_table
 			create test_class_table.make_default
 			fill_with_descendants (test_class_ancestor, old_table)
+			create test_classes.make_from_array (test_class_table.to_array)
 		end
 
 	fill_with_descendants (an_ancestor: EIFFEL_CLASS_C; an_old_list: like test_class_table) is
@@ -136,6 +142,9 @@ feature {NONE} -- Implementation
 						else
 							create test_class.make_with_class (l_ec)
 						end
+						check
+							test_class_not_void: test_class /= Void
+						end
 						test_class_table.force (test_class, l_ec)
 					end
 					fill_with_descendants (l_ec, an_old_list)
@@ -148,5 +157,6 @@ invariant
 	target_not_void: target /= Void
 	change_actions_not_void: change_actions /= Void
 	test_class_table_not_void: test_class_table /= Void and not test_class_table.has (Void)
+	test_classes_not_void: test_classes /= Void and not test_classes.has (Void)
 
 end

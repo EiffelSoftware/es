@@ -260,7 +260,9 @@ feature	-- Basic operations
 						l_tests_cluster := l_cluster_list.first
 					end
 				end
-				cluster_manager.add_class_to_cluster (new_class_name.as_lower + ".e", l_tests_cluster, new_class_path)
+-- TODO: The following line makes the created test case visible via the cluster view (grayed out but still).
+-- It doesn't seem to be working (at least not always) when in console mode. Arno will check with ManuS what to do.
+--				cluster_manager.add_class_to_cluster (new_class_name.as_lower + ".e", l_tests_cluster, new_class_path)
 				eiffel_system.system.set_rebuild (True)
 			else
 				if output_stream /= Void then

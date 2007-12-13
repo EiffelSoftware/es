@@ -101,6 +101,14 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	wipe_out_nodes_cache is
+			-- Remove all entries from nodes cache.
+		do
+			nodes_cache := Void
+		ensure
+			nodes_cache_void: nodes_cache = Void
+		end
+
 invariant
 
 	test_suite_not_void: test_suite /= Void

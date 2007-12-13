@@ -317,7 +317,7 @@ feature {NONE} -- Implementation (execution)
 				from
 					test_class_cursor.forth
 				until
-					test_class_cursor.after or not test_class_cursor.item.test_routines.is_empty
+					test_class_cursor.after or else not test_class_cursor.item.test_routines.is_empty
 				loop
 					test_class_cursor.forth
 				end

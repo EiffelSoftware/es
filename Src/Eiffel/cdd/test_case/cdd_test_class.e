@@ -32,6 +32,7 @@ feature {NONE} -- Initialization
 		do
 			test_class := a_class
 			create test_routine_table.make_default
+			create test_routines.make_default
 			update_test_routines
 			update_tags
 		ensure
@@ -43,13 +44,11 @@ feature -- Access
 	test_class: EIFFEL_CLASS_C
 			-- Compiled instance of test class
 
-	test_routines: DS_BILINEAR [CDD_TEST_ROUTINE]
+	test_routines: DS_ARRAYED_LIST [CDD_TEST_ROUTINE]
 			-- Test routines associated with this class;
 			-- A test routine is a routine from class `test_class'
 			-- which has a name starting with `test_routine_prefix'.
-		do
-			Result := test_routine_table
-		end
+			-- This routine is updated whenever `test_routine_table' is.
 
 feature {CDD_TEST_SUITE}
 
@@ -85,6 +84,7 @@ feature {CDD_TEST_SUITE}
 				l_ft.forth
 			end
 			l_ft.go_to (old_cs)
+			create test_routines.make_from_array (test_routine_table.to_array)
 		end
 
 feature {NONE} -- Implementation
