@@ -19,6 +19,8 @@ feature {NONE} -- Initialization
 		do
 			test_suite := a_test_suite
 			create filters.make_default
+			change_agent := agent refresh
+			enable_observing
 		ensure
 			test_suite_set: test_suite = a_test_suite
 		end
@@ -35,6 +37,15 @@ feature {ANY} -- Status Report
 			Result := True
 		end
 
+	is_observing: BOOLEAN is
+			-- Is this filter observing `test_suite'?
+			-- If it is then changes to `test_suite' will be
+			-- reflected by this filter immediately, otherwise
+			-- `refresh' must be called.
+		do
+			Result := test_suite.change_actions.has (change_agent)
+		end
+
 feature {ANY} -- Access
 
 	test_suite: CDD_TEST_SUITE
@@ -45,7 +56,7 @@ feature {ANY} -- Access
 			-- `filters'.
 		do
 			if nodes_cache = Void then
-				update_nodes_cache
+				refresh
 			end
 			Result := nodes_cache
 		ensure
@@ -57,16 +68,31 @@ feature {ANY} -- Access
 			-- List of tag patterns, restricting what routines should
 			-- be in this view of the test suite.
 
-feature {NONE} -- Implementation
+feature {ANY} -- Status setting
 
-	nodes_cache: DS_ARRAYED_LIST [CDD_FILTER_NODE]
-			-- Cache for `nodes'
+	enable_observing is
+			-- Enable auto update mode.
+		require
+			not_observing: not is_observing
+		do
+			test_suite.change_actions.force (change_agent)
+		ensure
+			observing: is_observing
+		end
 
-	internal_refresh_action: PROCEDURE [like Current, TUPLE]
-			-- Agent subscribed in test suite. Needed for
-			-- unsubscription.
+	disable_observing is
+			-- Disable auto update mode.
+		require
+			observing: is_observing
+		do
+			test_suite.change_actions.prune (change_agent)
+		ensure
+			not_observing: not is_observing
+		end
 
-	update_nodes_cache is
+feature {ANY} -- Element change
+
+	refresh is
 			-- Update `nodes_cache' with information from `test_suite'.
 		local
 			class_cs: DS_LINEAR_CURSOR [CDD_TEST_CLASS]
@@ -100,6 +126,17 @@ feature {NONE} -- Implementation
 				class_cs.forth
 			end
 		end
+
+feature {NONE} -- Implementation
+
+	nodes_cache: DS_ARRAYED_LIST [CDD_FILTER_NODE]
+			-- Cache for `nodes'
+
+	internal_refresh_action: PROCEDURE [like Current, TUPLE]
+			-- Agent subscribed in test suite. Needed for
+			-- unsubscription.
+
+	change_agent: PROCEDURE [ANY, TUPLE]
 
 	wipe_out_nodes_cache is
 			-- Remove all entries from nodes cache.
