@@ -123,6 +123,7 @@ feature -- Execution
 		require
 			not_running: not is_running
 		do
+			last_response := Void
 				-- $MELT_PATH needs to be set here in only to allow debugging.
 			execution_environment.set_variable_value ("MELT_PATH", file_system.dirname (executable_file_name))
 			launch_process
@@ -255,7 +256,7 @@ feature {NONE} -- Implementation
 	stderr_reader: AUT_THREAD_SAFE_LINE_READER
 			-- Non blocking reader for client-stderr
 
-	timeout: INTEGER is 4
+	timeout: INTEGER is 2
 			-- Client timeout in seconds
 
 	flush_process is

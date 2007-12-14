@@ -37,6 +37,11 @@ inherit
 			{NONE} all
 		end
 
+	CDD_ROUTINES
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -140,6 +145,18 @@ feature -- Settings
 		end
 
 feature -- Status report
+
+	is_test_class: BOOLEAN is
+			-- Is this class a test class?
+			-- Note: This is a CDD specific notion.
+		do
+			if parents /= Void then
+				Result := is_descendant_of_class (Current, "CDD_ABSTRACT_TEST_CASE")
+			else
+				Result := cluster.is_cdd_cluster
+			end
+		end
+
 
 	apply_msil_application_optimizations: BOOLEAN is
 			-- Should MSIL application optimizations be applied?
@@ -1949,7 +1966,14 @@ feature -- Supplier checking
 					-- We could not find class of name `cl_name', but it does not mean
 					-- that we actually need the class, as maybe, at the end of
 					-- the compilation, Current might not be needed anymore.
-				system.record_potential_vtct_error (Current, cl_name)
+				if is_test_class then
+					-- Ignore errors in test case classes. (They shouldn't prevent the system from compiling)
+					-- Warning: No other class must be depend on such errenous classes and their code must not
+					-- be brought to execution.
+					system.remove_class (Current)
+				else
+					system.record_potential_vtct_error (Current, cl_name)
+				end
 			end
 		end
 

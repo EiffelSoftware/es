@@ -271,13 +271,16 @@ feature {NONE} -- Implementation (execution)
 					end
 					if proxy.last_response /= Void or proxy.is_ready then
 						if proxy.last_response /= Void then
-							if proxy.last_response.has_bad_communication and execution_attempts < 3 then
+							if proxy.last_response.has_bad_communication and execution_attempts < 1 then
 									-- Proxy seems jammed, restart and try again
 								proxy.stop
 								proxy.start
 								execution_attempts := execution_attempts + 1
 							else
 								current_test_routine.add_outcome (proxy.last_response)
+									-- Proxy seems jammed, restart and try again
+								proxy.stop
+								proxy.start
 								finished_testing_routine_actions.call ([current_test_routine])
 								next_test_routine
 							end

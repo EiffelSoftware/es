@@ -89,7 +89,9 @@ feature {NONE} -- Processing
 		local
 			ignore_class: BOOLEAN
 		do
-			if not ignore_class then
+			if ignore_class then
+				System.remove_class (a_class)
+			else
 					-- Process creation feature of `a_class'.
 				a_class.process_creation_feature
 				a_class.pass3
@@ -109,12 +111,11 @@ feature {NONE} -- Processing
 			-- Ignore errors in test case classes. (They shouldn't prevent the system from compiling)
 			-- Warning: No other class must be depend on such errenous classes and their code must not
 			-- be brought to execution.
-			if is_descendant_of_class (a_class, "CDD_ABSTRACT_TEST_CASE") then
+			if a_class.is_test_class then
 				error_handler.wipe_out
 				ignore_class := True
 				retry
 			end
-
 		end
 
 feature -- Assertion changes

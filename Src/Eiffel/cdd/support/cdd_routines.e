@@ -68,6 +68,7 @@ feature {NONE} -- Implementation
 		require
 			a_class_not_void: a_class /= Void
 			a_class_name_not_void: a_class_name /= Void
+			a_class_parents_not_void: a_class.parents /= Void
 		local
 			l_class_list: FIXED_LIST [CLASS_C]
 		do
