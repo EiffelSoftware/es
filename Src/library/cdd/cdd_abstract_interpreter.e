@@ -59,107 +59,22 @@ feature {NONE} -- Execution
 
 feature -- Access
 
-	test_setting: HASH_TABLE [TUPLE [instance: CDD_ABSTRACT_TEST_CASE; test_features: HASH_TABLE [PROCEDURE [CDD_ABSTRACT_TEST_CASE, TUPLE [CDD_ABSTRACT_TEST_CASE]], STRING]], STRING] is
-			-- Main data structure containing an instance of all
-			-- classes representing a test case. Each instance comes
-			-- with a number of procedures pointing to actual test
-			-- features within the class. The operand of the
-			-- procedure is the instance of the test class
-			-- containing the test feature.
+	test_class_instance (a_name: STRING): CDD_ABSTRACT_TEST_CASE is
+			-- Instance of test class with name `a_name'. Void if no such
+			-- test class.
+		require
+			a_name_not_void: a_name /= Void
 		deferred
-		ensure
-			not_void: Result /= Void
-			valid_items: not Result.has (Void)
 		end
 
-	test_class_names: ARRAY [STRING] is
-			-- Names of all test classes
-		local
-			i: INTEGER
-		do
-			create Result.make (1, test_setting.count)
-			from
-				test_setting.start
-				i := 1
-			until
-				test_setting.off
-			loop
-				Result.put (test_setting.key_for_iteration, i)
-				test_setting.forth
-				i := i + 1
-			end
-		ensure
-			names_not_void: Result /= Void
-			names_doesnt_have_void: not Result.has (Void)
-		end
-
-	test_feature_names (a_class_name: STRING): ARRAY [STRING] is
-			-- Feature names of all test features in class `a_class_name'
+	test_procedure (a_name: STRING): PROCEDURE [ANY, TUPLE [CDD_ABSTRACT_TEST_CASE]] is
+			-- Agent of test procedure named `a_name'. Note that `a_name'
+			-- has to contain the class name a dot followed by the
+			-- procedure name. E.g. "MY_TEST_CASE.test_001". Void if no
+			-- such procedure.
 		require
-			a_class_name_valid: a_class_name /= Void and then has_test_class (a_class_name)
-		local
-			i: INTEGER
-			l_test_features: HASH_TABLE [PROCEDURE [CDD_ABSTRACT_TEST_CASE, TUPLE [CDD_ABSTRACT_TEST_CASE]], STRING]
-		do
-			l_test_features := test_setting.item (a_class_name).test_features
-			create Result.make (1, l_test_features.count)
-			from
-				l_test_features.start
-				i := 1
-			until
-				l_test_features.off
-			loop
-				Result.put (l_test_features.key_for_iteration, i)
-				l_test_features.forth
-				i := i + 1
-			end
-		ensure
-			features_not_void: Result /= Void
-			features_doesnt_have_void: not Result.has (Void)
-		end
-
-	has_test_class (a_class_name: STRING): BOOLEAN is
-			-- Does `test_setting' contain a test class named `a_class_name'?
-		require
-			a_class_name_not_void: a_class_name /= Void
-		do
-			Result := test_setting.has (a_class_name)
-		ensure
-			correct_result: Result = test_setting.has (a_class_name)
-		end
-
-	has_test_feature (a_class_name, a_feature_name: STRING): BOOLEAN is
-			-- Does `test_setting' contain a test feature named
-			-- `a_feature_name' in class `a_class_name'?
-		require
-			a_class_name_valid: a_class_name /= Void and then has_test_class (a_class_name)
-			a_feature_name_not_void: a_feature_name /= Void
-		do
-			Result := test_setting.item (a_class_name).test_features.has (a_feature_name)
-		ensure
-			correct_result: Result = test_setting.item (a_class_name).test_features.has (a_feature_name)
-		end
-
-	test_case (a_class_name: STRING): CDD_ABSTRACT_TEST_CASE is
-			-- Instance of `a_class_name'
-		require
-			a_class_name_valid: a_class_name /= Void and then has_test_class (a_class_name)
-		do
-			Result := test_setting.item (a_class_name).instance
-		ensure
-			valid_result: Result /= Void and then Result = test_setting.item (a_class_name).instance
-		end
-
-	test_feature (a_class_name, a_feature_name: STRING): PROCEDURE [CDD_ABSTRACT_TEST_CASE, TUPLE [CDD_ABSTRACT_TEST_CASE]] is
-			-- Procedure calling `a_feature_name' in class `a_class_name'
-		require
-			a_class_name_valid: a_class_name /= Void and then has_test_class (a_class_name)
-			a_feature_name_valid: a_feature_name /= Void and then has_test_feature (a_class_name, a_feature_name)
-		do
-			Result := test_setting.item (a_class_name).test_features.item (a_feature_name)
-		ensure
-			valid_result: Result /= Void and then
-				Result = test_setting.item (a_class_name).test_features.item (a_feature_name)
+			a_name_not_void: a_name /= Void
+		deferred
 		end
 
 feature {NONE} -- Request handling
@@ -172,21 +87,20 @@ feature {NONE} -- Request handling
 
 	report_list_test_classes_request is
 			-- Print a list of all test cases and their test features.
-		local
-			l_cursor: DS_BILINEAR_CURSOR [STRING]
 		do
-			test_class_names.do_all (agent report_list_of_class_request)
+			-- TODO: implement
+				check
+					TODO: False
+				end
 		end
 
 	report_list_of_class_request (a_class_name: STRING) is
 			-- Print a list of all test features in class `a_class_name'.
 		do
-			print ("Test cases for " + a_class_name + ":%N")
-			test_feature_names (a_class_name).do_all (
-				agent (a_test_feature_name: STRING)
-					do
-						print ("%T" + a_test_feature_name + "%N")
-					end)
+			-- TODO: implement
+				check
+					TODO: False
+				end
 		end
 
 	report_execute_all_test_routines_request is
@@ -201,23 +115,29 @@ feature {NONE} -- Request handling
 	report_execute_test_class_request (a_class_name: STRING) is
 			-- Execute all tests found in class `a_class_name'.
 		do
-			if not has_test_class (a_class_name) then
-				report_and_set_error ("`" + a_class_name + "' is not a valid class name.")
-			else
-				test_feature_names (a_class_name).do_all (agent execute_test (a_class_name, ?))
+			-- TODO: implement
+			check
+				todo: False
 			end
 		end
 
 	report_execute_test_routine_request (a_class_name, a_feature_name: STRING) is
 			-- Execute test feature `a_feature_name' in class `a_class_name'.
 			-- If `a_class_name' does not contain such a feature, print error message.
+		local
+			tc: CDD_ABSTRACT_TEST_CASE
+			p: PROCEDURE [ANY, TUPLE [CDD_ABSTRACT_TEST_CASE]]
 		do
-			if not has_test_class (a_class_name) then
+			tc := test_class_instance (a_class_name)
+			if tc = Void then
 				report_and_set_error ("`" + a_class_name + "' is not a valid class name.")
-			elseif not has_test_feature (a_class_name, a_feature_name) then
-				report_error (a_class_name + " does not contain a test feature `" + a_feature_name + "'")
 			else
-				execute_test (a_class_name, a_feature_name)
+				p := test_procedure (a_class_name + "." + a_feature_name)
+				if p = Void then
+					report_error (a_class_name + " does not contain a test feature `" + a_feature_name + "'")
+				else
+					execute_test (tc, p)
+				end
 			end
 		end
 
@@ -236,24 +156,18 @@ feature {NONE} -- Control
 
 feature {NONE} -- Implementation
 
-	execute_test (a_tc_name, a_feature_name: STRING) is
-			-- Set up `a_tc' and call `a_feature' with `a_tc' as operand.
-			-- Print results on standard out refering to `a_tc_name' and
-			-- `a_feature_name'.
+	execute_test (a_tc: CDD_ABSTRACT_TEST_CASE; a_p: PROCEDURE [ANY, TUPLE [CDD_ABSTRACT_TEST_CASE]]) is
+			-- Set up `a_tc' (via `set_up'),  call `a_p' and tear it down (via `tear_down').
+			-- Print results on standard out.
 		require
-			a_tc_name_valid: a_tc_name /= Void and then has_test_class (a_tc_name)
-			a_feature_name_valid: a_feature_name /= Void and then has_test_feature (a_tc_name, a_feature_name)
-		local
-			l_tc: CDD_ABSTRACT_TEST_CASE
-			l_tr: PROCEDURE [CDD_ABSTRACT_TEST_CASE, TUPLE [CDD_ABSTRACT_TEST_CASE]]
+			a_tc_not_void: a_tc /= Void
+			a_p_not_void: a_p /= Void
 		do
-			l_tc := test_case (a_tc_name)
-			execute_protected (agent l_tc.set_up)
+			execute_protected (agent a_tc.set_up)
 			if last_protected_execution_successfull then
-				l_tr := test_feature (a_tc_name, a_feature_name)
-				l_tr.set_operands ([l_tc])
-				execute_protected (l_tr)
-				execute_protected (agent l_tc.tear_down)
+				a_p.set_operands ([a_tc])
+				execute_protected (a_p)
+				execute_protected (agent a_tc.tear_down)
 			end
 			print_line_and_flush ("done:")
 		end

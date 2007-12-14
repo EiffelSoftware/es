@@ -13,6 +13,7 @@ inherit
 	DEGREE
 	COMPILER_EXPORTER
 	SHARED_ERROR_HANDLER
+	CDD_ROUTINES
 
 create
 
@@ -85,14 +86,18 @@ feature {NONE} -- Processing
 			-- features.
 		require
 			a_class_not_void: a_class /= Void
+		local
+			ignore_class: BOOLEAN
 		do
-				-- Process creation feature of `a_class'.
-			a_class.process_creation_feature
-			a_class.pass3
+			if not ignore_class then
+					-- Process creation feature of `a_class'.
+				a_class.process_creation_feature
+				a_class.pass3
 
-				-- Type checking and maybe byte code production for `a_class'.
-			if System.il_generation then
-				a_class.update_anchors
+					-- Type checking and maybe byte code production for `a_class'.
+				if System.il_generation then
+					a_class.update_anchors
+				end
 			end
 
 				-- No error happened: set the compilation
@@ -100,6 +105,16 @@ feature {NONE} -- Processing
 			check
 				No_error: not Error_handler.has_error
 			end
+		rescue
+			-- Ignore errors in test case classes. (They shouldn't prevent the system from compiling)
+			-- Warning: No other class must be depend on such errenous classes and their code must not
+			-- be brought to execution.
+			if is_descendant_of_class (a_class, "CDD_ABSTRACT_TEST_CASE") then
+				error_handler.wipe_out
+				ignore_class := True
+				retry
+			end
+
 		end
 
 feature -- Assertion changes

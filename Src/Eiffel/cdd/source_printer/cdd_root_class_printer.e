@@ -12,8 +12,6 @@ class
 
 inherit
 
-	CDD_CLASS_PRINTER
-
 	SHARED_EIFFEL_PROJECT
 
 create
@@ -67,15 +65,12 @@ feature -- Basic operations
 			create l_output_file.make (root_class_file_name)
 			l_output_file.open_write
 			if l_output_file.is_open_write then
-				initialize (l_output_file)
+				create output_stream.make (l_output_file)
 				put_indexing
 				put_class_header
-				put_test_setting_header
-				l_count := test_suite.test_classes.count
-				put_line ("create Result.make (" + l_count.out + ")")
-
-				put_test_class_table (test_suite.test_classes)
-
+				put_test_class_instance
+				output_stream.put_new_line
+				put_test_procedure
 				put_footer
 				l_output_file.close
 			else
@@ -91,118 +86,148 @@ feature {NONE} -- Access implementation
 	last_root_class_name: STRING
 			-- Last computed root class name
 
+	output_stream: ERL_G_INDENTING_TEXT_OUTPUT_FILTER
+			-- Output stream
+
 feature {NONE} -- Implementation
 
 	put_indexing is
 			-- Append indexing clause.
 		require
-			initialized: is_output_stream_valid
+			valid_output_stream: output_stream /= Void and then output_stream.is_open_write
 		do
-			put_line ("indexing%N")
-			increase_indent
-			put_line ("description: %"Objects that execute test cases%"")
-			put_line ("author: %"CDD Tool%"")
-			decrease_indent
-			put_line ("")
+			output_stream.put_line ("indexing%N")
+			output_stream.indent
+			output_stream.put_line ("description: %"Objects that execute test cases%"")
+			output_stream.put_line ("author: %"CDD Tool%"")
+			output_stream.dedent
+			output_stream.put_line ("")
 		end
 
 	put_class_header is
 			-- Append cdd interpreter class header.
 		require
-			initialized: is_output_stream_valid
+			valid_output_stream: output_stream /= Void and then output_stream.is_open_write
 		do
-			put_line ("class")
-			increase_indent
-			put_line ("CDD_INTERPRETER%N")
-			decrease_indent
-			put_line ("inherit")
-			increase_indent
-			put_line ("CDD_ABSTRACT_INTERPRETER%N")
-			decrease_indent
-			put_line ("create")
-			increase_indent
-			put_line ("execute")
-			decrease_indent
+			output_stream.put_line ("class")
+			output_stream.indent
+			output_stream.put_line ("CDD_INTERPRETER%N")
+			output_stream.dedent
+			output_stream.put_line ("inherit")
+			output_stream.indent
+			output_stream.put_line ("CDD_ABSTRACT_INTERPRETER%N")
+			output_stream.dedent
+			output_stream.put_line ("create")
+			output_stream.indent
+			output_stream.put_line ("execute")
+			output_stream.dedent
+			output_stream.put_line ("feature")
+		end
+
+	put_test_class_instance is
+			-- Print `test_class_instance' routine to `output_stream'.
+		require
+			valid_output_stream: output_stream /= Void and then output_stream.is_open_write
+		local
+			test_classes: DS_LINEAR [CDD_TEST_CLASS]
+			l_cursor: DS_LINEAR_CURSOR [CDD_TEST_CLASS]
+			printer: ERL_G_LOOKUP_PRINTER
+			list: DS_ARRAYED_LIST [DS_PAIR [STRING, STRING]]
+			pair: DS_PAIR [STRING, STRING]
+		do
+			test_classes := test_suite.test_classes
+			create list.make (test_classes.count)
+			from
+				l_cursor := test_classes.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				create pair.make ("create {" + l_cursor.item.test_class.name_in_upper + "}",
+									l_cursor.item.test_class.name_in_upper)
+				list.put_last (pair)
+				l_cursor.forth
+			end
+			create printer.make (output_stream)
+			output_stream.indent
+			printer.print_item_by_name_query ("test_class_instance", "CDD_ABSTRACT_TEST_CASE", list)
+			output_stream.dedent
+		end
+
+	put_test_procedure is
+			-- Print `test_procedure' routine to `output_stream'.
+		require
+			valid_output_stream: output_stream /= Void and then output_stream.is_open_write
+		local
+			test_classes: DS_LINEAR [CDD_TEST_CLASS]
+			l_cursor: DS_LINEAR_CURSOR [CDD_TEST_CLASS]
+			printer: ERL_G_LOOKUP_PRINTER
+			list: DS_ARRAYED_LIST [DS_PAIR [STRING, STRING]]
+			pair: DS_PAIR [STRING, STRING]
+			l_ft: FEATURE_TABLE
+			l_name, l_prefix: STRING
+		do
+			test_classes := test_suite.test_classes
+			create list.make (test_classes.count)
+			l_prefix := "test_"
+			from
+				l_cursor := test_classes.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+
+				l_ft := l_cursor.item.test_class.feature_table
+				from
+					l_ft.start
+				until
+					l_ft.after
+				loop
+					l_name := l_ft.item_for_iteration.feature_name
+					if
+						l_name.count >= l_prefix.count and then
+						l_name.substring (1, l_prefix.count).is_case_insensitive_equal (l_prefix)
+					then
+						create pair.make ("agent {" + l_cursor.item.test_class.name_in_upper + "}." + l_name,
+											l_cursor.item.test_class.name_in_upper + "." + l_name)
+						list.put_last (pair)
+					end
+					l_ft.forth
+				end
+				l_cursor.forth
+			end
+			create printer.make (output_stream)
+			output_stream.indent
+			printer.print_item_by_name_query ("test_procedure", "PROCEDURE [ANY, TUPLE [CDD_ABSTRACT_TEST_CASE]]", list)
+			output_stream.dedent
 		end
 
 	put_test_setting_header is
 			-- Append `test_setting' feature header.
 		require
-			initialized: is_output_stream_valid
+			valid_output_stream: output_stream /= Void and then output_stream.is_open_write
 		do
-			put_line ("feature -- Access%N")
+			output_stream.put_line ("feature -- Access%N")
 
 				-- Context
-			increase_indent
-			put_line ("test_setting: HASH_TABLE [TUPLE [instance: CDD_ABSTRACT_TEST_CASE; test_features: HASH_TABLE [PROCEDURE [CDD_ABSTRACT_TEST_CASE, TUPLE [CDD_ABSTRACT_TEST_CASE]], STRING]], STRING] is")
-			increase_indent
-			put_comment ("All test cases in this target")
-			put_line ("local")
-			increase_indent
-			put_line ("l_fht: HASH_TABLE [PROCEDURE [CDD_ABSTRACT_TEST_CASE, TUPLE [CDD_ABSTRACT_TEST_CASE]], STRING]")
-			decrease_indent
-			put_line ("once")
-			increase_indent
+			output_stream.indent
+			output_stream.put_line ("test_setting: HASH_TABLE [TUPLE [instance: CDD_ABSTRACT_TEST_CASE; test_features: HASH_TABLE [PROCEDURE [CDD_ABSTRACT_TEST_CASE, TUPLE [CDD_ABSTRACT_TEST_CASE]], STRING]], STRING] is")
+			output_stream.indent
+			output_stream.put_line ("%"All test cases in this target%"")
+			output_stream.put_line ("local")
+			output_stream.indent
+			output_stream.put_line ("l_fht: HASH_TABLE [PROCEDURE [CDD_ABSTRACT_TEST_CASE, TUPLE [CDD_ABSTRACT_TEST_CASE]], STRING]")
+			output_stream.dedent
+			output_stream.put_line ("once")
+			output_stream.indent
 		end
 
 	put_footer is
 			-- Append `test_setting' feature and class footer.
 		require
-			initialized: is_output_stream_valid
+			valid_output_stream: output_stream /= Void and then output_stream.is_open_write
 		do
-			decrease_indent
-			put_line ("end%N")
-			decrease_indent
-			put_string ("%N%Nend -- class %N%N")
-		end
-
-	put_feature_table (a_test_class: CLASS_C) is
-			-- Print class text for setting up feature hash table in `l_fht'
-			-- with all test features in `a_test_class'.
-		require
-			a_test_class_not_void: a_test_class /= Void
-		local
-			l_ft: FEATURE_TABLE
-			l_name, l_prefix: STRING
-		do
-			l_ft := a_test_class.feature_table
-			l_prefix := "test_"
-			from
-				l_ft.start
-			until
-				l_ft.after
-			loop
-				l_name := l_ft.item_for_iteration.feature_name
-				if l_name.count >= l_prefix.count and then
-					l_name.substring (1, l_prefix.count).is_case_insensitive_equal (l_prefix) then
-					put_line ("l_fht.put (agent {" + a_test_class.name_in_upper +
-						"}." + l_name + ", %"" + l_name + "%")")
-				end
-				l_ft.forth
-			end
-			put_line ("")
-		end
-
-	put_test_class_table (a_list: DS_LINEAR [CDD_TEST_CLASS]) is
-			-- Print hash tables for all test classes and test routines in `a_list'.
-		require
-			initialized: is_output_stream_valid
-		local
-			l_cursor: DS_LINEAR_CURSOR [CDD_TEST_CLASS]
-		do
-			from
-				l_cursor := a_list.new_cursor
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				put_line ("create l_fht.make (1)")
-				put_feature_table (l_cursor.item.test_class)
-				put_line ("Result.put ([create {" + l_cursor.item.test_class.name_in_upper +
-					"}, l_fht], %"" + l_cursor.item.test_class.name_in_upper + "%")")
-				put_line ("")
-				l_cursor.forth
-			end
+			output_stream.put_line ("%N%Nend")
 		end
 
 	conf_factory: CONF_COMP_FACTORY is
@@ -215,6 +240,7 @@ feature {NONE} -- Implementation
 
 
 invariant
+
 	test_suite_not_void: test_suite /= Void
 
 end

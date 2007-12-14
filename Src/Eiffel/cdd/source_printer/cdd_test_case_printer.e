@@ -15,13 +15,6 @@ inherit
 			finish as finish_capturing
 		end
 
-	CDD_CLASS_PRINTER
-		rename
-			finish as finish_printing
-		export
-			{NONE} all
-		end
-
 	CDD_ROUTINES
 		export
 			{NONE} all
@@ -69,7 +62,7 @@ feature -- Access
 	is_initialized: BOOLEAN is
 			-- Can we currently write any class text?
 		do
-			Result := failed or else is_output_stream_valid
+			Result := failed or else (output_stream /= Void and then output_stream.is_open_write)
 		end
 
 	target: CONF_TARGET
@@ -157,7 +150,7 @@ feature	-- Basic operations
 					failed := True
 				else
 					-- To here...
-					initialize (l_output_file)
+					create output_stream.make (l_output_file)
 
 						-- Print test class headers
 					put_indexing (a_cs_uuid.out, a_cs_level)
@@ -189,7 +182,7 @@ feature	-- Basic operations
 		do
 			if not failed then
 				if printed_objects > 0 then
-					put_string (",%N")
+					output_stream.put_string (",%N")
 				end
 				printed_objects := printed_objects + 1
 				create l_attrs.make_from_string ("<< ")
@@ -206,8 +199,9 @@ feature	-- Basic operations
 					l_cursor.forth
 				end
 				l_attrs.append (" >>")
-				put_string (indent)
-				put_string ("[%"" + an_id + "%", %"" + a_type + "%", " + an_inv.out + ", " + l_attrs + "]")
+				output_stream.indent
+				output_stream.put_string ("[%"" + an_id + "%", %"" + a_type + "%", " + an_inv.out + ", " + l_attrs + "]")
+				output_stream.dedent
 			end
 		rescue
 			failed := True
@@ -224,17 +218,15 @@ feature	-- Basic operations
 			l_directory: KL_DIRECTORY
 		do
 			if not failed then
-				decrease_indent
-				put_string ("%N")
-				put_line (">>")
-				decrease_indent
-				put_line ("end")
-				decrease_indent
+				output_stream.dedent
+				output_stream.put_string ("%N")
+				output_stream.put_line (">>")
+				output_stream.dedent
+				output_stream.put_line ("end")
+				output_stream.dedent
 				put_class_footer
 				output_stream.flush
 				output_stream.close
-				finish_printing
-
 
 				l_cluster_name := target.name + "_tests"
 				l_tests_cluster := eiffel_universe.cluster_of_name (l_cluster_name)
@@ -278,6 +270,9 @@ feature	-- Basic operations
 
 feature {NONE} -- Implementation
 
+	output_stream: ERL_G_INDENTING_TEXT_OUTPUT_FILTER
+			-- Output stream
+
 	failed: BOOLEAN
 			-- Has `Current' raised any exception since last call to `start_capturing'?
 
@@ -298,14 +293,14 @@ feature {NONE} -- Implementation
 			an_uuid_not_empty: an_uuid /= Void and then not an_uuid.is_empty
 			an_index_positive: an_index > 0
 		do
-			put_line ("indexing%N")
-			increase_indent
-			put_line ("description: %"Objects that represent a cdd test case%"")
-			put_line ("call_stack_uuid: %"" + an_uuid + "%"")
-			put_line ("call_stack_index: " + an_index.out + "")
-			put_line ("author: %"CDD Tool%"")
-			decrease_indent
-			put_line ("")
+			output_stream.put_line ("indexing%N")
+			output_stream.indent
+			output_stream.put_line ("description: %"Objects that represent a cdd test case%"")
+			output_stream.put_line ("call_stack_uuid: %"" + an_uuid + "%"")
+			output_stream.put_line ("call_stack_index: " + an_index.out + "")
+			output_stream.put_line ("author: %"CDD Tool%"")
+			output_stream.dedent
+			output_stream.put_line ("")
 		end
 
 	put_class_header is
@@ -314,14 +309,14 @@ feature {NONE} -- Implementation
 		require
 			initialized_and_not_failed: is_initialized and not failed
 		do
-			put_line ("class")
-			increase_indent
-			put_line (new_class_name + "%N")
-			decrease_indent
-			put_line ("inherit")
-			increase_indent
-			put_line ("CDD_EXTRACTED_TEST_CASE%N")
-			decrease_indent
+			output_stream.put_line ("class")
+			output_stream.indent
+			output_stream.put_line (new_class_name + "%N")
+			output_stream.dedent
+			output_stream.put_line ("inherit")
+			output_stream.indent
+			output_stream.put_line ("CDD_EXTRACTED_TEST_CASE%N")
+			output_stream.dedent
 		end
 
 	put_set_up (a_feature: E_FEATURE; an_is_creation_call: BOOLEAN) is
@@ -336,13 +331,13 @@ feature {NONE} -- Implementation
 			l_ops: DS_LINKED_LIST [STRING]
 			l_cursor: DS_LINKED_LIST_CURSOR [STRING]
 		do
-			put_line ("feature {NONE} -- Initialization%N")
-			increase_indent
-			put_line ("set_up_routine is")
-			increase_indent
-			put_comment ("Initialize agent that calls feature under test")
-			put_line ("do")
-			increase_indent
+			output_stream.put_line ("feature {NONE} -- Initialization%N")
+			output_stream.indent
+			output_stream.put_line ("set_up_routine is")
+			output_stream.indent
+			output_stream.put_line ("%"Initialize agent that calls feature under test%"")
+			output_stream.put_line ("do")
+			output_stream.indent
 			l_class := a_feature.associated_class.name_in_upper
 			l_agent := "routine_under_test := agent"
 			l_is_fix := a_feature.is_infix or a_feature.is_prefix
@@ -381,10 +376,10 @@ feature {NONE} -- Implementation
 				else
 					l_agent.append (": " + l_class)
 				end
-				put_line (l_agent)
-				increase_indent
-				put_line ("do")
-				increase_indent
+				output_stream.put_line (l_agent)
+				output_stream.indent
+				output_stream.put_line ("do")
+				output_stream.indent
 				if an_is_creation_call then
 					l_agent := "Result := create {" + l_class + "}." + a_feature.name
 					if a_feature.argument_count > 0 then
@@ -407,17 +402,17 @@ feature {NONE} -- Implementation
 				else
 					l_agent := "Result := " + a_feature.prefix_symbol + "an_arg1"
 				end
-				put_line (l_agent)
-				decrease_indent
-				put_line ("end")
-				decrease_indent
+				output_stream.put_line (l_agent)
+				output_stream.dedent
+				output_stream.put_line ("end")
+				output_stream.dedent
 			else
-				put_line (l_agent + " {" + l_class + "}." + a_feature.name)
+				output_stream.put_line (l_agent + " {" + l_class + "}." + a_feature.name)
 			end
-			decrease_indent
-			put_line ("end%N")
-			decrease_indent
-			decrease_indent
+			output_stream.dedent
+			output_stream.put_line ("end%N")
+			output_stream.dedent
+			output_stream.dedent
 		end
 
 	put_context_header is
@@ -425,18 +420,18 @@ feature {NONE} -- Implementation
 		require
 			initialized_and_not_failed: is_initialized and not failed
 		do
-			put_line ("feature -- Context%N")
+			output_stream.put_line ("feature -- Context%N")
 
 				-- Context
-			increase_indent
-			put_line ("context: ARRAY [TUPLE [id: STRING; type: STRING; inv: BOOLEAN; attributes: ARRAY [STRING]]] is")
-			increase_indent
-			put_comment ("Context for executing test case")
-			put_comment ("NOTE: by definition first element is operand for calling `routine_under_test'")
-			put_line ("once")
-			increase_indent
-			put_line ("Result := <<")
-			increase_indent
+			output_stream.indent
+			output_stream.put_line ("context: ARRAY [TUPLE [id: STRING; type: STRING; inv: BOOLEAN; attributes: ARRAY [STRING]]] is")
+			output_stream.indent
+			output_stream.put_line ("%"Context for executing test case%"")
+			output_stream.put_line ("%"NOTE: by definition first element is operand for calling `routine_under_test'%"")
+			output_stream.put_line ("once")
+			output_stream.indent
+			output_stream.put_line ("Result := <<")
+			output_stream.indent
 		end
 
 
@@ -449,10 +444,10 @@ feature {NONE} -- Implementation
 		local
 			l_feature_name: STRING
 		do
-			put_line ("feature -- Access%N")
-			increase_indent
-			put_line ("class_under_test: STRING is %"" + a_cut_name + "%"")
-			put_comment ("Name of the class beeing tested%N")
+			output_stream.put_line ("feature -- Access%N")
+			output_stream.indent
+			output_stream.put_line ("class_under_test: STRING is %"" + a_cut_name + "%"")
+			output_stream.put_line ("%"Name of the class beeing tested%N%"")
 			if a_feature.is_infix then
 				l_feature_name := "infix %%%"" + a_feature.infix_symbol + "%%%""
 			elseif a_feature.is_prefix then
@@ -460,9 +455,9 @@ feature {NONE} -- Implementation
 			else
 				l_feature_name := a_feature.name
 			end
-			put_line ("feature_under_test: STRING is %"" + l_feature_name + "%"")
-			put_comment ("Name of the feature beeing tested%N")
-			decrease_indent
+			output_stream.put_line ("feature_under_test: STRING is %"" + l_feature_name + "%"")
+			output_stream.put_line ("%"Name of the feature beeing tested%N%"")
+			output_stream.dedent
 		end
 
 	put_class_footer is
@@ -470,7 +465,7 @@ feature {NONE} -- Implementation
 		require
 			initialized_and_not_failed: is_initialized and not failed
 		do
-			put_string ("%N%Nend -- class %N%N")
+			output_stream.put_line ("%N%Nend")
 		end
 
 	conf_factory: CONF_COMP_FACTORY is
