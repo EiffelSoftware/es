@@ -303,7 +303,9 @@ feature {NONE} -- Implementation
 			print_line_and_flush (l_exception.out)
 			print_line_and_flush (l_recipient_name)
 			print_line_and_flush (l_class_name)
+			print_multi_line_value_start_tag
 			print_line_and_flush (l_tag_name)
+			print_multi_line_value_end_tag
 			print_multi_line_value_start_tag
 			print_line_and_flush (l_exception_trace)
 			print_multi_line_value_end_tag

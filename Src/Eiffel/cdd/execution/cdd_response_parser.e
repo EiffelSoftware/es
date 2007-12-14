@@ -48,8 +48,10 @@ feature -- Parsing
 			if not setup_response.is_bad then
 				parse_routine_invocation_response
 				test_response := last_routine_response
-				parse_routine_invocation_response
-				teardown_response := last_routine_response
+				if not test_response.is_bad then
+					parse_routine_invocation_response
+					teardown_response := last_routine_response
+				end
 			end
 			create last_response.make (setup_response, test_response, teardown_response)
 			parse_done
@@ -116,7 +118,7 @@ feature {NONE} -- Implmenentation
 					parse_line
 					if last_string /= Void then
 						exception_class_name := last_string.twin
-						parse_line
+						parse_multi_line_value
 						if last_string /= Void then
 							exception_tag_name := last_string.twin
 							parse_multi_line_value
