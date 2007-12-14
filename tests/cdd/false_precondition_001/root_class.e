@@ -11,15 +11,6 @@ create
 
 feature -- Initialization
 
---	make is
---		local
---			x: CDD_TEST_ROOT_CLASS_01
---		do
---			create x
---			x.set_up
---			x.run
---		end
-
 	make is
 		do
 			bar
@@ -30,6 +21,7 @@ feature -- Initialization
 		require
 			false_precondition: False
 		do
+
 		end
 
 end
