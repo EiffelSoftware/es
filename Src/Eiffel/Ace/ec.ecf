@@ -236,7 +236,7 @@
 				<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
 			</option>
 		</library>
-		<library name="com" location="\home\aleitner\src\erl_g\library\erl_g_library.ecf"/>
+		<library name="com" location="$ERL_G\library\erl_g_library.ecf"/>
 		<library name="configuration_gui" location="$EIFFEL_SRC\framework\configuration\configuration_gui.ecf" readonly="false">
 			<option>
 				<assertions/>
