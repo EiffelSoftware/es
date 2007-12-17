@@ -239,9 +239,6 @@ feature {NONE} -- Implementation (execution)
 		require
 			executing: is_executing
 		local
-			l_output: STRING
-			l_pos: INTEGER
-			l_ft: FEATURE_TABLE
 			l_go_idle: BOOLEAN
 		do
 			if is_compiling then
