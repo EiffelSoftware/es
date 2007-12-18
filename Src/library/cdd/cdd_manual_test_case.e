@@ -14,10 +14,22 @@ deferred class
 inherit
 
 	CDD_ABSTRACT_TEST_CASE
-		rename
-			tear_down as do_nothing
+		redefine
+			set_up,
+			tear_down
 		end
 
-feature
+feature -- Basic operations
 
+	set_up is
+			-- Initialize required state for running `Current'.
+			-- Redefine in descendats to provide custom setup.
+		do
+		end
+
+	tear_down is
+			-- Tear down any remaining state used to run `Current'.
+			-- Redefine in descendats to provide custom teardown.
+		do
+		end
 end
