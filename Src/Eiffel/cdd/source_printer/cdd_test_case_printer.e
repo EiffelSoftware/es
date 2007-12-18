@@ -226,7 +226,12 @@ feature	-- Basic operations
 				output_stream.dedent
 				put_class_footer
 				output_stream.flush
-				output_stream.close
+
+					-- NOTE: output_stream.close breaks precondition,
+					-- not sure why stream should not be closeable.
+				if output_stream.is_closable then
+					output_stream.close
+				end
 
 				l_cluster_name := target.name + "_tests"
 				l_tests_cluster := eiffel_universe.cluster_of_name (l_cluster_name)
