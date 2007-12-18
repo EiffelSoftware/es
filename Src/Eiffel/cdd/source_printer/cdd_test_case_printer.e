@@ -225,13 +225,10 @@ feature	-- Basic operations
 				output_stream.put_line ("end")
 				output_stream.dedent
 				put_class_footer
+					-- TODO: Do we really need to flush before closing?
+					-- Try to remove it?
 				output_stream.flush
-
-					-- NOTE: output_stream.close breaks precondition,
-					-- not sure why stream should not be closeable.
-				if output_stream.is_closable then
-					output_stream.close
-				end
+				output_stream.close
 
 				l_cluster_name := target.name + "_tests"
 				l_tests_cluster := eiffel_universe.cluster_of_name (l_cluster_name)
@@ -340,7 +337,9 @@ feature {NONE} -- Implementation
 			output_stream.indent
 			output_stream.put_line ("set_up_routine is")
 			output_stream.indent
-			output_stream.put_line ("%"Initialize agent that calls feature under test%"")
+			output_stream.indent
+			output_stream.put_line ("-- Initialize agent that calls feature under test.")
+			output_stream.dedent
 			output_stream.put_line ("do")
 			output_stream.indent
 			l_class := a_feature.associated_class.name_in_upper
@@ -431,8 +430,10 @@ feature {NONE} -- Implementation
 			output_stream.indent
 			output_stream.put_line ("context: ARRAY [TUPLE [id: STRING; type: STRING; inv: BOOLEAN; attributes: ARRAY [STRING]]] is")
 			output_stream.indent
-			output_stream.put_line ("%"Context for executing test case%"")
-			output_stream.put_line ("%"NOTE: by definition first element is operand for calling `routine_under_test'%"")
+			output_stream.indent
+			output_stream.put_line ("-- Context for executing test case")
+			output_stream.put_line ("-- NOTE: by definition first element is operand for calling `routine_under_test'.")
+			output_stream.dedent
 			output_stream.put_line ("once")
 			output_stream.indent
 			output_stream.put_line ("Result := <<")
@@ -452,7 +453,11 @@ feature {NONE} -- Implementation
 			output_stream.put_line ("feature -- Access%N")
 			output_stream.indent
 			output_stream.put_line ("class_under_test: STRING is %"" + a_cut_name + "%"")
-			output_stream.put_line ("%"Name of the class beeing tested%N%"")
+			output_stream.indent
+			output_stream.indent
+			output_stream.put_line ("-- Name of the class beeing tested%N")
+			output_stream.dedent
+			output_stream.dedent
 			if a_feature.is_infix then
 				l_feature_name := "infix %%%"" + a_feature.infix_symbol + "%%%""
 			elseif a_feature.is_prefix then
@@ -461,7 +466,10 @@ feature {NONE} -- Implementation
 				l_feature_name := a_feature.name
 			end
 			output_stream.put_line ("feature_under_test: STRING is %"" + l_feature_name + "%"")
-			output_stream.put_line ("%"Name of the feature beeing tested%N%"")
+			output_stream.indent
+			output_stream.indent
+			output_stream.put_line ("-- Name of the feature beeing tested%N")
+			output_stream.dedent
 			output_stream.dedent
 		end
 
@@ -478,7 +486,6 @@ feature {NONE} -- Implementation
 		once
 			create Result
 		end
-
 
 invariant
 	initialized_and_not_failed_implies_valid_class_name:
