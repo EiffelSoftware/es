@@ -62,17 +62,21 @@ feature -- Basic operations
 			l_count: INTEGER
 		do
 			last_print_succeeded := True
-			create l_output_file.make (root_class_file_name)
-			l_output_file.open_write
-			if l_output_file.is_open_write then
-				create output_stream.make (l_output_file)
-				put_indexing
-				put_class_header
-				put_test_class_instance
-				output_stream.put_new_line
-				put_test_procedure
-				put_footer
-				l_output_file.close
+			if test_suite.test_classes.count > 0 then
+				create l_output_file.make (root_class_file_name)
+				l_output_file.open_write
+				if l_output_file.is_open_write then
+					create output_stream.make (l_output_file)
+					put_indexing
+					put_class_header
+					put_test_class_instance
+					output_stream.put_new_line
+					put_test_procedure
+					put_footer
+					l_output_file.close
+				else
+					last_print_succeeded := False
+				end
 			else
 				last_print_succeeded := False
 			end
