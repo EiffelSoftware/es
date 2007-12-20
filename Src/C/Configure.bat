@@ -2,7 +2,7 @@
 set OLD_PATH=%PATH%
 set OLD_COMSPEC=%COMSPEC%
 set PATH=%~dp0\shell\bin;%PATH%
-set CONSOLE_DIR=..
+set CONSOLE_DIR=.
 if .%1. == .clean. goto clean
 if .%1. == .win32. goto win32
 if .%1. == .win64. goto win64
@@ -43,6 +43,8 @@ if .%2. == .. goto usage
 if NOT .%2. == .m. goto usage
 set CONSOLE_DIR=.
 copy CONFIGS\efi-x86-msc config.sh
+copy CONFIGS\windows-x86-msc bench\config.sh
+copy *.h bench\
 goto process
 :win64
 if .%2. == .. goto usage
@@ -92,24 +94,30 @@ rem Copy the config
 rem
 copy eif_config.h run-time
 copy eif_portable.h run-time
-copy config.sh bench
-copy make.w32 bench\make.bat
-rem if not .%1.==.efi. (
+if not .%1.==.efi. (
+	copy config.sh bench
+	copy make.w32 bench\make.bat
+) else (
+	copy make.efi bench\make.bat
+)
+if not .%1.==.efi. (
 	copy config.sh console
 	copy make.w32 console\make.bat
-rem )
+)
 if not "%remove_desc%" == "1" (
 	copy config.sh desc
 	copy make.w32 desc\make.bat
 )
-copy config.sh ipc\app
-copy make.w32 ipc\app\make.bat
-copy config.sh ipc\daemon
-copy make.w32 ipc\daemon\make.bat
-copy config.sh ipc\ewb
-copy make.w32 ipc\ewb\make.bat
-copy config.sh ipc\shared
-copy make.w32 ipc\shared\make.bat
+if not .%1.==.efi. (
+	copy config.sh ipc\app
+	copy make.w32 ipc\app\make.bat
+	copy config.sh ipc\daemon
+	copy make.w32 ipc\daemon\make.bat
+	copy config.sh ipc\ewb
+	copy make.w32 ipc\ewb\make.bat
+	copy config.sh ipc\shared
+	copy make.w32 ipc\shared\make.bat
+)
 copy config.sh platform
 copy make.w32 platform\make.bat
 copy config.sh idrs
@@ -127,18 +135,20 @@ cd ..
 rem
 rem Call the converter tranforming the makefile-win.sh to Makefile
 rem
-cd ipc\shared
-..\..\shell\bin\rt_converter.exe makefile-win.sh Makefile
+if not .%1.==.efi. (
+	cd ipc\shared
+	..\..\shell\bin\rt_converter.exe makefile-win.sh Makefile
+)
 cd ..\..\run-time
 ..\shell\bin\rt_converter.exe makefile-win.sh Makefile
 cd ..\platform
 ..\shell\bin\rt_converter.exe makefile-win.sh Makefile
 cd ..\idrs
 ..\shell\bin\rt_converter.exe makefile-win.sh Makefile
-rem if not .%1. == .efi. (
+if not .%1. == .efi. (
 	cd ..\console
 	..\shell\bin\rt_converter.exe makefile-win.sh Makefile
-rem )
+)
 cd ..\bench
 ..\shell\bin\rt_converter.exe makefile-win.sh Makefile
 if not "%remove_desc%" == "1" (
@@ -154,14 +164,14 @@ cd ..\app
 cd ..\shared
 ..\..\shell\bin\rt_converter.exe makefile-win.sh Makefile
 cd ..\..
-rem
+rem 
 rem Call make
-rem
+rem 
 echo @echo off > make.bat
-rem if not .%1. == .efi. (
-	echo cd console>> make.bat
+echo cd console>> make.bat
+if not .%1. == .efi. (
 	echo call make>> make.bat
-rem )
+) 
 echo cd ..\idrs>> make.bat
 echo call make>> make.bat
 echo cd ..\ipc\shared>> make.bat
