@@ -26,11 +26,10 @@ feature {NONE} -- Initialization
 			a_test_routine_not_void: a_test_routine /= Void
 		do
 			test_routine := a_test_routine
-			tag := test_routine.name
+			tag := test_routine.test_class.test_class.name_in_upper + "." + test_routine.name
 			create children.make (0)
 		ensure
 			test_routine_set: test_routine = a_test_routine
-			tag_set: tag = test_routine.name
 		end
 
 feature -- Status
