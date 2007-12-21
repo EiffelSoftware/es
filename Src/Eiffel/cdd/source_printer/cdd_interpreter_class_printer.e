@@ -1,6 +1,6 @@
 indexing
 	description: "[
-			Objects that print root class for executing test cases. All test
+			Objects that print root class (CDD_INTERPRETER) for executing test cases. All test
 			cases in system shall be created through this class.
 		]"
 	author: "fivaa"
@@ -8,9 +8,11 @@ indexing
 	revision: "$Revision$"
 
 class
-	CDD_ROOT_CLASS_PRINTER
+	CDD_INTERPRETER_CLASS_PRINTER
 
 inherit
+
+	CDD_ROUTINES
 
 	SHARED_EIFFEL_PROJECT
 
@@ -38,21 +40,6 @@ feature -- Access
 	last_print_succeeded: BOOLEAN
 			-- Has last call to `print_root_class' printed a new root class?
 
-	root_class_file_name: STRING is
-			-- Path to root class file
-			-- Note: file nor directory necessarilly exist
-		local
-			l_loc: CONF_DIRECTORY_LOCATION
-			l_target: CONF_TARGET
-		do
-			if last_root_class_name = Void then
-				l_target := test_suite.target
-				l_loc := conf_factory.new_location_from_path (".\cdd_tests\" + l_target.name, l_target)
-				last_root_class_name := l_loc.build_path ("", "cdd_interpreter.e")
-			end
-			Result := last_root_class_name
-		end
-
 feature -- Basic operations
 
 	print_root_class is
@@ -63,7 +50,7 @@ feature -- Basic operations
 		do
 			last_print_succeeded := True
 			if test_suite.test_classes.count > 0 then
-				create l_output_file.make (root_class_file_name)
+				create l_output_file.make (interpreter_path_name)
 				l_output_file.open_write
 				if l_output_file.is_open_write then
 					create output_stream.make (l_output_file)
@@ -82,18 +69,33 @@ feature -- Basic operations
 			end
 		ensure
 			succeeded_implies_file_exists: last_print_succeeded implies
-				(create {KL_TEXT_OUTPUT_FILE}.make (root_class_file_name)).exists
+				(create {KL_TEXT_OUTPUT_FILE}.make (interpreter_path_name)).exists
 		end
 
 feature {NONE} -- Access implementation
-
-	last_root_class_name: STRING
-			-- Last computed root class name
 
 	output_stream: ERL_G_INDENTING_TEXT_OUTPUT_FILTER
 			-- Output stream
 
 feature {NONE} -- Implementation
+
+	interpreter_path_name: STRING is
+			-- Path to class CDD_INTERPRETER
+			-- Note: file nor directory necessarilly exist
+		local
+			l_loc: CONF_DIRECTORY_LOCATION
+			l_target: CONF_TARGET
+		do
+			if cached_interpreter_path_name = Void then
+				l_target := test_suite.target
+				l_loc := conf_factory.new_location_from_path (".\cdd_tests\" + l_target.name, l_target)
+				cached_interpreter_path_name := l_loc.build_path ("", "cdd_interpreter.e")
+			end
+			Result := cached_interpreter_path_name
+		end
+
+	cached_interpreter_path_name: STRING
+			-- Cache for interpreter path name; writtin on first call to `interprter_path_name'.
 
 	put_indexing is
 			-- Append indexing clause.
@@ -147,9 +149,11 @@ feature {NONE} -- Implementation
 			until
 				l_cursor.after
 			loop
-				create pair.make ("create {" + l_cursor.item.test_class.name_in_upper + "}",
-									l_cursor.item.test_class.name_in_upper)
-				list.put_last (pair)
+				if not l_cursor.item.test_class.is_ignored_test_class then
+					create pair.make ("create {" + l_cursor.item.test_class.name_in_upper + "}",
+										l_cursor.item.test_class.name_in_upper)
+					list.put_last (pair)
+				end
 				l_cursor.forth
 			end
 			create printer.make (output_stream)
@@ -181,22 +185,24 @@ feature {NONE} -- Implementation
 				l_cursor.after
 			loop
 
-				l_ft := l_cursor.item.test_class.feature_table
-				from
-					l_ft.start
-				until
-					l_ft.after
-				loop
-					l_name := l_ft.item_for_iteration.feature_name
-					if
-						l_name.count >= l_prefix.count and then
-						l_name.substring (1, l_prefix.count).is_case_insensitive_equal (l_prefix)
-					then
-						create pair.make ("agent {" + l_cursor.item.test_class.name_in_upper + "}." + l_name,
-											l_cursor.item.test_class.name_in_upper + "." + l_name)
-						list.put_last (pair)
+				if not l_cursor.item.test_class.is_ignored_test_class then
+					l_ft := l_cursor.item.test_class.feature_table
+					from
+						l_ft.start
+					until
+						l_ft.after
+					loop
+						l_name := l_ft.item_for_iteration.feature_name
+						if
+							l_name.count >= l_prefix.count and then
+							l_name.substring (1, l_prefix.count).is_case_insensitive_equal (l_prefix)
+						then
+							create pair.make ("agent {" + l_cursor.item.test_class.name_in_upper + "}." + l_name,
+												l_cursor.item.test_class.name_in_upper + "." + l_name)
+							list.put_last (pair)
+						end
+						l_ft.forth
 					end
-					l_ft.forth
 				end
 				l_cursor.forth
 			end
@@ -241,7 +247,6 @@ feature {NONE} -- Implementation
 		ensure
 			not_void: Result /= Void
 		end
-
 
 invariant
 

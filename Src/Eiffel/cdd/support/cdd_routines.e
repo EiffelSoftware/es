@@ -13,6 +13,66 @@ inherit
 
 feature {NONE} -- Implementation
 
+	is_live_test_class (a_class: EIFFEL_CLASS_C; a_target: CONF_TARGET): BOOLEAN is
+			-- Is the test class `a_class' referenced in target `a_target'?
+			-- Note: We assume that a test class is only ever referenced by class
+			-- CDD_INTERPRETER.
+		require
+			a_class_not_void: a_class /= Void
+			a_class_is_test_class: a_class.is_test_class
+			a_target_not_void: a_target /= Void
+		local
+			cluster: CLUSTER_I
+			path: STRING
+			file: KL_TEXT_INPUT_FILE
+			regexp: RX_PCRE_REGULAR_EXPRESSION
+		do
+			if a_target.is_cdd_target then
+				cluster := a_class.cluster
+				path := cluster.location.build_path ("", "cdd_interpreter.e")
+				create file.make (path)
+				file.open_read
+				if file.is_open_read then
+					create regexp.make
+					regexp.compile ("Result := create {" + a_class.name_in_upper + "}")
+					from
+						file.read_line
+					until
+						file.end_of_file or Result
+					loop
+						if regexp.matches (file.last_string) then
+							Result := True
+						else
+							file.read_line
+						end
+					end
+					file.close
+				end
+			else
+				-- Test class must not be live in systems other than
+				-- the interpreter. (TODO: What happens when we are fg
+				-- debugging a test case?)
+			end
+		end
+
+-- TODO: remove
+--	cdd_interpreter_class (a_system: SYSTEM_I): EIFFEL_CLASS_C is
+--			-- EIFFEL_CLASS_C object for class CDD_INTERPRETER if already available in `a_system'
+--		require
+--			a_system_not_void: a_system /= Void
+--		local
+--			i: INTEGER
+--			classes:
+--		do
+--			from
+--				i := a_system.lower
+--			until
+--				i > a_system.upper
+--			loop
+--				i := i + 1
+--			end
+--		end
+
 	is_creation_feature (a_feature: E_FEATURE): BOOLEAN is
 			--
 		require

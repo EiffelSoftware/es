@@ -133,7 +133,6 @@ feature -- Basic operations
 					starting_compiling_actions.call ([])
 					l_target := test_suite.target
 					l_system := l_target.system
-					compiler.set_output_handler (agent io.put_string)
 					compiler.run (l_system.directory, l_system.file_name, tester_target_name (l_target))
 					if is_gui then
 						add_idle_action
@@ -249,6 +248,7 @@ feature {NONE} -- Implementation (execution)
 						proxy.start
 						next_test_routine
 					else
+						io.error.put_string (compiler.error_message)
 						error_actions.call ([])
 						if is_gui then
 							remove_idle_action
@@ -381,7 +381,7 @@ feature {NONE} -- Implementation
 	testing_output_buffer: STRING
 			-- Output from testing process
 
-	root_class_printer: CDD_ROOT_CLASS_PRINTER
+	root_class_printer: CDD_INTERPRETER_CLASS_PRINTER
 			-- Printer for root class (interpreter)
 
 invariant

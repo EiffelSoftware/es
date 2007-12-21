@@ -231,7 +231,6 @@
 		</external_object>
 		<variable name="batch_framework" value="false"/>
 		<library name="auto_test_library" location="$AUTO_TEST\library\auto_test_library.ecf" readonly="false"/>
-		<library name="erl_g_library" location="${ERL_G}\library\erl_g_library.ecf"/>
 		<library name="cdd" location="$ISE_LIBRARY\library\cdd\cdd.ecf" readonly="false">
 			<option>
 				<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
@@ -251,6 +250,7 @@
 				<assertions/>
 			</option>
 		</library>
+		<library name="erl_g_library" location="${ERL_G}\library\erl_g_library.ecf" readonly="false"/>
 		<library name="graph" location="$ISE_LIBRARY\library\graph\graph.ecf" readonly="false"/>
 		<library name="lex" location="$ISE_LIBRARY\library\lex\lex.ecf" readonly="false"/>
 		<library name="memory_analyzer" location="$ISE_LIBRARY\library\memory_analyzer\memory_analyzer.ecf" readonly="false"/>

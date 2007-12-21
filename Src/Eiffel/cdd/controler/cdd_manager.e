@@ -124,6 +124,7 @@ feature {DEBUGGER_MANAGER} -- Status setting (Application)
 			a_dbg_manager_not_void: a_dbg_manager /= Void
 			valid_app_status: not a_dbg_manager.application_is_executing
 		do
+			-- TODO: Will be used for fg-debugging (when done we need to reset the root class)
 		end
 
 feature -- Status setting (CDD)

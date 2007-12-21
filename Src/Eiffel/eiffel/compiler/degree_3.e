@@ -111,9 +111,10 @@ feature {NONE} -- Processing
 			-- Ignore errors in test case classes. (They shouldn't prevent the system from compiling)
 			-- Warning: No other class must be depend on such errenous classes and their code must not
 			-- be brought to execution.
-			if a_class.is_test_class then
+			if a_class.is_test_class and not is_live_test_class (a_class, universe.target) then
 				error_handler.wipe_out
 				ignore_class := True
+				a_class.ignore_test_class
 				retry
 			end
 		end
