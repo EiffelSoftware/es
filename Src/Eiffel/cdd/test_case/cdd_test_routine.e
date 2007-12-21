@@ -33,6 +33,34 @@ feature {NONE} -- Initialization
 			routine_name_set: name = a_routine_name
 		end
 
+feature -- Status report
+
+	has_matching_tag (a_pattern: STRING): BOOLEAN is
+			-- Does routine have a tag that matches `a_pattern'?
+			-- A tag matches a pattern if the tag contains the pattern (substring).
+		require
+			a_pattern_not_void: a_pattern /= Void
+		local
+			cs: DS_LINEAR_CURSOR [STRING]
+			regexp: RX_PCRE_REGULAR_EXPRESSION
+		do
+			create regexp.make
+			regexp.compile (a_pattern)
+			from
+				cs := tags.new_cursor
+				cs.start
+			until
+				cs.off or Result
+			loop
+				if regexp.matches (cs.item) then
+					Result := True
+				else
+					cs.forth
+				end
+			end
+			cs.go_after
+		end
+
 feature -- Access
 
 	test_class: CDD_TEST_CLASS

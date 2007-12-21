@@ -47,7 +47,7 @@ create
 
 feature {NONE} -- Initialization
 
-	filter: CDD_FILTER
+	filter: CDD_FILTERED_VIEW
 			-- TODO: remove me. made live just for debugging
 
 	make is

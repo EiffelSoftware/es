@@ -24,16 +24,22 @@ feature -- Execution
 	execute is
 			-- Print list of all test cases to stdout.
 		local
-			l_count: INTEGER
+			filter: CDD_FILTERED_VIEW
+			tree: CDD_TREE_VIEW
 		do
 			if cdd_manager.is_cdd_enabled then
 				localized_print ("%NAll test classes%N%N")
-
-				cdd_manager.test_suite.test_classes.do_all (agent (a_tc: CDD_TEST_CLASS)
-					do
-						print_test_class (a_tc)
-					end)
-				localized_print ("%NTotal " + test_class_count.out + " test classes with " + test_routine_count.out + " test routines%N%N")
+				io.put_string ("Please enter filter: ")
+				io.read_line
+				create filter.make (cdd_manager.test_suite)
+				if io.last_string.count > 0 then
+					filter.filters.force_last (io.last_string.twin)
+				end
+				io.put_string ("Please enter tree key: ")
+				io.read_line
+				create tree.make (filter)
+				tree.set_key (io.last_string.twin)
+				print_nodes (tree.nodes, 1)
 			else
 				io.put_string ("CDD is currently not enabled. To view or create%Ntest cases enable CDD through `Status' menu.")
 			end
@@ -41,29 +47,36 @@ feature -- Execution
 
 feature {NONE} -- Implementation
 
-	test_class_count: INTEGER
-			-- Number of test classes printed so far
-
-	test_routine_count: INTEGER
-			-- Number of test routines printed so far
-
-	print_test_class (a_test_class: CDD_TEST_CLASS) is
-			-- Print details for `a_test_class'.
+	print_nodes (a_list: DS_LINEAR [CDD_TREE_NODE]; a_level: INTEGER) is
+			-- Print content and children of `a_node' at level `a_level'.
 		require
-			a_test_class_not_void: a_test_class /= Void
+			a_list_void: a_list /= Void
+			a_level_not_negative: a_level > 0
 		local
-			l_cursor: DS_LINEAR_CURSOR [CDD_TEST_ROUTINE]
+			i: INTEGER
+			cs: DS_LINEAR_CURSOR [CDD_TREE_NODE]
 		do
-			test_class_count := test_class_count + 1
-			localized_print (a_test_class.test_class.name + "%N")
-			l_cursor := a_test_class.test_routines.new_cursor
 			from
-				l_cursor.start
+				cs := a_list.new_cursor
+				cs.start
 			until
-				l_cursor.after
+				cs.off
 			loop
-				print_test_routine (l_cursor.item)
-				l_cursor.forth
+				from
+					i := 1
+				until
+					i > a_level
+				loop
+					localized_print ("-->")
+					i := i + 1
+				end
+				localized_print (cs.item.tag + "%N")
+				if cs.item.test_routine /= Void then
+					print_test_routine (cs.item.test_routine)
+				else
+					print_nodes (cs.item.children, a_level + 1)
+				end
+				cs.forth
 			end
 		end
 
@@ -74,7 +87,6 @@ feature {NONE} -- Implementation
 		local
 			l_resp: CDD_TEST_EXECUTION_RESPONSE
 		do
-			test_routine_count := test_routine_count + 1
 			localized_print ("%T" + a_test_routine.name)
 			if not a_test_routine.outcomes.is_empty then
 				l_resp := a_test_routine.outcomes.last

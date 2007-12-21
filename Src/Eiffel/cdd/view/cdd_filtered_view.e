@@ -5,7 +5,7 @@ indexing
 	revision: "$Revision$"
 
 class
-	CDD_FILTER
+	CDD_FILTERED_VIEW
 
 create
 	make
@@ -17,10 +17,10 @@ feature {NONE} -- Initialization
 		require
 			a_test_suite_not_void: a_test_suite /= Void
 		do
+			create change_actions.make
 			test_suite := a_test_suite
 			create filters.make_default
 			change_agent := agent refresh
-			enable_observing
 		ensure
 			test_suite_set: test_suite = a_test_suite
 		end
@@ -29,12 +29,30 @@ feature {ANY} -- Status Report
 
 	is_matching_routine (a_routine: CDD_TEST_ROUTINE): BOOLEAN is
 			-- Does `a_routine' satisfy the filter criteria of
-			-- this filter?
+			-- this filter? If there are no filter criteria any test
+			-- case matches. If there are more than zero criteria a test
+			-- case matches iff at least one filter criterion is a substring
+			-- of at least one of the tags of the test routine.
 		require
 			a_routine_not_void: a_routine /= Void
+		local
+			cs: DS_LINEAR_CURSOR [STRING]
 		do
-			-- TODO: Implement proper check
-			Result := True
+			if filters.count > 0 then
+				from
+					cs := filters.new_cursor
+					cs.start
+				until
+					cs.off or Result
+				loop
+					Result := a_routine.has_matching_tag (cs.item)
+					cs.forth
+				end
+				cs.go_after
+			else
+				-- Every test case matches, if no filter criterion is present.
+				Result := True
+			end
 		end
 
 	is_observing: BOOLEAN is
@@ -51,22 +69,30 @@ feature {ANY} -- Access
 	test_suite: CDD_TEST_SUITE
 			-- Test suite containing test cases to be filtered
 
-	nodes: DS_LINEAR [CDD_FILTER_NODE] is
-			-- Test routines from `test_suite' matching the criteria from
-			-- `filters'.
+	test_routines: DS_LINEAR [CDD_TEST_ROUTINE] is
+			-- Test routines from `test_suite' matching filter criterion
 		do
-			if nodes_cache = Void then
+			if test_routines_cache = Void then
 				refresh
 			end
-			Result := nodes_cache
+			Result := test_routines_cache
 		ensure
-			nodes_not_void: Result /= Void
-			nodes_doesnt_have_void: not Result.has (Void)
+			test_routines_not_void: Result /= Void
+			test_routines_doesnt_have_void: not Result.has (Void)
 		end
 
 	filters: DS_ARRAYED_LIST [STRING]
 			-- List of tag patterns, restricting what routines should
 			-- be in this view of the test suite.
+
+feature -- Event handling
+
+	change_actions: ACTION_SEQUENCE [TUPLE]
+			-- Actions to be executed whenever test suite has changed;
+			-- E.g.: test routine added, removed, changed
+			-- For efficiency reasons changes are grouped together in transactions.
+			-- TODO: Add list of changes as arguments so observers can be more
+			-- efficient in updating their state.
 
 feature {ANY} -- Status setting
 
@@ -93,21 +119,15 @@ feature {ANY} -- Status setting
 feature {ANY} -- Element change
 
 	refresh is
-			-- Update `nodes_cache' with information from `test_suite'.
+			-- Update `test_routines_cache' with information from `test_suite'.
 		local
 			class_cs: DS_LINEAR_CURSOR [CDD_TEST_CLASS]
 			routine_cs: DS_LINEAR_CURSOR [CDD_TEST_ROUTINE]
-			root_node: CDD_FILTER_NODE
-			node: CDD_FILTER_NODE
 		do
 			from
 				class_cs := test_suite.test_classes.new_cursor
 				class_cs.start
-				create nodes_cache.make_default
-				create root_node.make
-				-- TODO: Implement grouping of test routines into a node tree based on
-				-- a grouping criterion.
-				nodes_cache.force_last (root_node)
+				create test_routines_cache.make_default
 			until
 				class_cs.off
 			loop
@@ -118,19 +138,19 @@ feature {ANY} -- Element change
 					routine_cs.off
 				loop
 					if is_matching_routine (routine_cs.item) then
-						create node.make_leaf (routine_cs.item)
-						root_node.children.force_last (node)
+						test_routines_cache.force_last (routine_cs.item)
 					end
 					routine_cs.forth
 				end
 				class_cs.forth
 			end
+			change_actions.call (Void)
 		end
 
 feature {NONE} -- Implementation
 
-	nodes_cache: DS_ARRAYED_LIST [CDD_FILTER_NODE]
-			-- Cache for `nodes'
+	test_routines_cache: DS_ARRAYED_LIST [CDD_TEST_ROUTINE]
+			-- Cache for `test_routines'
 
 	internal_refresh_action: PROCEDURE [like Current, TUPLE]
 			-- Agent subscribed in test suite. Needed for
@@ -138,17 +158,18 @@ feature {NONE} -- Implementation
 
 	change_agent: PROCEDURE [ANY, TUPLE]
 
-	wipe_out_nodes_cache is
-			-- Remove all entries from nodes cache.
+	wipe_out_test_routines_cache is
+			-- Remove all entries from cache of test routines.
 		do
-			nodes_cache := Void
+			test_routines_cache := Void
 		ensure
-			nodes_cache_void: nodes_cache = Void
+			test_routines_void: test_routines_cache = Void
 		end
 
 invariant
 
 	test_suite_not_void: test_suite /= Void
+	change_actions_not_void: change_actions /= Void
 	filters_not_void: filters /= Void
 	filters_doesnt_have_void: not filters.has (Void)
 

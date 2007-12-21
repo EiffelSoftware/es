@@ -5,7 +5,7 @@ indexing
 	revision: "$Revision$"
 
 class
-	CDD_FILTER_NODE
+	CDD_TREE_NODE
 
 create
 	make, make_leaf
@@ -23,15 +23,15 @@ feature {NONE} -- Initialization
 			-- `test_routine'. Set `tag' to the name of
 			-- `test_routine'.
 		require
-			a_test_routine_not_void: test_routine /= Void
+			a_test_routine_not_void: a_test_routine /= Void
 		do
 			test_routine := a_test_routine
 			tag := test_routine.name
+			create children.make (0)
 		ensure
 			test_routine_set: test_routine = a_test_routine
 			tag_set: tag = test_routine.name
 		end
-
 
 feature -- Status
 
@@ -45,7 +45,7 @@ feature -- Status
 
 feature -- Access
 
-	children: DS_ARRAYED_LIST [CDD_FILTER_NODE]
+	children: DS_ARRAYED_LIST [CDD_TREE_NODE]
 			-- Childnodes of this node
 
 	tag: STRING

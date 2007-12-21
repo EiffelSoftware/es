@@ -86,18 +86,7 @@ feature {CDD_TEST_SUITE}
 			l_ft.go_to (old_cs)
 			create test_routines.make_from_array (test_routine_table.to_array)
 		end
-
-feature {NONE} -- Implementation
-
-	test_routine_table: DS_HASH_TABLE [CDD_TEST_ROUTINE, STRING]
-			-- Table mapping all test routine names to their
-
-	is_cdd_test_routine_for_feature_name (a_routine: CDD_TEST_ROUTINE; a_name: STRING): BOOLEAN is
-			-- Is `a_name' feature name of `a_routine'?
-		do
-			Result := a_routine.name.is_equal (a_name)
-		end
-
+		
 	update_tags is
 			-- Update `tags' with data from the indexing clause.
 		local
@@ -150,6 +139,17 @@ feature {NONE} -- Implementation
 				end
 				l_ilist.forth
 			end
+		end
+
+feature {NONE} -- Implementation
+
+	test_routine_table: DS_HASH_TABLE [CDD_TEST_ROUTINE, STRING]
+			-- Table mapping all test routine names to their
+
+	is_cdd_test_routine_for_feature_name (a_routine: CDD_TEST_ROUTINE; a_name: STRING): BOOLEAN is
+			-- Is `a_name' feature name of `a_routine'?
+		do
+			Result := a_routine.name.is_equal (a_name)
 		end
 
 invariant

@@ -278,6 +278,9 @@
 			<option>
 				<assertions precondition="true" postcondition="true" check="true" invariant="true" supplier_precondition="true"/>
 			</option>
+			<file_rule>
+				<exclude>^/filter$</exclude>
+			</file_rule>
 		</cluster>
 		<cluster name="compiler" location="$EIFFEL_SRC\Eiffel\eiffel\" recursive="true">
 			<file_rule>

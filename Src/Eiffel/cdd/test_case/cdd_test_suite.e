@@ -139,6 +139,8 @@ feature {NONE} -- Implementation
 						an_old_list.search (l_ec)
 						if an_old_list.found then
 							test_class := an_old_list.found_item
+							test_class.update_test_routines
+							test_class.update_tags
 						else
 							create test_class.make_with_class (l_ec)
 						end
