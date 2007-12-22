@@ -27,6 +27,7 @@ feature {NONE} -- Initialization
 			filtered_view := a_filtered_view
 			change_agent := agent refresh
 			create key.make (0)
+			create change_actions
 		ensure
 			filtered_view_set: filtered_view = a_filtered_view
 		end
@@ -87,6 +88,15 @@ feature {ANY} -- Status setting
 			not_observing: not is_observing
 		end
 
+feature -- Event handling
+
+	change_actions: ACTION_SEQUENCE [TUPLE]
+			-- Actions to be executed whenever `nodes' has changed;
+			-- E.g.: test routine added, removed, changed
+			-- For efficiency reasons changes are grouped together in transactions.
+			-- TODO: Add list of changes as arguments so observers can be more
+			-- efficient in updating their state.
+
 feature {ANY} -- Element change
 
 	set_key (a_key: like key) is
@@ -118,6 +128,7 @@ feature {ANY} -- Element change
 				nodes_cache.force_last (node)
 				cs.forth
 			end
+			change_actions.call (Void)
         end
 
 feature {NONE} -- Implementation

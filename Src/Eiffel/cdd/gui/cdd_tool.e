@@ -12,6 +12,10 @@ inherit
 	EB_TOOL
 		rename
 			title_for_pre as title
+		redefine
+			build_mini_toolbar,
+			mini_toolbar,
+			internal_recycle
 		end
 
 create
@@ -23,34 +27,14 @@ feature {NONE} -- Initialization
 			-- Initialize all widgets for `Current'.
 		do
 			create widget
-			--build_notebook
-			--build_status_bar
-			--build_tool_bar
-		end
-
-	build_notebook is
-			-- Build notebook for view selection containing the grid
-		require
-			widget_not_viod: widget /= Void
-		local
-			l_cell: EV_CELL
-			l_ts: like test_suite
-			l_fv: CDD_TEST_ROUTINES_VIEW
-		do
 			create notebook
-			l_ts := test_suite
+			create enable_button.make_with_text ("Enable CDD")
+			build_status_bar
+			build_mini_toolbar
 
-			create l_cell
-			notebook.extend (l_cell)
-			notebook.set_item_text (l_cell, "All")
-
-			create l_cell
-			notebook.extend (l_cell)
-			notebook.set_item_text (l_cell, "Failing")
-
-			create l_cell
-			notebook.extend (l_cell)
-			notebook.set_item_text (l_cell, "Unresolved")
+			internal_refresh_action := agent refresh
+			cdd_manager.refresh_actions.extend (internal_refresh_action)
+			refresh
 		end
 
 	build_status_bar is
@@ -67,15 +51,12 @@ feature {NONE} -- Initialization
 			status_label.align_text_left
 			l_frame.extend (status_label)
 			status_bar.extend (l_frame)
-
-			widget.extend (status_bar)
-			widget.disable_item_expand (status_bar)
 		end
 
-	build_tool_bar is
+	build_mini_toolbar is
 			-- Create widgets for displaying a tool bar
 		do
-			create tool_bar
+			create mini_toolbar
 
 			create run_button
 			run_button.set_tooltip ("Run test case in debugger")
@@ -102,10 +83,13 @@ feature {NONE} -- Initialization
 			toggle_testing_button.enable_sensitive
 
 
-			tool_bar.extend (run_button)
-			tool_bar.extend (examine_button)
-			tool_bar.extend (delete_button)
-			tool_bar.extend (toggle_testing_button)
+			mini_toolbar.extend (run_button)
+			mini_toolbar.extend (examine_button)
+			mini_toolbar.extend (delete_button)
+			mini_toolbar.extend (toggle_testing_button)
+			mini_toolbar.extend (create {EV_TOOL_BAR_SEPARATOR})
+		ensure then
+			mini_toolbar_not_void: mini_toolbar /= Void
 		end
 
 feature -- Access
@@ -116,29 +100,121 @@ feature -- Access
 	widget: EV_VERTICAL_BOX
 			-- Main widget for visualizing `Current'
 
-feature {NONE} -- Widgets
-
-	test_suite: CDD_TEST_SUITE is
-			-- Test suite which routines are shown in `Current'
+	is_enabled: BOOLEAN is
+			-- Do we currently display test suite information?
 		do
-			Result := develop_window.eb_debugger_manager.cdd_manager.test_suite
-		ensure
-			not_void: Result /= Void
+			Result := not widget.is_empty and then widget.first = notebook
 		end
 
-	notebook_content: EV_WIDGET
-			-- Content shown in a current selected notebook tab
+	is_disabled: BOOLEAN is
+			-- Do we currently display a button for enabling cdd?
+		do
+			Result := not widget.is_empty and then widget.first = enable_button
+		end
 
-	grid: EV_GRID
-			-- Grid for displaying test routines
+feature {NONE} -- Implementation
 
-	text_field: EV_TEXT_FIELD
-			-- Text field for entering filter tags
+	internal_refresh_action: PROCEDURE [ANY, TUPLE]
+			-- Agent called when `cdd_manager' refreshes its status
 
+feature {NONE} -- Implementation
 
+	refresh is
+			-- Check whether cdd has been enabled/disabled in the mean while
+			-- and update widgets in `Current'.
+		do
+			if cdd_manager.is_cdd_enabled then
+				if not is_enabled then
+					enable
+				end
+			else
+				if not is_disabled then
+					disable
+				end
+			end
+		end
 
+	enable is
+			-- Enable the display of test routines, outcomes, etc.
+		require
+			not_enabled: not is_enabled
+		do
+			widget.wipe_out
+			widget.extend (notebook)
+			widget.extend (status_bar)
+			widget.disable_item_expand (status_bar)
 
-	tool_bar: EV_TOOL_BAR
+			add_notebook_tab ("All", Void)
+			add_notebook_tab ("Failing", "outcome:fail")
+			add_notebook_tab ("Unresolved", "outcome:unresolved")
+		end
+
+	disable is
+			-- Remove all cdd specific information an display an `enable cdd' button.
+		require
+			not_disabled: not is_disabled
+		local
+			l_item: EV_WIDGET
+		do
+			from
+			until
+				notebook.is_empty
+			loop
+				l_item := notebook.first
+				notebook.prune (l_item)
+				l_item.destroy
+			end
+			widget.wipe_out
+			widget.extend (enable_button)
+			status_label.set_text ("CDD disabled")
+			widget.extend (status_bar)
+			widget.disable_item_expand (status_bar)
+		end
+
+	add_notebook_tab (a_name, a_filter_tag: STRING) is
+			-- Add a new tab to `notebook' displaying test routines with predefined tag `a_filter_tag'.
+		require
+			a_name_not_void: a_name /= Void
+		local
+			l_filtered_view: CDD_FILTERED_VIEW
+			l_tree_view: CDD_TREE_VIEW
+			l_routines_view: CDD_TEST_ROUTINES_VIEW
+		do
+			create l_filtered_view.make (cdd_manager.test_suite)
+			if a_filter_tag /= Void then
+				l_filtered_view.filters.put_last (a_filter_tag)
+			end
+			create l_tree_view.make (l_filtered_view)
+			create l_routines_view.make (l_tree_view)
+			notebook.extend (l_routines_view)
+			notebook.set_item_text (l_routines_view, a_name)
+		ensure
+			notebook_extended: notebook.count = old notebook.count + 1
+		end
+
+	internal_recycle is
+			-- Unsubscribe all observing agents.
+		do
+			Precursor
+			if is_enabled then
+				disable
+			end
+			if cdd_manager /= Void then
+				cdd_manager.refresh_actions.prune (internal_refresh_action)
+			end
+		end
+
+feature {NONE} -- Widgets
+
+	cdd_manager: CDD_MANAGER is
+			-- Current cdd manager containing cdd status and test suite
+		do
+			if develop_window /= Void then
+				Result := develop_window.eb_debugger_manager.cdd_manager
+			end
+		end
+
+	mini_toolbar: EV_TOOL_BAR
 			-- Toolbar for control buttons
 
 	notebook: EV_NOTEBOOK
@@ -151,6 +227,9 @@ feature {NONE} -- Widgets
 			-- Label describing current tester status
 
 feature {NONE} -- Buttons
+
+	enable_button: EV_BUTTON
+			-- Button for enabling cdd
 
 	toggle_testing_button: EV_TOOL_BAR_TOGGLE_BUTTON
 			-- Button for enabling/disabling testing
@@ -166,10 +245,22 @@ feature {NONE} -- Buttons
 
 invariant
 
-	notebook_content_not_void: notebook_content /= Void
-	grid_not_void: grid /= Void
-	text_field_not_void: text_field /= Void
+	notebook_not_void: notebook /= Void
+	enable_button_not_void: enable_button /= Void
+	mini_toolbar_not_void: mini_toolbar /= Void
+	status_bar_not_void: status_bar /= Void
+	status_label_not_void: status_label /= Void
 
+	enable_button_not_void: enable_button /= Void
+	toggle_testing_button_not_void: toggle_testing_button /= Void
+	run_button_not_void: run_button /= Void
+	examine_button_not_void: examine_button /= Void
+	delete_button_not_void: delete_button /= Void
 
+	enabled_xor_disabled: is_enabled xor is_disabled
+
+	internal_refresh_action_not_void: internal_refresh_action /= Void
+	recycled_xor_subscribed: is_recycled xor cdd_manager.refresh_actions.has (internal_refresh_action)
+	not_enabled_implies_notbook_empty: (not is_enabled) implies notebook.is_empty
 
 end

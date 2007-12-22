@@ -58,11 +58,8 @@ feature {NONE} -- Initialization
 			l_prj_manager.compile_stop_agents.extend (agent refresh_status)
 			eb_cluster_manager.add_observer (Current)
 
-				-- NOTE: Looked like following code was redundant,
-				-- since `on_project_loaded' gets called anyway.
-			--if l_prj_manager.initialized then
-			--	refresh_status
-			--end
+			create refresh_actions
+			create log_actions
 		end
 
 feature -- Access (CDD Status)
@@ -135,23 +132,13 @@ feature -- Status setting (CDD)
 		require
 			not_enabled_yet: not is_cdd_enabled
 			can_enable: can_enable_cdd
-		local
-			l_loc: CONF_FILE_LOCATION
-			l_lib: CONF_LIBRARY
-			--l_rule: CONF_FILE_RULE
 		do
 			instantiate_cdd_configuration
 			cdd_conf.set_is_enabled (True)
--- TODO: what to do with the following commented code?
---			if not target.libraries.has (library_name) then
---				l_loc := conf_factory.new_location_from_full_path ("$ISE_LIBRARY\library\cdd\cdd.ecf", target)
---				l_lib := conf_factory.new_library (library_name, l_loc, target)
---				target.add_library (l_lib)
---			end
---			add_file_rule
 			target.system.store
 			create test_suite.make_with_target (target)
 			create executor.make (test_suite)
+			refresh_actions.call (Void)
 		ensure
 			enabled: is_cdd_enabled
 			correct_config: cdd_conf.is_enabled
@@ -166,14 +153,9 @@ feature -- Status setting (CDD)
 		do
 			instantiate_cdd_configuration
 			cdd_conf.set_is_enabled (False)
-			-- TODO: what to do with the following commented code?
-			--if target.libraries.has (library_name) then
-			--	target.remove_library (library_name)
-			--end
-			--remove_file_rule
-			--target.system.store
 			test_suite := Void
 			executor := Void
+			refresh_actions.call (Void)
 		ensure
 			cdd_disabled: not is_cdd_enabled
 			correct_config: not cdd_conf.is_enabled
@@ -306,9 +288,6 @@ feature -- Status change
 	refresh_actions: ACTION_SEQUENCE [TUPLE]
 			-- Actions performed after `Current' has refreshed the test suite
 
-	update_state_actions: ACTION_SEQUENCE [TUPLE [STRING]]
-			-- Actions performed when testing status changes
-
 	log_actions: ACTION_SEQUENCE [TUPLE [STRING]]
 			-- Agents for redirecting all output from external processes
 
@@ -419,5 +398,7 @@ feature {NONE} -- Implementation
 invariant
 	extracting_implies_cdd_enabled: is_extracting_enabled implies is_cdd_enabled
 	cdd_enabled_implies_executor_not_void: is_cdd_enabled implies (executor /= Void)
+	refresh_actions_not_void: refresh_actions /= Void
+	log_actions_not_void: log_actions /= Void
 
 end
