@@ -72,7 +72,6 @@ feature {ANY} -- Status setting
 			not_observing: not is_observing
 		do
 			filtered_view.change_actions.force (change_agent)
-			filtered_view.enable_observing
 		ensure
 			observing: is_observing
 		end
@@ -83,7 +82,6 @@ feature {ANY} -- Status setting
 			observing: is_observing
 		do
 			filtered_view.change_actions.prune (change_agent)
-			filtered_view.disable_observing
 		ensure
 			not_observing: not is_observing
 		end
