@@ -23,9 +23,9 @@ feature {NONE} -- Initialization
 			-- Initialize all widgets for `Current'.
 		do
 			create widget
-			build_notebook
-			build_status_bar
-			build_tool_bar
+			--build_notebook
+			--build_status_bar
+			--build_tool_bar
 		end
 
 	build_notebook is
@@ -33,29 +33,24 @@ feature {NONE} -- Initialization
 		require
 			widget_not_viod: widget /= Void
 		local
-			l_vbox: EV_VERTICAL_BOX
-			i: INTEGER
-			l_names: ARRAY [STRING]
+			l_cell: EV_CELL
+			l_ts: like test_suite
+			l_fv: CDD_TEST_ROUTINES_VIEW
 		do
 			create notebook
-			--enable_editor_token_pnd
-			--enable_ctrl_right_click_to_open_new_window
-			l_names := << "All", "Failing", "Unresolved" >>
-			from
-				i := 1
-			until
-				i > l_names.count
-			loop
-				create l_vbox
-				notebook.extend (l_vbox)
-				notebook.set_item_text (l_vbox, l_names.item (i))
-				if i = 1 then
-					--l_vbox.extend (grid)
-				end
-				i := i + 1
-			end
-			--notebook.selection_actions.extend (agent select_tab)
-			widget.extend (notebook)
+			l_ts := test_suite
+
+			create l_cell
+			notebook.extend (l_cell)
+			notebook.set_item_text (l_cell, "All")
+
+			create l_cell
+			notebook.extend (l_cell)
+			notebook.set_item_text (l_cell, "Failing")
+
+			create l_cell
+			notebook.extend (l_cell)
+			notebook.set_item_text (l_cell, "Unresolved")
 		end
 
 	build_status_bar is
@@ -123,6 +118,26 @@ feature -- Access
 
 feature {NONE} -- Widgets
 
+	test_suite: CDD_TEST_SUITE is
+			-- Test suite which routines are shown in `Current'
+		do
+			Result := develop_window.eb_debugger_manager.cdd_manager.test_suite
+		ensure
+			not_void: Result /= Void
+		end
+
+	notebook_content: EV_WIDGET
+			-- Content shown in a current selected notebook tab
+
+	grid: EV_GRID
+			-- Grid for displaying test routines
+
+	text_field: EV_TEXT_FIELD
+			-- Text field for entering filter tags
+
+
+
+
 	tool_bar: EV_TOOL_BAR
 			-- Toolbar for control buttons
 
@@ -148,5 +163,13 @@ feature {NONE} -- Buttons
 
 	delete_button: EV_TOOL_BAR_BUTTON
 			-- Button for deleting a single test case
+
+invariant
+
+	notebook_content_not_void: notebook_content /= Void
+	grid_not_void: grid /= Void
+	text_field_not_void: text_field /= Void
+
+
 
 end
