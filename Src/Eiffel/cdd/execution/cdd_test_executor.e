@@ -248,7 +248,7 @@ feature {NONE} -- Implementation (execution)
 						proxy.start
 						next_test_routine
 					else
-						io.error.put_string (compiler.error_message)
+						--io.error.put_string (compiler.error_message)
 						error_actions.call ([])
 						if is_gui then
 							remove_idle_action
