@@ -47,14 +47,14 @@ create
 
 feature -- Initialization
 
-	make (a_target: like target) is
-			-- Set `target' to `a_target'.
+	make (a_test_suite: like test_suite) is
+			-- Set `test_suite' to `a_test_suite'.
 		require
-			a_target_not_void: a_target /= Void
+			a_test_suite_not_void: a_test_suite /= Void
 		do
-			target := a_target
+			test_suite := a_test_suite
 		ensure
-			target_set: target = a_target
+			test_suite_set: test_suite = a_test_suite
 		end
 
 feature -- Access
@@ -65,8 +65,14 @@ feature -- Access
 			Result := failed or else (output_stream /= Void and then output_stream.is_open_write)
 		end
 
-	target: CONF_TARGET
+	target: CONF_TARGET is
 			-- Target in which test cases will be created
+		do
+			Result := test_suite.target
+		end
+
+	test_suite: CDD_TEST_SUITE
+			-- Test suite holding all test classes for `target'
 
 feature	-- Basic operations
 
@@ -216,6 +222,7 @@ feature	-- Basic operations
 			l_cluster_list: LIST [CONF_CLUSTER]
 			l_loc: CONF_DIRECTORY_LOCATION
 			l_directory: KL_DIRECTORY
+			l_feature_list: DS_ARRAYED_LIST [STRING]
 		do
 			if not failed then
 				output_stream.dedent
@@ -250,6 +257,10 @@ feature	-- Basic operations
 						target.add_cluster (l_tests_cluster)
 						eiffel_system.system.set_config_changed (True)
 						cluster_manager.refresh
+
+						create l_feature_list.make (1)
+						l_feature_list.put_first ("test_routine_under_test")
+						test_suite.add_test_class (create {CDD_TEST_CLASS}.make_with_class_name (new_class_name, l_feature_list))
 					else
 						l_tests_cluster := l_cluster_list.first
 					end
@@ -492,4 +503,5 @@ invariant
 		(is_initialized and not failed) implies new_class_name /= Void
 	initialized_and_not_failed_implies_valid_path_:
 		(is_initialized and not failed) implies new_class_path /= Void
+	test_suite_not_void: test_suite /= Void
 end

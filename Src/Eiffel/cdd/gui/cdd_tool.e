@@ -147,6 +147,10 @@ feature {NONE} -- Implementation
 			add_notebook_tab ("All", Void)
 			add_notebook_tab ("Failing", "outcome:fail")
 			add_notebook_tab ("Unresolved", "outcome:unresolved")
+
+			status_label.set_text ("CDD enabled")
+
+			toggle_testing_button.enable_select
 		end
 
 	disable is
@@ -169,6 +173,20 @@ feature {NONE} -- Implementation
 			status_label.set_text ("CDD disabled")
 			widget.extend (status_bar)
 			widget.disable_item_expand (status_bar)
+
+			toggle_testing_button.disable_select
+		end
+
+	enable_execution_control is
+			-- Enable all buttons for starting a test execution.
+		do
+			run_button.enable_sensitive
+		end
+
+	disable_execution_control is
+			-- Disable all buttons for starting a test execution.
+		do
+			run_button.disable_sensitive
 		end
 
 	add_notebook_tab (a_name, a_filter_tag: STRING) is
@@ -260,7 +278,7 @@ invariant
 	enabled_xor_disabled: is_enabled xor is_disabled
 
 	internal_refresh_action_not_void: internal_refresh_action /= Void
-	recycled_xor_subscribed: is_recycled xor cdd_manager.refresh_actions.has (internal_refresh_action)
+	recycled_xor_subscribed: is_recycled xor (cdd_manager /= Void and then cdd_manager.refresh_actions.has (internal_refresh_action))
 	not_enabled_implies_notbook_empty: (not is_enabled) implies notebook.is_empty
 
 end

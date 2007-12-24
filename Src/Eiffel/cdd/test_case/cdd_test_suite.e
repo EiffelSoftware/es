@@ -48,6 +48,21 @@ feature -- Access
 			-- this list is updated whenever `test_class_table',
 			-- is updated.
 
+feature -- Element change
+
+	add_test_class (a_test_class: CDD_TEST_CLASS) is
+			-- Add `a_test_class' to `test_classes' and call refresh.
+		require
+			a_test_class_not_void: a_test_class /= Void
+			a_test_class_not_added: not test_classes.has (a_test_class)
+		do
+			test_classes.force_last (a_test_class)
+			change_actions.call (Void)
+		ensure
+			added: test_classes.has (a_test_class)
+		end
+
+
 feature -- State change
 
 	refresh is

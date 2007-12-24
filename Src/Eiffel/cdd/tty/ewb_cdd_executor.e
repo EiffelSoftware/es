@@ -77,7 +77,7 @@ feature {NONE} -- Implementation
 			l_last: CDD_TEST_EXECUTION_RESPONSE
 		do
 			l_last := a_test_routine.outcomes.last
-			io.put_string (a_test_routine.test_class.test_class.name + "." + a_test_routine.name + "%N")
+			io.put_string (a_test_routine.test_class.test_class_name + "." + a_test_routine.name + "%N")
 			io.put_string ("%TSetup ")
 			print_response (l_last.setup_response)
 			if not l_last.setup_response.is_bad then

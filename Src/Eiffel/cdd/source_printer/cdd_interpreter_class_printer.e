@@ -149,9 +149,10 @@ feature {NONE} -- Implementation
 			until
 				l_cursor.after
 			loop
-				if not l_cursor.item.test_class.is_ignored_test_class then
-					create pair.make ("create {" + l_cursor.item.test_class.name_in_upper + "}",
-										l_cursor.item.test_class.name_in_upper)
+				if l_cursor.item.test_class = Void or else
+					not l_cursor.item.test_class.is_ignored_test_class then
+					create pair.make ("create {" + l_cursor.item.test_class_name + "}",
+										l_cursor.item.test_class_name)
 					list.put_last (pair)
 				end
 				l_cursor.forth
@@ -184,8 +185,8 @@ feature {NONE} -- Implementation
 			until
 				l_cursor.after
 			loop
-
-				if not l_cursor.item.test_class.is_ignored_test_class then
+				if l_cursor.item.test_class = Void or else
+				not l_cursor.item.test_class.is_ignored_test_class then
 					l_ft := l_cursor.item.test_class.feature_table
 					from
 						l_ft.start
@@ -197,8 +198,8 @@ feature {NONE} -- Implementation
 							l_name.count >= l_prefix.count and then
 							l_name.substring (1, l_prefix.count).is_case_insensitive_equal (l_prefix)
 						then
-							create pair.make ("agent {" + l_cursor.item.test_class.name_in_upper + "}." + l_name,
-												l_cursor.item.test_class.name_in_upper + "." + l_name)
+							create pair.make ("agent {" + l_cursor.item.test_class_name + "}." + l_name,
+												l_cursor.item.test_class_name + "." + l_name)
 							list.put_last (pair)
 						end
 						l_ft.forth

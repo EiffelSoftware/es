@@ -34,7 +34,7 @@ feature {NONE} -- Initialization
 		end
 
 	build_interface is
-			-- Initialize widgets
+			-- Initialize widgets.
 		do
 			create text_field
 			extend (text_field)
@@ -42,18 +42,18 @@ feature {NONE} -- Initialization
 
 			create grid
 			grid.enable_tree
-			--grid.set_dynamic_content_function (agent compute_grid_item)
-			--grid.enable_partial_dynamic_content
+			grid.set_dynamic_content_function (agent fetch_grid_item)
+			grid.enable_partial_dynamic_content
 			grid.set_column_count_to (2)
 			grid.column (1).set_title ("Tests")
 			grid.column (1).set_width (250)
 			grid.column (2).set_title ("Outcome")
 			extend (grid)
 
+			refresh
+
 			tree_view.enable_observing
 			tree_view.change_actions.extend (agent refresh)
-
-			refresh
 		end
 
 feature -- Access
@@ -84,6 +84,9 @@ feature {NONE} -- Implementation
 	grid: EV_GRID
 			-- Grid for displaying `filter' results
 
+	last_added_rows_count: INTEGER
+			-- Number of rows added by the last call to `add_rows_recursive'?
+
 feature {NONE} -- Implementation
 
 	refresh is
@@ -99,49 +102,86 @@ feature {NONE} -- Implementation
 			if grid.row_count > 0 then
 				grid.remove_rows (1, grid.row_count)
 			end
+			last_added_rows_count := 0
+			add_rows_recursive (Void, tree_view.nodes)
+		end
 
-			if tree_view.nodes.count > 0 then
-				create l_stack.make
-				l_cursor := tree_view.nodes.new_cursor
+	add_rows_recursive (a_parent: EV_GRID_ROW; a_list: DS_LINEAR [CDD_TREE_NODE]) is
+			-- Add subrows for `a_parent' into `grid' corresponding to `a_list'.
+			-- If `a_parent' is Void, simply add unparented rows to `grid'.
+			-- Set `last_added_rows_count' to total number of rows added.
+		require
+			a_list_not_void: a_list /= Void
+			a_list_valid: not a_list.has (Void)
+			a_parent_not_void_implies_valid: (a_parent /= Void) implies (grid.row (a_parent.index) = a_parent)
+		local
+			i, l_old_count: INTEGER
+			l_cursor: DS_LINEAR_CURSOR [CDD_TREE_NODE]
+			l_row: EV_GRID_ROW
+		do
+			if not a_list.is_empty then
+				if a_parent = Void then
+					i := 1
+					grid.insert_new_rows (a_list.count, i)
+				else
+					i := a_parent.index + 1
+					grid.insert_new_rows_parented (a_list.count, i, a_parent)
+				end
+				l_cursor := a_list.new_cursor
 				from
 					l_cursor.start
-					l_stack.put (l_cursor)
-					grid.insert_new_rows (tree_view.nodes.count, 1)
 				until
-					l_stack.is_empty
+					l_cursor.after
 				loop
-					if l_stack.item.after then
-						l_stack.remove
-					else
-						i := i + 1
-						l_row := grid.row (i)
-						l_node := l_stack.item.item
-						create l_item.make_with_text (l_node.tag)
-						l_row.set_item (1, l_item)
-						if l_node.is_leaf then
-							if l_node.test_routine.outcomes.is_empty then
-								create l_item.make_with_text ("not tested yet")
-							elseif l_node.test_routine.outcomes.first.is_fail then
-								create l_item.make_with_text ("FAIL")
-								l_item.set_foreground_color (create {EV_COLOR}.make_with_rgb (1, 0, 0))
-							elseif l_node.test_routine.outcomes.first.is_pass then
-								create l_item.make_with_text ("PASS")
-								l_item.set_foreground_color (create {EV_COLOR}.make_with_rgb (0, 1, 1))
-							else
-								create l_item.make_with_text ("UNRESOLVED")
-							end
-							l_row.set_item (2, l_item)
+					l_row := grid.row (i)
+					l_row.set_data (l_cursor.item)
+					if not l_cursor.item.is_leaf then
+						l_row.ensure_expandable
+						l_old_count := last_added_rows_count
+						add_rows_recursive (l_row, l_cursor.item.children)
+						i := i + last_added_rows_count - l_old_count
+					end
+					i := i + 1
+					l_cursor.forth
+				end
+				last_added_rows_count := last_added_rows_count + a_list.count
+			end
+		ensure
+			count_greater_or_equal_list_count: last_added_rows_count >= a_list.count
+			valid_count: grid.row_count = old grid.row_count + last_added_rows_count - old last_added_rows_count
+		end
+
+	fetch_grid_item (a_col, a_row: INTEGER): EV_GRID_LABEL_ITEM is
+			-- Grid item for row and column at `a_row' and `a_col'
+		require
+			a_row_valid: a_row > 0 and a_row <= grid.row_count
+			a_col_valid: a_col > 0 and a_col <= grid.column_count
+		local
+			l_node: CDD_TREE_NODE
+		do
+			create Result
+			l_node ?= grid.row (a_row).data
+			if l_node /= Void then
+				if a_col = 1 then
+					Result.text.append (l_node.tag)
+				else
+					if l_node.is_leaf then
+						if l_node.test_routine.outcomes.is_empty then
+							Result.text.append ("not tested yet")
+						elseif l_node.test_routine.outcomes.first.is_fail then
+							Result.text.append ("FAIL")
+							Result.set_foreground_color (create {EV_COLOR}.make_with_rgb (1, 0, 0))
+						elseif l_node.test_routine.outcomes.first.is_pass then
+							Result.text.append ("PASS")
+							Result.set_foreground_color (create {EV_COLOR}.make_with_rgb (0, 1, 1))
+						else
+							Result.text.append ("UNRESOLVED")
 						end
-						if not l_stack.item.item.is_leaf and then l_stack.item.item.children.count > 0 then
-							grid.insert_new_rows_parented (l_stack.item.item.children.count, i+1, l_row)
-							l_stack.put (l_stack.item.item.children.new_cursor)
-							l_stack.item.start
-							l_row.ensure_expandable
-						end
-						l_stack.item.forth
 					end
 				end
 			end
+		ensure
+			not_void: Result /= Void
 		end
 
 	update_filter is
