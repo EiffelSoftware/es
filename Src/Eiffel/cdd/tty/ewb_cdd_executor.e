@@ -41,16 +41,18 @@ feature -- Execution
 						l_tested := agent print_test_case_outcome
 						l_err := agent io.put_string ("Testing was terminated because of some error%N")
 						l_executor.starting_compiling_actions.extend (l_comp_start)
+						-- TODO: Why is below line commented out?
 						--l_executor.compiler_output_actions.extend (l_comp_output)
 						l_executor.starting_testing_actions.extend (l_testing_start)
 						l_executor.finished_testing_routine_actions.extend (l_tested)
 						l_executor.error_actions.extend (l_err)
 
 							-- Start testing
-						cdd_manager.executor.test_all
+						l_executor.test_all
 
 							-- Remove action handlers
 						l_executor.starting_compiling_actions.prune (l_comp_start)
+						-- TODO: Why is below line commented out?
 						--l_executor.compiler_output_actions.prune (l_comp_output)
 						l_executor.starting_testing_actions.prune (l_testing_start)
 						l_executor.finished_testing_routine_actions.prune (l_tested)
@@ -107,6 +109,7 @@ feature {NONE} -- Implementation
 					io.put_string ("%T%Ttag:     " + a_response.exception.exception_tag_name + "%N")
 					io.put_string ("%T%Tclass:   " + a_response.exception.exception_class_name + "%N")
 					io.put_string ("%T%Tfeature: " + a_response.exception.exception_recipient_name + "%N")
+					-- TODO: Why is below line commented out?
 					--io.put_string ("%T%Tmessage: " + a_response. + "%N")
 				end
 			end
