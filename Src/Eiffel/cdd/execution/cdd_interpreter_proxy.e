@@ -185,6 +185,8 @@ feature -- Execution
 				sleep (3000)
 				current_time.make_now
 			end
+			-- TODO: this and the timeout bit must be moved to `process_response'
+			-- otherwise async test case execution doesn't abort via a time-out.
 			if last_response = Void then
 				-- This means a timeout occured, so let's take what we have anyways ...
 					create stream.make (response_buffer)

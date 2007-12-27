@@ -137,7 +137,7 @@ feature -- Status setting (CDD)
 			cdd_conf.set_is_enabled (True)
 			target.system.store
 			create test_suite.make_with_target (target)
-			create executor.make (test_suite)
+			create background_executor.make (test_suite)
 			refresh_actions.call (Void)
 		ensure
 			enabled: is_cdd_enabled
@@ -154,7 +154,7 @@ feature -- Status setting (CDD)
 			instantiate_cdd_configuration
 			cdd_conf.set_is_enabled (False)
 			test_suite := Void
-			executor := Void
+			background_executor := Void
 			refresh_actions.call (Void)
 		ensure
 			cdd_disabled: not is_cdd_enabled
@@ -222,31 +222,39 @@ feature -- Status setting (CDD)
 
 feature -- Execution
 
-	executor: CDD_TEST_EXECUTOR
-			-- Test executor for executing test cases in `test_suite'.
-
-	start_execution is
-			--
-		do
-
-		end
+	background_executor: CDD_TEST_EXECUTOR
+			-- Background executor of test suite
 
 	start_examinating is
-			--
+			-- TODO:
 		do
 
 		end
 
 	start_debugging is
-			--
+			-- TODO:
 		do
 
+		end
+
+feature {ANY} -- Cooperative multitasking
+
+	drive_background_tasks is
+			-- Drive background tasks (e.g.: test case compilation and
+			-- execution). In an event driven setting call this routine
+			-- whenever time perimits. This routine must not execute for
+			-- very long so that it can be called from within GUI event loops
+		do
+			if background_executor.has_next_step then
+				background_executor.step
+			end
 		end
 
 feature {EB_CLUSTERS} -- Status setting (Eiffel Project)
 
 	refresh_status is
-			-- Check configuration if cdd status has changed and update if so.
+			-- Check configuration if cdd status has changed and update if so and
+			-- reiinitate background testing.
 			-- Note: This is usually called when project is opened or compiled.
 		do
 			if project.initialized and target /= Void then
@@ -268,6 +276,9 @@ feature {EB_CLUSTERS} -- Status setting (Eiffel Project)
 					if is_cdd_enabled then
 						disable_cdd
 					end
+				end
+				if is_cdd_enabled then
+					background_executor.start
 				end
 			end
 		ensure
@@ -397,7 +408,7 @@ feature {NONE} -- Implementation
 
 invariant
 	extracting_implies_cdd_enabled: is_extracting_enabled implies is_cdd_enabled
-	cdd_enabled_implies_executor_not_void: is_cdd_enabled implies (executor /= Void)
+	cdd_enabled_implies_executor_not_void: is_cdd_enabled implies (background_executor /= Void)
 	refresh_actions_not_void: refresh_actions /= Void
 	log_actions_not_void: log_actions /= Void
 

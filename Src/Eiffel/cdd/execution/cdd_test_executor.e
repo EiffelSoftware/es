@@ -1,5 +1,12 @@
 indexing
-	description: "Objects that execute test cases through the console."
+	description: "Compiles and executes unit tests in the background (in a separate process)"
+	instructions: "[
+					This class allows testing in the background through
+					a poor mans implementation of cooperative multi-tasking.
+					To start testing call `start' and then call `step' as long
+					as `has_next_step' is `True'. It is guaranteed that `step' will
+					not block for too long.
+				  ]"
 	author: "fivaa"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -9,27 +16,9 @@ class
 
 inherit
 
-	CDD_ABSTRACT_EXECUTOR
-		rename
-			start as test_all
-		end
+	AUT_TASK
 
 	CDD_ROUTINES
-		export
-			{NONE} all
-		end
-
-	EV_SHARED_APPLICATION
-		export
-			{NONE} all
-		end
-
-	SHARED_PLATFORM_CONSTANTS
-		export
-			{NONE} all
-		end
-
-	SHARED_EXEC_ENVIRONMENT
 		export
 			{NONE} all
 		end
@@ -38,8 +27,6 @@ inherit
 		export
 			{NONE} all
 		end
-
-	SHARED_FLAGS
 
 create
 	make
@@ -71,10 +58,10 @@ feature -- Status report
 	test_suite: CDD_TEST_SUITE
 			-- Test suite containing tests we want to test
 
-	is_executing: BOOLEAN is
+	has_next_step: BOOLEAN is
 			-- Is the test executor currently either compiling or testing?
 		do
-			Result := is_compiling or is_testing
+			Result := is_compiling or is_executing
 		ensure then
 			definition: Result = (is_compiling or is_executing)
 		end
@@ -87,63 +74,47 @@ feature -- Status report
 			definition: Result = (compiler /= Void)
 		end
 
-	is_testing: BOOLEAN is
+	is_executing: BOOLEAN is
 			-- Is the test exeutor currently exeuting the test suite?
 		do
 			Result := proxy /= Void
-		--ensure
-			--definition: Result = (test_suite_process /= Void)
 		end
 
 feature -- Access
 
 	current_test_class: CDD_TEST_CLASS is
-			-- Test class currently beeing tested
-		require
-			executing: is_testing
+			-- Test class currently beeing tested;
+			-- Void if currently not testing
 		do
-			Result := test_class_cursor.item
-		ensure
-			not_void: Result /= Void
+			if test_class_cursor /= Void then
+				Result := test_class_cursor.item
+			end
 		end
 
-
 	current_test_routine: CDD_TEST_ROUTINE is
-			-- Routine currently beeing tested
-		require
-			executing: is_testing
+			-- Routine currently beeing tested;
+			-- Void if currently not testing
 		do
-			Result := test_routine_cursor.item
-		ensure
-			not_void: Result /= Void
+			if test_routine_cursor /= Void then
+				Result := test_routine_cursor.item
+			end
 		end
 
 feature -- Basic operations
 
-	test_all is
+	start is
 			-- Start compiling and testing in background.
-			-- TODO: The idel action should be moved out of this class.
-			-- It should be the clients responsibility.
-			-- This way we also don't need to have this ugly `is_gui' hack in
-			-- there.
 		local
 			l_target: CONF_TARGET
 			l_system: CONF_SYSTEM
 		do
 			if not test_suite.test_classes.is_empty then
 				if root_class_printer.last_print_succeeded then
-					test_class_cursor := test_suite.test_classes.new_cursor
 					create compiler.make
 					starting_compiling_actions.call ([])
 					l_target := test_suite.target
 					l_system := l_target.system
 					compiler.run (l_system.directory, l_system.file_name, tester_target_name (l_target))
-					if is_gui then
-						add_idle_action
-					else
-						compiler.block
-						idle_action
-					end
 				else
 					-- TODO: notify observers that printing the root class has failed
 				end
@@ -152,20 +123,27 @@ feature -- Basic operations
 			end
 		end
 
-	stop is
-			-- Stop all running processes and remove idle action.
+	cancel is
+			-- Stop all running processes.
 		do
-			if is_executing then
-				remove_idle_action
-				if is_compiling then
-					compiler.terminate
-					compiler := Void
-				else
-					proxy.stop
-					proxy := Void
-				end
+			if is_compiling then
+				compiler.terminate
+				compiler := Void
+			else
+				proxy.stop
+				proxy := Void
 			end
 			-- TODO: notify log that we have stoped testing
+		end
+
+	step is
+			-- Execute one short testing step.
+		do
+			if is_compiling then
+				step_compile
+			elseif is_executing then
+				step_executing
+			end
 		end
 
 feature -- Event handling
@@ -196,128 +174,71 @@ feature -- Event handling
 
 feature {NONE} -- Implementation (execution)
 
-	internal_start is
-			-- Start compiling and testing in background.
-		do
-		ensure then
-			executing: is_executing
-		end
-
-	idle_action_agent: PROCEDURE [ANY, TUPLE]
-			-- Agent for 'idle_action'
-
-	is_idle_action_added: BOOLEAN is
-			-- Is `idle_action_agent' currently registered?
-		do
-			Result := idle_action_agent /= Void and then ev_application.idle_actions.has (idle_action_agent)
-		end
-
-	add_idle_action is
-			-- Add `idle_action_agent' to EV_APPLICATION idle actions.
+	step_compile is
+			-- Execute one short step in compiling the test suite.
 		require
-			gui_available: is_gui
-			not_added_yet: not is_idle_action_added
+			is_compiling: is_compiling
 		do
-			if idle_action_agent = Void then
-				idle_action_agent := agent idle_action
+			if not compiler.is_running then
+				if compiler.was_successful then
+					starting_testing_actions.call ([])
+					create proxy.make (interpreter_pathname, interpreter_pathname + "_log.txt")
+					proxy.start
+					select_first_test_routine
+				else
+					error_actions.call ([])
+				end
+				compiler := Void
 			end
-			ev_application.add_idle_action (idle_action_agent)
-		ensure
-			added: is_idle_action_added
 		end
 
-	remove_idle_action is
-			-- Remove `idle_action_agent' from EV_APPLICATION idle actions.
+	step_executing is
+			-- Execute one short step in executing the test suite.
 		require
-			gui_available: is_gui
-			added: is_idle_action_added
+			is_executing: is_executing
+			current_test_routine_not_void: current_test_routine /= Void
 		do
-			ev_application.remove_idle_action (idle_action_agent)
-		ensure
-			not_added: not is_idle_action_added
-		end
-
-	idle_action is
-			-- Check status of the process and its output.
-		require
-			executing: is_executing
-		local
-			l_go_idle: BOOLEAN
-		do
-			if is_compiling then
-				if not compiler.is_running then
-					if compiler.was_successful then
-						starting_testing_actions.call ([])
-						create proxy.make (interpreter_pathname, interpreter_pathname + "_log.txt")
-						proxy.start
-						next_test_routine
-					else
-						--io.error.put_string (compiler.error_message)
-						error_actions.call ([])
-						if is_gui then
-							remove_idle_action
-						end
-					end
-					compiler := Void
+			if proxy.last_response /= Void then
+				current_test_routine.add_outcome (proxy.last_response)
+				finished_testing_routine_actions.call ([current_test_routine])
+				select_next_test_routine
+				if not proxy.is_ready then
+					check proxy.last_response.has_bad_communication end
+						-- Proxy seems jammed, restart and try again
+					proxy.stop
+					proxy.start
 				end
 			end
-			if is_testing then
-				from
-
-				until
-					not is_testing or l_go_idle
-				loop
-					if proxy.is_executing_request then
-						proxy.process_response
-					end
-					if proxy.last_response /= Void or proxy.is_ready then
-						if proxy.last_response /= Void then
-							if proxy.last_response.has_bad_communication and execution_attempts < 1 then
-									-- Proxy seems jammed, restart and try again
-								proxy.stop
-								proxy.start
-								execution_attempts := execution_attempts + 1
-							else
-								current_test_routine.add_outcome (proxy.last_response)
-									-- Proxy seems jammed, restart and try again
-								proxy.stop
-								proxy.start
-								finished_testing_routine_actions.call ([current_test_routine])
-								next_test_routine
-							end
-						end
-						if test_class_cursor.after then
-							proxy.stop
-							proxy := Void
-							test_class_cursor := Void
-							test_routine_cursor := Void
-							finished_testing_actions.call ([])
-							if is_gui then
-								remove_idle_action
-							end
-						else
-							starting_testing_routine_actions.call ([current_test_routine])
-							if is_gui then
-								proxy.execute_test_async (current_test_class.test_class_name, current_test_routine.name)
-								l_go_idle := True
-							else
-								proxy.execute_test (current_test_class.test_class_name, current_test_routine.name)
-							end
-						end
-					elseif proxy.is_executing_request then
-						l_go_idle := True
-					end
+			if current_test_class = Void then
+				proxy.stop
+				proxy := Void
+			else
+				if proxy.is_ready then
+					starting_testing_routine_actions.call ([current_test_routine])
+					proxy.execute_test_async (current_test_class.test_class_name, current_test_routine.name)
+				elseif proxy.is_executing_request then
+					proxy.process_response
 				end
 			end
 		end
 
-	next_test_routine is
-			-- Move `test_class_cursor' and `test_routine_cursor' forward
-		require
-			valid_test_class_cursor: test_class_cursor /= Void and then not test_class_cursor.after
+	select_first_test_routine is
+			-- Select first routine under test. Similar to
+			-- `select_next_test_routine'.
 		do
-			execution_attempts := 0
+			test_class_cursor := test_suite.test_classes.new_cursor
+			select_next_test_routine
+		end
+
+	select_next_test_routine is
+			-- Move `test_routine_cursor' and `test_routine_class' so that they point
+			-- to the next routine under test. Set `test_routine_cursor' and `test_class_cursor'
+			-- to void if no more routines are under test.
+		require
+			is_executing: is_executing
+		do
 			if test_routine_cursor = Void or else test_routine_cursor.after or else test_routine_cursor.is_last then
+					-- Skip test classes with no test routines.
 				from
 					test_class_cursor.forth
 				until
@@ -327,6 +248,7 @@ feature {NONE} -- Implementation (execution)
 				end
 				if test_class_cursor.after then
 					test_routine_cursor := Void
+					test_class_cursor := Void
 				else
 					test_routine_cursor := test_class_cursor.item.test_routines.new_cursor
 					test_routine_cursor.start
@@ -334,11 +256,6 @@ feature {NONE} -- Implementation (execution)
 			else
 				test_routine_cursor.forth
 			end
-		ensure
-			execution_attempts_zero: execution_attempts = 0
-			test_class_cursor_not_void: test_class_cursor /= Void
-			test_class_cursor_after_equals_test_routine_cursor_void: test_class_cursor.after = (test_routine_cursor = Void)
-			test_routine_cursor_not_void_equals_not_off: (test_routine_cursor /= Void) implies not test_routine_cursor.off
 		end
 
 	interpreter_pathname: FILE_NAME is
@@ -373,14 +290,12 @@ feature {NONE} -- Implementation
 	proxy: CDD_INTERPRETER_PROXY
 			-- Proxy for communicating with interpreter
 
-	execution_attempts: INTEGER
-			-- How many times have we attempted to test `current_test_feature'?
-
 	test_class_cursor: DS_BILINEAR_CURSOR [CDD_TEST_CLASS]
 			-- Cursor pointing to current test case beeing tested
 
 	test_routine_cursor: DS_BILINEAR_CURSOR [CDD_TEST_ROUTINE]
-			-- Cursor pointing to current routines beeing tested
+			-- Cursor pointing to current routines beeing tested;
+			-- May be Void if no routine is currently under test.
 
 	testing_output_buffer: STRING
 			-- Output from testing process
@@ -392,9 +307,8 @@ invariant
 
 	test_suite_not_void: test_suite /= Void
 	root_class_printer_not_void: root_class_printer /= Void
-	executing_implies_compiling_xor_testing: is_executing implies (is_compiling xor is_testing)
+	executing_implies_compiling_xor_testing: is_executing implies (is_compiling xor is_executing)
 	is_executing_implies_correct_cursor: is_executing implies (test_class_cursor /= Void and then not test_class_cursor.off)
-
 	starting_compiling_actions_not_void: starting_compiling_actions /= Void
 	compiler_output_actions_not_void: compiler_output_actions /= Void
 	starting_testing_actions_not_void: starting_testing_actions /= Void
@@ -402,5 +316,8 @@ invariant
 	finished_testing_routine_actions_not_void: finished_testing_routine_actions /= Void
 	finished_testing_actions_not_void: finished_testing_actions /= Void
 	error_actions_not_void: error_actions /= Void
-
+	test_class_cursor_not_off: test_class_cursor /= Void implies not test_class_cursor.off
+	test_routine_cursor_not_off: test_routine_cursor /= Void implies not test_routine_cursor.off
+	is_executing_implies_cursor: is_executing implies (test_class_cursor /= Void and test_routine_cursor /= Void)
+	is_executing_implies_sut: is_executing implies (current_test_routine /= Void and current_test_class /= Void)
 end

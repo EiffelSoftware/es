@@ -11,6 +11,9 @@ inherit
 
 	EWB_CDD_CMD
 
+	THREAD_CONTROL
+		export {NONE} all end
+
 feature -- Access
 
 	name: STRING is "Run"
@@ -30,39 +33,33 @@ feature -- Execution
 			l_tested: PROCEDURE [ANY, TUPLE [CDD_TEST_ROUTINE]]
 		do
 			if cdd_manager.is_cdd_enabled then
-				if cdd_manager.test_suite.test_classes.count > 0 then
-					if cdd_manager.executor.can_start then
-						l_executor := cdd_manager.executor
+				l_executor := cdd_manager.background_executor
+					-- Create and register testing action handlers
+				l_comp_start := agent io.put_string ("Compiling interpreter...%N")
+				l_comp_output := agent io.put_string
+				l_testing_start := agent io.put_string ("Interpreter launched...%N%N")
+				l_tested := agent print_test_case_outcome
+				-- TODO: better error message
+				l_err := agent io.put_string ("Testing was terminated because of some error%N")
+				l_executor.starting_compiling_actions.extend (l_comp_start)
+				l_executor.starting_testing_actions.extend (l_testing_start)
+				l_executor.finished_testing_routine_actions.extend (l_tested)
+				l_executor.error_actions.extend (l_err)
 
-							-- Create and register testing action handlers
-						l_comp_start := agent io.put_string ("Compiling interpreter...%N")
-						l_comp_output := agent io.put_string
-						l_testing_start := agent io.put_string ("Interpreter launched...%N%N")
-						l_tested := agent print_test_case_outcome
-						l_err := agent io.put_string ("Testing was terminated because of some error%N")
-						l_executor.starting_compiling_actions.extend (l_comp_start)
-						-- TODO: Why is below line commented out?
-						--l_executor.compiler_output_actions.extend (l_comp_output)
-						l_executor.starting_testing_actions.extend (l_testing_start)
-						l_executor.finished_testing_routine_actions.extend (l_tested)
-						l_executor.error_actions.extend (l_err)
-
-							-- Start testing
-						l_executor.test_all
-
-							-- Remove action handlers
-						l_executor.starting_compiling_actions.prune (l_comp_start)
-						-- TODO: Why is below line commented out?
-						--l_executor.compiler_output_actions.prune (l_comp_output)
-						l_executor.starting_testing_actions.prune (l_testing_start)
-						l_executor.finished_testing_routine_actions.prune (l_tested)
-						l_executor.error_actions.prune (l_err)
-					else
-						io.put_string ("Could not start executing of some reason%N")
-					end
-				else
-					io.put_string ("There are no test cases in system. Try recompiling the system.%N")
+				from
+					l_executor.start
+				until
+					not l_executor.has_next_step
+				loop
+					l_executor.step
+					sleep (3000)
 				end
+
+					-- Remove action handlers
+				l_executor.starting_compiling_actions.prune (l_comp_start)
+				l_executor.starting_testing_actions.prune (l_testing_start)
+				l_executor.finished_testing_routine_actions.prune (l_tested)
+				l_executor.error_actions.prune (l_err)
 			else
 				io.put_string ("CDD is currently not enabled. To create%N, view or run test cases enable CDD through `Status' menu.")
 			end

@@ -1096,7 +1096,6 @@ feature -- Implementation
 			create Result.make
 		end
 
-
 invariant
 
 	implementation /= Void

@@ -94,9 +94,7 @@ feature {NONE} -- Initialization
 
 			window_manager.add_observer (Current)
 
-
-				-- Invoke cdd manager so instance of it is created...
-			cdd_manager.do_nothing
+			ev_application.add_idle_action (agent cdd_manager.drive_background_tasks)
 		end
 
 	initialize is
