@@ -122,6 +122,10 @@ feature -- Basic operations
 
 	test_all is
 			-- Start compiling and testing in background.
+			-- TODO: The idel action should be moved out of this class.
+			-- It should be the clients responsibility.
+			-- This way we also don't need to have this ugly `is_gui' hack in
+			-- there.
 		local
 			l_target: CONF_TARGET
 			l_system: CONF_SYSTEM
