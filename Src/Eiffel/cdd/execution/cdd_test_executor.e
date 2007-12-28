@@ -108,7 +108,6 @@ feature -- Basic operations
 			if not test_suite.test_classes.is_empty then
 				if root_class_printer.last_print_succeeded then
 					create compiler.make
-					compiler.set_output_handler (agent output_handler)
 					refresh_actions.call (Void)
 					l_target := test_suite.target
 					l_system := l_target.system
@@ -171,6 +170,7 @@ feature {NONE} -- Implementation (execution)
 			is_compiling: is_compiling
 		do
 			if not compiler.is_running then
+				dispatch_output (compiler.error_message)
 				if compiler.was_successful then
 					create proxy.make (interpreter_pathname, interpreter_pathname + "_log.txt")
 					proxy.start
@@ -266,7 +266,7 @@ feature {NONE} -- Implementation (execution)
 			filename_not_void: Result /= Void
 		end
 
-	output_handler (an_output: STRING) is
+	dispatch_output (an_output: STRING) is
 			-- Call compiler output handlers with `an_output'.
 		require
 			an_output_not_void: an_output /= Void
