@@ -28,36 +28,40 @@ feature -- Execution
 			-- Execute all test cases.
 		local
 			l_executor: CDD_TEST_EXECUTOR
-			l_comp_output: PROCEDURE [ANY, TUPLE [STRING]]
-			l_comp_start, l_testing_start, l_err: PROCEDURE [ANY, TUPLE]
+			l_output: PROCEDURE [ANY, TUPLE [STRING]]
+			l_err: PROCEDURE [ANY, TUPLE]
 			l_tested: PROCEDURE [ANY, TUPLE [CDD_TEST_ROUTINE]]
+			l_executing: BOOLEAN
 		do
 			if cdd_manager.is_cdd_enabled then
 				l_executor := cdd_manager.background_executor
+
 					-- Create and register testing action handlers
-				l_comp_start := agent io.put_string ("Compiling interpreter...%N")
-				l_comp_output := agent io.put_string
-				l_testing_start := agent io.put_string ("Interpreter launched...%N%N")
+				l_output := agent io.put_string
 				l_tested := agent print_test_case_outcome
-				-- TODO: better error message
 				l_err := agent io.put_string ("Testing was terminated because of some error%N")
-				l_executor.starting_compiling_actions.extend (l_comp_start)
-				l_executor.starting_testing_actions.extend (l_testing_start)
+
+				l_executor.output_actions.extend (l_output)
 				l_executor.finished_testing_routine_actions.extend (l_tested)
 				l_executor.error_actions.extend (l_err)
 
+				io.put_string ("Compiling interpreter...%N")
 				from
 					l_executor.start
 				until
 					not l_executor.has_next_step
 				loop
+					if l_executor.is_executing and not l_executing then
+						io.put_string ("Running test routines...%N")
+						l_executing := True
+					end
 					l_executor.step
 					sleep (3000)
 				end
+				io.put_string ("Done...%N")
 
 					-- Remove action handlers
-				l_executor.starting_compiling_actions.prune (l_comp_start)
-				l_executor.starting_testing_actions.prune (l_testing_start)
+				l_executor.output_actions.prune (l_output)
 				l_executor.finished_testing_routine_actions.prune (l_tested)
 				l_executor.error_actions.prune (l_err)
 			else

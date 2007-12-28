@@ -42,12 +42,9 @@ feature {NONE} -- Initialization
 			create root_class_printer.make (test_suite)
 
 				-- Create action handlers
-			create starting_compiling_actions
-			create compiler_output_actions
-			create starting_testing_actions
-			create starting_testing_routine_actions
+			create refresh_actions
+			create output_actions
 			create finished_testing_routine_actions
-			create finished_testing_actions
 			create error_actions
 		ensure
 			test_suite_set: test_suite = a_test_suite
@@ -111,7 +108,8 @@ feature -- Basic operations
 			if not test_suite.test_classes.is_empty then
 				if root_class_printer.last_print_succeeded then
 					create compiler.make
-					starting_compiling_actions.call ([])
+					compiler.set_output_handler (agent output_handler)
+					refresh_actions.call (Void)
 					l_target := test_suite.target
 					l_system := l_target.system
 					compiler.run (l_system.directory, l_system.file_name, tester_target_name (l_target))
@@ -119,7 +117,7 @@ feature -- Basic operations
 					-- TODO: notify observers that printing the root class has failed
 				end
 			else
-				finished_testing_actions.call ([])
+				refresh_actions.call (Void)
 			end
 		end
 
@@ -133,7 +131,7 @@ feature -- Basic operations
 				proxy.stop
 				proxy := Void
 			end
-			-- TODO: notify log that we have stoped testing
+			refresh_actions.call (Void)
 		end
 
 	step is
@@ -148,29 +146,22 @@ feature -- Basic operations
 
 feature -- Event handling
 
-	starting_compiling_actions: ACTION_SEQUENCE [TUPLE]
-			-- Agents called when compiling is started
-
-	compiler_output_actions: ACTION_SEQUENCE [TUPLE [STRING]]
-			-- Agents called with the output from the compiler when any is read
-
-	starting_testing_actions: ACTION_SEQUENCE [TUPLE]
-			-- Agents called when testing in general is beeing started
-
-	starting_testing_routine_actions: ACTION_SEQUENCE [TUPLE [CDD_TEST_ROUTINE]]
-			-- Agents called when we start testing some routine
+	refresh_actions: ACTION_SEQUENCE [TUPLE]
+			-- Agents called whenever the state of `Current' has changes
 
 	finished_testing_routine_actions: ACTION_SEQUENCE [TUPLE [CDD_TEST_ROUTINE]]
 			-- Agents called when we have finished testing some routines
 			-- and some outcome is available
 
-	finished_testing_actions: ACTION_SEQUENCE [TUPLE]
-			-- Agents called when testing is finished
+	output_actions: ACTION_SEQUENCE [TUPLE [STRING]]
+			-- Agents called whenever some text output has been received
+			-- from the compiler of interpreter
 
 	error_actions: ACTION_SEQUENCE [TUPLE]
 			-- Agents called when some error occured
 			-- NOTE: this only includes errors which forced the
 			-- executor to terminate testing
+
 
 feature {NONE} -- Implementation (execution)
 
@@ -181,12 +172,12 @@ feature {NONE} -- Implementation (execution)
 		do
 			if not compiler.is_running then
 				if compiler.was_successful then
-					starting_testing_actions.call ([])
 					create proxy.make (interpreter_pathname, interpreter_pathname + "_log.txt")
 					proxy.start
 					select_first_test_routine
+					refresh_actions.call (Void)
 				else
-					error_actions.call ([])
+					error_actions.call (Void)
 				end
 				compiler := Void
 			end
@@ -212,9 +203,10 @@ feature {NONE} -- Implementation (execution)
 			if current_test_class = Void then
 				proxy.stop
 				proxy := Void
+				refresh_actions.call (Void)
 			else
 				if proxy.is_ready then
-					starting_testing_routine_actions.call ([current_test_routine])
+					refresh_actions.call (Void)
 					proxy.execute_test_async (current_test_class.test_class_name, current_test_routine.name)
 				elseif proxy.is_executing_request then
 					proxy.process_response
@@ -279,7 +271,7 @@ feature {NONE} -- Implementation (execution)
 		require
 			an_output_not_void: an_output /= Void
 		do
-			compiler_output_actions.call ([an_output])
+			output_actions.call ([an_output])
 		end
 
 feature {NONE} -- Implementation
@@ -309,12 +301,9 @@ invariant
 	root_class_printer_not_void: root_class_printer /= Void
 	executing_implies_compiling_xor_testing: is_executing implies (is_compiling xor is_executing)
 	is_executing_implies_correct_cursor: is_executing implies (test_class_cursor /= Void and then not test_class_cursor.off)
-	starting_compiling_actions_not_void: starting_compiling_actions /= Void
-	compiler_output_actions_not_void: compiler_output_actions /= Void
-	starting_testing_actions_not_void: starting_testing_actions /= Void
-	starting_testing_routine_actions_not_void: starting_testing_routine_actions /= Void
+	refresh_actions_not_void: refresh_actions /= Void
 	finished_testing_routine_actions_not_void: finished_testing_routine_actions /= Void
-	finished_testing_actions_not_void: finished_testing_actions /= Void
+	output_actions_not_void: output_actions /= Void
 	error_actions_not_void: error_actions /= Void
 	test_class_cursor_not_off: test_class_cursor /= Void implies not test_class_cursor.off
 	test_routine_cursor_not_off: test_routine_cursor /= Void implies not test_routine_cursor.off
