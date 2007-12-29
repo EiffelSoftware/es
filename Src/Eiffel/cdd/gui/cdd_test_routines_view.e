@@ -52,7 +52,6 @@ feature {NONE} -- Initialization
 
 			refresh
 
-			tree_view.enable_observing
 			tree_view.change_actions.extend (agent refresh)
 		end
 

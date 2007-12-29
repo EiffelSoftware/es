@@ -214,10 +214,12 @@ feature {NONE} -- Implementation (Basic functionality)
 			l_routines_view: CDD_TEST_ROUTINES_VIEW
 		do
 			create l_filtered_view.make (cdd_manager.test_suite)
+			l_filtered_view.enable_observing
 			if a_filter_tag /= Void then
 				l_filtered_view.filters.put_last (a_filter_tag)
 			end
 			create l_tree_view.make (l_filtered_view)
+			l_tree_view.enable_observing
 			create l_routines_view.make (l_tree_view)
 			notebook.extend (l_routines_view)
 			notebook.set_item_text (l_routines_view, a_name)
