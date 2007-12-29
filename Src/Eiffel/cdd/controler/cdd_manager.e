@@ -153,7 +153,11 @@ feature -- Status setting (CDD)
 		do
 			instantiate_cdd_configuration
 			cdd_conf.set_is_enabled (False)
+			target.system.store
 			test_suite := Void
+			if background_executor.has_next_step then
+				background_executor.cancel
+			end
 			background_executor := Void
 			refresh_actions.call (Void)
 		ensure
@@ -175,6 +179,7 @@ feature -- Status setting (CDD)
 				-- Arno: not sure where to hook up printer and log
 				-- observers for capturing
 			capturer.capture_observers.put_last (create {CDD_TEST_CASE_PRINTER}.make (test_suite))
+			refresh_actions.call (Void)
 		ensure
 			extracting_enabled: is_extracting_enabled
 			correct_config: cdd_conf.is_extracting
@@ -191,6 +196,7 @@ feature -- Status setting (CDD)
 			cdd_conf.set_is_extracting (False)
 			target.system.store
 			capturer := Void
+			refresh_actions.call (Void)
 		ensure
 			extracting_disabled: not is_extracting_enabled
 			correct_config: not cdd_conf.is_extracting
@@ -204,6 +210,7 @@ feature -- Status setting (CDD)
 			instantiate_cdd_configuration
 			cdd_conf.set_is_capture_replay_activated (True)
 			target.system.store
+			refresh_actions.call (Void)
 		ensure
 			correct_config: cdd_conf.is_capture_replay_activated
 		end
@@ -216,6 +223,7 @@ feature -- Status setting (CDD)
 			instantiate_cdd_configuration
 			cdd_conf.set_is_capture_replay_activated (False)
 			target.system.store
+			refresh_actions.call (Void)
 		ensure
 			correct_config: not cdd_conf.is_capture_replay_activated
 		end
@@ -225,18 +233,6 @@ feature -- Execution
 	background_executor: CDD_TEST_EXECUTOR
 			-- Background executor of test suite
 
-	start_examinating is
-			-- TODO:
-		do
-
-		end
-
-	start_debugging is
-			-- TODO:
-		do
-
-		end
-
 feature {ANY} -- Cooperative multitasking
 
 	drive_background_tasks is
@@ -245,7 +241,7 @@ feature {ANY} -- Cooperative multitasking
 			-- whenever time perimits. This routine must not execute for
 			-- very long so that it can be called from within GUI event loops
 		do
-			if background_executor.has_next_step then
+			if is_cdd_enabled and then background_executor.has_next_step then
 				background_executor.step
 			end
 		end

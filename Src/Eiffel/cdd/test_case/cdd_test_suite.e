@@ -30,6 +30,7 @@ feature {NONE} -- Initialization
 			a_target_not_void: a_target /= Void
 		do
 			create change_actions.make
+			create new_test_outcome_actions.make
 			target := a_target
 			create test_class_table.make_default
 			create test_classes.make_default
@@ -85,6 +86,11 @@ feature -- Event handling
 			-- For efficiency reasons changes are grouped together in transactions.
 			-- TODO: Add list of changes as arguments so observers can be more
 			-- efficient in updating their state.
+
+	new_test_outcome_actions: ACTION_SEQUENCE [TUPLE [CDD_TEST_ROUTINE]]
+			-- Actions to be executed whenever some test routine receives
+			-- a new outcome. The corresponding test routine is passed as
+			-- an argument.
 
 feature {NONE} -- Implementation
 
@@ -173,6 +179,7 @@ feature {NONE} -- Implementation
 invariant
 	target_not_void: target /= Void
 	change_actions_not_void: change_actions /= Void
+	new_test_outcome_actions_not_void: new_test_outcome_actions /= Void
 	test_class_table_not_void: test_class_table /= Void and not test_class_table.has (Void)
 	test_classes_not_void: test_classes /= Void and not test_classes.has (Void)
 

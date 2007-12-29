@@ -42,7 +42,7 @@ feature -- Execution
 				l_err := agent io.put_string ("Testing was terminated because of some error%N")
 
 				l_executor.output_actions.extend (l_output)
-				l_executor.finished_testing_routine_actions.extend (l_tested)
+				cdd_manager.test_suite.new_test_outcome_actions.extend (l_tested)
 				l_executor.error_actions.extend (l_err)
 
 				io.put_string ("Compiling interpreter...%N")
@@ -62,7 +62,7 @@ feature -- Execution
 
 					-- Remove action handlers
 				l_executor.output_actions.prune (l_output)
-				l_executor.finished_testing_routine_actions.prune (l_tested)
+				cdd_manager.test_suite.new_test_outcome_actions.prune (l_tested)
 				l_executor.error_actions.prune (l_err)
 			else
 				io.put_string ("CDD is currently not enabled. To create%N, view or run test cases enable CDD through `Status' menu.")

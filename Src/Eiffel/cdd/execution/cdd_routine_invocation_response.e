@@ -6,6 +6,13 @@ indexing
 
 class CDD_ROUTINE_INVOCATION_RESPONSE
 
+inherit
+
+	ANY
+		redefine
+			out
+		end
+
 create
 
 	make_bad,
@@ -82,6 +89,23 @@ feature {ANY} -- Access
 
 	output: STRING
 			-- String printed by the routine to stdout and stderr.
+
+feature {ANY} -- Output
+
+	out: STRING is
+			-- String representation of `Current'.
+		do
+			if is_exceptional then
+				Result := "[exception]%N"
+				Result.append ("%Ttag: " + exception.exception_tag_name)
+				Result.append ("%N%Tclass: " + exception.exception_class_name)
+				Result.append ("%N%Tfeature: " + exception.exception_recipient_name)
+			elseif is_normal then
+				Result := "[normal]"
+			else
+				Result := "[bad]"
+			end
+		end
 
 invariant
 

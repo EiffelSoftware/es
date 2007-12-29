@@ -20,7 +20,7 @@ create
 feature {NONE} -- Initialization
 
 	make (a_tree_view: like tree_view) is
-			-- Initialize `Current' without predefined filter tags.
+			-- Initialize `Current' to display test routines of `a_tree_view'.
 		require
 			a_tree_view_not_void: a_tree_view /= Void
 		do
@@ -46,7 +46,7 @@ feature {NONE} -- Initialization
 			grid.enable_partial_dynamic_content
 			grid.set_column_count_to (2)
 			grid.column (1).set_title ("Tests")
-			grid.column (1).set_width (250)
+			grid.column (1).set_width (200)
 			grid.column (2).set_title ("Outcome")
 			extend (grid)
 
@@ -70,7 +70,7 @@ feature -- Access
 				end (?, Result))
 		end
 
-feature {NONE} -- Implementation
+feature {NONE} -- Implementation (Access)
 
 	predefined_filter_tags: DS_LINEAR [STRING]
 			-- Tags which where defined in the filter at creation time
@@ -81,13 +81,19 @@ feature {NONE} -- Implementation
 	text_field: EV_TEXT_FIELD
 			-- Text field for entering filter query
 
-	grid: EV_GRID
+	grid: CDD_GRID
 			-- Grid for displaying `filter' results
 
 	last_added_rows_count: INTEGER
 			-- Number of rows added by the last call to `add_rows_recursive'?
 
-feature {NONE} -- Implementation
+	stock_colors: EV_STOCK_COLORS is
+			-- Predefined colors
+		once
+			create Result
+		end
+
+feature {NONE} -- Implementation (Basic operations)
 
 	refresh is
 			-- Build grid.
@@ -158,9 +164,11 @@ feature {NONE} -- Implementation
 			a_col_valid: a_col > 0 and a_col <= grid.column_count
 		local
 			l_node: CDD_TREE_NODE
+			l_tooltip: STRING
+			l_last: CDD_TEST_EXECUTION_RESPONSE
 		do
 			create Result
-			l_node ?= grid.row (a_row).data
+			l_node := grid.row (a_row).tree_node
 			if l_node /= Void then
 				if a_col = 1 then
 					Result.text.append (l_node.tag)
@@ -168,14 +176,21 @@ feature {NONE} -- Implementation
 					if l_node.is_leaf then
 						if l_node.test_routine.outcomes.is_empty then
 							Result.text.append ("not tested yet")
-						elseif l_node.test_routine.outcomes.first.is_fail then
-							Result.text.append ("FAIL")
-							Result.set_foreground_color (create {EV_COLOR}.make_with_rgb (1, 0, 0))
-						elseif l_node.test_routine.outcomes.first.is_pass then
-							Result.text.append ("PASS")
-							Result.set_foreground_color (create {EV_COLOR}.make_with_rgb (0, 1, 1))
+							Result.set_foreground_color (stock_colors.grey)
 						else
-							Result.text.append ("UNRESOLVED")
+							l_last := l_node.test_routine.outcomes.last
+							l_tooltip := l_last.out
+							if l_last.is_fail then
+								Result.text.append ("FAIL")
+								Result.set_foreground_color (stock_colors.red)
+							elseif l_last.is_pass then
+								Result.text.append ("PASS")
+								Result.set_foreground_color (stock_colors.green)
+							else
+								Result.text.append ("UNRESOLVED")
+								Result.set_foreground_color (stock_colors.grey)
+							end
+							Result.set_tooltip (l_tooltip)
 						end
 					end
 				end
@@ -225,7 +240,6 @@ feature {NONE} -- Destruction
 		end
 
 invariant
-
 
 	tree_view_not_void: tree_view /= Void
 	predefined_filter_tags_valid: predefined_filter_tags /= Void and then not predefined_filter_tags.has (Void)

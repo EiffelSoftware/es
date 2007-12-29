@@ -27,14 +27,25 @@ feature {NONE} -- Initialization
 			-- Initialize all widgets for `Current'.
 		do
 			create widget
+			create notebook_cell
 			create notebook
 			create enable_button.make_with_text ("Enable CDD")
+			enable_button.select_actions.extend (agent toggle_cdd)
 			build_status_bar
 			build_mini_toolbar
 
-			internal_refresh_action := agent refresh
+			widget.extend (notebook_cell)
+			widget.extend (status_bar)
+			widget.disable_item_expand (status_bar)
+
+			internal_refresh_action := agent refresh_cdd_status
+			internal_execution_refresh_action := agent refresh_execution_status
 			cdd_manager.refresh_actions.extend (internal_refresh_action)
-			refresh
+
+			refresh_cdd_status
+			if cdd_manager.is_cdd_enabled then
+				refresh_execution_status
+			end
 		end
 
 	build_status_bar is
@@ -55,39 +66,45 @@ feature {NONE} -- Initialization
 
 	build_mini_toolbar is
 			-- Create widgets for displaying a tool bar
+		local
+			l_sep: SD_TOOL_BAR_SEPARATOR
 		do
-			create mini_toolbar
+			create mini_toolbar.make
 
-			create run_button
-			run_button.set_tooltip ("Run test case in debugger")
+			create run_button.make
+			run_button.set_tooltip ("Run test cases")
 			run_button.set_pixmap (pixmaps.mini_pixmaps.general_next_icon)
-			--run_button.select_actions.extend (agent on_run_button)
+			run_button.select_actions.extend (agent toggle_testing)
 			run_button.disable_sensitive
 
-			create examine_button
-			examine_button.set_tooltip ("Fix selected test case")
-			examine_button.set_pixmap (pixmaps.mini_pixmaps.general_search_icon)
-			--examine_button.select_actions.extend (agent on_examinate_button)
-			examine_button.disable_sensitive
+			create stop_button.make
+			stop_button.set_tooltip ("Cancel execution")
+			stop_button.set_pixmap (pixmaps.mini_pixmaps.general_delete_icon)
+			stop_button.select_actions.extend (agent toggle_testing)
+			stop_button.disable_sensitive
 
-			create delete_button
-			delete_button.set_tooltip ("Remove test case")
-			delete_button.set_pixmap (pixmaps.mini_pixmaps.general_delete_icon)
-			--delete_button.select_actions.extend (agent on_delete_button)
-			--delete_button.drop_actions.extend (agent on_drop_class)
-			delete_button.enable_sensitive
+			create toggle_extraction_button.make
+			toggle_extraction_button.set_tooltip ("Enable/Disable extraction")
+			toggle_extraction_button.set_pixmap (pixmaps.mini_pixmaps.general_toogle_icon)
+			toggle_extraction_button.select_actions.extend (agent toggle_extraction)
+			toggle_extraction_button.disable_sensitive
 
-			create toggle_testing_button
-			toggle_testing_button.set_pixmap (pixmaps.mini_pixmaps.general_toogle_icon)
-			--toggle_testing_button.select_actions.extend (agent on_toggle_testing_button)
-			toggle_testing_button.enable_sensitive
-
+			create toggle_cdd_button.make
+			toggle_cdd_button.set_tooltip ("Enable/Disable CDD")
+			toggle_cdd_button.set_pixmap (pixmaps.mini_pixmaps.general_toogle_icon)
+			toggle_cdd_button.select_actions.extend (agent toggle_cdd)
+			toggle_cdd_button.enable_sensitive
 
 			mini_toolbar.extend (run_button)
-			mini_toolbar.extend (examine_button)
-			mini_toolbar.extend (delete_button)
-			mini_toolbar.extend (toggle_testing_button)
-			mini_toolbar.extend (create {EV_TOOL_BAR_SEPARATOR})
+			mini_toolbar.extend (stop_button)
+			create l_sep.make
+			mini_toolbar.extend (l_sep)
+			mini_toolbar.extend (toggle_cdd_button)
+			mini_toolbar.extend (toggle_extraction_button)
+			create l_sep.make
+			mini_toolbar.extend (l_sep)
+
+			mini_toolbar.compute_minimum_size
 		ensure then
 			mini_toolbar_not_void: mini_toolbar /= Void
 		end
@@ -100,93 +117,91 @@ feature -- Access
 	widget: EV_VERTICAL_BOX
 			-- Main widget for visualizing `Current'
 
-	is_enabled: BOOLEAN is
-			-- Do we currently display test suite information?
-		do
-			Result := not widget.is_empty and then widget.first = notebook
-		end
+feature {NONE} -- Implementation (Access)
 
-	is_disabled: BOOLEAN is
-			-- Do we currently display a button for enabling cdd?
+	cdd_manager: CDD_MANAGER is
+			-- Current cdd manager containing cdd status and test suite
 		do
-			Result := not widget.is_empty and then widget.first = enable_button
+			if develop_window /= Void then
+				Result := develop_window.eb_debugger_manager.cdd_manager
+			end
 		end
-
-feature {NONE} -- Implementation
 
 	internal_refresh_action: PROCEDURE [ANY, TUPLE]
-			-- Agent called when `cdd_manager' refreshes its status
+			-- Agent called when `cdd_manager' or some executor refreshes its status
 
-feature {NONE} -- Implementation
+	internal_execution_refresh_action: PROCEDURE [ANY, TUPLE]
+			-- Agent called whenever an executor changes its state
 
-	refresh is
+feature {NONE} -- Implementation (Basic functionality)
+
+	refresh_cdd_status is
 			-- Check whether cdd has been enabled/disabled in the mean while
 			-- and update widgets in `Current'.
 		do
 			if cdd_manager.is_cdd_enabled then
-				if not is_enabled then
-					enable
+				if not notebook_cell.readable or else notebook_cell.item /= notebook then
+						-- Build notebook tabs
+					notebook_cell.wipe_out
+					notebook_cell.extend (notebook)
+
+					add_notebook_tab ("All", Void)
+					--add_notebook_tab ("Failing", "outcome:fail")
+					--add_notebook_tab ("Unresolved", "outcome:unresolved")
+
+					cdd_manager.background_executor.refresh_actions.extend (internal_execution_refresh_action)
+					status_label.set_text ("CDD enabled")
+					run_button.enable_sensitive
+					stop_button.enable_sensitive
+				end
+				toggle_cdd_button.enable_select
+				toggle_extraction_button.enable_sensitive
+				if cdd_manager.is_extracting_enabled then
+					toggle_extraction_button.enable_select
+				else
+					toggle_extraction_button.disable_select
 				end
 			else
-				if not is_disabled then
-					disable
+				if not notebook_cell.readable or else notebook_cell.item /= enable_button then
+						-- Recycle notebook tabs and show enable button
+					recycle_notebook_tabs
+
+					notebook_cell.wipe_out
+					notebook_cell.extend (enable_button)
+					status_label.set_text ("CDD disabled")
+					run_button.disable_sensitive
+					stop_button.disable_sensitive
+				end
+				toggle_cdd_button.disable_select
+				toggle_extraction_button.disable_select
+				toggle_extraction_button.disable_sensitive
+			end
+		end
+
+	refresh_execution_status is
+			-- Adapt buttons and status message to current execution state
+		require
+			cdd_enabled: cdd_manager /= Void and then cdd_manager.is_cdd_enabled
+		local
+			l_exec: CDD_TEST_EXECUTOR
+			l_label: STRING
+		do
+			l_exec := cdd_manager.background_executor
+			if not l_exec.has_next_step then
+				run_button.enable_sensitive
+				stop_button.disable_sensitive
+				status_label.set_text ("Done...")
+			else
+				run_button.disable_sensitive
+				stop_button.enable_sensitive
+				if l_exec.is_compiling then
+					status_label.set_text ("Compiling interpreter...")
+				else
+					l_label := "Testing " + l_exec.current_test_routine.test_class.test_class_name
+					l_label.append ("." + l_exec.current_test_routine.name)
+					status_label.set_text (l_label)
 				end
 			end
-		end
-
-	enable is
-			-- Enable the display of test routines, outcomes, etc.
-		require
-			not_enabled: not is_enabled
-		do
-			widget.wipe_out
-			widget.extend (notebook)
-			widget.extend (status_bar)
-			widget.disable_item_expand (status_bar)
-
-			add_notebook_tab ("All", Void)
-			add_notebook_tab ("Failing", "outcome:fail")
-			add_notebook_tab ("Unresolved", "outcome:unresolved")
-
-			status_label.set_text ("CDD enabled")
-
-			toggle_testing_button.enable_select
-		end
-
-	disable is
-			-- Remove all cdd specific information an display an `enable cdd' button.
-		require
-			not_disabled: not is_disabled
-		local
-			l_item: EV_WIDGET
-		do
-			from
-			until
-				notebook.is_empty
-			loop
-				l_item := notebook.first
-				notebook.prune (l_item)
-				l_item.destroy
-			end
-			widget.wipe_out
-			widget.extend (enable_button)
-			status_label.set_text ("CDD disabled")
-			widget.extend (status_bar)
-			widget.disable_item_expand (status_bar)
-
-			toggle_testing_button.disable_select
-		end
-
-	enable_execution_control is
-			-- Enable all buttons for starting a test execution.
-		do
-			run_button.enable_sensitive
-		end
-
-	disable_execution_control is
-			-- Disable all buttons for starting a test execution.
-		do
-			run_button.disable_sensitive
 		end
 
 	add_notebook_tab (a_name, a_filter_tag: STRING) is
@@ -214,26 +229,44 @@ feature {NONE} -- Implementation
 			-- Unsubscribe all observing agents.
 		do
 			Precursor
-			if is_enabled then
-				disable
-			end
+
+			recycle_notebook_tabs
+
+			-- TODO: Recycle all widgets!
+
 			if cdd_manager /= Void then
 				cdd_manager.refresh_actions.prune (internal_refresh_action)
+				if cdd_manager.is_cdd_enabled then
+					cdd_manager.background_executor.refresh_actions.prune (internal_execution_refresh_action)
+				end
 			end
 		end
 
-feature {NONE} -- Widgets
-
-	cdd_manager: CDD_MANAGER is
-			-- Current cdd manager containing cdd status and test suite
+	recycle_notebook_tabs is
+			-- Remove all notebook tabs and recycle them
+		local
+			l_item: EV_WIDGET
 		do
-			if develop_window /= Void then
-				Result := develop_window.eb_debugger_manager.cdd_manager
+			from
+			until
+				notebook.is_empty
+			loop
+				l_item := notebook.first
+				notebook.prune (l_item)
+				l_item.destroy
 			end
+		ensure
+			notebook_empty: notebook.is_empty
 		end
 
-	mini_toolbar: EV_TOOL_BAR
+feature {NONE} -- Implementation (Widgets)
+
+	mini_toolbar: SD_TOOL_BAR
 			-- Toolbar for control buttons
+
+	notebook_cell: EV_CELL
+			-- Cell containing `notebook' if cdd is enabled,
+			-- otherwise button for enabling cdd
 
 	notebook: EV_NOTEBOOK
 			-- Notebook for displaying different view tabs
@@ -244,25 +277,65 @@ feature {NONE} -- Widgets
 	status_label: EV_LABEL
 			-- Label describing current tester status
 
-feature {NONE} -- Buttons
+feature {NONE} -- Implementation (Buttons)
 
 	enable_button: EV_BUTTON
 			-- Button for enabling cdd
 
-	toggle_testing_button: EV_TOOL_BAR_TOGGLE_BUTTON
+	run_button: SD_TOOL_BAR_BUTTON
+			-- Button for running test executor
+
+	stop_button: SD_TOOL_BAR_BUTTON
+			-- Button for canceling test executor
+
+	toggle_cdd_button: SD_TOOL_BAR_TOGGLE_BUTTON
 			-- Button for enabling/disabling testing
 
-	run_button: EV_TOOL_BAR_BUTTON
-			-- Button for debugging test case
-
-	examine_button: EV_TOOL_BAR_BUTTON
+	toggle_extraction_button: SD_TOOL_BAR_TOGGLE_BUTTON
 			-- Button for examinating a test case
 
-	delete_button: EV_TOOL_BAR_BUTTON
-			-- Button for deleting a single test case
+feature {NONE} -- Implementation (Button functionality)
+
+	toggle_cdd is
+			-- Disable/Enable CDD.
+		do
+			if cdd_manager /= Void then
+				if cdd_manager.is_cdd_enabled then
+					cdd_manager.disable_cdd
+				else
+					cdd_manager.enable_cdd
+				end
+			end
+		end
+
+	toggle_extraction is
+			-- Enable/Disable extraction of test cases.
+		do
+			if cdd_manager /= Void and then cdd_manager.is_cdd_enabled then
+				if cdd_manager.is_extracting_enabled then
+					cdd_manager.disable_extracting
+				else
+					cdd_manager.enable_extracting
+				end
+			end
+		end
+
+	toggle_testing is
+			-- Start/Cancel testing
+		do
+			if cdd_manager /= Void and then cdd_manager.is_cdd_enabled then
+				if cdd_manager.background_executor.has_next_step then
+					cdd_manager.background_executor.cancel
+				else
+					cdd_manager.background_executor.start
+				end
+			end
+		end
+
 
 invariant
 
+	notbook_cell_not_void: notebook_cell /= Void
 	notebook_not_void: notebook /= Void
 	enable_button_not_void: enable_button /= Void
 	mini_toolbar_not_void: mini_toolbar /= Void
@@ -270,15 +343,14 @@ invariant
 	status_label_not_void: status_label /= Void
 
 	enable_button_not_void: enable_button /= Void
-	toggle_testing_button_not_void: toggle_testing_button /= Void
 	run_button_not_void: run_button /= Void
-	examine_button_not_void: examine_button /= Void
-	delete_button_not_void: delete_button /= Void
-
-	enabled_xor_disabled: is_enabled xor is_disabled
+	stop_button_not_void: stop_button /= Void
+	toggle_testing_button_not_void: toggle_cdd_button /= Void
+	toggle_extraction_button_not_void: toggle_extraction_button /= Void
 
 	internal_refresh_action_not_void: internal_refresh_action /= Void
-	recycled_xor_subscribed: is_recycled xor (cdd_manager /= Void and then cdd_manager.refresh_actions.has (internal_refresh_action))
-	not_enabled_implies_notbook_empty: (not is_enabled) implies notebook.is_empty
+	-- Note: invariant does not work since we do not always have access a CDD_MANAGER
+	-- recycled_xor_subscribed: is_recycled xor (cdd_manager /= Void and then cdd_manager.refresh_actions.has (internal_refresh_action))
+
 
 end

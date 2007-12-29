@@ -44,7 +44,6 @@ feature {NONE} -- Initialization
 				-- Create action handlers
 			create refresh_actions
 			create output_actions
-			create finished_testing_routine_actions
 			create error_actions
 		ensure
 			test_suite_set: test_suite = a_test_suite
@@ -60,7 +59,7 @@ feature -- Status report
 		do
 			Result := is_compiling or is_executing
 		ensure then
-			definition: Result = (is_compiling or is_executing)
+			definition: Result = (is_compiling xor is_executing)
 		end
 
 	is_compiling: BOOLEAN is
@@ -105,6 +104,9 @@ feature -- Basic operations
 			l_target: CONF_TARGET
 			l_system: CONF_SYSTEM
 		do
+			if has_next_step then
+				cancel
+			end
 			if not test_suite.test_classes.is_empty then
 				if root_class_printer.last_print_succeeded then
 					create compiler.make
@@ -149,10 +151,6 @@ feature -- Event handling
 	refresh_actions: ACTION_SEQUENCE [TUPLE]
 			-- Agents called whenever the state of `Current' has changes
 
-	finished_testing_routine_actions: ACTION_SEQUENCE [TUPLE [CDD_TEST_ROUTINE]]
-			-- Agents called when we have finished testing some routines
-			-- and some outcome is available
-
 	output_actions: ACTION_SEQUENCE [TUPLE [STRING]]
 			-- Agents called whenever some text output has been received
 			-- from the compiler of interpreter
@@ -161,7 +159,6 @@ feature -- Event handling
 			-- Agents called when some error occured
 			-- NOTE: this only includes errors which forced the
 			-- executor to terminate testing
-
 
 feature {NONE} -- Implementation (execution)
 
@@ -177,11 +174,11 @@ feature {NONE} -- Implementation (execution)
 					create proxy.make (interpreter_pathname, interpreter_pathname + "_log.txt")
 					proxy.start
 					select_first_test_routine
-					refresh_actions.call (Void)
 				else
 					error_actions.call (Void)
 				end
 				compiler := Void
+				refresh_actions.call (Void)
 			end
 		end
 
@@ -193,7 +190,7 @@ feature {NONE} -- Implementation (execution)
 		do
 			if proxy.last_response /= Void then
 				current_test_routine.add_outcome (proxy.last_response)
-				finished_testing_routine_actions.call ([current_test_routine])
+				test_suite.new_test_outcome_actions.call ([current_test_routine])
 				select_next_test_routine
 				if not proxy.is_ready then
 					check proxy.last_response.has_bad_communication end
@@ -299,12 +296,12 @@ feature {NONE} -- Implementation
 
 invariant
 
+	not_executing_and_compiling: not (is_executing and is_compiling)
+
 	test_suite_not_void: test_suite /= Void
 	root_class_printer_not_void: root_class_printer /= Void
-	executing_implies_compiling_xor_testing: is_executing implies (is_compiling xor is_executing)
 	is_executing_implies_correct_cursor: is_executing implies (test_class_cursor /= Void and then not test_class_cursor.off)
 	refresh_actions_not_void: refresh_actions /= Void
-	finished_testing_routine_actions_not_void: finished_testing_routine_actions /= Void
 	output_actions_not_void: output_actions /= Void
 	error_actions_not_void: error_actions /= Void
 	test_class_cursor_not_off: test_class_cursor /= Void implies not test_class_cursor.off

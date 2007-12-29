@@ -6,6 +6,13 @@ indexing
 
 class CDD_TEST_EXECUTION_RESPONSE
 
+inherit
+
+	ANY
+		redefine
+			out
+		end
+
 create
 	make
 
@@ -86,6 +93,41 @@ feature {ANY} -- Access
 
 	teardown_response: CDD_ROUTINE_INVOCATION_RESPONSE
 			-- Response from test teardown
+
+feature -- Output
+
+	out: STRING is
+			-- String representation of `Current'.
+		do
+			create Result.make_empty
+			Result.append ("Conclusion: ")
+			if is_pass then
+				Result.append ("PASS")
+			elseif is_fail then
+				Result.append ("FAIL")
+			else
+				Result.append ("UNRESOLVED")
+			end
+			if setup_response /= Void then
+				Result.append ("%N%NSetup " + setup_response.out)
+				if test_response /= Void then
+					Result.append ("%NTest " + test_response.out)
+					if teardown_response /= Void then
+						Result.append ("%NTeardown " + teardown_response.out)
+					end
+				end
+			end
+			if requires_maintenance then
+				Result.append ("%N%N")
+				if has_bad_communication then
+					Result.append ("bad communication")
+				elseif has_bad_context then
+					Result.append ("bad context")
+				else
+					Result.append ("compile error")
+				end
+			end
+		end
 
 feature {NONE} -- Assertion helpers
 
