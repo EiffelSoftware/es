@@ -257,10 +257,6 @@ feature	-- Basic operations
 						target.add_cluster (l_tests_cluster)
 						eiffel_system.system.set_config_changed (True)
 						cluster_manager.refresh
-
-						create l_feature_list.make (1)
-						l_feature_list.put_first ("test_routine_under_test")
-						test_suite.add_test_class (create {CDD_TEST_CLASS}.make_with_class_name (new_class_name, l_feature_list))
 					else
 						l_tests_cluster := l_cluster_list.first
 					end
@@ -269,6 +265,9 @@ feature	-- Basic operations
 -- It doesn't seem to be working (at least not always) when in console mode. Arno will check with ManuS what to do.
 --				cluster_manager.add_class_to_cluster (new_class_name.as_lower + ".e", l_tests_cluster, new_class_path)
 				eiffel_system.system.set_rebuild (True)
+				create l_feature_list.make (1)
+				l_feature_list.put_first ("test_routine_under_test")
+				test_suite.add_test_class (create {CDD_TEST_CLASS}.make_with_class_name (new_class_name, l_feature_list))
 			else
 				if output_stream /= Void then
 					output_stream.close

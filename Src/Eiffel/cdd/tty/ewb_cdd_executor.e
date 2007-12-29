@@ -28,22 +28,16 @@ feature -- Execution
 			-- Execute all test cases.
 		local
 			l_executor: CDD_TEST_EXECUTOR
-			l_output: PROCEDURE [ANY, TUPLE [STRING]]
-			l_err: PROCEDURE [ANY, TUPLE]
-			l_tested: PROCEDURE [ANY, TUPLE [CDD_TEST_ROUTINE]]
+			l_tested: PROCEDURE [ANY, TUPLE [DS_LINEAR [CDD_TEST_ROUTINE_UPDATE]]]
 			l_executing: BOOLEAN
 		do
 			if cdd_manager.is_cdd_enabled then
 				l_executor := cdd_manager.background_executor
 
 					-- Create and register testing action handlers
-				l_output := agent io.put_string
-				l_tested := agent print_test_case_outcome
-				l_err := agent io.put_string ("Testing was terminated because of some error%N")
+				l_tested := agent filter_updates
 
-				l_executor.output_actions.extend (l_output)
-				cdd_manager.test_suite.new_test_outcome_actions.extend (l_tested)
-				l_executor.error_actions.extend (l_err)
+				cdd_manager.test_suite.test_routine_update_actions.extend (l_tested)
 
 				io.put_string ("Compiling interpreter...%N")
 				from
@@ -61,15 +55,34 @@ feature -- Execution
 				io.put_string ("Done...%N")
 
 					-- Remove action handlers
-				l_executor.output_actions.prune (l_output)
-				cdd_manager.test_suite.new_test_outcome_actions.prune (l_tested)
-				l_executor.error_actions.prune (l_err)
+				cdd_manager.test_suite.test_routine_update_actions.prune (l_tested)
 			else
 				io.put_string ("CDD is currently not enabled. To create%N, view or run test cases enable CDD through `Status' menu.")
 			end
 		end
 
 feature {NONE} -- Implementation
+
+	filter_updates (an_update_list: DS_LINEAR [CDD_TEST_ROUTINE_UPDATE]) is
+			-- Call `print_test_case_outcome' for all new outcome updates in `an_update_list'.
+		require
+			an_update_list_not_void: an_update_list /= Void
+			an_update_list_vali: not an_update_list.has (Void)
+		local
+			l_cursor: DS_LINEAR_CURSOR [CDD_TEST_ROUTINE_UPDATE]
+		do
+			l_cursor := an_update_list.new_cursor
+			from
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				if l_cursor.item.is_new_outcome then
+					print_test_case_outcome (l_cursor.item.test_routine)
+				end
+				l_cursor.forth
+			end
+		end
 
 	print_test_case_outcome (a_test_routine: CDD_TEST_ROUTINE) is
 			-- Print the last outcome of `a_test_routine'.

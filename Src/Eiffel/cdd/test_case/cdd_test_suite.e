@@ -25,8 +25,7 @@ feature {NONE} -- Initialization
 		require
 			a_target_not_void: a_target /= Void
 		do
-			create change_actions.make
-			create new_test_outcome_actions.make
+			create test_routine_update_actions.make
 			target := a_target
 			create test_class_table.make_default
 			create test_classes.make_default
@@ -52,9 +51,22 @@ feature -- Element change
 		require
 			a_test_class_not_void: a_test_class /= Void
 			a_test_class_not_added: not test_classes.has (a_test_class)
+		local
+			l_list: DS_ARRAYED_LIST [CDD_TEST_ROUTINE_UPDATE]
+			l_cursor: DS_LINEAR_CURSOR [CDD_TEST_ROUTINE]
 		do
 			test_classes.force_last (a_test_class)
-			change_actions.call (Void)
+			create l_list.make (a_test_class.test_routines.count)
+			l_cursor := a_test_class.test_routines.new_cursor
+			from
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_list.put_last (create {CDD_TEST_ROUTINE_UPDATE}.make (l_cursor.item, {CDD_TEST_ROUTINE_UPDATE}.add_code))
+				l_cursor.forth
+			end
+			test_routine_update_actions.call ([l_list])
 		ensure
 			added: test_classes.has (a_test_class)
 		end
@@ -70,22 +82,18 @@ feature -- State change
 			else
 				test_class_table.wipe_out
 			end
-			change_actions.call (Void)
+			-- TODO: provide list with all changes done during last `refresh'
+			test_routine_update_actions.call (Void)
 		end
 
 feature -- Event handling
 
-	change_actions: ACTION_SEQUENCE [TUPLE]
-			-- Actions to be executed whenever test suite has changed;
-			-- E.g.: test routine added, removed, changed
-			-- For efficiency reasons changes are grouped together in transactions.
-			-- TODO: Add list of changes as arguments so observers can be more
-			-- efficient in updating their state.
-
-	new_test_outcome_actions: ACTION_SEQUENCE [TUPLE [CDD_TEST_ROUTINE]]
-			-- Actions to be executed whenever some test routine receives
-			-- a new outcome. The corresponding test routine is passed as
-			-- an argument.
+	test_routine_update_actions: ACTION_SEQUENCE [TUPLE [DS_LINEAR [CDD_TEST_ROUTINE_UPDATE]]]
+			-- Actions to be executed whenever the test suite or one of
+			-- its test routines changes; E.g.: test routine added,
+			-- removed, changed.
+			-- The argument is a list of all changes representing all changes
+			-- as a transaction.
 
 feature {NONE} -- Implementation
 
@@ -173,8 +181,7 @@ feature {NONE} -- Implementation
 
 invariant
 	target_not_void: target /= Void
-	change_actions_not_void: change_actions /= Void
-	new_test_outcome_actions_not_void: new_test_outcome_actions /= Void
+	test_routine_update_actions_not_void: test_routine_update_actions /= Void
 	test_class_table_not_void: test_class_table /= Void and not test_class_table.has (Void)
 	test_classes_not_void: test_classes /= Void and not test_classes.has (Void)
 

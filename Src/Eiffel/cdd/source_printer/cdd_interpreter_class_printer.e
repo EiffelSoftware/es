@@ -27,7 +27,6 @@ feature {NONE} -- Initialization
 			a_test_suite_not_void: a_test_suite /= Void
 		do
 			test_suite := a_test_suite
-			test_suite.change_actions.extend (agent print_root_class)
 		ensure
 			test_suite_set: test_suite = a_test_suite
 		end
@@ -170,15 +169,14 @@ feature {NONE} -- Implementation
 		local
 			test_classes: DS_LINEAR [CDD_TEST_CLASS]
 			l_cursor: DS_LINEAR_CURSOR [CDD_TEST_CLASS]
+			l_routine_cursor: DS_LINEAR_CURSOR [CDD_TEST_ROUTINE]
 			printer: ERL_G_LOOKUP_PRINTER
 			list: DS_ARRAYED_LIST [DS_PAIR [STRING, STRING]]
 			pair: DS_PAIR [STRING, STRING]
-			l_ft: FEATURE_TABLE
-			l_name, l_prefix: STRING
+			l_name: STRING
 		do
 			test_classes := test_suite.test_classes
 			create list.make (test_classes.count)
-			l_prefix := "test_"
 			from
 				l_cursor := test_classes.new_cursor
 				l_cursor.start
@@ -187,22 +185,17 @@ feature {NONE} -- Implementation
 			loop
 				if l_cursor.item.test_class = Void or else
 				not l_cursor.item.test_class.is_ignored_test_class then
-					l_ft := l_cursor.item.test_class.feature_table
+					l_routine_cursor := l_cursor.item.test_routines.new_cursor
 					from
-						l_ft.start
+						l_routine_cursor.start
 					until
-						l_ft.after
+						l_routine_cursor.after
 					loop
-						l_name := l_ft.item_for_iteration.feature_name
-						if
-							l_name.count >= l_prefix.count and then
-							l_name.substring (1, l_prefix.count).is_case_insensitive_equal (l_prefix)
-						then
-							create pair.make ("agent {" + l_cursor.item.test_class_name + "}." + l_name,
-												l_cursor.item.test_class_name + "." + l_name)
-							list.put_last (pair)
-						end
-						l_ft.forth
+						l_name := l_routine_cursor.item.name
+						create pair.make ("agent {" + l_cursor.item.test_class_name + "}." + l_name,
+											l_cursor.item.test_class_name + "." + l_name)
+						list.put_last (pair)
+						l_routine_cursor.forth
 					end
 				end
 				l_cursor.forth

@@ -58,8 +58,7 @@ feature {NONE} -- Initialization
 			l_prj_manager.compile_stop_agents.extend (agent refresh_status)
 			eb_cluster_manager.add_observer (Current)
 
-			create refresh_actions
-			create log_actions
+			create status_update_actions
 		end
 
 feature -- Access (CDD Status)
@@ -137,8 +136,8 @@ feature -- Status setting (CDD)
 			cdd_conf.set_is_enabled (True)
 			target.system.store
 			create test_suite.make_with_target (target)
-			create background_executor.make (test_suite)
-			refresh_actions.call (Void)
+			create background_executor.make (Current)
+			status_update_actions.call ([create {CDD_STATUS_UPDATE}.make_with_code ({CDD_STATUS_UPDATE}.enable_cdd_code)])
 		ensure
 			enabled: is_cdd_enabled
 			correct_config: cdd_conf.is_enabled
@@ -157,7 +156,7 @@ feature -- Status setting (CDD)
 				background_executor.cancel
 			end
 			background_executor := Void
-			refresh_actions.call (Void)
+			status_update_actions.call ([create {CDD_STATUS_UPDATE}.make_with_code ({CDD_STATUS_UPDATE}.disable_cdd_code)])
 		ensure
 			cdd_disabled: not is_cdd_enabled
 			correct_config: not cdd_conf.is_enabled
@@ -177,7 +176,7 @@ feature -- Status setting (CDD)
 				-- Arno: not sure where to hook up printer and log
 				-- observers for capturing
 			capturer.capture_observers.put_last (create {CDD_TEST_CASE_PRINTER}.make (test_suite))
-			refresh_actions.call (Void)
+			status_update_actions.call ([create {CDD_STATUS_UPDATE}.make_with_code ({CDD_STATUS_UPDATE}.enable_extracting_code)])
 		ensure
 			extracting_enabled: is_extracting_enabled
 			correct_config: cdd_conf.is_extracting
@@ -194,7 +193,7 @@ feature -- Status setting (CDD)
 			cdd_conf.set_is_extracting (False)
 			target.system.store
 			capturer := Void
-			refresh_actions.call (Void)
+			status_update_actions.call ([create {CDD_STATUS_UPDATE}.make_with_code ({CDD_STATUS_UPDATE}.disable_extracting_code)])
 		ensure
 			extracting_disabled: not is_extracting_enabled
 			correct_config: not cdd_conf.is_extracting
@@ -208,7 +207,6 @@ feature -- Status setting (CDD)
 			instantiate_cdd_configuration
 			cdd_conf.set_is_capture_replay_activated (True)
 			target.system.store
-			refresh_actions.call (Void)
 		ensure
 			correct_config: cdd_conf.is_capture_replay_activated
 		end
@@ -221,7 +219,6 @@ feature -- Status setting (CDD)
 			instantiate_cdd_configuration
 			cdd_conf.set_is_capture_replay_activated (False)
 			target.system.store
-			refresh_actions.call (Void)
 		ensure
 			correct_config: not cdd_conf.is_capture_replay_activated
 		end
@@ -290,11 +287,8 @@ feature {EB_CLUSTERS} -- Status setting (Eiffel Project)
 
 feature -- Status change
 
-	refresh_actions: ACTION_SEQUENCE [TUPLE]
-			-- Actions performed after `Current' has refreshed the test suite
-
-	log_actions: ACTION_SEQUENCE [TUPLE [STRING]]
-			-- Agents for redirecting all output from external processes
+	status_update_actions: ACTION_SEQUENCE [TUPLE [CDD_STATUS_UPDATE]]
+			-- Action performed whenever `Current' or any cdd controller changes its state
 
 feature {NONE} -- Implementation
 
@@ -403,7 +397,6 @@ feature {NONE} -- Implementation
 invariant
 	extracting_implies_cdd_enabled: is_extracting_enabled implies is_cdd_enabled
 	cdd_enabled_implies_executor_not_void: is_cdd_enabled implies (background_executor /= Void)
-	refresh_actions_not_void: refresh_actions /= Void
-	log_actions_not_void: log_actions /= Void
+	status_update_actions_not_void: status_update_actions /= Void
 
 end

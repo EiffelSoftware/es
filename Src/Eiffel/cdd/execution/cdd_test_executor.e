@@ -33,26 +33,27 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_test_suite: like test_suite) is
+	make (a_cdd_manager: like cdd_manager) is
 			-- Create a test executor.
 		require
-			a_test_suite: a_test_suite /= Void
+			a_cdd_manager_not_void: a_cdd_manager /= Void
 		do
-			test_suite := a_test_suite
+			cdd_manager := a_cdd_manager
 			create root_class_printer.make (test_suite)
-
-				-- Create action handlers
-			create refresh_actions
-			create output_actions
-			create error_actions
 		ensure
-			test_suite_set: test_suite = a_test_suite
+			cdd_manager_set: cdd_manager = a_cdd_manager
 		end
 
 feature -- Status report
 
-	test_suite: CDD_TEST_SUITE
+	test_suite: CDD_TEST_SUITE is
 			-- Test suite containing tests we want to test
+		do
+			Result := cdd_manager.test_suite
+		end
+
+	cdd_manager: CDD_MANAGER
+			-- Manager controlling `Current'
 
 	has_next_step: BOOLEAN is
 			-- Is the test executor currently either compiling or testing?
@@ -108,10 +109,11 @@ feature -- Basic operations
 				cancel
 			end
 			if not test_suite.test_classes.is_empty then
+				root_class_printer.print_root_class
 				if root_class_printer.last_print_succeeded then
 					create compiler.make
-					compiler.set_output_handler (agent dispatch_output)
-					refresh_actions.call (Void)
+					compiler.set_output_handler (agent io.put_string)
+					cdd_manager.status_update_actions.call ([update_step])
 					l_target := test_suite.target
 					l_system := l_target.system
 					compiler.run (l_system.directory, l_system.file_name, tester_target_name (l_target))
@@ -119,7 +121,7 @@ feature -- Basic operations
 					-- TODO: notify observers that printing the root class has failed
 				end
 			else
-				refresh_actions.call (Void)
+				cdd_manager.status_update_actions.call ([update_step])
 			end
 		end
 
@@ -133,7 +135,7 @@ feature -- Basic operations
 				proxy.stop
 				proxy := Void
 			end
-			refresh_actions.call (Void)
+			cdd_manager.status_update_actions.call ([update_step])
 		end
 
 	step is
@@ -145,20 +147,6 @@ feature -- Basic operations
 				step_executing
 			end
 		end
-
-feature -- Event handling
-
-	refresh_actions: ACTION_SEQUENCE [TUPLE]
-			-- Agents called whenever the state of `Current' has changes
-
-	output_actions: ACTION_SEQUENCE [TUPLE [STRING]]
-			-- Agents called whenever some text output has been received
-			-- from the compiler of interpreter
-
-	error_actions: ACTION_SEQUENCE [TUPLE]
-			-- Agents called when some error occured
-			-- NOTE: this only includes errors which forced the
-			-- executor to terminate testing
 
 feature {NONE} -- Implementation (execution)
 
@@ -175,10 +163,10 @@ feature {NONE} -- Implementation (execution)
 					proxy.start
 					select_first_test_routine
 				else
-					error_actions.call (Void)
+					cdd_manager.status_update_actions.call ([create {CDD_STATUS_UPDATE}.make_with_code ({CDD_STATUS_UPDATE}.execution_error_code)])
 				end
 				compiler := Void
-				refresh_actions.call (Void)
+				cdd_manager.status_update_actions.call ([update_step])
 			end
 		end
 
@@ -187,10 +175,14 @@ feature {NONE} -- Implementation (execution)
 		require
 			is_executing: is_executing
 			current_test_routine_not_void: current_test_routine /= Void
+		local
+			l_list: DS_ARRAYED_LIST [CDD_TEST_ROUTINE_UPDATE]
 		do
 			if proxy.last_response /= Void then
 				current_test_routine.add_outcome (proxy.last_response)
-				test_suite.new_test_outcome_actions.call ([current_test_routine])
+				create l_list.make (1)
+				l_list.put_first (create {CDD_TEST_ROUTINE_UPDATE}.make (current_test_routine, {CDD_TEST_ROUTINE_UPDATE}.new_outcome_code))
+				test_suite.test_routine_update_actions.call ([l_list])
 				select_next_test_routine
 				if not proxy.is_ready then
 					check proxy.last_response.has_bad_communication end
@@ -202,10 +194,10 @@ feature {NONE} -- Implementation (execution)
 			if current_test_class = Void then
 				proxy.stop
 				proxy := Void
-				refresh_actions.call (Void)
+				cdd_manager.status_update_actions.call ([update_step])
 			else
 				if proxy.is_ready then
-					refresh_actions.call (Void)
+					cdd_manager.status_update_actions.call ([update_step])
 					proxy.execute_test_async (current_test_class.test_class_name, current_test_routine.name)
 				elseif proxy.is_executing_request then
 					proxy.process_response
@@ -265,14 +257,6 @@ feature {NONE} -- Implementation (execution)
 			filename_not_void: Result /= Void
 		end
 
-	dispatch_output (an_output: STRING) is
-			-- Call compiler output handlers with `an_output'.
-		require
-			an_output_not_void: an_output /= Void
-		do
-			output_actions.call ([an_output])
-		end
-
 feature {NONE} -- Implementation
 
 	compiler: AUT_ISE_EIFFEL_COMPILER
@@ -294,16 +278,21 @@ feature {NONE} -- Implementation
 	root_class_printer: CDD_INTERPRETER_CLASS_PRINTER
 			-- Printer for root class (interpreter)
 
+	update_step: CDD_STATUS_UPDATE is
+			-- Update used after each step of `Current'
+		once
+			create Result.make_with_code ({CDD_STATUS_UPDATE}.executor_step_code)
+		ensure
+			not_void: Result /= Void
+		end
+
 invariant
 
+	cdd_manager_not_void: cdd_manager /= Void
 	not_executing_and_compiling: not (is_executing and is_compiling)
-
 	test_suite_not_void: test_suite /= Void
 	root_class_printer_not_void: root_class_printer /= Void
 	is_executing_implies_correct_cursor: is_executing implies (test_class_cursor /= Void and then not test_class_cursor.off)
-	refresh_actions_not_void: refresh_actions /= Void
-	output_actions_not_void: output_actions /= Void
-	error_actions_not_void: error_actions /= Void
 	test_class_cursor_not_off: test_class_cursor /= Void implies not test_class_cursor.off
 	test_routine_cursor_not_off: test_routine_cursor /= Void implies not test_routine_cursor.off
 	is_executing_implies_cursor: is_executing implies (test_class_cursor /= Void and test_routine_cursor /= Void)

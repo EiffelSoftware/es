@@ -61,7 +61,8 @@ feature {ANY} -- Status Report
 			-- reflected by this filter immediately, otherwise
 			-- `refresh' must be called.
 		do
-			Result := test_suite.change_actions.has (change_agent)
+			-- TODO: check whether `change_agent' is subscribed in test_suite.test_routine_update_actions
+			-- Result := test_suite.change_actions.has (change_agent)
 		end
 
 feature {ANY} -- Access
@@ -101,7 +102,8 @@ feature {ANY} -- Status setting
 		require
 			not_observing: not is_observing
 		do
-			test_suite.change_actions.force (change_agent)
+			-- TODO: subscribe valid routine to test_suite.test_routine_update_actions
+			--test_suite.change_actions.force (change_agent)
 		ensure
 			observing: is_observing
 		end
@@ -111,7 +113,8 @@ feature {ANY} -- Status setting
 		require
 			observing: is_observing
 		do
-			test_suite.change_actions.prune (change_agent)
+			-- TODO: prune routine from test_suite.test_routine_update_actions
+			-- test_suite.change_actions.prune (change_agent)
 		ensure
 			not_observing: not is_observing
 		end

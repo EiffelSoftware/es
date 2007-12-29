@@ -30,10 +30,13 @@ feature {NONE} -- Initialization
 			-- used to initialize `test_routines'.
 		require
 			a_name_not_empty: a_name /= Void and then not a_name.is_empty
+			some_routine_names_not_void: some_routine_names /= Void
+			some_routine_names_valid: not some_routine_names.has (Void)
 		local
 			l_cursor: DS_LINEAR_CURSOR [STRING]
 		do
 			test_class_name := a_name
+			l_cursor := some_routine_names.new_cursor
 			from
 				create test_routines.make (some_routine_names.count)
 				create test_routine_table.make (some_routine_names.count)
