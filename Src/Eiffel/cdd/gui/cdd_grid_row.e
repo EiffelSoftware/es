@@ -66,8 +66,8 @@ feature {NONE} -- Implementation
 			-- Check last outcome of test routine in `tree_node' and
 			-- properly update status item of `Current'.
 		do
-			clear
 			if parent /= Void then
+				clear
 				parent.redraw
 			end
 		end
