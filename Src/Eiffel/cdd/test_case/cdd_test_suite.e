@@ -10,14 +10,10 @@ class
 inherit
 
 	CDD_ROUTINES
-		export
-			{NONE} all
-		end
+		export {NONE} all end
 
 	SHARED_EIFFEL_PROJECT
-		export
-			{NONE} all
-		end
+		export {NONE} all end
 
 create
 	make_with_target
@@ -62,7 +58,6 @@ feature -- Element change
 		ensure
 			added: test_classes.has (a_test_class)
 		end
-
 
 feature -- State change
 

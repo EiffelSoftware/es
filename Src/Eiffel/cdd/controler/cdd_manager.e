@@ -148,8 +148,6 @@ feature -- Status setting (CDD)
 			-- Disable cdd in system configuration and store new configuration
 		require
 			cdd_enabled: can_disable_cdd
-		local
-			l_file_rules: ARRAYED_LIST [CONF_FILE_RULE]
 		do
 			instantiate_cdd_configuration
 			cdd_conf.set_is_enabled (False)

@@ -27,7 +27,6 @@ feature -- Execution
 			target_not_void: eiffel_universe.target /= Void
 		local
 			l_manager: CDD_MANAGER
-			l_was_enabled, l_bool: BOOLEAN
 		do
 			l_manager := debugger_manager.cdd_manager
 
