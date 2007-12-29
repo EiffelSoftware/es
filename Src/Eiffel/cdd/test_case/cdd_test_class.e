@@ -110,6 +110,14 @@ feature -- Element change
 
 feature {CDD_TEST_SUITE}
 
+	update_tags is
+			-- Update tags of test routines contained in this class.
+		do
+			wipe_out_tags
+			update_explicit_tags
+			update_implicit_tags
+		end
+
 	update_test_routines is
 			-- Update test_routine_table with information from currently compiled system.
 		local
@@ -147,7 +155,32 @@ feature {CDD_TEST_SUITE}
 			end
 		end
 
-	update_tags is
+feature {NONE} -- Implementation
+
+	internal_class_name: like test_class_name
+			-- Internally stored class name which is used when `test_class' is Void.
+
+	test_routine_table: DS_HASH_TABLE [CDD_TEST_ROUTINE, STRING]
+			-- Table mapping all test routine names to their
+
+	wipe_out_tags is
+			-- Remove tags from test routines.
+		local
+			r_cs: DS_LINEAR_CURSOR [CDD_TEST_ROUTINE]
+		do
+			from
+				r_cs := test_routines.new_cursor
+				r_cs.start
+			until
+				r_cs.off
+			loop
+				r_cs.item.tags.wipe_out
+				r_cs.forth
+			end
+		end
+
+
+	update_explicit_tags is
 			-- Update `tags' with data from the indexing clause.
 		local
 			r_cs: DS_LINEAR_CURSOR [CDD_TEST_ROUTINE]
@@ -158,16 +191,6 @@ feature {CDD_TEST_SUITE}
 			v: STRING
 		do
 			if test_class /= Void then
-				from
-					r_cs := test_routines.new_cursor
-					r_cs.start
-				until
-					r_cs.off
-				loop
-					r_cs.item.tags.wipe_out
-					r_cs.forth
-				end
-
 				l_ast := test_class.ast
 				l_ilist := l_ast.top_indexes
 				from
@@ -203,13 +226,27 @@ feature {CDD_TEST_SUITE}
 			end
 		end
 
-feature {NONE} -- Implementation
-
-	internal_class_name: like test_class_name
-			-- Internally stored class name which is used when `test_class' is Void.
-
-	test_routine_table: DS_HASH_TABLE [CDD_TEST_ROUTINE, STRING]
-			-- Table mapping all test routine names to their
+	update_implicit_tags is
+			-- Update implicit tags of test routines.
+		local
+			r_cs: DS_LINEAR_CURSOR [CDD_TEST_ROUTINE]
+			tag: STRING
+		do
+			from
+				r_cs := test_routines.new_cursor
+				r_cs.start
+			until
+				r_cs.off
+			loop
+				create tag.make (20)
+				tag.append_string ("name.")
+				tag.append_string (test_class_name)
+				tag.append_character ('.')
+				tag.append_string (r_cs.item.name)
+				r_cs.item.tags.force_last (tag)
+				r_cs.forth
+			end
+		end
 
 invariant
 	test_class_name_not_void: test_class_name /= Void

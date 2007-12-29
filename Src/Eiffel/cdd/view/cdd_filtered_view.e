@@ -20,7 +20,7 @@ feature {NONE} -- Initialization
 			create change_actions.make
 			test_suite := a_test_suite
 			create filters.make_default
-			change_agent := agent refresh
+			change_agent := agent incremental_refresh
 		ensure
 			test_suite_set: test_suite = a_test_suite
 		end
@@ -61,8 +61,7 @@ feature {ANY} -- Status Report
 			-- reflected by this filter immediately, otherwise
 			-- `refresh' must be called.
 		do
-			-- TODO: check whether `change_agent' is subscribed in test_suite.test_routine_update_actions
-			-- Result := test_suite.change_actions.has (change_agent)
+			Result := test_suite.test_routine_update_actions.has (change_agent)
 		end
 
 feature {ANY} -- Access
@@ -102,8 +101,7 @@ feature {ANY} -- Status setting
 		require
 			not_observing: not is_observing
 		do
-			-- TODO: subscribe valid routine to test_suite.test_routine_update_actions
-			--test_suite.change_actions.force (change_agent)
+			test_suite.test_routine_update_actions.force (change_agent)
 		ensure
 			observing: is_observing
 		end
@@ -113,13 +111,20 @@ feature {ANY} -- Status setting
 		require
 			observing: is_observing
 		do
-			-- TODO: prune routine from test_suite.test_routine_update_actions
-			-- test_suite.change_actions.prune (change_agent)
+			test_suite.test_routine_update_actions.prune (change_agent)
 		ensure
 			not_observing: not is_observing
 		end
 
 feature {ANY} -- Element change
+
+	incremental_refresh (a_list: DS_LINEAR [CDD_TEST_ROUTINE_UPDATE]) is
+			-- Incremental update of `test_routines_cache' applying changes
+			-- from `a_list'
+		do
+			-- TODO: For now we just fall back on the non incremental refresh.
+			refresh
+		end
 
 	refresh is
 			-- Update `test_routines_cache' with information from `test_suite'.
@@ -130,6 +135,7 @@ feature {ANY} -- Element change
 			from
 				class_cs := test_suite.test_classes.new_cursor
 				class_cs.start
+				wipe_out_test_routines_cache
 				create test_routines_cache.make_default
 			until
 				class_cs.off
@@ -148,6 +154,8 @@ feature {ANY} -- Element change
 				class_cs.forth
 			end
 			change_actions.call (Void)
+		ensure
+			test_routines_cache_not_void: test_routines_cache /= Void
 		end
 
 feature {NONE} -- Implementation
@@ -159,7 +167,7 @@ feature {NONE} -- Implementation
 			-- Agent subscribed in test suite. Needed for
 			-- unsubscription.
 
-	change_agent: PROCEDURE [ANY, TUPLE]
+	change_agent: PROCEDURE [ANY, TUPLE [DS_LINEAR [CDD_TEST_ROUTINE_UPDATE]]]
 
 	wipe_out_test_routines_cache is
 			-- Remove all entries from cache of test routines.

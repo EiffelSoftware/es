@@ -82,6 +82,34 @@ feature -- Access
 			Result := name.hash_code
 		end
 
+	tags_with_prefix (a_prefix: STRING): DS_ARRAYED_LIST [STRING] is
+			-- List of tags with prefix `a_prefix'
+		require
+			a_prefix_not_void: a_prefix /= Void
+		local
+			cs: DS_LINEAR_CURSOR [STRING]
+			item: STRING
+			count: INTEGER
+		do
+			from
+				create Result.make (5)
+				cs := tags.new_cursor
+				cs.start
+				count := a_prefix.count
+			until
+				cs.off
+			loop
+				item := cs.item
+				if item.count >= count and item.substring (1, count).is_equal (a_prefix) then
+					Result.force_last (item)
+				end
+				cs.forth
+			end
+		ensure
+			list_not_void: Result /= Void
+			list_doesnt_have_void: not Result.has (Void)
+		end
+
 feature -- Element change
 
 	add_outcome (an_outcome: CDD_TEST_EXECUTION_RESPONSE) is

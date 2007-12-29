@@ -83,7 +83,7 @@ feature -- State change
 				test_class_table.wipe_out
 			end
 			-- TODO: provide list with all changes done during last `refresh'
-			test_routine_update_actions.call (Void)
+			test_routine_update_actions.call ([Void])
 		end
 
 feature -- Event handling

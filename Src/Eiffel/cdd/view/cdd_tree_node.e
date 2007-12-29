@@ -12,24 +12,32 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make (a_tag: like tag) is
 			-- Create new non leaf node.
+		require
+			a_tag_not_void: a_tag /= Void
 		do
 			create children.make_default
+			tag := a_tag
+		ensure
+			tag_set: tag = a_tag
 		end
 
-	make_leaf (a_test_routine: like test_routine) is
+	make_leaf (a_test_routine: like test_routine; a_tag: like tag) is
 			-- Create new leaf node with `a_test_routine' as
 			-- `test_routine'. Set `tag' to the name of
 			-- `test_routine'.
 		require
 			a_test_routine_not_void: a_test_routine /= Void
+			a_tag_not_void: a_tag /= Void
 		do
 			test_routine := a_test_routine
 			tag := test_routine.test_class.test_class_name + "." + test_routine.name
 			create children.make (0)
+			tag := a_tag
 		ensure
 			test_routine_set: test_routine = a_test_routine
+			tag_set: tag = a_tag
 		end
 
 feature -- Status
