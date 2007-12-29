@@ -9,9 +9,7 @@ class CDD_INTERPRETER_PROXY
 inherit
 
 	THREAD_CONTROL
-		export
-			{NONE} all
-		end
+		export {NONE} all end
 
 	PROCESS_FACTORY
 		export {NONE} all end
@@ -157,6 +155,7 @@ feature -- Execution
 				log_line ("-- Proxy has terminated interpreter.")
 			end
 			process := Void
+			is_executing_request := False
 		end
 
 	execute_test (a_class_name: STRING; a_routine_name: STRING) is
