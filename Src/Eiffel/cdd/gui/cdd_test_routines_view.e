@@ -53,6 +53,7 @@ feature {NONE} -- Initialization
 			refresh
 
 			tree_view.change_actions.extend (agent refresh)
+			text_field.return_actions.extend (agent update_filter)
 		end
 
 feature -- Access
@@ -203,30 +204,21 @@ feature {NONE} -- Implementation (Basic operations)
 			-- to `test_field' and rebuild filter.
 		local
 			l_tags: DS_LIST [STRING]
-			l_new_tags: STRING
-			l_start, l_end: INTEGER
+			tokens: LIST [STRING_32]
 		do
 			l_tags := tree_view.filtered_view.filters
 			l_tags.wipe_out
-			l_new_tags := text_field.text
+			l_tags.extend_last (predefined_filter_tags)
+			tokens := text_field.text.split (' ')
 			from
-				l_tags.extend_first (predefined_filter_tags)
+				tokens.start
 			until
-				l_start > l_new_tags.count
+				tokens.off
 			loop
-				if l_end > l_start then
-					if l_new_tags.item (l_end).is_space then
-						l_tags.put_last (l_new_tags.substring (l_start, l_end - 1))
-						l_start := l_end
-					else
-						l_end := l_end + 1
-					end
-				elseif l_new_tags.item (l_start).is_space then
-					l_start := l_start + 1
-				else
-					l_end := l_start + 1
-				end
+				l_tags.force_last (tokens.item)
+				tokens.forth
 			end
+			tree_view.filtered_view.refresh
 		end
 
 feature {NONE} -- Destruction
