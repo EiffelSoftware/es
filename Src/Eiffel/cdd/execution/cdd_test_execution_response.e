@@ -94,6 +94,25 @@ feature {ANY} -- Access
 	teardown_response: CDD_ROUTINE_INVOCATION_RESPONSE
 			-- Response from test teardown
 
+	text: STRING is
+			-- Textual description of kind of outcome;
+			-- I.e.: "pass", "fail", "unresolved"
+		do
+			if is_pass then
+				Result := "pass"
+			elseif is_fail then
+				Result := "fail"
+			elseif is_unresolved then
+				Result := "unresolved"
+			else
+				check
+					dead_end: False
+				end
+			end
+		ensure
+			text_not_void: Result /= Void
+		end
+
 feature -- Output
 
 	out: STRING is

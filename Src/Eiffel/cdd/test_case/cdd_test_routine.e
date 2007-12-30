@@ -118,9 +118,45 @@ feature -- Element change
 			an_outcome_not_void: an_outcome /= Void
 		do
 			outcomes.put_last (an_outcome)
+			replace_tag ("outcome", "outcome." + an_outcome.text)
 			refresh_actions.call ([])
 		ensure
 			added: outcomes.last = an_outcome
+		end
+
+	replace_tag (a_prefix: STRING; a_new_tag: STRING) is
+			-- Replace the first tag that starts with
+			-- `a_prefix' with `a_new_tag'.
+		require
+			a_prefix_not_void: a_prefix /= Void
+			a_new_tag_not_void: a_new_tag /= Void
+		local
+			found: BOOLEAN
+			cs: DS_LINEAR_CURSOR [STRING]
+			item: STRING
+			count: INTEGER
+		do
+			from
+				cs := tags.new_cursor
+				cs.start
+				count := a_prefix.count
+			until
+				cs.off or found
+			loop
+				item := cs.item
+				if item.count >= count and item.substring (1, count).is_equal (a_prefix) then
+					item.wipe_out
+					item.append_string (a_new_tag)
+				else
+					cs.forth
+				end
+			end
+			cs.go_after
+			if not found then
+				tags.force_last (a_new_tag)
+			end
+		ensure
+			matches_new_tag: has_matching_tag (a_new_tag)
 		end
 
 feature -- Event handling	

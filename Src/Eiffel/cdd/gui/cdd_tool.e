@@ -143,8 +143,8 @@ feature {NONE} -- Implementation (Basic functionality)
 				notebook_cell.extend (notebook)
 
 				add_notebook_tab ("All", Void)
-				--add_notebook_tab ("Failing", "outcome:fail")
-				--add_notebook_tab ("Unresolved", "outcome:unresolved")
+				add_notebook_tab ("Failing", "outcome.fail")
+				add_notebook_tab ("Unresolved", "outcome.unresolved")
 
 				status_label.set_text ("CDD enabled")
 				run_button.enable_sensitive
