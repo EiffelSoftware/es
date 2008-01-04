@@ -53,7 +53,7 @@ feature {NONE} -- Initialization
 		local
 			l_prj_manager: EB_PROJECT_MANAGER
 		do
-			l_prj_manager := eiffel_project.manager
+			l_prj_manager := project.manager
 			l_prj_manager.load_agents.extend (agent refresh_status)
 			l_prj_manager.compile_stop_agents.extend (agent refresh_status)
 			eb_cluster_manager.add_observer (Current)
@@ -228,6 +228,9 @@ feature -- Execution
 	background_executor: CDD_TEST_EXECUTOR
 			-- Background executor of test suite
 
+	debug_executor: CDD_TEST_DEBUGGER
+			-- Test debugger for debugging tests
+
 feature {ANY} -- Cooperative multitasking
 
 	drive_background_tasks is
@@ -397,6 +400,7 @@ feature {NONE} -- Implementation
 invariant
 	extracting_implies_cdd_enabled: is_extracting_enabled implies is_cdd_enabled
 	cdd_enabled_implies_executor_not_void: is_cdd_enabled implies (background_executor /= Void)
+	cdd_enabled_implies_debugger_not_void: is_cdd_enabled implies (debug_executor /= Void)
 	status_update_actions_not_void: status_update_actions /= Void
 
 end

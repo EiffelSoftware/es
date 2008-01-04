@@ -194,7 +194,8 @@ feature {NONE} -- Implementation
 						l_name := l_routine_cursor.item.name
 						create pair.make ("agent {" + l_cursor.item.test_class_name + "}." + l_name,
 											l_cursor.item.test_class_name + "." + l_name)
-						list.put_last (pair)
+						--list.put_last (pair)
+						list.force_last (pair)
 						l_routine_cursor.forth
 					end
 				end

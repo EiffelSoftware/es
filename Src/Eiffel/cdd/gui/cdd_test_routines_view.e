@@ -14,6 +14,19 @@ inherit
 			destroy
 		end
 
+	SHARED_EIFFEL_PROJECT
+		export
+			{NONE} all
+		undefine
+			is_equal, copy, default_create
+		end
+
+	EB_PIXMAPABLE_ITEM_PIXMAP_FACTORY
+		export
+			{NONE} all
+		undefine
+			is_equal, copy, default_create
+		end
 create
 	make
 
@@ -93,6 +106,12 @@ feature {NONE} -- Implementation (Access)
 			create Result
 		end
 
+	token_writer: EB_EDITOR_TOKEN_GENERATOR is
+			-- Tokenwriter for clickable items
+		once
+			create Result.make
+		end
+
 feature {NONE} -- Implementation (Basic operations)
 
 	refresh is
@@ -160,7 +179,7 @@ feature {NONE} -- Implementation (Basic operations)
 			valid_count: grid.row_count = old grid.row_count + last_added_rows_count - old last_added_rows_count
 		end
 
-	fetch_grid_item (a_col, a_row: INTEGER): EV_GRID_LABEL_ITEM is
+	fetch_grid_item (a_col, a_row: INTEGER): EV_GRID_ITEM is
 			-- Grid item for row and column at `a_row' and `a_col'
 		require
 			a_row_valid: a_row > 0 and a_row <= grid.row_count
@@ -169,37 +188,56 @@ feature {NONE} -- Implementation (Basic operations)
 			l_node: CDD_TREE_NODE
 			l_tooltip: STRING
 			l_last: CDD_TEST_EXECUTION_RESPONSE
+			l_token_item: EB_GRID_EDITOR_TOKEN_ITEM
+			l_feature: FEATURE_I
+			l_label_item: EV_GRID_LABEL_ITEM
 		do
-			create Result
 			l_node := grid.row (a_row).tree_node
 			if l_node /= Void then
 				if a_col = 1 then
-					Result.text.append (l_node.tag)
+					if l_node.is_leaf and then l_node.test_routine.test_class.test_class /= Void then
+						l_feature := l_node.test_routine.test_class.test_class.feature_named (l_node.test_routine.name)
+						token_writer.new_line
+						create l_token_item
+						if l_feature /= Void then
+							l_feature.e_feature.append_signature (token_writer)
+							l_token_item.set_pixmap (pixmap_from_e_feature (l_feature.e_feature))
+						else
+							l_node.test_routine.test_class.test_class.append_name (token_writer)
+							l_token_item.set_pixmap (pixmap_from_class_i (l_node.test_routine.test_class.test_class.original_class))
+						end
+						-- TODO: finish...
+						create l_token_item.make_with_text (l_node.tag)
+						l_token_item.set_text_with_tokens (token_writer.last_line.content)
+						Result := l_token_item
+					else
+						create {EV_GRID_LABEL_ITEM} Result.make_with_text (l_node.tag)
+					end
 				else
+					create l_label_item
 					if l_node.is_leaf then
 						if l_node.test_routine.outcomes.is_empty then
-							Result.text.append ("not tested yet")
-							Result.set_foreground_color (stock_colors.grey)
+							l_label_item.text.append ("not tested yet")
+							l_label_item.set_foreground_color (stock_colors.grey)
 						else
 							l_last := l_node.test_routine.outcomes.last
 							l_tooltip := l_last.out
 							if l_last.is_fail then
-								Result.text.append ("FAIL")
-								Result.set_foreground_color (stock_colors.red)
+								l_label_item.text.append ("FAIL")
+								l_label_item.set_foreground_color (stock_colors.red)
 							elseif l_last.is_pass then
-								Result.text.append ("PASS")
-								Result.set_foreground_color (stock_colors.green)
+								l_label_item.text.append ("PASS")
+								l_label_item.set_foreground_color (stock_colors.green)
 							else
-								Result.text.append ("UNRESOLVED")
-								Result.set_foreground_color (stock_colors.grey)
+								l_label_item.text.append ("UNRESOLVED")
+								l_label_item.set_foreground_color (stock_colors.grey)
 							end
-							Result.set_tooltip (l_tooltip)
+							l_label_item.set_tooltip (l_tooltip)
 						end
+						Result := l_label_item
 					end
 				end
 			end
-		ensure
-			not_void: Result /= Void
 		end
 
 	update_filter is
