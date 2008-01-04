@@ -151,6 +151,9 @@ feature {NONE} -- Implementation (Basic operations)
 					l_cursor.forth
 				end
 				last_added_rows_count := last_added_rows_count + a_list.count
+				if a_parent /= Void then
+					a_parent.expand
+				end
 			end
 		ensure
 			count_greater_or_equal_list_count: last_added_rows_count >= a_list.count
