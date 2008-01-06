@@ -45,7 +45,6 @@ feature -- Basic operations
 			-- Print a new root class containing all test cases in `test_suite'.
 		local
 			l_output_file: KL_TEXT_OUTPUT_FILE
-			l_count: INTEGER
 		do
 			last_print_succeeded := True
 			if test_suite.test_classes.count > 0 then

@@ -984,12 +984,8 @@ feature -- Debugging events
 			incremente_debugging_operation_id
 
 			was_executing := application_is_executing
-			if was_executing then
-				debugger_output_message (debugger_names.t_Application_exited)
-				debugger_status_message (debugger_names.t_Application_exited)
 
-					--| Observers
-				observers.do_all (agent {DEBUGGER_OBSERVER}.on_application_quit (Current))
+			if was_executing then
 					--| Kept objects
 				application_status.clear_kept_objects
 			end
@@ -1003,7 +999,16 @@ feature -- Debugging events
 			destroy_application
 			reset_class_c_data
 
+			if was_executing then
+				debugger_output_message (debugger_names.t_Application_exited)
+				debugger_status_message (debugger_names.t_Application_exited)
+
+					--| Observers
+				observers.do_all (agent {DEBUGGER_OBSERVER}.on_application_quit (Current))
+			end
+
 			on_debugging_terminated (was_executing)
+
 			debug ("debugger_trace_synchro")
 				io.put_string (generator + ".on_application_quit : done%N")
 			end
@@ -1093,7 +1098,7 @@ feature -- Implementation
 			-- Instance of cdd manager
 			-- NOTE: not sure yet where it is the best place to initiate this manager
 		once
-			create Result.make
+			create Result.make (eiffel_project)
 		end
 
 invariant

@@ -31,7 +31,7 @@ feature -- Execution
 			l_tested: PROCEDURE [ANY, TUPLE [DS_LINEAR [CDD_TEST_ROUTINE_UPDATE]]]
 			l_executing: BOOLEAN
 		do
-			if cdd_manager.is_cdd_enabled then
+			if cdd_manager.is_project_initialized then
 				l_executor := cdd_manager.background_executor
 
 					-- Create and register testing action handlers
@@ -57,7 +57,7 @@ feature -- Execution
 					-- Remove action handlers
 				cdd_manager.test_suite.test_routine_update_actions.prune (l_tested)
 			else
-				io.put_string ("CDD is currently not enabled. To create%N, view or run test cases enable CDD through `Status' menu.")
+				io.put_string ("Please compile project first")
 			end
 		end
 

@@ -18,6 +18,16 @@ inherit
 			internal_recycle
 		end
 
+	SHARED_EIFFEL_PROJECT
+		export
+			{NONE} all
+		end
+
+	EB_PIXMAPABLE_ITEM_PIXMAP_FACTORY
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -27,45 +37,17 @@ feature {NONE} -- Initialization
 			-- Initialize all widgets for `Current'.
 		do
 			cdd_manager := develop_window.eb_debugger_manager.cdd_manager
-
-			create widget
-			create notebook_cell
-			create notebook
-			create enable_button.make_with_text ("Enable CDD")
-			enable_button.select_actions.extend (agent toggle_cdd)
-			build_status_bar
-			build_mini_toolbar
-
-			widget.extend (notebook_cell)
-			widget.extend (status_bar)
-			widget.disable_item_expand (status_bar)
-
-			if cdd_manager.is_cdd_enabled then
-				update_status (create {CDD_STATUS_UPDATE}.make_with_code ({CDD_STATUS_UPDATE}.enable_cdd_code))
-			else
-				update_status (create {CDD_STATUS_UPDATE}.make_with_code ({CDD_STATUS_UPDATE}.disable_cdd_code))
-			end
-
 			internal_status_update_action := agent update_status
 			cdd_manager.status_update_actions.extend (internal_status_update_action)
+
+			create widget
+
+			build_mini_toolbar
+			build_filter_box
+			build_grid
+			build_status_bar
 		ensure then
 			cdd_manager_set: cdd_manager = develop_window.eb_debugger_manager.cdd_manager
-		end
-
-	build_status_bar is
-			-- Create 'status_bar' and extend
-		require
-			widget_not_void: widget /= Void
-		local
-			l_frame: EV_FRAME
-		do
-			create status_bar
-
-			create l_frame
-			create status_label.make_with_text ("")
-			status_label.align_text_left
-			l_frame.extend (status_label)
-			status_bar.extend (l_frame)
 		end
 
 	build_mini_toolbar is
@@ -78,28 +60,16 @@ feature {NONE} -- Initialization
 			create run_button.make
 			run_button.set_tooltip ("Run test cases")
 			run_button.set_pixmap (pixmaps.mini_pixmaps.general_next_icon)
-			run_button.select_actions.extend (agent toggle_testing)
-
-			create stop_button.make
-			stop_button.set_tooltip ("Cancel execution")
-			stop_button.set_pixmap (pixmaps.mini_pixmaps.general_delete_icon)
-			stop_button.select_actions.extend (agent toggle_testing)
+			run_button.select_actions.extend (agent debug_test_routine)
 
 			create toggle_extraction_button.make
 			toggle_extraction_button.set_tooltip ("Enable/Disable extraction")
 			toggle_extraction_button.set_pixmap (pixmaps.mini_pixmaps.general_toogle_icon)
 			toggle_extraction_button.select_actions.extend (agent toggle_extraction)
 
-			create toggle_cdd_button.make
-			toggle_cdd_button.set_tooltip ("Enable/Disable CDD")
-			toggle_cdd_button.set_pixmap (pixmaps.mini_pixmaps.general_toogle_icon)
-			toggle_cdd_button.select_actions.extend (agent toggle_cdd)
-
 			mini_toolbar.extend (run_button)
-			mini_toolbar.extend (stop_button)
 			create l_sep.make
 			mini_toolbar.extend (l_sep)
-			mini_toolbar.extend (toggle_cdd_button)
 			mini_toolbar.extend (toggle_extraction_button)
 			create l_sep.make
 			mini_toolbar.extend (l_sep)
@@ -107,6 +77,95 @@ feature {NONE} -- Initialization
 			mini_toolbar.compute_minimum_size
 		ensure then
 			mini_toolbar_not_void: mini_toolbar /= Void
+		end
+
+	build_filter_box is
+			-- Build `filter_box' and add it to `widget'.
+		require
+			widget_not_void: widget /= Void
+		local
+			l_item: EV_LIST_ITEM
+			l_hbox: EV_HORIZONTAL_BOX
+			l_label: EV_LABEL
+		do
+			create l_hbox
+			l_hbox.set_padding (10)
+			l_hbox.set_border_width (5)
+			create l_label.make_with_text ("Filter ")
+			l_hbox.extend (l_label)
+			l_hbox.disable_item_expand (l_label)
+			create filter_box
+
+			create l_item.make_with_text ("All")
+			filter_box.extend (l_item)
+			create l_item.make_with_text ("Failing%T%T(outcome:fail)")
+			filter_box.extend (l_item)
+			create l_item.make_with_text ("Unresolved%T(outcome:unresolved)")
+			filter_box.extend (l_item)
+
+			filter_box.return_actions.extend (agent update_filter)
+
+			l_hbox.extend (filter_box)
+			widget.extend (l_hbox)
+			widget.disable_item_expand (l_hbox)
+		end
+
+	build_grid is
+			-- Create `grid' and add it to `widget'.
+		require
+			widget_not_void: widget /= Void
+		local
+			l_filter: CDD_FILTERED_VIEW
+		do
+			create grid
+			grid.enable_tree
+			grid.enable_multiple_row_selection
+			grid.enable_single_row_selection
+			grid.set_dynamic_content_function (agent fetch_grid_item)
+			grid.enable_partial_dynamic_content
+			grid.set_column_count_to (6)
+			grid.column (1).set_title ("")
+			grid.column (1).set_width (300)
+			grid.column (2).set_title ("Outcome")
+			grid.column (2).set_width (90)
+			grid.column (3).set_title ("Test class")
+			grid.column (3).set_width (170)
+			grid.column (4).set_title ("Test routine")
+			grid.column (4).set_width (170)
+			grid.column (5).set_title ("Class beeing tested")
+			grid.column (5).set_width (170)
+			grid.column (6).set_title ("Routine beeing tested")
+			grid.column (6).set_width (170)
+			widget.extend (grid)
+
+			create l_filter.make (cdd_manager.test_suite)
+			l_filter.enable_observing
+			create tree_view.make (l_filter)
+			tree_view.enable_observing
+			refresh_grid
+			tree_view.change_actions.extend (agent refresh_grid)
+		end
+
+	build_status_bar is
+			-- Add status bar containing `status_label' to `widget'
+		require
+			widget_not_void: widget /= Void
+		local
+			l_frame: EV_FRAME
+			l_status_bar: EV_STATUS_BAR
+		do
+			create l_status_bar
+			l_status_bar.set_border_width (2)
+
+			create l_frame
+			l_frame.set_style ({EV_FRAME_CONSTANTS}.ev_frame_lowered)
+			create status_label.make_with_text ("")
+			status_label.align_text_left
+			l_frame.extend (status_label)
+			l_status_bar.extend (l_frame)
+
+			widget.extend (l_status_bar)
+			widget.disable_item_expand (l_status_bar)
 		end
 
 feature -- Access
@@ -133,93 +192,46 @@ feature {NONE} -- Implementation (Basic functionality)
 			an_update_not_void: an_update /= Void
 		local
 			l_exec: CDD_TEST_EXECUTOR
+			l_debug: CDD_TEST_DEBUGGER
 			l_label: STRING
 		do
 			inspect
 				an_update.code
-			when {CDD_STATUS_UPDATE}.enable_cdd_code then
-					-- Build notebook tabs
-				notebook_cell.wipe_out
-				notebook_cell.extend (notebook)
-
-				add_notebook_tab ("All", Void)
-				add_notebook_tab ("Failing", "outcome.fail")
-				add_notebook_tab ("Unresolved", "outcome.unresolved")
-
-				status_label.set_text ("CDD enabled")
-				run_button.enable_sensitive
-				stop_button.disable_sensitive
-				toggle_cdd_button.enable_select
-				toggle_extraction_button.enable_sensitive
-				if cdd_manager.is_extracting_enabled then
-					toggle_extraction_button.enable_select
-				else
-					toggle_extraction_button.disable_select
-				end
-			when {CDD_STATUS_UPDATE}.disable_cdd_code then
-					-- Recycle notebook tabs and show enable button
-				recycle_notebook_tabs
-
-				notebook_cell.wipe_out
-				notebook_cell.extend (enable_button)
-
-				status_label.set_text ("CDD disabled")
-				run_button.disable_sensitive
-				stop_button.disable_sensitive
-				toggle_cdd_button.disable_select
-				toggle_extraction_button.disable_select
-				toggle_extraction_button.disable_sensitive
 			when {CDD_STATUS_UPDATE}.enable_extracting_code then
-				status_label.set_text ("Extraction enabled")
+				show_message ("Extraction enabled")
 				toggle_extraction_button.enable_select
 			when {CDD_STATUS_UPDATE}.disable_extracting_code then
-				status_label.set_text ("Extraction disabled")
+				show_message ("Extraction disabled")
 				toggle_extraction_button.disable_select
 			when {CDD_STATUS_UPDATE}.executor_step_code then
 				l_exec := cdd_manager.background_executor
 				if not l_exec.has_next_step then
-					run_button.enable_sensitive
-					stop_button.disable_sensitive
-					status_label.set_text ("Finished executing")
+					--run_button.enable_sensitive
+					show_message ("Finished executing")
 				else
-					run_button.disable_sensitive
-					stop_button.enable_sensitive
+					--run_button.disable_sensitive
 					if l_exec.is_compiling then
-						status_label.set_text ("Compiling interpreter")
+						show_message ("Compiling interpreter")
 					else
 						l_label := "Testing " + l_exec.current_test_routine.test_class.test_class_name
 						l_label.append ("." + l_exec.current_test_routine.name)
-						status_label.set_text (l_label)
+						show_message (l_label)
 					end
 				end
+			when {CDD_STATUS_UPDATE}.debugger_step_code then
+				l_debug := cdd_manager.debug_executor
+				if l_debug.is_running then
+					l_label := "Debugging " + l_debug.current_test_routine.test_class.test_class_name
+					l_label.append ("." + l_debug.current_test_routine.name)
+					show_message (l_label)
+				else
+					show_message ("Finished debugging")
+				end
 			when {CDD_STATUS_UPDATE}.execution_error_code then
-				status_label.set_text ("An execution error has occured...")
+				show_message ("An execution error has occured...")
 			else
-				status_label.set_text ("Unknown update code: " + an_update.code.out)
+				show_message ("Unknown update code: " + an_update.code.out)
 			end
-		end
-
-	add_notebook_tab (a_name, a_filter_tag: STRING) is
-			-- Add a new tab to `notebook' displaying test routines with predefined tag `a_filter_tag'.
-		require
-			a_name_not_void: a_name /= Void
-		local
-			l_filtered_view: CDD_FILTERED_VIEW
-			l_tree_view: CDD_TREE_VIEW
-			l_routines_view: CDD_TEST_ROUTINES_VIEW
-		do
-			create l_filtered_view.make (cdd_manager.test_suite)
-			l_filtered_view.enable_observing
-			if a_filter_tag /= Void then
-				l_filtered_view.filters.put_last (a_filter_tag)
-			end
-			create l_tree_view.make (l_filtered_view)
-			l_tree_view.enable_observing
-			create l_routines_view.make (l_tree_view)
-			notebook.extend (l_routines_view)
-			notebook.set_item_text (l_routines_view, a_name)
-		ensure
-			notebook_extended: notebook.count = old notebook.count + 1
 		end
 
 	internal_recycle is
@@ -227,28 +239,9 @@ feature {NONE} -- Implementation (Basic functionality)
 		do
 			Precursor
 
-			recycle_notebook_tabs
-
 			-- TODO: Recycle all widgets!
 
 			cdd_manager.status_update_actions.prune (internal_status_update_action)
-		end
-
-	recycle_notebook_tabs is
-			-- Remove all notebook tabs and recycle them
-		local
-			l_item: EV_WIDGET
-		do
-			from
-			until
-				notebook.is_empty
-			loop
-				l_item := notebook.first
-				notebook.prune (l_item)
-				l_item.destroy
-			end
-		ensure
-			notebook_empty: notebook.is_empty
 		end
 
 feature {NONE} -- Implementation (Widgets)
@@ -256,96 +249,256 @@ feature {NONE} -- Implementation (Widgets)
 	mini_toolbar: SD_TOOL_BAR
 			-- Toolbar for control buttons
 
-	notebook_cell: EV_CELL
-			-- Cell containing `notebook' if cdd is enabled,
-			-- otherwise button for enabling cdd
+	filter_box: EV_COMBO_BOX
+			-- Combo box for defining filter
 
-	notebook: EV_NOTEBOOK
-			-- Notebook for displaying different view tabs
-
-	status_bar: EV_STATUS_BAR
-			-- Bar for displaying different status messages
+	grid: CDD_GRID
+			-- Grid for displaying `filter' results
 
 	status_label: EV_LABEL
 			-- Label describing current tester status
 
 feature {NONE} -- Implementation (Buttons)
 
-	enable_button: EV_BUTTON
-			-- Button for enabling cdd
-
 	run_button: SD_TOOL_BAR_BUTTON
 			-- Button for running test executor
-
-	stop_button: SD_TOOL_BAR_BUTTON
-			-- Button for canceling test executor
-
-	toggle_cdd_button: SD_TOOL_BAR_TOGGLE_BUTTON
-			-- Button for enabling/disabling testing
 
 	toggle_extraction_button: SD_TOOL_BAR_TOGGLE_BUTTON
 			-- Button for examinating a test case
 
-feature {NONE} -- Implementation (Button functionality)
+feature {NONE} -- Implementation
 
-	toggle_cdd is
-			-- Disable/Enable CDD.
+	debug_test_routine is
+			-- Run currently selected test routine in debugger.
+		local
+			l_selected: LIST [EV_GRID_ROW]
+			l_tree_node: CDD_TREE_NODE
 		do
-			if cdd_manager /= Void then
-				if cdd_manager.is_cdd_enabled then
-					if cdd_manager.can_disable_cdd then
-						cdd_manager.disable_cdd
-					end
+			l_selected := grid.selected_rows
+			if l_selected.count = 1 then
+				l_tree_node ?= l_selected.first.data
+			end
+			if l_tree_node /= Void and then l_tree_node.is_leaf then
+				if cdd_manager.debug_executor.can_start then
+					cdd_manager.debug_executor.start (l_tree_node.test_routine)
 				else
-					if cdd_manager.can_enable_cdd then
-						cdd_manager.enable_cdd
-					end
+					show_error ("Unable to start debugger: make sure debugger is not running and system is not beeing compiled")
 				end
+			else
+				show_error ("Please select a test routine")
 			end
 		end
 
 	toggle_extraction is
 			-- Enable/Disable extraction of test cases.
 		do
-			if cdd_manager.is_cdd_enabled then
-				if cdd_manager.is_extracting_enabled then
-					cdd_manager.disable_extracting
+			if cdd_manager.is_extracting_enabled then
+				cdd_manager.disable_extracting
+			else
+				cdd_manager.enable_extracting
+			end
+		end
+
+	show_message (a_msg: STRING) is
+			-- Display `a_msg' in `status_label'.
+		require
+			a_msg_not_void: a_msg /= Void
+		do
+			status_label.set_text (a_msg)
+			status_label.set_foreground_color (stock_colors.black)
+		end
+
+	show_error (an_error: STRING) is
+			-- Display `an_error' in `status_label'.
+		require
+			an_error_not_void: an_error /= Void
+		do
+			status_label.set_text (an_error)
+			status_label.set_foreground_color (stock_colors.red)
+		end
+
+feature {NONE} -- Implementation (grid)
+
+	tree_view: CDD_TREE_VIEW
+			-- Tree view providing test routines which should be displayed by `Current'
+
+	last_added_rows_count: INTEGER
+			-- Number of rows added by the last call to `add_rows_recursive'?
+
+	stock_colors: EV_STOCK_COLORS is
+			-- Predefined colors
+		once
+			create Result
+		end
+
+	token_writer: EB_EDITOR_TOKEN_GENERATOR is
+			-- Tokenwriter for clickable items
+		once
+			create Result.make
+		end
+
+	refresh_grid is
+			-- Build grid.
+		local
+			i: INTEGER
+			l_cursor: DS_LINEAR_CURSOR [CDD_TREE_NODE]
+			l_stack: DS_LINKED_STACK [DS_LINEAR_CURSOR [CDD_TREE_NODE]]
+			l_row: EV_GRID_ROW
+			l_node: CDD_TREE_NODE
+			l_item: EV_GRID_LABEL_ITEM
+		do
+			develop_window.lock_update
+			if grid.row_count > 0 then
+				grid.remove_rows (1, grid.row_count)
+			end
+			last_added_rows_count := 0
+			add_rows_recursive (Void, tree_view.nodes)
+			develop_window.unlock_update
+		end
+
+	add_rows_recursive (a_parent: EV_GRID_ROW; a_list: DS_LINEAR [CDD_TREE_NODE]) is
+			-- Add subrows for `a_parent' into `grid' corresponding to `a_list'.
+			-- If `a_parent' is Void, simply add unparented rows to `grid'.
+			-- Set `last_added_rows_count' to total number of rows added.
+		require
+			a_list_not_void: a_list /= Void
+			a_list_valid: not a_list.has (Void)
+			a_parent_not_void_implies_valid: (a_parent /= Void) implies (grid.row (a_parent.index) = a_parent)
+		local
+			i, l_old_count: INTEGER
+			l_cursor: DS_LINEAR_CURSOR [CDD_TREE_NODE]
+			l_row: EV_GRID_ROW
+		do
+			if not a_list.is_empty then
+				if a_parent = Void then
+					i := 1
+					grid.insert_new_rows (a_list.count, i)
 				else
-					cdd_manager.enable_extracting
+					i := a_parent.index + 1
+					grid.insert_new_rows_parented (a_list.count, i, a_parent)
+				end
+				l_cursor := a_list.new_cursor
+				from
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					l_row := grid.row (i)
+					l_row.set_data (l_cursor.item)
+					if not l_cursor.item.is_leaf then
+						l_row.ensure_expandable
+						l_old_count := last_added_rows_count
+						add_rows_recursive (l_row, l_cursor.item.children)
+						i := i + last_added_rows_count - l_old_count
+					end
+					i := i + 1
+					l_cursor.forth
+				end
+				last_added_rows_count := last_added_rows_count + a_list.count
+				if a_parent /= Void then
+					a_parent.expand
+				end
+			end
+		ensure
+			count_greater_or_equal_list_count: last_added_rows_count >= a_list.count
+			valid_count: grid.row_count = old grid.row_count + last_added_rows_count - old last_added_rows_count
+		end
+
+	fetch_grid_item (a_col, a_row: INTEGER): EV_GRID_ITEM is
+			-- Grid item for row and column at `a_row' and `a_col'
+		require
+			a_row_valid: a_row > 0 and a_row <= grid.row_count
+			a_col_valid: a_col > 0 and a_col <= grid.column_count
+		local
+			l_node: CDD_TREE_NODE
+			l_tooltip: STRING
+			l_last: CDD_TEST_EXECUTION_RESPONSE
+			l_token_item: EB_GRID_EDITOR_TOKEN_ITEM
+			l_feature: FEATURE_I
+			l_label_item: EV_GRID_LABEL_ITEM
+		do
+			l_node := grid.row (a_row).tree_node
+			if l_node /= Void then
+				if a_col = 1 then
+					if l_node.is_leaf and then l_node.test_routine.test_class.test_class /= Void then
+						l_feature := l_node.test_routine.test_class.test_class.feature_named (l_node.test_routine.name)
+						token_writer.new_line
+						create l_token_item
+						if l_feature /= Void then
+							l_feature.e_feature.append_signature (token_writer)
+							l_token_item.set_pixmap (pixmap_from_e_feature (l_feature.e_feature))
+						else
+							l_node.test_routine.test_class.test_class.append_name (token_writer)
+							l_token_item.set_pixmap (pixmap_from_class_i (l_node.test_routine.test_class.test_class.original_class))
+						end
+						-- TODO: finish...
+						create l_token_item.make_with_text (l_node.tag)
+						l_token_item.set_text_with_tokens (token_writer.last_line.content)
+						Result := l_token_item
+					else
+						create {EV_GRID_LABEL_ITEM} Result.make_with_text (l_node.tag)
+					end
+				elseif a_col = 2 then
+					create l_label_item
+					if l_node.is_leaf then
+						if l_node.test_routine.outcomes.is_empty then
+							l_label_item.text.append ("not tested yet")
+							l_label_item.set_foreground_color (stock_colors.grey)
+						else
+							l_last := l_node.test_routine.outcomes.last
+							l_tooltip := l_last.out
+							if l_last.is_fail then
+								l_label_item.text.append ("FAIL")
+								l_label_item.set_foreground_color (stock_colors.red)
+							elseif l_last.is_pass then
+								l_label_item.text.append ("PASS")
+								l_label_item.set_foreground_color (stock_colors.green)
+							else
+								l_label_item.text.append ("UNRESOLVED")
+								l_label_item.set_foreground_color (stock_colors.grey)
+							end
+							l_label_item.set_tooltip (l_tooltip)
+						end
+						Result := l_label_item
+					end
 				end
 			end
 		end
 
-	toggle_testing is
-			-- Start/Cancel testing
+	update_filter is
+			-- Update filter tags of `filter' corresponding
+			-- to `test_field' and rebuild filter.
+		local
+			l_tags: DS_LIST [STRING]
+			tokens: LIST [STRING_32]
 		do
-			if cdd_manager.is_cdd_enabled then
-				if cdd_manager.background_executor.has_next_step then
-					cdd_manager.background_executor.cancel
-				else
-					cdd_manager.background_executor.start
-				end
+			l_tags := tree_view.filtered_view.filters
+			l_tags.wipe_out
+			tokens := filter_box.text.split (' ')
+			from
+				tokens.start
+			until
+				tokens.off
+			loop
+				l_tags.force_last (tokens.item)
+				tokens.forth
 			end
+			tree_view.filtered_view.refresh
 		end
 
 invariant
 
-	notbook_cell_not_void: notebook_cell /= Void
-	notebook_not_void: notebook /= Void
-	enable_button_not_void: enable_button /= Void
-	mini_toolbar_not_void: mini_toolbar /= Void
-	status_bar_not_void: status_bar /= Void
-	status_label_not_void: status_label /= Void
-
-	enable_button_not_void: enable_button /= Void
-	run_button_not_void: run_button /= Void
-	stop_button_not_void: stop_button /= Void
-	toggle_testing_button_not_void: toggle_cdd_button /= Void
-	toggle_extraction_button_not_void: toggle_extraction_button /= Void
-
-	internal_status_update_action_not_void: internal_status_update_action /= Void
 	cdd_manager_not_void: cdd_manager /= Void
-	recycled_xor_subscribed: is_recycled xor (cdd_manager.status_update_actions.has (internal_status_update_action))
+	internal_status_update_action_not_void: internal_status_update_action /= Void
 
+	tree_view_not_void: tree_view /= Void
+
+		-- Widgets
+	mini_toolbar_not_void: mini_toolbar /= Void
+	filter_box_not_void: filter_box /= Void
+	grid_not_void: grid /= Void
+	status_label_not_void: status_label /= Void
+	run_button_not_void: run_button /= Void
+	toggle_extraction_button_not_void: toggle_extraction_button /= Void
 
 end

@@ -27,10 +27,6 @@ feature -- Access
 	code: INTEGER
 			-- Status code
 
-	enable_cdd_code,
-			-- CDD has been enabled
-	disable_cdd_code,
-			-- CDD has been disabled
 	enable_extracting_code,
 			-- Extracting new test cases has been enabled
 	disable_extracting_code,
@@ -38,6 +34,8 @@ feature -- Access
 	executor_step_code,
 			-- The executor is compiling the interpreter
 			-- or executing the next test routine
+	debugger_step_code,
+			-- The test debugger changed its state
 	capture_error_code,
 			-- There was an error with capturing a new test case
 	execution_error_code: INTEGER is unique
@@ -47,11 +45,11 @@ feature -- Access
 	is_valid_code (a_code: like code): BOOLEAN is
 			-- Is `a_code' a valid code?
 		do
-			Result := a_code = enable_cdd_code or
-				a_code = disable_cdd_code or
+			Result :=
 				a_code = enable_extracting_code or
 				a_code = disable_extracting_code or
 				a_code = executor_step_code or
+				a_code = debugger_step_code or
 				a_code = capture_error_code or
 				a_code = execution_error_code
 		end

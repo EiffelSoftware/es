@@ -25,36 +25,21 @@ feature -- Execution
 			-- Retrieve user input for configuring cdd.
 		require else
 			target_not_void: eiffel_universe.target /= Void
-		local
-			l_manager: CDD_MANAGER
 		do
-			l_manager := debugger_manager.cdd_manager
-
 			io.new_line
-			if l_manager.is_cdd_enabled then
-				if not command_line_io.confirmed_with_default (confirm_enabling, True) then
-					l_manager.disable_cdd
-				end
-			elseif command_line_io.confirmed_with_default (confirm_disabling, True) then
-				l_manager.enable_cdd
-			end
 
-			if l_manager.is_cdd_enabled then
+			if cdd_manager.is_project_initialized then
 				if command_line_io.confirmed_with_default (confirm_extracting, True) then
-					if not l_manager.is_extracting_enabled then
-						l_manager.enable_extracting
+					if not cdd_manager.is_extracting_enabled then
+						cdd_manager.enable_extracting
 					end
 				else
-					if l_manager.is_extracting_enabled then
-						l_manager.disable_extracting
+					if cdd_manager.is_extracting_enabled then
+						cdd_manager.disable_extracting
 					end
 				end
-
-				if command_line_io.confirmed_with_default (confirm_capture_replay, False) then
-					l_manager.enable_capture_replay
-				else
-					l_manager.disable_capture_replay
-				end
+			else
+				io.put_string ("Please compile project first.")
 			end
 		end
 

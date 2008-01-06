@@ -27,7 +27,7 @@ feature -- Execution
 			filter: CDD_FILTERED_VIEW
 			tree: CDD_TREE_VIEW
 		do
-			if cdd_manager.is_cdd_enabled then
+			if cdd_manager.is_project_initialized then
 				localized_print ("%NAll test classes%N%N")
 				io.put_string ("Please enter filter: ")
 				io.read_line
@@ -41,7 +41,7 @@ feature -- Execution
 				tree.set_key (io.last_string.twin)
 				print_nodes (tree.nodes, 1)
 			else
-				io.put_string ("CDD is currently not enabled. To view or create%Ntest cases enable CDD through `Status' menu.")
+				io.put_string ("Please compile project first.")
 			end
 		end
 

@@ -3343,7 +3343,11 @@ feature {NONE} -- Implementation
 							-- A recursion may occur when removing a cluster
 						class_of_id (supplier.class_id) /= Void and then
 							-- removable
-						supplier.is_removable
+						supplier.is_removable and
+							-- Does not belong to `unref_classes'
+							-- NOTE (Arno): Without this, cdd test cases are
+							-- removed after executing them in the debugger
+						not unref_classes.has (supplier.original_class)
 					then
 							-- Recursively remove class.
 						internal_remove_class (supplier, a_depth + 1)

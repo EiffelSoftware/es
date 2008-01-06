@@ -226,7 +226,7 @@ feature	-- Basic operations
 		do
 			if not failed then
 				output_stream.dedent
-				output_stream.put_string ("%N")
+				output_stream.put_new_line
 				output_stream.put_line (">>")
 				output_stream.dedent
 				output_stream.put_line ("end")

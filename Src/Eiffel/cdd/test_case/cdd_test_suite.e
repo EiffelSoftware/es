@@ -12,32 +12,38 @@ inherit
 	CDD_ROUTINES
 		export {NONE} all end
 
-	SHARED_EIFFEL_PROJECT
-		export {NONE} all end
-
 create
-	make_with_target
+	make
 
 feature {NONE} -- Initialization
 
-	make_with_target (a_target: like target) is
-			-- Set `target' to `a_target'.
+	make (a_cdd_manager: like cdd_manager) is
+			-- Initialize `Current' for `a_cdd_manager'.
 		require
-			a_target_not_void: a_target /= Void
+			a_cdd_manager_not_void: a_cdd_manager /= Void
 		do
 			create test_routine_update_actions.make
-			target := a_target
+			cdd_manager := a_cdd_manager
 			create test_class_table.make_default
 			create test_classes.make_default
-			refresh
 		ensure
-			target_set: target = a_target
+			cdd_manager_set: cdd_manager = a_cdd_manager
 		end
 
 feature -- Access
 
-	target: CONF_TARGET
+	target: CONF_TARGET is
 			-- Target in which we look for test cases
+		require
+			project_initialized: cdd_manager.is_project_initialized
+		do
+			Result := cdd_manager.project.system.universe.target
+		ensure
+			not_void: Result /= Void
+		end
+
+	cdd_manager: CDD_MANAGER
+			-- CDD manager
 
 	test_classes: DS_ARRAYED_LIST [CDD_TEST_CLASS]
 			-- All test classes in this suite;
@@ -75,6 +81,8 @@ feature -- State change
 
 	refresh is
 			-- Refresh information from system under test.
+		require
+			project_initialized: cdd_manager.is_project_initialized
 		do
 			update_test_class_ancestor
 			if test_class_ancestor /= Void then
@@ -107,12 +115,16 @@ feature {NONE} -- Implementation
 			-- Find ancestor of all test cases (CDD_TEST_CASE) and make it
 			-- available via `test_class_ancestor'. Set `test_class_ancestor' to
 			-- Void if class not found or not completely compiled.
+		require
+			project_initialized: cdd_manager.is_project_initialized
 		local
 			ancestors: LIST [CLASS_I]
 			old_cs: CURSOR
+			l_universe: UNIVERSE_I
 		do
 			if test_class_ancestor = Void then
-				ancestors := eiffel_universe.classes_with_name (abstract_test_class_name)
+				l_universe := cdd_manager.project.system.universe
+				ancestors := l_universe.classes_with_name (abstract_test_class_name)
 				from
 					old_cs := ancestors.cursor
 					ancestors.start
@@ -180,7 +192,6 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	target_not_void: target /= Void
 	test_routine_update_actions_not_void: test_routine_update_actions /= Void
 	test_class_table_not_void: test_class_table /= Void and not test_class_table.has (Void)
 	test_classes_not_void: test_classes /= Void and not test_classes.has (Void)

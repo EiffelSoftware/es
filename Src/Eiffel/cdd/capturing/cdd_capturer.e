@@ -152,7 +152,7 @@ feature {NONE} -- Implementation (Capturing)
 				j > l_feature.argument_count
 			loop
 				l_arguments.put (a_cse.arguments.i_th (j), j + i)
-				l_type.append (l_feature.arguments.i_th (j).associated_class.name_in_upper)
+				l_type.append (a_cse.arguments.i_th (j).dump_value.generating_type_representation (True))
 				if l_feature.argument_count > j then
 					l_type.append (", ")
 				end

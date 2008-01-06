@@ -13,8 +13,7 @@ inherit
 
 	DEBUGGER_OBSERVER
 		redefine
-			on_application_stopped,
-			on_application_quit
+			on_application_stopped
 		end
 
 	EB_CLUSTER_MANAGER_OBSERVER
@@ -28,17 +27,7 @@ inherit
 			remove_test_case_for_class
 		end
 
-	SHARED_EIFFEL_PROJECT
-		export
-			{NONE} all
-		end
-
 	CONF_ACCESS
-		export
-			{NONE} all
-		end
-
-	EB_SHARED_GRAPHICAL_COMMANDS
 		export
 			{NONE} all
 		end
@@ -48,56 +37,64 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make (a_project: like project) is
 			-- Add `Current' to cluster observer list.
+		require
+			a_project_not_void: a_project /= Void
 		local
 			l_prj_manager: EB_PROJECT_MANAGER
 		do
+			create test_suite.make (Current)
+			create background_executor.make (Current)
+			create debug_executor.make (Current)
+
+			project := a_project
 			l_prj_manager := project.manager
 			l_prj_manager.load_agents.extend (agent refresh_status)
 			l_prj_manager.compile_stop_agents.extend (agent refresh_status)
 			eb_cluster_manager.add_observer (Current)
 
 			create status_update_actions
+		ensure
+			project_set: project = a_project
 		end
 
-feature -- Access (CDD Status)
+feature -- Access (status)
 
 	test_suite: CDD_TEST_SUITE
 			-- Test suite which is managed by `Current'
 
-	capturer: CDD_CAPTURER
-			-- Capturer for extracting new test cases
+	project: E_PROJECT
+			-- Project for which we manager tests
 
-	is_cdd_enabled: BOOLEAN is
-			-- Is testing currently enabled?
+	is_project_initialized: BOOLEAN is
+			-- Has `project' been initialized?
+			-- NOTE: This is the main condition whether cdd is active or not
 		do
-			Result := test_suite /= Void
-		ensure
-			correct_result: Result = (test_suite /= Void)
+			Result := project.initialized and target /= Void
 		end
 
 	is_extracting_enabled: BOOLEAN is
 			-- Is capturing currently enabled?
 		do
-			Result := is_cdd_enabled and then capturer /= Void
+			Result := capturer /= Void
 		ensure
-			correct_result: Result = (is_cdd_enabled and then capturer /= Void)
+			correct_result: Result = (capturer /= Void)
 		end
 
-	can_enable_cdd: BOOLEAN is
-			-- Can cdd support be enabled?
+	can_enable_extracting: BOOLEAN is
+			-- Can we enable extracting?
 		do
-			Result := not is_cdd_enabled and then
-				project.initialized and then
-				not project.is_read_only
+			Result := is_project_initialized and not is_extracting_enabled
 		end
 
-	can_disable_cdd: BOOLEAN is
-			-- Can cdd support be disabled?
-		do
-			Result := is_cdd_enabled
-		end
+feature -- Access (execution)
+
+	background_executor: CDD_TEST_EXECUTOR
+			-- Background executor of test suite
+
+	debug_executor: CDD_TEST_DEBUGGER
+			-- Test debugger for debugging tests
 
 feature {DEBUGGER_MANAGER} -- Status setting (Application)
 
@@ -109,65 +106,18 @@ feature {DEBUGGER_MANAGER} -- Status setting (Application)
 			valid_app_status: a_dbg_manager.application_is_executing and
 				a_dbg_manager.application_is_stopped
 		do
-			if is_extracting_enabled and a_dbg_manager.application_status.exception_occurred then
+			if is_extracting_enabled and not debug_executor.is_running and a_dbg_manager.application_status.exception_occurred then
 				capturer.capture_call_stack (a_dbg_manager.application_status)
 			end
 		end
 
-	on_application_quit (a_dbg_manager: DEBUGGER_MANAGER) is
-			-- If `is_debugging' is true, notify test debugger that application is quit.
-		require else
-			a_dbg_manager_not_void: a_dbg_manager /= Void
-			valid_app_status: not a_dbg_manager.application_is_executing
-		do
-			-- TODO: Will be used for fg-debugging (when done we need to reset the root class)
-		end
-
 feature -- Status setting (CDD)
-
-	enable_cdd is
-			-- Enable cdd in system configuration. Also add cdd library
-			-- and exclude file rule to configuration.
-		require
-			not_enabled_yet: not is_cdd_enabled
-			can_enable: can_enable_cdd
-		do
-			instantiate_cdd_configuration
-			cdd_conf.set_is_enabled (True)
-			target.system.store
-			create test_suite.make_with_target (target)
-			create background_executor.make (Current)
-			status_update_actions.call ([create {CDD_STATUS_UPDATE}.make_with_code ({CDD_STATUS_UPDATE}.enable_cdd_code)])
-		ensure
-			enabled: is_cdd_enabled
-			correct_config: cdd_conf.is_enabled
-		end
-
-	disable_cdd is
-			-- Disable cdd in system configuration and store new configuration
-		require
-			cdd_enabled: can_disable_cdd
-		do
-			instantiate_cdd_configuration
-			cdd_conf.set_is_enabled (False)
-			target.system.store
-			test_suite := Void
-			if background_executor.has_next_step then
-				background_executor.cancel
-			end
-			background_executor := Void
-			status_update_actions.call ([create {CDD_STATUS_UPDATE}.make_with_code ({CDD_STATUS_UPDATE}.disable_cdd_code)])
-		ensure
-			cdd_disabled: not is_cdd_enabled
-			correct_config: not cdd_conf.is_enabled
-		end
 
 	enable_extracting is
 			-- Make cdd create new test cases automatically.
 			-- Enable extracting mode in system configuration and store it.
 		require
-			cdd_enabled: is_cdd_enabled
-			extracting_disabled: not is_extracting_enabled
+			can_enable_extracting: can_enable_extracting
 		do
 			instantiate_cdd_configuration
 			cdd_conf.set_is_extracting (True)
@@ -186,7 +136,6 @@ feature -- Status setting (CDD)
 			-- Stop cdd creating test cases automatically.
 			-- Disable capturing mode in system configuration and store it.
 		require
-			cdd_enabled: is_cdd_enabled
 			extracting_enabled: is_extracting_enabled
 		do
 			instantiate_cdd_configuration
@@ -199,38 +148,6 @@ feature -- Status setting (CDD)
 			correct_config: not cdd_conf.is_extracting
 		end
 
-	enable_capture_replay is
-			-- Enable capture/replay mode and store it in system configuration.
-		require
-			cdd_enabled: is_cdd_enabled
-		do
-			instantiate_cdd_configuration
-			cdd_conf.set_is_capture_replay_activated (True)
-			target.system.store
-		ensure
-			correct_config: cdd_conf.is_capture_replay_activated
-		end
-
-	disable_capture_replay is
-			-- Disable capture/replay mode and store it in system configuration.
-		require
-			cdd_enabled: is_cdd_enabled
-		do
-			instantiate_cdd_configuration
-			cdd_conf.set_is_capture_replay_activated (False)
-			target.system.store
-		ensure
-			correct_config: not cdd_conf.is_capture_replay_activated
-		end
-
-feature -- Execution
-
-	background_executor: CDD_TEST_EXECUTOR
-			-- Background executor of test suite
-
-	debug_executor: CDD_TEST_DEBUGGER
-			-- Test debugger for debugging tests
-
 feature {ANY} -- Cooperative multitasking
 
 	drive_background_tasks is
@@ -239,7 +156,7 @@ feature {ANY} -- Cooperative multitasking
 			-- whenever time perimits. This routine must not execute for
 			-- very long so that it can be called from within GUI event loops
 		do
-			if is_cdd_enabled and then background_executor.has_next_step then
+			if background_executor.has_next_step then
 				background_executor.step
 			end
 		end
@@ -251,33 +168,19 @@ feature {EB_CLUSTERS} -- Status setting (Eiffel Project)
 			-- reiinitate background testing.
 			-- Note: This is usually called when project is opened or compiled.
 		do
-			if project.initialized and target /= Void then
-				instantiate_cdd_configuration
-				if cdd_conf.is_enabled then
-					if not is_cdd_enabled then
-						enable_cdd
-					end
-					test_suite.refresh
+			if is_project_initialized then
+				if cdd_conf /= Void then
 					if cdd_conf.is_extracting and not is_extracting_enabled then
 						enable_extracting
 					elseif not cdd_conf.is_extracting and is_extracting_enabled then
 						disable_extracting
 					end
-				else
-					if is_extracting_enabled then
-						disable_extracting
-					end
-					if is_cdd_enabled then
-						disable_cdd
-					end
 				end
-				if is_cdd_enabled then
+				test_suite.refresh
+				--if is_execution_enabled then
 					background_executor.start
-				end
+				--end
 			end
-		ensure
-			correct_status: (project.initialized and target /= Void) implies (cdd_conf.is_enabled = is_cdd_enabled and
-				(is_cdd_enabled implies (cdd_conf.is_extracting = is_extracting_enabled)))
 		end
 
 	remove_test_case_for_class (a_class: CLASS_I) is
@@ -295,27 +198,22 @@ feature -- Status change
 
 feature {NONE} -- Implementation
 
-	triggered_compilation: BOOLEAN
-			-- Has `Current' triggered a compilation?
-
-	project: E_PROJECT is
-			-- Currently opened project
-		do
-			Result := eiffel_project
-		ensure
-			open_project_not_void: Result /= Void
-		end
+	capturer: CDD_CAPTURER
+			-- Capturer for extracting new test cases
 
 	target: CONF_TARGET is
 			-- Currently opened target of `project'
 		require
 			project_initialized: project.initialized
 		do
-			Result := eiffel_universe.target
+			Result := project.system.universe.target
 		end
 
-	cdd_conf: CONF_CDD
+	cdd_conf: CONF_CDD is
 			-- CDD Configuration instance
+		do
+			Result := target.cdd
+		end
 
 	instantiate_cdd_configuration is
 			-- Create cdd configuration with default parameters if
@@ -326,12 +224,11 @@ feature {NONE} -- Implementation
 		local
 			l_conf: CONF_CDD
 		do
-			l_conf := target.cdd
+			l_conf := cdd_conf
 			if l_conf = Void then
 				l_conf := conf_factory.new_cdd (target)
 				target.set_cdd (l_conf)
 			end
-			cdd_conf := l_conf
 		ensure
 			cdd_conf_valid: cdd_conf /= Void and then cdd_conf.target = target
 		end
@@ -342,65 +239,13 @@ feature {NONE} -- Implementation
 			create Result
 		end
 
-	add_file_rule is
-			-- If `a_file_rule' does not already contain, add
-			-- `tests_directory_name' as an exclude to `a_file_rule'.
-		require
-			project_initialized: project.initialized
-		local
-			l_rules: ARRAYED_LIST [CONF_FILE_RULE]
-			l_conf: CONF_FILE_RULE
-			l_found: BOOLEAN
-		do
-			from
-				l_rules := target.file_rule
-				l_rules.start
-			until
-				l_rules.after or l_found
-			loop
-				l_conf := l_rules.item
-				if l_conf.exclude.has (tests_directory_name) then
-					l_found := True
-				else
-					l_rules.forth
-				end
-			end
-			if not l_found then
-				if l_rules.is_empty then
-					l_conf := conf_factory.new_file_rule
-					l_rules.force (l_conf)
-				end
-				l_rules.first.add_exclude (tests_directory_name)
-			end
-		end
-
-	remove_file_rule is
-			-- Remove all excludes of `tests_directory_name' from `a_file_rule'.
-		require
-			project_initialized: project.initialized
-		local
-			l_rules: ARRAYED_LIST [CONF_FILE_RULE]
-			l_conf: CONF_FILE_RULE
-		do
-			from
-				l_rules := target.file_rule
-				l_rules.start
-			until
-				l_rules.after
-			loop
-				l_conf := l_rules.item
-				if l_conf.exclude.has (tests_directory_name) then
-					l_conf.exclude.remove (tests_directory_name)
-				end
-				l_rules.forth
-			end
-		end
-
 
 invariant
-	extracting_implies_cdd_enabled: is_extracting_enabled implies is_cdd_enabled
-	cdd_enabled_implies_executor_not_void: is_cdd_enabled implies (background_executor /= Void)
-	cdd_enabled_implies_debugger_not_void: is_cdd_enabled implies (debug_executor /= Void)
+	test_suite_not_void: test_suite /= Void
+	executor_not_void: background_executor /= Void
+	debugger_not_void: debug_executor /= Void
 	status_update_actions_not_void: status_update_actions /= Void
+
+	extracting_implies_project_initialized: is_extracting_enabled implies is_project_initialized
 
 end
