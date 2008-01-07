@@ -72,8 +72,6 @@ inherit
 			{NONE} all
 		end
 
-	CDD_CONSTANTS
-
 create
 	make
 
