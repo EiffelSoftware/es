@@ -379,9 +379,9 @@ invariant
 	melt_path_not_void: melt_path /= Void
 	is_running_implies_reader: is_running implies (stdout_reader /= Void and stderr_reader /= Void)
 	executable_file_name_not_void: executable_file_name /= Void
-	not_running_implies_not_ready: not is_running implies not is_ready
-	not_running_implies_not_executing_request: not is_running implies not is_executing_request
-	executing_request_implies_running: is_executing_request implies is_running
+	not_launched_implies_not_ready: not is_launched implies not is_ready
+	not_launched_implies_not_executing_request: not is_launched implies not is_executing_request
+	executing_request_implies_running: is_executing_request implies is_launched
 	is_executing_request_implies_not_ready: is_executing_request implies not is_ready
 	proxy_log_file_not_void: proxy_log_file /= Void
 	response_buffer_not_void: response_buffer /= Void

@@ -109,7 +109,7 @@ feature -- Basic operations
 				cancel
 			end
 			if not test_suite.test_classes.is_empty then
-				root_class_printer.print_root_class
+				root_class_printer.print_class
 				if root_class_printer.last_print_succeeded then
 					create compiler.make
 					compiler.set_output_handler (agent io.put_string)

@@ -16,14 +16,10 @@ inherit
 	CDD_REQUEST_PARSER
 
 	EXCEPTIONS
-		export
-			{NONE} all
-		end
+		export {NONE} all	end
 
 	EXECUTION_ENVIRONMENT
-		export
-			{NONE} all
-		end
+		export {NONE} all	end
 
 feature {NONE} -- Execution
 
@@ -59,7 +55,7 @@ feature {NONE} -- Execution
 
 feature -- Access
 
-	test_class_instance (a_name: STRING): CDD_ABSTRACT_TEST_CASE is
+	test_class_instance (a_name: STRING): CDD_TEST_CASE is
 			-- Instance of test class with name `a_name'. Void if no such
 			-- test class.
 		require
@@ -67,7 +63,7 @@ feature -- Access
 		deferred
 		end
 
-	test_procedure (a_name: STRING): PROCEDURE [ANY, TUPLE [CDD_ABSTRACT_TEST_CASE]] is
+	test_procedure (a_name: STRING): PROCEDURE [ANY, TUPLE [CDD_TEST_CASE]] is
 			-- Agent of test procedure named `a_name'. Note that `a_name'
 			-- has to contain the class name a dot followed by the
 			-- procedure name. E.g. "MY_TEST_CASE.test_001". Void if no
@@ -125,8 +121,8 @@ feature {NONE} -- Request handling
 			-- Execute test feature `a_feature_name' in class `a_class_name'.
 			-- If `a_class_name' does not contain such a feature, print error message.
 		local
-			tc: CDD_ABSTRACT_TEST_CASE
-			p: PROCEDURE [ANY, TUPLE [CDD_ABSTRACT_TEST_CASE]]
+			tc: CDD_TEST_CASE
+			p: PROCEDURE [ANY, TUPLE [CDD_TEST_CASE]]
 		do
 			tc := test_class_instance (a_class_name)
 			if tc = Void then
@@ -156,7 +152,7 @@ feature {NONE} -- Control
 
 feature {NONE} -- Implementation
 
-	execute_test (a_tc: CDD_ABSTRACT_TEST_CASE; a_p: PROCEDURE [ANY, TUPLE [CDD_ABSTRACT_TEST_CASE]]) is
+	execute_test (a_tc: CDD_TEST_CASE; a_p: PROCEDURE [ANY, TUPLE [CDD_TEST_CASE]]) is
 			-- Set up `a_tc' (via `set_up'),  call `a_p' and tear it down (via `tear_down').
 			-- Print results on standard out.
 		require

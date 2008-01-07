@@ -33,7 +33,7 @@ feature -- Project constants
 
 	tester_target_suffix: STRING is "_tester"
 
-	test_routine_prefix: STRING is "test_"
+	test_routine_prefix: STRING is "test"
 
 	default_cluster_name: STRING is "cdd_test_suite"
 			-- Name of cdd cluster

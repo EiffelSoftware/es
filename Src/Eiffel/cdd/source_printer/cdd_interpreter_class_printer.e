@@ -37,11 +37,11 @@ feature -- Access
 			-- Test suite containing test cases for root class
 
 	last_print_succeeded: BOOLEAN
-			-- Has last call to `print_root_class' printed a new root class?
+			-- Has last call to `print_class' printed a new root class?
 
 feature -- Basic operations
 
-	print_root_class is
+	print_class is
 			-- Print a new root class containing all test cases in `test_suite'.
 		local
 			l_output_file: KL_TEXT_OUTPUT_FILE
@@ -157,7 +157,7 @@ feature {NONE} -- Implementation
 			end
 			create printer.make (output_stream)
 			output_stream.indent
-			printer.print_item_by_name_query ("test_class_instance", "CDD_ABSTRACT_TEST_CASE", list)
+			printer.print_item_by_name_query ("test_class_instance", "CDD_TEST_CASE", list)
 			output_stream.dedent
 		end
 
@@ -201,7 +201,7 @@ feature {NONE} -- Implementation
 			end
 			create printer.make (output_stream)
 			output_stream.indent
-			printer.print_item_by_name_query ("test_procedure", "PROCEDURE [ANY, TUPLE [CDD_ABSTRACT_TEST_CASE]]", list)
+			printer.print_item_by_name_query ("test_procedure", "PROCEDURE [ANY, TUPLE [CDD_TEST_CASE]]", list)
 			output_stream.dedent
 		end
 
@@ -214,12 +214,12 @@ feature {NONE} -- Implementation
 
 				-- Context
 			output_stream.indent
-			output_stream.put_line ("test_setting: HASH_TABLE [TUPLE [instance: CDD_ABSTRACT_TEST_CASE; test_features: HASH_TABLE [PROCEDURE [CDD_ABSTRACT_TEST_CASE, TUPLE [CDD_ABSTRACT_TEST_CASE]], STRING]], STRING] is")
+			output_stream.put_line ("test_setting: HASH_TABLE [TUPLE [instance: CDD_TEST_CASE; test_features: HASH_TABLE [PROCEDURE [CDD_ABSTRACT_TEST_CASE, TUPLE [CDD_TEST_CASE]], STRING]], STRING] is")
 			output_stream.indent
 			output_stream.put_line ("%"All test cases in this target%"")
 			output_stream.put_line ("local")
 			output_stream.indent
-			output_stream.put_line ("l_fht: HASH_TABLE [PROCEDURE [CDD_ABSTRACT_TEST_CASE, TUPLE [CDD_ABSTRACT_TEST_CASE]], STRING]")
+			output_stream.put_line ("l_fht: HASH_TABLE [PROCEDURE [CDD_TEST_CASE, TUPLE [CDD_TEST_CASE]], STRING]")
 			output_stream.dedent
 			output_stream.put_line ("once")
 			output_stream.indent

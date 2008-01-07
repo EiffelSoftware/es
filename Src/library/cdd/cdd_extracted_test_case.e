@@ -9,11 +9,10 @@ deferred class
 
 inherit
 
-	CDD_ABSTRACT_TEST_CASE
-		rename
-			tear_down as do_nothing
+	CDD_TEST_CASE
 		redefine
-			default_create
+			default_create,
+			set_up
 		end
 
 	INTERNAL
@@ -50,7 +49,7 @@ feature -- Basic operations
 			set_up_context
 		end
 
-	test_routine_under_test is
+	test is
 			-- Call `routine_under_test'. This is the default
 			-- test feature of extracted test cases.
 		require
