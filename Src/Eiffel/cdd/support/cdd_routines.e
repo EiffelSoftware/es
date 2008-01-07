@@ -55,24 +55,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
--- TODO: remove
---	cdd_interpreter_class (a_system: SYSTEM_I): EIFFEL_CLASS_C is
---			-- EIFFEL_CLASS_C object for class CDD_INTERPRETER if already available in `a_system'
---		require
---			a_system_not_void: a_system /= Void
---		local
---			i: INTEGER
---			classes:
---		do
---			from
---				i := a_system.lower
---			until
---				i > a_system.upper
---			loop
---				i := i + 1
---			end
---		end
-
 	is_creation_feature (a_feature: E_FEATURE): BOOLEAN is
 			--
 		require
@@ -120,7 +102,7 @@ feature {NONE} -- Implementation
 		require
 			a_class_not_void: a_class /= Void
 		do
-			Result := is_descendant_of_class (a_class, manual_test_class_name)
+			Result := is_descendant_of_class (a_class, test_ancestor_class_name) and not is_extracted_test_class (a_class)
 		end
 
 	is_descendant_of_class (a_class: CLASS_C; a_class_name: STRING): BOOLEAN is

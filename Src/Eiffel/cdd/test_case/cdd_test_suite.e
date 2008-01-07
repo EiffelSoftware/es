@@ -124,7 +124,7 @@ feature {NONE} -- Implementation
 		do
 			if test_class_ancestor = Void then
 				l_universe := cdd_manager.project.system.universe
-				ancestors := l_universe.classes_with_name (abstract_test_class_name)
+				ancestors := l_universe.classes_with_name (test_ancestor_class_name)
 				from
 					old_cs := ancestors.cursor
 					ancestors.start

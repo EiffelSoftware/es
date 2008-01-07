@@ -98,16 +98,34 @@ feature {NONE} -- Initialization
 
 			create l_item.make_with_text ("All")
 			filter_box.extend (l_item)
-			create l_item.make_with_text ("Failing%T%T(outcome:fail)")
+			create l_item.make_with_text ("Failing%T%T(outcome.fail)")
 			filter_box.extend (l_item)
-			create l_item.make_with_text ("Unresolved%T(outcome:unresolved)")
+			create l_item.make_with_text ("Unresolved%T(outcome.unresolved)")
 			filter_box.extend (l_item)
 
+			filter_box.set_text ("")
 			filter_box.return_actions.extend (agent update_filter)
+			filter_box.select_actions.extend (agent select_filter_text)
 
 			l_hbox.extend (filter_box)
 			widget.extend (l_hbox)
 			widget.disable_item_expand (l_hbox)
+		end
+
+	select_filter_text is
+		do
+			if filter_box.text.is_equal ("All") then
+				filter_box.set_text ("")
+			elseif filter_box.text.is_equal ("Failing%T%T(outcome.fail)") then
+				filter_box.set_text ("outcome.fail")
+			elseif filter_box.text.is_equal ("Unresolved%T(outcome.unresolved)") then
+				filter_box.set_text ("outcome.unresolved")
+			else
+				check
+					dead_end: False
+				end
+			end
+			update_filter
 		end
 
 	build_grid is

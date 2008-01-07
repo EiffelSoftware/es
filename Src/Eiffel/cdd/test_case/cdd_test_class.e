@@ -73,11 +73,11 @@ feature -- Access
 			a_class_not_void: a_class /= Void
 		do
 			Result := a_class.has_ast and not a_class.is_deferred and
-				is_descendant_of_class (a_class, abstract_test_class_name)
+				is_descendant_of_class (a_class, test_ancestor_class_name)
 		ensure
 			result_implies_has_ast: Result implies a_class.has_ast
 			result_implies_deferred: Result implies a_class.is_deferred
-			result_implies_is_descendant: Result implies is_descendant_of_class (a_class, abstract_test_class_name)
+			result_implies_is_descendant: Result implies is_descendant_of_class (a_class, test_ancestor_class_name)
 		end
 
 	test_class: EIFFEL_CLASS_C

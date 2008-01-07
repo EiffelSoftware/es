@@ -7,8 +7,6 @@ indexing
 class
 	CDD_CONSTANTS
 
-feature -- Access
-
 feature -- Project constants
 
 	library_name: STRING is "cdd"
@@ -20,11 +18,8 @@ feature -- Project constants
 	class_name_prefix: STRING is "CDD_TEST_"
 			-- Prefix for all test case class names
 
-	abstract_test_class_name: STRING is "CDD_ABSTRACT_TEST_CASE"
+	test_ancestor_class_name: STRING is "CDD_TEST_CASE"
 			-- Class name of ancestor of all test classes
-
-	manual_test_class_name: STRING is "CDD_MANUAL_TEST_CASE"
-			-- Class name of ancestor of manual test classes
 
 	extracted_test_class_name: STRING is "CDD_EXTRACTED_TEST_CASE"
 			-- Class name of ancestor of extracted test classes
