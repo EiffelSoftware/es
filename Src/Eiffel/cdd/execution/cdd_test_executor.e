@@ -295,6 +295,4 @@ invariant
 	is_executing_implies_correct_cursor: is_executing implies (test_class_cursor /= Void and then not test_class_cursor.off)
 	test_class_cursor_not_off: test_class_cursor /= Void implies not test_class_cursor.off
 	test_routine_cursor_not_off: test_routine_cursor /= Void implies not test_routine_cursor.off
-	is_executing_implies_cursor: is_executing implies (test_class_cursor /= Void and test_routine_cursor /= Void)
-	is_executing_implies_sut: is_executing implies (current_test_routine /= Void and current_test_class /= Void)
 end
