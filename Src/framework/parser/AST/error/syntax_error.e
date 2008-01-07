@@ -1,134 +1,77 @@
 indexing
-
-	description:
-		"Syntax error."
+	description: "Syntax error."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision $"
 
-class SYNTAX_ERROR
+class
+	SYNTAX_ERROR
 
 inherit
 	ERROR
-		redefine
-			trace, file_name
-		end
 
-	SYNTAX_MESSAGE
-
-	SHARED_WORKBENCH
-
-	SHARED_EIFFEL_PARSER
+create {ERROR_HANDLER}
+	init
 
 create
-	make, init
+	make
 
 feature {NONE} -- Initialization
 
-	make (s, e: INTEGER; f: like file_name; m: STRING; u: BOOLEAN) is
+	make (s, e: INTEGER; f: STRING; m: STRING; u: BOOLEAN) is
 			-- Create a new SYNTAX_ERROR.
 		require
 			f_not_void: f /= Void
 			m_not_void: m /= Void
 		do
-			set_position (s, e)
+			line := s
+			column := e
 			file_name := f
 			error_message := m
-			is_in_use_file := u
 		ensure
 			line_set: line = s
 			column_set: column = e
 			file_name_set: file_name = f
 			error_message_set: error_message = m
-			is_in_use_file_set: is_in_use_file = u
 		end
 
 	init is
-			-- Initialize `line' and `column'.
-		local
-			p: like Eiffel_parser
-			a_filename: FILE_NAME
+			-- Dummy implementation, kept for backward compatibility.
 		do
-			p := Eiffel_parser
-			create a_filename.make_from_string (p.filename)
-			make (p.line, p.column, a_filename, p.error_message, False)
+			file_name := ""
+			error_message := ""
 		end
 
-feature -- Properties
+feature -- Access
 
-	error_message: STRING
-			-- Specify syntax issue message.
+	line: INTEGER
+			-- Line number
+
+	column: INTEGER
+			-- Column number
 
 	file_name: STRING
-			-- Path to file where syntax issue happened
+			-- File name containing text with syntax error
 
-	code: STRING is "Syntax error"
-			-- Error code
+	error_message: STRING
+			-- Syntax error message
+
+feature {NONE} -- Implementation
 
 	syntax_message: STRING is
-			-- Specific syntax message.
-			-- (By default, it is empty)
+			-- Syntax error message, kept for backward compatibility.
 		do
-			Result := ""
-		ensure
-			non_void_result: Result /= Void
+			Result := error_message
 		end
 
-	is_in_use_file: BOOLEAN
-			-- Did error occurred when parsing `Use' clause of an Ace file.
-
-feature -- Output
-
-	build_explain (a_text_formatter: TEXT_FORMATTER) is
-		local
-			msg: STRING
-		do
-			msg := syntax_message
-			if not msg.is_empty then
-				a_text_formatter.add ("(")
-				a_text_formatter.add (msg)
-				a_text_formatter.add (")")
-				a_text_formatter.add_new_line
-			end
-		end
-
-	trace (a_text_formatter: TEXT_FORMATTER) is
-			-- Debug purpose
-		do
-			initialize_output
-			a_text_formatter.add ("Syntax error at line ")
-			a_text_formatter.add_int (line)
-				-- Error happened in a class
-			if System.current_class /= Void then
-				a_text_formatter.add (" in class ")
-				a_text_formatter.add_class_syntax (Current, System.current_class,
-						System.current_class.class_signature)
-			elseif file_name /= Void then
-				-- `current_class' May be void at degree 6 when parsing partial classes
-				a_text_formatter.add (" in file ")
-				a_text_formatter.add (file_name)
-			end
-			if error_message /= Void then
-				a_text_formatter.add_new_line
-				a_text_formatter.add (error_message)
-				a_text_formatter.add_new_line
-			end
-			a_text_formatter.add_new_line
-			build_explain (a_text_formatter)
-			if has_source_text then
-				display_line (a_text_formatter, previous_line)
-				display_syntax_line (a_text_formatter, current_line)
-				display_line (a_text_formatter, next_line)
-			else
-				a_text_formatter.add (" (source code is not available)")
-				a_text_formatter.add_new_line
-			end
-		end
+invariant
+	attached_file_name: file_name /= Void
+	attached_error_message: error_message /= Void
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.

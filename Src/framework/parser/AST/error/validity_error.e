@@ -1,5 +1,5 @@
 indexing
-	description: "Validity error in parser phase."
+	description: "Validity error."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
@@ -9,92 +9,18 @@ deferred class
 	VALIDITY_ERROR
 
 inherit
-	ERROR
+	SYNTAX_ERROR
 
-	SYNTAX_MESSAGE
+feature -- Access
 
-	SHARED_WORKBENCH
-
-	SHARED_EIFFEL_PARSER
-
-feature {NONE} -- Initialization
-
-	make (s, e: INTEGER; f: like file_name; error_mssage: STRING; u: BOOLEAN) is
-			-- Create a new SYNTAX_ERROR.
-		require
-			f_not_void: f /= Void
-		do
-			set_position (s, e)
-			file_name := f
-			is_in_use_file := u
-		ensure
-			line_set: line = s
-			column_set: column = e
-			file_name_set: file_name = f
-			is_in_use_file_set: is_in_use_file = u
-		end
-
-	init is
-			-- Initialize `line' and `column'.
-		local
-			p: like Eiffel_parser
-			a_filename: FILE_NAME
-		do
-			p := Eiffel_parser
-			create a_filename.make_from_string (p.filename)
-			make (p.line, p.column, a_filename, "", False)
-		end
-
-feature -- Properties
-
-	file_name: STRING
-			-- Path to file where syntax issue happened
-
-	syntax_message: STRING is
-			-- Specific syntax message.
-			-- (By default, it is empty)
-		do
-			Result := ""
-		ensure
-			non_void_result: Result /= Void
-		end
-
-	is_in_use_file: BOOLEAN
-			-- Did error occurred when parsing `Use' clause of an Ace file.
-
-feature -- Output
-
-	build_explain (a_text_formatter: TEXT_FORMATTER) is
-		do
-			initialize_output
-			if System.current_class /= Void then
-				a_text_formatter.add ("Class: ")
-				a_text_formatter.add_class_syntax (Current, System.current_class,
-						System.current_class.class_signature)
-				a_text_formatter.add_new_line
-			elseif file_name /= Void then
-				-- `current_class' May be void at degree 6 when parsing partial classes
-				a_text_formatter.add ("Error in file ")
-				a_text_formatter.add (file_name)
-				a_text_formatter.add_new_line
-			end
-			a_text_formatter.add ("Line: ")
-			a_text_formatter.add_int (line)
-				-- Error happened in a class
-			a_text_formatter.add_new_line
-			if has_source_text then
-				display_line (a_text_formatter, previous_line)
-				display_syntax_line (a_text_formatter, current_line)
-				display_line (a_text_formatter, next_line)
-			else
-				a_text_formatter.add (" (source code is not available)")
-				a_text_formatter.add_new_line
-			end
+	code: STRING is
+			-- Code error
+		deferred
 		end
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
@@ -124,4 +50,4 @@ indexing
 			 Customer support http://support.eiffel.com
 		]"
 
-end -- class VALIDITY_ERROR
+end -- class SYNTAX_ERROR

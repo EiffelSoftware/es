@@ -1,103 +1,21 @@
 indexing
-	description: "Generate a warning for an obsolete syntax."
+	description: "Not implemented yet."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
 	date: "$Date$"
-	revision: "$Revision$"
 
 class
 	SYNTAX_WARNING
-
-inherit
-	WARNING
-		redefine
-			trace, file_name
-		end
-
-	SYNTAX_MESSAGE
-
-	SHARED_WORKBENCH
-		export
-			{NONE} all
-		end
-
-	SHARED_TEXT_ITEMS
-		export
-			{NONE} all
-		end
 
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make (s, e: INTEGER; f: like file_name; m: STRING) is
+	make (s, e: INTEGER; f: STRING; m: STRING) is
 			-- Create a new SYNTAX_WARNING instance.
-		require
-			f_not_void: f /= Void
-			m_not_void: m /= Void
-		do
-			set_position (s, e)
-			warning_message := m
-			file_name := f
-			associated_class := System.current_class
-		ensure
-			line_set: line = s
-			column_set: column = e
-			warning_message_set: warning_message = m
-			file_name_set: file_name = f
-		end
-
-feature -- Properties
-
-	warning_message: STRING
-			-- Specify syntax issue message.
-
-	file_name: STRING
-			-- Path to file where syntax issue happened
-
-	code: STRING is "Syntax warning"
-			-- Error code
-
-	associated_class: CLASS_C
-			-- Class in which syntax warning occurred.
-
-feature -- Output
-
-	build_explain (a_text_formatter: TEXT_FORMATTER) is
 		do
 		end
-
-	trace (a_text_formatter: TEXT_FORMATTER) is
-			-- Debug purpose
-		do
-			initialize_output
-
-			a_text_formatter.add_error (Current, "Obsolete")
-			a_text_formatter.add (" syntax used at line ")
-			a_text_formatter.add_int (line)
-				-- Error happened in a class
-			a_text_formatter.add (" in class ")
-			a_text_formatter.add_class_syntax (Current, associated_class, associated_class.class_signature)
-			if warning_message /= Void then
-				a_text_formatter.add_new_line
-				a_text_formatter.add (warning_message)
-				a_text_formatter.add_new_line
-			end
-			a_text_formatter.add_new_line
-			build_explain (a_text_formatter)
-			if has_source_text then
-				display_line (a_text_formatter, previous_line)
-				display_syntax_line (a_text_formatter, current_line)
-				display_line (a_text_formatter, next_line)
-			else
-				a_text_formatter.add (" (source code is not available)")
-				a_text_formatter.add_new_line
-			end
-		end
-
-invariant
-	associated_class_not_void: associated_class /= Void
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
