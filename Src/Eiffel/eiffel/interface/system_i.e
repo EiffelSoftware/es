@@ -1442,9 +1442,10 @@ end
 			until
 				l_cursor.after
 			loop
-				if l_cursor.item.name.substring_index (class_name_prefix, 1) = 1 and
+				if l_cursor.item.name.as_upper.has_substring ("TEST") and
+					not l_cursor.item.group.is_used_in_library and
 					not unref_classes.has (l_cursor.item) then
-					add_unref_class (l_cursor.item)
+						add_unref_class (l_cursor.item)
 				end
 				l_cursor.forth
 			end
