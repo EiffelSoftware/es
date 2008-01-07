@@ -35,10 +35,7 @@ feature -- Execution
 				if io.last_string.count > 0 then
 					filter.filters.force_last (io.last_string.twin)
 				end
-				io.put_string ("Please enter tree key: ")
-				io.read_line
 				create tree.make (filter)
-				tree.set_key (io.last_string.twin)
 				print_nodes (tree.nodes, 1)
 			else
 				io.put_string ("Please compile project first.")

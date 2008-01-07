@@ -43,11 +43,12 @@ feature {NONE} -- Initialization
 feature -- Status
 
 	is_leaf: BOOLEAN is
-			-- Is this node a leaf node?
+			-- Is this node a leaf node? Note that a leaf node
+			-- can be sibling to an inner node.
 		do
-			Result := children.is_empty
+			Result := test_routine /= Void
 		ensure
-			definition: Result = children.is_empty
+			definition: Result = (test_routine /= Void)
 		end
 
 feature -- Access
@@ -87,6 +88,6 @@ invariant
 	tag_not_void: tag /= Void
 	children_not_void: children /= Void
 	children_doesnt_have_void: not children.has (Void)
-	test_routine_validity: not is_leaf implies (test_routine = Void)
+	leaf_doesnt_have_children: is_leaf implies (children.count = 0)
 
 end

@@ -1,12 +1,6 @@
 indexing
 	description: "[
-					Tree view of test suite; to be chained with filtered view. Grouping is 
-					defined via test routine tags. Tag A is a child of tag B, iff tag A
-					starts with the text of tag B followed by a dot ('.'). A test routine
-					can contain any number of tags; the tree key defines which tag is used
-					for building the tree structure. Only tags which start with the text of
-					the tree key are considered. Grouping is documented at
-					http://dev.eiffel.com/CddTreeViewSpec .
+					Tree view of test suite; to be chained with filtered view.
 				  ]"
 	author: "aleitner"
 	date: "$Date$"
@@ -27,7 +21,6 @@ feature {NONE} -- Initialization
 		do
 			filtered_view := a_filtered_view
 			change_agent := agent refresh
-			create key.make (0)
 			create change_actions
 		ensure
 			filtered_view_set: filtered_view = a_filtered_view
@@ -45,9 +38,6 @@ feature {ANY} -- Status Report
 		end
 
 feature {ANY} -- Access
-
-	key: STRING
-			-- Tree key
 
 	filtered_view: CDD_FILTERED_VIEW
 			-- Source where test routines are taken from
@@ -98,16 +88,6 @@ feature -- Event handling
 
 feature {ANY} -- Element change
 
-	set_key (a_key: like key) is
-			-- Set `key' to `a_key'.
-		require
-			a_key_not_void: a_key /= Void
-		do
-			key := a_key
-		ensure
-			key_set: key = a_key
-		end
-
 	refresh is
 			-- Update `nodes_cache' with information from `test_suite'.
         local
@@ -141,91 +121,27 @@ feature {NONE} -- Implementation
 			-- Remove all entries from nodes cache.
 		do
 			nodes_cache := Void
-			others_node := Void
 		ensure
 			nodes_cache_void: nodes_cache = Void
-			ohters_node_void: others_node = Void
 		end
 
 	insert_routine (a_routine: CDD_TEST_ROUTINE) is
-			-- Insert routine `a_routine' into the tree. Place it according
-			-- to `key'.
+			-- Insert routine `a_routine' into the tree.
 		require
 			a_routine_not_void: a_routine /= Void
 		local
-            tags: DS_LINEAR [STRING]
-            cs: DS_LINEAR_CURSOR [STRING]
-		do
-			from
-				tags := a_routine.tags_with_prefix (key)
-				cs := tags.new_cursor
-				cs.start
-			until
-				cs.off
-			loop
-				insert_routine_with_tag (a_routine, cs.item)
-				cs.forth
-			end
-		end
-
-	insert_routine_with_tag (a_routine: CDD_TEST_ROUTINE; a_tag: STRING) is
-			-- Insert routine `a_routine' into the tree using `a_tag' as path.
-		require
-			a_routine_not_void: a_routine /= Void
-		local
-			tokens: LIST [STRING]
-            grand_parent: DS_LIST [CDD_TREE_NODE]
-			parent: DS_LIST [CDD_TREE_NODE]
 			node: CDD_TREE_NODE
-            cs: DS_LINEAR_CURSOR [STRING]
-            tag: STRING
 		do
-			tokens := a_tag.split ('.')
-			if tokens /= Void then
-				from
-					parent := nodes_cache
-					tokens.start
-				until
-					tokens.islast
-				loop
-					grand_parent := parent
-					node := node_with_tag (grand_parent, tokens.item)
-					if node = Void then
-						create node.make (tokens.item)
-						parent := node.children
-						grand_parent.force_last (node)
-					else
-						parent := node.children
-					end
-					tokens.forth
-				end
-				tag := tokens.item
-			else
-				if others_node = Void then
-					insert_others_node
-					parent := others_node.children
-					tag := a_routine.test_class.test_class_name + "." + a_routine.name
-				end
-			end
-			create node.make_leaf (a_routine, tag)
-			parent.force_last (node)
+			create_path (a_routine.test_class.test_class_name, nodes_cache)
+			create node.make_leaf (a_routine, a_routine.name)
+			last_node.children.force_last (node)
 		end
 
-	insert_others_node is
-			-- Insert "others" node into tree and make it available via
-			-- `others_node'.
-		require
-			others_node_void: others_node = Void
-		do
-			create others_node.make ("others")
-			nodes_cache.force_last (others_node)
-		ensure
-			others_node_not_void: others_node /= Void
-		end
-
-	node_with_tag (a_list: DS_LINEAR [CDD_TREE_NODE]; a_tag: STRING): CDD_TREE_NODE is
-			-- Node in `a_list' with tag `a_tag' or Void if
-			-- no such node
+	create_node_with_tag (a_list: DS_LIST [CDD_TREE_NODE]; a_tag: STRING) is
+			-- Create node in `a_list' with tag `a_tag' and make it available via
+			-- `last_node'. If `a_list' already contains a node with `a_tag', do
+			-- not create a new node but make the existing node available
+			-- via `last_node' instead.
 		require
 			a_list_not_void: a_list /= Void
 			a_tag_not_void: a_tag /= Void
@@ -235,23 +151,56 @@ feature {NONE} -- Implementation
 			from
 				cs := a_list.new_cursor
 				cs.start
+				last_node := Void
 			until
-				cs.off or Result /= Void
+				cs.off or last_node /= Void
 			loop
 				if cs.item.tag.is_equal (a_tag) then
-					Result := cs.item
+					last_node := cs.item
 				end
 				cs.forth
 			end
 			cs.go_after
+			if last_node = Void then
+				create last_node.make (a_tag)
+				a_list.force_last (last_node)
+			end
 		end
 
-	others_node: CDD_TREE_NODE
-			-- Node that is parent to all nodes that don't match `key' at all
+	create_path (a_path: STRING; a_list: DS_LIST [CDD_TREE_NODE]) is
+			-- Create path `a_path' starting from list `a_list'. Make
+			-- last node of path available via `last_node'. If the whole
+			-- or a part of the path already exists, reuse existing part.
+		require
+			a_path_not_void: a_path /= Void
+			a_path_not_empty: not a_path.is_empty
+			a_list_not_void: a_list /= Void
+			a_list_doesnt_have_void: not a_list.has (Void)
+		local
+			tokens: LIST [STRING]
+			parent: DS_LIST [CDD_TREE_NODE]
+		do
+			tokens := a_path.split ('.')
+			from
+				parent := a_list
+				tokens.start
+			until
+				tokens.off
+			loop
+				create_node_with_tag (parent, tokens.item)
+				parent := last_node.children
+				tokens.forth
+			end
+		ensure
+			last_node_not_void: last_node /= Void
+		end
+
+	last_node: CDD_TREE_NODE
+			-- Last node created using `create_path' or
+			-- `create_node_with_tag'
 
 invariant
 
 	filtered_view_not_void: filtered_view /= Void
-	key_not_void: key /= Void
 
 end
