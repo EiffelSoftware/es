@@ -52,7 +52,7 @@ feature {NONE} -- Initialization
 			test_class_name_set: test_class_name = a_name
 		end
 
-	make_with_class (a_class: like test_class) is
+	make_with_class (a_class: like compiled_class) is
 			-- Initialize test class given a compiled class.
 		require
 			a_class_not_void: a_class /= Void
@@ -60,14 +60,14 @@ feature {NONE} -- Initialization
 		do
 			create test_routine_table.make_default
 			create test_routines.make_default
-			set_test_class (a_class)
+			set_compiled_class (a_class)
 		ensure
-			test_class_set: test_class = a_class
+			compiled_class_set: compiled_class = a_class
 		end
 
 feature -- Access
 
-	is_valid_test_class (a_class: like test_class): BOOLEAN is
+	is_valid_test_class (a_class: like compiled_class): BOOLEAN is
 			-- Is `a_class' a valid test class?
 		require
 			a_class_not_void: a_class /= Void
@@ -80,32 +80,32 @@ feature -- Access
 			result_implies_is_descendant: Result implies is_descendant_of_class (a_class, test_ancestor_class_name)
 		end
 
-	test_class: EIFFEL_CLASS_C
+	compiled_class: EIFFEL_CLASS_C
 			-- Compiled instance of test class
 
 	test_class_name: STRING
-			-- Name of the `test_class'
+			-- Name of the `compiled_class'
 
 	test_routines: DS_ARRAYED_LIST [CDD_TEST_ROUTINE]
 			-- Test routines associated with this class;
-			-- A test routine is a routine from class `test_class'
+			-- A test routine is a routine from class `compiled_class'
 			-- which has a name starting with `test_routine_prefix'.
 			-- This routine is updated whenever `test_routine_table' is.
 
 feature -- Element change
 
-	set_test_class (a_class: like test_class) is
-			-- Set `test_class' to `a_class'.
+	set_compiled_class (a_class: like compiled_class) is
+			-- Set `compiled_class' to `a_class'.
 		require
 			a_class_not_void: a_class /= Void
 			a_class_valid: is_valid_test_class (a_class)
 		do
-			test_class := a_class
+			compiled_class := a_class
 			test_class_name := a_class.name_in_upper
 			update_test_routines
 			update_tags
 		ensure
-			test_class_set: test_class = a_class
+			compiled_class_set: compiled_class = a_class
 		end
 
 feature {CDD_TEST_SUITE}
@@ -127,10 +127,10 @@ feature {CDD_TEST_SUITE}
 			old_table: like test_routine_table
 			rt: CDD_TEST_ROUTINE
 		do
-			if test_class /= Void and then test_class.has_feature_table then
+			if compiled_class /= Void and then compiled_class.has_feature_table then
 				old_table := test_routine_table
 				create test_routine_table.make_default
-				l_ft := test_class.feature_table
+				l_ft := compiled_class.feature_table
 				from
 					old_cs := l_ft.cursor
 					l_ft.start
@@ -158,7 +158,7 @@ feature {CDD_TEST_SUITE}
 feature {NONE} -- Implementation
 
 	internal_class_name: like test_class_name
-			-- Internally stored class name which is used when `test_class' is Void.
+			-- Internally stored class name which is used when `compiled_class' is Void.
 
 	test_routine_table: DS_HASH_TABLE [CDD_TEST_ROUTINE, STRING]
 			-- Table mapping all test routine names to their
@@ -190,8 +190,8 @@ feature {NONE} -- Implementation
 			l_value_list: EIFFEL_LIST [ATOMIC_AS]
 			v: STRING
 		do
-			if test_class /= Void then
-				l_ast := test_class.ast
+			if compiled_class /= Void then
+				l_ast := compiled_class.ast
 				l_ilist := l_ast.top_indexes
 				from
 					l_ilist.start
@@ -250,8 +250,8 @@ feature {NONE} -- Implementation
 
 invariant
 	test_class_name_not_void: test_class_name /= Void
-	test_class_name_valid: test_class /= Void implies test_class_name = test_class.name_in_upper
-	test_class_not_void_implies_has_ast: test_class /= Void implies is_valid_test_class (test_class)
+	test_class_name_valid: compiled_class /= Void implies test_class_name = compiled_class.name_in_upper
+	comlied_class_not_void_implies_has_ast: compiled_class /= Void implies is_valid_test_class (compiled_class)
 	test_routine_table_not_void: test_routine_table /= Void
 	test_routines_not_void: test_routines /= Void
 	test_routines_valid: test_routines.for_all (agent (a_routine: CDD_TEST_ROUTINE): BOOLEAN

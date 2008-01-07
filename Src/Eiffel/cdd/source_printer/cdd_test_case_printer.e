@@ -81,7 +81,7 @@ feature	-- Basic operations
 			-- `a_cs_uuid' is an ID for the call stack and `a_cs_level' is the
 			-- index of the frame beeing captured.
 		local
-			l_cluster_name, l_prefix, l_new_path: STRING
+			l_prefix, l_new_path: STRING
 			l_loc: CONF_LOCATION
 			l_output_file: KL_TEXT_OUTPUT_FILE
 			l_paths: DS_LINKED_LIST [STRING]

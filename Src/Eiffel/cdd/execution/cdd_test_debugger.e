@@ -95,7 +95,7 @@ feature -- Basic functionality
 				if cdd_manager.project.successful and is_running then
 					debugger_manager.application_quit_actions.extend (internal_reset_agent)
 					l_dbg_data := debugger_manager.debugger_data
-					l_eiffel_class := a_test_routine.test_class.test_class
+					l_eiffel_class := a_test_routine.test_class.compiled_class
 						-- Should not be void since we have just recompiled the system
 					check
 						test_class_not_void: l_eiffel_class /= Void

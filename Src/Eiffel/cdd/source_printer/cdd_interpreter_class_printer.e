@@ -147,8 +147,8 @@ feature {NONE} -- Implementation
 			until
 				l_cursor.after
 			loop
-				if l_cursor.item.test_class = Void or else
-					not l_cursor.item.test_class.is_ignored_test_class then
+				if l_cursor.item.compiled_class = Void or else
+					not l_cursor.item.compiled_class.is_ignored_test_class then
 					create pair.make ("create {" + l_cursor.item.test_class_name + "}",
 										l_cursor.item.test_class_name)
 					list.put_last (pair)
@@ -182,8 +182,8 @@ feature {NONE} -- Implementation
 			until
 				l_cursor.after
 			loop
-				if l_cursor.item.test_class = Void or else
-				not l_cursor.item.test_class.is_ignored_test_class then
+				if l_cursor.item.compiled_class = Void or else
+				not l_cursor.item.compiled_class.is_ignored_test_class then
 					l_routine_cursor := l_cursor.item.test_routines.new_cursor
 					from
 						l_routine_cursor.start

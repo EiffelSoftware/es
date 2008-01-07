@@ -18,12 +18,26 @@ inherit
 			internal_recycle
 		end
 
+	EVS_GRID_PND_SUPPORT
+		rename
+			internal_grid as grid
+		export
+			{NONE} all
+		redefine
+			grid
+		end
+
 	SHARED_EIFFEL_PROJECT
 		export
 			{NONE} all
 		end
 
 	EB_PIXMAPABLE_ITEM_PIXMAP_FACTORY
+		export
+			{NONE} all
+		end
+
+	EB_SHARED_PREFERENCES
 		export
 			{NONE} all
 		end
@@ -44,6 +58,7 @@ feature {NONE} -- Initialization
 
 			build_mini_toolbar
 			build_filter_box
+			build_toolbar
 			build_grid
 			build_status_bar
 		ensure then
@@ -112,20 +127,46 @@ feature {NONE} -- Initialization
 			widget.disable_item_expand (l_hbox)
 		end
 
-	select_filter_text is
+	build_toolbar is
+			-- Create toolbar containing buttons.
+		require
+			widget_not_void: widget /= Void
+		local
+			l_toolbar: EV_TOOL_BAR
+			l_sep: EV_TOOL_BAR_SEPARATOR
+			l_button: EV_TOOL_BAR_BUTTON
+			l_tbutton: EV_TOOL_BAR_TOGGLE_BUTTON
+
 		do
-			if filter_box.text.is_equal ("All") then
-				filter_box.set_text ("")
-			elseif filter_box.text.is_equal ("Failing%T%T(outcome.fail)") then
-				filter_box.set_text ("outcome.fail")
-			elseif filter_box.text.is_equal ("Unresolved%T(outcome.unresolved)") then
-				filter_box.set_text ("outcome.unresolved")
-			else
-				check
-					dead_end: False
-				end
-			end
-			update_filter
+			create l_toolbar
+
+			create l_button.make_with_text ("Debug")
+			l_button.set_tooltip ("Debug selected test routine")
+			--l_button.set_pixmap (pixmaps.icon_pixmaps.debug_run_icon)
+			l_toolbar.extend (l_button)
+
+			create l_button.make_with_text ("Stop")
+			l_button.set_tooltip ("Stop debugging")
+			--l_button.set_pixmap (pixmaps.icon_pixmaps.debug_stop_icon)
+			l_toolbar.extend (l_button)
+
+			create l_sep
+			l_toolbar.extend (l_sep)
+
+			create l_tbutton.make_with_text ("Execution")
+			l_tbutton.set_tooltip ("Turn background execution on/off")
+			--l_tbutton.set_pixmap (pixmaps.icon_pixmaps.debug_run_without_breakpoint_icon)
+			l_toolbar.extend (l_tbutton)
+			l_tbutton.enable_select
+
+			create l_tbutton.make_with_text ("Extraction")
+			l_tbutton.set_tooltip ("Turn extraction of new test cases on/off")
+			--l_tbutton.set_pixmap (pixmaps.icon_pixmaps.tool_breakpoints_icon)
+			l_toolbar.extend (l_tbutton)
+			l_tbutton.enable_select
+
+			widget.extend (l_toolbar)
+			widget.disable_item_expand (l_toolbar)
 		end
 
 	build_grid is
@@ -137,23 +178,24 @@ feature {NONE} -- Initialization
 		do
 			create grid
 			grid.enable_tree
-			grid.enable_multiple_row_selection
 			grid.enable_single_row_selection
 			grid.set_dynamic_content_function (agent fetch_grid_item)
 			grid.enable_partial_dynamic_content
-			grid.set_column_count_to (6)
+			grid.hide_tree_node_connectors
+			enable_grid_item_pnd_support
+			grid.set_focused_selection_color (preferences.editor_data.selection_background_color)
+			grid.row_select_actions.extend (agent highlight_row)
+			grid.row_deselect_actions.extend (agent dehighlight_row)
+
+			grid.set_column_count_to (4)
 			grid.column (1).set_title ("")
 			grid.column (1).set_width (300)
 			grid.column (2).set_title ("Outcome")
 			grid.column (2).set_width (90)
-			grid.column (3).set_title ("Test class")
+			grid.column (3).set_title ("Class")
 			grid.column (3).set_width (170)
-			grid.column (4).set_title ("Test routine")
+			grid.column (4).set_title ("Feature")
 			grid.column (4).set_width (170)
-			grid.column (5).set_title ("Class beeing tested")
-			grid.column (5).set_width (170)
-			grid.column (6).set_title ("Routine beeing tested")
-			grid.column (6).set_width (170)
 			widget.extend (grid)
 
 			create l_filter.make (cdd_manager.test_suite)
@@ -270,7 +312,7 @@ feature {NONE} -- Implementation (Widgets)
 	filter_box: EV_COMBO_BOX
 			-- Combo box for defining filter
 
-	grid: CDD_GRID
+	grid: ES_GRID
 			-- Grid for displaying `filter' results
 
 	status_label: EV_LABEL
@@ -357,13 +399,6 @@ feature {NONE} -- Implementation (grid)
 
 	refresh_grid is
 			-- Build grid.
-		local
-			i: INTEGER
-			l_cursor: DS_LINEAR_CURSOR [CDD_TREE_NODE]
-			l_stack: DS_LINKED_STACK [DS_LINEAR_CURSOR [CDD_TREE_NODE]]
-			l_row: EV_GRID_ROW
-			l_node: CDD_TREE_NODE
-			l_item: EV_GRID_LABEL_ITEM
 		do
 			develop_window.lock_update
 			if grid.row_count > 0 then
@@ -429,58 +464,125 @@ feature {NONE} -- Implementation (grid)
 			a_col_valid: a_col > 0 and a_col <= grid.column_count
 		local
 			l_node: CDD_TREE_NODE
-			l_tooltip: STRING
-			l_last: CDD_TEST_EXECUTION_RESPONSE
-			l_token_item: EB_GRID_EDITOR_TOKEN_ITEM
-			l_feature: FEATURE_I
-			l_label_item: EV_GRID_LABEL_ITEM
 		do
-			l_node := grid.row (a_row).tree_node
+			l_node ?= grid.row (a_row).data
 			if l_node /= Void then
 				if a_col = 1 then
-					if l_node.is_leaf and then l_node.test_routine.test_class.test_class /= Void then
-						l_feature := l_node.test_routine.test_class.test_class.feature_named (l_node.test_routine.name)
-						token_writer.new_line
-						create l_token_item
-						if l_feature /= Void then
-							l_feature.e_feature.append_signature (token_writer)
-							l_token_item.set_pixmap (pixmap_from_e_feature (l_feature.e_feature))
-						else
-							l_node.test_routine.test_class.test_class.append_name (token_writer)
-							l_token_item.set_pixmap (pixmap_from_class_i (l_node.test_routine.test_class.test_class.original_class))
-						end
-						-- TODO: finish...
-						create l_token_item.make_with_text (l_node.tag)
-						l_token_item.set_text_with_tokens (token_writer.last_line.content)
-						Result := l_token_item
+					Result := new_tree_node_item (l_node)
+				elseif l_node.is_leaf then
+					inspect
+						a_col
+					when 2 then
+						Result := new_outcome_item (l_node.test_routine)
+					when 3 then
+						Result := new_class_item (l_node.test_routine)
+					when 4 then
+						Result := new_feature_item (l_node.test_routine)
 					else
-						create {EV_GRID_LABEL_ITEM} Result.make_with_text (l_node.tag)
+						Result := empty_item
 					end
-				elseif a_col = 2 then
-					create l_label_item
-					if l_node.is_leaf then
-						if l_node.test_routine.outcomes.is_empty then
-							l_label_item.text.append ("not tested yet")
-							l_label_item.set_foreground_color (stock_colors.grey)
-						else
-							l_last := l_node.test_routine.outcomes.last
-							l_tooltip := l_last.out
-							if l_last.is_fail then
-								l_label_item.text.append ("FAIL")
-								l_label_item.set_foreground_color (stock_colors.red)
-							elseif l_last.is_pass then
-								l_label_item.text.append ("PASS")
-								l_label_item.set_foreground_color (stock_colors.green)
-							else
-								l_label_item.text.append ("UNRESOLVED")
-								l_label_item.set_foreground_color (stock_colors.grey)
-							end
-							l_label_item.set_tooltip (l_tooltip)
-						end
-						Result := l_label_item
-					end
+				else
+					Result := empty_item
 				end
+			else
+				Result := empty_item
 			end
+		ensure
+			not_void: Result /= Void
+		end
+
+	new_tree_node_item (a_node: CDD_TREE_NODE): EB_GRID_EDITOR_TOKEN_ITEM is
+			-- Item displaying clickable content of `a_node'
+		require
+			a_node_not_void: a_node /= Void
+		local
+			l_class: EIFFEL_CLASS_C
+			l_feature: E_FEATURE
+		do
+			create Result
+			token_writer.new_line
+			if a_node.is_leaf then
+				l_class := a_node.test_routine.test_class.compiled_class
+				if l_class /= Void then
+					l_feature := l_class.feature_with_name (a_node.test_routine.name)
+				end
+				if l_feature /= Void then
+					token_writer.process_feature_text (a_node.tag, l_feature, False)
+					Result.set_pixmap (pixmap_from_e_feature (l_feature))
+				else
+					token_writer.process_basic_text (a_node.tag)
+					Result.set_pixmap (pixmaps.icon_pixmaps.feature_routine_icon)
+				end
+			else
+				token_writer.process_basic_text (a_node.tag)
+			end
+			Result.set_text_with_tokens (token_writer.last_line.content)
+		ensure
+			not_void: Result /= Void
+		end
+
+	new_outcome_item (a_test_routine: CDD_TEST_ROUTINE): CDD_GRID_OUTCOME_ITEM is
+			--
+		require
+			a_test_routine_not_void: a_test_routine /= Void
+		local
+			l_last: CDD_TEST_EXECUTION_RESPONSE
+			l_tooltip: STRING
+		do
+			if a_test_routine.outcomes.is_empty then
+				create Result.make
+			else
+				create Result.make_with_outcome (a_test_routine.outcomes.first)
+			end
+--			create Result
+--			if a_test_routine.outcomes.is_empty then
+--				Result.text.append ("not tested yet")
+--				Result.set_foreground_color (stock_colors.grey)
+--			else
+--				l_last := a_test_routine.outcomes.last
+--				l_tooltip := l_last.out
+--				if l_last.is_fail then
+--					Result.text.append ("FAIL")
+--					Result.set_foreground_color (stock_colors.red)
+--					Result.select_actions.extend (agent (an_item: EV_GRID_LABEL_ITEM)
+--						do
+--							an_item.set_foreground_color (an_item.foreground_color)
+--						end)
+--				elseif l_last.is_pass then
+--					Result.text.append ("PASS")
+--					Result.set_foreground_color (stock_colors.green)
+--				else
+--					Result.text.append ("UNRESOLVED")
+--					Result.set_foreground_color (stock_colors.grey)
+--				end
+--				Result.set_tooltip (l_tooltip)
+--			end
+		ensure
+			not_void: Result /= Void
+		end
+
+	new_class_item (a_test_routine: CDD_TEST_ROUTINE): EB_GRID_EDITOR_TOKEN_ITEM is
+			--
+		do
+			create Result.make_with_text ("TODO")
+		ensure
+			not_void: Result /= Void
+		end
+
+	new_feature_item (a_test_routine: CDD_TEST_ROUTINE): EB_GRID_EDITOR_TOKEN_ITEM is
+			--
+		do
+			create Result.make_with_text ("TODO")
+		ensure
+			not_void: Result /= Void
+		end
+
+	empty_item: EV_GRID_ITEM is
+			-- Empty grid item
+		do
+			create Result
+		ensure
+			not_void: Result /= Void
 		end
 
 	update_filter is
@@ -503,6 +605,43 @@ feature {NONE} -- Implementation (grid)
 			end
 			tree_view.filtered_view.refresh
 		end
+
+	select_filter_text is
+		do
+			if filter_box.text.is_equal ("All") then
+				filter_box.set_text ("")
+			elseif filter_box.text.is_equal ("Failing%T%T(outcome.fail)") then
+				filter_box.set_text ("outcome.fail")
+			elseif filter_box.text.is_equal ("Unresolved%T(outcome.unresolved)") then
+				filter_box.set_text ("outcome.unresolved")
+			else
+				check
+					dead_end: False
+				end
+			end
+			update_filter
+		end
+
+	highlight_row (a_row: EV_GRID_ROW) is
+			-- Make `a_row' look like it is fully selected.
+		require
+			a_row_not_void: a_row /= Void
+		do
+			if grid.has_focus then
+				a_row.set_background_color (preferences.editor_data.selection_background_color)
+			else
+				a_row.set_background_color (preferences.editor_data.focus_out_selection_background_color)
+			end
+		end
+
+	dehighlight_row (a_row: EV_GRID_ROW) is
+			-- Make `a_row' look like it is not selected.
+		require
+			a_row_not_void: a_row /= Void
+		do
+			a_row.set_background_color (preferences.editor_data.class_background_color)
+		end
+
 
 invariant
 
