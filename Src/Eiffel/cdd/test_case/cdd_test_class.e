@@ -127,7 +127,7 @@ feature {CDD_TEST_SUITE}
 			old_table: like test_routine_table
 			rt: CDD_TEST_ROUTINE
 		do
-			if test_class /= Void then
+			if test_class /= Void and then test_class.has_feature_table then
 				old_table := test_routine_table
 				create test_routine_table.make_default
 				l_ft := test_class.feature_table
