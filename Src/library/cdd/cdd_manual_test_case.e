@@ -16,15 +16,20 @@ inherit
 	CDD_ABSTRACT_TEST_CASE
 		redefine
 			set_up,
-			tear_down
+			tear_down,
+			is_set_up
 		end
 
 feature -- Basic operations
+
+	is_set_up: BOOLEAN
+			-- Has `current' been set up yet?
 
 	set_up is
 			-- Initialize required state for running `Current'.
 			-- Redefine in descendats to provide custom setup.
 		do
+			is_set_up := True
 		end
 
 	tear_down is
