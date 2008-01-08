@@ -153,6 +153,14 @@ feature {NONE} -- Initialization
 			create l_sep
 			l_toolbar.extend (l_sep)
 
+			create l_button.make_with_text ("New")
+			l_button.set_tooltip ("Create new manual test class")
+			--l_button.set_pixmap (pixmaps.icon_pixmaps.debug_stop_icon)
+			l_toolbar.extend (l_button)
+
+			create l_sep
+			l_toolbar.extend (l_sep)
+
 			create l_tbutton.make_with_text ("Execution")
 			l_tbutton.set_tooltip ("Turn background execution on/off")
 			--l_tbutton.set_pixmap (pixmaps.icon_pixmaps.debug_run_without_breakpoint_icon)
@@ -186,6 +194,8 @@ feature {NONE} -- Initialization
 			grid.set_focused_selection_color (preferences.editor_data.selection_background_color)
 			grid.row_select_actions.extend (agent highlight_row)
 			grid.row_deselect_actions.extend (agent dehighlight_row)
+			grid.set_focused_selection_text_color (preferences.editor_data.selection_text_color)
+			--grid.set_focused_selection_color (grid.fo)
 
 			grid.set_column_count_to (4)
 			grid.column (1).set_title ("")
@@ -521,7 +531,7 @@ feature {NONE} -- Implementation (grid)
 			not_void: Result /= Void
 		end
 
-	new_outcome_item (a_test_routine: CDD_TEST_ROUTINE): CDD_GRID_OUTCOME_ITEM is
+	new_outcome_item (a_test_routine: CDD_TEST_ROUTINE): EV_GRID_LABEL_ITEM is
 			--
 		require
 			a_test_routine_not_void: a_test_routine /= Void
@@ -529,34 +539,34 @@ feature {NONE} -- Implementation (grid)
 			l_last: CDD_TEST_EXECUTION_RESPONSE
 			l_tooltip: STRING
 		do
-			if a_test_routine.outcomes.is_empty then
-				create Result.make
-			else
-				create Result.make_with_outcome (a_test_routine.outcomes.first)
-			end
---			create Result
 --			if a_test_routine.outcomes.is_empty then
---				Result.text.append ("not tested yet")
---				Result.set_foreground_color (stock_colors.grey)
+--				create Result.make
 --			else
---				l_last := a_test_routine.outcomes.last
---				l_tooltip := l_last.out
---				if l_last.is_fail then
---					Result.text.append ("FAIL")
---					Result.set_foreground_color (stock_colors.red)
---					Result.select_actions.extend (agent (an_item: EV_GRID_LABEL_ITEM)
---						do
---							an_item.set_foreground_color (an_item.foreground_color)
---						end)
---				elseif l_last.is_pass then
---					Result.text.append ("PASS")
---					Result.set_foreground_color (stock_colors.green)
---				else
---					Result.text.append ("UNRESOLVED")
---					Result.set_foreground_color (stock_colors.grey)
---				end
---				Result.set_tooltip (l_tooltip)
+--				create Result.make_with_outcome (a_test_routine.outcomes.first)
 --			end
+			create Result
+			if a_test_routine.outcomes.is_empty then
+				Result.text.append ("not tested yet")
+				Result.set_foreground_color (stock_colors.grey)
+			else
+				l_last := a_test_routine.outcomes.last
+				l_tooltip := l_last.out
+				if l_last.is_fail then
+					Result.text.append ("FAIL")
+					Result.set_foreground_color (stock_colors.red)
+					Result.select_actions.extend (agent (an_item: EV_GRID_LABEL_ITEM)
+						do
+							an_item.set_foreground_color (an_item.foreground_color)
+						end)
+				elseif l_last.is_pass then
+					Result.text.append ("PASS")
+					Result.set_foreground_color (stock_colors.green)
+				else
+					Result.text.append ("UNRESOLVED")
+					Result.set_foreground_color (stock_colors.grey)
+				end
+				Result.set_tooltip (l_tooltip)
+			end
 		ensure
 			not_void: Result /= Void
 		end
