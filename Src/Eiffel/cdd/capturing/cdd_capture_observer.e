@@ -16,11 +16,12 @@ feature -- Access
 
 feature -- Status setting
 
-	start (a_feature: E_FEATURE; a_class: CLASS_C; a_cs_uuid: UUID; a_cs_level: INTEGER) is
+	start (an_adv: ABSTRACT_DEBUG_VALUE; a_feature: E_FEATURE; a_class: CLASS_C; a_cs_uuid: UUID; a_cs_level: INTEGER) is
 			-- Start capturing state for `a_feature' in `a_class'.
 			-- `a_cs_uuid' is an ID for the call stack.
 		require
 			not_initialized: not is_initialized
+			an_adv_not_void: an_adv /= Void
 			a_feature_not_void: a_feature /= Void
 			a_class_not_void: a_class /= Void
 			a_cs_uuid_not_void: a_cs_uuid /= Void

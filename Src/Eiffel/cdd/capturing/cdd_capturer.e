@@ -120,7 +120,7 @@ feature {NONE} -- Implementation (Capturing)
 			until
 				l_cursor.after
 			loop
-				l_cursor.item.start (l_feature, l_class, a_cs_uuid, a_cs_level)
+				l_cursor.item.start (a_cse.current_object_value, l_feature, l_class, a_cs_uuid, a_cs_level)
 				l_cursor.forth
 			end
 
@@ -140,7 +140,7 @@ feature {NONE} -- Implementation (Capturing)
 			end
 			if i > 0 then
 				l_arguments.put_first (a_cse.current_object_value)
-				l_type.append (a_cse.dynamic_class.name_in_upper)
+				l_type.append (a_cse.current_object_value.dump_value.generating_type_representation (True))
 				if l_feature.argument_count > 0 then
 					l_type.append (", ")
 				end
@@ -153,6 +153,7 @@ feature {NONE} -- Implementation (Capturing)
 			loop
 				l_arguments.put (a_cse.arguments.i_th (j), j + i)
 				l_type.append (a_cse.arguments.i_th (j).dump_value.generating_type_representation (True))
+				--l_type.append (l_feature.arguments.i_th (j).associated_class.name_in_upper)
 				if l_feature.argument_count > j then
 					l_type.append (", ")
 				end

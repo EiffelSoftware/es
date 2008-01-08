@@ -76,7 +76,7 @@ feature -- Access
 
 feature	-- Basic operations
 
-	start_capturing (a_feature: E_FEATURE; a_class: CLASS_C; a_cs_uuid: UUID; a_cs_level: INTEGER) is
+	start_capturing (an_adv: ABSTRACT_DEBUG_VALUE; a_feature: E_FEATURE; a_class: CLASS_C; a_cs_uuid: UUID; a_cs_level: INTEGER) is
 			-- Start capturing state for `a_feature' in `a_class'.
 			-- `a_cs_uuid' is an ID for the call stack and `a_cs_level' is the
 			-- index of the frame beeing captured.
@@ -162,7 +162,7 @@ feature	-- Basic operations
 					put_indexing (a_cs_uuid.out, a_cs_level)
 					put_class_header
 
-					put_set_up (a_feature, is_creation_feature (a_feature))
+					put_set_up (an_adv, a_feature, is_creation_feature (a_feature))
 					put_access (a_class.name_in_upper, a_feature)
 					put_context_header
 
@@ -331,7 +331,7 @@ feature {NONE} -- Implementation
 			output_stream.dedent
 		end
 
-	put_set_up (a_feature: E_FEATURE; an_is_creation_call: BOOLEAN) is
+	put_set_up (an_adv: ABSTRACT_DEBUG_VALUE; a_feature: E_FEATURE; an_is_creation_call: BOOLEAN) is
 			-- Append class header text for 'test_class_name'
 		require
 			initialized_and_not_failed: is_initialized and not failed
@@ -352,7 +352,7 @@ feature {NONE} -- Implementation
 			output_stream.dedent
 			output_stream.put_line ("do")
 			output_stream.indent
-			l_class := a_feature.associated_class.name_in_upper
+			l_class := an_adv.dump_value.generating_type_representation (True) -- a_feature.associated_class.name_in_upper
 			l_agent := "routine_under_test := agent"
 			l_is_fix := a_feature.is_infix or a_feature.is_prefix
 			if an_is_creation_call or l_is_fix then
