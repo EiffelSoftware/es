@@ -312,7 +312,8 @@ feature {NONE} -- Implementation (Capturing)
 					end
 				end
 			elseif an_adv.kind = {VALUE_TYPES}.immediate_value then
-				Result := an_adv.output_value
+					-- transform into eiffel manifest string by escaping non printable characters
+				Result := string_formatter.eiffel_string_out (an_adv.output_value)
 			else
 				Result := "Void"
 			end
@@ -414,6 +415,15 @@ feature {NONE} -- Implementation
 
 	uuid_generator: UUID_GENERATOR is
 			-- UUID generator for creating uuid's
+		once
+			create Result
+		ensure
+			not_void: Result /= Void
+		end
+
+
+	string_formatter: UT_STRING_FORMATTER is
+			-- String formatter to generate escaped eiffel manifest strings
 		once
 			create Result
 		ensure
