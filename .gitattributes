@@ -3703,5 +3703,6 @@ free_add_ons/wex/library/wex/clib/cwex.lib svneol=native#unset
 tests/cdd/array_as_argument/input.txt -text
 tests/cdd/failure_in_infix/input.txt -text
 tests/cdd/false_postcondition_001/input.txt -text
+tests/cdd/false_postcondition_generic_class_001/input.txt -text
 tests/cdd/false_precondition_001/extract.sh -text
 tests/cdd/false_precondition_001/input.txt -text
