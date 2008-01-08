@@ -19,19 +19,19 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_class (a_class: like test_class) is
+	make_with_class (a_class: like compiled_class) is
 				-- Initialize test class.
 		  local
 				l_feat: E_CONSTANT
 		  do
 				Precursor (a_class)
-				l_feat ?= test_class.feature_with_name ("class_under_test")
+				l_feat ?= compiled_class.feature_with_name ("class_under_test")
 				if l_feat /= Void then
 					 class_name := l_feat.value
 				else
 					 create class_name.make_empty
 				end
-				l_feat ?= test_class.feature_with_name ("feature_under_test")
+				l_feat ?= compiled_class.feature_with_name ("feature_under_test")
 				if l_feat /= Void then
 					 feature_name := l_feat.value
 				else
