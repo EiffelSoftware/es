@@ -39,6 +39,9 @@ feature -- Project constants
 	max_reference_depth: INTEGER is 5
 			-- Max depth capturer will follow object references when extracting
 
+	max_object_count: INTEGER is 2000
+			-- Max number of objects that will be extracted per test class
+
 	max_execution_attempts: INTEGER is 3
 			-- How many time do we try to execute a test case which has killed or jammed to interpreter?
 

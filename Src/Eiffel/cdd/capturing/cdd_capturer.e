@@ -274,21 +274,19 @@ feature {NONE} -- Implementation (Capturing)
 			l_value: STRING
 		do
 			create {DS_LINKED_LIST [STRING]} Result.make
-			if a_depth <= max_reference_depth then
-				from
-					l_cursor := an_attr_list.new_cursor
-					l_cursor.start
-				until
-					l_cursor.after
-				loop
-					l_child := l_cursor.item
-					l_value := attribute_value (l_child, a_depth + 1)
-					if an_use_attr_names then
-						Result.put_last (l_child.name)
-					end
-					Result.put_last (l_value)
-					l_cursor.forth
+			from
+				l_cursor := an_attr_list.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_child := l_cursor.item
+				l_value := attribute_value (l_child, a_depth + 1)
+				if an_use_attr_names then
+					Result.put_last (l_child.name)
 				end
+				Result.put_last (l_value)
+				l_cursor.forth
 			end
 		end
 
@@ -303,9 +301,15 @@ feature {NONE} -- Implementation (Capturing)
 			if is_reference_value (an_adv) then
 				if  an_adv.dynamic_class /= Void and then an_adv.dynamic_class.is_eiffel_class_c then
 					if not object_map.has (an_adv.address) then
-						add_referenced_object (an_adv, a_depth)
+						if max_object_count <= current_object_id and a_depth <= max_reference_depth then
+							add_referenced_object (an_adv, a_depth)
+							Result := object_map.item (an_adv.address)
+						else
+							Result := "Void"
+						end
+					else
+						Result := object_map.item (an_adv.address)
 					end
-					Result := object_map.item (an_adv.address)
 				end
 			elseif an_adv.kind = {VALUE_TYPES}.immediate_value then
 				Result := an_adv.output_value
