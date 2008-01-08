@@ -147,6 +147,7 @@ feature -- Element change
 				if item.count >= count and item.substring (1, count).is_equal (a_prefix) then
 					item.wipe_out
 					item.append_string (a_new_tag)
+					found := True
 				else
 					cs.forth
 				end
