@@ -47,6 +47,8 @@ feature -- Basic operations
 		do
 			set_up_routine
 			set_up_context
+		ensure then
+			is_set_up: is_set_up
 		end
 
 	test is
