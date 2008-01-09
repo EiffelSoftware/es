@@ -41,6 +41,7 @@ feature -- Execution
 
 				io.put_string ("Compiling interpreter...%N")
 				from
+	--				l_executor.cancel
 					l_executor.start
 				until
 					not l_executor.has_next_step

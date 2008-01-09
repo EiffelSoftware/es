@@ -129,10 +129,14 @@ feature -- Basic operations
 			-- Stop all running processes.
 		do
 			if is_compiling then
-				compiler.terminate
+				if compiler.is_running then
+					compiler.terminate
+				end
 				compiler := Void
 			else
-				proxy.stop
+				if proxy.is_launched then
+					proxy.stop
+				end
 				proxy := Void
 			end
 			cdd_manager.status_update_actions.call ([update_step])
