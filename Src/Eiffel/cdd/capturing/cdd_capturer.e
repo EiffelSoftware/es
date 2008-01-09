@@ -303,7 +303,7 @@ feature {NONE} -- Implementation (Capturing)
 			if is_reference_value (an_adv) then
 				if  an_adv.dynamic_class /= Void and then an_adv.dynamic_class.is_eiffel_class_c then
 					if not object_map.has (an_adv.address) then
-						if max_object_count <= current_object_id and a_depth <= max_reference_depth then
+						if current_object_id <= max_object_count and a_depth <= max_reference_depth then
 							add_referenced_object (an_adv, a_depth)
 							Result := object_map.item (an_adv.address)
 						else
