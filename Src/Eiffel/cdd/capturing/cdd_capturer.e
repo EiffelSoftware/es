@@ -18,6 +18,8 @@ inherit
 
 	CDD_CONSTANTS
 
+	UT_STRING_FORMATTER
+
 create
 	make
 
@@ -313,7 +315,7 @@ feature {NONE} -- Implementation (Capturing)
 				end
 			elseif an_adv.kind = {VALUE_TYPES}.immediate_value then
 					-- transform into eiffel manifest string by escaping non printable characters
-				Result := string_formatter.eiffel_string_out (an_adv.output_value)
+				Result := eiffel_string_out (an_adv.output_value)
 			else
 				Result := "Void"
 			end
@@ -421,14 +423,6 @@ feature {NONE} -- Implementation
 			not_void: Result /= Void
 		end
 
-
-	string_formatter: UT_STRING_FORMATTER is
-			-- String formatter to generate escaped eiffel manifest strings
-		once
-			create Result
-		ensure
-			not_void: Result /= Void
-		end
 
 invariant
 	capture_observers_not_void: capture_observers /= Void
