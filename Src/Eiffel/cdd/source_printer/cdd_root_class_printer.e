@@ -132,7 +132,7 @@ feature {NONE} -- Implementation
 			output_stream.indent
 			output_stream.put_line ("local")
 			output_stream.indent
-			output_stream.put_line ("l_abstract_test_case: CDD_ABSTRACT_TEST_CASE")
+			output_stream.put_line ("l_abstract_test_case: CDD_TEST_CASE")
 			output_stream.put_line ("l_test_case: " + a_test_routine.test_class.test_class_name)
 			output_stream.dedent
 			output_stream.put_line ("do")
