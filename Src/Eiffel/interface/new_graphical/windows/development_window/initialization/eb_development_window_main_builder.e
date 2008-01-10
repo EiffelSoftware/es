@@ -614,6 +614,7 @@ feature -- Command
 
 				-- CDD tool
 			build_cdd_tool
+			build_cdd_output_tool
 
 				-- Build the refactoring tools
 			develop_window.commands.toolbarable_commands.extend (develop_window.refactoring_manager.pull_command)
@@ -1030,6 +1031,16 @@ feature{NONE} -- Implementation
 			create l_tool.make (develop_window)
 			develop_window.tools.set_cdd_tool (l_tool)
 			setup_tool (l_tool, "show_cdd_tool")
+		end
+
+	build_cdd_output_tool is
+			-- Build CDD output tool.
+		local
+			l_tool: CDD_OUTPUT_TOOL
+		do
+			create l_tool.make (develop_window)
+			develop_window.tools.set_cdd_output_tool (l_tool)
+			setup_tool (l_tool, "show_cdd_output_tool")
 		end
 
 	build_customized_tools is

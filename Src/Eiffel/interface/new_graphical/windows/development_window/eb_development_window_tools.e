@@ -213,7 +213,7 @@ feature -- Query
 	all_tools: ARRAYED_LIST [EB_TOOL] is
 			-- All tools
 		do
-			create Result.make (18)
+			create Result.make (19)
 			if favorites_tool /= Void then
 				Result.extend (favorites_tool)
 			end
@@ -270,6 +270,9 @@ feature -- Query
 			end
 			if cdd_tool /= Void then
 				Result.extend (cdd_tool)
+			end
+			if cdd_output_tool /= Void then
+				Result.extend (cdd_output_tool)
 			end
 			Result.append (develop_window.eb_debugger_manager.all_tools)
 			Result.append (customized_tools)
@@ -342,6 +345,9 @@ feature -- Query
 
 	cdd_tool: CDD_TOOL
 			-- CDD tool
+
+	cdd_output_tool: CDD_OUTPUT_TOOL
+			-- CDD output tool
 
 	customized_tools: LIST [EB_CUSTOMIZED_TOOL] is
 			-- Customized tools
@@ -614,6 +620,15 @@ feature {EB_DEVELOPMENT_WINDOW_MAIN_BUILDER, EB_DEVELOPMENT_WINDOW} -- Setting
 		ensure
 			cdd_tool_set: cdd_tool = a_tool
 		end
+
+	set_cdd_output_tool (a_tool: like cdd_output_tool) is
+			-- Set `cdd_output_tool' to `a_tool'.
+		do
+			cdd_output_tool := a_tool
+		ensure
+			cdd_tool_set: cdd_tool = a_tool
+		end
+
 
 
 feature{NONE} -- Implementation

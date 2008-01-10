@@ -1001,6 +1001,7 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			Result.wipe_out
 			fill_show_menu_for_tool (Result, develop_window.tools.features_tool)
 			fill_show_menu_for_tool (Result, develop_window.tools.cluster_tool)
+			fill_show_menu_for_tool (Result, develop_window.tools.cdd_tool)
 			Result.extend (create {EV_MENU_SEPARATOR})
 			fill_show_menu_for_tool (Result, develop_window.tools.class_tool)
 			fill_show_menu_for_tool (Result, develop_window.tools.features_relation_tool)
@@ -1008,6 +1009,7 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			fill_show_menu_for_tool (Result, develop_window.tools.output_tool)
 			fill_show_menu_for_tool (Result, develop_window.tools.c_output_tool)
 			fill_show_menu_for_tool (Result, develop_window.tools.external_output_tool)
+			fill_show_menu_for_tool (Result, develop_window.tools.cdd_output_tool)
 			Result.extend (create {EV_MENU_SEPARATOR})
 			fill_show_menu_for_tool (Result, develop_window.tools.errors_tool)
 			fill_show_menu_for_tool (Result, develop_window.tools.warnings_tool)
@@ -1019,7 +1021,6 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			fill_show_menu_for_tool (Result, develop_window.tools.diagram_tool)
 			fill_show_menu_for_tool (Result, develop_window.tools.metric_tool)
 			fill_show_menu_for_tool (Result, develop_window.tools.dependency_tool)
-			fill_show_menu_for_tool (Result, develop_window.tools.cdd_tool)
 			Result.extend (create {EV_MENU_SEPARATOR})
 			fill_show_menu_for_tool (Result, develop_window.tools.windows_tool)
 			fill_show_menu_for_tool (Result, develop_window.tools.favorites_tool)
