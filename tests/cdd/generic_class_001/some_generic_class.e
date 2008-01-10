@@ -4,26 +4,26 @@ indexing
 	revision: "$Revision$"
 
 class
-	ROOT_CLASS
+	SOME_GENERIC_CLASS[G]
 
 create
 	make
 
 feature -- Initialization
 
+
 	make is
 		do
-			bar
 		end
 
-	bar is
+	foo is
 			-- Fail with a postcondition violation.
 		require
 			precondition: True
 		do
-		
+
 		ensure
-			false_postcondition: False
+		  false_postcondition: False
 		end
 
 end

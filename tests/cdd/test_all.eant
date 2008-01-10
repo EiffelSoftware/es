@@ -1,0 +1,32 @@
+<project name="test_all" default="test_all">
+
+  <target name="clean_all">
+    <description> delete unused files </description>
+	  <delete>
+	  	<fileset include="**/*.@(rc|outcome)" filename_directory="." />
+	  </delete>
+	  <delete>
+	  	<fileset include="**/exception_trace.log" filename_directory="." />
+	  </delete>
+		<exec executable="rm -fr ${fs.mapped_filename}/EIFGENs">
+		  <fileset include="@(**/config.ecf)" force="false">
+		    <map type="glob" from="*/config.ecf" to="*" />
+		  </fileset>
+		</exec>
+		<exec executable="rm -fr ${fs.mapped_filename}/cdd_tests">
+		  <fileset include="@(**/config.ecf)" force="false">
+		    <map type="glob" from="*/config.ecf" to="*" />
+		  </fileset>
+		</exec>
+  </target>
+
+  <target name="test_all" depend="clean_all">
+    <description> test all test cases in call directory </description>
+	  <exec executable="execute_ec.bat ${fs.filename} ec_loop_input.txt ${fs.mapped_filename}${path_separator}zzz.outcome">
+		  <fileset include="@(**/config.ecf)" force="false">
+		    <map type="glob" from="*/config.ecf" to="*" />
+		  </fileset>
+	  </exec>
+  </target>
+
+</project>

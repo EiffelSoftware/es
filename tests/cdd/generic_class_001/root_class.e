@@ -17,13 +17,12 @@ feature -- Initialization
 		end
 
 	bar is
-			-- Fail with a postcondition violation.
-		require
-			precondition: True
+			-- Fail with a precondition violation.
+		local
+			foo: SOME_GENERIC_CLASS[ANY]
 		do
-		
-		ensure
-			false_postcondition: False
+			create foo.make
+			foo.foo
 		end
 
 end

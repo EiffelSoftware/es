@@ -11,19 +11,22 @@ create
 
 feature -- Initialization
 
+	some_new_line_char: CHARACTER_8
+
 	make is
 		do
-			bar
+			some_new_line_char := '%N'
+			bar(some_new_line_char)
 		end
 
-	bar is
-			-- Fail with a postcondition violation.
+	bar(a_char: CHARACTER) is
+			-- Fail with a precondition violation.
 		require
 			precondition: True
 		do
-		
+
 		ensure
-			false_postcondition: False
+			postcondition: False
 		end
 
 end

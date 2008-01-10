@@ -22,6 +22,8 @@ feature -- Initialization
 			false_precondition: False
 		do
 
+		ensure
+			postcondition: True
 		end
 
 end

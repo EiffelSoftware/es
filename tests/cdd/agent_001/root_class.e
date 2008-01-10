@@ -12,16 +12,19 @@ create
 feature -- Initialization
 
 	make is
+		local
+			l_procedure: PROCEDURE[ROOT_CLASS,TUPLE[INTEGER]]
 		do
-			bar
+			l_procedure := agent current.bar(?)
+			l_procedure.call([3])
 		end
 
-	bar is
+	bar(some_arg: INTEGER) is
 			-- Fail with a postcondition violation.
 		require
 			precondition: True
 		do
-		
+
 		ensure
 			false_postcondition: False
 		end
