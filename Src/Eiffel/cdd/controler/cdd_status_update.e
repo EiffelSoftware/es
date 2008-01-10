@@ -34,6 +34,8 @@ feature -- Access
 	executor_step_code,
 			-- The executor is compiling the interpreter
 			-- or executing the next test routine
+	executor_filter_change,
+			-- The executor received a new filter for testing
 	debugger_step_code,
 			-- The test debugger changed its state
 	capture_error_code,
@@ -49,6 +51,7 @@ feature -- Access
 				a_code = enable_extracting_code or
 				a_code = disable_extracting_code or
 				a_code = executor_step_code or
+				a_code = executor_filter_change or
 				a_code = debugger_step_code or
 				a_code = capture_error_code or
 				a_code = execution_error_code

@@ -40,20 +40,15 @@ feature {NONE} -- Initialization
 		do
 			cdd_manager := a_cdd_manager
 			create root_class_printer.make (test_suite)
+			create default_filter.make (test_suite)
+			default_filter.enable_observing
+			filter := default_filter
 		ensure
 			cdd_manager_set: cdd_manager = a_cdd_manager
+			filter_set_to_default: filter = default_filter
 		end
 
 feature -- Status report
-
-	test_suite: CDD_TEST_SUITE is
-			-- Test suite containing tests we want to test
-		do
-			Result := cdd_manager.test_suite
-		end
-
-	cdd_manager: CDD_MANAGER
-			-- Manager controlling `Current'
 
 	has_next_step: BOOLEAN is
 			-- Is the test executor currently either compiling or testing?
@@ -79,22 +74,74 @@ feature -- Status report
 
 feature -- Access
 
-	current_test_class: CDD_TEST_CLASS is
-			-- Test class currently beeing tested;
-			-- Void if currently not testing
+	cdd_manager: CDD_MANAGER
+			-- Manager controlling `Current'
+
+	test_suite: CDD_TEST_SUITE is
+			-- Test suite containing tests we want to test
 		do
-			if test_class_cursor /= Void then
-				Result := test_class_cursor.item
-			end
+			Result := cdd_manager.test_suite
+		ensure
+			valid: Result = cdd_manager.test_suite
 		end
+
+	filter: CDD_FILTERED_VIEW
+			-- Filter containing test routines beeing tested
+			-- in the next testing session
 
 	current_test_routine: CDD_TEST_ROUTINE is
 			-- Routine currently beeing tested;
 			-- Void if currently not testing
+		require
+			executing: is_executing
 		do
-			if test_routine_cursor /= Void then
-				Result := test_routine_cursor.item
-			end
+			Result := test_routines.item_for_iteration
+		ensure
+			not_void: Result /= Void
+			current_item: Result = test_routines.item_for_iteration
+		end
+
+	count: INTEGER is
+			-- Number of test routines beeing tested
+		require
+			executing: is_executing
+		do
+			Result := test_routines.count
+		ensure
+			same_as_test_routines: Result = test_routines.count
+		end
+
+	index: INTEGER is
+			-- Index of test routine currently beeing tested
+		require
+			executing: is_executing
+		do
+			Result := test_routines.index
+		ensure
+			same_as_test_routines: Result = test_routines.index
+		end
+
+feature -- Status settings
+
+	set_filter (a_filter: like filter) is
+			-- Set `filter' to `a_filter'.
+		require
+			a_filter_not_void: a_filter /= Void
+			a_filter_valid: a_filter.test_suite = test_suite
+		do
+			filter := a_filter
+			cdd_manager.status_update_actions.call ([create {CDD_STATUS_UPDATE}.make_with_code ({CDD_STATUS_UPDATE}.executor_filter_change)])
+		ensure
+			filter_set: filter = a_filter
+		end
+
+	reset_filter is
+			-- Set `filter' to `default_filter'.
+		do
+			filter := default_filter
+			cdd_manager.status_update_actions.call ([create {CDD_STATUS_UPDATE}.make_with_code ({CDD_STATUS_UPDATE}.executor_filter_change)])
+		ensure
+			filter_reset: filter = default_filter
 		end
 
 feature -- Basic operations
@@ -108,11 +155,12 @@ feature -- Basic operations
 			if has_next_step then
 				cancel
 			end
-			if not test_suite.test_classes.is_empty then
+			if not filter.test_routines.is_empty then
 				root_class_printer.print_class
 				if root_class_printer.last_print_succeeded then
+					create test_routines.make_from_linear (filter.test_routines)
 					create compiler.make
-					compiler.set_output_handler (agent io.put_string)
+					compiler.set_output_handler (agent redirect_output)
 					cdd_manager.status_update_actions.call ([update_step])
 					l_target := test_suite.target
 					l_system := l_target.system
@@ -139,6 +187,7 @@ feature -- Basic operations
 				end
 				proxy := Void
 			end
+			test_routines := Void
 			cdd_manager.status_update_actions.call ([update_step])
 		end
 
@@ -195,14 +244,15 @@ feature {NONE} -- Implementation (execution)
 					proxy.start
 				end
 			end
-			if current_test_class = Void then
+			if test_routines.after then
 				proxy.stop
 				proxy := Void
+				test_routines := Void
 				cdd_manager.status_update_actions.call ([update_step])
 			else
 				if proxy.is_ready then
 					cdd_manager.status_update_actions.call ([update_step])
-					proxy.execute_test_async (current_test_class.test_class_name, current_test_routine.name)
+					proxy.execute_test_async (current_test_routine.test_class.test_class_name, current_test_routine.name)
 				elseif proxy.is_executing_request then
 					proxy.process_response
 				end
@@ -212,9 +262,10 @@ feature {NONE} -- Implementation (execution)
 	select_first_test_routine is
 			-- Select first routine under test. Similar to
 			-- `select_next_test_routine'.
+		require
+			is_executing: is_executing
 		do
-			test_class_cursor := test_suite.test_classes.new_cursor
-			select_next_test_routine
+			test_routines.start
 		end
 
 	select_next_test_routine is
@@ -224,25 +275,7 @@ feature {NONE} -- Implementation (execution)
 		require
 			is_executing: is_executing
 		do
-			if test_routine_cursor = Void or else test_routine_cursor.after or else test_routine_cursor.is_last then
-					-- Skip test classes with no test routines.
-				from
-					test_class_cursor.forth
-				until
-					test_class_cursor.after or else not test_class_cursor.item.test_routines.is_empty
-				loop
-					test_class_cursor.forth
-				end
-				if test_class_cursor.after then
-					test_routine_cursor := Void
-					test_class_cursor := Void
-				else
-					test_routine_cursor := test_class_cursor.item.test_routines.new_cursor
-					test_routine_cursor.start
-				end
-			else
-				test_routine_cursor.forth
-			end
+			test_routines.forth
 		end
 
 	interpreter_pathname: FILE_NAME is
@@ -261,7 +294,19 @@ feature {NONE} -- Implementation (execution)
 			filename_not_void: Result /= Void
 		end
 
+	redirect_output (a_string: STRING) is
+			-- Redirect `a_string' to cdd manager as new output.
+		require
+			a_string_not_void: a_string /= Void
+		do
+			io.put_string (a_string)
+			cdd_manager.output_actions.call ([a_string])
+		end
+
 feature {NONE} -- Implementation
+
+	default_filter: like filter
+			-- Default filter containing all test routines
 
 	compiler: AUT_ISE_EIFFEL_COMPILER
 			-- Process for compiling the interpreter
@@ -269,15 +314,9 @@ feature {NONE} -- Implementation
 	proxy: CDD_INTERPRETER_PROXY
 			-- Proxy for communicating with interpreter
 
-	test_class_cursor: DS_BILINEAR_CURSOR [CDD_TEST_CLASS]
-			-- Cursor pointing to current test case beeing tested
-
-	test_routine_cursor: DS_BILINEAR_CURSOR [CDD_TEST_ROUTINE]
-			-- Cursor pointing to current routines beeing tested;
-			-- May be Void if no routine is currently under test.
-
-	testing_output_buffer: STRING
-			-- Output from testing process
+	test_routines: DS_ARRAYED_LIST [CDD_TEST_ROUTINE]
+			-- List containing all routines which are tested
+			-- during a test session
 
 	root_class_printer: CDD_INTERPRETER_CLASS_PRINTER
 			-- Printer for root class (interpreter)
@@ -293,10 +332,13 @@ feature {NONE} -- Implementation
 invariant
 
 	cdd_manager_not_void: cdd_manager /= Void
-	not_executing_and_compiling: not (is_executing and is_compiling)
 	test_suite_not_void: test_suite /= Void
+	filter_not_void: filter /= Void
+	filter_valid: filter.test_suite = test_suite
+	default_filter_not_void: default_filter /= Void
 	root_class_printer_not_void: root_class_printer /= Void
-	is_executing_implies_correct_cursor: is_executing implies (test_class_cursor /= Void and then not test_class_cursor.off)
-	test_class_cursor_not_off: test_class_cursor /= Void implies not test_class_cursor.off
-	test_routine_cursor_not_off: test_routine_cursor /= Void implies not test_routine_cursor.off
+	not_executing_and_compiling: not (is_executing and is_compiling)
+	has_next_step_implies_test_routines_not_void: has_next_step = (test_routines /= Void)
+	is_executing_implies_test_routines_not_off: is_executing implies not test_routines.off
+
 end

@@ -59,7 +59,7 @@ feature {NONE} -- Initialization
 			build_mini_toolbar
 			build_filter_box
 			build_toolbar
-			build_grid
+			build_grids
 			build_status_bar
 		ensure then
 			cdd_manager_set: cdd_manager = develop_window.eb_debugger_manager.cdd_manager
@@ -72,19 +72,11 @@ feature {NONE} -- Initialization
 		do
 			create mini_toolbar.make
 
-			create run_button.make
-			run_button.set_tooltip ("Run test cases")
-			run_button.set_pixmap (pixmaps.mini_pixmaps.general_next_icon)
-			run_button.select_actions.extend (agent debug_test_routine)
-
 			create toggle_extraction_button.make
 			toggle_extraction_button.set_tooltip ("Enable/Disable extraction")
 			toggle_extraction_button.set_pixmap (pixmaps.mini_pixmaps.general_toogle_icon)
 			toggle_extraction_button.select_actions.extend (agent toggle_extraction)
 
-			mini_toolbar.extend (run_button)
-			create l_sep.make
-			mini_toolbar.extend (l_sep)
 			mini_toolbar.extend (toggle_extraction_button)
 			create l_sep.make
 			mini_toolbar.extend (l_sep)
@@ -140,15 +132,17 @@ feature {NONE} -- Initialization
 		do
 			create l_toolbar
 
-			create l_button.make_with_text ("Debug")
-			l_button.set_tooltip ("Debug selected test routine")
-			--l_button.set_pixmap (pixmaps.icon_pixmaps.debug_run_icon)
-			l_toolbar.extend (l_button)
+			create debug_button.make_with_text ("Debug")
+			debug_button.select_actions.extend (agent debug_test_routine)
+			debug_button.set_tooltip ("Debug selected test routine")
+			--debug_button.set_pixmap (pixmaps.mini_pixmaps.general_next_icon)
+			l_toolbar.extend (debug_button)
 
-			create l_button.make_with_text ("Stop")
-			l_button.set_tooltip ("Stop debugging")
+			create toggle_filter_button.make_with_text ("Exec Set")
+			toggle_filter_button.select_actions.extend (agent toggle_filter)
+			toggle_filter_button.set_tooltip ("Only execute visible test routines")
 			--l_button.set_pixmap (pixmaps.icon_pixmaps.debug_stop_icon)
-			l_toolbar.extend (l_button)
+			l_toolbar.extend (toggle_filter_button)
 
 			create l_sep
 			l_toolbar.extend (l_sep)
@@ -177,13 +171,18 @@ feature {NONE} -- Initialization
 			widget.disable_item_expand (l_toolbar)
 		end
 
-	build_grid is
+	build_grids is
 			-- Create `grid' and add it to `widget'.
 		require
 			widget_not_void: widget /= Void
 		local
 			l_filter: CDD_FILTERED_VIEW
+			l_split_area: EV_VERTICAL_SPLIT_AREA
+			l_notebook: EV_NOTEBOOK
+			l_cell: EV_CELL
 		do
+			create l_split_area
+
 			create grid
 			grid.enable_tree
 			grid.enable_single_row_selection
@@ -192,21 +191,24 @@ feature {NONE} -- Initialization
 			grid.hide_tree_node_connectors
 			enable_grid_item_pnd_support
 			grid.set_focused_selection_color (preferences.editor_data.selection_background_color)
+			grid.set_non_focused_selection_color (preferences.editor_data.focus_out_selection_background_color)
 			grid.row_select_actions.extend (agent highlight_row)
 			grid.row_deselect_actions.extend (agent dehighlight_row)
+			grid.focus_in_actions.extend (agent change_focus)
+			grid.focus_out_actions.extend (agent change_focus)
 			grid.set_focused_selection_text_color (preferences.editor_data.selection_text_color)
-			--grid.set_focused_selection_color (grid.fo)
 
 			grid.set_column_count_to (4)
 			grid.column (1).set_title ("")
-			grid.column (1).set_width (300)
+			grid.column (1).set_width (200)
 			grid.column (2).set_title ("Outcome")
-			grid.column (2).set_width (90)
+			grid.column (2).set_width (45)
 			grid.column (3).set_title ("Class")
 			grid.column (3).set_width (170)
 			grid.column (4).set_title ("Feature")
 			grid.column (4).set_width (170)
-			widget.extend (grid)
+
+			l_split_area.extend (grid)
 
 			create l_filter.make (cdd_manager.test_suite)
 			l_filter.enable_observing
@@ -214,6 +216,19 @@ feature {NONE} -- Initialization
 			tree_view.enable_observing
 			refresh_grid
 			tree_view.change_actions.extend (agent refresh_grid)
+
+			create l_notebook
+			create l_cell
+			l_notebook.extend (l_cell)
+			l_notebook.set_item_text (l_cell, "Trace")
+			create l_cell
+			l_notebook.extend (l_cell)
+			l_notebook.set_item_text (l_cell, "Related")
+
+			l_split_area.extend (l_notebook)
+			l_split_area.set_proportion (0.3)
+
+			widget.extend (l_split_area)
 		end
 
 	build_status_bar is
@@ -223,6 +238,8 @@ feature {NONE} -- Initialization
 		local
 			l_frame: EV_FRAME
 			l_status_bar: EV_STATUS_BAR
+
+			l_label: EV_LABEL
 		do
 			create l_status_bar
 			l_status_bar.set_border_width (2)
@@ -233,6 +250,22 @@ feature {NONE} -- Initialization
 			status_label.align_text_left
 			l_frame.extend (status_label)
 			l_status_bar.extend (l_frame)
+
+			create l_frame
+			l_frame.set_style ({EV_FRAME_CONSTANTS}.ev_frame_lowered)
+			create l_label.make_with_text ("3/10 Tests Fail")
+			l_frame.extend (l_label)
+			l_status_bar.extend (l_frame)
+			l_status_bar.disable_item_expand (l_frame)
+
+			create l_frame
+			l_frame.set_style ({EV_FRAME_CONSTANTS}.ev_frame_lowered)
+			l_frame.set_minimum_width (100)
+			create progress_bar
+			progress_bar.set_proportion (0.0)
+			l_frame.extend (progress_bar)
+			l_status_bar.extend (l_frame)
+			l_status_bar.disable_item_expand (l_frame)
 
 			widget.extend (l_status_bar)
 			widget.disable_item_expand (l_status_bar)
@@ -278,6 +311,7 @@ feature {NONE} -- Implementation (Basic functionality)
 				if not l_exec.has_next_step then
 					--run_button.enable_sensitive
 					show_message ("Finished executing")
+					progress_bar.set_proportion (0.0)
 				else
 					--run_button.disable_sensitive
 					if l_exec.is_compiling then
@@ -286,7 +320,15 @@ feature {NONE} -- Implementation (Basic functionality)
 						l_label := "Testing " + l_exec.current_test_routine.test_class.test_class_name
 						l_label.append ("." + l_exec.current_test_routine.name)
 						show_message (l_label)
+						progress_bar.set_proportion (l_exec.index / l_exec.count)
 					end
+				end
+			when {CDD_STATUS_UPDATE}.executor_filter_change then
+				l_exec := cdd_manager.background_executor
+				if l_exec.filter = tree_view.filtered_view then
+					toggle_filter_button.enable_select
+				else
+					toggle_filter_button.disable_select
 				end
 			when {CDD_STATUS_UPDATE}.debugger_step_code then
 				l_debug := cdd_manager.debug_executor
@@ -328,9 +370,15 @@ feature {NONE} -- Implementation (Widgets)
 	status_label: EV_LABEL
 			-- Label describing current tester status
 
+	progress_bar: EV_HORIZONTAL_PROGRESS_BAR
+			-- Progress bar showing progress of test executor
+
 feature {NONE} -- Implementation (Buttons)
 
-	run_button: SD_TOOL_BAR_BUTTON
+	toggle_filter_button: EV_TOOL_BAR_TOGGLE_BUTTON
+			-- Button for setting current filter as test executors filter
+
+	debug_button: EV_TOOL_BAR_BUTTON
 			-- Button for running test executor
 
 	toggle_extraction_button: SD_TOOL_BAR_TOGGLE_BUTTON
@@ -356,6 +404,16 @@ feature {NONE} -- Implementation
 				end
 			else
 				show_error ("Please select a test routine")
+			end
+		end
+
+	toggle_filter is
+			-- (Un)set current filter in test executor.
+		do
+			if toggle_filter_button.is_selected then
+				cdd_manager.background_executor.set_filter (tree_view.filtered_view)
+			else
+				cdd_manager.background_executor.reset_filter
 			end
 		end
 
@@ -532,18 +590,13 @@ feature {NONE} -- Implementation (grid)
 		end
 
 	new_outcome_item (a_test_routine: CDD_TEST_ROUTINE): EV_GRID_LABEL_ITEM is
-			--
+			-- Grid item showing last outcome of `a_test_routine'
 		require
 			a_test_routine_not_void: a_test_routine /= Void
 		local
 			l_last: CDD_TEST_EXECUTION_RESPONSE
 			l_tooltip: STRING
 		do
---			if a_test_routine.outcomes.is_empty then
---				create Result.make
---			else
---				create Result.make_with_outcome (a_test_routine.outcomes.first)
---			end
 			create Result
 			if a_test_routine.outcomes.is_empty then
 				Result.text.append ("not tested yet")
@@ -572,7 +625,7 @@ feature {NONE} -- Implementation (grid)
 		end
 
 	new_class_item (a_test_routine: CDD_TEST_ROUTINE): EB_GRID_EDITOR_TOKEN_ITEM is
-			--
+			-- Grid item displaying class of `a_test_routine'
 		do
 			create Result.make_with_text ("TODO")
 		ensure
@@ -580,7 +633,7 @@ feature {NONE} -- Implementation (grid)
 		end
 
 	new_feature_item (a_test_routine: CDD_TEST_ROUTINE): EB_GRID_EDITOR_TOKEN_ITEM is
-			--
+			-- Grid item displaying feature of `a_test_routine'
 		do
 			create Result.make_with_text ("TODO")
 		ensure
@@ -652,6 +705,22 @@ feature {NONE} -- Implementation (grid)
 			a_row.set_background_color (preferences.editor_data.class_background_color)
 		end
 
+	change_focus is
+			-- Make sure all selected rows have correct background color.
+		local
+			l_selected: LIST [EV_GRID_ROW]
+		do
+			l_selected := grid.selected_rows
+			from
+				l_selected.start
+			until
+				l_selected.after
+			loop
+				highlight_row (l_selected.item)
+				l_selected.forth
+			end
+		end
+
 
 invariant
 
@@ -665,7 +734,11 @@ invariant
 	filter_box_not_void: filter_box /= Void
 	grid_not_void: grid /= Void
 	status_label_not_void: status_label /= Void
-	run_button_not_void: run_button /= Void
+	debug_button_not_void: debug_button /= Void
+	toggle_filter_button_not_void: toggle_filter_button /= Void
+	progress_bar_not_void: progress_bar /= Void
+
+
 	toggle_extraction_button_not_void: toggle_extraction_button /= Void
 
 end
