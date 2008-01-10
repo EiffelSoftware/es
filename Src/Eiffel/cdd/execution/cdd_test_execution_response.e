@@ -8,7 +8,7 @@ class CDD_TEST_EXECUTION_RESPONSE
 
 inherit
 
-	ANY
+	KL_SHARED_EXCEPTIONS
 		redefine
 			out
 		end
@@ -69,10 +69,24 @@ feature {ANY} -- Status
 
 	has_bad_context: BOOLEAN is
 			-- Does the test case seem to have an invalid context?
-			-- (e.g. are the preconditions of the feature under test not satisfied?)
+			-- This is the case when
+			-- 1) the precondition of the routine under test is violated
+			-- 2) the invariant of the input data is violated (this is a complicated case)
+			-- 3) the execution of `setup' raised an exception
+			-- Note about 2) A naive definitoin of an invariant for the input data set
+			-- would be that the invariant has to hold for all objects in the set.
+			-- Due to the dependant delegate issue (invariant violation on callback)
+			-- this definition is too simplistic. The defintion used for this implementation
+			-- is that the invariant has to hold for all objects that were not target to
+			-- an executing routine at the time of the failure. Such objects are marked
+			-- with a flag in the test case.
 		do
-			if test_response /= Void and then test_response.is_exceptional then
-				-- TODO: need test class/routine information...
+			Result := setup_response /= Void and then setup_response.is_exceptional
+			if not Result then
+				if test_response /= Void and then test_response.is_exceptional then
+					Result := test_response.exception.trace_depth = 1 and then
+								test_response.exception.exception_code = exceptions_.precondition
+				end
 			end
 		end
 

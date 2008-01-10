@@ -45,7 +45,7 @@ feature -- Parsing
 			last_response_text.wipe_out
 			parse_routine_invocation_response
 			setup_response := last_routine_response
-			if not setup_response.is_bad then
+			if setup_response.is_normal then
 				parse_routine_invocation_response
 				test_response := last_routine_response
 				if not test_response.is_bad then
