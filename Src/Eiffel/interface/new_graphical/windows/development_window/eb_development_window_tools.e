@@ -626,7 +626,7 @@ feature {EB_DEVELOPMENT_WINDOW_MAIN_BUILDER, EB_DEVELOPMENT_WINDOW} -- Setting
 		do
 			cdd_output_tool := a_tool
 		ensure
-			cdd_tool_set: cdd_tool = a_tool
+			cdd_tool_set: cdd_output_tool = a_tool
 		end
 
 

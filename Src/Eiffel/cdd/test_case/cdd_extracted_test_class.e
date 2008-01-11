@@ -97,7 +97,7 @@ feature -- Access
 					 Result := l_class.cluster
 				end
 		  ensure
-				not_void_equals_class_not_void: Result /= Void = class_under_test /= Void
+				not_void_equals_class_not_void: (Result /= Void) = (class_under_test /= Void)
 		  end
 
 feature -- Not implemented

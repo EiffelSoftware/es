@@ -22,7 +22,7 @@ feature {NONE} -- Initialization
 		require
 			a_cdd_manager_not_void: a_cdd_manager /= Void
 		do
-			create test_routine_update_actions.make
+			create test_routine_update_actions
 			cdd_manager := a_cdd_manager
 			create test_class_table.make_default
 			create test_classes.make_default
@@ -62,6 +62,7 @@ feature -- Element change
 			l_cursor: DS_LINEAR_CURSOR [CDD_TEST_ROUTINE]
 		do
 			test_classes.force_last (a_test_class)
+
 			create l_list.make (a_test_class.test_routines.count)
 			l_cursor := a_test_class.test_routines.new_cursor
 			from

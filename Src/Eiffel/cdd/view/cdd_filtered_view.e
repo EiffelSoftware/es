@@ -17,7 +17,7 @@ feature {NONE} -- Initialization
 		require
 			a_test_suite_not_void: a_test_suite /= Void
 		do
-			create change_actions.make
+			create change_actions
 			test_suite := a_test_suite
 			create filters.make_default
 			change_agent := agent incremental_refresh
