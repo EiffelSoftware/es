@@ -1,0 +1,53 @@
+<project name="test_all" default="help">
+
+  <target name="help">
+    <echo message="usage:"/>
+    <echo message="   geant test_all"/>
+    <echo message="   geant clobber"/>
+  </target>
+
+  <target name="clobber">
+    <description>
+      Remove all generated files.
+    </description>
+    <delete>
+      <fileset include="**/*.@(rc|outcome)" filename_directory="." />
+    </delete>
+    <delete>
+      <fileset include="**/exception_trace.log" filename_directory="." />
+    </delete>
+    <exec executable="rm -fr ${fs.mapped_filename}/EIFGENs">
+      <fileset include="@(**/config.ecf)" force="false">
+	 <map type="glob" from="*/config.ecf" to="*" />
+      </fileset>
+    </exec>
+    <exec executable="rm -fr ${fs.mapped_filename}/cdd_tests">
+      <fileset include="@(**/config.ecf)" force="false">
+	 <map type="glob" from="*/config.ecf" to="*" />
+      </fileset>
+    </exec>
+  </target>
+
+  <target name="test_all_windows" if="${is_windows}">
+    <description> test all test cases in call directory (windows) </description>
+    <exec executable="execute_ec.bat ${fs.filename} ec_loop_input.txt ${fs.mapped_filename}${path_separator}zzz.outcome" accept_errors="true">
+      <fileset include="@(**/config.ecf)" force="true">
+	 <map type="glob" from="*/config.ecf" to="*" />
+      </fileset>
+    </exec>
+  </target>
+
+  <target name="test_all_unix" if="${is_unix}">
+    <description> test all test cases in call directory (unix) </description>
+    <exec executable="./execute_ec.sh ${fs.filename} ./ec_loop_input.txt ./${fs.mapped_filename}${path_separator}zzz.outcome" accept_errors="true">
+      <fileset include="@(**/config.ecf)" force="true">
+	 <map type="glob" from="*/config.ecf" to="*" />
+      </fileset>
+    </exec>
+  </target>
+
+  <target name="test_all" depend="clobber, test_all_windows, test_all_unix">
+    <description> test all test cases in call directory </description>
+  </target>
+
+</project>
