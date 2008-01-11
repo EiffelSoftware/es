@@ -45,6 +45,7 @@ feature -- Status report
 			regexp: RX_PCRE_REGULAR_EXPRESSION
 		do
 			create regexp.make
+			regexp.set_caseless (True)
 			regexp.compile (a_pattern)
 			from
 				cs := tags.new_cursor
