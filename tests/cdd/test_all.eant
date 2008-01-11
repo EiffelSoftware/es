@@ -22,7 +22,7 @@
 
   <target name="test_all" depend="clean_all">
     <description> test all test cases in call directory </description>
-	  <exec executable="execute_ec.bat ${fs.filename} ec_loop_input.txt ${fs.mapped_filename}${path_separator}zzz.outcome">
+	  <exec executable="execute_ec.bat ${fs.filename} ec_loop_input.txt ${fs.mapped_filename}${path_separator}zzz.outcome" accept_errors="true">
 		  <fileset include="@(**/config.ecf)" force="false">
 		    <map type="glob" from="*/config.ecf" to="*" />
 		  </fileset>

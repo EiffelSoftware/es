@@ -3702,5 +3702,4 @@ free_add_ons/wex/examples/wex/MCI_Splash/APP.ICO svneol=native#unset
 free_add_ons/wex/library/wex/clib/cwex.lib svneol=native#unset
 tests/cdd/ec_loop_input.txt -text
 tests/cdd/execute_ec -text
-tests/cdd/false_postcondition_generic_class_001/input.txt -text
 tests/cdd/readme.txt -text
