@@ -24,8 +24,10 @@ feature {NONE} -- Initialization
 		do
 			create test_routine_update_actions
 			cdd_manager := a_cdd_manager
+			cdd_manager.status_update_actions.extend (agent check_for_modified_class)
 			create test_class_table.make_default
 			create test_classes.make_default
+			create modified_classes.make_default
 		ensure
 			cdd_manager_set: cdd_manager = a_cdd_manager
 		end
@@ -50,6 +52,18 @@ feature -- Access
 			-- this list is updated whenever `test_class_table',
 			-- is updated.
 
+	has_test_case_for_class (a_class: EIFFEL_CLASS_C): BOOLEAN is
+			-- Do we have a test class for `a_class'?
+		require
+			a_class_not_void: a_class /= Void
+		do
+			Result := test_class_table.has (a_class.name_in_upper) and then
+				test_class_table.item (a_class.name_in_upper).compiled_class = a_class
+		ensure
+			correct_result: Result = test_class_table.has (a_class.name_in_upper) and then
+				test_class_table.item (a_class.name_in_upper).compiled_class = a_class
+		end
+
 feature -- Element change
 
 	add_test_class (a_test_class: CDD_TEST_CLASS) is
@@ -62,7 +76,7 @@ feature -- Element change
 			l_cursor: DS_LINEAR_CURSOR [CDD_TEST_ROUTINE]
 		do
 			test_classes.force_last (a_test_class)
-
+			test_class_table.force (a_test_class, a_test_class.test_class_name)
 			create l_list.make (a_test_class.test_routines.count)
 			l_cursor := a_test_class.test_routines.new_cursor
 			from
@@ -78,21 +92,18 @@ feature -- Element change
 			added: test_classes.has (a_test_class)
 		end
 
-feature -- State change
+feature {CDD_MANAGER} -- State change
 
 	refresh is
 			-- Refresh information from system under test.
 		require
 			project_initialized: cdd_manager.is_project_initialized
 		do
-			update_test_class_ancestor
-			if test_class_ancestor /= Void then
-				update_class_table
-			else
-				test_class_table.wipe_out
-			end
-			-- TODO: provide list with all changes done during last `refresh'
-			test_routine_update_actions.call ([Void])
+			create {DS_ARRAYED_LIST [CDD_TEST_ROUTINE_UPDATE]} status_updates.make_default
+			update_class_table
+			test_routine_update_actions.call ([status_updates])
+		ensure
+			modified_classes_empty: modified_classes.is_empty
 		end
 
 feature -- Event handling
@@ -106,11 +117,28 @@ feature -- Event handling
 
 feature {NONE} -- Implementation
 
-	test_class_table: DS_HASH_TABLE [CDD_TEST_CLASS, EIFFEL_CLASS_C]
+	test_class_table: DS_HASH_TABLE [CDD_TEST_CLASS, STRING]
 			-- Table mapping eiffel classes to their test class object
+
+	modified_classes: DS_ARRAYED_LIST [EIFFEL_CLASS_C]
+			-- Test classes which have been modified since last compilation
 
 	test_class_ancestor: EIFFEL_CLASS_C
 			-- Ancestor all test classes must inherit from
+
+	status_updates: DS_LIST [CDD_TEST_ROUTINE_UPDATE]
+			-- List with all test routine updates since last `refresh'
+
+	check_for_modified_class (an_update: CDD_STATUS_UPDATE) is
+			-- Check if a test class has been modified and if
+			-- so add it to `modified_classes'.
+		require
+			an_update_not_void: an_update /= Void
+		do
+			if an_update.code = {CDD_STATUS_UPDATE}.test_class_update_code then
+				modified_classes.force_last (cdd_manager.last_updated_test_class)
+			end
+		end
 
 	update_test_class_ancestor is
 			-- Find ancestor of all test cases (CDD_TEST_CASE) and make it
@@ -142,13 +170,37 @@ feature {NONE} -- Implementation
 	update_class_table is
 			-- Update `test_class_tbale' with current information from system.
 		require
-			test_class_ancestor_not_void: test_class_ancestor /= Void
+			status_updates_not_void: status_updates /= Void
 		local
-			old_table: like test_class_table
+			l_old_table: like test_class_table
+			l_cursor: DS_LINEAR_CURSOR [CDD_TEST_ROUTINE]
 		do
-			old_table := test_class_table
+			update_test_class_ancestor
+			l_old_table := test_class_table
 			create test_class_table.make_default
-			fill_with_descendants (test_class_ancestor, old_table)
+			if test_class_ancestor /= Void then
+				fill_with_descendants (test_class_ancestor, l_old_table)
+			end
+
+				-- Create remove update for each remaining test routine in `l_old_table'
+			from
+				l_old_table.start
+			until
+				l_old_table.after
+			loop
+				l_cursor := l_old_table.item_for_iteration.test_routines.new_cursor
+				from
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					status_updates.force_last (create {CDD_TEST_ROUTINE_UPDATE}.make (l_cursor.item, {CDD_TEST_ROUTINE_UPDATE}.remove_code))
+					l_cursor.forth
+				end
+				l_old_table.forth
+			end
+
+				-- This should not be necessary once bug is fixed in gobo library
 			create test_classes.make_from_array (test_class_table.to_array)
 		end
 
@@ -159,10 +211,12 @@ feature {NONE} -- Implementation
 		require
 			an_ancestor_not_void: an_ancestor /= Void
 			an_old_list_not_void: an_old_list /= Void
+			status_updates_not_void: status_updates /= Void
 		local
 			l_list: ARRAYED_LIST [CLASS_C]
 			l_ec: EIFFEL_CLASS_C
 			test_class: CDD_TEST_CLASS
+			l_update: BOOLEAN
 		do
 			l_list := an_ancestor.descendants
 			from
@@ -173,18 +227,31 @@ feature {NONE} -- Implementation
 				l_ec ?= l_list.item
 				if l_ec /= Void then
 					if not l_ec.is_deferred then
-						an_old_list.search (l_ec)
+						l_update := True
+						an_old_list.search (l_ec.name_in_upper)
 						if an_old_list.found then
 							test_class := an_old_list.found_item
-							test_class.update_test_routines
-							test_class.update_tags
+							an_old_list.remove_found_item
+							if test_class.compiled_class = Void then
+								test_class.set_compiled_class (l_ec)
+								test_class.update
+							elseif modified_classes.has (l_ec) then
+								test_class.update
+							else
+									-- The test class existed and was not
+									-- changed since last `refresh'
+								l_update := False
+							end
 						else
 							create test_class.make_with_class (l_ec)
 						end
 						check
 							test_class_not_void: test_class /= Void
 						end
-						test_class_table.force (test_class, l_ec)
+						if l_update then
+							status_updates.extend_last (test_class.status_updates)
+						end
+						test_class_table.force (test_class, l_ec.name_in_upper)
 					end
 					fill_with_descendants (l_ec, an_old_list)
 				end
@@ -196,5 +263,8 @@ invariant
 	test_routine_update_actions_not_void: test_routine_update_actions /= Void
 	test_class_table_not_void: test_class_table /= Void and not test_class_table.has (Void)
 	test_classes_not_void: test_classes /= Void and not test_classes.has (Void)
+	modified_classes_not_void: modified_classes /= Void
+	modified_classes_valid: not modified_classes.has (Void)
+	modified_classes_valid: modified_classes.for_all (agent has_test_case_for_class)
 
 end

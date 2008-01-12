@@ -774,7 +774,9 @@ feature {NONE} -- Implementation
 			until
 				l_targets.after
 			loop
-				Result.put_last (l_targets.key_for_iteration)
+				if not l_targets.item_for_iteration.is_cdd_target then
+					Result.put_last (l_targets.key_for_iteration)
+				end
 				l_targets.forth
 			end
 			Result.sort (

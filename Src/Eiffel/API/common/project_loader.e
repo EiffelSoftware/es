@@ -827,11 +827,17 @@ feature {NONE} -- Settings
 				until
 					a_targets.after
 				loop
-					l_list.put_last (a_targets.key_for_iteration)
+					if not a_targets.item_for_iteration.is_cdd_target then
+						l_list.put_last (a_targets.key_for_iteration)
+					end
 					a_targets.forth
 				end
-				l_list.sort (create {DS_QUICK_SORTER [STRING]}.make (create {KL_COMPARABLE_COMPARATOR [STRING]}.make))
-				ask_for_target_name (a_proposed_target, l_list)
+				if l_list.count = 1 then
+					target_name := l_list.first
+				else
+					l_list.sort (create {DS_QUICK_SORTER [STRING]}.make (create {KL_COMPARABLE_COMPARATOR [STRING]}.make))
+					ask_for_target_name (a_proposed_target, l_list)
+				end
 			end
 		ensure
 			target_name_set: not has_error implies target_name /= Void and then not target_name.is_empty

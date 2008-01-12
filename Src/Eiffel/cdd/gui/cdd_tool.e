@@ -300,6 +300,8 @@ feature {NONE} -- Implementation (Basic functionality)
 		do
 			inspect
 				an_update.code
+			when {CDD_STATUS_UPDATE}.project_initialize_code then
+				-- TODO: enable all disabled buttons!
 			when {CDD_STATUS_UPDATE}.enable_extracting_code then
 				show_message ("Extraction enabled")
 				toggle_extraction_button.enable_select

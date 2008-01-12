@@ -46,6 +46,8 @@ feature {NONE} -- Initialization
 		local
 			l_prj_manager: EB_PROJECT_MANAGER
 		do
+			create status_update_actions
+			create output_actions
 			create test_suite.make (Current)
 			create background_executor.make (Current)
 			create debug_executor.make (Current)
@@ -55,9 +57,6 @@ feature {NONE} -- Initialization
 			l_prj_manager.load_agents.extend (agent refresh_status)
 			l_prj_manager.compile_stop_agents.extend (agent refresh_status)
 			eb_cluster_manager.add_observer (Current)
-
-			create status_update_actions
-			create output_actions
 		ensure
 			project_set: project = a_project
 		end
@@ -74,7 +73,7 @@ feature -- Access (status)
 			-- Has `project' been initialized?
 			-- NOTE: This is the main condition whether cdd is active or not
 		do
-			Result := project.initialized and target /= Void
+			Result := project.initialized and project.system_defined -- target /= Void
 		end
 
 	is_extracting_enabled: BOOLEAN is
@@ -90,6 +89,9 @@ feature -- Access (status)
 		do
 			Result := is_project_initialized and not is_extracting_enabled
 		end
+
+	last_updated_test_class: EIFFEL_CLASS_C
+			-- Test class which has last been reprocessed in degree 5
 
 feature -- Access (execution)
 
@@ -206,9 +208,32 @@ feature {EB_CLUSTERS} -- Status setting (Eiffel Project)
 						disable_extracting
 					end
 				end
+				if has_project_been_initialized then
+					has_project_been_initialized := True
+						-- From now on, we want to be notified whenever
+						-- a test case class get processed in degree 5
+					project.system.system.degree_5.process_actions.extend (agent add_updated_class)
+					status_update_actions.call ([create {CDD_STATUS_UPDATE}.make_with_code ({CDD_STATUS_UPDATE}.project_initialize_code)])
+				end
 				test_suite.refresh
 				start_background_executing := True
 			end
+		end
+
+	add_updated_class (a_class: EIFFEL_CLASS_C) is
+			-- If `a_class' is a test class (exists in test suite)
+			-- add it to classes which for which test class should
+			-- be updated.
+		require
+			a_class_not_void: a_class /= Void
+		do
+			if test_suite.has_test_case_for_class (a_class) then
+				last_updated_test_class := a_class
+				status_update_actions.call ([create {CDD_STATUS_UPDATE}.make_with_code ({CDD_STATUS_UPDATE}.test_class_update_code)])
+			end
+		ensure
+			added_if_test_class: test_suite.has_test_case_for_class (a_class) implies
+				(last_updated_test_class = a_class)
 		end
 
 	remove_test_case_for_class (a_class: CLASS_I) is
@@ -228,6 +253,9 @@ feature -- Status change
 			-- Actions performed whenever there is some kind of textual output available
 
 feature {NONE} -- Implementation
+
+	has_project_been_initialized: BOOLEAN
+			-- Has the project been initialized before?
 
 	capturer: CDD_CAPTURER
 			-- Capturer for extracting new test cases
@@ -277,6 +305,8 @@ invariant
 	debugger_not_void: debug_executor /= Void
 	status_update_actions_not_void: status_update_actions /= Void
 	output_actions_not_void: output_actions /= Void
+	last_updated_test_class_valid: (last_updated_test_class /= Void) implies
+		test_suite.has_test_case_for_class (last_updated_test_class)
 
 	extracting_implies_project_initialized: is_extracting_enabled implies is_project_initialized
 

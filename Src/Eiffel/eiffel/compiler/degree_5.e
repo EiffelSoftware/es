@@ -12,6 +12,7 @@ inherit
 
 	DEGREE
 		redefine
+			make,
 			insert_new_class
 		end
 
@@ -22,6 +23,15 @@ inherit
 create
 
 	make
+
+feature {NONE} -- Initialization
+
+	make is
+			 -- Initialize `Current'
+		do
+			Precursor
+			create process_actions
+		end
 
 feature -- Access
 
@@ -131,6 +141,7 @@ feature {NONE} -- Processing
 				a_class.external_class_c.process_degree_5
 			else
 				eif_class := a_class.eiffel_class_c
+				process_actions.call ([eif_class])
 				if eif_class.parsing_needed then
 						-- Parse class and save a backup if requested and generates warning.
 					ast := eif_class.build_ast (True, True)
@@ -233,25 +244,35 @@ feature -- Removal
 			count := 0
 		end
 
+feature -- Event handling
+
+	process_actions: ACTION_SEQUENCE [TUPLE [EIFFEL_CLASS_C]]
+			-- Actions beeing called whenever an eiffel
+			-- class is processed by `Current'
+
+invariant
+
+	process_actions_not_void: process_actions /= Void
+
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
-			
+
 			Eiffel Software's Eiffel Development Environment is free
 			software; you can redistribute it and/or modify it under
 			the terms of the GNU General Public License as published
 			by the Free Software Foundation, version 2 of the License
 			(available at the URL listed under "license" above).
-			
+
 			Eiffel Software's Eiffel Development Environment is
 			distributed in the hope that it will be useful,	but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 			See the	GNU General Public License for more details.
-			
+
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
@@ -266,4 +287,3 @@ indexing
 		]"
 
 end -- class DEGREE_5
-

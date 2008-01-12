@@ -27,6 +27,13 @@ feature -- Access
 	code: INTEGER
 			-- Status code
 
+	project_initialize_code,
+			-- The project we are looking at has been initialized
+			-- (compiled for the first time or opened)
+	test_class_update_code,
+			-- Some test class has been recompiled
+			-- (the class is available through
+			-- {CDD_MANAGER}.last_updated_test_class)
 	enable_extracting_code,
 			-- Extracting new test cases has been enabled
 	disable_extracting_code,

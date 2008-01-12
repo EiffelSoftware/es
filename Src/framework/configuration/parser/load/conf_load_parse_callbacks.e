@@ -230,6 +230,8 @@ feature -- Callbacks
 			l_error: CONF_ERROR_GRUNDEF
 			l_e_ov: CONF_ERROR_OVERRIDE
 
+			l_name: STRING
+			l_target: CONF_TARGET
 			l_cdd_target: CONF_TARGET
 			l_cdd_lib_loc: CONF_FILE_LOCATION
 			l_cdd_lib: CONF_LIBRARY
@@ -260,6 +262,29 @@ feature -- Callbacks
 				when t_system then
 					if current_library_target /= Void then
 						set_error (create {CONF_ERROR_LIBTAR})
+					end
+
+						-- Add CDD tester target to all existing targets
+					from
+						last_system.targets.start
+					until
+						last_system.targets.after
+					loop
+						l_target := last_system.targets.item_for_iteration
+						if not l_target.is_cdd_target then
+							l_name := l_target.name + "_tester"
+							if not last_system.targets.has_key (l_name) then
+								l_cdd_target := factory.new_cdd_target (l_name, last_system)
+								l_cdd_target.set_parent (l_target)
+								last_system.add_target (l_cdd_target)
+							end
+							if not l_target.libraries.has ("cdd") then
+								l_cdd_lib_loc := factory.new_location_from_full_path ("$ISE_LIBRARY\library\cdd\cdd.ecf", l_target)
+								l_cdd_lib := factory.new_cdd_library ("cdd", l_cdd_lib_loc, l_target)
+								l_target.add_library (l_cdd_lib)
+							end
+						end
+						last_system.targets.forth
 					end
 				when t_target then
 						-- check for overrides and precompiles in a library_target
@@ -305,22 +330,6 @@ feature -- Callbacks
 								overrides_list.item_for_iteration.do_all (agent {CONF_OVERRIDE}.add_override (l_group))
 							end
 							overrides_list.forth
-						end
-					end
-
-					if current_target.cdd /= Void and then current_target.cdd.is_enabled then
-						-- note: might not be sufficient to check if there is no target with that name
-						if not current_target.system.targets.has (current_target.name + "_tester") then
-							l_cdd_target := factory.new_cdd_target (current_target.name + "_tester", current_target.system)
-							l_cdd_target.set_parent (current_target)
-							l_cdd_target.set_root (factory.new_root (current_target.name + "_tests", "CDD_INTERPRETER", "execute", False))
-							current_target.system.add_target (l_cdd_target)
-						end
-
-						if not current_target.libraries.has ("cdd") then
-							l_cdd_lib_loc := factory.new_location_from_full_path ("$ISE_LIBRARY\library\cdd\cdd.ecf", current_target)
-							l_cdd_lib := factory.new_cdd_library ("cdd", l_cdd_lib_loc, current_target)
-							current_target.add_library (l_cdd_lib)
 						end
 					end
 

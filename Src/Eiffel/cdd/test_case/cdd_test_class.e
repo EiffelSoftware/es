@@ -19,6 +19,11 @@ inherit
 			{NONE} all
 		end
 
+	KL_SHARED_STRING_EQUALITY_TESTER
+		export
+			{NONE} all
+		end
+
 create
 	make_with_class_name, make_with_class
 
@@ -34,20 +39,25 @@ feature {NONE} -- Initialization
 			some_routine_names_valid: not some_routine_names.has (Void)
 		local
 			l_cursor: DS_LINEAR_CURSOR [STRING]
+			l_test_routine: CDD_TEST_ROUTINE
 		do
 			test_class_name := a_name
+			create test_routines.make (some_routine_names.count)
+			create test_routine_table.make (some_routine_names.count)
 			l_cursor := some_routine_names.new_cursor
 			from
-				create test_routines.make (some_routine_names.count)
-				create test_routine_table.make (some_routine_names.count)
 				l_cursor.start
 			until
 				l_cursor.after
 			loop
-				test_routines.put_last (create {CDD_TEST_ROUTINE}.make (Current, l_cursor.item))
-				test_routine_table.put (test_routines.last, l_cursor.item)
+				create l_test_routine.make (Current, l_cursor.item)
+				test_routines.put_last (l_test_routine)
+				test_routine_table.put (l_test_routine, l_cursor.item)
+				status_updates.force_last (create {CDD_TEST_ROUTINE_UPDATE}.make (l_test_routine, {CDD_TEST_ROUTINE_UPDATE}.add_code))
 				l_cursor.forth
 			end
+			create class_tags.make (0)
+			class_tags.set_equality_tester (case_insensitive_string_equality_tester)
 		ensure
 			test_class_name_set: test_class_name = a_name
 		end
@@ -61,6 +71,9 @@ feature {NONE} -- Initialization
 			create test_routine_table.make_default
 			create test_routines.make_default
 			set_compiled_class (a_class)
+			create class_tags.make (0)
+			class_tags.set_equality_tester (case_insensitive_string_equality_tester)
+			update
 		ensure
 			compiled_class_set: compiled_class = a_class
 		end
@@ -108,52 +121,27 @@ feature -- Element change
 			compiled_class_set: compiled_class = a_class
 		end
 
-feature {CDD_TEST_SUITE}
+feature {CDD_TEST_SUITE} -- Status change
 
-	update_tags is
-			-- Update tags of test routines contained in this class.
+	status_updates: DS_LIST [CDD_TEST_ROUTINE_UPDATE]
+			-- List of changes since creation or else
+			-- last call to `update_test_routines'.
+
+	update is
+			-- Update information about all test routines `compiled_class'
+			-- and add update notifications to `status_updates'.
+		require
+			compiled_class_set: compiled_class /= Void
 		do
-			wipe_out_tags
-			update_explicit_tags
-			update_implicit_tags
+			status_updates.wipe_out
+			update_tags
+			update_test_routines
 		end
 
-	update_test_routines is
-			-- Update test_routine_table with information from currently compiled system.
-		local
-			l_ft: FEATURE_TABLE
-			l_name: STRING
-			old_cs: CURSOR
-			old_table: like test_routine_table
-			rt: CDD_TEST_ROUTINE
-		do
-			if compiled_class /= Void and then compiled_class.has_feature_table then
-				old_table := test_routine_table
-				create test_routine_table.make_default
-				l_ft := compiled_class.feature_table
-				from
-					old_cs := l_ft.cursor
-					l_ft.start
-				until
-					l_ft.after
-				loop
-					l_name := l_ft.item_for_iteration.feature_name
-					if l_name.count >= test_routine_prefix.count and then
-						l_name.substring (1, test_routine_prefix.count).is_case_insensitive_equal (test_routine_prefix) then
-						old_table.search (l_name)
-						if old_table.found then
-							rt := old_table.found_item
-						else
-							create rt.make (Current, l_name)
-						end
-						test_routine_table.force (rt, l_name)
-					end
-					l_ft.forth
-				end
-				l_ft.go_to (old_cs)
-				create test_routines.make_from_array (test_routine_table.to_array)
-			end
-		end
+feature {CDD_TEST_ROUTINE} -- Test routine properties
+
+	class_tags: DS_HASH_SET [STRING]
+			-- CDD tags in `compiled_class'
 
 feature {NONE} -- Implementation
 
@@ -161,29 +149,172 @@ feature {NONE} -- Implementation
 			-- Internally stored class name which is used when `compiled_class' is Void.
 
 	test_routine_table: DS_HASH_TABLE [CDD_TEST_ROUTINE, STRING]
-			-- Table mapping all test routine names to their
+			-- Table mapping all test routine names to their actual instance
 
-	wipe_out_tags is
-			-- Remove tags from test routines.
+	is_valid_feature_as (a_feature_as: FEATURE_AS): BOOLEAN is
+			-- Is `a_feature_as' the syntax of a valid test routine?
+			-- (Note: for now only with respect to the first visible name)
 		local
-			r_cs: DS_LINEAR_CURSOR [CDD_TEST_ROUTINE]
+			l_name: STRING
 		do
-			from
-				r_cs := test_routines.new_cursor
-				r_cs.start
-			until
-				r_cs.off
-			loop
-				r_cs.item.tags.wipe_out
-				r_cs.forth
+			if a_feature_as.body.arguments.is_empty and not a_feature_as.is_function then
+				l_name := a_feature_as.feature_names.first.visual_name
+				Result := l_name.count >= test_routine_prefix.count and then
+							l_name.substring (1, test_routine_prefix.count).is_case_insensitive_equal (test_routine_prefix)
 			end
 		end
 
+	is_valid_clause_as (a_clause_as: FEATURE_CLAUSE_AS): BOOLEAN is
+			-- Is `a_clause_as' exported to ANY?
+		require
+			a_clause_as_not_void: a_clause_as /= Void
+		local
+			l_list: CLASS_LIST_AS
+			l_old_cs: CURSOR
+		do
+			if a_clause_as.clients /= Void then
+				l_list := a_clause_as.clients.clients
+				from
+					l_old_cs := l_list.cursor
+					l_list.start
+				until
+					Result or l_list.after
+				loop
+					if l_list.item.name.is_case_insensitive_equal ("ANY") then
+						Result := True
+					end
+					l_list.forth
+				end
+				l_list.go_to (l_old_cs)
+			else
+				Result := True
+			end
+		end
+
+	update_test_routines is
+			-- Update test_routine_table with information from currently compiled system.
+		require
+			compiled_class_set: compiled_class /= Void
+		local
+			l_ft: FEATURE_TABLE
+			l_fcl: EIFFEL_LIST [FEATURE_CLAUSE_AS]
+			l_fl: EIFFEL_LIST [FEATURE_AS]
+			l_feature_as: FEATURE_AS
+			l_old_cs, l_old_cs2: CURSOR
+			l_feature_list: DS_ARRAYED_LIST [FEATURE_AS]
+		do
+				-- If feature table not available, could we look at AST?
+			create l_feature_list.make_default
+			if compiled_class.has_feature_table then
+				l_ft := compiled_class.feature_table
+				from
+					l_old_cs := l_ft.cursor
+					l_ft.start
+				until
+					l_ft.after
+				loop
+					if l_ft.item_for_iteration.export_status.is_all then
+						l_feature_as := l_ft.item_for_iteration.body
+						if is_valid_feature_as (l_feature_as) then
+							l_feature_list.force_last (l_feature_as)
+						end
+						l_ft.forth
+					end
+				end
+				l_ft.go_to (l_old_cs)
+			elseif compiled_class.ast.features /= Void then
+				l_fcl := compiled_class.ast.features
+				from
+					l_old_cs := l_fcl.cursor
+					l_fcl.start
+				until
+					l_fcl.after
+				loop
+					if is_valid_clause_as (l_fcl.item) and not l_fcl.item.features.is_empty then
+						l_fl := l_fcl.item.features
+						from
+							l_old_cs2 := l_fl.cursor
+							l_fl.start
+						until
+							l_fl.after
+						loop
+							if is_valid_feature_as (l_fl.item) then
+								l_feature_list.force_last (l_fl.item)
+							end
+							l_fl.forth
+						end
+						l_fl.go_to (l_old_cs2)
+					end
+					l_fcl.forth
+				end
+				l_fcl.go_to (l_old_cs)
+			end
+			update_test_routine_table (l_feature_list)
+		end
+
+	update_test_routine_table (a_routine_list: DS_LINEAR [FEATURE_AS]) is
+			-- Update `test_routine_table' according to `a_routine_list' and
+			-- add all create update for all notifications in `status_udpates'.
+		require
+			a_routine_list_not_void: a_routine_list /= Void
+			a_routine_list_valid: not a_routine_list.has (Void)
+		local
+			l_old_table: like test_routine_table
+			l_cursor: DS_LINEAR_CURSOR [FEATURE_AS]
+			l_name: STRING
+			l_test_routine: CDD_TEST_ROUTINE
+		do
+			l_old_table := test_routine_table
+			create test_routine_table.make (a_routine_list.count)
+
+			l_cursor := a_routine_list.new_cursor
+			from
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_name := l_cursor.item.feature_names.first.visual_name
+				l_old_table.search (l_name)
+				if l_old_table.found then
+					l_test_routine := l_old_table.found_item
+					test_routine_table.put (l_test_routine, l_name)
+					l_old_table.remove_found_item
+					l_test_routine.update
+					if l_test_routine.is_modified then
+						status_updates.force_last (create {CDD_TEST_ROUTINE_UPDATE}.make (l_test_routine, {CDD_TEST_ROUTINE_UPDATE}.new_outcome_code))
+					end
+				else
+					create l_test_routine.make (Current, l_name)
+					test_routine_table.put (l_test_routine, l_name)
+					status_updates.force_last (create {CDD_TEST_ROUTINE_UPDATE}.make (l_test_routine, {CDD_TEST_ROUTINE_UPDATE}.add_code))
+				end
+				l_cursor.forth
+			end
+			if not l_old_table.is_empty then
+				from
+					l_old_table.start
+				until
+					l_old_table.after
+				loop
+					status_updates.force_last (create {CDD_TEST_ROUTINE_UPDATE}.make (l_old_table.item_for_iteration, {CDD_TEST_ROUTINE_UPDATE}.remove_code))
+					l_old_table.forth
+				end
+			end
+
+			create test_routines.make_from_array (test_routine_table.to_array)
+		end
+
+	update_tags is
+			-- Update tags of test routines contained in this class.
+		do
+			create class_tags.make_default
+			class_tags.set_equality_tester (string_equality_tester)
+			update_explicit_tags
+		end
 
 	update_explicit_tags is
 			-- Update `tags' with data from the indexing clause.
 		local
-			r_cs: DS_LINEAR_CURSOR [CDD_TEST_ROUTINE]
 			l_ast: CLASS_AS
 			l_ilist: INDEXING_CLAUSE_AS
 			l_item: INDEX_AS
@@ -209,42 +340,12 @@ feature {NONE} -- Implementation
 							v := l_value_list.item.string_value.twin
 							v.prune_all_leading ('"')
 							v.prune_all_trailing ('"')
-							from
-								r_cs := test_routines.new_cursor
-								r_cs.start
-							until
-								r_cs.off
-							loop
-								r_cs.item.tags.force_last (v)
-								r_cs.forth
-							end
+							class_tags.force (v)
 							l_value_list.forth
 						end
 					end
 					l_ilist.forth
 				end
-			end
-		end
-
-	update_implicit_tags is
-			-- Update implicit tags of test routines.
-		local
-			r_cs: DS_LINEAR_CURSOR [CDD_TEST_ROUTINE]
-			tag: STRING
-		do
-			from
-				r_cs := test_routines.new_cursor
-				r_cs.start
-			until
-				r_cs.off
-			loop
-				create tag.make (20)
-				tag.append_string ("name.")
-				tag.append_string (test_class_name)
-				tag.append_character ('.')
-				tag.append_string (r_cs.item.name)
-				r_cs.item.tags.force_last (tag)
-				r_cs.forth
 			end
 		end
 
@@ -259,5 +360,9 @@ invariant
 			Result := a_routine /= Void and then
 				a_routine.test_class = Current
 		end)
+	status_updates_not_void: status_updates /= Void
+	status_updates_valid: not status_updates.has (Void)
+	class_tags_not_void: class_tags /= Void
+	class_tags_has_equality_tester: class_tags.equality_tester = case_insensitive_string_equality_tester
 
 end
