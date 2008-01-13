@@ -9,6 +9,10 @@ indexing
 class
 	CDD_TREE_VIEW
 
+inherit
+
+	CDD_ACTIVE_VIEW
+
 create
 	make
 
@@ -19,9 +23,9 @@ feature {NONE} -- Initialization
 		require
 			a_filtered_view_not_void: a_filtered_view /= Void
 		do
-			filtered_view := a_filtered_view
-			change_agent := agent refresh
 			create change_actions
+			filtered_view := a_filtered_view
+			change_agent := agent incremental_update
 		ensure
 			filtered_view_set: filtered_view = a_filtered_view
 		end
@@ -45,9 +49,11 @@ feature {ANY} -- Access
 	nodes: DS_LINEAR [CDD_TREE_NODE] is
 			-- Test routines from `test_suite' matching the criteria from
 			-- `filters'.
+		require
+			observing: is_observing
 		do
 			if nodes_cache = Void then
-				refresh
+				fill_nodes_cache
 			end
 			Result := nodes_cache
 		ensure
@@ -59,22 +65,17 @@ feature {ANY} -- Status setting
 
 	enable_observing is
 			-- Enable auto update mode.
-		require
-			not_observing: not is_observing
 		do
-			filtered_view.change_actions.force (change_agent)
-		ensure
-			observing: is_observing
+			filtered_view.change_actions.extend (change_agent)
+			filtered_view.add_client
 		end
 
 	disable_observing is
 			-- Disable auto update mode.
-		require
-			observing: is_observing
 		do
 			filtered_view.change_actions.prune (change_agent)
-		ensure
-			not_observing: not is_observing
+			filtered_view.remove_client
+			wipe_out_nodes_cache
 		end
 
 feature -- Event handling
@@ -86,13 +87,34 @@ feature -- Event handling
 			-- TODO: Add list of changes as arguments so observers can be more
 			-- efficient in updating their state.
 
-feature {ANY} -- Element change
+feature {NONE} -- Element change
+
+	incremental_update (an_update_list: DS_LINEAR [CDD_TEST_ROUTINE_UPDATE]) is
+		require
+			an_update_list_valid: an_update_list = Void or else not an_update_list.has (Void)
+		do
+			-- TODO: implement incremental update
+			refresh
+		end
 
 	refresh is
+			-- Wipe out cache and call observers.
+		require
+			observing: is_observing
+		do
+			wipe_out_nodes_cache
+			change_actions.call ([Void])
+		end
+
+	fill_nodes_cache is
 			-- Update `nodes_cache' with information from `test_suite'.
+		require
+			observing: is_observing
+			cache_void: nodes_cache = Void
         local
             cs: DS_LINEAR_CURSOR [CDD_TEST_ROUTINE]
         do
+        	wipe_out_nodes_cache
 			create nodes_cache.make_default
 			from
 				cs := filtered_view.test_routines.new_cursor
@@ -103,7 +125,6 @@ feature {ANY} -- Element change
 				insert_routine (cs.item)
 				cs.forth
 			end
-			change_actions.call (Void)
         end
 
 feature {NONE} -- Implementation
@@ -115,7 +136,7 @@ feature {NONE} -- Implementation
 			-- Agent subscribed in test suite. Needed for
 			-- unsubscription.
 
-	change_agent: PROCEDURE [ANY, TUPLE]
+	change_agent: PROCEDURE [ANY, TUPLE [DS_LINEAR [CDD_TEST_ROUTINE_UPDATE]]]
 
 	wipe_out_nodes_cache is
 			-- Remove all entries from nodes cache.
@@ -201,6 +222,8 @@ feature {NONE} -- Implementation
 
 invariant
 
+	change_actions_not_void: change_actions /= Void
 	filtered_view_not_void: filtered_view /= Void
+	change_agent_not_void: change_agent /= Void
 
 end

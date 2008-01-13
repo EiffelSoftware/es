@@ -41,7 +41,7 @@ feature {NONE} -- Initialization
 			cdd_manager := a_cdd_manager
 			create root_class_printer.make (test_suite)
 			create default_filter.make (test_suite)
-			default_filter.enable_observing
+			default_filter.add_client
 			filter := default_filter
 		ensure
 			cdd_manager_set: cdd_manager = a_cdd_manager
@@ -129,7 +129,13 @@ feature -- Status settings
 			a_filter_not_void: a_filter /= Void
 			a_filter_valid: a_filter.test_suite = test_suite
 		do
+			if filter /= default_filter then
+				filter.remove_client
+			end
 			filter := a_filter
+			if filter /= default_filter then
+				filter.add_client
+			end
 			cdd_manager.status_update_actions.call ([create {CDD_STATUS_UPDATE}.make_with_code ({CDD_STATUS_UPDATE}.executor_filter_change)])
 		ensure
 			filter_set: filter = a_filter
@@ -138,8 +144,7 @@ feature -- Status settings
 	reset_filter is
 			-- Set `filter' to `default_filter'.
 		do
-			filter := default_filter
-			cdd_manager.status_update_actions.call ([create {CDD_STATUS_UPDATE}.make_with_code ({CDD_STATUS_UPDATE}.executor_filter_change)])
+			set_filter (default_filter)
 		ensure
 			filter_reset: filter = default_filter
 		end

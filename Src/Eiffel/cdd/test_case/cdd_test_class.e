@@ -35,9 +35,6 @@ feature {NONE} -- Initialization
 			-- used to initialize `test_routines'.
 		require
 			an_ast_not_void: an_ast /= Void
-		local
-			l_cursor: DS_LINEAR_CURSOR [STRING]
-			l_test_routine: CDD_TEST_ROUTINE
 		do
 			internal_parsed_class := an_ast
 			test_class_name := an_ast.class_name.name.as_upper
@@ -107,10 +104,12 @@ feature -- Element change
 			compiled_class_set: compiled_class = a_class
 		end
 
-feature {CDD_TEST_SUITE} -- Status change
+feature -- Status changes
 
 	status_updates: DS_LIST [CDD_TEST_ROUTINE_UPDATE]
 			-- List of changes since creation or last call to `update_test_routines'.
+
+feature {CDD_TEST_SUITE} -- Status change
 
 	update is
 			-- Update information about all test routines `compiled_class'
@@ -161,8 +160,6 @@ feature {NONE} -- Implementation
 			-- Is `a_feature' a valid test routine feature?
 		require
 			a_feature_not_void: a_feature /= Void
-		local
-			l_name: STRING
 		do
 			Result := not a_feature.has_arguments and a_feature.is_routine and
 				a_feature.export_status.is_all and is_valid_routine_name (a_feature.feature_name)
@@ -170,12 +167,10 @@ feature {NONE} -- Implementation
 
 	is_valid_feature_as (a_feature_as: FEATURE_AS): BOOLEAN is
 			-- Is `a_feature_as' the syntax of a valid test routine?
-			-- (Note: for now only with respect to the first visible name)
-		local
-			l_name: STRING
+			-- (Note: for now only with respect to the first name)
 		do
 			Result := (a_feature_as.body.arguments = Void or else a_feature_as.body.arguments.is_empty) and
-				not a_feature_as.is_function and is_valid_routine_name (a_feature_as.feature_names.first.visual_name)
+				not a_feature_as.is_function and is_valid_routine_name (a_feature_as.feature_name.name)
 		end
 
 	is_valid_clause_as (a_clause_as: FEATURE_CLAUSE_AS): BOOLEAN is
@@ -212,11 +207,9 @@ feature {NONE} -- Implementation
 			l_fcl: EIFFEL_LIST [FEATURE_CLAUSE_AS]
 			l_fl: EIFFEL_LIST [FEATURE_AS]
 			l_feature: FEATURE_I
-			l_feature_as: FEATURE_AS
 			l_old_cs, l_old_cs2: CURSOR
-			l_feature_list: DS_ARRAYED_LIST [STRING]
+			l_feature_list: DS_ARRAYED_LIST [FEATURE_AS]
 		do
-				-- If feature table not available, could we look at AST?
 			create l_feature_list.make_default
 			if compiled_class /= Void and then compiled_class.has_feature_table then
 				l_ft := compiled_class.feature_table
@@ -228,7 +221,7 @@ feature {NONE} -- Implementation
 				loop
 					l_feature := l_ft.item_for_iteration
 					if is_valid_feature (l_ft.item_for_iteration) then
-						l_feature_list.force_last (l_ft.item_for_iteration.feature_name)
+						l_feature_list.force_last (l_ft.item_for_iteration.e_feature.ast)
 					end
 					l_ft.forth
 				end
@@ -251,7 +244,7 @@ feature {NONE} -- Implementation
 								l_fl.after
 							loop
 								if is_valid_feature_as (l_fl.item) then
-									l_feature_list.force_last (l_fl.item.feature_names.first.visual_name)
+									l_feature_list.force_last (l_fl.item)
 								end
 								l_fl.forth
 							end
@@ -265,7 +258,7 @@ feature {NONE} -- Implementation
 			update_test_routine_table (l_feature_list)
 		end
 
-	update_test_routine_table (a_routine_list: DS_LINEAR [STRING]) is
+	update_test_routine_table (a_routine_list: DS_LINEAR [FEATURE_AS]) is
 			-- Update `test_routine_table' according to `a_routine_list' and
 			-- add all create update for all notifications in `status_udpates'.
 		require
@@ -273,7 +266,7 @@ feature {NONE} -- Implementation
 			a_routine_list_valid: not a_routine_list.has (Void)
 		local
 			l_old_table: like test_routine_table
-			l_cursor: DS_LINEAR_CURSOR [STRING]
+			l_cursor: DS_LINEAR_CURSOR [FEATURE_AS]
 			l_name: STRING
 			l_test_routine: CDD_TEST_ROUTINE
 			l_found: BOOLEAN
@@ -289,7 +282,7 @@ feature {NONE} -- Implementation
 			until
 				l_cursor.after
 			loop
-				l_name := l_cursor.item
+				l_name := l_cursor.item.feature_name.name
 				l_found := False
 				if l_old_table /= Void then
 					l_old_table.search (l_name)
@@ -298,6 +291,7 @@ feature {NONE} -- Implementation
 						l_test_routine := l_old_table.found_item
 						test_routine_table.put (l_test_routine, l_name)
 						l_old_table.remove_found_item
+						l_test_routine.set_ast (l_cursor.item)
 						l_test_routine.update
 						if l_test_routine.is_modified then
 							status_updates.force_last (create {CDD_TEST_ROUTINE_UPDATE}.make (l_test_routine, {CDD_TEST_ROUTINE_UPDATE}.new_outcome_code))
@@ -305,7 +299,7 @@ feature {NONE} -- Implementation
 					end
 				end
 				if not l_found then
-					create l_test_routine.make (Current, l_name)
+					create l_test_routine.make (Current, l_cursor.item)
 					test_routine_table.put (l_test_routine, l_name)
 					status_updates.force_last (create {CDD_TEST_ROUTINE_UPDATE}.make (l_test_routine, {CDD_TEST_ROUTINE_UPDATE}.add_code))
 				end

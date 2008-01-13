@@ -72,23 +72,15 @@ feature -- Element change
 		require
 			a_test_class_not_void: a_test_class /= Void
 			a_test_class_not_added: not test_classes.has (a_test_class)
-		local
-			l_list: DS_ARRAYED_LIST [CDD_TEST_ROUTINE_UPDATE]
-			l_cursor: DS_LINEAR_CURSOR [CDD_TEST_ROUTINE]
+			has_valid_status_updates: a_test_class.status_updates.for_all (
+				agent (an_update: CDD_TEST_ROUTINE_UPDATE): BOOLEAN
+					do
+						Result := an_update.is_added
+					end)
 		do
 			test_classes.force_last (a_test_class)
 			test_class_table.force (a_test_class, a_test_class.test_class_name)
-			create l_list.make (a_test_class.test_routines.count)
-			l_cursor := a_test_class.test_routines.new_cursor
-			from
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				l_list.put_last (create {CDD_TEST_ROUTINE_UPDATE}.make (l_cursor.item, {CDD_TEST_ROUTINE_UPDATE}.add_code))
-				l_cursor.forth
-			end
-			test_routine_update_actions.call ([l_list])
+			test_routine_update_actions.call ([a_test_class.status_updates])
 		ensure
 			added: test_classes.has (a_test_class)
 		end
@@ -211,7 +203,7 @@ feature {NONE} -- Implementation
 			if l_incremental then
 				test_routine_update_actions.call ([status_updates])
 			else
-				test_routine_update_actions.call (Void)
+				test_routine_update_actions.call ([Void])
 			end
 		end
 

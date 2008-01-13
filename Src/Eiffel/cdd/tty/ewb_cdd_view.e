@@ -26,17 +26,33 @@ feature -- Execution
 		local
 			filter: CDD_FILTERED_VIEW
 			tree: CDD_TREE_VIEW
+			l_filter_tags: DS_ARRAYED_LIST [STRING]
+			l_tags: LIST [STRING]
 		do
 			if cdd_manager.is_project_initialized then
 				localized_print ("%NAll test classes%N%N")
 				io.put_string ("Please enter filter: ")
 				io.read_line
 				create filter.make (cdd_manager.test_suite)
-				if io.last_string.count > 0 then
-					filter.filters.force_last (io.last_string.twin)
-				end
 				create tree.make (filter)
+				if io.last_string.count > 0 then
+					l_tags := io.last_string.split (' ')
+					create l_filter_tags.make_default
+					from
+						l_tags.start
+					until
+						l_tags.after
+					loop
+						if not l_tags.is_empty then
+							l_filter_tags.force_last (l_tags.item)
+						end
+						l_tags.forth
+					end
+					filter.set_filters (l_filter_tags)
+				end
+				tree.add_client
 				print_nodes (tree.nodes, 1)
+				tree.remove_client
 			else
 				io.put_string ("Please compile project first.")
 			end

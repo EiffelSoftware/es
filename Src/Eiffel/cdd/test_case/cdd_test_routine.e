@@ -19,20 +19,19 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_test_class: like test_class; a_routine_name: STRING) is
-			-- Initialize current with `a_test_class' as `test_class'
-			-- and `a_routine_name' as `name'.
+	make (a_test_class: like test_class; an_ast: like ast) is
+			-- Initialize current.
 		require
 			a_test_class_not_void: a_test_class /= Void
-			a_routines_name_valid: a_routine_name /= Void and then not a_routine_name.is_empty
+			an_ast_not_void: an_ast /= Void
 		do
 			test_class := a_test_class
-			name := a_routine_name
+			set_ast (an_ast)
 			create internal_outcomes.make
 			update
 		ensure
 			test_class_set: test_class = a_test_class
-			routine_name_set: name = a_routine_name
+			--routine_name_set: name = a_routine_name
 		end
 
 feature -- Status report
@@ -69,8 +68,14 @@ feature -- Access
 	test_class: CDD_TEST_CLASS
 			-- Class which contains `Current'
 
-	name: STRING
+	name: STRING is
 			-- Name of testable routine in `test_class'
+		do
+			Result := ast.feature_name.name
+		ensure
+			not_void: Result /= Void
+			first_visual_in_ast: Result = ast.feature_names.first.visual_name
+		end
 
 	tags: DS_LINEAR [STRING] is
 			-- Tags associated with this test routine
@@ -132,13 +137,21 @@ feature -- Element change
 			added: outcomes.last = an_outcome
 		end
 
+	set_ast (an_ast: like ast) is
+			-- Set `ast' to `an_ast'.
+		require
+			an_ast_not_void: an_ast /= Void
+		do
+			ast := an_ast
+		end
+
 feature {CDD_TEST_CLASS} -- Update
 
 	is_modified: BOOLEAN
 			-- Has `Current' been updated in any way since last `update'?
 
 	update is
-			-- Update `tags' and set
+			-- Update `tags' and set `is_modified' if tags have changed.
 		local
 			l_old_tags: like internal_tags
 		do
@@ -146,7 +159,9 @@ feature {CDD_TEST_CLASS} -- Update
 			l_old_tags := internal_tags
 			create internal_tags.make_default
 			internal_tags.set_equality_tester (case_insensitive_string_equality_tester)
-			add_tags
+			internal_tags.merge (test_class.class_tags)
+			add_implicit_tags
+			add_explicit_tags
 			if l_old_tags /= Void and then not l_old_tags.is_equal (internal_tags) then
 				is_modified := True
 			end
@@ -154,13 +169,62 @@ feature {CDD_TEST_CLASS} -- Update
 
 feature {NONE} -- Implementation
 
-	add_tags is
+	ast: FEATURE_AS
+			-- Abstract syntax tree representation of `Current'
+
+	internal_outcomes: DS_LINKED_LIST [CDD_TEST_EXECUTION_RESPONSE]
+			-- List of recorded test execution responses
+			-- where last item is most recent.
+
+	internal_tags: DS_HASH_SET [STRING]
+			-- Internal set of tags for `Current'
+
+feature {NONE} -- Implementation
+
+	add_explicit_tags is
+			-- Add explicit indexing tags in `an_ast' to `internal_tags'.
+		local
+			l_ilist: INDEXING_CLAUSE_AS
+			l_cs: CURSOR
+			l_item: INDEX_AS
+			l_value_list: EIFFEL_LIST [ATOMIC_AS]
+			v: STRING
+		do
+			l_ilist := ast.indexes
+			if l_ilist /= Void and then not l_ilist.is_empty then
+				from
+					l_cs := l_ilist.cursor
+					l_ilist.start
+				until
+					l_ilist.after
+				loop
+					l_item := l_ilist.item
+					if l_item.tag.name.is_equal ("tag") then
+						from
+							l_value_list := l_item.index_list
+							l_value_list.start
+						until
+							l_value_list.after
+						loop
+							v := l_value_list.item.string_value.twin
+							v.prune_all_leading ('"')
+							v.prune_all_trailing ('"')
+							internal_tags.force (v)
+							l_value_list.forth
+						end
+					end
+					l_ilist.forth
+				end
+				l_ilist.go_to (l_cs)
+			end
+		end
+
+	add_implicit_tags is
 			-- Add implicit and explicit tags found for
 			-- `Current' to `internal_tags'.
 		local
 			l_tag: STRING
 		do
-			internal_tags.merge (test_class.class_tags)
 			create l_tag.make (20)
 			l_tag := "name."
 			l_tag.append (test_class.test_class_name)
@@ -174,18 +238,10 @@ feature {NONE} -- Implementation
 			end
 		end
 
-feature {NONE} -- Implementation
-
-	internal_outcomes: DS_LINKED_LIST [CDD_TEST_EXECUTION_RESPONSE]
-			-- List of recorded test execution responses
-			-- where last item is most recent.
-
-	internal_tags: DS_HASH_SET [STRING]
-			-- Internal set of tags for `Current'
-
 invariant
 	test_class_not_void: test_class /= Void
 	routine_name_not_void: name /= Void
+	ast_not_void: ast /= Void
 	internal_outcomes_valid: internal_outcomes /= Void and then not internal_outcomes.has (Void)
 	internal_tags_valid: internal_tags /= Void and then not internal_tags.has (Void) and then
 		internal_tags.equality_tester = case_insensitive_string_equality_tester

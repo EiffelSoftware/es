@@ -101,20 +101,29 @@ feature {NONE} -- Initialization
 			create l_label.make_with_text ("Filter ")
 			l_hbox.extend (l_label)
 			l_hbox.disable_item_expand (l_label)
-			create filter_box
 
+			create filter_box
+			filter_box.set_text ("")
 			create l_item.make_with_text ("All")
 			filter_box.extend (l_item)
 			create l_item.make_with_text ("Failing%T%T(outcome.fail)")
 			filter_box.extend (l_item)
 			create l_item.make_with_text ("Unresolved%T(outcome.unresolved)")
 			filter_box.extend (l_item)
-
-			filter_box.set_text ("")
+			l_hbox.extend (filter_box)
 			filter_box.return_actions.extend (agent update_filter)
 			filter_box.select_actions.extend (agent select_filter_text)
 
-			l_hbox.extend (filter_box)
+			create toggle_filter_button.make_with_text ("Exec Set")
+			toggle_filter_button.select_actions.extend (agent toggle_filter)
+			toggle_filter_button.set_tooltip ("Only execute visible test routines")
+			--l_button.set_pixmap (pixmaps.icon_pixmaps.debug_stop_icon)
+			if not cdd_manager.is_project_initialized then
+				toggle_filter_button.disable_sensitive
+			end
+			l_hbox.extend (toggle_filter_button)
+			l_hbox.disable_item_expand (toggle_filter_button)
+
 			widget.extend (l_hbox)
 			widget.disable_item_expand (l_hbox)
 		end
@@ -140,15 +149,6 @@ feature {NONE} -- Initialization
 				debug_button.disable_sensitive
 			end
 			l_toolbar.extend (debug_button)
-
-			create toggle_filter_button.make_with_text ("Exec Set")
-			toggle_filter_button.select_actions.extend (agent toggle_filter)
-			toggle_filter_button.set_tooltip ("Only execute visible test routines")
-			--l_button.set_pixmap (pixmaps.icon_pixmaps.debug_stop_icon)
-			if not cdd_manager.is_project_initialized then
-				toggle_filter_button.disable_sensitive
-			end
-			l_toolbar.extend (toggle_filter_button)
 
 			create l_sep
 			l_toolbar.extend (l_sep)
@@ -217,9 +217,8 @@ feature {NONE} -- Initialization
 			l_split_area.extend (grid)
 
 			create l_filter.make (cdd_manager.test_suite)
-			l_filter.enable_observing
 			create tree_view.make (l_filter)
-			tree_view.enable_observing
+			tree_view.add_client
 			refresh_grid
 			tree_view.change_actions.extend (agent refresh_grid)
 
@@ -358,11 +357,14 @@ feature {NONE} -- Implementation (Basic functionality)
 	internal_recycle is
 			-- Unsubscribe all observing agents.
 		do
-			Precursor
-
-			-- TODO: Recycle all widgets!
-
 			cdd_manager.status_update_actions.prune (internal_status_update_action)
+			if cdd_manager.is_project_initialized then
+				if cdd_manager.background_executor.filter = tree_view.filtered_view then
+					cdd_manager.background_executor.reset_filter
+				end
+			end
+			tree_view.remove_client
+			Precursor
 		end
 
 feature {NONE} -- Implementation (Widgets)
@@ -384,7 +386,7 @@ feature {NONE} -- Implementation (Widgets)
 
 feature {NONE} -- Implementation (Buttons)
 
-	toggle_filter_button: EV_TOOL_BAR_TOGGLE_BUTTON
+	toggle_filter_button: EV_TOGGLE_BUTTON
 			-- Button for setting current filter as test executors filter
 
 	debug_button: EV_TOOL_BAR_BUTTON
@@ -575,6 +577,7 @@ feature {NONE} -- Implementation (grid)
 		local
 			l_class: EIFFEL_CLASS_C
 			l_feature: E_FEATURE
+			l_tooltip: STRING
 		do
 			create Result
 			token_writer.new_line
@@ -590,6 +593,18 @@ feature {NONE} -- Implementation (grid)
 					token_writer.process_basic_text (a_node.tag)
 					Result.set_pixmap (pixmaps.icon_pixmaps.feature_routine_icon)
 				end
+				l_tooltip := "Tags: "
+				a_node.test_routine.tags.do_all_with_index (agent (a_tooltip, a_tag: STRING; an_index: INTEGER)
+					do
+						if an_index > 1 then
+							a_tooltip.append (", ")
+							if (an_index \\ 5) = 0 then
+								a_tooltip.append ("%N")
+							end
+						end
+						a_tooltip.append (a_tag)
+					end (l_tooltip, ?, ?))
+				Result.set_tooltip (l_tooltip)
 			else
 				token_writer.process_basic_text (a_node.tag)
 			end
@@ -661,21 +676,22 @@ feature {NONE} -- Implementation (grid)
 			-- Update filter tags of `filter' corresponding
 			-- to `test_field' and rebuild filter.
 		local
-			l_tags: DS_LIST [STRING]
+			l_tags: DS_ARRAYED_LIST [STRING]
 			tokens: LIST [STRING_32]
 		do
-			l_tags := tree_view.filtered_view.filters
-			l_tags.wipe_out
+			create l_tags.make_default
 			tokens := filter_box.text.split (' ')
 			from
 				tokens.start
 			until
 				tokens.off
 			loop
-				l_tags.force_last (tokens.item)
+				if not tokens.item.is_empty then
+					l_tags.force_last (tokens.item)
+				end
 				tokens.forth
 			end
-			tree_view.filtered_view.refresh
+			tree_view.filtered_view.set_filters (l_tags)
 		end
 
 	select_filter_text is

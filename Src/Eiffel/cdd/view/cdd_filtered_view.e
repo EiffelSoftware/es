@@ -7,6 +7,15 @@ indexing
 class
 	CDD_FILTERED_VIEW
 
+inherit
+
+	CDD_ACTIVE_VIEW
+
+	KL_SHARED_STRING_EQUALITY_TESTER
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -19,7 +28,8 @@ feature {NONE} -- Initialization
 		do
 			create change_actions
 			test_suite := a_test_suite
-			create filters.make_default
+			create internal_filters.make (0)
+			internal_filters.set_equality_tester (case_insensitive_string_equality_tester)
 			change_agent := agent incremental_refresh
 		ensure
 			test_suite_set: test_suite = a_test_suite
@@ -71,9 +81,11 @@ feature {ANY} -- Access
 
 	test_routines: DS_LINEAR [CDD_TEST_ROUTINE] is
 			-- Test routines from `test_suite' matching filter criterion
+		require
+			observing: is_observing
 		do
 			if test_routines_cache = Void then
-				refresh
+				fill_test_routines_cache
 			end
 			Result := test_routines_cache
 		ensure
@@ -81,9 +93,48 @@ feature {ANY} -- Access
 			test_routines_doesnt_have_void: not Result.has (Void)
 		end
 
-	filters: DS_ARRAYED_LIST [STRING]
+	filters: DS_LINEAR [STRING] is
 			-- List of tag patterns, restricting what routines should
 			-- be in this view of the test suite.
+		do
+			Result := internal_filters
+		ensure
+			not_void: Result /= Void
+			valid: not Result.has (Void)
+		end
+
+feature -- Status setting
+
+	set_filters (new_tags: like filters) is
+			-- Set `filters' to `new_tags' and adopt `test_routine' to new filters.
+		require
+			new_tags_not_void: new_tags /= Void
+		local
+			l_old_tags: like internal_filters
+			l_cursor: DS_LINEAR_CURSOR [STRING]
+		do
+			l_old_tags := internal_filters
+			create internal_filters.make (new_tags.count)
+			internal_filters.set_equality_tester (case_insensitive_string_equality_tester)
+			l_cursor := new_tags.new_cursor
+			from
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				internal_filters.force (l_cursor.item)
+				l_cursor.forth
+			end
+			if not internal_filters.is_equal (l_old_tags) then
+					-- NOTE: To further optimize filtering, one could
+					-- implement an incremental update for each removed
+					-- or added tag in `internal_filter'. For now we
+					-- will just simply refresh the view.
+				wipe_out_test_routines_cache
+			end
+		ensure
+
+		end
 
 feature -- Event handling
 
@@ -94,40 +145,48 @@ feature -- Event handling
 			-- TODO: Add list of changes as arguments so observers can be more
 			-- efficient in updating their state.
 
-feature {ANY} -- Status setting
+
+feature {NONE} -- Status setting
 
 	enable_observing is
 			-- Enable auto update mode.
-		require
-			not_observing: not is_observing
 		do
 			test_suite.test_routine_update_actions.force (change_agent)
-		ensure
-			observing: is_observing
 		end
 
 	disable_observing is
 			-- Disable auto update mode.
-		require
-			observing: is_observing
 		do
 			test_suite.test_routine_update_actions.prune (change_agent)
-		ensure
-			not_observing: not is_observing
+			wipe_out_test_routines_cache
 		end
 
-feature {ANY} -- Element change
+feature {NONE} -- Element change
 
 	incremental_refresh (a_list: DS_LINEAR [CDD_TEST_ROUTINE_UPDATE]) is
 			-- Incremental update of `test_routines_cache' applying changes
 			-- from `a_list'
+		require
+			observing: is_observing
 		do
-			-- TODO: For now we just fall back on the non incremental refresh.
+			-- TODO: implement incremental update.
 			refresh
 		end
 
 	refresh is
+			-- Wipe out `test_routines_cache' and call observers.
+		require
+			observing: is_observing
+		do
+			wipe_out_test_routines_cache
+			change_actions.call ([Void])
+		end
+
+	fill_test_routines_cache is
 			-- Update `test_routines_cache' with information from `test_suite'.
+		require
+			observing: is_observing
+			cache_void: test_routines_cache = Void
 		local
 			class_cs: DS_LINEAR_CURSOR [CDD_TEST_CLASS]
 			routine_cs: DS_LINEAR_CURSOR [CDD_TEST_ROUTINE]
@@ -135,7 +194,6 @@ feature {ANY} -- Element change
 			from
 				class_cs := test_suite.test_classes.new_cursor
 				class_cs.start
-				wipe_out_test_routines_cache
 				create test_routines_cache.make_default
 			until
 				class_cs.off
@@ -153,7 +211,6 @@ feature {ANY} -- Element change
 				end
 				class_cs.forth
 			end
-			change_actions.call (Void)
 		ensure
 			test_routines_cache_not_void: test_routines_cache /= Void
 		end
@@ -163,11 +220,12 @@ feature {NONE} -- Implementation
 	test_routines_cache: DS_ARRAYED_LIST [CDD_TEST_ROUTINE]
 			-- Cache for `test_routines'
 
-	internal_refresh_action: PROCEDURE [like Current, TUPLE]
-			-- Agent subscribed in test suite. Needed for
-			-- unsubscription.
+	internal_filters: DS_HASH_SET [STRING]
+			-- List of tag patterns, restricting what routines should
+			-- be in this view of the test suite.
 
 	change_agent: PROCEDURE [ANY, TUPLE [DS_LINEAR [CDD_TEST_ROUTINE_UPDATE]]]
+			-- Agent called when `test_suite' changes
 
 	wipe_out_test_routines_cache is
 			-- Remove all entries from cache of test routines.
@@ -181,7 +239,12 @@ invariant
 
 	test_suite_not_void: test_suite /= Void
 	change_actions_not_void: change_actions /= Void
-	filters_not_void: filters /= Void
-	filters_doesnt_have_void: not filters.has (Void)
+	change_agent_not_void: change_agent /= Void
+	not_observing_implies_test_routines_cache_void: (not is_observing) implies test_routines_cache = Void
+	test_routines_cache_not_void_implies_valid: test_routines_cache /= Void implies
+			test_routines_cache.for_all (agent is_matching_routine)
+	internal_filters_not_void: filters /= Void
+	internal_filters_doesnt_have_void: not filters.has (Void)
+	internal_filter_has_valid_equality_tester: filters.equality_tester = case_insensitive_string_equality_tester
 
 end
