@@ -151,17 +151,34 @@ feature {NONE} -- Implementation
 	test_routine_table: DS_HASH_TABLE [CDD_TEST_ROUTINE, STRING]
 			-- Table mapping all test routine names to their actual instance
 
+	is_valid_routine_name (a_name: STRING): BOOLEAN is
+			-- Is `a_name' a valid test routine name?
+		require
+			a_name_not_void: a_name /= Void
+		do
+			Result := a_name.count >= test_routine_prefix.count and then
+				a_name.substring (1, test_routine_prefix.count).is_case_insensitive_equal (test_routine_prefix)
+		end
+
+	is_valid_feature (a_feature: FEATURE_I): BOOLEAN is
+			--
+		require
+			a_feature_not_void: a_feature /= Void
+		local
+			l_name: STRING
+		do
+			Result := not a_feature.has_arguments and a_feature.is_routine and
+				a_feature.export_status.is_all and is_valid_routine_name (a_feature.feature_name)
+		end
+
 	is_valid_feature_as (a_feature_as: FEATURE_AS): BOOLEAN is
 			-- Is `a_feature_as' the syntax of a valid test routine?
 			-- (Note: for now only with respect to the first visible name)
 		local
 			l_name: STRING
 		do
-			if (a_feature_as.body.arguments = Void or else a_feature_as.body.arguments.is_empty) and not a_feature_as.is_function then
-				l_name := a_feature_as.feature_names.first.visual_name
-				Result := l_name.count >= test_routine_prefix.count and then
-							l_name.substring (1, test_routine_prefix.count).is_case_insensitive_equal (test_routine_prefix)
-			end
+			Result := (a_feature_as.body.arguments = Void or else a_feature_as.body.arguments.is_empty) and
+				not a_feature_as.is_function and is_valid_routine_name (a_feature_as.feature_names.first.visual_name)
 		end
 
 	is_valid_clause_as (a_clause_as: FEATURE_CLAUSE_AS): BOOLEAN is
@@ -199,9 +216,10 @@ feature {NONE} -- Implementation
 			l_ft: FEATURE_TABLE
 			l_fcl: EIFFEL_LIST [FEATURE_CLAUSE_AS]
 			l_fl: EIFFEL_LIST [FEATURE_AS]
+			l_feature: FEATURE_I
 			l_feature_as: FEATURE_AS
 			l_old_cs, l_old_cs2: CURSOR
-			l_feature_list: DS_ARRAYED_LIST [FEATURE_AS]
+			l_feature_list: DS_ARRAYED_LIST [STRING]
 		do
 				-- If feature table not available, could we look at AST?
 			create l_feature_list.make_default
@@ -213,11 +231,9 @@ feature {NONE} -- Implementation
 				until
 					l_ft.after
 				loop
-					if l_ft.item_for_iteration.export_status.is_all then
-						l_feature_as := l_ft.item_for_iteration.body
-						if is_valid_feature_as (l_feature_as) then
-							l_feature_list.force_last (l_feature_as)
-						end
+					l_feature := l_ft.item_for_iteration
+					if is_valid_feature (l_ft.item_for_iteration) then
+						l_feature_list.force_last (l_ft.item_for_iteration.feature_name)
 					end
 					l_ft.forth
 				end
@@ -239,7 +255,7 @@ feature {NONE} -- Implementation
 							l_fl.after
 						loop
 							if is_valid_feature_as (l_fl.item) then
-								l_feature_list.force_last (l_fl.item)
+								l_feature_list.force_last (l_fl.item.feature_names.first.visual_name)
 							end
 							l_fl.forth
 						end
@@ -252,7 +268,7 @@ feature {NONE} -- Implementation
 			update_test_routine_table (l_feature_list)
 		end
 
-	update_test_routine_table (a_routine_list: DS_LINEAR [FEATURE_AS]) is
+	update_test_routine_table (a_routine_list: DS_LINEAR [STRING]) is
 			-- Update `test_routine_table' according to `a_routine_list' and
 			-- add all create update for all notifications in `status_udpates'.
 		require
@@ -260,7 +276,7 @@ feature {NONE} -- Implementation
 			a_routine_list_valid: not a_routine_list.has (Void)
 		local
 			l_old_table: like test_routine_table
-			l_cursor: DS_LINEAR_CURSOR [FEATURE_AS]
+			l_cursor: DS_LINEAR_CURSOR [STRING]
 			l_name: STRING
 			l_test_routine: CDD_TEST_ROUTINE
 		do
@@ -273,7 +289,7 @@ feature {NONE} -- Implementation
 			until
 				l_cursor.after
 			loop
-				l_name := l_cursor.item.feature_names.first.visual_name
+				l_name := l_cursor.item
 				l_old_table.search (l_name)
 				if l_old_table.found then
 					l_test_routine := l_old_table.found_item
