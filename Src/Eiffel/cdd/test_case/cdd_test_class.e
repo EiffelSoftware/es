@@ -25,42 +25,25 @@ inherit
 		end
 
 create
-	make_with_class_name, make_with_class
+	make_with_ast, make_with_class
 
 feature {NONE} -- Initialization
 
-	make_with_class_name (a_name: like test_class_name; some_routine_names: DS_LINEAR [STRING]) is
+	make_with_ast (an_ast: CLASS_AS) is
 			-- Initialize test class given only the class name `a_name' and
 			-- a list of routines names `some_rounite_names' which will be
 			-- used to initialize `test_routines'.
 		require
-			a_name_not_empty: a_name /= Void and then not a_name.is_empty
-			some_routine_names_not_void: some_routine_names /= Void
-			some_routine_names_valid: not some_routine_names.has (Void)
+			an_ast_not_void: an_ast /= Void
 		local
 			l_cursor: DS_LINEAR_CURSOR [STRING]
 			l_test_routine: CDD_TEST_ROUTINE
 		do
-			test_class_name := a_name
-			create test_routines.make (some_routine_names.count)
-			create test_routine_table.make (some_routine_names.count)
-			create class_tags.make (0)
-			class_tags.set_equality_tester (case_insensitive_string_equality_tester)
-			l_cursor := some_routine_names.new_cursor
-			from
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				create l_test_routine.make (Current, l_cursor.item)
-				test_routines.put_last (l_test_routine)
-				test_routine_table.put (l_test_routine, l_cursor.item)
-				status_updates.force_last (create {CDD_TEST_ROUTINE_UPDATE}.make (l_test_routine, {CDD_TEST_ROUTINE_UPDATE}.add_code))
-				l_cursor.forth
-			end
-			create {DS_ARRAYED_LIST [CDD_TEST_ROUTINE_UPDATE]} status_updates.make_default
+			internal_parsed_class := an_ast
+			test_class_name := an_ast.class_name.name.as_upper
+			initialize
 		ensure
-			test_class_name_set: test_class_name = a_name
+			parsed_class_set: parsed_class = an_ast
 		end
 
 	make_with_class (a_class: like compiled_class) is
@@ -69,15 +52,18 @@ feature {NONE} -- Initialization
 			a_class_not_void: a_class /= Void
 			a_class_valid: is_valid_test_class (a_class)
 		do
-			create test_routine_table.make_default
-			create test_routines.make_default
+			test_class_name := a_class.name_in_upper.twin
 			set_compiled_class (a_class)
-			create class_tags.make (0)
-			class_tags.set_equality_tester (case_insensitive_string_equality_tester)
-			create {DS_ARRAYED_LIST [CDD_TEST_ROUTINE_UPDATE]} status_updates.make_default
-			update
+			initialize
 		ensure
 			compiled_class_set: compiled_class = a_class
+		end
+
+	initialize is
+			-- Initialize `Current'
+		do
+			create {DS_ARRAYED_LIST [CDD_TEST_ROUTINE_UPDATE]} status_updates.make_default
+			update
 		end
 
 feature -- Access
@@ -116,7 +102,7 @@ feature -- Element change
 			a_class_valid: is_valid_test_class (a_class)
 		do
 			compiled_class := a_class
-			test_class_name := a_class.name_in_upper
+			internal_parsed_class := Void
 		ensure
 			compiled_class_set: compiled_class = a_class
 		end
@@ -124,14 +110,11 @@ feature -- Element change
 feature {CDD_TEST_SUITE} -- Status change
 
 	status_updates: DS_LIST [CDD_TEST_ROUTINE_UPDATE]
-			-- List of changes since creation or else
-			-- last call to `update_test_routines'.
+			-- List of changes since creation or last call to `update_test_routines'.
 
 	update is
 			-- Update information about all test routines `compiled_class'
 			-- and add update notifications to `status_updates'.
-		require
-			compiled_class_set: compiled_class /= Void
 		do
 			status_updates.wipe_out
 			update_tags
@@ -145,8 +128,22 @@ feature {CDD_TEST_ROUTINE} -- Test routine properties
 
 feature {NONE} -- Implementation
 
-	internal_class_name: like test_class_name
-			-- Internally stored class name which is used when `compiled_class' is Void.
+	parsed_class: CLASS_AS is
+			-- Abstract syntax tree of the corresponding eiffel class
+		do
+			if compiled_class /= Void then
+				Result := compiled_class.ast
+			else
+				Result := internal_parsed_class
+			end
+		ensure
+			not_void: Result /= Void
+			valid: (compiled_class /= Void) implies (Result = compiled_class.ast)
+			valid: (compiled_class = Void) implies (Result = internal_parsed_class)
+		end
+
+	internal_parsed_class: like parsed_class
+			-- Abstract syntax tree if `compiled_class' is not available
 
 	test_routine_table: DS_HASH_TABLE [CDD_TEST_ROUTINE, STRING]
 			-- Table mapping all test routine names to their actual instance
@@ -161,7 +158,7 @@ feature {NONE} -- Implementation
 		end
 
 	is_valid_feature (a_feature: FEATURE_I): BOOLEAN is
-			--
+			-- Is `a_feature' a valid test routine feature?
 		require
 			a_feature_not_void: a_feature /= Void
 		local
@@ -210,8 +207,6 @@ feature {NONE} -- Implementation
 
 	update_test_routines is
 			-- Update test_routine_table with information from currently compiled system.
-		require
-			compiled_class_set: compiled_class /= Void
 		local
 			l_ft: FEATURE_TABLE
 			l_fcl: EIFFEL_LIST [FEATURE_CLAUSE_AS]
@@ -223,7 +218,7 @@ feature {NONE} -- Implementation
 		do
 				-- If feature table not available, could we look at AST?
 			create l_feature_list.make_default
-			if compiled_class.has_feature_table then
+			if compiled_class /= Void and then compiled_class.has_feature_table then
 				l_ft := compiled_class.feature_table
 				from
 					l_old_cs := l_ft.cursor
@@ -238,32 +233,34 @@ feature {NONE} -- Implementation
 					l_ft.forth
 				end
 				l_ft.go_to (l_old_cs)
-			elseif compiled_class.ast.features /= Void then
-				l_fcl := compiled_class.ast.features
-				from
-					l_old_cs := l_fcl.cursor
-					l_fcl.start
-				until
-					l_fcl.after
-				loop
-					if is_valid_clause_as (l_fcl.item) and not l_fcl.item.features.is_empty then
-						l_fl := l_fcl.item.features
-						from
-							l_old_cs2 := l_fl.cursor
-							l_fl.start
-						until
-							l_fl.after
-						loop
-							if is_valid_feature_as (l_fl.item) then
-								l_feature_list.force_last (l_fl.item.feature_names.first.visual_name)
+			elseif parsed_class.features /= Void then
+				l_fcl := parsed_class.features
+				if l_fcl /= Void then
+					from
+						l_old_cs := l_fcl.cursor
+						l_fcl.start
+					until
+						l_fcl.after
+					loop
+						if is_valid_clause_as (l_fcl.item) and not l_fcl.item.features.is_empty then
+							l_fl := l_fcl.item.features
+							from
+								l_old_cs2 := l_fl.cursor
+								l_fl.start
+							until
+								l_fl.after
+							loop
+								if is_valid_feature_as (l_fl.item) then
+									l_feature_list.force_last (l_fl.item.feature_names.first.visual_name)
+								end
+								l_fl.forth
 							end
-							l_fl.forth
+							l_fl.go_to (l_old_cs2)
 						end
-						l_fl.go_to (l_old_cs2)
+						l_fcl.forth
 					end
-					l_fcl.forth
+					l_fcl.go_to (l_old_cs)
 				end
-				l_fcl.go_to (l_old_cs)
 			end
 			update_test_routine_table (l_feature_list)
 		end
@@ -279,10 +276,13 @@ feature {NONE} -- Implementation
 			l_cursor: DS_LINEAR_CURSOR [STRING]
 			l_name: STRING
 			l_test_routine: CDD_TEST_ROUTINE
+			l_found: BOOLEAN
 		do
 			l_old_table := test_routine_table
 			create test_routine_table.make (a_routine_list.count)
 
+				-- Insert or update test routine for each item in `a_routine_list'
+				-- Remove existing test routines in `l_old_table'
 			l_cursor := a_routine_list.new_cursor
 			from
 				l_cursor.start
@@ -290,23 +290,30 @@ feature {NONE} -- Implementation
 				l_cursor.after
 			loop
 				l_name := l_cursor.item
-				l_old_table.search (l_name)
-				if l_old_table.found then
-					l_test_routine := l_old_table.found_item
-					test_routine_table.put (l_test_routine, l_name)
-					l_old_table.remove_found_item
-					l_test_routine.update
-					if l_test_routine.is_modified then
-						status_updates.force_last (create {CDD_TEST_ROUTINE_UPDATE}.make (l_test_routine, {CDD_TEST_ROUTINE_UPDATE}.new_outcome_code))
+				l_found := False
+				if l_old_table /= Void then
+					l_old_table.search (l_name)
+					if l_old_table.found then
+						l_found := True
+						l_test_routine := l_old_table.found_item
+						test_routine_table.put (l_test_routine, l_name)
+						l_old_table.remove_found_item
+						l_test_routine.update
+						if l_test_routine.is_modified then
+							status_updates.force_last (create {CDD_TEST_ROUTINE_UPDATE}.make (l_test_routine, {CDD_TEST_ROUTINE_UPDATE}.new_outcome_code))
+						end
 					end
-				else
+				end
+				if not l_found then
 					create l_test_routine.make (Current, l_name)
 					test_routine_table.put (l_test_routine, l_name)
 					status_updates.force_last (create {CDD_TEST_ROUTINE_UPDATE}.make (l_test_routine, {CDD_TEST_ROUTINE_UPDATE}.add_code))
 				end
 				l_cursor.forth
 			end
-			if not l_old_table.is_empty then
+
+				-- Add update message for each test routine left in `l_old_table'.
+			if l_old_table /= Void and then not l_old_table.is_empty then
 				from
 					l_old_table.start
 				until
@@ -337,38 +344,36 @@ feature {NONE} -- Implementation
 			l_value_list: EIFFEL_LIST [ATOMIC_AS]
 			v: STRING
 		do
-			if compiled_class /= Void then
-				l_ast := compiled_class.ast
-				l_ilist := l_ast.top_indexes
-				from
-					l_ilist.start
-				until
-					l_ilist.after
-				loop
-					l_item := l_ilist.item
-					if l_item.tag.name.is_equal ("tag") then
-						from
-							l_value_list := l_item.index_list
-							l_value_list.start
-						until
-							l_value_list.after
-						loop
-							v := l_value_list.item.string_value.twin
-							v.prune_all_leading ('"')
-							v.prune_all_trailing ('"')
-							class_tags.force (v)
-							l_value_list.forth
-						end
+			l_ast := parsed_class
+			l_ilist := l_ast.top_indexes
+			from
+				l_ilist.start
+			until
+				l_ilist.after
+			loop
+				l_item := l_ilist.item
+				if l_item.tag.name.is_equal ("tag") then
+					from
+						l_value_list := l_item.index_list
+						l_value_list.start
+					until
+						l_value_list.after
+					loop
+						v := l_value_list.item.string_value.twin
+						v.prune_all_leading ('"')
+						v.prune_all_trailing ('"')
+						class_tags.force (v)
+						l_value_list.forth
 					end
-					l_ilist.forth
 				end
+				l_ilist.forth
 			end
 		end
 
 invariant
 	test_class_name_not_void: test_class_name /= Void
-	test_class_name_valid: compiled_class /= Void implies test_class_name = compiled_class.name_in_upper
-	comlied_class_not_void_implies_has_ast: compiled_class /= Void implies is_valid_test_class (compiled_class)
+	compiled_class_xor_internal_parsed_class_not_void: (compiled_class /= Void) xor (internal_parsed_class /= Void)
+	compiled_class_not_void_implies_valid: (compiled_class /= Void) implies is_valid_test_class (compiled_class)
 	test_routine_table_not_void: test_routine_table /= Void
 	test_routines_not_void: test_routines /= Void
 	test_routines_valid: test_routines.for_all (agent (a_routine: CDD_TEST_ROUTINE): BOOLEAN

@@ -146,7 +146,7 @@ feature -- Status setting (CDD)
 			create capturer.make
 				-- Arno: not sure where to hook up printer and log
 				-- observers for capturing
-			capturer.capture_observers.put_last (create {CDD_TEST_CASE_PRINTER}.make (test_suite))
+			capturer.capture_observers.put_last (create {CDD_TEST_CASE_PRINTER}.make (Current))
 			status_update_actions.call ([create {CDD_STATUS_UPDATE}.make_with_code ({CDD_STATUS_UPDATE}.enable_extracting_code)])
 		ensure
 			extracting_enabled: is_extracting_enabled

@@ -102,7 +102,6 @@ feature {CDD_MANAGER} -- State change
 		do
 			create {DS_ARRAYED_LIST [CDD_TEST_ROUTINE_UPDATE]} status_updates.make_default
 			update_class_table
-			test_routine_update_actions.call ([status_updates])
 			modified_classes.wipe_out
 		ensure
 			modified_classes_empty: modified_classes.is_empty
@@ -116,6 +115,9 @@ feature -- Event handling
 			-- removed, changed.
 			-- The argument is a list of all changes representing all changes
 			-- as a transaction.
+			-- The argument can also be void, in this case we do not make an
+			-- incremental update. Instead we just read out all test routines
+			-- from scratch.
 
 feature {NONE} -- Implementation
 
@@ -176,34 +178,41 @@ feature {NONE} -- Implementation
 		local
 			l_old_table: like test_class_table
 			l_cursor: DS_LINEAR_CURSOR [CDD_TEST_ROUTINE]
+			l_incremental: BOOLEAN
 		do
 			update_test_class_ancestor
 			l_old_table := test_class_table
 			create test_class_table.make_default
 			if test_class_ancestor /= Void then
+				l_incremental := True
 				fill_with_descendants (test_class_ancestor, l_old_table)
-			end
-
 				-- Create remove update for each remaining test routine in `l_old_table'
-			from
-				l_old_table.start
-			until
-				l_old_table.after
-			loop
-				l_cursor := l_old_table.item_for_iteration.test_routines.new_cursor
 				from
-					l_cursor.start
+					l_old_table.start
 				until
-					l_cursor.after
+					l_old_table.after
 				loop
-					status_updates.force_last (create {CDD_TEST_ROUTINE_UPDATE}.make (l_cursor.item, {CDD_TEST_ROUTINE_UPDATE}.remove_code))
-					l_cursor.forth
+					l_cursor := l_old_table.item_for_iteration.test_routines.new_cursor
+					from
+						l_cursor.start
+					until
+						l_cursor.after
+					loop
+						status_updates.force_last (create {CDD_TEST_ROUTINE_UPDATE}.make (l_cursor.item, {CDD_TEST_ROUTINE_UPDATE}.remove_code))
+						l_cursor.forth
+					end
+					l_old_table.forth
 				end
-				l_old_table.forth
 			end
 
 				-- This should not be necessary once bug is fixed in gobo library
 			create test_classes.make_from_array (test_class_table.to_array)
+
+			if l_incremental then
+				test_routine_update_actions.call ([status_updates])
+			else
+				test_routine_update_actions.call (Void)
+			end
 		end
 
 	fill_with_descendants (an_ancestor: EIFFEL_CLASS_C; an_old_list: like test_class_table) is

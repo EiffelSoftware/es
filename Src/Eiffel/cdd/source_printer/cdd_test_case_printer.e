@@ -20,8 +20,6 @@ inherit
 			{NONE} all
 		end
 
-	CDD_CONSTANTS
-
 	EB_CLUSTER_MANAGER_OBSERVER
 		rename
 			manager as cluster_manager
@@ -32,7 +30,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_EIFFEL_PROJECT
+	SHARED_EIFFEL_PARSER
 		export
 			{NONE} all
 		end
@@ -42,19 +40,24 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_FLAGS
+		export
+			{NONE} all
+		end
+
 create
 	make
 
 feature -- Initialization
 
-	make (a_test_suite: like test_suite) is
-			-- Set `test_suite' to `a_test_suite'.
+	make (a_cdd_manager: like cdd_manager) is
+			-- Initialize `Current'.
 		require
-			a_test_suite_not_void: a_test_suite /= Void
+			a_cdd_manager_not_void: a_cdd_manager /= Void
 		do
-			test_suite := a_test_suite
+			cdd_manager := a_cdd_manager
 		ensure
-			test_suite_set: test_suite = a_test_suite
+			cdd_manager_set: cdd_manager = a_cdd_manager
 		end
 
 feature -- Access
@@ -68,11 +71,11 @@ feature -- Access
 	target: CONF_TARGET is
 			-- Target in which test cases will be created
 		do
-			Result := test_suite.target
+			Result := cdd_manager.test_suite.target
 		end
 
-	test_suite: CDD_TEST_SUITE
-			-- Test suite holding all test classes for `target'
+	cdd_manager: CDD_MANAGER
+			-- CDD Manager
 
 feature	-- Basic operations
 
@@ -222,7 +225,8 @@ feature	-- Basic operations
 			l_cluster_list: LIST [CONF_CLUSTER]
 			l_loc: CONF_DIRECTORY_LOCATION
 			l_directory: KL_DIRECTORY
-			l_feature_list: DS_ARRAYED_LIST [STRING]
+			l_file: KL_BINARY_INPUT_FILE
+			l_new_test_class: CDD_TEST_CLASS
 		do
 			if not failed then
 				output_stream.dedent
@@ -238,10 +242,10 @@ feature	-- Basic operations
 				output_stream.close
 
 				l_cluster_name := target.name + "_tests"
-				l_tests_cluster := eiffel_universe.cluster_of_name (l_cluster_name)
+				l_tests_cluster := cdd_manager.project.system.system.eiffel_universe.cluster_of_name (l_cluster_name)
 				if l_tests_cluster = Void Then
 					create l_directory.make (target.system.directory)
-					l_cluster_list := eiffel_universe.cluster_of_location (l_directory.name)
+					l_cluster_list := cdd_manager.project.system.system.eiffel_universe.cluster_of_location (l_directory.name)
 					if l_cluster_list.is_empty then
 						-- Note (Arno): first version prints absolute path to cluster
 						--cluster_manager.add_cluster (current_cluster.cluster_name + cluster_name_suffix, current_cluster, l_directory.name)
@@ -255,19 +259,25 @@ feature	-- Basic operations
 						l_tests_cluster.set_classes_by_filename (create {HASH_TABLE [EIFFEL_CLASS_I, STRING]}.make (0))
 
 						target.add_cluster (l_tests_cluster)
-						eiffel_system.system.set_config_changed (True)
+						cdd_manager.project.system.system.set_config_changed (True)
 						cluster_manager.refresh
 					else
 						l_tests_cluster := l_cluster_list.first
 					end
 				end
--- TODO: The following line makes the created test case visible via the cluster view (grayed out but still).
--- It doesn't seem to be working (at least not always) when in console mode. Arno will check with ManuS what to do.
---				cluster_manager.add_class_to_cluster (new_class_name.as_lower + ".e", l_tests_cluster, new_class_path)
-				eiffel_system.system.set_rebuild (True)
-				create l_feature_list.make (1)
-				l_feature_list.put_first ("test")
-				test_suite.add_test_class (create {CDD_TEST_CLASS}.make_with_class_name (new_class_name, l_feature_list))
+				cdd_manager.project.system.system.set_rebuild (True)
+				if is_gui then
+					cluster_manager.add_class_to_cluster (new_class_name.as_lower + ".e", l_tests_cluster, new_class_path)
+				end
+				create l_file.make (output_stream.name)
+				if l_file.is_readable then
+					l_file.open_read
+					eiffel_parser.parse (l_file)
+					if eiffel_parser.error_count = 0 then
+						create l_new_test_class.make_with_ast (eiffel_parser.root_node)
+						cdd_manager.test_suite.add_test_class (l_new_test_class)
+					end
+				end
 			else
 				if output_stream /= Void then
 					output_stream.close
@@ -502,5 +512,5 @@ invariant
 		(is_initialized and not failed) implies new_class_name /= Void
 	initialized_and_not_failed_implies_valid_path_:
 		(is_initialized and not failed) implies new_class_path /= Void
-	test_suite_not_void: test_suite /= Void
+	cdd_manager_not_void: cdd_manager /= Void
 end
