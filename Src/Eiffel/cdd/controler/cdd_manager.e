@@ -208,7 +208,7 @@ feature {EB_CLUSTERS} -- Status setting (Eiffel Project)
 						disable_extracting
 					end
 				end
-				if has_project_been_initialized then
+				if not has_project_been_initialized then
 					has_project_been_initialized := True
 						-- From now on, we want to be notified whenever
 						-- a test case class get processed in degree 5
@@ -220,20 +220,19 @@ feature {EB_CLUSTERS} -- Status setting (Eiffel Project)
 			end
 		end
 
-	add_updated_class (a_class: EIFFEL_CLASS_C) is
+	add_updated_class is
 			-- If `a_class' is a test class (exists in test suite)
 			-- add it to classes which for which test class should
 			-- be updated.
-		require
-			a_class_not_void: a_class /= Void
+		local
+			l_class: EIFFEL_CLASS_C
 		do
-			if test_suite.has_test_case_for_class (a_class) then
-				last_updated_test_class := a_class
+			l_class := project.system.system.degree_5.current_class
+			if test_suite.has_test_case_for_class (l_class) then
+				last_updated_test_class := l_class
 				status_update_actions.call ([create {CDD_STATUS_UPDATE}.make_with_code ({CDD_STATUS_UPDATE}.test_class_update_code)])
 			end
-		ensure
-			added_if_test_class: test_suite.has_test_case_for_class (a_class) implies
-				(last_updated_test_class = a_class)
+			last_updated_test_class := Void
 		end
 
 	remove_test_case_for_class (a_class: CLASS_I) is

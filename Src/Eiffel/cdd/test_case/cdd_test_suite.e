@@ -57,11 +57,12 @@ feature -- Access
 		require
 			a_class_not_void: a_class /= Void
 		do
-			Result := test_class_table.has (a_class.name_in_upper) and then
-				test_class_table.item (a_class.name_in_upper).compiled_class = a_class
+			test_class_table.search (a_class.name_in_upper)
+			if test_class_table.found then
+				Result := test_class_table.found_item.compiled_class = a_class
+			end
 		ensure
-			correct_result: Result = test_class_table.has (a_class.name_in_upper) and then
-				test_class_table.item (a_class.name_in_upper).compiled_class = a_class
+			correct_result: Result = (test_class_table.found and then test_class_table.found_item.compiled_class = a_class)
 		end
 
 feature -- Element change
@@ -102,6 +103,7 @@ feature {CDD_MANAGER} -- State change
 			create {DS_ARRAYED_LIST [CDD_TEST_ROUTINE_UPDATE]} status_updates.make_default
 			update_class_table
 			test_routine_update_actions.call ([status_updates])
+			modified_classes.wipe_out
 		ensure
 			modified_classes_empty: modified_classes.is_empty
 		end
@@ -226,7 +228,7 @@ feature {NONE} -- Implementation
 			loop
 				l_ec ?= l_list.item
 				if l_ec /= Void then
-					if not l_ec.is_deferred then
+					if not (l_ec.is_deferred or l_ec.is_generic) then
 						l_update := True
 						an_old_list.search (l_ec.name_in_upper)
 						if an_old_list.found then

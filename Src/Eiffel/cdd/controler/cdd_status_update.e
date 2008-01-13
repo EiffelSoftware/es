@@ -55,6 +55,8 @@ feature -- Access
 			-- Is `a_code' a valid code?
 		do
 			Result :=
+				a_code = project_initialize_code or
+				a_code = test_class_update_code or
 				a_code = enable_extracting_code or
 				a_code = disable_extracting_code or
 				a_code = executor_step_code or

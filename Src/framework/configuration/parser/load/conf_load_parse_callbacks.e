@@ -275,6 +275,7 @@ feature -- Callbacks
 							l_name := l_target.name + "_tester"
 							if not last_system.targets.has_key (l_name) then
 								l_cdd_target := factory.new_cdd_target (l_name, last_system)
+								l_cdd_target.set_root (factory.new_root (Void, "CDD_INTERPRETER", "execute", False))
 								l_cdd_target.set_parent (l_target)
 								last_system.add_target (l_cdd_target)
 							end

@@ -167,7 +167,7 @@ feature {NONE} -- Implementation
 			l_tag.append_character ('.')
 			l_tag.append (name)
 			internal_tags.force (l_tag)
-			if outcomes /= Void then
+			if not outcomes.is_empty then
 				create l_tag.make (20)
 				l_tag.append ("outcome.")
 				l_tag.append (outcomes.last.text)

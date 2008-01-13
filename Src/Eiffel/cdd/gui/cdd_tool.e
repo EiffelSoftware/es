@@ -136,12 +136,18 @@ feature {NONE} -- Initialization
 			debug_button.select_actions.extend (agent debug_test_routine)
 			debug_button.set_tooltip ("Debug selected test routine")
 			--debug_button.set_pixmap (pixmaps.mini_pixmaps.general_next_icon)
+			if not cdd_manager.is_project_initialized then
+				debug_button.disable_sensitive
+			end
 			l_toolbar.extend (debug_button)
 
 			create toggle_filter_button.make_with_text ("Exec Set")
 			toggle_filter_button.select_actions.extend (agent toggle_filter)
 			toggle_filter_button.set_tooltip ("Only execute visible test routines")
 			--l_button.set_pixmap (pixmaps.icon_pixmaps.debug_stop_icon)
+			if not cdd_manager.is_project_initialized then
+				toggle_filter_button.disable_sensitive
+			end
 			l_toolbar.extend (toggle_filter_button)
 
 			create l_sep
@@ -301,7 +307,8 @@ feature {NONE} -- Implementation (Basic functionality)
 			inspect
 				an_update.code
 			when {CDD_STATUS_UPDATE}.project_initialize_code then
-				-- TODO: enable all disabled buttons!
+				debug_button.enable_sensitive
+				toggle_filter_button.enable_sensitive
 			when {CDD_STATUS_UPDATE}.enable_extracting_code then
 				show_message ("Extraction enabled")
 				toggle_extraction_button.enable_select
@@ -618,7 +625,7 @@ feature {NONE} -- Implementation (grid)
 					Result.set_foreground_color (stock_colors.green)
 				else
 					Result.text.append ("UNRESOLVED")
-					Result.set_foreground_color (stock_colors.grey)
+					Result.set_foreground_color (stock_colors.dark_yellow)
 				end
 				Result.set_tooltip (l_tooltip)
 			end

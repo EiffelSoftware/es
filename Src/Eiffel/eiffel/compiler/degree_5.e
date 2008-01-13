@@ -141,7 +141,8 @@ feature {NONE} -- Processing
 				a_class.external_class_c.process_degree_5
 			else
 				eif_class := a_class.eiffel_class_c
-				process_actions.call ([eif_class])
+				current_class := eif_class
+				process_actions.call (Void)
 				if eif_class.parsing_needed then
 						-- Parse class and save a backup if requested and generates warning.
 					ast := eif_class.build_ast (True, True)
@@ -246,9 +247,12 @@ feature -- Removal
 
 feature -- Event handling
 
-	process_actions: ACTION_SEQUENCE [TUPLE [EIFFEL_CLASS_C]]
+	process_actions: ACTION_SEQUENCE [TUPLE]
 			-- Actions beeing called whenever an eiffel
 			-- class is processed by `Current'
+
+	current_class: EIFFEL_CLASS_C
+			-- Class currently beeing processed
 
 invariant
 

@@ -44,6 +44,8 @@ feature {NONE} -- Initialization
 			test_class_name := a_name
 			create test_routines.make (some_routine_names.count)
 			create test_routine_table.make (some_routine_names.count)
+			create class_tags.make (0)
+			class_tags.set_equality_tester (case_insensitive_string_equality_tester)
 			l_cursor := some_routine_names.new_cursor
 			from
 				l_cursor.start
@@ -56,8 +58,7 @@ feature {NONE} -- Initialization
 				status_updates.force_last (create {CDD_TEST_ROUTINE_UPDATE}.make (l_test_routine, {CDD_TEST_ROUTINE_UPDATE}.add_code))
 				l_cursor.forth
 			end
-			create class_tags.make (0)
-			class_tags.set_equality_tester (case_insensitive_string_equality_tester)
+			create {DS_ARRAYED_LIST [CDD_TEST_ROUTINE_UPDATE]} status_updates.make_default
 		ensure
 			test_class_name_set: test_class_name = a_name
 		end
@@ -73,6 +74,7 @@ feature {NONE} -- Initialization
 			set_compiled_class (a_class)
 			create class_tags.make (0)
 			class_tags.set_equality_tester (case_insensitive_string_equality_tester)
+			create {DS_ARRAYED_LIST [CDD_TEST_ROUTINE_UPDATE]} status_updates.make_default
 			update
 		ensure
 			compiled_class_set: compiled_class = a_class
@@ -115,8 +117,6 @@ feature -- Element change
 		do
 			compiled_class := a_class
 			test_class_name := a_class.name_in_upper
-			update_test_routines
-			update_tags
 		ensure
 			compiled_class_set: compiled_class = a_class
 		end
@@ -157,7 +157,7 @@ feature {NONE} -- Implementation
 		local
 			l_name: STRING
 		do
-			if a_feature_as.body.arguments.is_empty and not a_feature_as.is_function then
+			if (a_feature_as.body.arguments = Void or else a_feature_as.body.arguments.is_empty) and not a_feature_as.is_function then
 				l_name := a_feature_as.feature_names.first.visual_name
 				Result := l_name.count >= test_routine_prefix.count and then
 							l_name.substring (1, test_routine_prefix.count).is_case_insensitive_equal (test_routine_prefix)
@@ -218,8 +218,8 @@ feature {NONE} -- Implementation
 						if is_valid_feature_as (l_feature_as) then
 							l_feature_list.force_last (l_feature_as)
 						end
-						l_ft.forth
 					end
+					l_ft.forth
 				end
 				l_ft.go_to (l_old_cs)
 			elseif compiled_class.ast.features /= Void then
@@ -308,7 +308,7 @@ feature {NONE} -- Implementation
 			-- Update tags of test routines contained in this class.
 		do
 			create class_tags.make_default
-			class_tags.set_equality_tester (string_equality_tester)
+			class_tags.set_equality_tester (case_insensitive_string_equality_tester)
 			update_explicit_tags
 		end
 

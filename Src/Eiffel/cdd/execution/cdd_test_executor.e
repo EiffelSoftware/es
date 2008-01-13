@@ -217,6 +217,7 @@ feature {NONE} -- Implementation (execution)
 					select_first_test_routine
 				else
 					cdd_manager.status_update_actions.call ([create {CDD_STATUS_UPDATE}.make_with_code ({CDD_STATUS_UPDATE}.execution_error_code)])
+					test_routines := Void
 				end
 				compiler := Void
 				cdd_manager.status_update_actions.call ([update_step])
