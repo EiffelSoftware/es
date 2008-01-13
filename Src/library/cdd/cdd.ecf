@@ -8,7 +8,6 @@
 			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true"/>
 		</option>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf" readonly="true"/>
-		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
 		<cluster name="cdd" location=".\"/>
 	</target>
 </system>
