@@ -48,7 +48,6 @@ feature {NONE} -- Initialization
 			cdd_library: is_cdd_library
 		end
 
-
 feature -- Status
 
 	is_library: BOOLEAN is

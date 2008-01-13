@@ -213,13 +213,9 @@ feature -- Visit nodes
 				else
 					l_cdd_target := a_target
 				end
-				if (l_cdd_target /= Void and then l_cdd_target.cdd /= Void and then l_cdd_target.cdd.is_enabled) then
-					-- TODO: make sure cluster with this name does not exists yet
-					-- or any cluster pointing to ./cdd_tests/target.name does
-					-- not exists yet!
+				if l_cdd_target /= Void and then l_cdd_target.cdd /= Void then
 					l_loc := factory.new_location_from_path (".\cdd_tests\" + l_cdd_target.name, a_target)
 					create l_dir.make (l_loc.build_path ("", ""))
-
 					if l_dir.exists and not a_target.clusters.has (l_cdd_target.name + "_tests") then
 						l_cluster := factory.new_cdd_cluster (l_cdd_target.name + "_tests", l_loc, a_target)
 						l_cluster.set_recursive (True)
