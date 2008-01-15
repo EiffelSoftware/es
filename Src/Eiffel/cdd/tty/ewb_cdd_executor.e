@@ -102,7 +102,7 @@ feature {NONE} -- Implementation
 			io.put_string (a_test_routine.test_class.test_class_name + "." + a_test_routine.name + "%N")
 			io.put_string ("%TSetup ")
 			print_response (l_last.setup_response)
-			if not l_last.setup_response.is_bad then
+			if l_last.setup_response.is_normal then
 				io.put_string ("%TTest ")
 				print_response (l_last.test_response)
 				if not l_last.test_response.is_bad then
