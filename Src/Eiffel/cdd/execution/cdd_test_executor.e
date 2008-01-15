@@ -240,7 +240,7 @@ feature {NONE} -- Implementation (execution)
 			if proxy.last_response /= Void then
 				current_test_routine.add_outcome (proxy.last_response)
 				create l_list.make (1)
-				l_list.put_first (create {CDD_TEST_ROUTINE_UPDATE}.make (current_test_routine, {CDD_TEST_ROUTINE_UPDATE}.new_outcome_code))
+				l_list.put_first (create {CDD_TEST_ROUTINE_UPDATE}.make (current_test_routine, {CDD_TEST_ROUTINE_UPDATE}.changed_code))
 				test_suite.test_routine_update_actions.call ([l_list])
 				select_next_test_routine
 				if not proxy.is_ready then

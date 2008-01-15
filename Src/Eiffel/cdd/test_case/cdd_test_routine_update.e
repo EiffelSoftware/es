@@ -27,12 +27,12 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	is_new_outcome: BOOLEAN is
+	is_changed: BOOLEAN is
 			-- Does `Current' notify about a new outcome in `test_routine'?
 		do
-			Result := code = new_outcome_code
+			Result := code = changed_code
 		ensure
-			correct_result: Result = (code = new_outcome_code)
+			correct_result: Result = (code = changed_code)
 		end
 
 	is_added: BOOLEAN is
@@ -59,15 +59,16 @@ feature -- Access
 
 	add_code,
 	remove_code,
-	new_outcome_code: INTEGER is unique
+	changed_code: INTEGER is unique
 			-- Available status codes
 
 	is_valid_code (a_code: like code): BOOLEAN is
 			-- Is `a_code' a valid code?
 		do
-			Result := a_code = add_code or
+			Result :=
+				a_code = add_code or
 				a_code = remove_code or
-				a_code = new_outcome_code
+				a_code = changed_code
 		end
 
 invariant

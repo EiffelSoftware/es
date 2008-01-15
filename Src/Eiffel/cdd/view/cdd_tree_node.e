@@ -7,17 +7,17 @@ indexing
 class
 	CDD_TREE_NODE
 
-create
-	make, make_leaf
+create {CDD_TREE_VIEW}
+	make, make_leaf, make_with_class
 
 feature {NONE} -- Initialization
 
 	make (a_tag: like tag) is
-			-- Create new non leaf node.
+			-- Create new node `a_tag' as `tag'.
 		require
 			a_tag_not_void: a_tag /= Void
 		do
-			create children.make_default
+			create internal_children.make_default
 			tag := a_tag
 		ensure
 			tag_set: tag = a_tag
@@ -25,18 +25,29 @@ feature {NONE} -- Initialization
 
 	make_leaf (a_test_routine: like test_routine; a_tag: like tag) is
 			-- Create new leaf node with `a_test_routine' as
-			-- `test_routine'. Set `tag' to the name of
-			-- `test_routine'.
+			-- `test_routine' and `a_tag' as `tag'.
 		require
 			a_test_routine_not_void: a_test_routine /= Void
 			a_tag_not_void: a_tag /= Void
 		do
-			test_routine := a_test_routine
-			tag := test_routine.test_class.test_class_name + "." + test_routine.name
-			create children.make (0)
 			tag := a_tag
+			test_routine := a_test_routine
 		ensure
 			test_routine_set: test_routine = a_test_routine
+			tag_set: tag = a_tag
+		end
+
+	make_with_class (a_class: like eiffel_class; a_tag: like tag) is
+			-- Create new node with `a_class' as
+			-- `eiffel_class' and `a_tag' as `tag'.
+		require
+			a_class_not_void: a_class /= Void
+			a_tag_not_void: a_tag /= Void
+		do
+			make (a_tag)
+			eiffel_class := a_class
+		ensure
+			eiffel_class_set: eiffel_class = a_class
 			tag_set: tag = a_tag
 		end
 
@@ -51,30 +62,52 @@ feature -- Status
 			definition: Result = (test_routine /= Void)
 		end
 
+	has_test_class: BOOLEAN is
+			-- Is `eiffel_class' set?
+		do
+			Result := eiffel_class /= Void
+		ensure
+			correct: Result = (eiffel_class /= Void)
+		end
+
 feature -- Access
 
-	children: DS_ARRAYED_LIST [CDD_TREE_NODE]
-			-- Childnodes of this node
+	parent: CDD_TREE_NODE
+			-- Parent of this node
 
-	recursive_children_count: INTEGER is
-			-- Recursive count of `children'
-		local
-			l_cursor: DS_LINEAR_CURSOR [CDD_TREE_NODE]
+	children: DS_LINEAR [like Current] is
+			-- Childnodes of this node
+			-- NOTE: Has to linked since we might have to insert
+			-- or remove nodes during incremental update
+		require
+			not_leaf: not is_leaf
 		do
-			if not is_leaf then
-				l_cursor := children.new_cursor
-				from
-					l_cursor.start
-				until
-					l_cursor.after
-				loop
-					Result := 1 + l_cursor.item.recursive_children_count
-					l_cursor.forth
-				end
-			end
+			Result := internal_children
 		ensure
-			leaf_implies_no_children: is_leaf implies Result = 0
+			not_void: Result /= Void
+			result_valid: not Result.has (Void)
 		end
+
+--	NOTE: not sure whether this is used...
+--	recursive_children_count: INTEGER is
+--			-- Recursive count of `children'
+--		local
+--			l_cursor: DS_LINEAR_CURSOR [CDD_TREE_NODE]
+--		do
+--			if not is_leaf then
+--				l_cursor := children.new_cursor
+--				from
+--					l_cursor.start
+--				until
+--					l_cursor.after
+--				loop
+--					Result := 1 + l_cursor.item.recursive_children_count
+--					l_cursor.forth
+--				end
+--			end
+--		ensure
+--			leaf_implies_no_children: is_leaf implies Result = 0
+--		end
 
 	tag: STRING
 			-- Tag matched by all leaves of this node
@@ -83,11 +116,26 @@ feature -- Access
 			-- Test routine associated with this node; only applies
 			-- to leaf nodes.
 
+	eiffel_class: EIFFEL_CLASS_C
+			-- Eiffel class associated with this node
+
+feature {CDD_TREE_VIEW} -- Implementation
+
+	internal_children: DS_LINKED_LIST [like Current]
+			-- Internally stored child nodes
+
+	set_parent (a_parent: like Current) is
+			-- Set `parent' to `a_parent'.
+		do
+			parent := a_parent
+		ensure
+			parent_set: parent = a_parent
+		end
+
 invariant
 
 	tag_not_void: tag /= Void
-	children_not_void: children /= Void
-	children_doesnt_have_void: not children.has (Void)
-	leaf_doesnt_have_children: is_leaf implies (children.count = 0)
+	is_leaf_equals_children_void: is_leaf = (internal_children = Void)
+	children_doesnt_have_void: (not is_leaf) implies (not internal_children.has (Void))
 
 end

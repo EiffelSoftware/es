@@ -14,6 +14,8 @@ inherit
 			{NONE} all
 		end
 
+	HASHABLE
+
 create
 	make
 
@@ -27,11 +29,11 @@ feature {NONE} -- Initialization
 		do
 			test_class := a_test_class
 			set_ast (an_ast)
+			hash_code := (test_class.test_class_name + "." + name).hash_code
 			create internal_outcomes.make
 			update
 		ensure
 			test_class_set: test_class = a_test_class
-			--routine_name_set: name = a_routine_name
 		end
 
 feature -- Status report
@@ -96,6 +98,12 @@ feature -- Access
 			not_has_void: not Result.has (Void)
 		end
 
+	is_modified: BOOLEAN
+			-- Has `Current' updated its tags since last call to `update' or `add_outcome'?
+
+	hash_code: INTEGER
+			-- Hash code for using `Current' in a hash table
+
 	tags_with_prefix (a_prefix: STRING): DS_ARRAYED_LIST [STRING] is
 			-- List of tags with prefix `a_prefix'
 		require
@@ -146,9 +154,6 @@ feature -- Element change
 		end
 
 feature {CDD_TEST_CLASS} -- Update
-
-	is_modified: BOOLEAN
-			-- Has `Current' been updated in any way since last `update'?
 
 	update is
 			-- Update `tags' and set `is_modified' if tags have changed.
@@ -235,6 +240,7 @@ feature {NONE} -- Implementation
 				create l_tag.make (20)
 				l_tag.append ("outcome.")
 				l_tag.append (outcomes.last.text)
+				internal_tags.force (l_tag)
 			end
 		end
 

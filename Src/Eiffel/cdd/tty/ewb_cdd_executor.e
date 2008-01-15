@@ -83,7 +83,7 @@ feature {NONE} -- Implementation
 			until
 				l_cursor.after
 			loop
-				if l_cursor.item.is_new_outcome then
+				if l_cursor.item.is_changed then
 					print_test_case_outcome (l_cursor.item.test_routine)
 				end
 				l_cursor.forth

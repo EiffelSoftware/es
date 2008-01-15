@@ -30,7 +30,7 @@ feature {NONE} -- Initialization
 			test_suite := a_test_suite
 			create internal_filters.make (0)
 			internal_filters.set_equality_tester (case_insensitive_string_equality_tester)
-			change_agent := agent incremental_refresh
+			change_agent := agent incremental_update
 		ensure
 			test_suite_set: test_suite = a_test_suite
 		end
@@ -48,20 +48,22 @@ feature {ANY} -- Status Report
 		local
 			cs: DS_LINEAR_CURSOR [STRING]
 		do
+				-- Every test case matches, if no filter criterion is present.
+			Result := True
 			if filters.count > 0 then
 				from
 					cs := filters.new_cursor
 					cs.start
 				until
-					cs.off or Result
+					cs.off or not Result
 				loop
-					Result := a_routine.has_matching_tag (cs.item)
-					cs.forth
+					if not a_routine.has_matching_tag (cs.item) then
+						Result := False
+					else
+						cs.forth
+					end
 				end
 				cs.go_after
-			else
-				-- Every test case matches, if no filter criterion is present.
-				Result := True
 			end
 		end
 
@@ -106,7 +108,7 @@ feature {ANY} -- Access
 feature -- Status setting
 
 	set_filters (new_tags: like filters) is
-			-- Set `filters' to `new_tags' and adopt `test_routine' to new filters.
+			-- Set `filters' to `new_tags' and adopt `test_routines' to new filters.
 		require
 			new_tags_not_void: new_tags /= Void
 		local
@@ -130,7 +132,9 @@ feature -- Status setting
 					-- implement an incremental update for each removed
 					-- or added tag in `internal_filter'. For now we
 					-- will just simply refresh the view.
-				wipe_out_test_routines_cache
+				if is_observing then
+					refresh
+				end
 			end
 		ensure
 
@@ -144,7 +148,6 @@ feature -- Event handling
 			-- For efficiency reasons changes are grouped together in transactions.
 			-- TODO: Add list of changes as arguments so observers can be more
 			-- efficient in updating their state.
-
 
 feature {NONE} -- Status setting
 
@@ -163,14 +166,71 @@ feature {NONE} -- Status setting
 
 feature {NONE} -- Element change
 
-	incremental_refresh (a_list: DS_LINEAR [CDD_TEST_ROUTINE_UPDATE]) is
+	incremental_update (a_list: DS_LINEAR [CDD_TEST_ROUTINE_UPDATE]) is
 			-- Incremental update of `test_routines_cache' applying changes
 			-- from `a_list'
 		require
 			observing: is_observing
+			a_list_valid: a_list = Void or else not a_list.has (Void)
+		local
+			l_cursor: DS_LINEAR_CURSOR [CDD_TEST_ROUTINE_UPDATE]
+			l_update: CDD_TEST_ROUTINE_UPDATE
+			l_updates: DS_ARRAYED_LIST [CDD_TEST_ROUTINE_UPDATE]
 		do
-			-- TODO: implement incremental update.
-			refresh
+			if a_list /= Void and test_routines_cache /= Void then
+				l_cursor := a_list.new_cursor
+				create l_updates.make_default
+				from
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					l_update := l_cursor.item
+					if l_update.is_added then
+						if is_matching_routine (l_update.test_routine) then
+							test_routines_cache.force (l_update.test_routine)
+							l_updates.force_last (l_update)
+						end
+					elseif l_update.is_removed then
+						test_routines_cache.search (l_update.test_routine)
+						if test_routines_cache.found then
+							test_routines_cache.remove_found_item
+							l_updates.force_last (l_update)
+						end
+					elseif l_update.is_changed then
+						test_routines_cache.search (l_update.test_routine)
+						if test_routines_cache.found then
+							if not l_update.test_routine.is_modified or else is_matching_routine (l_update.test_routine) then
+									-- Even if `test_routines' has not changed,
+									-- we propagate a change update if the test
+									-- routine belongs to `test_routines', since
+									-- we might want to change the display.
+								l_updates.force_last (l_update)
+							else
+									-- Does not match tags anymore so we propagate
+									-- a remove update.
+								l_updates.force_last (create {CDD_TEST_ROUTINE_UPDATE}.make (l_update.test_routine, {CDD_TEST_ROUTINE_UPDATE}.remove_code))
+								test_routines_cache.remove_found_item
+							end
+						else
+							if l_update.test_routine.is_modified and then is_matching_routine (l_update.test_routine) then
+									-- Matches tags so we add it to `test_routines'
+									-- and propagate add update.
+								l_updates.force_last (create {CDD_TEST_ROUTINE_UPDATE}.make (l_update.test_routine, {CDD_TEST_ROUTINE_UPDATE}.add_code))
+								test_routines_cache.force (l_update.test_routine)
+							end
+						end
+					else
+						check
+							dead_end: False
+						end
+					end
+					l_cursor.forth
+				end
+				change_actions.call ([l_updates])
+			else
+				refresh
+			end
 		end
 
 	refresh is
@@ -217,7 +277,7 @@ feature {NONE} -- Element change
 
 feature {NONE} -- Implementation
 
-	test_routines_cache: DS_ARRAYED_LIST [CDD_TEST_ROUTINE]
+	test_routines_cache: DS_HASH_SET [CDD_TEST_ROUTINE]
 			-- Cache for `test_routines'
 
 	internal_filters: DS_HASH_SET [STRING]

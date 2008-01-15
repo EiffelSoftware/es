@@ -294,7 +294,7 @@ feature {NONE} -- Implementation
 						l_test_routine.set_ast (l_cursor.item)
 						l_test_routine.update
 						if l_test_routine.is_modified then
-							status_updates.force_last (create {CDD_TEST_ROUTINE_UPDATE}.make (l_test_routine, {CDD_TEST_ROUTINE_UPDATE}.new_outcome_code))
+							status_updates.force_last (create {CDD_TEST_ROUTINE_UPDATE}.make (l_test_routine, {CDD_TEST_ROUTINE_UPDATE}.changed_code))
 						end
 					end
 				end

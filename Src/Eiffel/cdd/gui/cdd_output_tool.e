@@ -103,7 +103,7 @@ feature {NONE} -- Implementation
 			l_last: CDD_TEST_EXECUTION_RESPONSE
 			l_formatter: CLICKABLE_TEXT
 		do
-			if an_update.is_new_outcome then
+			if an_update.is_changed then
 				l_formatter := text_area.text_displayed
 				l_formatter.add ("Tested ")
 				append_routine (an_update.test_routine)

@@ -103,13 +103,13 @@ feature {NONE} -- Initialization
 			l_hbox.disable_item_expand (l_label)
 
 			create filter_box
-			filter_box.set_text ("")
 			create l_item.make_with_text ("All")
 			filter_box.extend (l_item)
 			create l_item.make_with_text ("Failing%T%T(outcome.fail)")
 			filter_box.extend (l_item)
 			create l_item.make_with_text ("Unresolved%T(outcome.unresolved)")
 			filter_box.extend (l_item)
+			filter_box.set_text ("")
 			l_hbox.extend (filter_box)
 			filter_box.return_actions.extend (agent update_filter)
 			filter_box.select_actions.extend (agent select_filter_text)
@@ -193,6 +193,7 @@ feature {NONE} -- Initialization
 			grid.enable_tree
 			grid.enable_single_row_selection
 			grid.set_dynamic_content_function (agent fetch_grid_item)
+			grid.row_expand_actions.extend (agent add_subrows)
 			grid.enable_partial_dynamic_content
 			grid.hide_tree_node_connectors
 			enable_grid_item_pnd_support
@@ -220,7 +221,7 @@ feature {NONE} -- Initialization
 			create tree_view.make (l_filter)
 			tree_view.add_client
 			refresh_grid
-			tree_view.change_actions.extend (agent refresh_grid)
+			tree_view.change_actions.extend (agent update_grid_incremental)
 
 			create l_notebook
 			create l_cell
@@ -456,13 +457,10 @@ feature {NONE} -- Implementation
 			status_label.set_foreground_color (stock_colors.red)
 		end
 
-feature {NONE} -- Implementation (grid)
+feature {NONE} -- Grid access
 
 	tree_view: CDD_TREE_VIEW
 			-- Tree view providing test routines which should be displayed by `Current'
-
-	last_added_rows_count: INTEGER
-			-- Number of rows added by the last call to `add_rows_recursive'?
 
 	stock_colors: EV_STOCK_COLORS is
 			-- Predefined colors
@@ -476,6 +474,8 @@ feature {NONE} -- Implementation (grid)
 			create Result.make
 		end
 
+feature {NONE} -- Grid manipulation
+
 	refresh_grid is
 			-- Build grid.
 		do
@@ -483,58 +483,213 @@ feature {NONE} -- Implementation (grid)
 			if grid.row_count > 0 then
 				grid.remove_rows (1, grid.row_count)
 			end
-			last_added_rows_count := 0
-			add_rows_recursive (Void, tree_view.nodes)
+			if tree_view.nodes.count > 0 then
+				grid.insert_new_rows (tree_view.nodes.count, 1)
+				fill_rows (tree_view.nodes, 1)
+			end
 			develop_window.unlock_update
 		end
 
-	add_rows_recursive (a_parent: EV_GRID_ROW; a_list: DS_LINEAR [CDD_TREE_NODE]) is
+	 add_subrows (a_parent: EV_GRID_ROW) is
 			-- Add subrows for `a_parent' into `grid' corresponding to `a_list'.
 			-- If `a_parent' is Void, simply add unparented rows to `grid'.
 			-- Set `last_added_rows_count' to total number of rows added.
 		require
+			a_parent_not_void: a_parent /= Void
+			a_parent_valid: grid.row (a_parent.index) = a_parent
+		local
+			l_node: CDD_TREE_NODE
+		do
+				-- Make sure
+			if a_parent.subrow_count = 0 then
+				l_node ?= a_parent.data
+				check
+					node_valid: l_node /= Void and then not l_node.is_leaf
+				end
+				a_parent.insert_subrows (l_node.children.count, 1)
+				fill_rows (l_node.children, a_parent.index + 1)
+			end
+		end
+
+	fill_rows (a_list: DS_LINEAR [CDD_TREE_NODE]; a_pos: INTEGER) is
+			-- Set `data' field from rows in grid for each node
+			-- in `a_list' starting from `a_pos'.
+		require
 			a_list_not_void: a_list /= Void
 			a_list_valid: not a_list.has (Void)
-			a_parent_not_void_implies_valid: (a_parent /= Void) implies (grid.row (a_parent.index) = a_parent)
+			a_pos_valid: a_pos > 0 and a_pos <= grid.row_count
 		local
-			i, l_old_count: INTEGER
 			l_cursor: DS_LINEAR_CURSOR [CDD_TREE_NODE]
 			l_row: EV_GRID_ROW
+			i: INTEGER
 		do
-			if not a_list.is_empty then
-				if a_parent = Void then
-					i := 1
-					grid.insert_new_rows (a_list.count, i)
-				else
-					i := a_parent.index + 1
-					grid.insert_new_rows_parented (a_list.count, i, a_parent)
+			l_cursor := a_list.new_cursor
+			from
+				l_cursor.start
+				i := a_pos
+			until
+				l_cursor.after
+			loop
+				l_row := grid.row (i)
+				l_row.set_data (l_cursor.item)
+				if not l_cursor.item.is_leaf then
+					l_row.ensure_expandable
 				end
-				l_cursor := a_list.new_cursor
+				i := i + 1 + l_row.subrow_count_recursive
+				l_cursor.forth
+			end
+		end
+
+	highlight_row (a_row: EV_GRID_ROW) is
+			-- Make `a_row' look like it is fully selected.
+		require
+			a_row_not_void: a_row /= Void
+		do
+			if grid.has_focus then
+				a_row.set_background_color (preferences.editor_data.selection_background_color)
+			else
+				a_row.set_background_color (preferences.editor_data.focus_out_selection_background_color)
+			end
+		end
+
+	dehighlight_row (a_row: EV_GRID_ROW) is
+			-- Make `a_row' look like it is not selected.
+		require
+			a_row_not_void: a_row /= Void
+		do
+			a_row.set_background_color (preferences.editor_data.class_background_color)
+		end
+
+	change_focus is
+			-- Make sure all selected rows have correct background color.
+		local
+			l_selected: LIST [EV_GRID_ROW]
+		do
+			l_selected := grid.selected_rows
+			from
+				l_selected.start
+			until
+				l_selected.after
+			loop
+				highlight_row (l_selected.item)
+				l_selected.forth
+			end
+		end
+
+feature {NONE} -- Incremental grid update
+
+	update_grid_incremental (an_update_list: DS_LINEAR [CDD_TREE_NODE_UPDATE]) is
+			-- Incrementally update `grid'.
+		require
+			an_update_list_valid: an_update_list = Void or else not an_update_list.has (Void)
+		local
+			l_cursor: DS_LINEAR_CURSOR [CDD_TREE_NODE_UPDATE]
+		do
+			if an_update_list /= Void then
+				l_cursor := an_update_list.new_cursor
 				from
 					l_cursor.start
 				until
 					l_cursor.after
 				loop
-					l_row := grid.row (i)
-					l_row.set_data (l_cursor.item)
-					if not l_cursor.item.is_leaf then
-						l_row.ensure_expandable
-						l_old_count := last_added_rows_count
-						add_rows_recursive (l_row, l_cursor.item.children)
-						i := i + last_added_rows_count - l_old_count
-					end
-					i := i + 1
+					process_update (l_cursor.item)
 					l_cursor.forth
 				end
-				last_added_rows_count := last_added_rows_count + a_list.count
-				if a_parent /= Void then
-					a_parent.expand
+			else
+				refresh_grid
+			end
+		end
+
+	process_update (an_update: CDD_TREE_NODE_UPDATE) is
+			-- Modify `grid' according to `an_update'..
+		require
+			an_update_not_void: an_update /= Void
+		local
+			l_path: DS_LIST_CURSOR [INTEGER]
+			l_row: EV_GRID_ROW
+			l_abort: BOOLEAN
+		do
+			l_path := an_update.path.new_cursor
+			from
+				l_path.start
+			until
+				(an_update.is_added and l_path.is_last) or
+				l_path.after or l_abort
+			loop
+				if l_row = Void then
+					l_row := subrow (l_path.item)
+				elseif l_row.subrow_count > 0 then
+					l_row := l_row.subrow (l_path.item)
+				else
+					l_abort := True
+				end
+				l_row.clear
+				l_path.forth
+			end
+			if not l_abort then
+				if an_update.is_added then
+						-- NOTE: need to be careful when parent row
+						-- already contains new node because of previous
+						-- updates or parent is not expanded and does not
+						-- contain any subrows
+					if l_row = Void or else l_row.subrow_count > 0 then
+						if l_row /= Void then
+							if l_row.subrow_count < l_path.item or else l_row.subrow (l_path.item).data /= an_update.node then
+								l_row.insert_subrow (l_path.item)
+							end
+							l_row := l_row.subrow (l_path.item)
+						else
+							l_row := subrow (l_path.item)
+							if l_row /= Void then
+								grid.insert_new_row (l_row.index)
+								l_row := grid.row (l_row.index - 1)
+							else
+								grid.insert_new_row (grid.row_count + 1)
+								l_row := grid.row (grid.row_count)
+							end
+						end
+						l_row.set_data (an_update.node)
+						if not an_update.node.is_leaf then
+							l_row.ensure_expandable
+						end
+					end
+				elseif an_update.is_removed then
+					grid.remove_row (l_row.index)
+				elseif an_update.is_changed then
+					-- Nothing to do...
+				else
+					check
+						dead_end: False
+					end
 				end
 			end
-		ensure
-			count_greater_or_equal_list_count: last_added_rows_count >= a_list.count
-			valid_count: grid.row_count = old grid.row_count + last_added_rows_count - old last_added_rows_count
 		end
+
+	subrow (i: INTEGER): EV_GRID_ROW is
+			-- `i'-th unparented row in `grid'.
+			-- Void if i is too large.
+		require
+			valid_index: i > 0
+		local
+			j, pos: INTEGER
+		do
+			from
+				j := 1
+				pos := 1
+			until
+				j = i
+			loop
+				pos := pos + 1 + grid.row (pos).subrow_count_recursive
+				j := j + 1
+			end
+			if pos <= grid.row_count then
+				Result := grid.row (pos)
+			end
+		ensure
+			valid_result: Result /= Void implies (Result.parent_row = Void and Result.parent = grid)
+		end
+
+feature {NONE} -- Dynamic grid items
 
 	fetch_grid_item (a_col, a_row: INTEGER): EV_GRID_ITEM is
 			-- Grid item for row and column at `a_row' and `a_col'
@@ -606,7 +761,12 @@ feature {NONE} -- Implementation (grid)
 					end (l_tooltip, ?, ?))
 				Result.set_tooltip (l_tooltip)
 			else
-				token_writer.process_basic_text (a_node.tag)
+				if a_node.has_test_class then
+					token_writer.add_class (a_node.eiffel_class.original_class)
+					Result.set_pixmap (pixmap_from_class_i (a_node.eiffel_class.original_class))
+				else
+					token_writer.process_basic_text (a_node.tag)
+				end
 			end
 			Result.set_text_with_tokens (token_writer.last_line.content)
 		ensure
@@ -672,6 +832,8 @@ feature {NONE} -- Implementation (grid)
 			not_void: Result /= Void
 		end
 
+feature {NONE} -- Widget implementation
+
 	update_filter is
 			-- Update filter tags of `filter' corresponding
 			-- to `test_field' and rebuild filter.
@@ -696,11 +858,11 @@ feature {NONE} -- Implementation (grid)
 
 	select_filter_text is
 		do
-			if filter_box.text.is_equal ("All") then
+			if filter_box.selected_item = filter_box.i_th (1) then
 				filter_box.set_text ("")
-			elseif filter_box.text.is_equal ("Failing%T%T(outcome.fail)") then
+			elseif filter_box.selected_item = filter_box.i_th (2) then
 				filter_box.set_text ("outcome.fail")
-			elseif filter_box.text.is_equal ("Unresolved%T(outcome.unresolved)") then
+			elseif filter_box.selected_item = filter_box.i_th (3) then
 				filter_box.set_text ("outcome.unresolved")
 			else
 				check
@@ -709,43 +871,6 @@ feature {NONE} -- Implementation (grid)
 			end
 			update_filter
 		end
-
-	highlight_row (a_row: EV_GRID_ROW) is
-			-- Make `a_row' look like it is fully selected.
-		require
-			a_row_not_void: a_row /= Void
-		do
-			if grid.has_focus then
-				a_row.set_background_color (preferences.editor_data.selection_background_color)
-			else
-				a_row.set_background_color (preferences.editor_data.focus_out_selection_background_color)
-			end
-		end
-
-	dehighlight_row (a_row: EV_GRID_ROW) is
-			-- Make `a_row' look like it is not selected.
-		require
-			a_row_not_void: a_row /= Void
-		do
-			a_row.set_background_color (preferences.editor_data.class_background_color)
-		end
-
-	change_focus is
-			-- Make sure all selected rows have correct background color.
-		local
-			l_selected: LIST [EV_GRID_ROW]
-		do
-			l_selected := grid.selected_rows
-			from
-				l_selected.start
-			until
-				l_selected.after
-			loop
-				highlight_row (l_selected.item)
-				l_selected.forth
-			end
-		end
-
 
 invariant
 
