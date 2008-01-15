@@ -762,8 +762,8 @@ feature {NONE} -- Dynamic grid items
 				Result.set_tooltip (l_tooltip)
 			else
 				if a_node.has_test_class then
-					token_writer.add_class (a_node.eiffel_class.original_class)
-					Result.set_pixmap (pixmap_from_class_i (a_node.eiffel_class.original_class))
+					token_writer.add_class (a_node.eiffel_class)
+					Result.set_pixmap (pixmap_from_class_i (a_node.eiffel_class))
 				else
 					token_writer.process_basic_text (a_node.tag)
 				end

@@ -116,7 +116,7 @@ feature -- Access
 			-- Test routine associated with this node; only applies
 			-- to leaf nodes.
 
-	eiffel_class: EIFFEL_CLASS_C
+	eiffel_class: CLASS_I
 			-- Eiffel class associated with this node
 
 feature {CDD_TREE_VIEW} -- Implementation

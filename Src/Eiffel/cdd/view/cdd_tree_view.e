@@ -101,13 +101,55 @@ feature {NONE} -- View definition
 			-- "TEST_CLASS_NAME.test_routine_name"
 		local
 			l_tag: STRING
+			l_cursor: DS_LINEAR_CURSOR [STRING]
 		do
 			last_computed_tag_list.wipe_out
-			create l_tag.make (20)
+
+				-- Tag view
+			from
+				l_cursor := a_routine.tags.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				if not (l_cursor.item.has_substring ("outcome.") or l_cursor.item.has_substring ("name.")
+					or l_cursor.item.has_substring ("covers.")) then
+					last_computed_tag_list.force_last ("Tag View." + l_cursor.item + "." + a_routine.name)
+				end
+				l_cursor.forth
+			end
+
+				-- Name view
+			create l_tag.make (30)
+			l_tag.append ("Name View.")
 			l_tag.append (a_routine.test_class.test_class_name)
 			l_tag.append_character ('.')
 			l_tag.append (a_routine.name)
 			last_computed_tag_list.force_last (l_tag)
+
+				-- Outcome view
+			if not a_routine.outcomes.is_empty then
+				create l_tag.make (30)
+				l_tag.append ("Outcome View.")
+				l_tag.append (a_routine.outcomes.last.text)
+				l_tag.append_character ('.')
+				l_tag.append (a_routine.name)
+				last_computed_tag_list.force_last (l_tag)
+			end
+
+			l_cursor := a_routine.tags_with_prefix ("covers.").new_cursor
+			from
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				if l_cursor.item.count > 7 then
+					l_tag := "Covers View" + l_cursor.item.substring (7, l_cursor.item.count) + "." + a_routine.name
+					last_computed_tag_list.force_last (l_tag)
+				end
+				l_cursor.forth
+			end
+
 		end
 
 feature {NONE} -- Implementation (Access)
@@ -313,6 +355,9 @@ feature {NONE} -- Tree modification
 			l_cursor: DS_LINKED_LIST_CURSOR [CDD_TREE_NODE]
 			l_path: DS_ARRAYED_LIST [INTEGER]
 			l_update: CDD_TREE_NODE_UPDATE
+
+			l_universe: UNIVERSE_I
+			l_class_list: LIST [CLASS_I]
 		do
 			l_tokens := a_tag.split ('.')
 			create l_path.make (2)
@@ -334,10 +379,10 @@ feature {NONE} -- Tree modification
 					--    existing leaf
 				if l_cursor.after or else not l_cursor.item.tag.is_case_insensitive_equal (l_token) or else
 				   l_tokens.index = l_tokens.count or else l_cursor.item.is_leaf then
-						-- NOTE: For now we know the first token is a class name,
-						-- since the name view is hardcoded. In future, this
-						-- piece of code will have to be replaced with something
-						-- more sofisticated to support different views.
+						-- NOTE: For now we know just check if `l_token' is a class name.
+						-- In future, this piece of code will have to be replaced
+						-- with something more sofisticated to be more efficient
+						-- and support different clickable tokens.
 					if l_tokens.index = l_tokens.count then
 						create l_next.make_leaf (a_routine, l_token)
 						if l_cursor.after or else not l_cursor.item.tag.is_case_insensitive_equal (l_token) then
@@ -349,7 +394,13 @@ feature {NONE} -- Tree modification
 						end
 						last_node := l_next
 					else
-						create l_next.make (l_token)
+						l_universe := filtered_view.test_suite.cdd_manager.project.system.system.universe
+						l_class_list := l_universe.classes_with_name (l_token)
+						if not l_class_list.is_empty then
+							create l_next.make_with_class (l_class_list.first, l_token)
+						else
+							create l_next.make (l_token)
+						end
 						l_cursor.put_left (l_next)
 						l_cursor.back
 					end
@@ -426,7 +477,7 @@ feature {NONE} -- Tree modification
 			if last_updates /= Void then
 				create l_update.make_removed (l_remove)
 				l_update.path.extend_first (l_path)
-				last_updates.put_last (l_update)
+				last_updates.force_last (l_update)
 			end
 		end
 
@@ -453,7 +504,7 @@ feature {NONE} -- Tree modification
 			if last_updates /= Void then
 				create l_update.make_changed (a_leaf)
 				l_update.path.extend_first (l_path)
-				last_updates.put_last (l_update)
+				last_updates.force_last (l_update)
 			end
 		end
 
