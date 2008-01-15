@@ -305,7 +305,6 @@ feature {NONE} -- Implementation (execution)
 		require
 			a_string_not_void: a_string /= Void
 		do
-			io.put_string (a_string)
 			cdd_manager.output_actions.call ([a_string])
 		end
 

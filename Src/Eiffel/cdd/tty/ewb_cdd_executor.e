@@ -30,6 +30,7 @@ feature -- Execution
 			l_executor: CDD_TEST_EXECUTOR
 			l_tested: PROCEDURE [ANY, TUPLE [DS_LINEAR [CDD_TEST_ROUTINE_UPDATE]]]
 			l_executing: BOOLEAN
+			output_agent: PROCEDURE [ANY, TUPLE [STRING]]
 		do
 			if cdd_manager.is_project_initialized then
 				l_executor := cdd_manager.background_executor
@@ -38,9 +39,12 @@ feature -- Execution
 				l_tested := agent filter_updates
 
 				cdd_manager.test_suite.test_routine_update_actions.extend (l_tested)
+				output_agent := agent io.put_string
+				cdd_manager.output_actions.extend (output_agent)
 
 				io.put_string ("Compiling interpreter...%N")
 				from
+    -- TODO: what to do with the next line? Do we need it or not?				
 	--				l_executor.cancel
 					l_executor.start
 				until
@@ -57,6 +61,7 @@ feature -- Execution
 
 					-- Remove action handlers
 				cdd_manager.test_suite.test_routine_update_actions.prune (l_tested)
+				cdd_manager.output_actions.prune (output_agent)
 			else
 				io.put_string ("Please compile project first")
 			end
