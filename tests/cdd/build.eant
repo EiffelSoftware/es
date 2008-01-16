@@ -18,12 +18,12 @@
     </delete>
     <exec executable="rm -fr ${fs.mapped_filename}/EIFGENs">
       <fileset include="@(**/config.ecf)" force="false">
-	 <map type="glob" from="*/config.ecf" to="*" />
+	      <map type="glob" from="*/config.ecf" to="*" />
       </fileset>
     </exec>
     <exec executable="rm -fr ${fs.mapped_filename}/cdd_tests">
       <fileset include="@(**/config.ecf)" force="false">
-	 <map type="glob" from="*/config.ecf" to="*" />
+	      <map type="glob" from="*/config.ecf" to="*" />
       </fileset>
     </exec>
   </target>
@@ -32,7 +32,7 @@
     <description> test all test cases in call directory (windows) </description>
     <exec executable="execute_ec.bat ${fs.filename} ec_loop_input.txt ${fs.mapped_filename}${path_separator}zzz.outcome" accept_errors="true">
       <fileset include="@(**/config.ecf)" force="true">
-	 <map type="glob" from="*/config.ecf" to="*" />
+			  <map type="glob" from="*/config.ecf" to="*" />
       </fileset>
     </exec>
   </target>
@@ -41,12 +41,12 @@
     <description> test all test cases in call directory (unix) </description>
     <exec executable="./execute_ec.sh ${fs.filename} ./ec_loop_input.txt ./${fs.mapped_filename}${path_separator}zzz.outcome" accept_errors="true">
       <fileset include="@(**/config.ecf)" force="true">
-	 <map type="glob" from="*/config.ecf" to="*" />
+	      <map type="glob" from="*/config.ecf" to="*" />
       </fileset>
     </exec>
   </target>
 
-  <target name="test_all" depend="clobber, test_all_windows, test_all_unix">
+  <target name="test_all" depend="clobber, test_all_unix, test_all_windows">
     <description> test all test cases in call directory </description>
   </target>
 
