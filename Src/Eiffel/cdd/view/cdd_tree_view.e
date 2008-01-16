@@ -170,6 +170,14 @@ feature {NONE} -- Implementation (Access)
 	last_updates: DS_ARRAYED_LIST [CDD_TREE_NODE_UPDATE]
 			-- Updates since last call to `incemental_update'
 
+	project: E_PROJECT is
+			-- Current project
+		do
+			Result := filtered_view.test_suite.cdd_manager.project
+		ensure
+			not_void: Result /= Void
+		end
+
 feature {NONE} -- Tree update
 
 	refresh is
@@ -188,7 +196,7 @@ feature {NONE} -- Tree update
 			l_cursor: DS_LINEAR_CURSOR [CDD_TEST_ROUTINE_UPDATE]
 		do
 			-- TODO: implement incremental update
-			if an_update_list /= Void then
+			if an_update_list /= Void and then nodes_cache /= Void then
 				create last_updates.make_default
 				l_cursor := an_update_list.new_cursor
 				from
@@ -251,6 +259,7 @@ feature {NONE} -- Tree modification
 			-- Insert routine `a_routine' into the tree and
 			-- set `last_node' to new created node.
 		require
+			nodes_cache_not_void: nodes_cache /= Void
 			a_routine_not_void: a_routine /= Void
 			not_inserted: not leafs.has (a_routine)
 		local
@@ -278,6 +287,7 @@ feature {NONE} -- Tree modification
 	remove_routine (a_routine: CDD_TEST_ROUTINE) is
 			-- Remove `a_routine' from tree.
 		require
+			nodes_cache_not_void: nodes_cache /= Void
 			a_routine_not_void: a_routine /= Void
 			inserted: leafs.has (a_routine)
 		local
@@ -302,6 +312,7 @@ feature {NONE} -- Tree modification
 			-- This usualy only consists of finding the appropriate
 			-- leaf in the tree and creating a change update for it.
 		require
+			nodes_cache_not_void: nodes_cache /= Void
 			a_routine_not_void: a_routine /= Void
 			inserted: leafs.has (a_routine)
 		local
@@ -355,9 +366,6 @@ feature {NONE} -- Tree modification
 			l_cursor: DS_LINKED_LIST_CURSOR [CDD_TREE_NODE]
 			l_path: DS_ARRAYED_LIST [INTEGER]
 			l_update: CDD_TREE_NODE_UPDATE
-
-			l_universe: UNIVERSE_I
-			l_class_list: LIST [CLASS_I]
 		do
 			l_tokens := a_tag.split ('.')
 			create l_path.make (2)
@@ -394,13 +402,8 @@ feature {NONE} -- Tree modification
 						end
 						last_node := l_next
 					else
-						l_universe := filtered_view.test_suite.cdd_manager.project.system.system.universe
-						l_class_list := l_universe.classes_with_name (l_token)
-						if not l_class_list.is_empty then
-							create l_next.make_with_class (l_class_list.first, l_token)
-						else
-							create l_next.make (l_token)
-						end
+						create_node (l_token, l_node)
+						l_next := last_node
 						l_cursor.put_left (l_next)
 						l_cursor.back
 					end
@@ -510,6 +513,35 @@ feature {NONE} -- Tree modification
 
 feature {NONE} -- Helpers
 
+	create_node (a_tag: STRING; a_parent: CDD_TREE_NODE) is
+			--
+		require
+			a_tag_not_void: a_tag /= Void
+		local
+			l_universe: UNIVERSE_I
+			l_class_list: LIST [CLASS_I]
+			l_class: CLASS_C
+			l_feature: FEATURE_I
+		do
+			l_universe := project.system.system.universe
+			l_class_list := l_universe.classes_with_name (a_tag)
+			if not l_class_list.is_empty then
+				create last_node.make_with_class (l_class_list.first, a_tag)
+			else
+				if a_parent /= Void and then a_parent.has_test_class then
+					l_class := a_parent.eiffel_class.compiled_class
+					if l_class /= Void then
+						l_feature := l_class.feature_named (a_tag)
+					end
+				end
+				if l_feature /= Void then
+					create last_node.make_with_feature (l_feature, a_tag)
+				else
+					create last_node.make (a_tag)
+				end
+			end
+		end
+
 	remove_node (a_node: CDD_TREE_NODE) is
 			-- Remove `a_node' from tree.
 		require
@@ -543,7 +575,7 @@ feature {NONE} -- Helpers
 			-- in parents children list. If `a_node' is not parented,
 			-- return index of `a_node' in `nodes'.
 		require
-			nodes_cache /= Void
+			nodes_cache_not_void: nodes_cache /= Void
 			a_node_not_void: a_node /= Void
 			valid_node: (a_node.parent /= Void and then a_node.parent.internal_children.has (a_node)) or
 				(a_node.parent = Void and then nodes.has (a_node))

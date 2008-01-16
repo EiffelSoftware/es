@@ -8,7 +8,7 @@ class
 	CDD_TREE_NODE
 
 create {CDD_TREE_VIEW}
-	make, make_leaf, make_with_class
+	make, make_leaf, make_with_class, make_with_feature
 
 feature {NONE} -- Initialization
 
@@ -51,6 +51,21 @@ feature {NONE} -- Initialization
 			tag_set: tag = a_tag
 		end
 
+	make_with_feature (a_feature: like eiffel_feature; a_tag: like tag) is
+			-- Create new node with `a_feature' as
+			-- `eiffel_feature' and `a_tag' as `tag'.
+		require
+			a_feature_not_void: a_feature /= Void
+			a_tag_not_void: a_tag /= Void
+		do
+			make (a_tag)
+			eiffel_feature := a_feature
+		ensure
+			eiffel_feature_set: eiffel_feature = a_feature
+			tag_set: tag = a_tag
+		end
+
+
 feature -- Status
 
 	is_leaf: BOOLEAN is
@@ -68,6 +83,14 @@ feature -- Status
 			Result := eiffel_class /= Void
 		ensure
 			correct: Result = (eiffel_class /= Void)
+		end
+
+	has_feature: BOOLEAN is
+			-- Is `eiffel_feature' set?
+		do
+			Result := eiffel_feature /= Void
+		ensure
+			correct: Result = (eiffel_feature /= Void)
 		end
 
 feature -- Access
@@ -118,6 +141,9 @@ feature -- Access
 
 	eiffel_class: CLASS_I
 			-- Eiffel class associated with this node
+
+	eiffel_feature: FEATURE_I
+			-- Eiffel feature associated with this node
 
 feature {CDD_TREE_VIEW} -- Implementation
 

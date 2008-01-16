@@ -764,6 +764,9 @@ feature {NONE} -- Dynamic grid items
 				if a_node.has_test_class then
 					token_writer.add_class (a_node.eiffel_class)
 					Result.set_pixmap (pixmap_from_class_i (a_node.eiffel_class))
+				elseif a_node.has_feature and then a_node.eiffel_feature.e_feature /= Void then
+					token_writer.add_feature (a_node.eiffel_feature.e_feature, a_node.tag)
+					Result.set_pixmap (pixmap_from_e_feature (a_node.eiffel_feature.e_feature))
 				else
 					token_writer.process_basic_text (a_node.tag)
 				end

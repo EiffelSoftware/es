@@ -302,7 +302,7 @@ invariant
 	change_agent_not_void: change_agent /= Void
 	not_observing_implies_test_routines_cache_void: (not is_observing) implies test_routines_cache = Void
 	test_routines_cache_not_void_implies_valid: test_routines_cache /= Void implies
-			test_routines_cache.for_all (agent is_matching_routine)
+			not test_routines_cache.has (Void)
 	internal_filters_not_void: filters /= Void
 	internal_filters_doesnt_have_void: not filters.has (Void)
 	internal_filter_has_valid_equality_tester: filters.equality_tester = case_insensitive_string_equality_tester
