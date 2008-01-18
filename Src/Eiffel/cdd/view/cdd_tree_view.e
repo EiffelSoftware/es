@@ -514,7 +514,9 @@ feature {NONE} -- Tree modification
 feature {NONE} -- Helpers
 
 	create_node (a_tag: STRING; a_parent: CDD_TREE_NODE) is
-			--
+			-- Create a new tree node for `a_tag' and store
+			-- it in `last_node'. If `last_node' is not void,
+			-- use it as a parent.
 		require
 			a_tag_not_void: a_tag /= Void
 		local

@@ -80,7 +80,7 @@ feature {NONE} -- Implementation
 		do
 			if an_update.code = {CDD_STATUS_UPDATE}.executor_step_code then
 				if develop_window.eb_debugger_manager.cdd_manager.background_executor.is_compiling then
-					--text_area.clear_window
+					text_area.clear_window
 				end
 			end
 		end
@@ -93,6 +93,7 @@ feature {NONE} -- Implementation
 			if some_updates /= Void then
 				some_updates.do_all (agent append_routine_update)
 			end
+			update_text_area
 		end
 
 	append_routine_update (an_update: CDD_TEST_ROUTINE_UPDATE) is
@@ -117,7 +118,6 @@ feature {NONE} -- Implementation
 				end
 				l_formatter.add_new_line
 			end
-			update_text_area
 		end
 
 	append_routine (a_routine: CDD_TEST_ROUTINE) is
@@ -148,7 +148,11 @@ feature {NONE} -- Implementation
 	update_text_area is
 			-- Remove top lines in `text_area' and scroll to end.
 		do
+			text_area.redraw_current_screen
+			--text_area.reload
+			--text_area.show
 			text_area.scroll_to_end_when_ready
+			text_area.refresh_now
 		end
 
 	internal_recycle is

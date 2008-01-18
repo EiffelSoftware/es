@@ -98,7 +98,7 @@ feature {NONE} -- Initialization
 			create l_hbox
 			l_hbox.set_padding (10)
 			l_hbox.set_border_width (5)
-			create l_label.make_with_text ("Filter ")
+			create l_label.make_with_text ("Filter")
 			l_hbox.extend (l_label)
 			l_hbox.disable_item_expand (l_label)
 
@@ -133,15 +133,19 @@ feature {NONE} -- Initialization
 		require
 			widget_not_void: widget /= Void
 		local
+			l_hbox: EV_HORIZONTAL_BOX
 			l_toolbar: EV_TOOL_BAR
 			l_sep: EV_TOOL_BAR_SEPARATOR
 			l_button: EV_TOOL_BAR_BUTTON
 			l_tbutton: EV_TOOL_BAR_TOGGLE_BUTTON
-
+			l_label: EV_LABEL
+			l_viewbox: EV_COMBO_BOX
 		do
+			create l_hbox
+			l_hbox.set_padding (6)
 			create l_toolbar
 
-			create debug_button.make_with_text ("Debug")
+			create debug_button.make_with_text ("Dbg")
 			debug_button.select_actions.extend (agent debug_test_routine)
 			debug_button.set_tooltip ("Debug selected test routine")
 			--debug_button.set_pixmap (pixmaps.mini_pixmaps.general_next_icon)
@@ -161,20 +165,35 @@ feature {NONE} -- Initialization
 			create l_sep
 			l_toolbar.extend (l_sep)
 
-			create l_tbutton.make_with_text ("Execution")
+			create l_tbutton.make_with_text ("Exe")
 			l_tbutton.set_tooltip ("Turn background execution on/off")
 			--l_tbutton.set_pixmap (pixmaps.icon_pixmaps.debug_run_without_breakpoint_icon)
 			l_toolbar.extend (l_tbutton)
 			l_tbutton.enable_select
 
-			create l_tbutton.make_with_text ("Extraction")
+			create l_tbutton.make_with_text ("Ext")
 			l_tbutton.set_tooltip ("Turn extraction of new test cases on/off")
 			--l_tbutton.set_pixmap (pixmaps.icon_pixmaps.tool_breakpoints_icon)
 			l_toolbar.extend (l_tbutton)
 			l_tbutton.enable_select
 
-			widget.extend (l_toolbar)
-			widget.disable_item_expand (l_toolbar)
+			l_hbox.extend (l_toolbar)
+
+			create l_label.make_with_text ("View")
+			l_hbox.extend (l_label)
+			l_hbox.disable_item_expand (l_label)
+
+			create l_viewbox
+			l_viewbox.set_minimum_width (100)
+			l_viewbox.extend (create {EV_LIST_ITEM}.make_with_text ("Testcase"))
+			l_viewbox.extend (create {EV_LIST_ITEM}.make_with_text ("Target"))
+			l_viewbox.extend (create {EV_LIST_ITEM}.make_with_text ("Outcome"))
+			l_viewbox.extend (create {EV_LIST_ITEM}.make_with_text ("Tags"))
+			l_hbox.extend (l_viewbox)
+			l_hbox.disable_item_expand (l_viewbox)
+
+			widget.extend (l_hbox)
+			widget.disable_item_expand (l_hbox)
 		end
 
 	build_grids is
@@ -205,15 +224,11 @@ feature {NONE} -- Initialization
 			grid.focus_out_actions.extend (agent change_focus)
 			grid.set_focused_selection_text_color (preferences.editor_data.selection_text_color)
 
-			grid.set_column_count_to (4)
+			grid.set_column_count_to (2)
 			grid.column (1).set_title ("")
 			grid.column (1).set_width (200)
 			grid.column (2).set_title ("Outcome")
 			grid.column (2).set_width (45)
-			grid.column (3).set_title ("Class")
-			grid.column (3).set_width (170)
-			grid.column (4).set_title ("Feature")
-			grid.column (4).set_width (170)
 
 			l_split_area.extend (grid)
 
@@ -232,7 +247,7 @@ feature {NONE} -- Initialization
 			l_notebook.set_item_text (l_cell, "Related")
 
 			l_split_area.extend (l_notebook)
-			l_split_area.set_proportion (0.3)
+			l_split_area.set_proportion (0.7)
 
 			widget.extend (l_split_area)
 		end
@@ -704,25 +719,9 @@ feature {NONE} -- Dynamic grid items
 				if a_col = 1 then
 					Result := new_tree_node_item (l_node)
 				elseif l_node.is_leaf then
-					inspect
-						a_col
-					when 2 then
-						Result := new_outcome_item (l_node.test_routine)
-					when 3 then
-						Result := new_class_item (l_node.test_routine)
-					when 4 then
-						Result := new_feature_item (l_node.test_routine)
-					else
-						Result := empty_item
-					end
-				else
-					Result := empty_item
+					Result := new_outcome_item (l_node.test_routine)
 				end
-			else
-				Result := empty_item
 			end
-		ensure
-			not_void: Result /= Void
 		end
 
 	new_tree_node_item (a_node: CDD_TREE_NODE): EB_GRID_EDITOR_TOKEN_ITEM is
@@ -807,30 +806,6 @@ feature {NONE} -- Dynamic grid items
 				end
 				Result.set_tooltip (l_tooltip)
 			end
-		ensure
-			not_void: Result /= Void
-		end
-
-	new_class_item (a_test_routine: CDD_TEST_ROUTINE): EB_GRID_EDITOR_TOKEN_ITEM is
-			-- Grid item displaying class of `a_test_routine'
-		do
-			create Result.make_with_text ("TODO")
-		ensure
-			not_void: Result /= Void
-		end
-
-	new_feature_item (a_test_routine: CDD_TEST_ROUTINE): EB_GRID_EDITOR_TOKEN_ITEM is
-			-- Grid item displaying feature of `a_test_routine'
-		do
-			create Result.make_with_text ("TODO")
-		ensure
-			not_void: Result /= Void
-		end
-
-	empty_item: EV_GRID_ITEM is
-			-- Empty grid item
-		do
-			create Result
 		ensure
 			not_void: Result /= Void
 		end

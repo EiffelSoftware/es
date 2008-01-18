@@ -13,9 +13,7 @@ inherit
 
 	DEBUGGER_OBSERVER
 		redefine
-			on_application_launched,
-			on_application_stopped,
-			on_application_quit
+			on_application_stopped
 		end
 
 	EB_CLUSTER_MANAGER_OBSERVER
@@ -51,6 +49,8 @@ feature {NONE} -- Initialization
 			create test_suite.make (Current)
 			create background_executor.make (Current)
 			create debug_executor.make (Current)
+
+			status_update_actions.extend (agent update_status)
 
 			project := a_project
 			l_prj_manager := project.manager
@@ -103,14 +103,6 @@ feature -- Access (execution)
 
 feature {DEBUGGER_MANAGER} -- Status setting (Application)
 
-	on_application_launched (a_dbg_manager: DEBUGGER_MANAGER) is
-			-- Set `is_debugging' to `True'.
-		do
-			is_debugging := True
-		ensure then
-			debugging: is_debugging
-		end
-
 	on_application_stopped (a_dbg_manager: DEBUGGER_MANAGER) is
 			-- Check whether we want to create a new test case from the current
 			-- application status `an_application_status'.
@@ -124,14 +116,6 @@ feature {DEBUGGER_MANAGER} -- Status setting (Application)
 			end
 		end
 
-	on_application_quit (a_dbg_manager: DEBUGGER_MANAGER) is
-			-- Set `is_debugging' to `False'.
-		do
-			is_debugging := False
-		ensure then
-			not_debugging: not is_debugging
-		end
-
 feature -- Status setting (CDD)
 
 	enable_extracting is
@@ -143,7 +127,7 @@ feature -- Status setting (CDD)
 			instantiate_cdd_configuration
 			cdd_conf.set_is_extracting (True)
 			target.system.store
-			create capturer.make
+			create capturer.make (Current)
 				-- Arno: not sure where to hook up printer and log
 				-- observers for capturing
 			capturer.capture_observers.put_last (create {CDD_TEST_CASE_PRINTER}.make (Current))
@@ -171,9 +155,6 @@ feature -- Status setting (CDD)
 
 feature {ANY} -- Cooperative multitasking
 
-	is_debugging: BOOLEAN
-			-- Is the debugger currently running?
-
 	start_background_executing: BOOLEAN
 			-- Shall we (re)start executing the next time `drive_background_tasks' is called?
 
@@ -183,7 +164,7 @@ feature {ANY} -- Cooperative multitasking
 			-- whenever time perimits. This routine must not execute for
 			-- very long so that it can be called from within GUI event loops
 		do
-			if not project.is_compiling and not is_debugging then
+			if not project.is_compiling then
 				if start_background_executing then
 					background_executor.start
 					start_background_executing := False
@@ -250,6 +231,18 @@ feature -- Status change
 
 	output_actions: ACTION_SEQUENCE [TUPLE [STRING]]
 			-- Actions performed whenever there is some kind of textual output available
+
+feature {NONE} -- Implementation
+
+	update_status (an_update: CDD_STATUS_UPDATE) is
+			-- Process `an_update' if necessary.
+		require
+			an_update_not_void: an_update /= Void
+		do
+			if an_update.code = an_update.capturer_extracted_code then
+				start_background_executing := True
+			end
+		end
 
 feature {NONE} -- Implementation
 

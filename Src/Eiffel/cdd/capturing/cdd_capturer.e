@@ -25,22 +25,24 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make (a_manager: like cdd_manager) is
 			-- Create `capture_observers'.
+		require
+			a_manager_not_void: a_manager /= Void
 		do
+			cdd_manager := a_manager
 			create capture_observers.make
+		ensure
+			cdd_manager_set: cdd_manager = a_manager
 		end
 
 feature -- Access
 
+	cdd_manager: CDD_MANAGER
+			-- CDD manager
+
 	capture_observers: DS_LINKED_LIST [CDD_CAPTURE_OBSERVER]
 			-- Observers tracking the capture process
-
-	are_observers_initialized: BOOLEAN is
-			-- Are all items of `capture_obervers' initialized?
-		do
-
-		end
 
 feature -- Basic operations
 
@@ -74,35 +76,39 @@ feature {NONE} -- Implementation (Capturing)
 		local
 			i: INTEGER
 			l_cse: EIFFEL_CALL_STACK_ELEMENT
-			an_uuid: UUID
+			an_csid: STRING
+			l_time: DATE_TIME
 		do
-			--last_created_test_cases.wipe_out
 			l_cse ?= a_status.current_call_stack_element
 			if a_status.exception_code = {EXCEP_CONST}.precondition then
 				if l_cse /= Void and then l_cse.level_in_stack < a_status.current_call_stack.count then
 					l_cse := caller (l_cse, a_status.current_call_stack)
 				end
 			end
+			create l_time.make_now
+			an_csid := l_time.formatted_out ("yyyy/[0]mm/[0]dd [0]hh:[0]mi")
 			from
 				i := 1
-				an_uuid := uuid_generator.generate_uuid
+
 			until
 				l_cse = Void or i > a_count
 			loop
 				l_cse := next_valid_cse (a_status, l_cse)
 				if l_cse /= Void then
-					capture_call_stack_element (l_cse, an_uuid, i)
+					capture_call_stack_element (l_cse, an_csid, i)
 					l_cse := caller (l_cse, a_status.current_call_stack)
 					i := i + 1
 				end
 			end
+			cdd_manager.status_update_actions.call ([create {CDD_STATUS_UPDATE}.make_with_code ({CDD_STATUS_UPDATE}.capturer_extracted_code)])
 		end
 
-	capture_call_stack_element (a_cse: EIFFEL_CALL_STACK_ELEMENT; a_cs_uuid: UUID; a_cs_level: INTEGER) is
+	capture_call_stack_element (a_cse: EIFFEL_CALL_STACK_ELEMENT; a_csid: STRING; a_cs_level: INTEGER) is
 			-- Capture state for `a_cse'. `a_cs_uuid' is the call stack's uuid.
 		require
 			a_cse_not_void: a_cse /= Void
 			valid_cse: is_valid_cse (a_cse)
+			a_csid_not_empty: a_csid /= Void and then not a_csid.is_empty
 			a_cs_level_positiv: a_cs_level > 0
 		local
 			l_feature: E_FEATURE
@@ -122,7 +128,7 @@ feature {NONE} -- Implementation (Capturing)
 			until
 				l_cursor.after
 			loop
-				l_cursor.item.start (a_cse.current_object_value, l_feature, l_class, a_cs_uuid, a_cs_level)
+				l_cursor.item.start (a_cse.current_object_value, l_feature, l_class, a_csid, a_cs_level)
 				l_cursor.forth
 			end
 
@@ -425,6 +431,7 @@ feature {NONE} -- Implementation
 
 
 invariant
+	cdd_manager_not_void: cdd_manager /= Void
 	capture_observers_not_void: capture_observers /= Void
 
 

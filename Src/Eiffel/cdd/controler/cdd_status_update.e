@@ -45,7 +45,10 @@ feature -- Access
 			-- The executor received a new filter for testing
 	debugger_step_code,
 			-- The test debugger changed its state
-	capture_error_code,
+	capturer_extracted_code,
+			-- The capturer has extracted a
+			-- number of new test classes
+	capturer_error_code,
 			-- There was an error with capturing a new test case
 	execution_error_code: INTEGER is unique
 			-- There was an error with compiling the interpreter
@@ -62,7 +65,8 @@ feature -- Access
 				a_code = executor_step_code or
 				a_code = executor_filter_change or
 				a_code = debugger_step_code or
-				a_code = capture_error_code or
+				a_code = capturer_extracted_code or
+				a_code = capturer_error_code or
 				a_code = execution_error_code
 		end
 
