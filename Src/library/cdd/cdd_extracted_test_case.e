@@ -85,16 +85,6 @@ feature {NONE} -- Implementation (Access)
 			Result := routine_under_test /= Void
 		end
 
-	class_under_test: STRING is
-			-- Name of the class beeing tested
-		deferred
-		end
-
-	feature_under_test: STRING is
-			-- Name of the feature beeing tested
-		deferred
-		end
-
 feature {NONE} -- Implementation
 
 	operands: TUPLE
