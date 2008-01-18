@@ -588,6 +588,6 @@ feature {NONE} -- Object initialization
 		end
 
 invariant
-	object_map_valid: object_map /= Void and then object_map.capacity = context.count
+	object_map_valid: object_map /= Void and then object_map.capacity >= context.count
 
 end
