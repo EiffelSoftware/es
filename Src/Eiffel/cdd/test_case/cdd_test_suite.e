@@ -122,7 +122,7 @@ feature {NONE} -- Implementation
 	test_class_ancestor: EIFFEL_CLASS_C
 			-- Ancestor all test classes must inherit from
 
-	status_updates: DS_LIST [CDD_TEST_ROUTINE_UPDATE]
+	status_updates: DS_ARRAYED_LIST [CDD_TEST_ROUTINE_UPDATE]
 			-- List with all test routine updates since last `refresh'
 
 	check_for_modified_class (an_update: CDD_STATUS_UPDATE) is
@@ -164,7 +164,7 @@ feature {NONE} -- Implementation
 		end
 
 	update_class_table is
-			-- Update `test_class_tbale' with current information from system.
+			-- Update `test_class_table' with current information from system.
 		require
 			status_updates_not_void: status_updates /= Void
 		local
@@ -252,6 +252,9 @@ feature {NONE} -- Implementation
 							test_class_not_void: test_class /= Void
 						end
 						if l_update then
+							if (status_updates.count + test_class.status_updates.count) > status_updates.capacity then
+								status_updates.resize(status_updates.count + test_class.status_updates.count)
+							end
 							status_updates.extend_last (test_class.status_updates)
 						end
 						test_class_table.force (test_class, l_ec.name_in_upper)
