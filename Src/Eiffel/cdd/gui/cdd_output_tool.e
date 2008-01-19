@@ -108,13 +108,15 @@ feature {NONE} -- Implementation
 				l_formatter := text_area.text_displayed
 				l_formatter.add ("Tested ")
 				append_routine (an_update.test_routine)
-				l_last := an_update.test_routine.outcomes.last
-				if l_last.is_fail then
-					l_formatter.add (" (FAIL)")
-				elseif l_last.is_pass then
-					l_formatter.add (" (PASS)")
-				else
-					l_formatter.add (" (UNRESOLVED)")
+				if not an_update.test_routine.outcomes.is_empty then
+					l_last := an_update.test_routine.outcomes.last
+					if l_last.is_fail then
+						l_formatter.add (" (FAIL)")
+					elseif l_last.is_pass then
+						l_formatter.add (" (PASS)")
+					else
+						l_formatter.add (" (UNRESOLVED)")
+					end
 				end
 				l_formatter.add_new_line
 			end
