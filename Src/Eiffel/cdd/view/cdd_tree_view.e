@@ -112,8 +112,14 @@ feature {NONE} -- View definition
 			until
 				l_cursor.after
 			loop
-				if not (l_cursor.item.has_substring ("outcome.") or l_cursor.item.has_substring ("name.")
-					or l_cursor.item.has_substring ("covers.")) then
+				if
+					not (
+						l_cursor.item.has_substring ("outcome.") or
+						l_cursor.item.has_substring ("name.") or
+						l_cursor.item.has_substring ("covers.") or
+						l_cursor.item.has_substring ("source.")
+					)
+				then
 					last_computed_tag_list.force_last ("Tag View." + l_cursor.item + "." + a_routine.name)
 				end
 				l_cursor.forth
@@ -137,6 +143,21 @@ feature {NONE} -- View definition
 				last_computed_tag_list.force_last (l_tag)
 			end
 
+				-- Source View
+			l_cursor := a_routine.tags_with_prefix ("source.").new_cursor
+			from
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				if l_cursor.item.count > 7 then
+					l_tag := "Source View" + l_cursor.item.substring (7, l_cursor.item.count) + "." + a_routine.test_class.test_class_name + "." + a_routine.name
+					last_computed_tag_list.force_last (l_tag)
+				end
+				l_cursor.forth
+			end
+
+				-- Covers View
 			l_cursor := a_routine.tags_with_prefix ("covers.").new_cursor
 			from
 				l_cursor.start
@@ -149,7 +170,6 @@ feature {NONE} -- View definition
 				end
 				l_cursor.forth
 			end
-
 		end
 
 feature {NONE} -- Implementation (Access)
