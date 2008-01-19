@@ -20,6 +20,11 @@ inherit
 
 	UT_STRING_FORMATTER
 
+	KL_SHARED_STRING_EQUALITY_TESTER
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -32,6 +37,8 @@ feature {NONE} -- Initialization
 		do
 			cdd_manager := a_manager
 			create capture_observers.make
+			create call_stack_target_objects.make(20)
+			call_stack_target_objects.set_equality_tester (case_insensitive_string_equality_tester)
 		ensure
 			cdd_manager_set: cdd_manager = a_manager
 		end
@@ -75,7 +82,7 @@ feature {NONE} -- Implementation (Capturing)
 			a_status_valid: a_status.is_stopped
 		local
 			i: INTEGER
-			l_cse: EIFFEL_CALL_STACK_ELEMENT
+			l_cse, l_cse2: EIFFEL_CALL_STACK_ELEMENT
 			an_csid: STRING
 			l_time: DATE_TIME
 		do
@@ -87,9 +94,21 @@ feature {NONE} -- Implementation (Capturing)
 			end
 			create l_time.make_now
 			an_csid := l_time.formatted_out ("yyyy/[0]mm/[0]dd [0]hh:[0]mi")
+
+			call_stack_target_objects.wipe_out
+			from
+				l_cse2 := l_cse
+			until
+				l_cse2 = void
+			loop
+				if l_cse.current_object_value /= void and then l_cse.current_object_value.address /= void then
+					call_stack_target_objects.force (l_cse.current_object_value.address)
+				end
+				l_cse2 := caller (l_cse2, a_status.current_call_stack)
+			end
+
 			from
 				i := 1
-
 			until
 				l_cse = Void or i > a_count
 			loop
@@ -161,7 +180,6 @@ feature {NONE} -- Implementation (Capturing)
 			loop
 				l_arguments.put (a_cse.arguments.i_th (j), j + i)
 				l_type.append (a_cse.arguments.i_th (j).dump_value.generating_type_representation (True))
-				--l_type.append (l_feature.arguments.i_th (j).associated_class.name_in_upper)
 				if l_feature.argument_count > j then
 					l_type.append (", ")
 				end
@@ -204,6 +222,12 @@ feature {NONE} -- Implementation (Capturing)
 			l_id, l_type: STRING
 			l_ref_adv: ABSTRACT_REFERENCE_VALUE
 			l_attrs: DS_LIST [STRING]
+
+			l_class_id: INTEGER
+			l_feature_id: INTEGER
+			l_routine_target_type: CLASS_TYPE
+			l_routine_target_class: CLASS_C
+			l_routine: E_FEATURE
 		do
 			l_class := an_object.dynamic_class.eiffel_class_c
 			l_type := an_object.dump_value.generating_type_representation (True)
@@ -214,13 +238,58 @@ feature {NONE} -- Implementation (Capturing)
 				l_ref_adv ?= an_object
 				check l_ref_adv_not_void: l_ref_adv /= Void end
 				l_attrs.put_first (l_ref_adv.dump_value.formatted_output)
+			elseif l_class.parents_classes.there_exists (agent (x: CLASS_C): BOOLEAN do Result := x.name_in_upper.is_equal("ROUTINE") end) then
+				l_attrs := fetch_object_attributes (an_object.children, True, a_depth)
+					-- find target class for agent
+				l_attrs.set_equality_tester (case_insensitive_string_equality_tester)
+				l_attrs.start
+				l_attrs.search_forth ("class_id")
+				check class_id_attr_exists: not l_attrs.after end
+				l_attrs.forth
+				check class_id_attr_valid: not l_attrs.after and l_attrs.item_for_iteration.is_integer_32 end
+				l_class_id := l_attrs.item_for_iteration.to_integer_32 + 1
+
+				l_attrs.start
+				l_attrs.search_forth ("feature_id")
+				check feature_id_attr_exists: not l_attrs.after end
+				l_attrs.forth
+				check feature_id_attr_valid: not l_attrs.after and l_attrs.item_for_iteration.is_integer_32 end
+				l_feature_id := l_attrs.item_for_iteration.to_integer_32
+
+				if l_class_id > 0 then
+					l_routine_target_type := l_class.system.class_type_of_static_type_id (l_class_id)
+					if l_routine_target_type /= void then
+						l_routine_target_class := l_routine_target_type.associated_class
+					end
+				end
+
+				if l_routine_target_class /= void and l_feature_id > 0 then
+					l_attrs.start
+					l_attrs.search_forth ("class_id")
+					check class_id_attr_exists: not l_attrs.after end
+					l_attrs.forth
+					check class_id_attr_valid: not l_attrs.after and l_attrs.item_for_iteration.is_integer_32 end
+					l_attrs.replace_at (l_routine_target_class.name_in_upper)
+
+					l_routine := l_routine_target_class.feature_with_feature_id (l_feature_id)
+					if l_routine /= void then
+						l_attrs.start
+						l_attrs.search_forth ("feature_id")
+						check feature_id_attr_exists: not l_attrs.after end
+						l_attrs.forth
+						check feature_id_attr_valid: not l_attrs.after and l_attrs.item_for_iteration.is_integer_32 end
+						l_attrs.replace_at (l_routine.name)
+					end
+				end
+
 			elseif l_class.is_special or l_class.is_tuple then
 				l_attrs := fetch_object_attributes (an_object.children, False, a_depth)
 			else
 				l_attrs := fetch_object_attributes (an_object.children, True, a_depth)
 			end
-				-- TODO: replace boolean constant in feature call
-			put_object (l_id, l_type, True, l_attrs)
+
+
+			put_object (l_id, l_type, not (an_object.address /= void and then call_stack_target_objects.has(an_object.address)), l_attrs)
 		end
 
 	put_object (an_id, a_type: STRING; an_inv: BOOLEAN; some_attrs: DS_LIST [STRING]) is
@@ -320,8 +389,11 @@ feature {NONE} -- Implementation (Capturing)
 					end
 				end
 			elseif an_adv.kind = {VALUE_TYPES}.immediate_value then
-					-- transform into eiffel manifest string by escaping non printable characters
-				Result := eiffel_string_out (an_adv.output_value)
+				if an_adv.dump_value.output_value (false) /= void then
+					Result := format_output_value(an_adv.dump_value.output_value (false))
+				else
+					Result := ""
+				end
 			else
 				Result := "Void"
 			end
@@ -340,6 +412,10 @@ feature {NONE} -- Implementation (Access)
 	current_object_id: INTEGER
 			-- Counter for giving new objects an id.
 			-- NOTE: this will be replaced with id from capture/replay module.
+
+	call_stack_target_objects: DS_HASH_SET [STRING]
+			-- Hash set for all addresses of objects which are target for a routine call represented by a frame of current call stack
+			-- This is used to prevent invariant checks for theses objects
 
 	is_capturing: BOOLEAN is
 			-- Are we currently capturing?
@@ -418,6 +494,28 @@ feature {NONE} -- Implementation (Access)
 			valid_result: Result = Void or else Result.level_in_stack >= a_cse.level_in_stack
 			result_is_valid_cse: Result = Void or else an_app_status.current_call_stack.i_th (Result.level_in_stack) = Result
 		end
+
+	format_output_value (a_string: STRING): STRING is
+			-- Format output value `a_string'
+		require
+			a_string_not_void: a_string /= void
+		local
+			i: INTEGER
+		do
+			Result := eiffel_string_out (a_string.substring (1, max_manifext_string_size.min (a_string.count)))
+
+			from
+				i := max_manifext_string_size + 1
+			until
+				i > a_string.count
+			loop
+				Result := Result + "%" + %"" + eiffel_string_out (a_string.substring (i, (i + max_manifext_string_size - 1).min (a_string.count)))
+				i := i + max_manifext_string_size
+			end
+		ensure
+			result_not_void: Result /= void
+		end
+
 
 feature {NONE} -- Implementation
 

@@ -119,7 +119,7 @@ feature {NONE} -- Implementation
 					i > an_entry.attributes.upper or not Result
 				loop
 					l_attribute := an_entry.attributes.item (i)
-					Result := l_attribute /= Void and then not l_attribute.is_empty
+					Result := l_attribute /= Void -- TODO: The following does not work for empty strings!!:: and then not l_attribute.is_empty
 					i := i + 1
 				end
 			end
@@ -147,6 +147,8 @@ feature {NONE} -- Object initialization
 			l_string32_object: STRING_32
 			l_tuple_object: TUPLE
 			l_special_object: SPECIAL [ANY]
+			l_routine: ROUTINE[ANY,TUPLE]
+			l_routine_attr_adj_success: BOOLEAN
 		do
 				-- Create instance for each object in `context'
 			from
@@ -165,6 +167,13 @@ feature {NONE} -- Object initialization
 					l_object := create_special_object (l_name, context.item (i).attributes.count)
 				elseif is_valid_type_string (l_name) then
 					l_object := create_object (l_name)
+					l_routine ?= l_object
+					if l_routine /= void then
+						l_routine_attr_adj_success := adjust_routine_attributes(l_routine, context.item (i).attributes)
+						if not l_routine_attr_adj_success then
+							l_object := void
+						end
+					end
 				else
 						-- Class we do not support yet
 					check invalid_class_name: False end
@@ -180,15 +189,20 @@ feature {NONE} -- Object initialization
 				i > context.upper
 			loop
 				l_name := context.item (i).type
-				if is_special (object_map.item (context.item (i).id)) then
-					l_special_object ?= object_map.item (context.item (i).id)
-					set_special_attributes (l_special_object, context.item (i).attributes)
-				elseif is_tuple (object_map.item (context.item (i).id)) then
-					l_tuple_object ?= object_map.item (context.item (i).id)
-					check is_tuple_objects: l_tuple_object /= Void end
-					set_tuple_attributes (l_tuple_object, context.item (i).attributes)
-				elseif not (l_name.is_equal ("STRING_8") or l_name.is_equal ("STRING_32")) then
-					set_attributes (object_map.item (context.item (i).id), context.item (i).attributes)
+				if
+					(object_map.item (context.item (i).id) /= void) and then
+					not (l_name.is_equal ("STRING_8") or l_name.is_equal ("STRING_32"))
+				then
+					if is_special (object_map.item (context.item (i).id)) then
+						l_special_object ?= object_map.item (context.item (i).id)
+						set_special_attributes (l_special_object, context.item (i).attributes)
+					elseif is_tuple (object_map.item (context.item (i).id)) then
+						l_tuple_object ?= object_map.item (context.item (i).id)
+						check is_tuple_objects: l_tuple_object /= Void end
+						set_tuple_attributes (l_tuple_object, context.item (i).attributes)
+					else
+						set_attributes (object_map.item (context.item (i).id), context.item (i).attributes)
+					end
 				end
 				i := i + 1
 			end
@@ -199,7 +213,7 @@ feature {NONE} -- Object initialization
 			until
 				i > context.upper
 			loop
-				if context.item (i).inv then
+				if object_map.item (context.item (i).id) /= void and then context.item (i).inv then
 					object_map.item (context.item (i).id).do_nothing
 				end
 				i := i + 1
@@ -363,6 +377,9 @@ feature {NONE} -- Object initialization
 						if l_value.is_double then
 							set_real_64_field (i, an_object, l_value.to_double)
 						end
+					when pointer_type then
+							-- in general pointer type attributes are not supported.
+						set_pointer_field (i, an_object, create {POINTER}.default_create)
 					else
 						check attribute_type_not_supported: False end
 							-- Type we do not cover yet. I.e. Pointers
@@ -575,6 +592,12 @@ feature {NONE} -- Object initialization
 				end
 				i := i + 1
 			end
+		end
+
+	adjust_routine_attributes(a_routine: ROUTINE[ANY,TUPLE]; some_attributes: ARRAY[STRING_8]): BOOLEAN is
+			-- replace class_id and feature_id to ids of current system
+		do
+			Result := false
 		end
 
 invariant
