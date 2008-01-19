@@ -45,6 +45,9 @@ feature -- Project constants
 	max_execution_attempts: INTEGER is 3
 			-- How many time do we try to execute a test case which has killed or jammed to interpreter?
 
+	max_manifext_string_size: INTEGER is 1000
+			-- max size of manifest strings written in extracted test classes, larger strings are split in several parts
+
 feature -- TTY
 
 	confirm_enabling: STRING is "CDD is currently enabled, would you like to%Ncontinue having CDD enabled"
