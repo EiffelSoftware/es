@@ -8,6 +8,10 @@ class
 	CDD_TEST_CLASS
 
 inherit
+	CDD_CONSTANTS
+		export
+			{NONE} all
+		end
 
 	CDD_ROUTINES
 		export
@@ -326,10 +330,11 @@ feature {NONE} -- Implementation
 		do
 			create class_tags.make_default
 			class_tags.set_equality_tester (case_insensitive_string_equality_tester)
-			update_explicit_tags
+			add_explicit_tags
+			add_implicit_tags
 		end
 
-	update_explicit_tags is
+	add_explicit_tags is
 			-- Update `tags' with data from the indexing clause.
 		local
 			l_ast: CLASS_AS
@@ -363,6 +368,52 @@ feature {NONE} -- Implementation
 				l_ilist.forth
 			end
 		end
+
+	add_implicit_tags is
+			-- Add implicit tags for `Current' to `class_tags'.
+		local
+			l_tag: STRING
+			is_extracted_test_case: BOOLEAN
+			is_manual_test_case: BOOLEAN
+		do
+			if compiled_class /= void and then compiled_class.parents_classes /= void then
+				from
+					compiled_class.parents_classes.start
+				until
+					compiled_class.parents_classes.after or is_extracted_test_case
+				loop
+					is_extracted_test_case := compiled_class.parents_classes.item.name_in_upper.is_equal (extracted_test_class_name)
+					compiled_class.parents_classes.forth
+				end
+
+					-- TODO: check if source is synthesized test case
+
+				from
+					compiled_class.parents_classes.start
+				until
+					compiled_class.parents_classes.after or is_extracted_test_case or is_manual_test_case
+				loop
+					is_manual_test_case := compiled_class.parents_classes.item.name_in_upper.is_equal (test_ancestor_class_name)
+				end
+
+				if
+					is_extracted_test_case
+				then
+					create l_tag.make (20)
+					l_tag := "source."
+					l_tag.append ("extracted")
+					class_tags.force (l_tag)
+				elseif
+					is_manual_test_case
+				then
+					create l_tag.make (20)
+					l_tag := "source."
+					l_tag.append ("manual")
+					class_tags.force (l_tag)
+				end
+			end
+		end
+
 
 invariant
 	test_class_name_not_void: test_class_name /= Void

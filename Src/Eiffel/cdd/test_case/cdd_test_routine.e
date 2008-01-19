@@ -187,7 +187,7 @@ feature {NONE} -- Implementation
 feature {NONE} -- Implementation
 
 	add_explicit_tags is
-			-- Add explicit indexing tags in `an_ast' to `internal_tags'.
+			-- Add explicit indexing tags in `ast' to `internal_tags'.
 		local
 			l_ilist: INDEXING_CLAUSE_AS
 			l_cs: CURSOR
@@ -225,8 +225,7 @@ feature {NONE} -- Implementation
 		end
 
 	add_implicit_tags is
-			-- Add implicit and explicit tags found for
-			-- `Current' to `internal_tags'.
+			-- Add implicit tags for `Current' to `internal_tags'.
 		local
 			l_tag: STRING
 		do
