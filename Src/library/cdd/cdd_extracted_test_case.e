@@ -10,6 +10,8 @@ deferred class
 inherit
 
 	CDD_TEST_CASE
+		rename
+			class_name as exc_class_name
 		redefine
 			default_create,
 			set_up
@@ -22,14 +24,6 @@ inherit
 			default_create
 		end
 
-	EXCEPTIONS
-		rename
-			class_name as exc_class_name
-		export
-			{NONE} all
-		undefine
-			default_create
-		end
 
 feature -- Access
 

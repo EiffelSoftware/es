@@ -14,6 +14,9 @@ indexing
 deferred class
 	CDD_TEST_CASE
 
+inherit
+	CDD_ASSERTION_ROUTINES
+
 feature -- Basic operations
 
 	set_up is
