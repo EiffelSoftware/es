@@ -109,6 +109,12 @@ feature {NONE} -- Initialization
 			filter_box.extend (l_item)
 			create l_item.make_with_text ("Unresolved%T(outcome.unresolved)")
 			filter_box.extend (l_item)
+			create l_item.make_with_text ("Extracted Test Cases%T(type.extracted)")
+			filter_box.extend (l_item)
+			create l_item.make_with_text ("Manual Test Cases%T(type.manual)")
+			filter_box.extend (l_item)
+			create l_item.make_with_text ("Synthesized Test Cases%T(type.synthesized)")
+			filter_box.extend (l_item)
 			filter_box.set_text ("")
 			l_hbox.extend (filter_box)
 			filter_box.return_actions.extend (agent update_filter)
@@ -842,6 +848,12 @@ feature {NONE} -- Widget implementation
 				filter_box.set_text ("outcome.fail")
 			elseif filter_box.selected_item = filter_box.i_th (3) then
 				filter_box.set_text ("outcome.unresolved")
+			elseif filter_box.selected_item = filter_box.i_th (4) then
+				filter_box.set_text ("type.extracted")
+			elseif filter_box.selected_item = filter_box.i_th (5) then
+				filter_box.set_text ("type.manual")
+			elseif filter_box.selected_item = filter_box.i_th (6) then
+				filter_box.set_text ("type.synthesized")
 			else
 				check
 					dead_end: False

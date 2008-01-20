@@ -374,6 +374,7 @@ feature {NONE} -- Implementation
 		local
 			l_tag: STRING
 			is_extracted_test_case: BOOLEAN
+			is_synthesized_test_case: BOOLEAN
 			is_manual_test_case: BOOLEAN
 		do
 			if compiled_class /= void and then compiled_class.parents_classes /= void then
@@ -386,12 +387,19 @@ feature {NONE} -- Implementation
 					compiled_class.parents_classes.forth
 				end
 
-					-- TODO: check if source is synthesized test case
+				from
+					compiled_class.parents_classes.start
+				until
+					compiled_class.parents_classes.after or is_extracted_test_case or is_synthesized_test_case
+				loop
+					is_synthesized_test_case := compiled_class.parents_classes.item.name_in_upper.is_equal (synthesized_test_class_name)
+					compiled_class.parents_classes.forth
+				end
 
 				from
 					compiled_class.parents_classes.start
 				until
-					compiled_class.parents_classes.after or is_extracted_test_case or is_manual_test_case
+					compiled_class.parents_classes.after or is_extracted_test_case or is_synthesized_test_case or is_manual_test_case
 				loop
 					is_manual_test_case := compiled_class.parents_classes.item.name_in_upper.is_equal (test_ancestor_class_name)
 				end
@@ -400,14 +408,21 @@ feature {NONE} -- Implementation
 					is_extracted_test_case
 				then
 					create l_tag.make (20)
-					l_tag := "source."
+					l_tag := "type."
 					l_tag.append ("extracted")
+					class_tags.force (l_tag)
+				elseif
+					is_synthesized_test_case
+				then
+					create l_tag.make (20)
+					l_tag := "type."
+					l_tag.append ("synthesized")
 					class_tags.force (l_tag)
 				elseif
 					is_manual_test_case
 				then
 					create l_tag.make (20)
-					l_tag := "source."
+					l_tag := "type."
 					l_tag.append ("manual")
 					class_tags.force (l_tag)
 				end

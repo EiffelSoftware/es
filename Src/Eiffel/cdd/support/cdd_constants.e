@@ -24,6 +24,9 @@ feature -- Project constants
 	extracted_test_class_name: STRING is "CDD_EXTRACTED_TEST_CASE"
 			-- Class name of ancestor of extracted test classes
 
+	synthesized_test_class_name: STRING is "CDD_AUT_TEST_CASE"
+			-- Class name of ancestor of synthesized test classes
+
 	cluster_name_suffix: STRING is "_tests"
 
 	tester_target_suffix: STRING is "_tester"

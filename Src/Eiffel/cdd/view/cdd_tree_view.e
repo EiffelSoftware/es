@@ -114,7 +114,7 @@ feature {NONE} -- View definition
 			loop
 				if
 					not (
-						l_cursor.item.has_substring ("outcome.") or
+						l_cursor.item.has_substring ("type.") or
 						l_cursor.item.has_substring ("name.") or
 						l_cursor.item.has_substring ("covers.") or
 						l_cursor.item.has_substring ("source.")
@@ -143,7 +143,7 @@ feature {NONE} -- View definition
 				last_computed_tag_list.force_last (l_tag)
 			end
 
-				-- Source View
+				-- Type View
 			l_cursor := a_routine.tags_with_prefix ("source.").new_cursor
 			from
 				l_cursor.start
@@ -151,7 +151,7 @@ feature {NONE} -- View definition
 				l_cursor.after
 			loop
 				if l_cursor.item.count > 7 then
-					l_tag := "Source View" + l_cursor.item.substring (7, l_cursor.item.count) + "." + a_routine.test_class.test_class_name + "." + a_routine.name
+					l_tag := "Type View" + l_cursor.item.substring (5, l_cursor.item.count) + "." + a_routine.test_class.test_class_name + "." + a_routine.name
 					last_computed_tag_list.force_last (l_tag)
 				end
 				l_cursor.forth
