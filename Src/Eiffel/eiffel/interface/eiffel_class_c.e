@@ -161,7 +161,7 @@ feature -- Status report
 			-- Note: This is a CDD specific notion.
 		do
 			if parents /= Void then
-				Result := is_descendant_of_class (Current, "CDD_ABSTRACT_TEST_CASE")
+				Result := is_descendant_of_class (Current, "CDD_TEST_CASE")
 			else
 				Result := cluster.is_cdd_cluster
 			end
