@@ -122,7 +122,7 @@ feature {NONE} -- Implementation
 	test_class_ancestor: EIFFEL_CLASS_C
 			-- Ancestor all test classes must inherit from
 
-	status_updates: DS_ARRAYED_LIST [CDD_TEST_ROUTINE_UPDATE]
+	status_updates: DS_LIST [CDD_TEST_ROUTINE_UPDATE]
 			-- List with all test routine updates since last `refresh'
 
 	check_for_modified_class (an_update: CDD_STATUS_UPDATE) is
@@ -178,6 +178,7 @@ feature {NONE} -- Implementation
 			if test_class_ancestor /= Void then
 				l_incremental := True
 				fill_with_descendants (test_class_ancestor, l_old_table)
+				
 				-- Create remove update for each remaining test routine in `l_old_table'
 				from
 					l_old_table.start
@@ -252,10 +253,7 @@ feature {NONE} -- Implementation
 							test_class_not_void: test_class /= Void
 						end
 						if l_update then
-							if (status_updates.count + test_class.status_updates.count) > status_updates.capacity then
-								status_updates.resize(status_updates.count + test_class.status_updates.count)
-							end
-							status_updates.extend_last (test_class.status_updates)
+							status_updates.append_last (test_class.status_updates)
 						end
 						test_class_table.force (test_class, l_ec.name_in_upper)
 					end
