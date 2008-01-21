@@ -161,7 +161,7 @@ feature -- Basic operations
 				cancel
 			end
 			if not filter.test_routines.is_empty then
-				root_class_printer.print_class
+				root_class_printer.print_class (cdd_manager.testing_directory)
 				if root_class_printer.last_print_succeeded then
 					create test_routines.make_from_linear (filter.test_routines)
 					create compiler.make

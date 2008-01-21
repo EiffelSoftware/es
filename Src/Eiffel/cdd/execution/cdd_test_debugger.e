@@ -27,7 +27,7 @@ feature {NONE} -- Initialization
 			a_cdd_manager_not_void: a_cdd_manager /= Void
 		do
 			cdd_manager := a_cdd_manager
-			create root_class_printer.make (cdd_manager.test_suite)
+			create root_class_printer
 			internal_reset_agent := agent reset_system (Void)
 		ensure
 			cdd_manager_set: cdd_manager = a_cdd_manager
@@ -85,7 +85,7 @@ feature -- Basic functionality
 			l_eiffel_class: EIFFEL_CLASS_C
 		do
 			current_test_routine := a_test_routine
-			root_class_printer.print_root_class (a_test_routine)
+			root_class_printer.print_root_class (cdd_manager.testing_directory, a_test_routine)
 			if root_class_printer.last_print_succeeded then
 				l_root := conf_factory.new_root (Void, "CDD_ROOT_CLASS", "make", False)
 				is_running := True

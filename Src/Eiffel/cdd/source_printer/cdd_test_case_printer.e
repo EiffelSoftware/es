@@ -35,11 +35,6 @@ inherit
 			{NONE} all
 		end
 
-	KL_SHARED_FILE_SYSTEM
-		export
-			{NONE} all
-		end
-
 	SHARED_FLAGS
 		export
 			{NONE} all
@@ -84,51 +79,36 @@ feature	-- Basic operations
 			-- `a_cs_uuid' is an ID for the call stack and `a_cs_level' is the
 			-- index of the frame beeing captured.
 		local
-			l_prefix, l_new_path: STRING
-			l_loc: CONF_LOCATION
+			l_prefix: STRING
 			l_output_file: KL_TEXT_OUTPUT_FILE
-			l_paths: DS_LINKED_LIST [STRING]
 			l_cluster: CONF_CLUSTER
-			l_fs: KL_FILE_SYSTEM
+			l_dir: KL_DIRECTORY
+			l_loc: CONF_LOCATION
 			i: INTEGER
 		do
 			failed := False
 			printed_objects := 0
 
 				-- Build path list in which test case shall be stored
-			create l_paths.make
+			create new_class_path.make_empty
 			from
 				l_cluster ?= a_class.group
 			until
 				l_cluster = Void
 			loop
-				l_paths.put_first (l_cluster.name)
+				new_class_path := "/" + l_cluster.name + new_class_path
 				l_cluster := l_cluster.parent
 			end
-			l_paths.put_first (target.name)
-			l_paths.put_first ("cdd_tests")
 
 				-- Create directories from path list
-			l_loc := conf_factory.new_location_from_path (".\", target)
-			l_fs := file_system
-			l_new_path := l_loc.build_path ("", "")
-			from
-				l_paths.start
-			until
-				l_paths.after or failed
-			loop
-				l_new_path := l_fs.pathname (l_new_path, l_paths.item_for_iteration)
-				if not l_fs.directory_exists (l_new_path) then
-					l_fs.create_directory (l_new_path)
-					if not l_fs.directory_exists (l_new_path) then
-						io.put_string ("%Tfailed%N")
-						failed := True
-					end
+			l_loc := cdd_manager.testing_directory
+			create l_dir.make (l_loc.build_path (new_class_path, ""))
+			if not l_dir.exists then
+				l_dir.recursive_create_directory
+				if not l_dir.exists then
+					failed := True
 				end
-				l_paths.forth
 			end
-
-			check new_path_not_void: l_new_path /= Void end
 
 			if not failed then
 				l_prefix := class_name_prefix + a_class.name + "_"
@@ -142,7 +122,7 @@ feature	-- Basic operations
 						new_class_name.append_character ('0')
 					end
 					new_class_name.append (i.out)
-					create l_output_file.make (l_fs.pathname(l_new_path, new_class_name.as_lower + ".e"))
+					create l_output_file.make (l_loc.build_path (new_class_path, new_class_name.as_lower + ".e"))
 					if l_output_file.exists then
 						l_output_file := Void
 					end
@@ -168,15 +148,6 @@ feature	-- Basic operations
 					put_set_up (an_adv, a_feature, is_creation_feature (a_feature))
 					put_test_routine (a_class, a_feature, a_csid, a_cs_level)
 					put_context_header
-
-					--create new_class_path.make_from_string (l_new_path)
-					create new_class_path.make_empty
-					l_paths.remove_first
-					l_paths.remove_first
-					l_paths.do_all (agent (a_path, a_dir: STRING)
-						do
-							a_path.append ("/" + a_dir)
-						end (new_class_path, ?))
 				end
 			end
 		end

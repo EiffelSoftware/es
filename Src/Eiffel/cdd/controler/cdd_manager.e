@@ -91,7 +91,24 @@ feature -- Access (status)
 		end
 
 	last_updated_test_class: EIFFEL_CLASS_C
-			-- Test class which has last been reprocessed in degree 5
+			-- Test class which has last been processed in degree 5
+
+	testing_directory: CONF_DIRECTORY_LOCATION is
+			-- Directory where test classes, interpreter,
+			-- cdd root class etc. are created
+			-- NOTE: if .ecf file is in directory x, `testing_directory'
+			-- will point to x/cdd_tests/target
+		require
+			project_initialized: is_project_initialized
+		local
+			l_path: STRING
+		do
+			if cached_testing_directory = Void then
+				l_path := ".\cdd_tests\" + target.name
+				cached_testing_directory := conf_factory.new_location_from_path (l_path, target)
+			end
+			Result := cached_testing_directory
+		end
 
 feature -- Access (execution)
 
@@ -245,6 +262,9 @@ feature {NONE} -- Implementation
 		end
 
 feature {NONE} -- Implementation
+
+	cached_testing_directory: like testing_directory
+			-- Cached `testing_directory'
 
 	has_project_been_initialized: BOOLEAN
 			-- Has the project been initialized before?

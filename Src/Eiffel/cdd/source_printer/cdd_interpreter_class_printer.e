@@ -41,15 +41,17 @@ feature -- Access
 
 feature -- Basic operations
 
-	print_class is
+	print_class (a_loc: CONF_DIRECTORY_LOCATION) is
 			-- Print a new root class containing all test cases in `test_suite'.
+		require
+			a_loc_not_void: a_loc /= Void
 		local
 			l_output_file: KL_TEXT_OUTPUT_FILE
 		do
 			last_print_succeeded := True
 			if test_suite.test_classes.count > 0 then
-				create l_output_file.make (interpreter_path_name)
-				l_output_file.open_write
+				create l_output_file.make (a_loc.build_path ("", "cdd_interpreter.e"))
+				l_output_file.recursive_open_write
 				if l_output_file.is_open_write then
 					create output_stream.make (l_output_file)
 					put_indexing
@@ -67,7 +69,7 @@ feature -- Basic operations
 			end
 		ensure
 			succeeded_implies_file_exists: last_print_succeeded implies
-				(create {KL_TEXT_OUTPUT_FILE}.make (interpreter_path_name)).exists
+				(create {KL_TEXT_OUTPUT_FILE}.make (a_loc.build_path ("", "cdd_interpreter.e"))).exists
 		end
 
 feature {NONE} -- Access implementation
@@ -76,24 +78,6 @@ feature {NONE} -- Access implementation
 			-- Output stream
 
 feature {NONE} -- Implementation
-
-	interpreter_path_name: STRING is
-			-- Path to class CDD_INTERPRETER
-			-- Note: file nor directory necessarilly exist
-		local
-			l_loc: CONF_DIRECTORY_LOCATION
-			l_target: CONF_TARGET
-		do
-			if cached_interpreter_path_name = Void then
-				l_target := test_suite.target
-				l_loc := conf_factory.new_location_from_path (".\cdd_tests\" + l_target.name, l_target)
-				cached_interpreter_path_name := l_loc.build_path ("", "cdd_interpreter.e")
-			end
-			Result := cached_interpreter_path_name
-		end
-
-	cached_interpreter_path_name: STRING
-			-- Cache for interpreter path name; writtin on first call to `interprter_path_name'.
 
 	put_indexing is
 			-- Append indexing clause.

@@ -150,11 +150,7 @@ feature {NONE} -- Implementation
 	update_text_area is
 			-- Remove top lines in `text_area' and scroll to end.
 		do
-			text_area.redraw_current_screen
-			--text_area.reload
-			--text_area.show
 			text_area.scroll_to_end_when_ready
-			text_area.refresh_now
 		end
 
 	internal_recycle is
