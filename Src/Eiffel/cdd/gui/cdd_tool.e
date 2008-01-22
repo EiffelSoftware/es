@@ -797,18 +797,11 @@ feature {NONE} -- Dynamic grid items
 				l_last := a_test_routine.outcomes.last
 				l_tooltip := l_last.out
 				if l_last.is_fail then
-					Result.text.append ("FAIL")
-					Result.set_foreground_color (stock_colors.red)
-					Result.select_actions.extend (agent (an_item: EV_GRID_LABEL_ITEM)
-						do
-							an_item.set_foreground_color (an_item.foreground_color)
-						end)
+					Result.set_pixmap (pixmaps.icon_pixmaps.cdd_fail_icon)
 				elseif l_last.is_pass then
-					Result.text.append ("PASS")
-					Result.set_foreground_color (stock_colors.green)
+					Result.set_pixmap (pixmaps.icon_pixmaps.cdd_pass_icon)
 				else
-					Result.text.append ("UNRESOLVED")
-					Result.set_foreground_color (stock_colors.dark_yellow)
+					Result.set_pixmap (pixmaps.icon_pixmaps.cdd_unresolved_icon)
 				end
 				Result.set_tooltip (l_tooltip)
 			end

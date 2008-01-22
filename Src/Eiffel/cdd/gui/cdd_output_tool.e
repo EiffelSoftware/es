@@ -33,7 +33,6 @@ feature {NONE} -- Initialization
 			widget.set_style ({EV_FRAME_CONSTANTS}.ev_frame_lowered)
 			create text_area.make (develop_window)
 			widget.extend (text_area.widget)
-			text_area.set_read_only (True)
 			internal_append_text_action := agent append_text
 			internal_append_status_update_action := agent append_status_update
 			internal_append_routine_update_action := agent append_routine_updates
