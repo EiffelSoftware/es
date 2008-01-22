@@ -145,7 +145,6 @@ feature {NONE} -- Initialization
 			l_button: EV_TOOL_BAR_BUTTON
 			l_tbutton: EV_TOOL_BAR_TOGGLE_BUTTON
 			l_label: EV_LABEL
-			l_viewbox: EV_COMBO_BOX
 		do
 			create l_hbox
 			l_hbox.set_padding (6)
@@ -189,14 +188,17 @@ feature {NONE} -- Initialization
 			l_hbox.extend (l_label)
 			l_hbox.disable_item_expand (l_label)
 
-			create l_viewbox
-			l_viewbox.set_minimum_width (100)
-			l_viewbox.extend (create {EV_LIST_ITEM}.make_with_text ("Testcase"))
-			l_viewbox.extend (create {EV_LIST_ITEM}.make_with_text ("Target"))
-			l_viewbox.extend (create {EV_LIST_ITEM}.make_with_text ("Outcome"))
-			l_viewbox.extend (create {EV_LIST_ITEM}.make_with_text ("Tags"))
-			l_hbox.extend (l_viewbox)
-			l_hbox.disable_item_expand (l_viewbox)
+			create tree_view_box
+			tree_view_box.disable_edit
+			tree_view_box.set_minimum_width (100)
+			tree_view_box.extend (create {EV_LIST_ITEM}.make_with_text ("Testcase"))
+			tree_view_box.extend (create {EV_LIST_ITEM}.make_with_text ("Target"))
+			tree_view_box.extend (create {EV_LIST_ITEM}.make_with_text ("Outcome"))
+			tree_view_box.extend (create {EV_LIST_ITEM}.make_with_text ("Tags"))
+			tree_view_box.extend (create {EV_LIST_ITEM}.make_with_text ("Failure"))
+			l_hbox.extend (tree_view_box)
+			l_hbox.disable_item_expand (tree_view_box)
+			tree_view_box.select_actions.extend (agent select_view)
 
 			widget.extend (l_hbox)
 			widget.disable_item_expand (l_hbox)
@@ -396,6 +398,9 @@ feature {NONE} -- Implementation (Widgets)
 
 	filter_box: EV_COMBO_BOX
 			-- Combo box for defining filter
+
+	tree_view_box: EV_COMBO_BOX
+			-- Drop down menu for choosing view
 
 	grid: ES_GRID
 			-- Grid for displaying `filter' results
@@ -809,7 +814,7 @@ feature {NONE} -- Dynamic grid items
 			not_void: Result /= Void
 		end
 
-feature {NONE} -- Widget implementation
+feature {NONE} -- Filter / Tree view
 
 	update_filter is
 			-- Update filter tags of `filter' corresponding
@@ -855,6 +860,27 @@ feature {NONE} -- Widget implementation
 			update_filter
 		end
 
+	select_view is
+			-- Set view in `tree_view' corresponding to
+			-- selected item of `tree_view_box'.
+		do
+			if tree_view_box.selected_item = tree_view_box.i_th (1) then
+				tree_view.set_view_code ({CDD_TREE_VIEW}.name_view_code)
+			elseif tree_view_box.selected_item = tree_view_box.i_th (2) then
+				tree_view.set_view_code ({CDD_TREE_VIEW}.covers_view_code)
+			elseif tree_view_box.selected_item = tree_view_box.i_th (3) then
+				tree_view.set_view_code ({CDD_TREE_VIEW}.outcome_view_code)
+			elseif tree_view_box.selected_item = tree_view_box.i_th (4) then
+				tree_view.set_view_code ({CDD_TREE_VIEW}.tags_view_code)
+			elseif tree_view_box.selected_item = tree_view_box.i_th (5) then
+				tree_view.set_view_code ({CDD_TREE_VIEW}.failure_view_code)
+			else
+				check
+					dead_end: False
+				end
+			end
+		end
+
 invariant
 
 	cdd_manager_not_void: cdd_manager /= Void
@@ -865,6 +891,7 @@ invariant
 		-- Widgets
 	mini_toolbar_not_void: mini_toolbar /= Void
 	filter_box_not_void: filter_box /= Void
+	tree_view_box_not_void: tree_view_box /= Void
 	grid_not_void: grid /= Void
 	status_label_not_void: status_label /= Void
 	debug_button_not_void: debug_button /= Void

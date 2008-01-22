@@ -28,8 +28,10 @@ feature {NONE} -- Initialization
 			change_agent := agent incremental_update
 			create last_computed_tag_list.make_default
 			create leafs.make_default
+			view_code := name_view_code
 		ensure
 			filtered_view_set: filtered_view = a_filtered_view
+			default_view_set: view_code = name_view_code
 		end
 
 feature {ANY} -- Status Report
@@ -44,6 +46,20 @@ feature {ANY} -- Status Report
 		end
 
 feature {ANY} -- Access
+
+	view_code: like name_view_code
+			-- Code defining tags used to build `nodes'.
+
+	is_valid_code (a_code: like view_code): BOOLEAN is
+			-- Is `a_code' a valid view code?
+		do
+			Result :=
+				a_code = name_view_code or
+				a_code = covers_view_code or
+				a_code = failure_view_code or
+				a_code = tags_view_code or
+				a_code = outcome_view_code
+		end
 
 	filtered_view: CDD_FILTERED_VIEW
 			-- Source where test routines are taken from
@@ -63,7 +79,35 @@ feature {ANY} -- Access
 			nodes_doesnt_have_void: not Result.has (Void)
 		end
 
-feature {ANY} -- Status setting
+feature -- Views
+
+	name_view_code,
+	covers_view_code,
+	failure_view_code,
+	tags_view_code,
+	outcome_view_code: INTEGER is unique
+			-- Different view codes
+
+feature -- Status setting
+
+	set_view_code (a_code: like view_code) is
+			-- Set `view_code' to `a_code' and
+			-- refresh cache if necessary.
+		require
+			a_code_valid: is_valid_code (a_code)
+		do
+			if a_code /= view_code then
+				view_code := a_code
+				if is_observing then
+					refresh
+				end
+			end
+		ensure
+			view_code_set: view_code = a_code
+			cache_wiped_out_if_changed: (a_code /= old view_code) implies nodes_cache /= Void
+		end
+
+feature {NONE} -- Status setting
 
 	enable_observing is
 			-- Enable auto update mode.
@@ -105,70 +149,68 @@ feature {NONE} -- View definition
 		do
 			last_computed_tag_list.wipe_out
 
-				-- Tag view
-			from
+			inspect
+				view_code
+			when name_view_code then
+				add_tags_with_prefix (a_routine, "name.", False)
+			when covers_view_code then
+				add_tags_with_prefix (a_routine, "covers.", True)
+			when failure_view_code then
+				add_tags_with_prefix (a_routine, "failure.", False)
+			when tags_view_code then
+				add_tags_with_prefix (a_routine, "", True)
+			when outcome_view_code then
+				add_tags_with_prefix (a_routine, "outcome.", True)
+			else
+				check
+					dead_end: False
+				end
+			end
+		end
+
+	add_tags_with_prefix (a_routine: CDD_TEST_ROUTINE; a_prefix: STRING; an_append_name: BOOLEAN) is
+			-- Add all tags beginning with `a_prefix' of `a_routine'
+			-- to the end of `last_computed_tag_list'. If `an_append_name'
+			-- is `True', extend all tags with name of `a_routine'.
+		require
+			a_routine_not_void: a_routine /= Void
+			a_prefix_not_void: a_prefix /= Void
+		local
+			l_name, l_tag: STRING
+			l_cursor: DS_LINEAR_CURSOR [STRING]
+			l_delta: INTEGER
+		do
+			if a_prefix.is_empty then
 				l_cursor := a_routine.tags.new_cursor
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				if
-					not (
-						l_cursor.item.has_substring ("type.") or
-						l_cursor.item.has_substring ("name.") or
-						l_cursor.item.has_substring ("covers.") or
-						l_cursor.item.has_substring ("source.")
-					)
-				then
-					last_computed_tag_list.force_last ("Tag View." + l_cursor.item + "." + a_routine.name)
+			else
+				l_cursor := a_routine.tags_with_prefix (a_prefix).new_cursor
+			end
+			if an_append_name or not a_prefix.is_empty then
+				l_delta := -(a_prefix.count)
+				if an_append_name then
+					l_name := a_routine.name
+					l_delta := l_delta + l_name.count + 1
 				end
-				l_cursor.forth
-			end
-
-				-- Name view
-			create l_tag.make (30)
-			l_tag.append ("Name View.")
-			l_tag.append (a_routine.test_class.test_class_name)
-			l_tag.append_character ('.')
-			l_tag.append (a_routine.name)
-			last_computed_tag_list.force_last (l_tag)
-
-				-- Outcome view
-			if not a_routine.outcomes.is_empty then
-				create l_tag.make (30)
-				l_tag.append ("Outcome View.")
-				l_tag.append (a_routine.outcomes.last.text)
-				l_tag.append_character ('.')
-				l_tag.append (a_routine.name)
-				last_computed_tag_list.force_last (l_tag)
-			end
-
-				-- Type View
-			l_cursor := a_routine.tags_with_prefix ("source.").new_cursor
-			from
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				if l_cursor.item.count > 7 then
-					l_tag := "Type View" + l_cursor.item.substring (5, l_cursor.item.count) + "." + a_routine.test_class.test_class_name + "." + a_routine.name
+				from
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					create l_tag.make (l_cursor.item.count + l_delta)
+					if a_prefix.is_empty then
+						l_tag.append (l_cursor.item)
+					else
+						l_tag.append (l_cursor.item.substring (a_prefix.count + 1, l_cursor.item.count))
+					end
+					if an_append_name then
+						l_tag.append_character ('.')
+						l_tag.append (l_name)
+					end
 					last_computed_tag_list.force_last (l_tag)
+					l_cursor.forth
 				end
-				l_cursor.forth
-			end
-
-				-- Covers View
-			l_cursor := a_routine.tags_with_prefix ("covers.").new_cursor
-			from
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				if l_cursor.item.count > 7 then
-					l_tag := "Covers View" + l_cursor.item.substring (7, l_cursor.item.count) + "." + a_routine.name
-					last_computed_tag_list.force_last (l_tag)
-				end
-				l_cursor.forth
+			else
+				last_computed_tag_list.append_last (l_cursor.container)
 			end
 		end
 
@@ -646,6 +688,7 @@ invariant
 	last_computed_tag_list_not_void: last_computed_tag_list /= Void
 	last_computed_tag_list_valid: not last_computed_tag_list.has (Void)
 	leafs_not_void: leafs /= Void
+	view_code_valid: is_valid_code (view_code)
 	nodes_cache_void_implies_leafs_empty: (nodes_cache = Void) implies leafs.is_empty
 
 end
