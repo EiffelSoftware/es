@@ -214,7 +214,9 @@ feature {EB_CLUSTERS} -- Status setting (Eiffel Project)
 					status_update_actions.call ([create {CDD_STATUS_UPDATE}.make_with_code ({CDD_STATUS_UPDATE}.project_initialize_code)])
 				end
 				test_suite.refresh
-				start_background_executing := True
+				if project.successful and not debug_executor.is_running then
+					start_background_executing := True
+				end
 			end
 		end
 
