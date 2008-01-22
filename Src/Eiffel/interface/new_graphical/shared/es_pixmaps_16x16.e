@@ -1819,7 +1819,7 @@ feature -- Access
 		once
 			Result := raw_buffer.sub_pixel_buffer (pixel_rectangle (33, 6))
 		end
-		
+
 	frozen callstack_active_arrow_icon: EV_PIXMAP is
 			-- Access to 'active arrow' pixmap.
 		once
@@ -4399,6 +4399,26 @@ feature -- Access
 			-- Access to 'task' pixmap pixel buffer.
 		once
 			Result := raw_buffer.sub_pixel_buffer (pixel_rectangle (17, 18))
+		end
+
+feature -- CDD pixmaps
+
+	frozen cdd_fail_icon: EV_PIXEL_BUFFER is
+			-- CDD fail icon
+		once
+			Result := raw_buffer.sub_pixel_buffer (pixel_rectangle (1, 19))
+		end
+
+	frozen cdd_pass_icon: EV_PIXEL_BUFFER is
+			-- CDD pass icon
+		once
+			Result := raw_buffer.sub_pixel_buffer (pixel_rectangle (2, 19))
+		end
+
+	frozen cdd_unresolved_icon: EV_PIXEL_BUFFER is
+			-- CDD unresolved icon
+		once
+			Result := raw_buffer.sub_pixel_buffer (pixel_rectangle (3, 19))
 		end
 
 feature {NONE} -- Query
