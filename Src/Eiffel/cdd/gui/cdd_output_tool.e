@@ -32,6 +32,9 @@ feature {NONE} -- Initialization
 			create widget
 			widget.set_style ({EV_FRAME_CONSTANTS}.ev_frame_lowered)
 			create text_area.make (develop_window)
+			text_area.drop_actions.extend (agent drop_class)
+			text_area.drop_actions.extend (agent drop_feature)
+			text_area.drop_actions.extend (agent drop_cluster)
 			widget.extend (text_area.widget)
 			internal_append_text_action := agent append_text
 			internal_append_status_update_action := agent append_status_update

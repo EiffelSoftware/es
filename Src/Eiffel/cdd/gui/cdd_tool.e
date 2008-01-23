@@ -119,6 +119,7 @@ feature {NONE} -- Initialization
 			l_hbox.extend (filter_box)
 			filter_box.return_actions.extend (agent update_filter)
 			filter_box.select_actions.extend (agent select_filter_text)
+			filter_box.drop_actions.extend (agent drop_class_on_filter)
 
 			create toggle_filter_button.make_with_text ("Exec Set")
 			toggle_filter_button.select_actions.extend (agent toggle_filter)
@@ -243,7 +244,6 @@ feature {NONE} -- Initialization
 			create l_filter.make (cdd_manager.test_suite)
 			create tree_view.make (l_filter)
 			tree_view.add_client
-			refresh_grid
 			tree_view.change_actions.extend (agent update_grid_incremental)
 
 			create l_notebook
@@ -267,23 +267,21 @@ feature {NONE} -- Initialization
 		local
 			l_frame: EV_FRAME
 			l_status_bar: EV_STATUS_BAR
-
-			l_label: EV_LABEL
 		do
 			create l_status_bar
 			l_status_bar.set_border_width (2)
 
 			create l_frame
 			l_frame.set_style ({EV_FRAME_CONSTANTS}.ev_frame_lowered)
-			create status_label.make_with_text ("")
+			create status_label
 			status_label.align_text_left
 			l_frame.extend (status_label)
 			l_status_bar.extend (l_frame)
 
 			create l_frame
 			l_frame.set_style ({EV_FRAME_CONSTANTS}.ev_frame_lowered)
-			create l_label.make_with_text ("3/10 Tests Fail")
-			l_frame.extend (l_label)
+			create testing_label
+			l_frame.extend (testing_label)
 			l_status_bar.extend (l_frame)
 			l_status_bar.disable_item_expand (l_frame)
 
@@ -318,6 +316,53 @@ feature {NONE} -- Implementation (Access)
 
 feature {NONE} -- Implementation (Basic functionality)
 
+	update_testing_label is
+			-- Update `testing_label' to current test
+			-- execution status
+		local
+			l_cursor: DS_LINEAR_CURSOR [CDD_TEST_ROUTINE]
+			l_executing: BOOLEAN
+			l_total, l_failing: INTEGER
+			l_label: STRING
+		do
+			if cdd_manager.background_executor.is_executing then
+				l_executing := True
+				l_cursor := cdd_manager.background_executor.test_routines.new_cursor
+			else
+				l_cursor := tree_view.filtered_view.test_routines.new_cursor
+			end
+
+			from
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_total := l_total + 1
+				if not l_cursor.item.outcomes.is_empty then
+					if l_cursor.item.outcomes.last.is_fail then
+						l_failing := l_failing + 1
+					end
+				end
+				if l_executing and then
+					l_cursor.item = cdd_manager.background_executor.current_test_routine then
+					l_cursor.go_after
+				else
+					l_cursor.forth
+				end
+			end
+			create l_label.make (20)
+			l_label.append_integer (l_failing)
+			l_label.append ("/")
+			l_label.append_integer (l_total)
+			l_label.append (" tests fail")
+			if l_failing > 0 then
+				testing_label.set_foreground_color (stock_colors.red)
+			else
+				testing_label.set_foreground_color (stock_colors.black)
+			end
+			testing_label.set_text (l_label)
+		end
+
 	update_status (an_update: CDD_STATUS_UPDATE) is
 			-- Apopt widgets to `an_update'.
 		require
@@ -340,6 +385,7 @@ feature {NONE} -- Implementation (Basic functionality)
 				toggle_extraction_button.disable_select
 			when {CDD_STATUS_UPDATE}.executor_step_code then
 				l_exec := cdd_manager.background_executor
+				update_testing_label
 				if not l_exec.has_next_step then
 					--run_button.enable_sensitive
 					show_message ("Finished executing")
@@ -352,7 +398,7 @@ feature {NONE} -- Implementation (Basic functionality)
 						l_label := "Testing " + l_exec.current_test_routine.test_class.test_class_name
 						l_label.append ("." + l_exec.current_test_routine.name)
 						show_message (l_label)
-						progress_bar.set_proportion (l_exec.index / l_exec.count)
+						progress_bar.set_proportion (l_exec.index / l_exec.test_routines.count)
 					end
 				end
 			when {CDD_STATUS_UPDATE}.executor_filter_change then
@@ -407,6 +453,9 @@ feature {NONE} -- Implementation (Widgets)
 
 	status_label: EV_LABEL
 			-- Label describing current tester status
+
+	testing_label: EV_LABEL
+			-- Label containing current test outcome information
 
 	progress_bar: EV_HORIZONTAL_PROGRESS_BAR
 			-- Progress bar showing progress of test executor
@@ -513,6 +562,7 @@ feature {NONE} -- Grid manipulation
 				grid.insert_new_rows (tree_view.nodes.count, 1)
 				fill_rows (tree_view.nodes, 1)
 			end
+			update_testing_label
 			develop_window.unlock_update
 		end
 
@@ -621,6 +671,7 @@ feature {NONE} -- Incremental grid update
 					process_update (l_cursor.item)
 					l_cursor.forth
 				end
+				update_testing_label
 			else
 				refresh_grid
 			end
@@ -780,6 +831,7 @@ feature {NONE} -- Dynamic grid items
 				else
 					token_writer.process_basic_text (a_node.tag)
 				end
+				token_writer.process_basic_text (" (" + a_node.test_routine_count.out + ")")
 			end
 			Result.set_text_with_tokens (token_writer.last_line.content)
 		ensure
@@ -860,6 +912,25 @@ feature {NONE} -- Filter / Tree view
 			update_filter
 		end
 
+	drop_class_on_filter (a_stone: CLASSI_STONE) is
+			-- Set appropriate filter text for `a_stone'.
+		require
+			a_stone_not_void: a_stone /= Void
+		local
+			l_eclass: EIFFEL_CLASS_C
+			l_list: DS_ARRAYED_LIST [STRING]
+		do
+			l_eclass ?= a_stone.class_i.compiled_class
+			create l_list.make (1)
+			if l_eclass /= Void and then tree_view.filtered_view.test_suite.has_test_case_for_class (l_eclass) then
+				l_list.put_first ("name." + l_eclass.name_in_upper)
+			else
+				l_list.put_first ("covers." + a_stone.class_i.name)
+			end
+			filter_box.set_text (l_list.first)
+			tree_view.filtered_view.set_filters (l_list)
+		end
+
 	select_view is
 			-- Set view in `tree_view' corresponding to
 			-- selected item of `tree_view_box'.
@@ -894,6 +965,7 @@ invariant
 	tree_view_box_not_void: tree_view_box /= Void
 	grid_not_void: grid /= Void
 	status_label_not_void: status_label /= Void
+	testing_label_not_void: testing_label /= Void
 	debug_button_not_void: debug_button /= Void
 	toggle_filter_button_not_void: toggle_filter_button /= Void
 	progress_bar_not_void: progress_bar /= Void

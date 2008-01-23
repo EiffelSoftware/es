@@ -20,6 +20,11 @@ inherit
 
 	UT_STRING_FORMATTER
 
+	DT_SHARED_SYSTEM_CLOCK
+		export
+			{NONE} all
+		end
+
 	KL_SHARED_STRING_EQUALITY_TESTER
 		export
 			{NONE} all
@@ -84,7 +89,8 @@ feature {NONE} -- Implementation (Capturing)
 			i: INTEGER
 			l_cse, l_cse2: EIFFEL_CALL_STACK_ELEMENT
 			an_csid: STRING
-			l_time: DATE_TIME
+			l_dt: DT_DATE_TIME
+			l_sec: INTEGER_32
 		do
 			l_cse ?= a_status.current_call_stack_element
 			if a_status.exception_code = {EXCEP_CONST}.precondition then
@@ -92,8 +98,16 @@ feature {NONE} -- Implementation (Capturing)
 					l_cse := caller (l_cse, a_status.current_call_stack)
 				end
 			end
-			create l_time.make_now
-			an_csid := l_time.formatted_out ("yyyy/[0]mm/[0]dd [0]hh:[0]mi")
+
+				-- As a call stack id, we used to number of seconds
+				-- elapsed since epoch date. This can later
+				-- be used for sorting and displaying an arbitrary
+				-- date time format.
+			l_dt := system_clock.date_time_now
+			l_sec := l_dt.epoch_days (l_dt.year, l_dt.month, l_dt.day)*l_dt.seconds_in_day
+			l_sec := l_sec + l_dt.time.second_count
+			an_csid := l_sec.out
+			--an_csid := l_time.formatted_out ("yyyy/[0]mm/[0]dd [0]hh:[0]mi")
 
 			call_stack_target_objects.wipe_out
 			from

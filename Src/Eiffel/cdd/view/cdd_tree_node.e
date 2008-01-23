@@ -77,6 +77,26 @@ feature -- Status
 			definition: Result = (test_routine /= Void)
 		end
 
+	test_routine_count: INTEGER is
+			-- Number of test routines contained in subtree
+		local
+			l_cursor: DS_LINEAR_CURSOR [CDD_TREE_NODE]
+		do
+			if is_leaf then
+				Result := 1
+			else
+				l_cursor := children.new_cursor
+				from
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					Result := Result + l_cursor.item.test_routine_count
+					l_cursor.forth
+				end
+			end
+		end
+
 	has_test_class: BOOLEAN is
 			-- Is `eiffel_class' set?
 		do
