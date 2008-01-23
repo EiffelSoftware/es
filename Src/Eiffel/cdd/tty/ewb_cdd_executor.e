@@ -8,7 +8,6 @@ class
 	EWB_CDD_EXECUTOR
 
 inherit
-
 	EWB_CDD_CMD
 
 	THREAD_CONTROL
@@ -44,8 +43,6 @@ feature -- Execution
 
 				io.put_string ("Compiling interpreter...%N")
 				from
-    -- TODO: what to do with the next line? Do we need it or not?				
-	--				l_executor.cancel
 					l_executor.start
 				until
 					not l_executor.has_next_step
@@ -63,7 +60,7 @@ feature -- Execution
 				cdd_manager.test_suite.test_routine_update_actions.prune (l_tested)
 				cdd_manager.output_actions.prune (output_agent)
 			else
-				io.put_string ("Please compile project first")
+				io.error.put_string ("Please compile project first")
 			end
 		end
 
@@ -99,18 +96,18 @@ feature {NONE} -- Implementation
 			l_last: CDD_TEST_EXECUTION_RESPONSE
 		do
 			l_last := a_test_routine.outcomes.last
-			io.put_string (a_test_routine.test_class.test_class_name + "." + a_test_routine.name + "%N")
-			io.put_string ("%TSetup ")
+			io.error.put_string (a_test_routine.test_class.test_class_name + "." + a_test_routine.name + "%N")
+			io.error.put_string ("%TSetup ")
 			print_response (l_last.setup_response)
 			if l_last.setup_response.is_normal then
-				io.put_string ("%TTest ")
+				io.error.put_string ("%TTest ")
 				print_response (l_last.test_response)
 				if not l_last.test_response.is_bad then
-					io.put_string ("%TTeardown ")
+					io.error.put_string ("%TTeardown ")
 					print_response (l_last.teardown_response)
 				end
 			end
-			io.put_string ("%N")
+			io.error.put_string ("%N")
 		end
 
 	print_response (a_response: CDD_ROUTINE_INVOCATION_RESPONSE) is
@@ -119,18 +116,16 @@ feature {NONE} -- Implementation
 			a_response_not_void: a_response /= Void
 		do
 			if a_response.is_bad then
-				io.put_string ("(bad)%N")
+				io.error.put_string ("(bad)%N")
 			else
 				if a_response.is_normal then
-					io.put_string ("(normal)%N")
+					io.error.put_string ("(normal)%N")
 				else
-					io.put_string ("(exceptional)%N")
-					io.put_string ("%T%Treason:  " + meaning (a_response.exception.exception_code) + "%N")
-					io.put_string ("%T%Ttag:     " + a_response.exception.exception_tag_name + "%N")
-					io.put_string ("%T%Tclass:   " + a_response.exception.exception_class_name + "%N")
-					io.put_string ("%T%Tfeature: " + a_response.exception.exception_recipient_name + "%N")
-					-- TODO: Why is below line commented out?
-					--io.put_string ("%T%Tmessage: " + a_response. + "%N")
+					io.error.put_string ("(exceptional)%N")
+					io.error.put_string ("%T%Treason:  " + meaning (a_response.exception.exception_code) + "%N")
+					io.error.put_string ("%T%Ttag:     " + a_response.exception.exception_tag_name + "%N")
+					io.error.put_string ("%T%Tclass:   " + a_response.exception.exception_class_name + "%N")
+					io.error.put_string ("%T%Tfeature: " + a_response.exception.exception_recipient_name + "%N")
 				end
 			end
 		end
