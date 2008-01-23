@@ -251,7 +251,7 @@ feature {NONE} -- Implementation (Capturing)
 				create {DS_ARRAYED_LIST [STRING]} l_attrs.make (1)
 				l_ref_adv ?= an_object
 				check l_ref_adv_not_void: l_ref_adv /= Void end
-				l_attrs.put_first (l_ref_adv.dump_value.formatted_output)
+				l_attrs.put_first (format_output_value(l_ref_adv.dump_value.truncated_string_representation (0, -1)))
 			elseif l_class.parents_classes.there_exists (agent (x: CLASS_C): BOOLEAN do Result := x.name_in_upper.is_equal("ROUTINE") end) then
 				l_attrs := fetch_object_attributes (an_object.children, True, a_depth)
 					-- find target class for agent
@@ -404,7 +404,7 @@ feature {NONE} -- Implementation (Capturing)
 				end
 			elseif an_adv.kind = {VALUE_TYPES}.immediate_value then
 				if an_adv.dump_value.output_value (false) /= void then
-					Result := format_output_value(an_adv.dump_value.output_value (false))
+					Result := format_output_value(an_adv.dump_value.truncated_string_representation (0, -1))
 				else
 					Result := ""
 				end
@@ -516,15 +516,15 @@ feature {NONE} -- Implementation (Access)
 		local
 			i: INTEGER
 		do
-			Result := eiffel_string_out (a_string.substring (1, max_manifext_string_size.min (a_string.count)))
+			Result := eiffel_string_out (a_string.substring (1, max_manifest_string_size.min (a_string.count)))
 
 			from
-				i := max_manifext_string_size + 1
+				i := max_manifest_string_size + 1
 			until
 				i > a_string.count
 			loop
-				Result := Result + "%" + %"" + eiffel_string_out (a_string.substring (i, (i + max_manifext_string_size - 1).min (a_string.count)))
-				i := i + max_manifext_string_size
+				Result := Result + "%" + %"" + eiffel_string_out (a_string.substring (i, (i + max_manifest_string_size - 1).min (a_string.count)))
+				i := i + max_manifest_string_size
 			end
 		ensure
 			result_not_void: Result /= void
