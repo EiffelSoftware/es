@@ -121,6 +121,16 @@ feature -- Access
 			same_as_test_routines: Result = test_routines_cursor.index
 		end
 
+	pass_count: INTEGER
+			-- Number of passing tests in current execution
+			-- NOTE: `pass_count' only contains a meaningful
+			-- value if `has_next_step' is `True'
+
+	fail_count: INTEGER
+			-- Number of failing tests in current execution
+			-- NOTE: `fail_count' only contains a meaningful
+			-- value if `has_next_step' is `True'
+
 feature -- Status settings
 
 	set_filter (a_filter: like filter) is
@@ -196,6 +206,8 @@ feature -- Basic operations
 			end
 			test_routines_cursor.go_after
 			test_routines_cursor := Void
+			fail_count := 0
+			pass_count := 0
 			cdd_manager.status_update_actions.call ([update_step])
 		end
 
@@ -241,6 +253,11 @@ feature {NONE} -- Implementation (execution)
 		do
 			if proxy.last_response /= Void then
 				current_test_routine.add_outcome (proxy.last_response)
+				if proxy.last_response.is_fail then
+					fail_count := fail_count + 1
+				elseif proxy.last_response.is_pass then
+					pass_count := pass_count + 1
+				end
 				create l_list.make (1)
 				l_list.put_first (create {CDD_TEST_ROUTINE_UPDATE}.make (current_test_routine, {CDD_TEST_ROUTINE_UPDATE}.changed_code))
 				test_suite.test_routine_update_actions.call ([l_list])
@@ -256,6 +273,8 @@ feature {NONE} -- Implementation (execution)
 				proxy.stop
 				proxy := Void
 				test_routines_cursor := Void
+				fail_count := 0
+				pass_count := 0
 				cdd_manager.status_update_actions.call ([update_step])
 			else
 				if proxy.is_ready then
@@ -347,5 +366,7 @@ invariant
 	not_executing_and_compiling: not (is_executing and is_compiling)
 	has_next_step_implies_test_routines_cursor_not_void: has_next_step = (test_routines_cursor /= Void)
 	is_executing_implies_test_routines_cursor_not_off: is_executing implies not test_routines_cursor.off
+	not_has_next_step_implies_fail_count_zero: (not has_next_step) implies (fail_count = 0)
+	not_has_next_step_implies_pass_count_zero: (not has_next_step) implies (pass_count = 0)
 
 end

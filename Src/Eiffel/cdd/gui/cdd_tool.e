@@ -281,6 +281,8 @@ feature {NONE} -- Initialization
 			create l_frame
 			l_frame.set_style ({EV_FRAME_CONSTANTS}.ev_frame_lowered)
 			create testing_label
+			testing_label.set_minimum_width (100)
+			testing_label.align_text_right
 			l_frame.extend (testing_label)
 			l_status_bar.extend (l_frame)
 			l_status_bar.disable_item_expand (l_frame)
@@ -320,47 +322,27 @@ feature {NONE} -- Implementation (Basic functionality)
 			-- Update `testing_label' to current test
 			-- execution status
 		local
-			l_cursor: DS_LINEAR_CURSOR [CDD_TEST_ROUTINE]
-			l_executing: BOOLEAN
-			l_total, l_failing: INTEGER
+			l_exec: CDD_TEST_EXECUTOR
 			l_label: STRING
 		do
-			if cdd_manager.background_executor.is_executing then
-				l_executing := True
-				l_cursor := cdd_manager.background_executor.test_routines.new_cursor
-			else
-				l_cursor := tree_view.filtered_view.test_routines.new_cursor
-			end
-
-			from
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				l_total := l_total + 1
-				if not l_cursor.item.outcomes.is_empty then
-					if l_cursor.item.outcomes.last.is_fail then
-						l_failing := l_failing + 1
-					end
-				end
-				if l_executing and then
-					l_cursor.item = cdd_manager.background_executor.current_test_routine then
-					l_cursor.go_after
+			l_exec := cdd_manager.background_executor
+			if l_exec.is_executing then
+				create l_label.make (20)
+				if l_exec.fail_count > 0 then
+					testing_label.set_foreground_color (stock_colors.red)
+					l_label.append_integer (l_exec.fail_count)
+					l_label.append_character ('/')
+					l_label.append_integer (l_exec.index)
+					l_label.append (" tests fail")
 				else
-					l_cursor.forth
+					testing_label.set_foreground_color (stock_colors.black)
+					l_label.append_integer (l_exec.index)
+					l_label.append_character ('/')
+					l_label.append_integer (l_exec.test_routines.count)
+					l_label.append (" tested")
 				end
+				testing_label.set_text (l_label)
 			end
-			create l_label.make (20)
-			l_label.append_integer (l_failing)
-			l_label.append ("/")
-			l_label.append_integer (l_total)
-			l_label.append (" tests fail")
-			if l_failing > 0 then
-				testing_label.set_foreground_color (stock_colors.red)
-			else
-				testing_label.set_foreground_color (stock_colors.black)
-			end
-			testing_label.set_text (l_label)
 		end
 
 	update_status (an_update: CDD_STATUS_UPDATE) is
@@ -385,12 +367,12 @@ feature {NONE} -- Implementation (Basic functionality)
 				toggle_extraction_button.disable_select
 			when {CDD_STATUS_UPDATE}.executor_step_code then
 				l_exec := cdd_manager.background_executor
-				update_testing_label
 				if not l_exec.has_next_step then
 					--run_button.enable_sensitive
 					show_message ("Finished executing")
 					progress_bar.set_proportion (0.0)
 				else
+					update_testing_label
 					--run_button.disable_sensitive
 					if l_exec.is_compiling then
 						show_message ("Compiling interpreter")
