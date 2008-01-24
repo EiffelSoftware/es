@@ -32,18 +32,18 @@ create
 feature {NONE} -- Initialization
 
 	make (an_executable_file_name: STRING;
-			a_proxy_log_filename: STRING) is
+			a_proxy_log_file: KL_TEXT_OUTPUT_FILE) is
 			-- Create a new proxy for the interpreter found at `an_executable_file_name'.
 			-- Log communication between proxy and interpreter into a file
 			-- named `a_proxy_log_filename'.
 		require
 			an_executable_file_name_not_void: an_executable_file_name /= Void
-			a_proxy_log_filename_not_void: a_proxy_log_filename /= Void
+			a_proxy_log_file_not_void: a_proxy_log_file /= Void
 		do
 			create output_stream.make_empty
 			executable_file_name := an_executable_file_name
 			melt_path := file_system.dirname (executable_file_name)
-			create proxy_log_file.make (a_proxy_log_filename)
+			proxy_log_file := a_proxy_log_file
 			proxy_log_file.open_append
 			log_line ("-- A new proxy has been created.")
 			create parser.make

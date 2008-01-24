@@ -232,7 +232,7 @@ feature {NONE} -- Implementation (execution)
 				compiler.process_output
 			else
 				if compiler.was_successful then
-					create proxy.make (interpreter_pathname, interpreter_pathname + "_log.txt")
+					create proxy.make (interpreter_pathname, create {KL_TEXT_OUTPUT_FILE}.make (cdd_manager.testing_directory.build_path ("", "cdd_interpreter.log")))
 					proxy.start
 					select_first_test_routine
 				else

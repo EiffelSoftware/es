@@ -64,6 +64,8 @@ feature -- Basic operations
 			a_status_not_void: a_status /= Void
 			a_status_valid: a_status.is_stopped
 		do
+			a_status.set_max_depth (-1)
+			a_status.force_reload_current_call_stack
 			capture_stack_frames (a_status, a_status.current_call_stack.count)
 		end
 
@@ -404,7 +406,7 @@ feature {NONE} -- Implementation (Capturing)
 				end
 			elseif an_adv.kind = {VALUE_TYPES}.immediate_value then
 				if an_adv.dump_value.output_value (false) /= void then
-					Result := format_output_value(an_adv.dump_value.truncated_string_representation (0, -1))
+					Result := format_output_value(an_adv.output_value)
 				else
 					Result := ""
 				end

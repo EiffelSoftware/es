@@ -115,7 +115,7 @@ feature	-- Basic operations
 				from
 					i := 1
 				until
-					l_output_file /= Void or i > 99
+					l_output_file /= Void or i > max_test_cases_per_sut_class
 				loop
 					create new_class_name.make_from_string (l_prefix)
 					if i < 10 then
@@ -245,7 +245,8 @@ feature	-- Basic operations
 					cdd_manager.test_suite.add_test_class (l_new_test_class)
 				end
 			else
-				if output_stream /= Void then
+					-- In case 'start_capturing' failed there might be no closable file around
+				if output_stream /= Void and then output_stream.is_closable then
 					output_stream.close
 				end
 				output_stream := Void
@@ -327,11 +328,17 @@ feature {NONE} -- Implementation
 			-- stack id and `an_index' for call stack index.
 		require
 			initialized_and_not_failed: is_initialized and not failed
+		local
+			l_date: DATE_TIME
 		do
 			output_stream.put_line ("indexing%N")
 			output_stream.indent
-			output_stream.put_line ("description: %"Automatically extracted test class%"")
+			output_stream.put_line ("description: %"This class has been automatically created by CDD%"")
+			output_stream.put_line ("description: %"Visit " + cdd_homepage_url + " to learn more about extracted test cases%"")
+			create l_date.make_now_utc
+			output_stream.put_line ("date: %"$Date: " + l_date.formatted_out ("yyyy-[0]mm-[0]dd hh:[0]mi:[0]ss") + "%"")
 			output_stream.put_line ("author: %"EiffelStudio CDD Tool%"")
+			output_stream.put_line ("tag: %"created." + l_date.formatted_out ("yyyy-[0]mm-[0]dd") + "%"")
 			output_stream.dedent
 			output_stream.put_line ("")
 		end
@@ -354,11 +361,11 @@ feature {NONE} -- Implementation
 			output_stream.indent
 			output_stream.put_line ("rename")
 			output_stream.indent
-			output_stream.put_line ("test as test_" + a_feature.name)
+			output_stream.put_line ("test as test_" + unfix_feature_name(a_feature.name))
 			output_stream.dedent
 			output_stream.put_line ("redefine")
 			output_stream.indent
-			output_stream.put_line ("test_" + a_feature.name)
+			output_stream.put_line ("test_" + unfix_feature_name(a_feature.name))
 			output_stream.dedent
 			output_stream.put_line ("end")
 			output_stream.dedent
@@ -430,7 +437,7 @@ feature {NONE} -- Implementation
 				output_stream.put_line ("do")
 				output_stream.indent
 				if an_is_creation_call then
-					l_agent := "Result := create {" + l_class + "}." + a_feature.name
+					l_agent := "Result := create {" + l_class + "}." + unfix_feature_name(a_feature.name)
 					if a_feature.argument_count > 0 then
 						l_agent.append (" (")
 						from
@@ -456,7 +463,7 @@ feature {NONE} -- Implementation
 				output_stream.put_line ("end")
 				output_stream.dedent
 			else
-				output_stream.put_line (l_agent + " {" + l_class + "}." + a_feature.name)
+				output_stream.put_line (l_agent + " {" + l_class + "}." + unfix_feature_name(a_feature.name))
 			end
 			output_stream.dedent
 			output_stream.put_line ("end%N")
@@ -498,7 +505,7 @@ feature {NONE} -- Implementation
 		do
 			output_stream.put_line ("feature -- Testing%N")
 			output_stream.indent
-			output_stream.put_line ("test_" + a_feature.name + " is")
+			output_stream.put_line ("test_" + unfix_feature_name(a_feature.name) + " is")
 			output_stream.indent
 			output_stream.indent
 			output_stream.put_line ("-- Execute routine under test")
@@ -513,8 +520,8 @@ feature {NONE} -- Implementation
 			end
 			output_stream.put_line ("indexing")
 			output_stream.indent
-			output_stream.put_line ("tag: %"covers." + a_class.name_in_upper + "." + a_feature.name + "%"")
-			output_stream.put_line ("tag: %"failure." + a_csid + "." + a_csindex.out + ": " + a_feature.name + "%"")
+			output_stream.put_line ("tag: %"covers." + a_class.name_in_upper + "." +l_feature_name + "%"")
+			output_stream.put_line ("tag: %"failure." + a_csid + "." + a_csindex.out + ": " + l_feature_name + "%"")
 			output_stream.dedent
 			output_stream.put_line ("do")
 			output_stream.indent
@@ -538,6 +545,31 @@ feature {NONE} -- Implementation
 			-- Factory for creating CONF_LOCATION
 		once
 			create Result
+		end
+
+	unfix_feature_name (a_name: STRING): STRING is
+			-- format a feature name in order to obtain a syntactically correct name for a non-infix/prefix eiffel feature
+			-- This is necessary because prefix and infix features provide the whole "infix 'some_op'" string as name
+		require
+			a_name_not_void_nor_empty: a_name /= void and then not a_name.is_empty
+		local
+			i: INTEGER
+		do
+			from
+				i := 1
+				Result := ""
+			until
+				i > a_name.count
+			loop
+				if a_name.item (i).is_alpha_numeric then
+					Result.append_character (a_name.item (i))
+				elseif a_name.item (i).is_space then
+					Result.append_character ('_')
+				end
+				i := i + 1
+			end
+		ensure
+			result_not_void_nor_empty: Result /= void and then not a_name.is_empty
 		end
 
 invariant
