@@ -1,1 +1,0 @@
-ec -loop -config %1 -target sut < %2 > %3

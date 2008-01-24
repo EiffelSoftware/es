@@ -1,0 +1,20 @@
+CDD_TEST_ROOT_CLASS_01.test_bar
+	Setup (normal)
+	Test (exceptional)
+		reason:  Postcondition violated.
+		tag:     postcondition
+
+		class:   ROOT_CLASS
+		feature: bar
+	Teardown (normal)
+
+CDD_TEST_ROOT_CLASS_02.test_make
+	Setup (normal)
+	Test (exceptional)
+		reason:  Postcondition violated.
+		tag:     postcondition
+
+		class:   ROOT_CLASS
+		feature: bar
+	Teardown (normal)
+

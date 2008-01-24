@@ -1,0 +1,72 @@
+MY_TEST_01.test_string_equal_1
+	Setup (normal)
+	Test (exceptional)
+		reason:  Developer exception.
+		tag:     Equal Strings Must BE
+   expected: Hello
+   but  got: Hallo
+
+		class:   EXCEPTIONS
+		feature: eraise
+	Teardown (normal)
+
+MY_TEST_01.test_string_equal_2
+	Setup (normal)
+	Test (normal)
+	Teardown (normal)
+
+MY_TEST_02.test_linux
+	Setup (normal)
+	Test (exceptional)
+		reason:  Postcondition violated.
+		tag:     is_buggy
+
+		class:   MY_TEST_02
+		feature: test_linux
+	Teardown (normal)
+
+MY_TEST_02.test_linux2
+	Setup (normal)
+	Test (exceptional)
+		reason:  Postcondition violated.
+		tag:     not_buggy
+
+		class:   MY_TEST_02
+		feature: test_linux2
+	Teardown (normal)
+
+MY_TEST_02.test_windows2
+	Setup (normal)
+	Test (exceptional)
+		reason:  Precondition violated.
+		tag:     really_weird
+
+		class:   MY_TEST_02
+		feature: test_windows2
+	Teardown (normal)
+
+MY_TEST_02.test_macos
+	Setup (normal)
+	Test (normal)
+	Teardown (normal)
+
+CDD_TEST_ROOT_CLASS_01.test_bar
+	Setup (normal)
+	Test (exceptional)
+		reason:  Postcondition violated.
+		tag:     false_postcondition
+
+		class:   ROOT_CLASS
+		feature: bar
+	Teardown (normal)
+
+CDD_TEST_ROOT_CLASS_02.test_make
+	Setup (normal)
+	Test (exceptional)
+		reason:  Postcondition violated.
+		tag:     false_postcondition
+
+		class:   ROOT_CLASS
+		feature: bar
+	Teardown (normal)
+

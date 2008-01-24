@@ -1,0 +1,14 @@
+[!!!FAIL] agent_001  Files ./_RESULTS_/expected/agent_001.txt and ./_RESULTS_/outcome/agent_001.txt differ
+[PASS] array_argument_001  Files ./_RESULTS_/expected/array_argument_001.txt and ./_RESULTS_/outcome/array_argument_001.txt are identical
+[PASS] escape_char_extraction_001  Files ./_RESULTS_/expected/escape_char_extraction_001.txt and ./_RESULTS_/outcome/escape_char_extraction_001.txt are identical
+[PASS] false_postcondition_001  Files ./_RESULTS_/expected/false_postcondition_001.txt and ./_RESULTS_/outcome/false_postcondition_001.txt are identical
+[PASS] false_precondition_001  Files ./_RESULTS_/expected/false_precondition_001.txt and ./_RESULTS_/outcome/false_precondition_001.txt are identical
+[PASS] frozen_special_001  Files ./_RESULTS_/expected/frozen_special_001.txt and ./_RESULTS_/outcome/frozen_special_001.txt are identical
+[PASS] generic_class_001  Files ./_RESULTS_/expected/generic_class_001.txt and ./_RESULTS_/outcome/generic_class_001.txt are identical
+[PASS] infix_001  Files ./_RESULTS_/expected/infix_001.txt and ./_RESULTS_/outcome/infix_001.txt are identical
+[PASS] manifest_string_001  Files ./_RESULTS_/expected/manifest_string_001.txt and ./_RESULTS_/outcome/manifest_string_001.txt are identical
+[PASS] manual_test_001  Files ./_RESULTS_/expected/manual_test_001.txt and ./_RESULTS_/outcome/manual_test_001.txt are identical
+[PASS] mixed_test_types_001  Files ./_RESULTS_/expected/mixed_test_types_001.txt and ./_RESULTS_/outcome/mixed_test_types_001.txt are identical
+[PASS] non_call_target_obj_001  Files ./_RESULTS_/expected/non_call_target_obj_001.txt and ./_RESULTS_/outcome/non_call_target_obj_001.txt are identical
+Only in ./_RESULTS_/expected: stress_test_001.txt
+[PASS] tuple_001  Files ./_RESULTS_/expected/tuple_001.txt and ./_RESULTS_/outcome/tuple_001.txt are identical

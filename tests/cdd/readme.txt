@@ -1,19 +1,32 @@
-Create your testcases in the same manner as the existing ones:
 
-- Each subdirectory of the directory containing this file represents one testcase, containing one system under test
+CDD SYSTEM LEVEL TESTS
 
-- !!!!!!! IMPORTANT: the project file must be named "config.ecf" (otherwise testcase is not found)
-- !!!!!!! EVEN MORE IMPORTANT: the project must provide a target "sut", which is chosen as target for compilation of system under test (otherwise infinity loop occurs currently...)
+Usage:
+Invoke the 'help' target of the build.eant file to get information on how to use the script
 
-- So far now oracle is provided, and there is no way of declaring expected results
+Requirements:
+bash, rm, cp, sed, diff, echo (linux version), tee, 
+-> on windows tested using Cygwin
 
+How to add a test case:
 
-Running the testcases:
+- Create a new subdirectory holding the system under test (sut)
+- The name of the subdirectory is the name of the test case
+- the subdirectory needs to contain a 'config.ecf' file
+- sut's with a .ecf file with an other name than 'config.ecf' will be ignored by the script 
+- the sut HAS TO PROVIDE A TARGET 'sut' ! (this is most important, since an infinity loop will occur when running the script!!!)
 
-- Execute the build.eant script. Target 'test_all' deletes all compilation files + result files, and executes all test cases from scratch
+The "regression" oracle
 
-- Currently execution is supported on Linux/Unix operation systems. Excution on windows requires some Linux-like shell and support for the 'rm' command (both provided by Cygwin, has been tested)
+There is an oracle provided based on 'diff'. The actual output of a test case run is compared with a reference output.
+In order to obtain such a reference output:
 
+- Add the new test case
+- Run the test case (geant test -A test_name=<name_of_test_case>)
+- in the corresponding subdirectory a file 'zzz.outcome' will be produced
+- Check manually if the 'zzz.outcome' file is correct
+- If the 'zzz.outcome' reflects the proper result for the testcase, rename it to 'zzz.expected'
+- The content of 'zzz.expected' will now serve as reference for all future test runs
 
 
 

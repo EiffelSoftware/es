@@ -1,53 +1,145 @@
-<project name="test_all" default="help">
+<project name="cdd_system_test_suite" default="help">
 
   <target name="help">
-    <echo message="usage:"/>
-    <echo message="   geant test_all"/>
-    <echo message="   geant clobber"/>
+    <echo message=""/>
+    <echo message="TARGETS:"/>
+    <echo message=""/>
+    <echo message="clean"/>
+    <echo message="   Clean up all generated files for specific test case."/>
+    <echo message="   Provide name of test case as argument 'test_name'."/>
+    <echo message="   -&gt; usage: geant clean -A test_name=&lt;name of test case&gt;"/>
+    <echo message=""/>
+    <echo message="test"/>
+    <echo message="   Executes specific test case."/>
+    <echo message="   Always cleans test case before execution."/>
+    <echo message="   Provide name of test case as argument 'test_name'."/>
+    <echo message="   -&gt; usage: geant test -A test_name=&lt;name of test case&gt;"/>
+    <echo message=""/>
+    <echo message="clobber"/>
+    <echo message="   Removes all generated files of all testcases."/>
+    <echo message="   This includes the current results in subdirectory '_RESULTS_'."/>
+    <echo message="   It does NOT include archived results in subdirectory '_RESULTS_'."/>
+    <echo message="   -&gt; usage: geant clobber"/>
+    <echo message=""/>
+    <echo message="test_all"/>
+    <echo message="   Run all test cases."/>
+    <echo message="   The actual .outcome and .expected files are copied"/>
+    <echo message="   into the '_RESULT_' subdirectory and compared."/>
+    <echo message="   Always &quot;clobbers&quot; the test cases before execution."/>
+    <echo message="   -&gt; usage: geant test_all"/>
+    <echo message=""/>
+    <echo message="archive_results"/>
+    <echo message="   Move actual results in _RESULT_ directory into archive folder."/>
+    <echo message="   The results won't be automatically deleted after having been archived."/>
+    <echo message="   -&gt; usage: geant archive_results"/>
   </target>
+  
+  <target name="clean">
+    <description>
+Clean up all generated files for specific test case.
+Provide name of test case as argument 'test_name'.
+    </description>
+    <argument name="test_name" />
+    
+    <echo message="cleaning up ${test_name} ..."/>
+    
+    <delete>
+      <fileset include="${test_name}/*.@(rc|outcome)" filename_directory="." />
+    </delete>
+    <delete>
+      <fileset include="${test_name}/exception_trace.log" filename_directory="." />
+    </delete>
+    <delete directory="${test_name}/EIFGENs" />
+    <delete directory="${test_name}/cdd_tests" />
+  </target>
+  
+  <target name="test">
+    <description>
+Executes specific test case.
+Always cleans test case before execution.
+Provide name of test case as argument 'test_name'.
+    </description>
+    <argument name="test_name" />
+    
+    <geant target="clean" arguments="${test_name}" />
+    
+    <echo message="Running test case ${test_name} ..."/>
+    
+    <exec executable="echo ./execute_ec.sh ${test_name} | bash" />
+    
+    <exec executable="echo echo -e &quot;\n\n\nTEST RESULT:\n&quot; | bash" />
+    <exec executable="diff -q -s ./${test_name}/zzz.expected ./${test_name}/zzz.outcome | sed -r 's/(^Files.*differ)/[!!!FAIL] \1/g' | sed -r 's/(^Files.*identical)/[PASS] \1/g' | sed -r 's/(^.*)( Files \.\/)(.*)(\/zzz\.expected and \.\/.*)/\1 \3 \2\3\4/g'" accept_errors="true" />
+    <exec executable="diff ./${test_name}/zzz.expected ./${test_name}/zzz.outcome" accept_errors="true" />
+  </target>
+  
 
   <target name="clobber">
     <description>
-      Remove all generated files.
+Removes all generated files of all testcases.
+This includes the current results in subdirectory '_RESULTS_'.
+It does NOT include archived results in subdirectory '_RESULTS_'.
     </description>
     <delete>
-      <fileset include="**/*.@(rc|outcome)" filename_directory="." />
+      <fileset include="*/*.@(rc|outcome)" filename_directory="." />
     </delete>
     <delete>
-      <fileset include="**/exception_trace.log" filename_directory="." />
+      <fileset include="*/exception_trace.log" filename_directory="." />
     </delete>
     <exec executable="rm -fr ${fs.mapped_filename}/EIFGENs">
-      <fileset include="@(**/config.ecf)" force="false">
+      <fileset include="@(*/config.ecf)" force="true">
 	      <map type="glob" from="*/config.ecf" to="*" />
       </fileset>
     </exec>
     <exec executable="rm -fr ${fs.mapped_filename}/cdd_tests">
-      <fileset include="@(**/config.ecf)" force="false">
+      <fileset include="@(*/config.ecf)" force="true">
 	      <map type="glob" from="*/config.ecf" to="*" />
       </fileset>
     </exec>
+    <delete file="./_RESULTS_/result.txt" />
+    <delete directory="./_RESULTS_/expected" />
+    <delete directory="./_RESULTS_/outcome" />
   </target>
 
-  <target name="test_all_windows" if="${is_windows}">
-    <description> test all test cases in call directory (windows) </description>
-    <exec executable="execute_ec.bat ${fs.filename} ec_loop_input.txt ${fs.mapped_filename}${path_separator}zzz.outcome" accept_errors="true">
-      <fileset include="@(**/config.ecf)" force="true">
-			  <map type="glob" from="*/config.ecf" to="*" />
-      </fileset>
-    </exec>
-  </target>
-
-  <target name="test_all_unix" if="${is_unix}">
-    <description> test all test cases in call directory (unix) </description>
-    <exec executable="./execute_ec.sh ${fs.filename} ./ec_loop_input.txt ./${fs.mapped_filename}${path_separator}zzz.outcome" accept_errors="true">
-      <fileset include="@(**/config.ecf)" force="true">
+  <target name="test_all" depend="clobber">
+    <description>
+Run all test cases.
+The actual .outcome and .expected files are copied
+into the '_RESULT_' subdirectory and compared.
+Always &quot;clobbers&quot; the test cases before execution.
+		</description>
+		
+    <exec executable="echo ./execute_ec.sh ${fs.mapped_filename} | bash" accept_errors="true">
+      <fileset include="@(*/config.ecf)" force="true">
 	      <map type="glob" from="*/config.ecf" to="*" />
       </fileset>
     </exec>
+    
+    <copy to_directory="." force="true">
+      <fileset include="@(*/zzz.expected)" force="true">
+	      <map type="glob" from="*/zzz.expected" to="./_RESULTS_/expected/*.txt" />
+      </fileset>
+    </copy>
+    
+    <copy to_directory="." force="true">
+      <fileset include="@(*/zzz.outcome)" force="true">
+	      <map type="glob" from="*/zzz.outcome" to="./_RESULTS_/outcome/*.txt" />
+      </fileset>
+    </copy>
+    
+    <exec executable="echo echo -e &quot;\n\n\nTEST RESULT:\n&quot; | bash" />
+    <exec executable="diff -q -s ./_RESULTS_/expected ./_RESULTS_/outcome | sed -r 's/(^Files.*differ)/[!!!FAIL] \1/g' | sed -r 's/(^Files.*identical)/[PASS] \1/g' | sed -r 's/(^.*)( Files \.\/_RESULTS_\/expected\/)(.*)(\.txt and \.\/.*)/\1 \3 \2\3\4/g' | tee ./_RESULTS_/result.txt" accept_errors="true"/>
+    <exec executable="echo echo -e &quot;\n\nDETAILS:\n&quot; | bash" />
+    <exec executable="diff ./_RESULTS_/expected ./_RESULTS_/outcome" accept_errors="true" />
+
   </target>
 
-  <target name="test_all" depend="clobber, test_all_unix, test_all_windows">
-    <description> test all test cases in call directory </description>
+  <target name="archive_results" >
+    <description>
+Move actual results in _RESULT_ directory into archive folder.
+The results won't be automatically deleted after having been archived.
+		</description>
+		
+    <exec executable="echo ./archive_results.sh | bash" accept_errors="true" />
   </target>
 
 </project>

@@ -1,0 +1,30 @@
+CDD_TEST_SOME_GENERIC_CLASS_01.test_foo
+	Setup (normal)
+	Test (exceptional)
+		reason:  Postcondition violated.
+		tag:     false_postcondition
+
+		class:   SOME_GENERIC_CLASS
+		feature: foo
+	Teardown (normal)
+
+CDD_TEST_ROOT_CLASS_01.test_bar
+	Setup (normal)
+	Test (exceptional)
+		reason:  Postcondition violated.
+		tag:     false_postcondition
+
+		class:   SOME_GENERIC_CLASS
+		feature: foo
+	Teardown (normal)
+
+CDD_TEST_ROOT_CLASS_02.test_make
+	Setup (normal)
+	Test (exceptional)
+		reason:  Postcondition violated.
+		tag:     false_postcondition
+
+		class:   SOME_GENERIC_CLASS
+		feature: foo
+	Teardown (normal)
+

@@ -1,0 +1,10 @@
+CDD_TEST_ROOT_CLASS_01.test_make
+	Setup (normal)
+	Test (exceptional)
+		reason:  Precondition violated.
+		tag:     false_precondition
+
+		class:   ROOT_CLASS
+		feature: bar
+	Teardown (normal)
+
