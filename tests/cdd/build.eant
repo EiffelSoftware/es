@@ -34,7 +34,40 @@
     <echo message="   -&gt; usage: geant archive_results"/>
   </target>
   
-  <target name="clean">
+  <target name="init_windows" if="${is_windows}">
+    <description> initialize commands for windows os </description>
+    
+    <set name="run_execute_ec_1" value="echo ./execute_ec.sh " />
+    <set name="run_execute_ec_2" value=" | bash" />
+    
+    <set name="output_result_header_no_file" value="echo echo -e &quot;\n\n\nTEST RESULT:\n&quot; | bash" />
+    
+    <set name="output_result_header_plus_file" value="echo echo -e &quot;\n\n\nTEST RESULT:\n&quot; | bash | tee ./_RESULTS_/result.txt" />
+    <set name="output_result_details_header_plus_file" value="echo echo -e &quot;\n\nDETAILS:\n&quot; | bash | tee -a ./_RESULTS_/result.txt" />
+    
+    <set name="run_archive_results" value="echo ./archive_results.sh | bash" />
+  </target>
+  
+  <target name="init_unix" if="${is_unix}">
+    <description> initialize commands for unix os </description>
+    
+    <set name="run_execute_ec_1" value="./execute_ec.sh " />
+    <set name="run_execute_ec_2" value="" />
+    
+    <set name="output_result_header_no_file" value="echo -e &quot;\n\n\nTEST RESULT:\n&quot;" />
+    
+    <set name="output_result_header_plus_file" value="echo -e &quot;\n\n\nTEST RESULT:\n&quot; | tee ./_RESULTS_/result.txt" />
+    <set name="output_result_details_header_plus_file" value="echo -e &quot;\n\nDETAILS:\n&quot; | tee -a ./_RESULTS_/result.txt" />
+    
+    <set name="run_archive_results" value="echo ./archive_results.sh | bash" />
+  </target>
+  
+  <target name="init" depend="init_windows, init_unix">
+    <description> initialize commands depending on -nix/windows os </description>
+  </target>
+  
+  
+  <target name="clean" depend="init">
     <description>
 Clean up all generated files for specific test case.
 Provide name of test case as argument 'test_name'.
@@ -53,7 +86,7 @@ Provide name of test case as argument 'test_name'.
     <delete directory="${test_name}/cdd_tests" />
   </target>
   
-  <target name="test">
+  <target name="test" depend="init">
     <description>
 Executes specific test case.
 Always cleans test case before execution.
@@ -65,15 +98,15 @@ Provide name of test case as argument 'test_name'.
     
     <echo message="Running test case ${test_name} ..."/>
     
-    <exec executable="echo ./execute_ec.sh ${test_name} | bash" />
+    <exec executable="${run_execute_ec_1}${test_name}${run_execute_ec_2}" />
     
-    <exec executable="echo echo -e &quot;\n\n\nTEST RESULT:\n&quot; | bash" />
+    <exec executable="${output_result_header_no_file}" />
     <exec executable="diff -q -s ./${test_name}/zzz.expected ./${test_name}/zzz.outcome | sed -r 's/(^Files.*differ)/[!!!FAIL] \1/g' | sed -r 's/(^Files.*identical)/[PASS] \1/g' | sed -r 's/(^.*)( Files \.\/)(.*)(\/zzz\.expected and \.\/.*)/\1 \3 \2\3\4/g'" accept_errors="true" />
     <exec executable="diff ./${test_name}/zzz.expected ./${test_name}/zzz.outcome" accept_errors="true" />
   </target>
   
 
-  <target name="clobber">
+  <target name="clobber" depend="init">
     <description>
 Removes all generated files of all testcases.
 This includes the current results in subdirectory '_RESULTS_'.
@@ -108,7 +141,7 @@ into the '_RESULT_' subdirectory and compared.
 Always &quot;clobbers&quot; the test cases before execution.
 		</description>
 		
-    <exec executable="echo ./execute_ec.sh ${fs.mapped_filename} | bash" accept_errors="true">
+    <exec executable="${run_execute_ec_1}${fs.mapped_filename}${run_execute_ec_2}" accept_errors="true">
       <fileset include="@(*/config.ecf)" force="true">
 	      <map type="glob" from="*/config.ecf" to="*" />
       </fileset>
@@ -126,20 +159,20 @@ Always &quot;clobbers&quot; the test cases before execution.
       </fileset>
     </copy>
     
-    <exec executable="echo echo -e &quot;\n\n\nTEST RESULT:\n&quot; | bash" />
-    <exec executable="diff -q -s ./_RESULTS_/expected ./_RESULTS_/outcome | sed -r 's/(^Files.*differ)/[!!!FAIL] \1/g' | sed -r 's/(^Files.*identical)/[PASS] \1/g' | sed -r 's/(^.*)( Files \.\/_RESULTS_\/expected\/)(.*)(\.txt and \.\/.*)/\1 \3 \2\3\4/g' | tee ./_RESULTS_/result.txt" accept_errors="true"/>
-    <exec executable="echo echo -e &quot;\n\nDETAILS:\n&quot; | bash" />
-    <exec executable="diff ./_RESULTS_/expected ./_RESULTS_/outcome" accept_errors="true" />
+    <exec executable="${output_result_header_plus_file}" />
+    <exec executable="diff -q -s ./_RESULTS_/expected ./_RESULTS_/outcome | sed -r 's/(^Files.*differ)/[!!!FAIL] \1/g' | sed -r 's/(^Files.*identical)/[PASS] \1/g' | sed -r 's/(^.*)( Files \.\/_RESULTS_\/expected\/)(.*)(\.txt and \.\/.*)/\1 \3 \2\3\4/g' | tee -a ./_RESULTS_/result.txt" accept_errors="true"/>
+    <exec executable="${output_result_details_header_plus_file}" />
+    <exec executable="diff ./_RESULTS_/expected ./_RESULTS_/outcome | tee -a ./_RESULTS_/result.txt" accept_errors="true" />
 
   </target>
 
-  <target name="archive_results" >
+  <target name="archive_results" depend="init">
     <description>
 Move actual results in _RESULT_ directory into archive folder.
 The results won't be automatically deleted after having been archived.
 		</description>
 		
-    <exec executable="echo ./archive_results.sh | bash" accept_errors="true" />
+    <exec executable="${run_archive_results}" accept_errors="true" />
   </target>
 
 </project>
