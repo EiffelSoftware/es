@@ -336,6 +336,7 @@ feature {NONE} -- Implementation
 			process.redirect_input_to_stream
 			process.redirect_output_to_agent (agent stdout_reader.put_string)
 			process.redirect_error_to_agent (agent stderr_reader.put_string)
+			process.set_hidden (True)
 			process.launch
 			-- TODO: both process.launch and process.is_running must be true, otherwise report error.
 		end

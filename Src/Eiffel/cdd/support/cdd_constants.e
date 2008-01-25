@@ -59,6 +59,8 @@ feature -- Project constants
 
 	cdd_homepage_url: STRING is "http://dev.eiffel.com/CddBranch"
 
+	cdd_tester_id_evironment_variable: STRING is "CDD_TESTER_ID"
+
 feature -- TTY
 
 	confirm_enabling: STRING is "CDD is currently enabled, would you like to%Ncontinue having CDD enabled"

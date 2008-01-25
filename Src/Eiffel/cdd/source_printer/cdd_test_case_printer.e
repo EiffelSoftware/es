@@ -85,6 +85,8 @@ feature	-- Basic operations
 			l_dir: KL_DIRECTORY
 			l_loc: CONF_LOCATION
 			i: INTEGER
+			l_integer_string: STRING
+			l_tester_id_string: STRING
 		do
 			failed := False
 			printed_objects := 0
@@ -118,11 +120,18 @@ feature	-- Basic operations
 					l_output_file /= Void or i > max_test_cases_per_sut_class
 				loop
 					create new_class_name.make_from_string (l_prefix)
-					if i < 10 then
-						new_class_name.append_character ('0')
+					create l_integer_string.make_filled ('0', max_test_cases_per_sut_class.out.count)
+					l_integer_string.replace_substring (i.out, (max_test_cases_per_sut_class.out.count - i.out.count) + 1, max_test_cases_per_sut_class.out.count)
+					new_class_name.append_string (l_integer_string)
+					l_tester_id_string := environment_impl.get (cdd_tester_id_evironment_variable)
+					if l_tester_id_string /= void then
+						new_class_name.append_character ('_')
+						l_tester_id_string.to_upper
+						new_class_name.append_string (l_tester_id_string)
 					end
-					new_class_name.append (i.out)
+
 					create l_output_file.make (l_loc.build_path (new_class_path, new_class_name.as_lower + ".e"))
+
 					if l_output_file.exists then
 						l_output_file := Void
 					end
@@ -330,6 +339,7 @@ feature {NONE} -- Implementation
 			initialized_and_not_failed: is_initialized and not failed
 		local
 			l_date: DATE_TIME
+			l_uuid: UUID
 		do
 			output_stream.put_line ("indexing%N")
 			output_stream.indent
@@ -338,6 +348,7 @@ feature {NONE} -- Implementation
 			create l_date.make_now_utc
 			output_stream.put_line ("date: %"$Date: " + l_date.formatted_out ("yyyy-[0]mm-[0]dd hh:[0]mi:[0]ss") + "%"")
 			output_stream.put_line ("author: %"EiffelStudio CDD Tool%"")
+			output_stream.put_line ("id: %"" + uuid_generator.generate_uuid.out + "%"")
 			output_stream.put_line ("tag: %"created." + l_date.formatted_out ("yyyy-[0]mm-[0]dd") + "%"")
 			output_stream.dedent
 			output_stream.put_line ("")
@@ -394,7 +405,7 @@ feature {NONE} -- Implementation
 			output_stream.dedent
 			output_stream.put_line ("do")
 			output_stream.indent
-			l_class := an_adv.dump_value.generating_type_representation (True) -- a_feature.associated_class.name_in_upper
+			l_class := an_adv.dump_value.generating_type_representation (True)
 			l_agent := "routine_under_test := agent"
 			l_is_fix := a_feature.is_infix or a_feature.is_prefix
 			if an_is_creation_call or l_is_fix then
@@ -571,6 +582,26 @@ feature {NONE} -- Implementation
 		ensure
 			result_not_void_nor_empty: Result /= void and then not a_name.is_empty
 		end
+
+feature {NONE} -- Implementation
+
+	uuid_generator: UUID_GENERATOR is
+			-- UUID generator for creating uuid's
+		once
+			create Result
+		ensure
+			not_void: Result /= Void
+		end
+
+	environment_impl: EXECUTION_ENVIRONMENT is
+			-- Execution environment impl
+		once
+			create Result
+		ensure
+			environment_impl_not_void: Result /= Void
+		end
+
+
 
 invariant
 	initialized_and_not_failed_implies_valid_class_name:

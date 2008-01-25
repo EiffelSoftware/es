@@ -533,17 +533,6 @@ feature {NONE} -- Implementation (Access)
 		end
 
 
-feature {NONE} -- Implementation
-
-	uuid_generator: UUID_GENERATOR is
-			-- UUID generator for creating uuid's
-		once
-			create Result
-		ensure
-			not_void: Result /= Void
-		end
-
-
 invariant
 	cdd_manager_not_void: cdd_manager /= Void
 	capture_observers_not_void: capture_observers /= Void
