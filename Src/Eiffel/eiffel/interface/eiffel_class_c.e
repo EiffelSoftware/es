@@ -1979,15 +1979,16 @@ feature -- Supplier checking
 					-- We could not find class of name `cl_name', but it does not mean
 					-- that we actually need the class, as maybe, at the end of
 					-- the compilation, Current might not be needed anymore.
-				if is_test_class and not is_live_test_class (Current, universe.target) then
-					-- Ignore errors in test case classes. (They shouldn't prevent the system from compiling)
-					-- Warning: No other class must be depend on such errenous classes and their code must not
-					-- be brought to execution.
-					ignore_test_class
-					system.remove_class (Current)
-				else
+					-- TODO: uncomment these lines again if compilation errors for tests are handled properly
+--				if is_test_class and not is_live_test_class (Current, universe.target) then
+--					-- Ignore errors in test case classes. (They shouldn't prevent the system from compiling)
+--					-- Warning: No other class must be depend on such errenous classes and their code must not
+--					-- be brought to execution.
+--					ignore_test_class
+--					system.remove_class (Current)
+--				else
 					system.record_potential_vtct_error (Current, cl_name)
-				end
+--				end
 			end
 		end
 
