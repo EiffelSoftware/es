@@ -121,7 +121,7 @@ feature {NONE} -- Status setting
 	disable_observing is
 			-- Disable auto update mode.
 		do
-			filtered_view.change_actions.prune (change_agent)
+			filtered_view.change_actions.prune_all (change_agent)
 			filtered_view.remove_client
 			wipe_out_nodes_cache
 		end

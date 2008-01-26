@@ -160,7 +160,7 @@ feature {NONE} -- Status setting
 	disable_observing is
 			-- Disable auto update mode.
 		do
-			test_suite.test_routine_update_actions.prune (change_agent)
+			test_suite.test_routine_update_actions.prune_all (change_agent)
 			wipe_out_test_routines_cache
 		end
 
