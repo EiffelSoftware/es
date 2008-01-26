@@ -13,8 +13,6 @@ inherit
 		rename
 			title_for_pre as title
 		redefine
-			build_mini_toolbar,
-			mini_toolbar,
 			internal_recycle
 		end
 
@@ -56,34 +54,27 @@ feature {NONE} -- Initialization
 
 			create widget
 
-			build_mini_toolbar
 			build_filter_box
 			build_toolbar
 			build_grids
 			build_status_bar
+
+			if cdd_manager.is_project_initialized then
+				if cdd_manager.is_executing_enabled then
+					toggle_execution_button.enable_select
+				else
+					toggle_execution_button.disable_select
+				end
+				if cdd_manager.is_extracting_enabled then
+					toggle_extraction_button.enable_select
+				end
+			else
+				debug_button.disable_sensitive
+				toggle_extraction_button.disable_sensitive
+				toggle_execution_button.disable_sensitive
+			end
 		ensure then
 			cdd_manager_set: cdd_manager = develop_window.eb_debugger_manager.cdd_manager
-		end
-
-	build_mini_toolbar is
-			-- Create widgets for displaying a tool bar
-		local
-			l_sep: SD_TOOL_BAR_SEPARATOR
-		do
-			create mini_toolbar.make
-
-			create toggle_extraction_button.make
-			toggle_extraction_button.set_tooltip ("Enable/Disable extraction")
-			toggle_extraction_button.set_pixmap (pixmaps.mini_pixmaps.general_toogle_icon)
-			toggle_extraction_button.select_actions.extend (agent toggle_extraction)
-
-			mini_toolbar.extend (toggle_extraction_button)
-			create l_sep.make
-			mini_toolbar.extend (l_sep)
-
-			mini_toolbar.compute_minimum_size
-		ensure then
-			mini_toolbar_not_void: mini_toolbar /= Void
 		end
 
 	build_filter_box is
@@ -121,7 +112,7 @@ feature {NONE} -- Initialization
 			filter_box.select_actions.extend (agent select_filter_text)
 			filter_box.drop_actions.extend (agent drop_class_on_filter)
 
-			create toggle_filter_button.make_with_text ("Exec Set")
+			create toggle_filter_button.make_with_text ("Restrict")
 			toggle_filter_button.select_actions.extend (agent toggle_filter)
 			toggle_filter_button.set_tooltip ("Only execute visible test routines")
 			--l_button.set_pixmap (pixmaps.icon_pixmaps.debug_stop_icon)
@@ -144,7 +135,6 @@ feature {NONE} -- Initialization
 			l_toolbar: EV_TOOL_BAR
 			l_sep: EV_TOOL_BAR_SEPARATOR
 			l_button: EV_TOOL_BAR_BUTTON
-			l_tbutton: EV_TOOL_BAR_TOGGLE_BUTTON
 			l_label: EV_LABEL
 		do
 			create l_hbox
@@ -155,9 +145,6 @@ feature {NONE} -- Initialization
 			debug_button.select_actions.extend (agent debug_test_routine)
 			debug_button.set_tooltip ("Debug selected test routine")
 			--debug_button.set_pixmap (pixmaps.mini_pixmaps.general_next_icon)
-			if not cdd_manager.is_project_initialized then
-				debug_button.disable_sensitive
-			end
 			l_toolbar.extend (debug_button)
 
 			create l_sep
@@ -171,17 +158,17 @@ feature {NONE} -- Initialization
 			create l_sep
 			l_toolbar.extend (l_sep)
 
-			create l_tbutton.make_with_text ("Exe")
-			l_tbutton.set_tooltip ("Turn background execution on/off")
-			--l_tbutton.set_pixmap (pixmaps.icon_pixmaps.debug_run_without_breakpoint_icon)
-			l_toolbar.extend (l_tbutton)
-			l_tbutton.enable_select
-
-			create l_tbutton.make_with_text ("Ext")
-			l_tbutton.set_tooltip ("Turn extraction of new test cases on/off")
+			create toggle_execution_button.make_with_text ("Exe")
+			toggle_execution_button.select_actions.extend (agent toggle_execution)
+			toggle_execution_button.set_tooltip ("Enable/Disable automatic background execution of tests")
 			--l_tbutton.set_pixmap (pixmaps.icon_pixmaps.tool_breakpoints_icon)
-			l_toolbar.extend (l_tbutton)
-			l_tbutton.enable_select
+			l_toolbar.extend (toggle_execution_button)
+
+			create toggle_extraction_button.make_with_text ("Ext")
+			toggle_extraction_button.select_actions.extend (agent toggle_extraction)
+			toggle_extraction_button.set_tooltip ("Enable/Disable automatic extraction of new test cases")
+			--l_tbutton.set_pixmap (pixmaps.icon_pixmaps.debug_run_without_breakpoint_icon)
+			l_toolbar.extend (toggle_extraction_button)
 
 			l_hbox.extend (l_toolbar)
 
@@ -192,11 +179,13 @@ feature {NONE} -- Initialization
 			create tree_view_box
 			tree_view_box.disable_edit
 			tree_view_box.set_minimum_width (100)
-			tree_view_box.extend (create {EV_LIST_ITEM}.make_with_text ("Testcase"))
-			tree_view_box.extend (create {EV_LIST_ITEM}.make_with_text ("Target"))
+			tree_view_box.extend (create {EV_LIST_ITEM}.make_with_text ("Type"))
 			tree_view_box.extend (create {EV_LIST_ITEM}.make_with_text ("Outcome"))
-			tree_view_box.extend (create {EV_LIST_ITEM}.make_with_text ("Tags"))
+			tree_view_box.extend (create {EV_LIST_ITEM}.make_with_text ("Testcase"))
+			tree_view_box.extend (create {EV_LIST_ITEM}.make_with_text ("Tested Class"))
+			tree_view_box.extend (create {EV_LIST_ITEM}.make_with_text ("Tag"))
 			tree_view_box.extend (create {EV_LIST_ITEM}.make_with_text ("Failure"))
+			tree_view_box.i_th (3).enable_select
 			l_hbox.extend (tree_view_box)
 			l_hbox.disable_item_expand (tree_view_box)
 			tree_view_box.select_actions.extend (agent select_view)
@@ -255,9 +244,9 @@ feature {NONE} -- Initialization
 			l_notebook.set_item_text (l_cell, "Related")
 
 			l_split_area.extend (l_notebook)
-			l_split_area.set_proportion (0.7)
 
 			widget.extend (l_split_area)
+			l_split_area.set_proportion (0.7)
 		end
 
 	build_status_bar is
@@ -356,15 +345,22 @@ feature {NONE} -- Implementation (Basic functionality)
 		do
 			inspect
 				an_update.code
-			when {CDD_STATUS_UPDATE}.project_initialize_code then
-				debug_button.enable_sensitive
-				toggle_filter_button.enable_sensitive
-			when {CDD_STATUS_UPDATE}.enable_extracting_code then
-				show_message ("Extraction enabled")
-				toggle_extraction_button.enable_select
-			when {CDD_STATUS_UPDATE}.disable_extracting_code then
-				show_message ("Extraction disabled")
-				toggle_extraction_button.disable_select
+			when {CDD_STATUS_UPDATE}.manager_update_code then
+				if cdd_manager.is_project_initialized then
+					debug_button.enable_sensitive
+					toggle_extraction_button.enable_sensitive
+					toggle_execution_button.enable_sensitive
+					if cdd_manager.is_extracting_enabled then
+						toggle_extraction_button.enable_select
+					else
+						toggle_extraction_button.disable_select
+					end
+					if cdd_manager.is_executing_enabled then
+						toggle_execution_button.enable_select
+					else
+						toggle_execution_button.disable_select
+					end
+				end
 			when {CDD_STATUS_UPDATE}.executor_step_code then
 				l_exec := cdd_manager.background_executor
 				if not l_exec.has_next_step then
@@ -402,7 +398,6 @@ feature {NONE} -- Implementation (Basic functionality)
 			when {CDD_STATUS_UPDATE}.execution_error_code then
 				show_message ("An execution error has occured...")
 			else
-				show_message ("Unknown update code: " + an_update.code.out)
 			end
 		end
 
@@ -420,9 +415,6 @@ feature {NONE} -- Implementation (Basic functionality)
 		end
 
 feature {NONE} -- Implementation (Widgets)
-
-	mini_toolbar: SD_TOOL_BAR
-			-- Toolbar for control buttons
 
 	filter_box: EV_COMBO_BOX
 			-- Combo box for defining filter
@@ -450,8 +442,11 @@ feature {NONE} -- Implementation (Buttons)
 	debug_button: EV_TOOL_BAR_BUTTON
 			-- Button for running test executor
 
-	toggle_extraction_button: SD_TOOL_BAR_TOGGLE_BUTTON
-			-- Button for examinating a test case
+	toggle_extraction_button: EV_TOOL_BAR_TOGGLE_BUTTON
+			-- Button for enabling/disabling extraction
+
+	toggle_execution_button: EV_TOOL_BAR_TOGGLE_BUTTON
+			-- Button for enabling/disabling automatic execution
 
 feature {NONE} -- Implementation
 
@@ -493,6 +488,16 @@ feature {NONE} -- Implementation
 				cdd_manager.disable_extracting
 			else
 				cdd_manager.enable_extracting
+			end
+		end
+
+	toggle_execution is
+			-- Enable/Disable execution of tests.
+		do
+			if cdd_manager.is_executing_enabled then
+				cdd_manager.disable_executing
+			else
+				cdd_manager.enable_executing
 			end
 		end
 
@@ -544,7 +549,6 @@ feature {NONE} -- Grid manipulation
 				grid.insert_new_rows (tree_view.nodes.count, 1)
 				fill_rows (tree_view.nodes, 1)
 			end
-			update_testing_label
 			develop_window.unlock_update
 		end
 
@@ -653,7 +657,6 @@ feature {NONE} -- Incremental grid update
 					process_update (l_cursor.item)
 					l_cursor.forth
 				end
-				update_testing_label
 			else
 				refresh_grid
 			end
@@ -804,15 +807,15 @@ feature {NONE} -- Dynamic grid items
 					end (l_tooltip, ?, ?))
 				Result.set_tooltip (l_tooltip)
 			else
-				if a_node.has_test_class then
-					token_writer.add_class (a_node.eiffel_class)
-					Result.set_pixmap (pixmap_from_class_i (a_node.eiffel_class))
-				elseif a_node.has_feature and then a_node.eiffel_feature.e_feature /= Void then
-					token_writer.add_feature (a_node.eiffel_feature.e_feature, a_node.tag)
-					Result.set_pixmap (pixmap_from_e_feature (a_node.eiffel_feature.e_feature))
-				else
+--				if a_node.has_test_class then
+--					token_writer.add_class (a_node.eiffel_class)
+--					Result.set_pixmap (pixmap_from_class_i (a_node.eiffel_class))
+--				elseif a_node.has_feature and then a_node.eiffel_feature.e_feature /= Void then
+--					token_writer.add_feature (a_node.eiffel_feature.e_feature, a_node.tag)
+--					Result.set_pixmap (pixmap_from_e_feature (a_node.eiffel_feature.e_feature))
+--				else
 					token_writer.process_basic_text (a_node.tag)
-				end
+--				end
 				token_writer.process_basic_text (" (" + a_node.test_routine_count.out + ")")
 			end
 			Result.set_text_with_tokens (token_writer.last_line.content)
@@ -918,14 +921,16 @@ feature {NONE} -- Filter / Tree view
 			-- selected item of `tree_view_box'.
 		do
 			if tree_view_box.selected_item = tree_view_box.i_th (1) then
-				tree_view.set_view_code ({CDD_TREE_VIEW}.name_view_code)
+				tree_view.set_view_code ({CDD_TREE_VIEW}.type_view_code)
 			elseif tree_view_box.selected_item = tree_view_box.i_th (2) then
-				tree_view.set_view_code ({CDD_TREE_VIEW}.covers_view_code)
-			elseif tree_view_box.selected_item = tree_view_box.i_th (3) then
 				tree_view.set_view_code ({CDD_TREE_VIEW}.outcome_view_code)
+			elseif tree_view_box.selected_item = tree_view_box.i_th (3) then
+				tree_view.set_view_code ({CDD_TREE_VIEW}.name_view_code)
 			elseif tree_view_box.selected_item = tree_view_box.i_th (4) then
-				tree_view.set_view_code ({CDD_TREE_VIEW}.tags_view_code)
+				tree_view.set_view_code ({CDD_TREE_VIEW}.covers_view_code)
 			elseif tree_view_box.selected_item = tree_view_box.i_th (5) then
+				tree_view.set_view_code ({CDD_TREE_VIEW}.tags_view_code)
+			elseif tree_view_box.selected_item = tree_view_box.i_th (6) then
 				tree_view.set_view_code ({CDD_TREE_VIEW}.failure_view_code)
 			else
 				check
@@ -942,7 +947,6 @@ invariant
 	tree_view_not_void: tree_view /= Void
 
 		-- Widgets
-	mini_toolbar_not_void: mini_toolbar /= Void
 	filter_box_not_void: filter_box /= Void
 	tree_view_box_not_void: tree_view_box /= Void
 	grid_not_void: grid /= Void
@@ -952,7 +956,7 @@ invariant
 	toggle_filter_button_not_void: toggle_filter_button /= Void
 	progress_bar_not_void: progress_bar /= Void
 
-
 	toggle_extraction_button_not_void: toggle_extraction_button /= Void
+	toggle_execution_button_not_void: toggle_execution_button /= Void
 
 end
