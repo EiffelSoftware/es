@@ -4,77 +4,15 @@ indexing
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	CDD_TREE_NODE
-
-create {CDD_TREE_VIEW}
-	make, make_leaf, make_with_class, make_with_feature
-
-feature {NONE} -- Initialization
-
-	make (a_tag: like tag) is
-			-- Create new node `a_tag' as `tag'.
-		require
-			a_tag_not_void: a_tag /= Void
-		do
-			create internal_children.make_default
-			tag := a_tag
-		ensure
-			tag_set: tag = a_tag
-		end
-
-	make_leaf (a_test_routine: like test_routine; a_tag: like tag) is
-			-- Create new leaf node with `a_test_routine' as
-			-- `test_routine' and `a_tag' as `tag'.
-		require
-			a_test_routine_not_void: a_test_routine /= Void
-			a_tag_not_void: a_tag /= Void
-		do
-			tag := a_tag
-			test_routine := a_test_routine
-		ensure
-			test_routine_set: test_routine = a_test_routine
-			tag_set: tag = a_tag
-		end
-
-	make_with_class (a_class: like eiffel_class; a_tag: like tag) is
-			-- Create new node with `a_class' as
-			-- `eiffel_class' and `a_tag' as `tag'.
-		require
-			a_class_not_void: a_class /= Void
-			a_tag_not_void: a_tag /= Void
-		do
-			make (a_tag)
-			eiffel_class := a_class
-		ensure
-			eiffel_class_set: eiffel_class = a_class
-			tag_set: tag = a_tag
-		end
-
-	make_with_feature (a_feature: like eiffel_feature; a_tag: like tag) is
-			-- Create new node with `a_feature' as
-			-- `eiffel_feature' and `a_tag' as `tag'.
-		require
-			a_feature_not_void: a_feature /= Void
-			a_tag_not_void: a_tag /= Void
-		do
-			make (a_tag)
-			eiffel_feature := a_feature
-		ensure
-			eiffel_feature_set: eiffel_feature = a_feature
-			tag_set: tag = a_tag
-		end
-
 
 feature -- Status
 
 	is_leaf: BOOLEAN is
 			-- Is this node a leaf node? Note that a leaf node
 			-- can be sibling to an inner node.
-		do
-			Result := test_routine /= Void
-		ensure
-			definition: Result = (test_routine /= Void)
+		deferred
 		end
 
 	test_routine_count: INTEGER is
@@ -95,22 +33,6 @@ feature -- Status
 					l_cursor.forth
 				end
 			end
-		end
-
-	has_test_class: BOOLEAN is
-			-- Is `eiffel_class' set?
-		do
-			Result := eiffel_class /= Void
-		ensure
-			correct: Result = (eiffel_class /= Void)
-		end
-
-	has_feature: BOOLEAN is
-			-- Is `eiffel_feature' set?
-		do
-			Result := eiffel_feature /= Void
-		ensure
-			correct: Result = (eiffel_feature /= Void)
 		end
 
 feature -- Access
@@ -155,33 +77,31 @@ feature -- Access
 	tag: STRING
 			-- Tag matched by all leaves of this node
 
-	test_routine:  CDD_TEST_ROUTINE
-			-- Test routine associated with this node; only applies
-			-- to leaf nodes.
-
-	eiffel_class: CLASS_I
-			-- Eiffel class associated with this node
-
-	eiffel_feature: FEATURE_I
-			-- Eiffel feature associated with this node
+	test_routine:  CDD_TEST_ROUTINE is
+			-- Test routine associated with this node;
+			-- only applies to leaf nodes.
+		require
+			leaf: is_leaf
+		do
+		ensure
+			not_void: Result /= Void
+		end
 
 feature {CDD_TREE_VIEW} -- Implementation
 
-	internal_children: DS_LINKED_LIST [like Current]
-			-- Internally stored child nodes
-
-	set_parent (a_parent: like Current) is
-			-- Set `parent' to `a_parent'.
+	internal_children: DS_LINKED_LIST [like Current] is
+			-- Internally stored child nodes accessible
+			-- by CDD_TREE_VIEW for building the tree.
+		require
+			not_leaf: not is_leaf
 		do
-			parent := a_parent
 		ensure
-			parent_set: parent = a_parent
+			not_void: Result /= Void
+			valid: not Result.has (Void)
 		end
 
 invariant
 
 	tag_not_void: tag /= Void
-	is_leaf_equals_children_void: is_leaf = (internal_children = Void)
-	children_doesnt_have_void: (not is_leaf) implies (not internal_children.has (Void))
 
 end

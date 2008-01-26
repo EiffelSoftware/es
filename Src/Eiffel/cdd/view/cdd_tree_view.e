@@ -58,7 +58,8 @@ feature {ANY} -- Access
 				a_code = covers_view_code or
 				a_code = failure_view_code or
 				a_code = tags_view_code or
-				a_code = outcome_view_code
+				a_code = outcome_view_code or
+				a_code = type_view_code
 		end
 
 	filtered_view: CDD_FILTERED_VIEW
@@ -85,7 +86,8 @@ feature -- Views
 	covers_view_code,
 	failure_view_code,
 	tags_view_code,
-	outcome_view_code: INTEGER is unique
+	outcome_view_code,
+	type_view_code: INTEGER is unique
 			-- Different view codes
 
 feature -- Status setting
@@ -143,9 +145,6 @@ feature {NONE} -- View definition
 			-- for `a_routine' and store them in `last_computed_tag_list'.
 			-- NOTE: for now we only have one view, which is of the form
 			-- "TEST_CLASS_NAME.test_routine_name"
-		local
-			l_tag: STRING
-			l_cursor: DS_LINEAR_CURSOR [STRING]
 		do
 			last_computed_tag_list.wipe_out
 
@@ -161,6 +160,8 @@ feature {NONE} -- View definition
 				add_tags_with_prefix (a_routine, "", True)
 			when outcome_view_code then
 				add_tags_with_prefix (a_routine, "outcome.", True)
+			when type_view_code then
+				add_tags_with_prefix (a_routine, "type.", True)
 			else
 				check
 					dead_end: False
@@ -422,7 +423,7 @@ feature {NONE} -- Tree modification
 			a_routine_not_void: a_routine /= Void
 			a_tag_not_empty: a_tag /= Void and then not a_tag.is_empty
 		local
-			l_node, l_next, l_first_created: CDD_TREE_NODE
+			l_first_created: CDD_TREE_NODE
 			l_tokens: LIST [STRING]
 			l_token: STRING
 			l_cursor: DS_LINKED_LIST_CURSOR [CDD_TREE_NODE]
@@ -432,6 +433,7 @@ feature {NONE} -- Tree modification
 			l_tokens := a_tag.split ('.')
 			create l_path.make (2)
 			from
+				last_node := Void
 				l_tokens.start
 				l_cursor := nodes_cache.new_cursor
 			until
@@ -454,37 +456,33 @@ feature {NONE} -- Tree modification
 						-- with something more sofisticated to be more efficient
 						-- and support different clickable tokens.
 					if l_tokens.index = l_tokens.count then
-						create l_next.make_leaf (a_routine, l_token)
+						create {CDD_TREE_LEAF} last_node.make (l_token, a_routine, last_node)
 						if l_cursor.after or else not l_cursor.item.tag.is_case_insensitive_equal (l_token) then
-							l_cursor.put_left (l_next)
+							l_cursor.put_left (last_node)
 							l_cursor.back
 						else
-							l_cursor.put_right (l_next)
+							l_cursor.put_right (last_node)
 							l_cursor.forth
 						end
-						last_node := l_next
 					else
-						create_node (l_token, l_node)
-						l_next := last_node
-						l_cursor.put_left (l_next)
+						create {CDD_TREE_PARENT_NODE} last_node.make (l_token, last_node)
+						l_cursor.put_left (last_node)
 						l_cursor.back
 					end
-					l_next.set_parent (l_node)
 					if l_first_created = Void then
-						l_first_created := l_next
+						l_first_created := last_node
 					end
 				else
-					l_next := l_cursor.item
+					last_node := l_cursor.item
 				end
 					-- Add path indexes until we are in the new subtree
-				if l_first_created = Void or l_first_created = l_next then
+				if l_first_created = Void or l_first_created = last_node then
 					l_path.force_last (l_cursor.index)
 				end
 				l_cursor.go_after
 				l_tokens.forth
-				if not l_next.is_leaf then
-					l_node := l_next
-					l_cursor := l_node.internal_children.new_cursor
+				if not last_node.is_leaf then
+					l_cursor := last_node.internal_children.new_cursor
 				end
 			end
 
@@ -575,37 +573,6 @@ feature {NONE} -- Tree modification
 
 feature {NONE} -- Helpers
 
-	create_node (a_tag: STRING; a_parent: CDD_TREE_NODE) is
-			-- Create a new tree node for `a_tag' and store
-			-- it in `last_node'. If `last_node' is not void,
-			-- use it as a parent.
-		require
-			a_tag_not_void: a_tag /= Void
-		local
-			l_universe: UNIVERSE_I
-			l_class_list: LIST [CLASS_I]
-			l_class: CLASS_C
-			l_feature: FEATURE_I
-		do
-			l_universe := project.system.system.universe
-			l_class_list := l_universe.classes_with_name (a_tag)
-			if not l_class_list.is_empty then
-				create last_node.make_with_class (l_class_list.first, a_tag)
-			else
-				if a_parent /= Void and then a_parent.has_test_class then
-					l_class := a_parent.eiffel_class.compiled_class
-					if l_class /= Void then
-						l_feature := l_class.feature_named (a_tag)
-					end
-				end
-				if l_feature /= Void then
-					create last_node.make_with_feature (l_feature, a_tag)
-				else
-					create last_node.make (a_tag)
-				end
-			end
-		end
-
 	remove_node (a_node: CDD_TREE_NODE) is
 			-- Remove `a_node' from tree.
 		require
@@ -620,7 +587,6 @@ feature {NONE} -- Helpers
 				l_cursor := nodes_cache.new_cursor
 			else
 				l_cursor := a_node.parent.internal_children.new_cursor
-				a_node.set_parent (Void)
 			end
 			l_cursor.start
 			l_cursor.search_forth (a_node)
