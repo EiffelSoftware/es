@@ -22,7 +22,7 @@ inherit
 		end
 
 create {CONF_PARSE_FACTORY}
-	make, make_cdd_library
+	make
 
 feature {NONE} -- Initialization
 
@@ -33,19 +33,6 @@ feature {NONE} -- Initialization
 			internal_read_only := True
 		ensure then
 			readonly: is_readonly
-		end
-
-	make_cdd_library (a_name: like name; a_location: like location; a_target: CONF_TARGET) is
-			-- Initialize library pointing to cdd library.
-		require
-			a_name_ok: a_name /= Void and then not a_name.is_empty
-			a_location_not_void: a_location /= Void
-			a_target_not_void: a_target /= Void
-		do
-			make (a_name, a_location, a_target)
-			is_cdd_library := True
-		ensure
-			cdd_library: is_cdd_library
 		end
 
 feature -- Status
@@ -67,10 +54,6 @@ feature -- Status
 				Result := True
 			end
 		end
-
-	is_cdd_library: BOOLEAN
-			-- Does Current represent the cdd library?
-
 
 feature -- Access, stored in configuration file
 

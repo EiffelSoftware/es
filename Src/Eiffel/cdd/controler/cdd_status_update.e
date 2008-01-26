@@ -27,17 +27,12 @@ feature -- Access
 	code: INTEGER
 			-- Status code
 
-	project_initialize_code,
-			-- The project we are looking at has been initialized
-			-- (compiled for the first time or opened)
+	manager_update_code,
+			-- The manager has somehow changed his status
 	test_class_update_code,
 			-- Some test class has been recompiled
 			-- (the class is available through
 			-- {CDD_MANAGER}.last_updated_test_class)
-	enable_extracting_code,
-			-- Extracting new test cases has been enabled
-	disable_extracting_code,
-			-- Extracting new test cases has been disabled
 	executor_step_code,
 			-- The executor is compiling the interpreter
 			-- or executing the next test routine
@@ -58,10 +53,8 @@ feature -- Access
 			-- Is `a_code' a valid code?
 		do
 			Result :=
-				a_code = project_initialize_code or
+				a_code = manager_update_code or
 				a_code = test_class_update_code or
-				a_code = enable_extracting_code or
-				a_code = disable_extracting_code or
 				a_code = executor_step_code or
 				a_code = executor_filter_change or
 				a_code = debugger_step_code or

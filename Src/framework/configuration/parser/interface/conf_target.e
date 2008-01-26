@@ -69,7 +69,6 @@ feature {NONE} -- Initialization
 			cdd_target: is_cdd_target
 		end
 
-
 feature -- Access, stored in configuration file
 
 	name: STRING

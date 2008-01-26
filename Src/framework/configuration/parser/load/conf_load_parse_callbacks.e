@@ -309,18 +309,11 @@ feature -- Callbacks
 					end
 
 						-- Add cdd target and library if cdd tag is set in `current_tag'
-					if current_target.cdd /= Void then
-						if not current_target.system.targets.has (current_target.name + "_tester") then
-							l_cdd_target := factory.new_cdd_target (current_target.name + "_tester", current_target.system)
-							l_cdd_target.set_parent (current_target)
-							l_cdd_target.set_root (factory.new_root (current_target.name + "_tests", "CDD_INTERPRETER", "execute", False))
-							current_target.system.add_target (l_cdd_target)
-						end
-						if not current_target.libraries.has ("cdd") then
-							l_cdd_lib_loc := factory.new_location_from_full_path ("$ISE_LIBRARY\library\cdd\cdd.ecf", current_target)
-							l_cdd_lib := factory.new_cdd_library ("cdd", l_cdd_lib_loc, current_target)
-							current_target.add_library (l_cdd_lib)
-						end
+					if not current_target.system.targets.has (current_target.name + "_tester") then
+						l_cdd_target := factory.new_cdd_target (current_target.name + "_tester", current_target.system)
+						l_cdd_target.set_parent (current_target)
+						l_cdd_target.set_root (factory.new_root (current_target.name + "_tests", "CDD_INTERPRETER", "execute", False))
+						current_target.system.add_target (l_cdd_target)
 					end
 
 					uses_list.clear_all
@@ -1573,14 +1566,6 @@ feature {NONE} -- Implementation attribute processing
 		do
 			l_cdd_conf := factory.new_cdd (current_target)
 			current_target.set_cdd (l_cdd_conf)
-			l_attr := current_attributes.item (at_enabled)
-			if l_attr /= Void then
-				if l_attr.is_boolean then
-					l_cdd_conf.set_is_enabled (l_attr.to_boolean)
-				else
-					set_parse_error_message (conf_interface_names.e_parse_incorrect_cdd_enabled)
-				end
-			end
 
 			l_attr := current_attributes.item (at_extracting)
 			if l_attr /= Void then
@@ -1591,12 +1576,12 @@ feature {NONE} -- Implementation attribute processing
 				end
 			end
 
-			l_attr := current_attributes.item (at_capture_replay)
+			l_attr := current_attributes.item (at_executing)
 			if l_attr /= Void then
 				if l_attr.is_boolean then
-					l_cdd_conf.set_is_capture_replay_activated (l_attr.to_boolean)
+					l_cdd_conf.set_is_executing (l_attr.to_boolean)
 				else
-					set_parse_error_message (conf_interface_names.e_parse_incorrect_cdd_capture_replay)
+					set_parse_error_message (conf_interface_names.e_parse_incorrect_cdd_executing)
 				end
 			end
 		end
@@ -2071,9 +2056,8 @@ feature {NONE} -- Implementation state transitions
 				-- * extract
 				-- * capture_replay
 			create l_attr.make (4)
-			l_attr.force (at_enabled, "enabled")
-			l_attr.force (at_extracting, "extracting")
-			l_attr.force (at_capture_replay, "capture_replay")
+			l_attr.force (at_extracting, "extract")
+			l_attr.force (at_executing, "execute")
 			Result.force (l_attr, t_cdd)
 
 				-- build, platform
@@ -2264,7 +2248,7 @@ feature {NONE} -- Implementation constants
 
 		-- CDD attributes
 	at_extracting: INTEGER is 1100
-	at_capture_replay: INTEGER is 1101
+	at_executing: INTEGER is 1101
 
 feature -- Assertions
 

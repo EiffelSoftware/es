@@ -235,20 +235,6 @@ feature
 			Result_not_void: Result /= Void
 		end
 
-	new_cdd_library (a_name: STRING; a_directory: CONF_FILE_LOCATION; a_target: CONF_TARGET): CONF_LIBRARY is
-			-- Create a `CONF_LIBRARY' object with `is_cdd_library' set to True.
-		require
-			a_name_ok: a_name /= Void and then not a_name.is_empty
-			a_directory_not_void: a_directory /= Void
-			a_target_not_void: a_target /= Void
-		do
-			create Result.make_cdd_library (a_name, a_directory, a_target)
-		ensure
-			not_void: Result /= Void
-			result_is_cdd_library: Result.is_cdd_library
-		end
-
-
 	new_precompile (a_name: STRING; a_file: STRING; a_target: CONF_TARGET): CONF_PRECOMPILE is
 			-- Create a `CONF_PRECOMPILE' object.
 		require

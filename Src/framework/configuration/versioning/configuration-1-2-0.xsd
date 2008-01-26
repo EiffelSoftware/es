@@ -412,10 +412,8 @@
 	</xs:complexType>
 
 	<xs:complexType name="cdd">
-                <xs:attribute name="enabled" type="xs:boolean" use="optional"/>
-                <xs:attribute name="cluster_name" type="xs:string" use="optional"/>
                 <xs:attribute name="extracting" type="xs:boolean" use="optional"/>
-                <xs:attribute name="capture_replay" type="xs:boolean" use="optional"/>
+		<xs:attribute name="executing" type="xs:boolean" use="optional"/>
         </xs:complexType>
 
 	<xs:complexType name="overrides">

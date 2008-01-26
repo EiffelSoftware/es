@@ -49,8 +49,10 @@ feature {NONE} -- Initialization
 			create test_suite.make (Current)
 			create background_executor.make (Current)
 			create debug_executor.make (Current)
+			create capturer.make (Current)
+			capturer.capture_observers.put_last (create {CDD_TEST_CASE_PRINTER}.make (Current))
 
-			status_update_actions.extend (agent update_status)
+			status_update_actions.extend (agent process_update)
 
 			project := a_project
 			l_prj_manager := project.manager
@@ -76,19 +78,11 @@ feature -- Access (status)
 			Result := project.initialized and project.system_defined -- target /= Void
 		end
 
-	is_extracting_enabled: BOOLEAN is
+	is_extracting_enabled: BOOLEAN
 			-- Is capturing currently enabled?
-		do
-			Result := capturer /= Void
-		ensure
-			correct_result: Result = (capturer /= Void)
-		end
 
-	can_enable_extracting: BOOLEAN is
-			-- Can we enable extracting?
-		do
-			Result := is_project_initialized and not is_extracting_enabled
-		end
+	is_executing_enabled: BOOLEAN
+			-- Do we automatically execute tests?
 
 	last_updated_test_class: EIFFEL_CLASS_C
 			-- Test class which has last been processed in degree 5
@@ -128,7 +122,16 @@ feature {DEBUGGER_MANAGER} -- Status setting (Application)
 			valid_app_status: a_dbg_manager.application_is_executing and
 				a_dbg_manager.application_is_stopped
 		do
-			if is_extracting_enabled and not debug_executor.is_running and a_dbg_manager.application_status.exception_occurred then
+				-- Before we extract any thing, make sure
+				--		* extraction is actually enabled
+				--		* the debugger is not debugging a
+				--		  test routine right now
+				--		* an exception has occured which
+				--		  is not a developer exception
+			if is_extracting_enabled and
+				not debug_executor.is_running and
+				a_dbg_manager.application_status.exception_occurred and
+				a_dbg_manager.application_status.exception_code /= {EXCEP_CONST}.developer_exception then
 				capturer.capture_call_stack (a_dbg_manager.application_status)
 			end
 		end
@@ -139,16 +142,14 @@ feature -- Status setting (CDD)
 			-- Make cdd create new test cases automatically.
 			-- Enable extracting mode in system configuration and store it.
 		require
-			can_enable_extracting: can_enable_extracting
+			project_initialized: project.initialized
+			extraction_disabled: not is_extracting_enabled
 		do
 			instantiate_cdd_configuration
 			cdd_conf.set_is_extracting (True)
 			target.system.store
-			create capturer.make (Current)
-				-- Arno: not sure where to hook up printer and log
-				-- observers for capturing
-			capturer.capture_observers.put_last (create {CDD_TEST_CASE_PRINTER}.make (Current))
-			status_update_actions.call ([create {CDD_STATUS_UPDATE}.make_with_code ({CDD_STATUS_UPDATE}.enable_extracting_code)])
+			is_extracting_enabled := True
+			status_update_actions.call ([status_udpate])
 		ensure
 			extracting_enabled: is_extracting_enabled
 			correct_config: cdd_conf.is_extracting
@@ -158,16 +159,51 @@ feature -- Status setting (CDD)
 			-- Stop cdd creating test cases automatically.
 			-- Disable capturing mode in system configuration and store it.
 		require
+			project_initialized: project.initialized
 			extracting_enabled: is_extracting_enabled
 		do
 			instantiate_cdd_configuration
 			cdd_conf.set_is_extracting (False)
 			target.system.store
-			capturer := Void
-			status_update_actions.call ([create {CDD_STATUS_UPDATE}.make_with_code ({CDD_STATUS_UPDATE}.disable_extracting_code)])
+			is_extracting_enabled := False
+			status_update_actions.call ([status_udpate])
 		ensure
 			extracting_disabled: not is_extracting_enabled
 			correct_config: not cdd_conf.is_extracting
+		end
+
+	enable_executing is
+			-- Make cdd create new test cases automatically.
+			-- Enable extracting mode in system configuration and store it.
+		require
+			project_initialized: project.initialized
+			executing_disabled: not is_executing_enabled
+		do
+			instantiate_cdd_configuration
+			cdd_conf.set_is_executing (True)
+			target.system.store
+			is_executing_enabled := True
+			status_update_actions.call ([status_udpate])
+		ensure
+			executing_enabled: is_executing_enabled
+			correct_config: cdd_conf.is_executing
+		end
+
+	disable_executing is
+			-- Stop cdd creating test cases automatically.
+			-- Disable capturing mode in system configuration and store it.
+		require
+			project_initialized: project.initialized
+			executing_enabled: is_executing_enabled
+		do
+			instantiate_cdd_configuration
+			cdd_conf.set_is_executing (False)
+			target.system.store
+			is_executing_enabled := False
+			status_update_actions.call ([status_udpate])
+		ensure
+			executing_disabled: not is_executing_enabled
+			correct_config: not cdd_conf.is_executing
 		end
 
 feature {ANY} -- Cooperative multitasking
@@ -197,21 +233,37 @@ feature {EB_CLUSTERS} -- Status setting (Eiffel Project)
 			-- Check configuration if cdd status has changed and update if so and
 			-- reiinitate background testing.
 			-- Note: This is usually called when project is opened or compiled.
+		local
+			l_update_call: BOOLEAN
 		do
 			if is_project_initialized then
-				if cdd_conf /= Void then
-					if cdd_conf.is_extracting and not is_extracting_enabled then
-						enable_extracting
-					elseif not cdd_conf.is_extracting and is_extracting_enabled then
-						disable_extracting
+				if cdd_conf /= Void and then cdd_conf.is_extracting then
+					if not is_extracting_enabled then
+						is_extracting_enabled := True
+						l_update_call := True
 					end
+				elseif is_extracting_enabled then
+					is_extracting_enabled := False
+					l_update_call := True
+				end
+				if cdd_conf /= Void and then cdd_conf.is_executing then
+					if not is_executing_enabled then
+						is_executing_enabled := True
+						l_update_call := True
+					end
+				elseif is_executing_enabled then
+					is_executing_enabled := False
+					l_update_call := True
 				end
 				if not has_project_been_initialized then
 					has_project_been_initialized := True
 						-- From now on, we want to be notified whenever
 						-- a test case class get processed in degree 5
 					project.system.system.degree_5.process_actions.extend (agent add_updated_class)
-					status_update_actions.call ([create {CDD_STATUS_UPDATE}.make_with_code ({CDD_STATUS_UPDATE}.project_initialize_code)])
+					l_update_call := True
+				end
+				if l_update_call then
+					status_update_actions.call ([status_udpate])
 				end
 				test_suite.refresh
 				if project.successful and not debug_executor.is_running then
@@ -253,7 +305,7 @@ feature -- Status change
 
 feature {NONE} -- Implementation
 
-	update_status (an_update: CDD_STATUS_UPDATE) is
+	process_update (an_update: CDD_STATUS_UPDATE) is
 			-- Process `an_update' if necessary.
 		require
 			an_update_not_void: an_update /= Void
@@ -293,7 +345,7 @@ feature {NONE} -- Implementation
 			-- doesn't exists. Set `cdd_conf' to current
 			-- cdd configuration.
 		require
-			project_initialized: project.initialized
+			project_initialized: is_project_initialized
 		local
 			l_conf: CONF_CDD
 		do
@@ -310,18 +362,29 @@ feature {NONE} -- Implementation
 			-- Factory for creating cdd library
 		once
 			create Result
+		ensure
+			not_void: Result /= Void
 		end
 
+	status_udpate: CDD_STATUS_UPDATE is
+			-- Update message for `Current'
+		once
+			create Result.make_with_code ({CDD_STATUS_UPDATE}.manager_update_code)
+		ensure
+			not_void: Result /= Void
+		end
 
 invariant
 	test_suite_not_void: test_suite /= Void
 	executor_not_void: background_executor /= Void
 	debugger_not_void: debug_executor /= Void
+	capturer_not_void: capturer /= Void
 	status_update_actions_not_void: status_update_actions /= Void
 	output_actions_not_void: output_actions /= Void
 	last_updated_test_class_valid: (last_updated_test_class /= Void) implies
 		test_suite.has_test_case_for_class (last_updated_test_class)
 
 	extracting_implies_project_initialized: is_extracting_enabled implies is_project_initialized
+	executing_implies_project_initialized: is_executing_enabled implies is_project_initialized
 
 end
