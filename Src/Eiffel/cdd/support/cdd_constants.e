@@ -54,7 +54,7 @@ feature -- Project constants
 	max_manifest_string_size: INTEGER is 1000
 			-- max size of manifest strings written in extracted test classes, larger strings are split in several parts
 
-	max_test_cases_per_sut_class: INTEGER is 1000
+	max_test_cases_per_sut_class: INTEGER is 999
 			-- max amount of test cases that are generated per "original-class-name"
 
 	cdd_homepage_url: STRING is "http://dev.eiffel.com/CddBranch"

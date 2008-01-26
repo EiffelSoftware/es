@@ -480,7 +480,7 @@ feature {NONE} -- Implementation (Access)
 		do
 			if a_cse.dynamic_class /= Void and then a_cse.dynamic_class.is_eiffel_class_c then
 				l_class := a_cse.dynamic_class.eiffel_class_c
-				if not (l_class.cluster.is_library and then l_class.cluster.is_readonly) then
+				if not (l_class.cluster.is_used_in_library and then l_class.cluster.is_readonly) then
 					skip_library := True
 					Result := True
 				elseif not skip_library then
@@ -488,7 +488,9 @@ feature {NONE} -- Implementation (Access)
 				end
 				if Result then
 					l_feature := a_cse.routine
-					if not l_feature.export_status.is_all then
+					if l_feature.is_external then
+						Result := False
+					elseif not l_feature.export_status.is_all then
 						Result := l_class.creation_feature = l_feature.associated_feature_i or
 							(l_class.creators /= Void and then l_class.creators.has (l_feature.name))
 					end

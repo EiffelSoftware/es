@@ -40,6 +40,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_EXEC_ENVIRONMENT
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -85,6 +90,7 @@ feature	-- Basic operations
 			l_dir: KL_DIRECTORY
 			l_loc: CONF_LOCATION
 			i: INTEGER
+			l_feature_name: STRING
 			l_integer_string: STRING
 			l_tester_id_string: STRING
 		do
@@ -123,8 +129,8 @@ feature	-- Basic operations
 					create l_integer_string.make_filled ('0', max_test_cases_per_sut_class.out.count)
 					l_integer_string.replace_substring (i.out, (max_test_cases_per_sut_class.out.count - i.out.count) + 1, max_test_cases_per_sut_class.out.count)
 					new_class_name.append_string (l_integer_string)
-					l_tester_id_string := environment_impl.get (cdd_tester_id_evironment_variable)
-					if l_tester_id_string /= void then
+					l_tester_id_string := execution_environment.get (cdd_tester_id_evironment_variable)
+					if l_tester_id_string /= Void and then not l_tester_id_string.is_empty then
 						new_class_name.append_character ('_')
 						l_tester_id_string.to_upper
 						new_class_name.append_string (l_tester_id_string)
@@ -147,15 +153,17 @@ feature	-- Basic operations
 				if not l_output_file.is_open_write then
 					failed := True
 				else
-					-- To here...
 					create output_stream.make (l_output_file)
+
+						-- Create printable name for featur
+					l_feature_name := unfix_feature_name (a_feature)
 
 						-- Print test class headers
 					put_indexing
-					put_class_header (a_feature)
+					put_class_header (l_feature_name)
 
 					put_set_up (an_adv, a_feature, is_creation_feature (a_feature))
-					put_test_routine (a_class, a_feature, a_csid, a_cs_level)
+					put_test_routine (a_class, l_feature_name, a_csid, a_cs_level)
 					put_context_header
 				end
 			end
@@ -354,12 +362,12 @@ feature {NONE} -- Implementation
 			output_stream.put_line ("")
 		end
 
-	put_class_header (a_feature: E_FEATURE) is
+	put_class_header (a_feature_name: STRING) is
 			-- Append cdd test case class header with name `a_class_name' for testing `a_cut_name'.
 			-- The feature under test takes the arguments listed in `a_arg_list'.
 		require
 			initialized_and_not_failed: is_initialized and not failed
-			a_feature_not_void: a_feature /= Void
+			a_feature_name_not_void: a_feature_name /= Void and then not a_feature_name.is_empty
 		do
 			output_stream.put_line ("class")
 			output_stream.indent
@@ -372,11 +380,11 @@ feature {NONE} -- Implementation
 			output_stream.indent
 			output_stream.put_line ("rename")
 			output_stream.indent
-			output_stream.put_line ("test as test_" + unfix_feature_name(a_feature.name))
+			output_stream.put_line ("test as test_" + a_feature_name)
 			output_stream.dedent
 			output_stream.put_line ("redefine")
 			output_stream.indent
-			output_stream.put_line ("test_" + unfix_feature_name(a_feature.name))
+			output_stream.put_line ("test_" + a_feature_name)
 			output_stream.dedent
 			output_stream.put_line ("end")
 			output_stream.dedent
@@ -448,7 +456,7 @@ feature {NONE} -- Implementation
 				output_stream.put_line ("do")
 				output_stream.indent
 				if an_is_creation_call then
-					l_agent := "Result := create {" + l_class + "}." + unfix_feature_name(a_feature.name)
+					l_agent := "Result := create {" + l_class + "}." + a_feature.name
 					if a_feature.argument_count > 0 then
 						l_agent.append (" (")
 						from
@@ -474,7 +482,7 @@ feature {NONE} -- Implementation
 				output_stream.put_line ("end")
 				output_stream.dedent
 			else
-				output_stream.put_line (l_agent + " {" + l_class + "}." + unfix_feature_name(a_feature.name))
+				output_stream.put_line (l_agent + " {" + l_class + "}." + a_feature.name)
 			end
 			output_stream.dedent
 			output_stream.put_line ("end%N")
@@ -504,35 +512,25 @@ feature {NONE} -- Implementation
 			output_stream.indent
 		end
 
-	put_test_routine (a_class: CLASS_C; a_feature: E_FEATURE; a_csid: STRING; a_csindex: INTEGER) is
+	put_test_routine (a_class: CLASS_C; a_feature_name: STRING; a_csid: STRING; a_csindex: INTEGER) is
 			-- Append class header text for `test_class_name'.
 		require
 			initialized_and_not_failed: is_initialized and not failed
-			a_feature_not_void: a_feature /= Void
+			a_feature_name_not_empty: a_feature_name /= Void and then not a_feature_name.is_empty
 			a_csid_not_empty: a_csid /= Void and then not a_csid.is_empty
 			a_csindex_positive: a_csindex > 0
-		local
-			l_feature_name: STRING
 		do
 			output_stream.put_line ("feature -- Testing%N")
 			output_stream.indent
-			output_stream.put_line ("test_" + unfix_feature_name(a_feature.name) + " is")
+			output_stream.put_line ("test_" + a_feature_name + " is")
 			output_stream.indent
 			output_stream.indent
 			output_stream.put_line ("-- Execute routine under test")
 			output_stream.dedent
-
-			if a_feature.is_infix then
-				l_feature_name := "infix %%%"" + a_feature.infix_symbol + "%%%""
-			elseif a_feature.is_prefix then
-				l_feature_name := "prefix %%%"" + a_feature.prefix_symbol + "%%%""
-			else
-				l_feature_name := a_feature.name
-			end
 			output_stream.put_line ("indexing")
 			output_stream.indent
-			output_stream.put_line ("tag: %"covers." + a_class.name_in_upper + "." +l_feature_name + "%"")
-			output_stream.put_line ("tag: %"failure." + a_csid + "." + a_csindex.out + ": " + l_feature_name + "%"")
+			output_stream.put_line ("tag: %"covers." + a_class.name_in_upper + "." +a_feature_name + "%"")
+			output_stream.put_line ("tag: %"failure." + a_csid + "." + a_csindex.out + ": " + a_feature_name + "%"")
 			output_stream.dedent
 			output_stream.put_line ("do")
 			output_stream.indent
@@ -558,29 +556,53 @@ feature {NONE} -- Implementation
 			create Result
 		end
 
-	unfix_feature_name (a_name: STRING): STRING is
+	unfix_feature_name (a_feature: E_FEATURE): STRING is
 			-- format a feature name in order to obtain a syntactically correct name for a non-infix/prefix eiffel feature
 			-- This is necessary because prefix and infix features provide the whole "infix 'some_op'" string as name
 		require
-			a_name_not_void_nor_empty: a_name /= void and then not a_name.is_empty
-		local
-			i: INTEGER
+			a_feature_not_void: a_feature /= Void
 		do
-			from
-				i := 1
-				Result := ""
-			until
-				i > a_name.count
-			loop
-				if a_name.item (i).is_alpha_numeric then
-					Result.append_character (a_name.item (i))
-				elseif a_name.item (i).is_space then
-					Result.append_character ('_')
+			if a_feature.is_prefix then
+				Result := "prefix_"
+				if a_feature.prefix_symbol.is_equal ("+") then
+					Result.append ("plus")
+				elseif a_feature.prefix_symbol.is_equal ("-") then
+					Result.append ("minus")
+				else
+					Result.append (a_feature.prefix_symbol)
 				end
-				i := i + 1
+			elseif a_feature.is_infix then
+    			Result := "infix_"
+				if a_feature.infix_symbol.is_equal ("+") then
+					Result.append ("plus")
+				elseif a_feature.infix_symbol.is_equal ("-") then
+					Result.append ("minus")
+				elseif a_feature.infix_symbol.is_equal ("*") then
+					Result.append ("multiply")
+				elseif a_feature.infix_symbol.is_equal ("/") then
+					Result.append ("division")
+				elseif a_feature.infix_symbol.is_equal ("<") then
+					Result.append ("less")
+				elseif a_feature.infix_symbol.is_equal (">") then
+					Result.append ("greater")
+				elseif a_feature.infix_symbol.is_equal ("<=") then
+					Result.append ("less_or_equal")
+				elseif a_feature.infix_symbol.is_equal (">=") then
+					Result.append ("greater_or_equal")
+				elseif a_feature.infix_symbol.is_equal ("//") then
+					Result.append ("integer_division")
+				elseif a_feature.infix_symbol.is_equal ("\\") then
+					Result.append ("modulo")
+				elseif a_feature.infix_symbol.is_equal ("^") then
+					Result.append ("power")
+				else
+					Result.append (a_feature.infix_symbol)
+				end
+			else
+				Result := a_feature.name
 			end
 		ensure
-			result_not_void_nor_empty: Result /= void and then not a_name.is_empty
+			result_not_void_nor_empty: Result /= Void and then not Result.is_empty
 		end
 
 feature {NONE} -- Implementation
@@ -592,16 +614,6 @@ feature {NONE} -- Implementation
 		ensure
 			not_void: Result /= Void
 		end
-
-	environment_impl: EXECUTION_ENVIRONMENT is
-			-- Execution environment impl
-		once
-			create Result
-		ensure
-			environment_impl_not_void: Result /= Void
-		end
-
-
 
 invariant
 	initialized_and_not_failed_implies_valid_class_name:

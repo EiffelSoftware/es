@@ -246,7 +246,7 @@ feature {NONE} -- Initialization
 			l_split_area.extend (l_notebook)
 
 			widget.extend (l_split_area)
-			l_split_area.set_proportion (0.7)
+			l_split_area.resize_actions.force (agent resize_grids (l_split_area, ?, ?, ?, ?))
 		end
 
 	build_status_bar is
@@ -636,6 +636,14 @@ feature {NONE} -- Grid manipulation
 				highlight_row (l_selected.item)
 				l_selected.forth
 			end
+		end
+
+	resize_grids (a_split_area: EV_SPLIT_AREA; a_x, a_y, a_width, a_height: INTEGER) is
+			-- Make sure `a_split_area' keeps its proportions.
+		require
+			a_split_area_not_void: a_split_area /= Void
+		do
+			a_split_area.set_proportion (0.7)
 		end
 
 feature {NONE} -- Incremental grid update
