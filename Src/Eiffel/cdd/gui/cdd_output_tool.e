@@ -161,9 +161,9 @@ feature {NONE} -- Implementation
 			l_manager: CDD_MANAGER
 		do
 			l_manager := develop_window.eb_debugger_manager.cdd_manager
-			l_manager.output_actions.prune (internal_append_text_action)
-			l_manager.status_update_actions.prune (internal_append_status_update_action)
-			l_manager.test_suite.test_routine_update_actions.prune (internal_append_routine_update_action)
+			l_manager.output_actions.prune_all (internal_append_text_action)
+			l_manager.status_update_actions.prune_all (internal_append_status_update_action)
+			l_manager.test_suite.test_routine_update_actions.prune_all (internal_append_routine_update_action)
 			Precursor
 		end
 

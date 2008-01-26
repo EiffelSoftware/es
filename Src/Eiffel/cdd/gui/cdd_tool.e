@@ -16,15 +16,6 @@ inherit
 			internal_recycle
 		end
 
-	EVS_GRID_PND_SUPPORT
-		rename
-			internal_grid as grid
-		export
-			{NONE} all
-		redefine
-			grid
-		end
-
 	SHARED_EIFFEL_PROJECT
 		export
 			{NONE} all
@@ -178,7 +169,7 @@ feature {NONE} -- Initialization
 
 			create tree_view_box
 			tree_view_box.disable_edit
-			tree_view_box.set_minimum_width (100)
+			tree_view_box.set_minimum_width (140)
 			tree_view_box.extend (create {EV_LIST_ITEM}.make_with_text ("Type"))
 			tree_view_box.extend (create {EV_LIST_ITEM}.make_with_text ("Outcome"))
 			tree_view_box.extend (create {EV_LIST_ITEM}.make_with_text ("Testcase"))
@@ -199,52 +190,40 @@ feature {NONE} -- Initialization
 		require
 			widget_not_void: widget /= Void
 		local
+			l_tree_view: CDD_TREE_VIEW
 			l_filter: CDD_FILTERED_VIEW
 			l_split_area: EV_VERTICAL_SPLIT_AREA
 			l_notebook: EV_NOTEBOOK
-			l_cell: EV_CELL
 		do
-			create l_split_area
+				-- Build main grid
+			create l_filter.make (cdd_manager.test_suite)
+			create l_tree_view.make (l_filter)
+			create grid.make (l_tree_view, develop_window)
+			grid.row_select_actions.force (agent update_related_grid)
+			grid.row_deselect_actions.force (agent update_related_grid)
 
-			create grid
-			grid.enable_tree
-			grid.enable_single_row_selection
-			grid.set_dynamic_content_function (agent fetch_grid_item)
-			grid.row_expand_actions.extend (agent add_subrows)
-			grid.enable_partial_dynamic_content
-			grid.hide_tree_node_connectors
-			enable_grid_item_pnd_support
-			grid.set_focused_selection_color (preferences.editor_data.selection_background_color)
-			grid.set_non_focused_selection_color (preferences.editor_data.focus_out_selection_background_color)
-			grid.row_select_actions.extend (agent highlight_row)
-			grid.row_deselect_actions.extend (agent dehighlight_row)
-			grid.focus_in_actions.extend (agent change_focus)
-			grid.focus_out_actions.extend (agent change_focus)
-			grid.set_focused_selection_text_color (preferences.editor_data.selection_text_color)
+				-- Build details view and related grid
+			create l_notebook
 
-			grid.set_column_count_to (2)
-			grid.column (1).set_title ("")
-			grid.column (1).set_width (200)
-			grid.column (2).set_title ("Outcome")
-			grid.column (2).set_width (45)
 
-			l_split_area.extend (grid)
+			create details_text
+			details_text.set_font (preferences.editor_data.font)
+			details_text.disable_edit
+			details_text.disable_word_wrapping
+			l_notebook.extend (details_text)
+			l_notebook.set_item_text (details_text, "Details")
 
 			create l_filter.make (cdd_manager.test_suite)
-			create tree_view.make (l_filter)
-			tree_view.add_client
-			tree_view.change_actions.extend (agent update_grid_incremental)
+			create l_tree_view.make (l_filter)
+			l_tree_view.set_view_code ({CDD_TREE_VIEW}.failure_view_code)
+			create related_grid.make (l_tree_view, develop_window)
+			l_notebook.extend (related_grid)
+			l_notebook.set_item_text (related_grid, "Related")
 
-			create l_notebook
-			create l_cell
-			l_notebook.extend (l_cell)
-			l_notebook.set_item_text (l_cell, "Trace")
-			create l_cell
-			l_notebook.extend (l_cell)
-			l_notebook.set_item_text (l_cell, "Related")
-
+				-- And put them into a split area
+			create l_split_area
+			l_split_area.extend (grid)
 			l_split_area.extend (l_notebook)
-
 			widget.extend (l_split_area)
 			l_split_area.resize_actions.force (agent resize_grids (l_split_area, ?, ?, ?, ?))
 		end
@@ -381,7 +360,7 @@ feature {NONE} -- Implementation (Basic functionality)
 				end
 			when {CDD_STATUS_UPDATE}.executor_filter_change then
 				l_exec := cdd_manager.background_executor
-				if l_exec.filter = tree_view.filtered_view then
+				if l_exec.filter = grid.tree_view.filtered_view then
 					toggle_filter_button.enable_select
 				else
 					toggle_filter_button.disable_select
@@ -404,26 +383,35 @@ feature {NONE} -- Implementation (Basic functionality)
 	internal_recycle is
 			-- Unsubscribe all observing agents.
 		do
-			cdd_manager.status_update_actions.prune (internal_status_update_action)
+			cdd_manager.status_update_actions.prune_all (internal_status_update_action)
 			if cdd_manager.is_project_initialized then
-				if cdd_manager.background_executor.filter = tree_view.filtered_view then
+				if cdd_manager.background_executor.filter = grid.tree_view.filtered_view then
 					cdd_manager.background_executor.reset_filter
 				end
 			end
-			tree_view.remove_client
 			Precursor
 		end
 
-feature {NONE} -- Implementation (Widgets)
+feature {NONE} -- Access (Widgets)
+
+	grid: CDD_TREE_VIEW_GRID
+			-- Grid displaying test routines corresponding
+			-- to filter and view defined in `filter_box' and
+			-- `tree_view_box'
+
+	related_grid: CDD_TREE_VIEW_GRID
+			-- Grid displaying related test routines
+			-- for selected routine in `grid'
+
+	details_text: EV_TEXT
+			-- Text field for displaying details of a
+			-- selected test routine in `grid'
 
 	filter_box: EV_COMBO_BOX
 			-- Combo box for defining filter
 
 	tree_view_box: EV_COMBO_BOX
 			-- Drop down menu for choosing view
-
-	grid: ES_GRID
-			-- Grid for displaying `filter' results
 
 	status_label: EV_LABEL
 			-- Label describing current tester status
@@ -434,7 +422,7 @@ feature {NONE} -- Implementation (Widgets)
 	progress_bar: EV_HORIZONTAL_PROGRESS_BAR
 			-- Progress bar showing progress of test executor
 
-feature {NONE} -- Implementation (Buttons)
+feature {NONE} -- Access (Buttons)
 
 	toggle_filter_button: EV_TOGGLE_BUTTON
 			-- Button for setting current filter as test executors filter
@@ -448,7 +436,75 @@ feature {NONE} -- Implementation (Buttons)
 	toggle_execution_button: EV_TOOL_BAR_TOGGLE_BUTTON
 			-- Button for enabling/disabling automatic execution
 
-feature {NONE} -- Implementation
+feature {NONE} -- Implementation (Grids)
+
+	resize_grids (a_split_area: EV_SPLIT_AREA; a_x, a_y, a_width, a_height: INTEGER) is
+			-- Make sure `a_split_area' keeps its proportions.
+		require
+			a_split_area_not_void: a_split_area /= Void
+		do
+			a_split_area.set_proportion (0.7)
+		end
+
+	update_related_grid (a_row: EV_GRID_ROW) is
+			-- Update `related_grid' according to selected
+			-- row in `grid'.
+		local
+			l_node: CDD_TREE_NODE
+			l_test_routine: CDD_TEST_ROUTINE
+			l_outcome: CDD_TEST_EXECUTION_RESPONSE
+			l_list: DS_ARRAYED_LIST [STRING]
+			l_regex: RX_PCRE_REGULAR_EXPRESSION
+			l_tag: STRING
+		do
+			if a_row.is_selected then
+				l_node ?= a_row.data
+				if l_node.is_leaf then
+					l_test_routine := l_node.test_routine
+				end
+			end
+
+				-- Update `details_text'
+			details_text.set_text ("")
+			if l_test_routine /= Void then
+				if l_test_routine.outcomes.is_empty then
+					details_text.append_text ("Test routine has not been executed yet")
+				else
+					l_outcome := l_test_routine.outcomes.last
+					details_text.append_text (l_outcome.out)
+					if l_outcome.is_fail then
+						details_text.append_text ("%N%N%NStack trace:%N")
+						details_text.append_text (l_outcome.test_response.exception.exception_trace)
+					end
+				end
+			end
+
+				-- Update `related_grid'
+			if l_test_routine /= Void then
+				l_list := l_test_routine.tags_with_prefix ("failure.")
+				if not l_list.is_empty then
+					create l_regex.make
+					l_regex.compile ("^failure\.([0-9]+)")
+					l_regex.match (l_list.first)
+					if l_regex.has_matched then
+						l_tag := "failure."
+						l_regex.append_captured_substring_to_string (l_tag, 1)
+					else
+						l_list := Void
+					end
+				else
+					l_list := Void
+				end
+			end
+			if l_tag = Void then
+				l_tag := "_none_"
+			end
+			create l_list.make (1)
+			l_list.force_first (l_tag)
+			related_grid.tree_view.filtered_view.set_filters (l_list)
+		end
+
+feature {NONE} -- Implementation (Buttons)
 
 	debug_test_routine is
 			-- Run currently selected test routine in debugger.
@@ -475,10 +531,10 @@ feature {NONE} -- Implementation
 			-- (Un)set current filter in test executor.
 		do
 			if toggle_filter_button.is_selected then
-				if cdd_manager.background_executor.filter /= tree_view.filtered_view then
-
+				if cdd_manager.background_executor.filter /= grid.tree_view.filtered_view then
+					cdd_manager.background_executor.set_filter (grid.tree_view.filtered_view)
 				end
-			elseif cdd_manager.background_executor.filter = tree_view.filtered_view then
+			elseif cdd_manager.background_executor.filter = grid.tree_view.filtered_view then
 				cdd_manager.background_executor.reset_filter
 			end
 		end
@@ -525,346 +581,6 @@ feature {NONE} -- Implementation
 			status_label.set_foreground_color (stock_colors.red)
 		end
 
-feature {NONE} -- Grid access
-
-	tree_view: CDD_TREE_VIEW
-			-- Tree view providing test routines which should be displayed by `Current'
-
-	stock_colors: EV_STOCK_COLORS is
-			-- Predefined colors
-		once
-			create Result
-		end
-
-	token_writer: EB_EDITOR_TOKEN_GENERATOR is
-			-- Tokenwriter for clickable items
-		once
-			create Result.make
-		end
-
-feature {NONE} -- Grid manipulation
-
-	refresh_grid is
-			-- Build grid.
-		do
-			develop_window.lock_update
-			if grid.row_count > 0 then
-				grid.remove_rows (1, grid.row_count)
-			end
-			if tree_view.nodes.count > 0 then
-				grid.insert_new_rows (tree_view.nodes.count, 1)
-				fill_rows (tree_view.nodes, 1)
-			end
-			develop_window.unlock_update
-		end
-
-	 add_subrows (a_parent: EV_GRID_ROW) is
-			-- Add subrows for `a_parent' into `grid' corresponding to `a_list'.
-			-- If `a_parent' is Void, simply add unparented rows to `grid'.
-			-- Set `last_added_rows_count' to total number of rows added.
-		require
-			a_parent_not_void: a_parent /= Void
-			a_parent_valid: grid.row (a_parent.index) = a_parent
-		local
-			l_node: CDD_TREE_NODE
-		do
-				-- Make sure
-			if a_parent.subrow_count = 0 then
-				l_node ?= a_parent.data
-				check
-					node_valid: l_node /= Void and then not l_node.is_leaf
-				end
-				a_parent.insert_subrows (l_node.children.count, 1)
-				fill_rows (l_node.children, a_parent.index + 1)
-			end
-		end
-
-	fill_rows (a_list: DS_LINEAR [CDD_TREE_NODE]; a_pos: INTEGER) is
-			-- Set `data' field from rows in grid for each node
-			-- in `a_list' starting from `a_pos'.
-		require
-			a_list_not_void: a_list /= Void
-			a_list_valid: not a_list.has (Void)
-			a_pos_valid: a_pos > 0 and a_pos <= grid.row_count
-		local
-			l_cursor: DS_LINEAR_CURSOR [CDD_TREE_NODE]
-			l_row: EV_GRID_ROW
-			i: INTEGER
-		do
-			l_cursor := a_list.new_cursor
-			from
-				l_cursor.start
-				i := a_pos
-			until
-				l_cursor.after
-			loop
-				l_row := grid.row (i)
-				l_row.set_data (l_cursor.item)
-				if not l_cursor.item.is_leaf then
-					l_row.ensure_expandable
-				end
-				i := i + 1 + l_row.subrow_count_recursive
-				l_cursor.forth
-			end
-		end
-
-	highlight_row (a_row: EV_GRID_ROW) is
-			-- Make `a_row' look like it is fully selected.
-		require
-			a_row_not_void: a_row /= Void
-		do
-			if grid.has_focus then
-				a_row.set_background_color (preferences.editor_data.selection_background_color)
-			else
-				a_row.set_background_color (preferences.editor_data.focus_out_selection_background_color)
-			end
-		end
-
-	dehighlight_row (a_row: EV_GRID_ROW) is
-			-- Make `a_row' look like it is not selected.
-		require
-			a_row_not_void: a_row /= Void
-		do
-			a_row.set_background_color (preferences.editor_data.class_background_color)
-		end
-
-	change_focus is
-			-- Make sure all selected rows have correct background color.
-		local
-			l_selected: LIST [EV_GRID_ROW]
-		do
-			l_selected := grid.selected_rows
-			from
-				l_selected.start
-			until
-				l_selected.after
-			loop
-				highlight_row (l_selected.item)
-				l_selected.forth
-			end
-		end
-
-	resize_grids (a_split_area: EV_SPLIT_AREA; a_x, a_y, a_width, a_height: INTEGER) is
-			-- Make sure `a_split_area' keeps its proportions.
-		require
-			a_split_area_not_void: a_split_area /= Void
-		do
-			a_split_area.set_proportion (0.7)
-		end
-
-feature {NONE} -- Incremental grid update
-
-	update_grid_incremental (an_update_list: DS_LINEAR [CDD_TREE_NODE_UPDATE]) is
-			-- Incrementally update `grid'.
-		require
-			an_update_list_valid: an_update_list = Void or else not an_update_list.has (Void)
-		local
-			l_cursor: DS_LINEAR_CURSOR [CDD_TREE_NODE_UPDATE]
-		do
-			if an_update_list /= Void then
-				l_cursor := an_update_list.new_cursor
-				from
-					l_cursor.start
-				until
-					l_cursor.after
-				loop
-					process_update (l_cursor.item)
-					l_cursor.forth
-				end
-			else
-				refresh_grid
-			end
-		end
-
-	process_update (an_update: CDD_TREE_NODE_UPDATE) is
-			-- Modify `grid' according to `an_update'..
-		require
-			an_update_not_void: an_update /= Void
-		local
-			l_path: DS_LIST_CURSOR [INTEGER]
-			l_row: EV_GRID_ROW
-			l_abort: BOOLEAN
-		do
-			l_path := an_update.path.new_cursor
-			from
-				l_path.start
-			until
-				(an_update.is_added and l_path.is_last) or
-				l_path.after or l_abort
-			loop
-				if l_row = Void then
-					l_row := subrow (l_path.item)
-				elseif l_row.subrow_count > 0 then
-					l_row := l_row.subrow (l_path.item)
-				else
-					l_abort := True
-				end
-				l_row.clear
-				l_path.forth
-			end
-			if not l_abort then
-				if an_update.is_added then
-						-- NOTE: need to be careful when parent row
-						-- already contains new node because of previous
-						-- updates or parent is not expanded and does not
-						-- contain any subrows
-					if l_row = Void or else l_row.subrow_count > 0 then
-						if l_row /= Void then
-							if l_row.subrow_count < l_path.item or else l_row.subrow (l_path.item).data /= an_update.node then
-								l_row.insert_subrow (l_path.item)
-							end
-							l_row := l_row.subrow (l_path.item)
-						else
-							l_row := subrow (l_path.item)
-							if l_row /= Void then
-								grid.insert_new_row (l_row.index)
-								l_row := grid.row (l_row.index - 1)
-							else
-								grid.insert_new_row (grid.row_count + 1)
-								l_row := grid.row (grid.row_count)
-							end
-						end
-						l_row.set_data (an_update.node)
-						if not an_update.node.is_leaf then
-							l_row.ensure_expandable
-						end
-					end
-				elseif an_update.is_removed then
-					grid.remove_row (l_row.index)
-				elseif an_update.is_changed then
-					-- Nothing to do...
-				else
-					check
-						dead_end: False
-					end
-				end
-			end
-		end
-
-	subrow (i: INTEGER): EV_GRID_ROW is
-			-- `i'-th unparented row in `grid'.
-			-- Void if i is too large.
-		require
-			valid_index: i > 0
-		local
-			j, pos: INTEGER
-		do
-			from
-				j := 1
-				pos := 1
-			until
-				j = i
-			loop
-				pos := pos + 1 + grid.row (pos).subrow_count_recursive
-				j := j + 1
-			end
-			if pos <= grid.row_count then
-				Result := grid.row (pos)
-			end
-		ensure
-			valid_result: Result /= Void implies (Result.parent_row = Void and Result.parent = grid)
-		end
-
-feature {NONE} -- Dynamic grid items
-
-	fetch_grid_item (a_col, a_row: INTEGER): EV_GRID_ITEM is
-			-- Grid item for row and column at `a_row' and `a_col'
-		require
-			a_row_valid: a_row > 0 and a_row <= grid.row_count
-			a_col_valid: a_col > 0 and a_col <= grid.column_count
-		local
-			l_node: CDD_TREE_NODE
-		do
-			l_node ?= grid.row (a_row).data
-			if l_node /= Void then
-				if a_col = 1 then
-					Result := new_tree_node_item (l_node)
-				elseif l_node.is_leaf then
-					Result := new_outcome_item (l_node.test_routine)
-				end
-			end
-		end
-
-	new_tree_node_item (a_node: CDD_TREE_NODE): EB_GRID_EDITOR_TOKEN_ITEM is
-			-- Item displaying clickable content of `a_node'
-		require
-			a_node_not_void: a_node /= Void
-		local
-			l_class: EIFFEL_CLASS_C
-			l_feature: E_FEATURE
-			l_tooltip: STRING
-		do
-			create Result
-			token_writer.new_line
-			if a_node.is_leaf then
-				l_class := a_node.test_routine.test_class.compiled_class
-				if l_class /= Void then
-					l_feature := l_class.feature_with_name (a_node.test_routine.name)
-				end
-				if l_feature /= Void then
-					token_writer.process_feature_text (a_node.tag, l_feature, False)
-					Result.set_pixmap (pixmap_from_e_feature (l_feature))
-				else
-					token_writer.process_basic_text (a_node.tag)
-					Result.set_pixmap (pixmaps.icon_pixmaps.feature_routine_icon)
-				end
-				l_tooltip := "Tags: "
-				a_node.test_routine.tags.do_all_with_index (agent (a_tooltip, a_tag: STRING; an_index: INTEGER)
-					do
-						if an_index > 1 then
-							a_tooltip.append (", ")
-							if (an_index \\ 5) = 0 then
-								a_tooltip.append ("%N")
-							end
-						end
-						a_tooltip.append (a_tag)
-					end (l_tooltip, ?, ?))
-				Result.set_tooltip (l_tooltip)
-			else
---				if a_node.has_test_class then
---					token_writer.add_class (a_node.eiffel_class)
---					Result.set_pixmap (pixmap_from_class_i (a_node.eiffel_class))
---				elseif a_node.has_feature and then a_node.eiffel_feature.e_feature /= Void then
---					token_writer.add_feature (a_node.eiffel_feature.e_feature, a_node.tag)
---					Result.set_pixmap (pixmap_from_e_feature (a_node.eiffel_feature.e_feature))
---				else
-					token_writer.process_basic_text (a_node.tag)
---				end
-				token_writer.process_basic_text (" (" + a_node.test_routine_count.out + ")")
-			end
-			Result.set_text_with_tokens (token_writer.last_line.content)
-		ensure
-			not_void: Result /= Void
-		end
-
-	new_outcome_item (a_test_routine: CDD_TEST_ROUTINE): EV_GRID_LABEL_ITEM is
-			-- Grid item showing last outcome of `a_test_routine'
-		require
-			a_test_routine_not_void: a_test_routine /= Void
-		local
-			l_last: CDD_TEST_EXECUTION_RESPONSE
-			l_tooltip: STRING
-		do
-			create Result
-			if a_test_routine.outcomes.is_empty then
-				Result.text.append ("not tested yet")
-				Result.set_foreground_color (stock_colors.grey)
-			else
-				l_last := a_test_routine.outcomes.last
-				l_tooltip := l_last.out
-				if l_last.is_fail then
-					Result.set_pixmap (pixmaps.icon_pixmaps.cdd_fail_icon)
-				elseif l_last.is_pass then
-					Result.set_pixmap (pixmaps.icon_pixmaps.cdd_pass_icon)
-				else
-					Result.set_pixmap (pixmaps.icon_pixmaps.cdd_unresolved_icon)
-				end
-				Result.set_tooltip (l_tooltip)
-			end
-		ensure
-			not_void: Result /= Void
-		end
-
 feature {NONE} -- Filter / Tree view
 
 	update_filter is
@@ -886,7 +602,7 @@ feature {NONE} -- Filter / Tree view
 				end
 				tokens.forth
 			end
-			tree_view.filtered_view.set_filters (l_tags)
+			grid.tree_view.filtered_view.set_filters (l_tags)
 		end
 
 	select_filter_text is
@@ -921,13 +637,13 @@ feature {NONE} -- Filter / Tree view
 		do
 			l_eclass ?= a_stone.class_i.compiled_class
 			create l_list.make (1)
-			if l_eclass /= Void and then tree_view.filtered_view.test_suite.has_test_case_for_class (l_eclass) then
+			if l_eclass /= Void and then cdd_manager.test_suite.has_test_case_for_class (l_eclass) then
 				l_list.put_first ("name." + l_eclass.name_in_upper)
 			else
 				l_list.put_first ("covers." + a_stone.class_i.name)
 			end
 			filter_box.set_text (l_list.first)
-			tree_view.filtered_view.set_filters (l_list)
+			grid.tree_view.filtered_view.set_filters (l_list)
 		end
 
 	select_view is
@@ -935,17 +651,17 @@ feature {NONE} -- Filter / Tree view
 			-- selected item of `tree_view_box'.
 		do
 			if tree_view_box.selected_item = tree_view_box.i_th (1) then
-				tree_view.set_view_code ({CDD_TREE_VIEW}.type_view_code)
+				grid.tree_view.set_view_code ({CDD_TREE_VIEW}.type_view_code)
 			elseif tree_view_box.selected_item = tree_view_box.i_th (2) then
-				tree_view.set_view_code ({CDD_TREE_VIEW}.outcome_view_code)
+				grid.tree_view.set_view_code ({CDD_TREE_VIEW}.outcome_view_code)
 			elseif tree_view_box.selected_item = tree_view_box.i_th (3) then
-				tree_view.set_view_code ({CDD_TREE_VIEW}.name_view_code)
+				grid.tree_view.set_view_code ({CDD_TREE_VIEW}.name_view_code)
 			elseif tree_view_box.selected_item = tree_view_box.i_th (4) then
-				tree_view.set_view_code ({CDD_TREE_VIEW}.covers_view_code)
+				grid.tree_view.set_view_code ({CDD_TREE_VIEW}.covers_view_code)
 			elseif tree_view_box.selected_item = tree_view_box.i_th (5) then
-				tree_view.set_view_code ({CDD_TREE_VIEW}.tags_view_code)
+				grid.tree_view.set_view_code ({CDD_TREE_VIEW}.tags_view_code)
 			elseif tree_view_box.selected_item = tree_view_box.i_th (6) then
-				tree_view.set_view_code ({CDD_TREE_VIEW}.failure_view_code)
+				grid.tree_view.set_view_code ({CDD_TREE_VIEW}.failure_view_code)
 			else
 				check
 					dead_end: False
@@ -953,17 +669,25 @@ feature {NONE} -- Filter / Tree view
 			end
 		end
 
+feature {NONE} -- Implementation
+
+	stock_colors: EV_STOCK_COLORS is
+			-- Predefined colors
+		once
+			create Result
+		end
+
 invariant
 
 	cdd_manager_not_void: cdd_manager /= Void
 	internal_status_update_action_not_void: internal_status_update_action /= Void
 
-	tree_view_not_void: tree_view /= Void
-
 		-- Widgets
+	grid_not_void: grid /= Void
+	related_grid_not_void: related_grid /= Void
+	details_text_not_void: details_text /= Void
 	filter_box_not_void: filter_box /= Void
 	tree_view_box_not_void: tree_view_box /= Void
-	grid_not_void: grid /= Void
 	status_label_not_void: status_label /= Void
 	testing_label_not_void: testing_label /= Void
 	debug_button_not_void: debug_button /= Void

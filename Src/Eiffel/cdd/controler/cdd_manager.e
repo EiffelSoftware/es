@@ -195,6 +195,7 @@ feature -- Status setting (CDD)
 			target.system.store
 			is_executing_enabled := True
 			status_update_actions.call ([status_udpate])
+			start_background_executing := True
 			is_changing_status := False
 		ensure
 			executing_enabled: is_executing_enabled
@@ -233,7 +234,7 @@ feature {ANY} -- Cooperative multitasking
 			-- very long so that it can be called from within GUI event loops
 		do
 			if not project.is_compiling then
-				if start_background_executing then
+				if start_background_executing and is_executing_enabled then
 					background_executor.start
 					start_background_executing := False
 				elseif background_executor.has_next_step then

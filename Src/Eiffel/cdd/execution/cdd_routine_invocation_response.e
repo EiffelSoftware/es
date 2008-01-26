@@ -98,7 +98,7 @@ feature {ANY} -- Output
 			if is_exceptional then
 				Result := "[exception]%N"
 				Result.append ("%Ttag: " + exception.exception_tag_name)
-				Result.append ("%N%Tclass: " + exception.exception_class_name)
+				Result.append ("%Tclass: " + exception.exception_class_name)
 				Result.append ("%N%Tfeature: " + exception.exception_recipient_name)
 			elseif is_normal then
 				Result := "[normal]"

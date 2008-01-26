@@ -136,8 +136,6 @@ feature -- Status setting
 					refresh
 				end
 			end
-		ensure
-
 		end
 
 feature -- Event handling

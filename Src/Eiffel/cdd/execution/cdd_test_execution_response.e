@@ -133,7 +133,7 @@ feature -- Output
 			-- String representation of `Current'.
 		do
 			create Result.make_empty
-			Result.append ("Conclusion: " + text.as_upper)
+			Result.append ("Conclusion:%N%T" + text.as_upper)
 			if setup_response /= Void then
 				Result.append ("%N%NSetup " + setup_response.out)
 				if test_response /= Void then
@@ -144,11 +144,11 @@ feature -- Output
 				end
 			end
 			if requires_maintenance then
-				Result.append ("%N%N")
+				Result.append ("%N%NRequires maintenance because of:%N%T")
 				if has_bad_communication then
 					Result.append ("bad communication")
 				elseif has_bad_context then
-					Result.append ("bad context")
+					Result.append ("bad input")
 				else
 					Result.append ("compile error")
 				end

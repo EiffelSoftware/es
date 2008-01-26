@@ -106,7 +106,6 @@ feature -- Status setting
 			end
 		ensure
 			view_code_set: view_code = a_code
-			cache_wiped_out_if_changed: (a_code /= old view_code) implies nodes_cache /= Void
 		end
 
 feature {NONE} -- Status setting
