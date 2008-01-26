@@ -87,55 +87,68 @@ feature {NONE} -- Implementation (Capturing)
 		require
 			a_status_not_void: a_status /= Void
 			a_status_valid: a_status.is_stopped
+			a_count_not_negative: a_count >= 0
 		local
+			l_call_stack: EIFFEL_CALL_STACK
+			l_cse: EIFFEL_CALL_STACK_ELEMENT
 			i: INTEGER
-			l_cse, l_cse2: EIFFEL_CALL_STACK_ELEMENT
-			an_csid: STRING
+			l_csid: STRING
 			l_dt: DT_DATE_TIME
 			l_sec: INTEGER_32
 		do
-			l_cse ?= a_status.current_call_stack_element
-			if a_status.exception_code = {EXCEP_CONST}.precondition then
-				if l_cse /= Void and then l_cse.level_in_stack < a_status.current_call_stack.count then
-					l_cse := caller (l_cse, a_status.current_call_stack)
+			l_call_stack := a_status.current_call_stack
+			skip_library := False
+
+				-- Store all object addresses which
+				-- are target of some routine call
+				-- on the current call stack
+			from
+				l_call_stack.start
+			until
+				l_call_stack.after
+			loop
+				l_cse ?= l_call_stack.item
+				if l_cse /= Void and then l_cse.current_object_value /= void and then l_cse.current_object_value.address /= void then
+					call_stack_target_objects.force (l_cse.current_object_value.address)
 				end
+				l_call_stack.forth
 			end
 
-				-- As a call stack id, we used to number of seconds
+				-- As a call stack id, we use to number of seconds
 				-- elapsed since epoch date. This can later
 				-- be used for sorting and displaying an arbitrary
 				-- date time format.
 			l_dt := system_clock.date_time_now
 			l_sec := l_dt.epoch_days (l_dt.year, l_dt.month, l_dt.day)*l_dt.seconds_in_day
 			l_sec := l_sec + l_dt.time.second_count
-			an_csid := l_sec.out
-			--an_csid := l_time.formatted_out ("yyyy/[0]mm/[0]dd [0]hh:[0]mi")
+			l_csid := l_sec.out
 
-			call_stack_target_objects.wipe_out
+				-- Extract test cases for at most `a_count'
+				-- valid stack from on the call stack,
+				-- beginning from the top. Objects for read-only
+				-- library calls are only extracted if they
+				-- are directly responsible for the exception.
+				-- Also if the top stack frame failed because of
+				-- a precondition violation, we do not extract
+				-- a test case for it.
 			from
-				l_cse2 := l_cse
-			until
-				l_cse2 = void
-			loop
-				if l_cse.current_object_value /= void and then l_cse.current_object_value.address /= void then
-					call_stack_target_objects.force (l_cse.current_object_value.address)
+				l_call_stack.start
+				if not l_call_stack.after and a_status.exception_code = {EXCEP_CONST}.precondition then
+					l_call_stack.forth
 				end
-				l_cse2 := caller (l_cse2, a_status.current_call_stack)
-			end
-
-			from
 				i := 1
 			until
-				l_cse = Void or i > a_count
+				l_call_stack.after or i > a_count
 			loop
-				l_cse := next_valid_cse (a_status, l_cse)
-				if l_cse /= Void then
-					capture_call_stack_element (l_cse, an_csid, i)
-					l_cse := caller (l_cse, a_status.current_call_stack)
+				l_cse ?= l_call_stack.item
+				if l_cse /= Void and then is_valid_cse (l_cse) then
+					capture_call_stack_element (l_cse, l_csid, i)
 					i := i + 1
 				end
+				l_call_stack.forth
 			end
 			cdd_manager.status_update_actions.call ([create {CDD_STATUS_UPDATE}.make_with_code ({CDD_STATUS_UPDATE}.capturer_extracted_code)])
+			call_stack_target_objects.wipe_out
 		end
 
 	capture_call_stack_element (a_cse: EIFFEL_CALL_STACK_ELEMENT; a_csid: STRING; a_cs_level: INTEGER) is
@@ -432,6 +445,16 @@ feature {NONE} -- Implementation (Access)
 	call_stack_target_objects: DS_HASH_SET [STRING]
 			-- Hash set for all addresses of objects which are target for a routine call represented by a frame of current call stack
 			-- This is used to prevent invariant checks for theses objects
+			-- NOTE: for now we simply check whether a object is part
+			-- of the call stack. Actually for a given stack frame,
+			-- we should only account for the objects in stack frames
+			-- below the given stack frame (assuming we can extract the
+			-- prestate).
+
+	skip_library: BOOLEAN
+			-- Should `is_valid_cse' return False if it identifies
+			-- the next call stack element as a call to a read-only
+			-- library?
 
 	is_capturing: BOOLEAN is
 			-- Are we currently capturing?
@@ -446,23 +469,6 @@ feature {NONE} -- Implementation (Access)
 			Result := an_adv.kind = {VALUE_TYPES}.reference_value or an_adv.kind = {VALUE_TYPES}.special_value
 		end
 
-	caller (a_element: EIFFEL_CALL_STACK_ELEMENT; a_call_stack: EIFFEL_CALL_STACK): EIFFEL_CALL_STACK_ELEMENT is
-			-- Call stack element which called the routine in `a_element' in `a_call_stack'.
-			-- NOTE: Void if `a_element' is first element in `a_call_stack' or caller is not a eiffel call stack element.
-		require
-			a_element_not_void: a_element /= Void
-			a_call_stack_not_void: a_call_stack /= Void
-			a_element_valid: a_call_stack.i_th (a_element.level_in_stack) = a_element
-		do
-			if a_call_stack.valid_index (a_element.level_in_stack + 1) then
-				Result ?= a_call_stack.i_th (a_element.level_in_stack + 1)
-			end
-		ensure
-			valid_result: Result = Void or else
-				(Result.level_in_stack = a_element.level_in_stack + 1 and
-				a_call_stack.i_th (Result.level_in_stack) = Result)
-		end
-
 	is_valid_cse (a_cse: EIFFEL_CALL_STACK_ELEMENT): BOOLEAN is
 			-- Are `a_cse' a valid call stack element in `an_app_status' for creating a test case?
 			-- e.g. exported to all or creation procedure?
@@ -471,44 +477,23 @@ feature {NONE} -- Implementation (Access)
 		local
 			l_class: EIFFEL_CLASS_C
 			l_feature: E_FEATURE
-			l_is_creation_call: BOOLEAN
 		do
 			if a_cse.dynamic_class /= Void and then a_cse.dynamic_class.is_eiffel_class_c then
 				l_class := a_cse.dynamic_class.eiffel_class_c
-				l_feature := a_cse.routine
-				l_is_creation_call := l_class.creation_feature = l_feature.associated_feature_i or
-					(l_class.creators /= Void and then l_class.creators.has (l_feature.name))
-				if l_is_creation_call or l_feature.export_status.is_all then
+				if not (l_class.cluster.is_library and then l_class.cluster.is_readonly) then
+					skip_library := True
+					Result := True
+				elseif not skip_library then
 					Result := True
 				end
-			end
-		end
-
-	next_valid_cse (an_app_status: APPLICATION_STATUS; a_cse: EIFFEL_CALL_STACK_ELEMENT): EIFFEL_CALL_STACK_ELEMENT is
-			-- Next valid call stack element below `a_cse' (including `a_cse') in
-			-- `an_app_status' call stack.
-		require
-			an_app_status_not_void: an_app_status /= Void
-			a_cse_not_void: a_cse /= Void
-			valid_a_cse: an_app_status.current_call_stack.i_th (a_cse.level_in_stack) = a_cse
-		local
-			i: INTEGER
-		do
-			from
-				Result := a_cse
-			until
-				Result = Void or else is_valid_cse (Result)
-			loop
-				i := Result.level_in_stack + 1
-				if an_app_status.current_call_stack.valid_index (i) then
-					Result := caller (Result, an_app_status.current_call_stack)
-				else
-					Result := Void
+				if Result then
+					l_feature := a_cse.routine
+					if not l_feature.export_status.is_all then
+						Result := l_class.creation_feature = l_feature.associated_feature_i or
+							(l_class.creators /= Void and then l_class.creators.has (l_feature.name))
+					end
 				end
 			end
-		ensure
-			valid_result: Result = Void or else Result.level_in_stack >= a_cse.level_in_stack
-			result_is_valid_cse: Result = Void or else an_app_status.current_call_stack.i_th (Result.level_in_stack) = Result
 		end
 
 	format_output_value (a_string: STRING): STRING is
@@ -536,6 +521,7 @@ feature {NONE} -- Implementation (Access)
 invariant
 	cdd_manager_not_void: cdd_manager /= Void
 	capture_observers_not_void: capture_observers /= Void
+	call_stack_target_objects_not_void: call_stack_target_objects /= Void
 
 
 end
