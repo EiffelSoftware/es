@@ -475,8 +475,10 @@ feature {NONE} -- Implementation
 			-- (Un)set current filter in test executor.
 		do
 			if toggle_filter_button.is_selected then
-				cdd_manager.background_executor.set_filter (tree_view.filtered_view)
-			else
+				if cdd_manager.background_executor.filter /= tree_view.filtered_view then
+
+				end
+			elseif cdd_manager.background_executor.filter = tree_view.filtered_view then
 				cdd_manager.background_executor.reset_filter
 			end
 		end
@@ -484,20 +486,24 @@ feature {NONE} -- Implementation
 	toggle_extraction is
 			-- Enable/Disable extraction of test cases.
 		do
-			if cdd_manager.is_extracting_enabled then
-				cdd_manager.disable_extracting
-			else
-				cdd_manager.enable_extracting
+			if not cdd_manager.is_changing_status then
+				if cdd_manager.is_extracting_enabled then
+					cdd_manager.disable_extracting
+				else
+					cdd_manager.enable_extracting
+				end
 			end
 		end
 
 	toggle_execution is
 			-- Enable/Disable execution of tests.
 		do
-			if cdd_manager.is_executing_enabled then
-				cdd_manager.disable_executing
-			else
-				cdd_manager.enable_executing
+			if not cdd_manager.is_changing_status then
+				if cdd_manager.is_executing_enabled then
+					cdd_manager.disable_executing
+				else
+					cdd_manager.enable_executing
+				end
 			end
 		end
 

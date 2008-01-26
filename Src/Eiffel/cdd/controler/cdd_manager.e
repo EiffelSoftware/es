@@ -84,6 +84,9 @@ feature -- Access (status)
 	is_executing_enabled: BOOLEAN
 			-- Do we automatically execute tests?
 
+	is_changing_status: BOOLEAN
+			-- Is `Current' changing its status?
+
 	last_updated_test_class: EIFFEL_CLASS_C
 			-- Test class which has last been processed in degree 5
 
@@ -144,12 +147,15 @@ feature -- Status setting (CDD)
 		require
 			project_initialized: project.initialized
 			extraction_disabled: not is_extracting_enabled
+			not_changing_status: not is_changing_status
 		do
+			is_changing_status := True
 			instantiate_cdd_configuration
 			cdd_conf.set_is_extracting (True)
 			target.system.store
 			is_extracting_enabled := True
 			status_update_actions.call ([status_udpate])
+			is_changing_status := False
 		ensure
 			extracting_enabled: is_extracting_enabled
 			correct_config: cdd_conf.is_extracting
@@ -161,12 +167,15 @@ feature -- Status setting (CDD)
 		require
 			project_initialized: project.initialized
 			extracting_enabled: is_extracting_enabled
+			not_changing_status: not is_changing_status
 		do
+			is_changing_status := True
 			instantiate_cdd_configuration
 			cdd_conf.set_is_extracting (False)
 			target.system.store
 			is_extracting_enabled := False
 			status_update_actions.call ([status_udpate])
+			is_changing_status := False
 		ensure
 			extracting_disabled: not is_extracting_enabled
 			correct_config: not cdd_conf.is_extracting
@@ -178,12 +187,15 @@ feature -- Status setting (CDD)
 		require
 			project_initialized: project.initialized
 			executing_disabled: not is_executing_enabled
+			not_changing_status: not is_changing_status
 		do
+			is_changing_status := True
 			instantiate_cdd_configuration
 			cdd_conf.set_is_executing (True)
 			target.system.store
 			is_executing_enabled := True
 			status_update_actions.call ([status_udpate])
+			is_changing_status := False
 		ensure
 			executing_enabled: is_executing_enabled
 			correct_config: cdd_conf.is_executing
@@ -195,12 +207,15 @@ feature -- Status setting (CDD)
 		require
 			project_initialized: project.initialized
 			executing_enabled: is_executing_enabled
+			not_changing_status: not is_changing_status
 		do
+			is_changing_status := True
 			instantiate_cdd_configuration
 			cdd_conf.set_is_executing (False)
 			target.system.store
 			is_executing_enabled := False
 			status_update_actions.call ([status_udpate])
+			is_changing_status := False
 		ensure
 			executing_disabled: not is_executing_enabled
 			correct_config: not cdd_conf.is_executing
@@ -233,9 +248,12 @@ feature {EB_CLUSTERS} -- Status setting (Eiffel Project)
 			-- Check configuration if cdd status has changed and update if so and
 			-- reiinitate background testing.
 			-- Note: This is usually called when project is opened or compiled.
+		require
+			not_changing_status: not is_changing_status
 		local
 			l_update_call: BOOLEAN
 		do
+			is_changing_status := True
 			if is_project_initialized then
 				if cdd_conf /= Void and then cdd_conf.is_extracting then
 					if not is_extracting_enabled then
@@ -270,6 +288,7 @@ feature {EB_CLUSTERS} -- Status setting (Eiffel Project)
 					start_background_executing := True
 				end
 			end
+			is_changing_status := False
 		end
 
 	add_updated_class is
