@@ -92,7 +92,11 @@ feature {NONE} -- Implementation
 			not_void: Result /= Void
 			not_empty: not Result.is_empty
 			items_not_void: not Result.has (Void)
-			context_entries_valid: Result.for_all (agent is_valid_context_entry)
+			-- NOTE (Arno): of some reason this postcondition does
+			-- not work when this class is precompiled. Segmentation
+			-- fault is thrown when calling `is_valid_context_entry'
+			-- in fast_item of PREDICATE.
+			--context_entries_valid: Result.for_all (agent is_valid_context_entry)
 		end
 
 	is_valid_context_entry (an_entry: TUPLE [id: STRING; name: STRING; inv: BOOLEAN; attributes: ARRAY [STRING]]): BOOLEAN is
