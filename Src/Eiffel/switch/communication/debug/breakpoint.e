@@ -364,40 +364,6 @@ feature -- Status
 			Result := hits_count_condition /= Void and then hits_count_condition.mode /= hits_count_condition_always
 		end
 
-feature -- Query
-
-	real_body_ids_list: LIST [INTEGER] is
-		local
-			l_class_type_list: LIST [CLASS_TYPE]
-			fi: FEATURE_I
-			lcurs: CURSOR
-		do
-			if routine /= Void and then routine.written_class /= Void then
-				l_class_type_list := routine.written_class.types
-				if l_class_type_list /= Void then
-					check routine_not_void: routine /= Void end
-					if routine.associated_class /= Void then
-						fi := routine.associated_feature_i
-						if fi /= Void then
-							create {ARRAYED_LIST [INTEGER]} Result.make (l_class_type_list.count)
-							lcurs := l_class_type_list.cursor
-							from
-								l_class_type_list.start
-							until
-								l_class_type_list.after
-							loop
-								Result.extend (fi.real_body_id (l_class_type_list.item))
-								l_class_type_list.forth
-							end
-							if l_class_type_list.valid_cursor (lcurs) then
-								l_class_type_list.go_to (lcurs)
-							end
-						end
-					end
-				end
-			end
-		end
-
 feature -- Access
 
 	is_not_useful: BOOLEAN is

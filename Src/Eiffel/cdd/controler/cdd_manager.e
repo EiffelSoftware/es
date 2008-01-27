@@ -37,13 +37,14 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_project: like project) is
+	make (dbg_mng: DEBUGGER_MANAGER; a_project: like project) is
 			-- Add `Current' to cluster observer list.
 		require
 			a_project_not_void: a_project /= Void
 		local
 			l_prj_manager: EB_PROJECT_MANAGER
 		do
+			debugger_manager := dbg_mng
 			create status_update_actions
 			create output_actions
 			create test_suite.make (Current)
@@ -59,14 +60,23 @@ feature {NONE} -- Initialization
 			l_prj_manager.load_agents.extend (agent refresh_status)
 			l_prj_manager.compile_stop_agents.extend (agent refresh_status)
 			eb_cluster_manager.add_observer (Current)
+
+			create cdd_breakpoints.make (debugger_manager, 30)
+			debugger_manager.application_prelaunching_actions.extend (agent cdd_breakpoints.update)
 		ensure
 			project_set: project = a_project
 		end
 
 feature -- Access (status)
 
+	cdd_breakpoints: CDD_BREAKPOINTS_LIST
+			-- CDD breakpoints.
+
 	test_suite: CDD_TEST_SUITE
 			-- Test suite which is managed by `Current'
+
+	debugger_manager: DEBUGGER_MANAGER
+			-- Debugger manager.
 
 	project: E_PROJECT
 			-- Project for which we manager tests
@@ -136,6 +146,26 @@ feature {DEBUGGER_MANAGER} -- Status setting (Application)
 				a_dbg_manager.application_status.exception_occurred and
 				a_dbg_manager.application_status.exception_code /= {EXCEP_CONST}.developer_exception then
 				capturer.capture_call_stack (a_dbg_manager.application_status)
+			end
+		end
+
+feature {STOPPED_HDLR} -- CDD breakpoints
+
+	execution_paused_on_breakpoint (cse: CALL_STACK_ELEMENT_CLASSIC) is
+			-- Execution paused on breakpoint
+		local
+			f: E_FEATURE
+			i: INTEGER
+		do
+			f := cse.routine
+			i := cse.break_index
+			if
+				i = f.first_breakpoint_slot_index and then
+				cdd_breakpoints.has_cdd_breakpoint (f)
+			then
+				--| We reached a CDD breakpoint
+				--| on routine `f'
+
 			end
 		end
 

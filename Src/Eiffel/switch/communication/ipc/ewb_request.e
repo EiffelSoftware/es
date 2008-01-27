@@ -219,6 +219,39 @@ feature {NONE} -- Implementation
 				send_breakpoint (bp, bp.update_status)
 				bpts.forth
 			end
+			debugger_manager.cdd_manager.cdd_breakpoints.do_all (agent (bpk: BREAKPOINT_KEY; abpts: BREAK_LIST)
+					do
+						if abpts.has_key (bpk) and then abpts.found_item.is_set_for_application then
+							--| application breakpoint already set
+						else
+							set_application_breakpoint (bpk)
+						end
+					end(?, bpts)
+				)
+		end
+
+	set_application_breakpoint (bpk: BREAKPOINT_KEY) is
+		require
+			bpk_not_void: bpk /= Void
+		local
+			l_body_ids: LIST [INTEGER_32]
+			l_real_body_id: INTEGER_32
+			l_break_op: INTEGER_32
+			l_break_line: INTEGER_32
+		do
+			l_body_ids := bpk.real_body_ids_list
+			if l_body_ids /= Void then
+				l_break_line := bpk.breakable_line_number
+				from
+					l_body_ids.start
+				until
+					l_body_ids.after
+				loop
+					l_real_body_id := l_body_ids.item
+					send_rqst_3_integer (rqst_break, l_real_body_id - 1, l_break_op, l_break_line)
+					l_body_ids.forth
+				end
+			end
 		end
 
 indexing

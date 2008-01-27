@@ -1098,7 +1098,7 @@ feature -- Implementation
 			-- Instance of cdd manager
 			-- NOTE: not sure yet where it is the best place to initiate this manager
 		once
-			create Result.make (eiffel_project)
+			create Result.make (Current, eiffel_project)
 		end
 
 invariant

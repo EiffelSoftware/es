@@ -193,6 +193,8 @@ feature -- Execution
 							--| Check if this is a Conditional Breakpoint
 						cse := l_status.current_call_stack.i_th (1)
 
+						debugger_manager.cdd_manager.execution_paused_on_breakpoint (cse)
+
 						if Debugger_manager.debugger_data.is_breakpoint_set (cse.routine, cse.break_index) then
 							bp := Debugger_manager.debugger_data.breakpoint (cse.routine, cse.break_index)
 							need_to_stop := debugger_manager.process_breakpoint (bp)
