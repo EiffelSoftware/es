@@ -15,24 +15,30 @@ feature -- Status
 		deferred
 		end
 
-	test_routine_count: INTEGER is
-			-- Number of test routines contained in subtree
+	failure_count: INTEGER is
+			-- Number of test routines failing in subtree
 		local
 			l_cursor: DS_LINEAR_CURSOR [CDD_TREE_NODE]
 		do
-			if is_leaf then
-				Result := 1
-			else
-				l_cursor := children.new_cursor
-				from
-					l_cursor.start
-				until
-					l_cursor.after
-				loop
-					Result := Result + l_cursor.item.test_routine_count
-					l_cursor.forth
+			if failure_count_cache < 0 then
+				failure_count_cache := 0
+				if is_leaf then
+					if not test_routine.outcomes.is_empty and then test_routine.outcomes.last.is_fail then
+						failure_count_cache := 1
+					end
+				else
+					l_cursor := children.new_cursor
+					from
+						l_cursor.start
+					until
+						l_cursor.after
+					loop
+						failure_count_cache := failure_count_cache + l_cursor.item.failure_count
+						l_cursor.forth
+					end
 				end
 			end
+			Result := failure_count_cache
 		end
 
 feature -- Access
@@ -53,27 +59,6 @@ feature -- Access
 			result_valid: not Result.has (Void)
 		end
 
---	NOTE: not sure whether this is used...
---	recursive_children_count: INTEGER is
---			-- Recursive count of `children'
---		local
---			l_cursor: DS_LINEAR_CURSOR [CDD_TREE_NODE]
---		do
---			if not is_leaf then
---				l_cursor := children.new_cursor
---				from
---					l_cursor.start
---				until
---					l_cursor.after
---				loop
---					Result := 1 + l_cursor.item.recursive_children_count
---					l_cursor.forth
---				end
---			end
---		ensure
---			leaf_implies_no_children: is_leaf implies Result = 0
---		end
-
 	tag: STRING
 			-- Tag matched by all leaves of this node
 
@@ -88,6 +73,15 @@ feature -- Access
 		end
 
 feature {CDD_TREE_VIEW} -- Implementation
+
+	failure_count_cache: like failure_count
+			-- Cache for `failure_count'
+
+	clear_cache is
+			-- Set `failure_count_cache' to -1
+		do
+			failure_count_cache := -1
+		end
 
 	internal_children: DS_LINKED_LIST [like Current] is
 			-- Internally stored child nodes accessible

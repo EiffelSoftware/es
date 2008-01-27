@@ -530,7 +530,11 @@ feature {NONE} -- Implementation
 			output_stream.put_line ("indexing")
 			output_stream.indent
 			output_stream.put_line ("tag: %"covers." + a_class.name_in_upper + "." +a_feature_name + "%"")
-			output_stream.put_line ("tag: %"failure." + a_csid + "." + a_csindex.out + ": " + a_feature_name + "%"")
+			if a_csindex > 9 then
+				output_stream.put_line ("tag: %"failure." + a_csid + "." + a_csindex.out + "%"")
+			else
+				output_stream.put_line ("tag: %"failure." + a_csid + ".0" + a_csindex.out + "%"")
+			end
 			output_stream.dedent
 			output_stream.put_line ("do")
 			output_stream.indent

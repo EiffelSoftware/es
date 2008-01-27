@@ -87,13 +87,13 @@ feature {NONE} -- Initialization
 			create filter_box
 			create l_item.make_with_text ("All")
 			filter_box.extend (l_item)
-			create l_item.make_with_text ("Failing%T%T(outcome.fail)")
+			create l_item.make_with_text ("Failing%T%T%T%T(outcome.fail)")
 			filter_box.extend (l_item)
-			create l_item.make_with_text ("Unresolved%T(outcome.unresolved)")
+			create l_item.make_with_text ("Unresolved%T%T%T(outcome.unresolved)")
 			filter_box.extend (l_item)
 			create l_item.make_with_text ("Extracted Test Cases%T(type.extracted)")
 			filter_box.extend (l_item)
-			create l_item.make_with_text ("Manual Test Cases%T(type.manual)")
+			create l_item.make_with_text ("Manual Test Cases%T%T(type.manual)")
 			filter_box.extend (l_item)
 			create l_item.make_with_text ("Synthesized Test Cases%T(type.synthesized)")
 			filter_box.extend (l_item)
@@ -132,34 +132,35 @@ feature {NONE} -- Initialization
 			l_hbox.set_padding (6)
 			create l_toolbar
 
-			create debug_button.make_with_text ("Dbg")
+			create debug_button
 			debug_button.select_actions.extend (agent debug_test_routine)
 			debug_button.set_tooltip ("Debug selected test routine")
-			--debug_button.set_pixmap (pixmaps.mini_pixmaps.general_next_icon)
+			debug_button.set_pixmap (pixmaps.icon_pixmaps.cdd_debug_icon)
 			l_toolbar.extend (debug_button)
 
 			create l_sep
 			l_toolbar.extend (l_sep)
 
-			create l_button.make_with_text ("New")
-			l_button.set_tooltip ("Create new manual test class")
-			--l_button.set_pixmap (pixmaps.icon_pixmaps.debug_stop_icon)
-			l_toolbar.extend (l_button)
-
-			create l_sep
-			l_toolbar.extend (l_sep)
-
-			create toggle_execution_button.make_with_text ("Exe")
+			create toggle_execution_button
+			toggle_execution_button.set_pixmap (pixmaps.icon_pixmaps.cdd_execute_icon)
 			toggle_execution_button.select_actions.extend (agent toggle_execution)
 			toggle_execution_button.set_tooltip ("Enable/Disable automatic background execution of tests")
 			--l_tbutton.set_pixmap (pixmaps.icon_pixmaps.tool_breakpoints_icon)
 			l_toolbar.extend (toggle_execution_button)
 
-			create toggle_extraction_button.make_with_text ("Ext")
+			create toggle_extraction_button
+			toggle_extraction_button.set_pixmap (pixmaps.icon_pixmaps.cdd_extract_icon)
 			toggle_extraction_button.select_actions.extend (agent toggle_extraction)
 			toggle_extraction_button.set_tooltip ("Enable/Disable automatic extraction of new test cases")
-			--l_tbutton.set_pixmap (pixmaps.icon_pixmaps.debug_run_without_breakpoint_icon)
 			l_toolbar.extend (toggle_extraction_button)
+
+			create l_sep
+			l_toolbar.extend (l_sep)
+
+			create l_button
+			l_button.set_tooltip ("Create new manual test class")
+			l_button.set_pixmap (pixmaps.icon_pixmaps.cdd_new_test_icon)
+			l_toolbar.extend (l_button)
 
 			l_hbox.extend (l_toolbar)
 
@@ -329,6 +330,7 @@ feature {NONE} -- Implementation (Basic functionality)
 					debug_button.enable_sensitive
 					toggle_extraction_button.enable_sensitive
 					toggle_execution_button.enable_sensitive
+					toggle_filter_button.enable_sensitive
 					if cdd_manager.is_extracting_enabled then
 						toggle_extraction_button.enable_select
 					else

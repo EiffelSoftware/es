@@ -43,7 +43,7 @@ feature {NONE} -- Initialization
 				l_warn.show
 
 					-- Fail safe, use blank pixmap
-				create raw_buffer.make_with_size ((33 * 16) + 1,(18 * 16) + 1)
+				create raw_buffer.make_with_size ((33 * 16) + 1,(19 * 16) + 1)
 			end
 		rescue
 			retried := True
@@ -4403,22 +4403,44 @@ feature -- Access
 
 feature -- CDD pixmaps
 
-	frozen cdd_fail_icon: EV_PIXEL_BUFFER is
-			-- CDD fail icon
+	frozen cdd_test_icon: EV_PIXEL_BUFFER is
 		once
 			Result := raw_buffer.sub_pixel_buffer (pixel_rectangle (1, 19))
 		end
 
-	frozen cdd_pass_icon: EV_PIXEL_BUFFER is
-			-- CDD pass icon
+	frozen cdd_test_unresolved_icon: EV_PIXEL_BUFFER is
 		once
 			Result := raw_buffer.sub_pixel_buffer (pixel_rectangle (2, 19))
 		end
 
-	frozen cdd_unresolved_icon: EV_PIXEL_BUFFER is
-			-- CDD unresolved icon
+	frozen cdd_test_fail_icon: EV_PIXEL_BUFFER is
 		once
 			Result := raw_buffer.sub_pixel_buffer (pixel_rectangle (3, 19))
+		end
+
+	frozen cdd_test_pass_icon: EV_PIXEL_BUFFER is
+		once
+			Result := raw_buffer.sub_pixel_buffer (pixel_rectangle (4, 19))
+		end
+
+	frozen cdd_execute_icon: EV_PIXEL_BUFFER is
+		once
+			Result := raw_buffer.sub_pixel_buffer (pixel_rectangle (5, 19))
+		end
+
+	frozen cdd_new_test_icon: EV_PIXEL_BUFFER is
+		once
+			Result := raw_buffer.sub_pixel_buffer (pixel_rectangle (6, 19))
+		end
+
+	frozen cdd_extract_icon: EV_PIXEL_BUFFER is
+		once
+			Result := raw_buffer.sub_pixel_buffer (pixel_rectangle (7, 19))
+		end
+
+	frozen cdd_debug_icon: EV_PIXEL_BUFFER is
+		once
+			Result := raw_buffer.sub_pixel_buffer (pixel_rectangle (8, 19))
 		end
 
 feature {NONE} -- Query

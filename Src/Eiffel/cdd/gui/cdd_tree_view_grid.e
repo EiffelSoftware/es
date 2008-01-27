@@ -25,7 +25,7 @@ inherit
 			default_create, copy
 		end
 
-	EVS_GRID_PND_SUPPORT
+	EB_EDITOR_TOKEN_GRID_SUPPORT
 		export
 			{NONE} all
 		undefine
@@ -80,11 +80,9 @@ feature {NONE} -- Initialization
 			focus_out_actions.extend (agent change_focus)
 			set_focused_selection_text_color (preferences.editor_data.selection_text_color)
 
-			set_column_count_to (2)
+			set_column_count_to (1)
 			column (1).set_title ("")
-			column (1).set_width (200)
-			column (2).set_title ("Outcome")
-			column (2).set_width (45)
+			column (1).set_width (300)
 
 			tree_view.add_client
 			tree_view.change_actions.extend (internal_update_agent)
@@ -335,36 +333,121 @@ feature {NONE} -- Dynamic grid items
 		do
 			l_node ?= grid.row (a_row).data
 			if l_node /= Void then
-				if a_col = 1 then
-					Result := new_tree_node_item (l_node)
-				elseif l_node.is_leaf then
-					Result := new_outcome_item (l_node.test_routine)
-				end
+				Result := new_token_item (l_node)
 			end
 		end
 
-	new_tree_node_item (a_node: CDD_TREE_NODE): EB_GRID_EDITOR_TOKEN_ITEM is
-			-- Item displaying clickable content of `a_node'
+
+	new_token_item (a_node: CDD_TREE_NODE): EB_GRID_EDITOR_TOKEN_ITEM is
+			-- New item for displaying in the tree
 		require
 			a_node_not_void: a_node /= Void
 		local
-			l_class: EIFFEL_CLASS_C
+			l_root, l_p1, l_p2: CDD_TREE_NODE
+			l_tag, l_tooltip: STRING
+			i, l_sec: INTEGER
+			l_universe: UNIVERSE_I
+			l_list: LIST [CLASS_I]
+			l_class: CLASS_I
+			l_eclass: CLASS_C
 			l_feature: E_FEATURE
-			l_tooltip: STRING
+			l_dt: DT_DATE_TIME
+			l_regex: RX_PCRE_REGULAR_EXPRESSION
+			l_tag_list: DS_LINEAR [STRING]
 		do
+			from
+				l_root := a_node
+				l_tag := a_node.tag
+				i := 1
+			until
+				l_root.parent = Void
+			loop
+				i := i + 1
+				l_root := l_root.parent
+				l_tag := l_root.tag + "." + l_tag
+				if l_p1 = Void then
+					l_p1 := l_root
+					l_p2 := l_root.parent
+				end
+			end
 			create Result
 			token_writer.new_line
-			if a_node.is_leaf then
-				l_class := a_node.test_routine.test_class.compiled_class
-				if l_class /= Void then
-					l_feature := l_class.feature_with_name (a_node.test_routine.name)
+			l_universe := tree_view.filtered_view.test_suite.cdd_manager.project.universe
+
+					-- Are we displaying a class?
+			if	(i = 1 and (tree_view.view_code = {CDD_TREE_VIEW}.name_view_code
+						or tree_view.view_code = {CDD_TREE_VIEW}.covers_view_code)) or
+					(i = 2 and tree_view.view_code = {CDD_TREE_VIEW}.tags_view_code and then
+					(l_p1.tag.is_case_insensitive_equal ("covers") or l_p1.tag.is_case_insensitive_equal ("name"))) then
+				Result.set_pixmap (pixmaps.icon_pixmaps.class_normal_icon)
+				l_list := l_universe.classes_with_name (a_node.tag)
+				if not l_list.is_empty then
+					l_class := l_list.first
+					Result.set_pixmap (pixmap_from_class_i (l_class))
+					token_writer.add_class (l_class)
+				end
+
+					-- Are we displaying a routine?
+			elseif	(i = 2 and (tree_view.view_code = {CDD_TREE_VIEW}.covers_view_code)) or
+					(i = 3 and then tree_view.view_code = {CDD_TREE_VIEW}.tags_view_code and then
+					l_p2.tag.is_case_insensitive_equal ("covers")) then
+				Result.set_pixmap (pixmaps.icon_pixmaps.feature_routine_icon_buffer)
+				l_list := l_universe.classes_with_name (l_p1.tag)
+				if not l_list.is_empty and then l_list.first.is_compiled then
+					l_eclass := l_list.first.compiled_class
+					l_feature := l_eclass.feature_with_name (a_node.tag)
+					if l_feature /= Void then
+						token_writer.process_feature_text (a_node.tag, l_feature, False)
+						Result.set_pixmap (pixmap_from_e_feature (l_feature))
+					end
+				end
+
+					-- Are we displaying a call stack id (extraction date/time)?
+			elseif (i = 1 and tree_view.view_code = {CDD_TREE_VIEW}.failure_view_code) or
+					(i = 2 and then tree_view.view_code = {CDD_TREE_VIEW}.tags_view_code and then
+					l_p1.tag.is_case_insensitive_equal ("failure")) then
+				if a_node.tag.is_integer then
+					l_sec := a_node.tag.to_integer
+					create l_dt.make_from_epoch (l_sec)
+					token_writer.process_basic_text (l_dt.out)
+				end
+
+					-- Are we displaying a call stack element?
+			elseif a_node.is_leaf and ((i = 2 and tree_view.view_code = {CDD_TREE_VIEW}.failure_view_code) or
+					(i = 3 and then tree_view.view_code = {CDD_TREE_VIEW}.tags_view_code and then
+					l_p2.tag.is_case_insensitive_equal ("failure"))) then
+				l_tag_list := a_node.test_routine.tags_with_prefix ("covers.")
+				if not l_tag_list.is_empty then
+					create l_regex.make
+					l_regex.compile ("^covers\.([a-zA-Z][a-zA-Z0-9_]*)\.([a-zA-Z][a-zA-Z0-9_]*)")
+					l_regex.match (l_tag_list.first)
+					if l_regex.match_count > 2 then
+						l_list := l_universe.classes_with_name (l_regex.captured_substring (1))
+						if not l_list.is_empty and then l_list.first.is_compiled then
+							l_eclass := l_list.first.compiled_class
+							l_feature := l_eclass.feature_with_name (l_regex.captured_substring (2))
+							if l_feature /= Void then
+								token_writer.process_basic_text (a_node.tag + ": ")
+								token_writer.process_feature_text (l_feature.name, l_feature, False)
+								token_writer.process_basic_text (" (")
+								token_writer.process_class_name_text (l_list.first.name, l_list.first, False)
+								token_writer.process_basic_text (")")
+							end
+						end
+					end
+				end
+
+					-- Are we displaying a test routine?
+			elseif a_node.is_leaf then
+				l_eclass := a_node.test_routine.test_class.compiled_class
+				Result.set_spacing (4)
+				if l_eclass /= Void then
+					l_feature := l_eclass.feature_with_name (a_node.test_routine.name)
 				end
 				if l_feature /= Void then
 					token_writer.process_feature_text (a_node.tag, l_feature, False)
-					Result.set_pixmap (pixmap_from_e_feature (l_feature))
 				else
 					token_writer.process_basic_text (a_node.tag)
-					Result.set_pixmap (pixmaps.icon_pixmaps.feature_routine_icon)
 				end
 				l_tooltip := "Tags: "
 				a_node.test_routine.tags.do_all_with_index (agent (a_tooltip, a_tag: STRING; an_index: INTEGER)
@@ -378,49 +461,31 @@ feature {NONE} -- Dynamic grid items
 						a_tooltip.append (a_tag)
 					end (l_tooltip, ?, ?))
 				Result.set_tooltip (l_tooltip)
+			end
+
+				-- We did not display any of the above, so lets
+				-- just simply add the node tag
+			if token_writer.last_line.content.is_empty then
+				token_writer.process_basic_text (a_node.tag)
+			end
+				-- Add tooltip and failing routine count if necessary
+			if not a_node.is_leaf then
+				Result.set_tooltip (l_tag)
+				if a_node.failure_count > 0 then
+					token_writer.process_basic_text (" (" + a_node.failure_count.out + ")")
+				end
 			else
---				if a_node.has_test_class then
---					token_writer.add_class (a_node.eiffel_class)
---					Result.set_pixmap (pixmap_from_class_i (a_node.eiffel_class))
---				elseif a_node.has_feature and then a_node.eiffel_feature.e_feature /= Void then
---					token_writer.add_feature (a_node.eiffel_feature.e_feature, a_node.tag)
---					Result.set_pixmap (pixmap_from_e_feature (a_node.eiffel_feature.e_feature))
---				else
-					token_writer.process_basic_text (a_node.tag)
---				end
-				token_writer.process_basic_text (" (" + a_node.test_routine_count.out + ")")
+				if a_node.test_routine.outcomes.is_empty then
+					Result.set_pixmap (pixmaps.icon_pixmaps.cdd_test_icon)
+				elseif a_node.test_routine.outcomes.last.is_fail then
+					Result.set_pixmap (pixmaps.icon_pixmaps.cdd_test_fail_icon)
+				elseif a_node.test_routine.outcomes.last.is_pass then
+					Result.set_pixmap (pixmaps.icon_pixmaps.cdd_test_pass_icon)
+				else
+					Result.set_pixmap (pixmaps.icon_pixmaps.cdd_test_unresolved_icon)
+				end
 			end
 			Result.set_text_with_tokens (token_writer.last_line.content)
-		ensure
-			not_void: Result /= Void
-		end
-
-	new_outcome_item (a_test_routine: CDD_TEST_ROUTINE): EV_GRID_LABEL_ITEM is
-			-- Grid item showing last outcome of `a_test_routine'
-		require
-			a_test_routine_not_void: a_test_routine /= Void
-		local
-			l_last: CDD_TEST_EXECUTION_RESPONSE
-			l_tooltip: STRING
-		do
-			create Result
-			if a_test_routine.outcomes.is_empty then
-				Result.text.append ("not tested yet")
-				Result.set_foreground_color (stock_colors.grey)
-			else
-				l_last := a_test_routine.outcomes.last
-				l_tooltip := l_last.out
-				if l_last.is_fail then
-					Result.set_pixmap (pixmaps.icon_pixmaps.cdd_fail_icon)
-				elseif l_last.is_pass then
-					Result.set_pixmap (pixmaps.icon_pixmaps.cdd_pass_icon)
-				else
-					Result.set_pixmap (pixmaps.icon_pixmaps.cdd_unresolved_icon)
-				end
-				Result.set_tooltip (l_tooltip)
-			end
-		ensure
-			not_void: Result /= Void
 		end
 
 feature {NONE} -- Implementation

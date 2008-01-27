@@ -12,7 +12,7 @@ class
 	CDD_TREE_PARENT_NODE
 
 inherit
-	
+
 	CDD_TREE_NODE
 		redefine
 			internal_children
@@ -33,6 +33,7 @@ feature {NONE} -- Initialization
 			tag := a_tag
 			parent := a_parent
 			create internal_children.make
+			clear_cache
 		ensure
 			tag_set: tag = a_tag
 			parent_set: parent = a_parent

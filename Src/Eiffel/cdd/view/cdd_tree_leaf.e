@@ -35,6 +35,7 @@ feature {NONE} -- Initialization
 			tag := a_tag
 			parent := a_parent
 			test_routine := a_routine
+			clear_cache
 		ensure
 			tag_set: tag = a_tag
 			test_routine_set: test_routine = a_routine

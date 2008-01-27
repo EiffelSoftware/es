@@ -480,6 +480,7 @@ feature {NONE} -- Tree modification
 				end
 				l_cursor.go_after
 				l_tokens.forth
+				last_node.clear_cache
 				if not last_node.is_leaf then
 					l_cursor := last_node.internal_children.new_cursor
 				end
@@ -520,6 +521,7 @@ feature {NONE} -- Tree modification
 			until
 				l_node = Void
 			loop
+				l_node.clear_cache
 				if l_node = a_leaf then
 					l_remove := l_node
 				else
@@ -560,6 +562,7 @@ feature {NONE} -- Tree modification
 			until
 				l_node = Void
 			loop
+				l_node.clear_cache
 				l_path.put_first (index_of_node (l_node))
 				l_node := l_node.parent
 			end
