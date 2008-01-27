@@ -105,7 +105,7 @@ feature {NONE} -- Initialization
 
 			create toggle_filter_button.make_with_text ("Restrict")
 			toggle_filter_button.select_actions.extend (agent toggle_filter)
-			toggle_filter_button.set_tooltip ("Only execute visible test routines")
+			toggle_filter_button.set_tooltip ("Only execute filtered test routines")
 			--l_button.set_pixmap (pixmaps.icon_pixmaps.debug_stop_icon)
 			if not cdd_manager.is_project_initialized then
 				toggle_filter_button.disable_sensitive
