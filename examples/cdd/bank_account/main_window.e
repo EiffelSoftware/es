@@ -149,7 +149,6 @@ feature {NONE} -- Implementation
 		end
 
 	read_amount is
-			--
 		do
 			last_amount := 0
 			status_label.text.wipe_out
@@ -169,7 +168,6 @@ feature -- Access
 feature {NONE} -- Bank account operations
 
 	deposit_amount is
-			--
 		do
 			read_amount
 			if last_amount /= 0 then
@@ -179,7 +177,6 @@ feature {NONE} -- Bank account operations
 		end
 
 	withdraw_amount is
-			--
 		do
 			read_amount
 			if last_amount /= 0 then
