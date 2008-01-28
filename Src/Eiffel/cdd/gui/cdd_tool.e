@@ -63,6 +63,7 @@ feature {NONE} -- Initialization
 				debug_button.disable_sensitive
 				toggle_extraction_button.disable_sensitive
 				toggle_execution_button.disable_sensitive
+				new_test_routine_button.disable_sensitive
 			end
 		ensure then
 			cdd_manager_set: cdd_manager = develop_window.eb_debugger_manager.cdd_manager
@@ -125,7 +126,6 @@ feature {NONE} -- Initialization
 			l_hbox: EV_HORIZONTAL_BOX
 			l_toolbar: EV_TOOL_BAR
 			l_sep: EV_TOOL_BAR_SEPARATOR
-			l_button: EV_TOOL_BAR_BUTTON
 			l_label: EV_LABEL
 		do
 			create l_hbox
@@ -157,10 +157,11 @@ feature {NONE} -- Initialization
 			create l_sep
 			l_toolbar.extend (l_sep)
 
-			create l_button
-			l_button.set_tooltip ("Create new manual test class")
-			l_button.set_pixmap (pixmaps.icon_pixmaps.cdd_new_test_icon)
-			l_toolbar.extend (l_button)
+			create new_test_routine_button
+			new_test_routine_button.set_tooltip ("Create new manual test class")
+			new_test_routine_button.select_actions.extend (agent create_new_test_routine)
+			new_test_routine_button.set_pixmap (pixmaps.icon_pixmaps.cdd_new_test_icon)
+			l_toolbar.extend (new_test_routine_button)
 
 			l_hbox.extend (l_toolbar)
 
@@ -331,6 +332,7 @@ feature {NONE} -- Implementation (Basic functionality)
 					toggle_extraction_button.enable_sensitive
 					toggle_execution_button.enable_sensitive
 					toggle_filter_button.enable_sensitive
+					new_test_routine_button.enable_sensitive
 					if cdd_manager.is_extracting_enabled then
 						toggle_extraction_button.enable_select
 					else
@@ -437,6 +439,9 @@ feature {NONE} -- Access (Buttons)
 
 	toggle_execution_button: EV_TOOL_BAR_TOGGLE_BUTTON
 			-- Button for enabling/disabling automatic execution
+
+	new_test_routine_button: EV_TOOL_BAR_BUTTON
+			-- Button for creating new test routine
 
 feature {NONE} -- Implementation (Grids)
 
@@ -563,6 +568,15 @@ feature {NONE} -- Implementation (Buttons)
 					cdd_manager.enable_executing
 				end
 			end
+		end
+
+	create_new_test_routine is
+			-- Show dialog for creating new test class
+		local
+			l_dialog: CDD_CREATE_TEST_ROUTINE_DIALOG
+		do
+			create l_dialog.make_default (develop_window.history_manager.target, cdd_manager)
+			l_dialog.call_default
 		end
 
 	show_message (a_msg: STRING) is
@@ -698,5 +712,6 @@ invariant
 
 	toggle_extraction_button_not_void: toggle_extraction_button /= Void
 	toggle_execution_button_not_void: toggle_execution_button /= Void
+	new_test_routine_button_not_void: new_test_routine_button /= Void
 
 end

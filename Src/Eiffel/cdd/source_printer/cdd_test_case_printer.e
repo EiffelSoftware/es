@@ -77,7 +77,10 @@ feature -- Access
 	cdd_manager: CDD_MANAGER
 			-- CDD Manager
 
-feature	-- Basic operations
+	last_extracted_class: CLASS_I
+			-- Last printed class by `Current'
+
+feature {CDD_CAPTURER} -- Basic operations
 
 	start_capturing (an_adv: ABSTRACT_DEBUG_VALUE; a_feature: E_FEATURE; a_class: CLASS_C; a_csid: STRING; a_cs_level: INTEGER) is
 			-- Start capturing state for `a_feature' in `a_class'.
@@ -255,6 +258,8 @@ feature	-- Basic operations
 				cdd_manager.project.system.system.set_rebuild (True)
 				if is_gui then
 					cluster_manager.add_class_to_cluster (new_class_name.as_lower + ".e", l_tests_cluster, new_class_path)
+					last_extracted_class := cluster_manager.last_added_class
+					cdd_manager.status_update_actions.call ([status_update])
 				end
 				parse_output_stream
 				if not has_parse_error then
@@ -347,7 +352,6 @@ feature {NONE} -- Implementation
 			initialized_and_not_failed: is_initialized and not failed
 		local
 			l_date: DATE_TIME
-			l_uuid: UUID
 		do
 			output_stream.put_line ("indexing%N")
 			output_stream.indent
@@ -615,6 +619,14 @@ feature {NONE} -- Implementation
 			-- UUID generator for creating uuid's
 		once
 			create Result
+		ensure
+			not_void: Result /= Void
+		end
+
+	status_update: CDD_STATUS_UPDATE is
+			-- Status update for `Current'
+		once
+			create Result.make_with_code ({CDD_STATUS_UPDATE}.printer_step_code)
 		ensure
 			not_void: Result /= Void
 		end

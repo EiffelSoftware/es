@@ -51,7 +51,8 @@ feature {NONE} -- Initialization
 			create background_executor.make (Current)
 			create debug_executor.make (Current)
 			create capturer.make (Current)
-			capturer.capture_observers.put_last (create {CDD_TEST_CASE_PRINTER}.make (Current))
+			create printer.make (Current)
+			capturer.capture_observers.put_last (printer)
 
 			status_update_actions.extend (agent process_update)
 
@@ -124,6 +125,11 @@ feature -- Access (execution)
 
 	debug_executor: CDD_TEST_DEBUGGER
 			-- Test debugger for debugging tests
+
+feature -- Access (Extraction)
+
+	printer: CDD_TEST_CASE_PRINTER
+			-- Printer for extracting test cases
 
 feature {DEBUGGER_MANAGER} -- Status setting (Application)
 
@@ -429,6 +435,7 @@ invariant
 	executor_not_void: background_executor /= Void
 	debugger_not_void: debug_executor /= Void
 	capturer_not_void: capturer /= Void
+	printer_not_void: printer /= Void
 	status_update_actions_not_void: status_update_actions /= Void
 	output_actions_not_void: output_actions /= Void
 	last_updated_test_class_valid: (last_updated_test_class /= Void) implies

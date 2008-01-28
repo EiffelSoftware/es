@@ -895,7 +895,7 @@ feature -- Modification (Change class name)
 			end
 		end
 
-feature {NONE} -- Implementation
+feature -- Implementation
 
 	text: STRING
 			-- Current class text.

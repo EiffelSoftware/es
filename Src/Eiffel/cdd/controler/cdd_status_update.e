@@ -43,6 +43,8 @@ feature -- Access
 	capturer_extracted_code,
 			-- The capturer has extracted a
 			-- number of new test classes
+	printer_step_code,
+			-- The printer has extracted a new class,
 	capturer_error_code,
 			-- There was an error with capturing a new test case
 	execution_error_code: INTEGER is unique
@@ -60,7 +62,8 @@ feature -- Access
 				a_code = debugger_step_code or
 				a_code = capturer_extracted_code or
 				a_code = capturer_error_code or
-				a_code = execution_error_code
+				a_code = execution_error_code or
+				a_code = printer_step_code
 		end
 
 invariant

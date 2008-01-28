@@ -178,7 +178,7 @@ feature {NONE} -- Implementation
 			if test_class_ancestor /= Void then
 				l_incremental := True
 				fill_with_descendants (test_class_ancestor, l_old_table)
-				
+
 				-- Create remove update for each remaining test routine in `l_old_table'
 				from
 					l_old_table.start
@@ -228,6 +228,9 @@ feature {NONE} -- Implementation
 			until
 				l_list.after
 			loop
+					-- NOTE: if the EIFGEN is messed up enough, it can happen
+					-- that l_list has two different EIFFEL_CLASS_C entries
+					-- for the same class name.
 				l_ec ?= l_list.item
 				if l_ec /= Void then
 					if not (l_ec.is_deferred or l_ec.is_generic) then

@@ -375,10 +375,10 @@ feature {NONE} -- Dynamic grid items
 			l_universe := tree_view.filtered_view.test_suite.cdd_manager.project.universe
 
 					-- Are we displaying a class?
-			if	(i = 1 and (tree_view.view_code = {CDD_TREE_VIEW}.name_view_code
+			if	not a_node.is_leaf and ((i = 1 and (tree_view.view_code = {CDD_TREE_VIEW}.name_view_code
 						or tree_view.view_code = {CDD_TREE_VIEW}.covers_view_code)) or
 					(i = 2 and tree_view.view_code = {CDD_TREE_VIEW}.tags_view_code and then
-					(l_p1.tag.is_case_insensitive_equal ("covers") or l_p1.tag.is_case_insensitive_equal ("name"))) then
+					(l_p1.tag.is_case_insensitive_equal ("covers") or l_p1.tag.is_case_insensitive_equal ("name")))) then
 				Result.set_pixmap (pixmaps.icon_pixmaps.class_normal_icon)
 				l_list := l_universe.classes_with_name (a_node.tag)
 				if not l_list.is_empty then
@@ -388,9 +388,9 @@ feature {NONE} -- Dynamic grid items
 				end
 
 					-- Are we displaying a routine?
-			elseif	(i = 2 and (tree_view.view_code = {CDD_TREE_VIEW}.covers_view_code)) or
+			elseif	not a_node.is_leaf and ((i = 2 and (tree_view.view_code = {CDD_TREE_VIEW}.covers_view_code)) or
 					(i = 3 and then tree_view.view_code = {CDD_TREE_VIEW}.tags_view_code and then
-					l_p2.tag.is_case_insensitive_equal ("covers")) then
+					l_p2.tag.is_case_insensitive_equal ("covers"))) then
 				Result.set_pixmap (pixmaps.icon_pixmaps.feature_routine_icon_buffer)
 				l_list := l_universe.classes_with_name (l_p1.tag)
 				if not l_list.is_empty and then l_list.first.is_compiled then
@@ -403,9 +403,9 @@ feature {NONE} -- Dynamic grid items
 				end
 
 					-- Are we displaying a call stack id (extraction date/time)?
-			elseif (i = 1 and tree_view.view_code = {CDD_TREE_VIEW}.failure_view_code) or
+			elseif	not a_node.is_leaf and ((i = 1 and tree_view.view_code = {CDD_TREE_VIEW}.failure_view_code) or
 					(i = 2 and then tree_view.view_code = {CDD_TREE_VIEW}.tags_view_code and then
-					l_p1.tag.is_case_insensitive_equal ("failure")) then
+					l_p1.tag.is_case_insensitive_equal ("failure"))) then
 				if a_node.tag.is_integer then
 					l_sec := a_node.tag.to_integer
 					create l_dt.make_from_epoch (l_sec)

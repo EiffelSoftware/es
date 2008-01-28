@@ -28,14 +28,31 @@ feature {NONE} -- Initialization
 			-- Initialize widgets and subscribe as observer
 		local
 			l_manager: CDD_MANAGER
+			l_hbox: EV_HORIZONTAL_BOX
+			l_frame: EV_FRAME
+			l_button: EV_BUTTON
 		do
 			create widget
-			widget.set_style ({EV_FRAME_CONSTANTS}.ev_frame_lowered)
+
+			create l_frame
+			l_frame.set_style ({EV_FRAME_CONSTANTS}.ev_frame_lowered)
 			create text_area.make (develop_window)
 			text_area.drop_actions.extend (agent drop_class)
 			text_area.drop_actions.extend (agent drop_feature)
 			text_area.drop_actions.extend (agent drop_cluster)
-			widget.extend (text_area.widget)
+			text_area.disable_editable
+			text_area.set_read_only (True)
+			l_frame.extend (text_area.widget)
+			widget.extend (l_frame)
+
+			create l_hbox
+			l_hbox.set_border_width (3)
+			create l_button.make_with_text_and_action ("Clear", agent clear_text_area)
+			l_hbox.extend (l_button)
+			l_hbox.disable_item_expand (l_button)
+			widget.extend (l_hbox)
+			widget.disable_item_expand (l_hbox)
+
 			internal_append_text_action := agent append_text
 			internal_append_status_update_action := agent append_status_update
 			internal_append_routine_update_action := agent append_routine_updates
@@ -50,7 +67,7 @@ feature -- Access
 	title: STRING is "CDD Output"
 			-- Title for `Current'
 
-	widget: EV_FRAME
+	widget: EV_VERTICAL_BOX
 			-- Frame containing output window
 
 feature {NONE} -- Implementation
@@ -71,7 +88,8 @@ feature {NONE} -- Implementation
 		require
 			a_text_not_void: a_text /= Void
 		do
-			text_area.text_displayed.add (a_text)
+			text_area.handle_before_processing (True)
+			text_area.text_displayed.process_basic_text (a_text)
 			update_text_area
 		end
 
@@ -79,12 +97,23 @@ feature {NONE} -- Implementation
 			-- Append message for `an_update' to `text_area'.
 		require
 			an_update_not_void: an_update /= Void
+		local
+			l_formatter: CLICKABLE_TEXT
+			l_class: CLASS_I
 		do
-			if an_update.code = {CDD_STATUS_UPDATE}.executor_step_code then
-				if develop_window.eb_debugger_manager.cdd_manager.background_executor.is_compiling then
-					text_area.clear_window
-				end
+			text_area.handle_before_processing (True)
+			inspect
+				an_update.code
+			when {CDD_STATUS_UPDATE}.printer_step_code then
+				l_formatter := text_area.text_displayed
+				l_formatter.process_basic_text ("Extracted new test class ")
+				l_class := debugger_manager.cdd_manager.printer.last_extracted_class
+				l_formatter.process_class_name_text (l_class.name, l_class, False)
+				l_formatter.add_new_line
+			else
+
 			end
+			update_text_area
 		end
 
 	append_routine_updates (some_updates: DS_LINEAR [CDD_TEST_ROUTINE_UPDATE]) is
@@ -92,6 +121,7 @@ feature {NONE} -- Implementation
 		require
 			valid_updates: (some_updates /= Void) implies (not some_updates.has (Void))
 		do
+			text_area.handle_before_processing (True)
 			if some_updates /= Void then
 				some_updates.do_all (agent append_routine_update)
 			end
@@ -152,7 +182,14 @@ feature {NONE} -- Implementation
 	update_text_area is
 			-- Remove top lines in `text_area' and scroll to end.
 		do
+			text_area.handle_after_processing
 			text_area.scroll_to_end_when_ready
+		end
+
+	clear_text_area is
+			-- Clear `text_area'.
+		do
+			text_area.clear_window
 		end
 
 	internal_recycle is
@@ -166,7 +203,6 @@ feature {NONE} -- Implementation
 			l_manager.test_suite.test_routine_update_actions.prune_all (internal_append_routine_update_action)
 			Precursor
 		end
-
 
 invariant
 	internal_append_routine_update_action_not_void: internal_append_routine_update_action /= Void
