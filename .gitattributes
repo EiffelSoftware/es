@@ -274,6 +274,7 @@ Delivery/studio/config/vxworks/templates/egc_dynlib.template -text
 Delivery/studio/config/windows/bcb/appl.ico -text
 Delivery/studio/config/windows/gnu/gnu.ico -text
 Delivery/studio/config/windows/msc/appl.ico -text
+Delivery/studio/help/defaults/manual_test_class.cls -text
 Delivery/studio/help/errors/ECMA-VHPR -text
 Delivery/studio/help/errors/VIIN -text
 Delivery/studio/help/errors/VPIR -text
