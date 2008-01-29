@@ -233,7 +233,12 @@ feature {NONE} -- Implementation
 					-- for the same class name.
 				l_ec ?= l_list.item
 				if l_ec /= Void then
-					if not (l_ec.is_deferred or l_ec.is_generic) then
+					-- Need to check whether there is an entry for `l_ec'
+					-- in `test_class_table' so we do not create two
+					-- test classes for `l_ec'. This happened in very
+					-- rare situation where the system has two compiled
+					-- class instances for the same class name.
+					if not (l_ec.is_deferred or l_ec.is_generic) and not test_class_table.has (l_ec.name_in_upper) then
 						l_update := True
 						an_old_list.search (l_ec.name_in_upper)
 						if an_old_list.found then
