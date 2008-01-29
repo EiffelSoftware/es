@@ -2,7 +2,7 @@
 <system xmlns="http://www.eiffel.com/developers/xml/configuration-1-2-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-2-0 http://www.eiffel.com/developers/xml/configuration-1-2-0.xsd" name="manual_test_001" uuid="87597A85-0813-4584-86FD-A2A47D4A41D5">
 	<target name="sut">
 		<root class="ROOT_CLASS" feature="make"/>
-		<cdd enabled="true" extracting="true" capture_replay="false"/>
+                <cdd extract="true" execute="true"/>
 		<option warning="true">
 			<assertions precondition="true" postcondition="true" check="true" supplier_precondition="true"/>
 		</option>
