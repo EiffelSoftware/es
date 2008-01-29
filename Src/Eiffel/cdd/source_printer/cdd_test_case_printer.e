@@ -624,7 +624,7 @@ feature {NONE} -- Implementation
 		end
 
 	status_update: CDD_STATUS_UPDATE is
-			-- Status update for `Current'
+			-- New status update for `Current'
 		once
 			create Result.make_with_code ({CDD_STATUS_UPDATE}.printer_step_code)
 		ensure

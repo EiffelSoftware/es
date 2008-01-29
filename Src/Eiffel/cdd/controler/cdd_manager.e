@@ -68,7 +68,32 @@ feature {NONE} -- Initialization
 			project_set: project = a_project
 		end
 
-feature -- Access (status)
+feature -- Status report
+
+	is_project_initialized: BOOLEAN is
+			-- Has `project' been initialized?
+			-- Note that CDD is not active without an initialized project.
+		do
+			Result := project.initialized and project.system_defined -- target /= Void
+		end
+
+	is_extracting_enabled: BOOLEAN is
+			-- Is test case extracting enabled?
+		require
+			is_project_initialized: is_project_initialized
+		do
+			Result := configuration.is_extracting_enabled
+		end
+
+	is_executing_enabled: BOOLEAN is
+			-- Is background test case execution enabled?
+		require
+			is_project_initialized: is_project_initialized
+		do
+			Result := configuration.is_executing_enabled
+		end
+
+feature -- Access
 
 	cdd_breakpoints: CDD_BREAKPOINTS_LIST
 			-- CDD breakpoints.
@@ -77,26 +102,10 @@ feature -- Access (status)
 			-- Test suite which is managed by `Current'
 
 	debugger_manager: DEBUGGER_MANAGER
-			-- Debugger manager.
+			-- Debugger manager
 
 	project: E_PROJECT
 			-- Project for which we manager tests
-
-	is_project_initialized: BOOLEAN is
-			-- Has `project' been initialized?
-			-- NOTE: This is the main condition whether cdd is active or not
-		do
-			Result := project.initialized and project.system_defined -- target /= Void
-		end
-
-	is_extracting_enabled: BOOLEAN
-			-- Is capturing currently enabled?
-
-	is_executing_enabled: BOOLEAN
-			-- Do we automatically execute tests?
-
-	is_changing_status: BOOLEAN
-			-- Is `Current' changing its status?
 
 	last_updated_test_class: EIFFEL_CLASS_C
 			-- Test class which has last been processed in degree 5
@@ -118,7 +127,7 @@ feature -- Access (status)
 			Result := cached_testing_directory
 		end
 
-feature -- Access (execution)
+feature -- Executors
 
 	background_executor: CDD_TEST_EXECUTOR
 			-- Background executor of test suite
@@ -175,93 +184,70 @@ feature {STOPPED_HDLR} -- CDD breakpoints
 			end
 		end
 
-feature -- Status setting (CDD)
+feature -- Status setting
 
 	enable_extracting is
 			-- Make cdd create new test cases automatically.
 			-- Enable extracting mode in system configuration and store it.
 		require
-			project_initialized: project.initialized
+			project_initialized: is_project_initialized
 			extraction_disabled: not is_extracting_enabled
-			not_changing_status: not is_changing_status
 		do
-			is_changing_status := True
-			instantiate_cdd_configuration
-			cdd_conf.set_is_extracting (True)
-			target.system.store
-			is_extracting_enabled := True
+			configuration.enable_extracting
 			status_update_actions.call ([status_udpate])
-			is_changing_status := False
 		ensure
 			extracting_enabled: is_extracting_enabled
-			correct_config: cdd_conf.is_extracting
 		end
 
 	disable_extracting is
 			-- Stop cdd creating test cases automatically.
 			-- Disable capturing mode in system configuration and store it.
 		require
-			project_initialized: project.initialized
+			project_initialized: is_project_initialized
 			extracting_enabled: is_extracting_enabled
-			not_changing_status: not is_changing_status
 		do
-			is_changing_status := True
-			instantiate_cdd_configuration
-			cdd_conf.set_is_extracting (False)
-			target.system.store
-			is_extracting_enabled := False
+			configuration.disable_extracting
 			status_update_actions.call ([status_udpate])
-			is_changing_status := False
 		ensure
 			extracting_disabled: not is_extracting_enabled
-			correct_config: not cdd_conf.is_extracting
 		end
 
 	enable_executing is
-			-- Make cdd create new test cases automatically.
-			-- Enable extracting mode in system configuration and store it.
+			-- Enable automated background execution of test cases.
 		require
-			project_initialized: project.initialized
+			project_initialized: is_project_initialized
 			executing_disabled: not is_executing_enabled
-			not_changing_status: not is_changing_status
 		do
-			is_changing_status := True
-			instantiate_cdd_configuration
-			cdd_conf.set_is_executing (True)
-			target.system.store
-			is_executing_enabled := True
+			configuration.enable_executing
 			status_update_actions.call ([status_udpate])
-			start_background_executing := True
-			is_changing_status := False
+			schedule_testing_restart
 		ensure
 			executing_enabled: is_executing_enabled
-			correct_config: cdd_conf.is_executing
 		end
 
 	disable_executing is
 			-- Stop cdd creating test cases automatically.
 			-- Disable capturing mode in system configuration and store it.
 		require
-			project_initialized: project.initialized
+			project_initialized: is_project_initialized
 			executing_enabled: is_executing_enabled
-			not_changing_status: not is_changing_status
 		do
-			is_changing_status := True
-			instantiate_cdd_configuration
-			cdd_conf.set_is_executing (False)
-			target.system.store
-			is_executing_enabled := False
+			configuration.disable_executing
 			status_update_actions.call ([status_udpate])
-			is_changing_status := False
 		ensure
 			executing_disabled: not is_executing_enabled
-			correct_config: not cdd_conf.is_executing
 		end
 
 feature {ANY} -- Cooperative multitasking
 
-	start_background_executing: BOOLEAN
-			-- Shall we (re)start executing the next time `drive_background_tasks' is called?
+	schedule_testing_restart is
+			-- Schedule that background testing starts a new as soon as possible.
+		do
+			if background_executor.has_next_step then
+				background_executor.cancel
+			end
+			background_executor.start
+		end
 
 	drive_background_tasks is
 			-- Drive background tasks (e.g.: test case compilation and
@@ -269,13 +255,8 @@ feature {ANY} -- Cooperative multitasking
 			-- whenever time perimits. This routine must not execute for
 			-- very long so that it can be called from within GUI event loops
 		do
-			if not project.is_compiling then
-				if start_background_executing and is_executing_enabled then
-					background_executor.start
-					start_background_executing := False
-				elseif background_executor.has_next_step then
-					background_executor.step
-				end
+			if not project.is_compiling and background_executor.has_next_step then
+				background_executor.step
 			end
 		end
 
@@ -285,51 +266,22 @@ feature {EB_CLUSTERS} -- Status setting (Eiffel Project)
 			-- Check configuration if cdd status has changed and update if so and
 			-- reiinitate background testing.
 			-- Note: This is usually called when project is opened or compiled.
-		require
-			not_changing_status: not is_changing_status
-		local
-			l_update_call: BOOLEAN
 		do
-			is_changing_status := True
 			if is_project_initialized then
-				if cdd_conf /= Void and then cdd_conf.is_extracting then
-					if not is_extracting_enabled then
-						is_extracting_enabled := True
-						l_update_call := True
-					end
-				elseif is_extracting_enabled then
-					is_extracting_enabled := False
-					l_update_call := True
-				end
-				if cdd_conf /= Void and then cdd_conf.is_executing then
-					if not is_executing_enabled then
-						is_executing_enabled := True
-						l_update_call := True
-					end
-				elseif is_executing_enabled then
-					is_executing_enabled := False
-					l_update_call := True
-				end
-				if not has_project_been_initialized then
-					has_project_been_initialized := True
-						-- From now on, we want to be notified whenever
-						-- a test case class get processed in degree 5
-					project.system.system.degree_5.process_actions.extend (agent add_updated_class)
-					l_update_call := True
-				end
-				if l_update_call then
+				if degree_5_observer = Void then
+					degree_5_observer := agent add_updated_class
+					project.system.system.degree_5.process_actions.extend (degree_5_observer)
 					status_update_actions.call ([status_udpate])
 				end
 				test_suite.refresh
 				if project.successful and not debug_executor.is_running then
-					start_background_executing := True
+					schedule_testing_restart
 				end
 			end
-			is_changing_status := False
 		end
 
 	add_updated_class is
-			-- If `a_class' is a test class (exists in test suite)
+			-- If `project.system.system.degree_5.current_class' is a test class (exists in test suite)
 			-- add it to classes which for which test class should
 			-- be updated.
 		local
@@ -367,17 +319,27 @@ feature {NONE} -- Implementation
 			an_update_not_void: an_update /= Void
 		do
 			if an_update.code = an_update.capturer_extracted_code then
-				start_background_executing := True
+				schedule_testing_restart
 			end
 		end
 
-feature {NONE} -- Implementation
+	configuration: CONF_CDD is
+			-- CDD part of project configuration
+		require
+			is_project_initialized: is_project_initialized
+		do
+			if target.cdd = Void then
+				target.set_cdd (conf_factory.new_cdd (target))
+			end
+			Result := target.cdd
+		ensure
+			configuration_not_void: Result /= Void
+		end
+
+	degree_5_observer: PROCEDURE [ANY, TUPLE]
 
 	cached_testing_directory: like testing_directory
 			-- Cached `testing_directory'
-
-	has_project_been_initialized: BOOLEAN
-			-- Has the project been initialized before?
 
 	capturer: CDD_CAPTURER
 			-- Capturer for extracting new test cases
@@ -385,33 +347,9 @@ feature {NONE} -- Implementation
 	target: CONF_TARGET is
 			-- Currently opened target of `project'
 		require
-			project_initialized: project.initialized
+			project_initialized: is_project_initialized
 		do
 			Result := project.system.universe.target
-		end
-
-	cdd_conf: CONF_CDD is
-			-- CDD Configuration instance
-		do
-			Result := target.cdd
-		end
-
-	instantiate_cdd_configuration is
-			-- Create cdd configuration with default parameters if
-			-- doesn't exists. Set `cdd_conf' to current
-			-- cdd configuration.
-		require
-			project_initialized: is_project_initialized
-		local
-			l_conf: CONF_CDD
-		do
-			l_conf := cdd_conf
-			if l_conf = Void then
-				l_conf := conf_factory.new_cdd (target)
-				target.set_cdd (l_conf)
-			end
-		ensure
-			cdd_conf_valid: cdd_conf /= Void and then cdd_conf.target = target
 		end
 
 	conf_factory: CONF_FACTORY is
@@ -423,7 +361,7 @@ feature {NONE} -- Implementation
 		end
 
 	status_udpate: CDD_STATUS_UPDATE is
-			-- Update message for `Current'
+			-- New status update message
 		once
 			create Result.make_with_code ({CDD_STATUS_UPDATE}.manager_update_code)
 		ensure
@@ -440,8 +378,5 @@ invariant
 	output_actions_not_void: output_actions /= Void
 	last_updated_test_class_valid: (last_updated_test_class /= Void) implies
 		test_suite.has_test_case_for_class (last_updated_test_class)
-
-	extracting_implies_project_initialized: is_extracting_enabled implies is_project_initialized
-	executing_implies_project_initialized: is_executing_enabled implies is_project_initialized
 
 end

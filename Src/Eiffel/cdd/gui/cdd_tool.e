@@ -50,21 +50,7 @@ feature {NONE} -- Initialization
 			build_grids
 			build_status_bar
 
-			if cdd_manager.is_project_initialized then
-				if cdd_manager.is_executing_enabled then
-					toggle_execution_button.enable_select
-				else
-					toggle_execution_button.disable_select
-				end
-				if cdd_manager.is_extracting_enabled then
-					toggle_extraction_button.enable_select
-				end
-			else
-				debug_button.disable_sensitive
-				toggle_extraction_button.disable_sensitive
-				toggle_execution_button.disable_sensitive
-				new_test_routine_button.disable_sensitive
-			end
+			update_button_state
 		ensure then
 			cdd_manager_set: cdd_manager = develop_window.eb_debugger_manager.cdd_manager
 		end
@@ -315,6 +301,42 @@ feature {NONE} -- Implementation (Basic functionality)
 			end
 		end
 
+	update_button_state is
+			-- Update the state of toolbar buttons according to
+			-- the state of `cdd_manager'.
+		do
+--			toggle_extraction_button.select_actions.block
+--			toggle_execution_button.select_actions.block
+--			toggle_filter_button.select_actions.block
+			if cdd_manager.is_project_initialized then
+				debug_button.enable_sensitive
+				toggle_extraction_button.enable_sensitive
+				toggle_execution_button.enable_sensitive
+				toggle_filter_button.enable_sensitive
+				new_test_routine_button.enable_sensitive
+				if cdd_manager.is_extracting_enabled then
+					toggle_extraction_button.enable_select
+				else
+					toggle_extraction_button.disable_select
+				end
+				if cdd_manager.is_executing_enabled then
+					toggle_execution_button.enable_select
+				else
+					toggle_execution_button.disable_select
+				end
+			else
+				debug_button.disable_sensitive
+				toggle_extraction_button.disable_sensitive
+				toggle_execution_button.disable_sensitive
+				toggle_filter_button.disable_sensitive
+				new_test_routine_button.disable_sensitive
+			end
+--			toggle_extraction_button.select_actions.resume
+--			toggle_execution_button.select_actions.resume
+--			toggle_filter_button.select_actions.resume
+		end
+
+
 	update_status (an_update: CDD_STATUS_UPDATE) is
 			-- Apopt widgets to `an_update'.
 		require
@@ -327,23 +349,7 @@ feature {NONE} -- Implementation (Basic functionality)
 			inspect
 				an_update.code
 			when {CDD_STATUS_UPDATE}.manager_update_code then
-				if cdd_manager.is_project_initialized then
-					debug_button.enable_sensitive
-					toggle_extraction_button.enable_sensitive
-					toggle_execution_button.enable_sensitive
-					toggle_filter_button.enable_sensitive
-					new_test_routine_button.enable_sensitive
-					if cdd_manager.is_extracting_enabled then
-						toggle_extraction_button.enable_select
-					else
-						toggle_extraction_button.disable_select
-					end
-					if cdd_manager.is_executing_enabled then
-						toggle_execution_button.enable_select
-					else
-						toggle_execution_button.disable_select
-					end
-				end
+				update_button_state
 			when {CDD_STATUS_UPDATE}.executor_step_code then
 				l_exec := cdd_manager.background_executor
 				if not l_exec.has_next_step then
@@ -549,24 +555,20 @@ feature {NONE} -- Implementation (Buttons)
 	toggle_extraction is
 			-- Enable/Disable extraction of test cases.
 		do
-			if not cdd_manager.is_changing_status then
-				if cdd_manager.is_extracting_enabled then
-					cdd_manager.disable_extracting
-				else
-					cdd_manager.enable_extracting
-				end
+			if cdd_manager.is_extracting_enabled then
+				cdd_manager.disable_extracting
+			else
+				cdd_manager.enable_extracting
 			end
 		end
 
 	toggle_execution is
 			-- Enable/Disable execution of tests.
 		do
-			if not cdd_manager.is_changing_status then
-				if cdd_manager.is_executing_enabled then
-					cdd_manager.disable_executing
-				else
-					cdd_manager.enable_executing
-				end
+			if cdd_manager.is_executing_enabled then
+				cdd_manager.disable_executing
+			else
+				cdd_manager.enable_executing
 			end
 		end
 

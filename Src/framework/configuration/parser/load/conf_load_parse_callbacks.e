@@ -308,7 +308,7 @@ feature -- Callbacks
 						end
 					end
 
-						-- Add cdd target and library if cdd tag is set in `current_tag'
+						-- Add cdd target
 					if not current_target.system.targets.has (current_target.name + "_tester") then
 						l_cdd_target := factory.new_cdd_target (current_target.name + "_tester", current_target.system)
 						l_cdd_target.set_parent (current_target)

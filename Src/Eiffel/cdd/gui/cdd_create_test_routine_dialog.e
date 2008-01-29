@@ -114,7 +114,7 @@ feature {NONE} -- Initialization
 			target := a_target
 			cdd_manager := a_manager
 
-			make_with_title ("Create new test routine")
+			make_with_title ("Create new test case")
 			set_icon_pixmap (pixmaps.icon_pixmaps.cdd_new_test_icon)
 			set_height (Layout_constants.dialog_unit_to_pixels (600))
 			set_width (Layout_constants.dialog_unit_to_pixels (400))
@@ -148,7 +148,7 @@ feature {NONE} -- Initialization
 
 				-- Build test routine frame
 			create l_frame.make_with_text ("Test routine")
-			create l_label.make_with_text ("Routine name:")
+			create l_label.make_with_text ("Routine name: ")
 			l_label.align_text_left
 			l_label.set_minimum_width (l_label_weight)
 			create l_hbox

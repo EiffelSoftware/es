@@ -157,13 +157,13 @@ feature -- Visit nodes
 
 					-- Append CDD config
 				l_cdd := a_target.cdd
-				if l_cdd /= Void then
+				if l_cdd /= Void and then not l_cdd.is_default then
 					create l_a_name.make (2)
 					create l_a_val.make (2)
 					l_a_name.force ("extract")
-					l_a_val.force (l_cdd.is_extracting.out.as_lower)
+					l_a_val.force (l_cdd.is_extracting_enabled.out.as_lower)
 					l_a_name.force ("execute")
-					l_a_val.force (l_cdd.is_executing.out.as_lower)
+					l_a_val.force (l_cdd.is_executing_enabled.out.as_lower)
 					append_tag ("cdd", Void, l_a_name, l_a_val)
 				end
 
