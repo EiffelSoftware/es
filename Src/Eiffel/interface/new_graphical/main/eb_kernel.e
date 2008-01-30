@@ -47,9 +47,6 @@ create
 
 feature {NONE} -- Initialization
 
-	filter: CDD_FILTERED_VIEW
-			-- TODO: remove me. made live just for debugging
-
 	make is
 			-- Create and map the first window: the system window.
 		local
@@ -83,7 +80,7 @@ feature {NONE} -- Initialization
 				--| directory
 			create eifgen_init.make
 
-				--| Initialization of global resources.		
+				--| Initialization of global resources.
 			create pref_strs
 				-- Initialize pixmaps
 			pref_strs.Pixmaps_extension_cell.put ("png")
@@ -142,19 +139,19 @@ indexing
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
-			
+
 			Eiffel Software's Eiffel Development Environment is free
 			software; you can redistribute it and/or modify it under
 			the terms of the GNU General Public License as published
 			by the Free Software Foundation, version 2 of the License
 			(available at the URL listed under "license" above).
-			
+
 			Eiffel Software's Eiffel Development Environment is
 			distributed in the hope that it will be useful,	but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 			See the	GNU General Public License for more details.
-			
+
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
