@@ -206,7 +206,6 @@ rt_private jmp_buf *backtrack(void);		/* Backtrack in the calling stack */
 rt_private void excur(void);			/* Current exception code in previous level */
 rt_private void exorig(void);			/* Original exception code in previous level */
 rt_private char *extag(struct ex_vect *trace);			/* Recompute exception tag */
-rt_private struct ex_vect *top_n_call(struct xstack *stk, int n);	/* Get the n-th topest call vector from the stack */
 
 #ifndef NOHOOK
 rt_private void exception(int how);		/* Debugger hook */
@@ -1375,7 +1374,6 @@ rt_public void eviol(void)
 	unsigned char code;						/* Exception code */
 	unsigned char type;				   /* Exception type */
 	EIF_REFERENCE obj = NULL;				  /* Object */
-	struct ex_vect *vector_call;			/* Stack vector entry */
 
 	/* Derive exception code from the information held in the top level vector
 	 * in the Eiffel call stack. If the exception is ignored, pop the offending
@@ -1408,20 +1406,16 @@ rt_public void eviol(void)
 	if (type == EX_CINV)		/* if in invariant */
 		obj = vector->ex_oid;   /*	  record object */
 
-	if (type == EX_CINV && echentry || type == EX_PRE) {
-		vector_call = top_n_call(&eif_stack, 2); /* Get the caller */
-	} else {
-		vector_call = top_n_call(&eif_stack, 1);
-	}
-	if (vector_call != (struct ex_vect *) 0) {
-		echrt = vector_call->ex_rout;
-		echclass = vector_call->ex_orig;
-	} else {
+	expop(&eif_stack);		  /* Remove vector */
+
+	vector = extop(&eif_stack); /* Execution vector at top of stack */
+	if (vector == (struct ex_vect *) 0) {
 		echrt = (char *) 0;	 /* Null routine name */
 		echclass =  0;		  /* Null class name */
+	} else {
+		echrt = vector->ex_rout;	/* Record routine name */
+		echclass = vector->ex_orig; /* Record class name */
 	}
-
-	expop(&eif_stack);		  /* Remove vector */
 
 	vector = exget(&eif_stack);  /* Get brand new vector on the Eiffel stack */
 	if (vector == (struct ex_vect *) 0) {   /* No more memory */
@@ -3376,43 +3370,6 @@ rt_private char eedefined(long ex)
 	/* Is exception `ex' defined? */
 
 	return (char) ((ex > 0 && ex <= EN_NEX)? 1 : 0);
-}
-
-rt_shared struct ex_vect *top_n_call(struct xstack *stk, int n)
-{
-	/* Get the n-th top EX_CALL, EX_RETY or EX_RESC vector from `stk'.
-	 * If not found, return 0. `n' should be greater than zero.
-	 */
-	struct ex_vect *top = stk->st_top;	/* Top of stack */
-	struct stxchunk *cur;
-	int found = 0;
-
-	if (top == (struct ex_vect *) 0)	{		/* No stack yet? */
-		return top;
-	}
-	cur = stk->st_cur;
-	while (top--){
-		if (top >= cur->sk_arena){ /* We are still in current chunk */
-			if (top->ex_type == EX_CALL || top->ex_type == EX_RETY || top->ex_type == EX_RESC){
-				if (++found >= n) {
-					return top;
-				}
-			}
-		} else { /* We are out of current chunk */
-			cur = cur->sk_prev;
-			if (cur){ /* There is a previous chunk. */
-				top = cur->sk_arena;
-				if (top->ex_type == EX_CALL || top->ex_type == EX_RETY || top->ex_type == EX_RESC){
-					if (++found >= n) {
-						return top;
-					}
-				}
-			} else {	/* It is already bottom of the stack. */
-				return (struct ex_vect *)0;
-			}
-		}
-	}
-	return (struct ex_vect *)0; /* Should never reach, just to make the c compiler happy. */
 }
 
 /*

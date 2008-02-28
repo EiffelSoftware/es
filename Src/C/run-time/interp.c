@@ -3542,9 +3542,6 @@ rt_private void icheck_inv(EIF_REFERENCE obj, struct stochunk *scur, EIF_TYPED_V
 	unsigned char *OLD_IC;		/* IC backup */
 	int dtype = Dtype(obj);
 
-	/* Store the `where' infomation for later use */
-	echentry = !where;
-
 	if (inv_mark_table == (char *) 0)
 		if ((inv_mark_table = (char *) cmalloc (scount * sizeof(char))) == (char *) 0)
 			enomem(MTC_NOARG);
