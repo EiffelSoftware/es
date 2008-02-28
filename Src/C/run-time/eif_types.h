@@ -162,6 +162,7 @@ struct eif_exception {
 	char *ex_ort;			/* Routine associated with original exception */
 	int ex_class;			/* Class associated with current exception */
 	int ex_oclass;			/* Class associated with original exception */
+	int ex_entry;			/* Is entry or exit of a routine when evaluating invariant. */
 };
 
 
