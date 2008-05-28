@@ -1,0 +1,116 @@
+iff not defined INSTALL_DIR then 
+	echo INSTALL_DIR not defined
+	CANCEL
+endiff
+iff not defined INIT_DIR then
+	set INIT_DIR=%@EXECSTR[cd]
+endiff
+
+set SVN_VERSION=%@EXECSTR[bash set_version.sh %EIFFEL_SRC]
+
+cdd %INIT_DIR\install
+safe_md %INIT_DIR\install\bin
+iff .%ISE_PLATFORM%.==.win64. then
+	set IS_WIN64=yes
+	set WINNAME=x64
+else
+	set IS_WIN64=no
+	set WINNAME=x86
+endiff
+
+iff .%1.==.. then
+	remtrace ---------------------------------------------
+	remtrace Checkout and compile the hallow tool
+	remtrace ---------------------------------------------
+
+	cdd %EIFFEL_SRC\tools
+	co -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/tools/hallow hallow
+	cd %EIFFEL_SRC\tools\hallow
+	clean_project
+	finalize hallow.ecf
+	cleanup_dotnet_eiffel hallow hallow.exe
+	iff not exist libhallow.dll then
+		remtrace Couldnt generate hallow.exe
+		CANCEL
+	else
+		move hallow.exe %INIT_DIR\install\bin
+		move libhallow.dll %INIT_DIR\install\bin
+		move eiffelsoftware.runtime.dll %INIT_DIR\install\bin
+	endiff
+
+	remtrace --------------------------------------------------
+	remtrace Recompile Custom actions for installation program
+	remtrace --------------------------------------------------
+
+	cdd %EIFFEL_SRC
+	cd tools
+	co %DEFAULT_ISE_SVN/Src/tools/setup setup
+	cd %EIFFEL_SRC\tools\setup\studio
+	clean_project
+	finalize setup.ecf
+	cleanup_eiffel setup setup.dll
+	iff not exist setup.dll then
+		remtrace Couldnt generate setup.dll
+		QUIT
+		CANCEL
+	endiff
+	safe_md %INIT_DIR\install\binaries
+	safe_md %INIT_DIR\install\binaries\%WINNAME
+	move setup.dll %INIT_DIR\install\binaries\%WINNAME
+endiff
+
+remtrace ----------------------------------------------
+remtrace Building the MSIs
+remtrace ----------------------------------------------
+
+cdd %INIT_DIR\install\content\eiffelstudio
+safe_md %INSTALL_DIR\setups
+safe_md %INSTALL_DIR\setups\gpl
+safe_md %INSTALL_DIR\setups\enterprise
+
+remtrace Creating WIX files
+nmake /nologo clean
+nmake /nologo
+
+remtrace Preparing GPL edition
+nmake /nologo gpl_%WINNAME
+copy %INIT_DIR\install\bin\studio_gpl_%WINNAME\package.msi %INSTALL_DIR\setups\gpl\%STUDIO_NAME%_gpl_%SVN_VERSION-%ISE_PLATFORM%.msi
+
+remtrace Preparing Commercial edition
+nmake /nologo enterprise_%WINNAME
+copy %INIT_DIR\install\bin\studio_ent_%WINNAME\package.msi %INSTALL_DIR\setups\enterprise\%STUDIO_NAME%_enterprise_%SVN_VERSION-%ISE_PLATFORM%.msi
+
+remtrace ----------------------------------------------
+remtrace Building the Zips
+remtrace ----------------------------------------------
+cdd %INSTALL_DIR
+move EiffelStudio %STUDIO_NAME%
+
+if .%IS_WIN64%. == .no. (
+	mv gcc %STUDIO_NAME%\gcc
+)
+copy %INSTALL_DIR\releases\gpl_version\ec.exe %INSTALL_DIR\%STUDIO_NAME%\studio\spec\%ISE_PLATFORM%\bin
+copy %INSTALL_DIR\releases\gpl_version\ecb.exe %INSTALL_DIR\%STUDIO_NAME%\studio\spec\%ISE_PLATFORM%\bin
+7z a -t7z %INSTALL_DIR\setups\gpl\%STUDIO_NAME%_gpl_%SVN_VERSION-%ISE_PLATFORM%.7z %STUDIO_NAME% -mx9 >>& %INSTALL_LOG
+
+copy %INSTALL_DIR\releases\enterprise_version\ec.exe %INSTALL_DIR\%STUDIO_NAME%\studio\spec\%ISE_PLATFORM%\bin
+copy %INSTALL_DIR\releases\enterprise_version\ecb.exe %INSTALL_DIR\%STUDIO_NAME%\studio\spec\%ISE_PLATFORM%\bin
+7z a -t7z %INSTALL_DIR\setups\enterprise\%STUDIO_NAME%_enterprise_%SVN_VERSION-%ISE_PLATFORM%.7z %STUDIO_NAME% -mx9 >>& %INSTALL_LOG
+
+remtrace Restoring the layout to its original state
+cdd %INSTALL_DIR
+if .%IS_WIN64%. == .no. (
+	mv %STUDIO_NAME%\gcc gcc
+)
+move %STUDIO_NAME% EiffelStudio
+
+remtrace Uploading packages online
+cdd %INSTALL_DIR\setups\gpl
+scp %STUDIO_NAME%_gpl_%SVN_VERSION%-%ISE_PLATFORM%.msi manus@eiffel.com:builds/
+scp %STUDIO_NAME%_gpl_%SVN_VERSION%-%ISE_PLATFORM%.7z manus@eiffel.com:builds/
+
+fullrf %INSTALL_DIR\EiffelStudio\studio\spec\%ISE_PLATFORM%\bin\ec.exe
+fullrf %INSTALL_DIR\EiffelStudio\studio\spec\%ISE_PLATFORM%\bin\ecb.exe
+
+remtrace Your deliveries are now ready
+cdd %INIT_DIR

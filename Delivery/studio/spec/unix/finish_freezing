@@ -1,0 +1,133 @@
+#!/bin/sh
+arg=none
+nologo=""
+ncpus=0
+prioritylevel="" # Default prority level
+
+if [ $# -gt 0 ]; then
+	while [ "$1" != "" ]; do
+		case "$1" in
+			"cecil" | "-cecil" | "-library") arg=$1 ;;
+			"-nproc")
+				shift
+				if [ $# -gt 0 ]; then
+						# Test if $1 is indeed an integer argument.
+					echo $1 | grep "[^0-9]" > /dev/null 2>&1
+					if [ "$?" -eq "0" ]; then
+						echo "Error: invalid value for nproc option"
+						echo "Option -nproc needs a non-negative integer argument"
+						exit 1
+					else
+						ncpus=$1
+					fi
+				else
+					echo "Usage: option -nproc needs a non-negative integer argument"
+					exit 1
+				fi
+				;;
+			"-x86") ;; # No effect on Unix yet
+			"-low") prioritylevel="nice -n 19" ;; 
+			"-silent") ;; #Nothing anymore, kept for backward compatibility
+			"-nologo") nologo="nologo" ;;	# Keep or remove display of logo.
+			*)
+				echo "Usage: finish_freezing [-cecil | -library | -nproc VAL | -x86 | -silent | -low]"
+				exit 1
+				;;
+		esac
+		shift
+	done	
+fi
+
+if [ "$nologo" = "" ]; then
+	echo "Eiffel C/C++ Compilation Tool - Version 6.0"
+	echo "Copyright Eiffel Software 1985-2007. All Rights Reserved"
+	echo
+fi
+
+# default values for unix layout, so that no environment variables need to be set
+if [ -z "$ISE_EIFFEL" ]; then
+	if [ -z "$ISE_PREFIX" ]; then
+		ISE_PREFIX=/usr #UNIX_BASE_PATH comment for replacement
+		export ISE_PREFIX
+	fi
+	if [ -z "$ISE_VERSION" ]; then
+		ISE_VERSION=6.2
+		export ISE_VERSION
+	fi
+	if [ -z "$ISE_PLATFORM" ]; then
+		ISE_PLATFORM=unix
+		export ISE_PLATFORM
+	fi
+	if [ -z "$ISE_LIB_NAME" ]; then
+		ISE_LIB_NAME=lib #UNIX_LIB_NAME comment for replacement
+		export ISE_LIB_NAME
+	fi
+fi
+
+#Check if ISE_LIBRARY is defined, if not we use ISE_EIFFEL.
+if [ -z "$ISE_LIBRARY" ]; then
+	if [ -n "$ISE_EIFFEL" ]; then
+		ISE_LIBRARY=$ISE_EIFFEL
+	else
+		ISE_LIBRARY=$ISE_PREFIX/lib/eiffelstudio-$ISE_VERSION/
+	fi
+	export ISE_LIBRARY
+fi
+
+#Use $MAKE as make utility instead of `make'.
+if [ -z "$MAKE" ]; then
+	make=make
+else
+	make=$MAKE
+fi
+
+if $make --version 2>/dev/null | grep GNU >/dev/null 2>&1; then
+	if [ ! $ncpus -gt 0 ]; then
+		case `uname` in
+			Darwin) ncpus=`sysctl -n hw.activecpu` ;;
+			Linux)
+				if [ -f /proc/cpuinfo ] ; then
+					ncpus=`grep -c '^processor[[:space:]]*:' /proc/cpuinfo`
+				fi
+				;;
+			SunOS) ncpus=`/usr/sbin/psrinfo | wc -l` ;;
+			IRIX*) ncpus=`hinv | awk '/^[0-9]+ [0-9]+ MHZ/ {print $1}'` ;;
+		esac
+	fi
+	if [ -z "$MAKELEVEL" -a -n "$ncpus" ]; then
+		if [ $ncpus -gt 1 ]; then
+			make_args="-j $ncpus"
+		fi
+	fi
+		# Special handling if `distcc' is currently used to speed up C compilation
+		# time.
+	if [ -n "$DISTCC_COUNT" ]; then
+		make_args="-j $DISTCC_COUNT"
+	fi
+fi
+
+if [ "$arg" != "-library" ]; then
+	if [ -n "$ISE_EIFFEL" ]; then
+		$ISE_EIFFEL/studio/spec/$ISE_PLATFORM/bin/quick_finalize . o
+	else
+		$ISE_PREFIX/$ISE_LIB_NAME/eiffelstudio-$ISE_VERSION/studio/quick_finalize . o
+	fi
+else
+	echo "Generating C libraries ..."
+fi
+
+if [ ! -f config.sh ]; then
+	if [ -n "$ISE_EIFFEL" ]; then
+		cp $ISE_EIFFEL/studio/spec/$ISE_PLATFORM/include/config.sh .
+	else
+		cp $ISE_PREFIX/include/eiffelstudio-$ISE_VERSION/config.sh .
+	fi
+fi
+sh Makefile.SH
+
+if [ "$arg"  = cecil -o "$arg" = "-cecil" ] ; then
+	echo Generating CECIL library ...
+	$prioritylevel $make -s $make_args cecil && echo "C compilation completed"
+else
+	$prioritylevel $make -s $make_args && echo "C compilation completed"
+fi

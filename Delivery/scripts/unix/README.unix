@@ -1,0 +1,31 @@
+Instructions to build a delivery with a Unix layout
+---------------------------------------------------
+
+Motivation
+----------
+-consistent file layout
+-no environment setup needed
+-multiple versions can be installed and used at the same time
+
+Before building
+---------------
+If the default base directory (/usr/local) or the name of the lib dir (lib) should be changed,
+adjust set_aliases.
+
+Building
+--------
+A normal build should be created, e.g. with make_all
+
+After building
+--------------
+To get a delivery in the unix layout, use the make_unix_layout script
+
+make_unix_layout platform source destination
+
+e.g. under Delivery/scripts/unix where a linux-x86-64 delivery has been generated
+
+./make_unix_layout linux-x86-64 PorterPackage/Eiffel62 unix_layout
+
+will generate a delivery in the unix_layout directory.
+
+At the end, the precompiles should be built using the freshly built delivery.

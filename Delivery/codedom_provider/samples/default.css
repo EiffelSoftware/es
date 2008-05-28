@@ -1,0 +1,233 @@
+/*
+--+--------------------------------------------------------------------
+-- Eiffel for ASP.NET 5.6 samples styles
+--+--------------------------------------------------------------------
+*/
+
+body 
+{
+	font-family: verdana;
+	font-size: 75%;
+}
+
+a 
+{
+	color: #18649B;;
+	text-decoration: none;
+}
+
+a:hover 
+{
+	color: red;
+	text-decoration: underline;
+}
+
+div.description
+{
+	border-bottom: 2px solid #58A4DB;
+	padding-bottom: 10px;
+}
+
+div.link a
+{
+	font-weight: bold;
+}
+
+div.title
+{
+	border-bottom: 1px solid #58A4DB;
+	margin-bottom: 10px;
+	background-color: #a0a0a0;
+	color: white;
+	font-family: courier new;
+	padding-left: 5px;
+	font-size: 150%;
+	color: #f0f0f0;
+}
+
+div.sample
+{
+	margin-top: 10px;
+	white-space: nowrap;
+}
+
+div.sample h1
+{
+	margin-bottom: 10px;
+	padding-left: 5px;
+	font-size: 150%;
+	color: #606060;
+	margin-top: 0px;
+}
+
+form
+{
+	margin: 0px;
+	padding: 0px;
+}
+
+h1 
+{
+	font-size: 130%;
+	font-weight: bold;
+	margin-bottom: 0px;
+}
+
+h2 
+{	
+	font-size: 120%;
+	font-weight: bold;
+}
+
+h3 
+{
+	font-size: 110%;
+	font-style: italic;
+	font-weight: bold;
+}
+
+img
+{
+	border: 0;
+}
+
+img.toggle
+{
+	vertical-align:bottom;
+}
+
+li
+{
+	padding: 2px;
+}
+
+p
+{
+	margin-bottom: 5px;
+	margin-top: 0px;
+}
+
+span.up
+{
+	font-size: 150%;
+	font-weight: bold;
+}
+
+table
+{
+	font-size: 100%;
+}
+
+table.frame td
+{
+	padding: 0px;
+	white-space: "nowrap";
+}
+
+table.modulehead
+{
+	width: 100%;
+}
+
+table.modulehead td
+{
+	padding: 0px 0px 3px 0px;
+	border-bottom: 1px solid #58A4DB;
+	vertical-align: top;
+	font-size: 120%;
+}
+
+ul
+{
+	margin-bottom: 5px;
+	margin-top: 5px;
+}
+
+.code 
+{
+	font-family: courier new;
+	padding-left: .5em;
+	padding-right: .5em;
+	padding-top: .5em;
+	padding-bottom: .5em;
+}
+
+.comments
+{
+	color: #a0a0a0;
+}
+
+.eclass
+{
+    color: #0000aa;
+}
+
+.eiffel_1
+{
+    color: navy;
+	font-weight: bold;
+}
+
+.eiffel_2
+{
+   	color: #a0522d;
+   	font-weight: bold;
+}
+
+.eiffel_3
+{
+   	color: #a0522d;
+}
+
+.ecomment 
+{
+    color: #990000;
+}
+
+.econstant
+{
+   	color: #4b0082;
+}
+
+.equote
+{
+   	color: #006400;
+   	font-style: italic;
+}
+
+.html_1
+{
+	color: blue;
+}
+
+.html_2
+{
+	color: #82004b;
+}
+
+.html_3
+{
+	color: #522da0;
+	font-weight: bold;
+}
+
+.html_4
+{
+	color: #522da0;
+}
+
+.quote
+{
+   	color: #006400;
+}
+
+/*
+--+--------------------------------------------------------------------
+--| Eiffel for ASP.NET 5.6
+--| Copyright (c) 2005-2006 Eiffel Software
+--|
+--| Eiffel Software
+--| 356 Storke Road, Goleta, CA 93117 USA
+--| http://www.eiffel.com
+--+--------------------------------------------------------------------
+*/

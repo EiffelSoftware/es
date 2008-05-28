@@ -1,0 +1,275 @@
+@echo off
+REM Adding Wix to the path.
+set PATH=%PATH;%@EXECSTR[cd]\wix
+set OLD_PATH=%PATH
+set OLD_EIFFEL_SRC=%EIFFEL_SRC
+set OLD_ISE_LIBRARY=%ISE_LIBRARY
+set OLD_ISE_SRC=%ISE_SRC
+set INIT_DIR=%@EXECSTR[cd]
+set TMP_ISE_EIFFEL=%ISE_EIFFEL
+
+call set_aliases.btm
+remtrace Set up the environment
+on break goto broken
+TIMER ON /1 >> NUL
+TIMER ON /2 >> NUL
+iff %@INDEX[%@LOWER[%$],h] ge 0 then
+	echo Installation for ISE Eiffel 5 generation.
+	echo Parameters are no_compile, no_doc, no_new_ec, enterprise no_wizards and no_install (or nothing to fully regenerate the installation).
+	CANCEL
+endiff
+iff %@INDEX[%@LOWER[%$],no_compil] ge 0 then
+	set NO_COMPILE="True"
+else
+	unset /Q NO_COMPILE
+endiff
+iff %@INDEX[%@LOWER[%$],no_doc] ge 0 then
+	set NO_DOCUMENTATION="True"
+else
+	unset /Q NO_DOCUMENTATION
+endiff
+iff %@INDEX[%@LOWER[%$],no_install] ge 0 then
+	set NO_INSTALL="True"
+else
+	unset /Q NO_INSTALL
+endiff
+iff %@INDEX[%@LOWER[%$],no_new_ec] ge 0 then
+	set NO_NEW_EC="True"
+else
+	unset /Q NO_NEW_EC
+endiff
+iff %@INDEX[%@LOWER[%$],enterprise] ge 0 then
+	set BUILD_ENTERPRISE_ONLY="True"
+else
+	unset /Q BUILD_ENTERPRISE_ONLY
+endiff
+iff %@INDEX[%@LOWER[%$],no_wizard] ge 0 then
+	set NO_WIZARDS="True"
+else
+	unset /Q NO_WIZARDS
+endiff
+
+set EIFFEL_SRC=%TMP_EIFFEL_SRC
+set ISE_LIBRARY=%TMP_EIFFEL_SRC
+set ISE_SRC=%TMP_EIFFEL_SRC
+cdd %INIT_DIR
+remtrace Approximative starting time:
+remtrace %_TIME
+
+REM This is not a comment, it should create a 0-sized log file.
+REM > %INSTALL_LOG
+call check_environment.btm
+cdd %INIT_DIR
+
+give_time_to warm up
+remtrace Retrieve and organize the delivery
+remtrace Remove %INSTALL_DIR
+if isdir %INSTALL_DIR fullrd %INSTALL_DIR >>& %INSTALL_LOG
+if exist %INSTALL_DIR fullrf %INSTALL_DIR >>& %INSTALL_LOG
+iff exist %INSTALL_DIR then
+	echo Cannot delete %INSTALL_DIR!
+	CANCEL
+endiff
+md %INSTALL_DIR
+md %STUDIO_DIR
+cdd %STUDIO_DIR
+remtrace studio
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Delivery/studio studio
+fullrd studio\help\defaults\unix
+fullrd studio\spec\unix
+cdd %STUDIO_DIR\studio\spec
+move windows\compile_library.bat %ISE_PLATFORM\bin\
+iff "windows"=="%ISE_PLATFORM" then
+	fullrd win64
+else
+	fullrd windows
+endiff
+cdd %STUDIO_DIR\studio\config
+if not "windows"=="%ISE_PLATFORM" move windows %ISE_PLATFORM
+cdd %STUDIO_DIR
+remtrace esbuilder
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Delivery/esbuilder esbuilder
+remtrace vision2 tour
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Delivery/vision2_demo vision2_demo
+remtrace examples
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/examples examples
+cd examples
+fullrd obsolete
+fullrd eiffeltest
+fullrd math
+fullrd matisse
+fullrd store\matisse
+fullrd old_com
+fullrd old_matisse
+fullrd vision
+fullrd build
+cd dotnet
+fullrd envision
+fullrd winforms\data\simple_binding
+cd ..
+cd vision2
+fullrd Boxes
+fullrd drawing_area
+fullrd ev_list
+fullrd fake_event
+fullrd figure
+fullrd hello_world
+fullrd menu
+fullrd multicolumn_list
+fullrd pixmap
+fullrd split_area
+fullrd test_all_widgets
+fullrd test_events
+fullrd tests
+fullrd tutorial
+fullrd widget_test
+cd ..
+cd ..
+remtrace precomp
+safe_md %STUDIO_DIR\precomp
+safe_md %STUDIO_DIR\precomp\spec
+cd %STUDIO_DIR\precomp\spec
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Delivery/precomp/spec/platform %ISE_PLATFORM
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Delivery/precomp/spec/dotnet %ISE_PLATFORM-dotnet
+cdd %STUDIO_DIR
+remtrace wizards
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Delivery/wizards wizards
+fullrf %STUDIO_DIR\studio\wizards\new_projects\wizard.dsc
+fullrd %STUDIO_DIR\studio\wizards\new_projects\wizard
+remtrace C_library
+safe_md %STUDIO_DIR\C_library
+cdd %STUDIO_DIR\C_library
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/C_library/libpng libpng
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/C_library/zlib zlib
+cdd %STUDIO_DIR
+remtrace root
+exprt -N -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Delivery Delivery
+move Delivery\*.* . >>& %INSTALL_LOG
+fullrd Delivery >>& %INSTALL_LOG
+fullrf INSTALL README make_install compile_libraries
+remtrace eweasel (just the necessary)
+exprt -N -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/eweasel eweasel
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/eweasel/bin eweasel/bin
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/eweasel/control eweasel/control
+fullrf %STUDIO_DIR\eweasel\INSTALL
+
+remtrace MinGW files
+cdd %INSTALL_DIR
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/free_add_ons/gcc gcc
+
+cdd %STUDIO_DIR
+remtrace Create documentation directory
+md docs
+
+remtrace Create directories
+safe_md %STUDIO_DIR\studio\spec
+safe_md %STUDIO_DIR\studio\spec\%ISE_PLATFORM
+safe_md %STUDIO_DIR\esbuilder\spec
+safe_md %STUDIO_DIR\esbuilder\spec\%ISE_PLATFORM
+safe_md %STUDIO_DIR\esbuilder\spec\%ISE_PLATFORM\bin
+safe_md %STUDIO_DIR\vision2_demo\spec
+safe_md %STUDIO_DIR\vision2_demo\spec\%ISE_PLATFORM
+safe_md %STUDIO_DIR\vision2_demo\spec\%ISE_PLATFORM\bin
+safe_md %STUDIO_DIR\wizards
+safe_md %STUDIO_DIR\wizards\com
+safe_md %STUDIO_DIR\wizards\com\config
+safe_md %STUDIO_DIR\studio\spec\%ISE_PLATFORM\include
+safe_md %STUDIO_DIR\studio\spec\%ISE_PLATFORM\lib
+safe_md %STUDIO_DIR\studio\spec\%ISE_PLATFORM\lib\msc
+safe_md %STUDIO_DIR\studio\spec\%ISE_PLATFORM\lib\mingw
+safe_md %STUDIO_DIR\rb
+
+cdd %INIT_DIR
+give_time_to organize the delivery and to start filling it
+
+call make_libraries.btm
+cdd %INIT_DIR
+
+REM Fill directories
+iff not defined NO_COMPILE then
+	remtrace Update all libraries
+	iff isdir %EIFFEL_SRC then
+		remtrace Delete %EIFFEL_SRC
+		fullrd %EIFFEL_SRC
+	endiff
+	safe_md %EIFFEL_SRC
+
+	REM Clean up the files
+	remtrace Update all source files.
+	cdd %EIFFEL_SRC\..
+	co -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src %EIFFEL_SRC
+
+	remtrace ISE specific files
+	cdd %EIFFEL_SRC
+	co %DEFAULT_ISE_SVN/Src/library/keygen library/keygen
+	cd tools
+	co %DEFAULT_ISE_SVN/Src/tools/activation activation
+	co %DEFAULT_ISE_SVN/Src/tools/estudio_enterprise estudio_enterprise
+
+	cdd %INIT_DIR
+	call update_libraries.btm
+	copy %EIFFEL_SRC\library\wel\spec\msc\%ISE_PLATFORM\dll\wel_hook.dll %STUDIO_DIR\studio\spec\%ISE_PLATFORM\bin\
+	copy %EIFFEL_SRC\library\wel\spec\msc\%ISE_PLATFORM\dll\wel_hook.dll %STUDIO_DIR\esbuilder\spec\%ISE_PLATFORM\bin\
+	copy %EIFFEL_SRC\library\wel\spec\msc\%ISE_PLATFORM\dll\wel_hook.dll %STUDIO_DIR\vision2_demo\spec\%ISE_PLATFORM\bin\
+	cdd %INIT_DIR
+	give_time_to update libraries
+
+	remtrace Generate needed executables of the bin directory
+	call make_exes.btm
+	cdd %INIT_DIR
+	give_time_to compile exes
+
+	iff not defined NO_WIZARDS then
+		remtrace Generate the precompilation and the "new project" wizards
+		call make_wizards.btm
+		cdd %INIT_DIR
+		give_time_to compile basic wizards
+
+		remtrace Generate the COM wizard
+		call make_com_wizard.btm
+		cdd %INIT_DIR
+		give_time_to compile the COM wizard
+	else
+		quick_move /s studio\wizards
+		quick_move /s wizards
+	endiff
+
+	cdd %INIT_DIR
+
+	remtrace Generate Resource Bench
+	call make_rb.btm
+	cdd %INIT_DIR
+	give_time_to compile Resource Bench
+else
+	remtrace Copy executable files from the old delivery
+	quick_move /s studio\spec
+	quick_move /s studio\wizards
+	quick_move /s rb
+	quick_move /s wizards
+	cdd %STUDIO_DIR
+	give_time_to copy executables from the old delivery
+endiff
+
+iff not defined NO_DOCUMENTATION then
+	remtrace Recompile the documentation
+	call make_xml_documentation
+	cdd %INIT_DIR
+	give_time_to compile the main documentation
+endiff
+cdd %INIT_DIR
+
+iff not defined NO_INSTALL then
+	call make_installations.btm
+	cdd %INIT_DIR
+endiff
+
+REM Finish
+remtrace final time:
+remtrace %_TIME
+remtrace total used time:
+remtrace %@TIMER[2]
+
+REM Error handling and normal ending
+:broken
+CANCEL
+

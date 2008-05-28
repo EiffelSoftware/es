@@ -1,0 +1,127 @@
+#!/bin/sh
+set -e
+
+if `echo $0 | grep make_unix_layout$ > /dev/null`; then
+	if [ $# != 1 ]; then
+		echo Usage: $0 destination
+		exit 1
+	fi
+	DST_DIR=$1
+	. ./packaging/config.sh
+fi
+
+# some helper variables
+UNIX_PLATFORM=unix
+UNIX_BASE_PATH=/usr
+
+BASE_PATH=$DST_DIR$UNIX_BASE_PATH
+BIN_DIR=$BASE_PATH/bin
+INCLUDE_DIR=$BASE_PATH/include/$PRODUCT
+LIB_DIR=$BASE_PATH/lib/$PRODUCT
+LIB_BIN_DIR=$LIB_DIR/studio
+SHARE_DIR=$BASE_PATH/share/$PRODUCT
+APPLICATIONS_DIR=$BASE_PATH/share/applications
+ICONS_DIR=$BASE_PATH/share/icons
+DOC_DIR=$BASE_PATH/share/doc/$PRODUCT
+SRC_BIN_DIR=$ISE_EIFFEL/studio/spec/$ISE_PLATFORM/bin
+
+echo "Creating unix layout in $DST_DIR"
+echo "(binaries in /usr/bin will have suffix $PRODUCT_VERSION -> e.g. ec$PRODUCT_VERSION)"
+
+
+# Create basic directory layout
+if test -d $DST_DIR; then
+    echo $0: $DST_DIR exists already, please remove or choose a different directory for unix layout
+    exit 1
+fi
+
+mkdir -p $BIN_DIR
+mkdir -p $INCLUDE_DIR
+mkdir -p $LIB_DIR
+mkdir -p $LIB_BIN_DIR
+mkdir -p $SHARE_DIR
+mkdir -p $APPLICATIONS_DIR
+mkdir -p $ICONS_DIR
+mkdir -p $DOC_DIR
+
+# Copy runtime
+cp -r $ISE_EIFFEL/studio/spec/$ISE_PLATFORM/include/* $INCLUDE_DIR
+cp -r $ISE_EIFFEL/studio/spec/$ISE_PLATFORM/lib/* $LIB_DIR
+
+# Copy library
+cp -r $ISE_EIFFEL/library $LIB_DIR
+
+# Copy precompile without EIFGENs and remove WEL files
+mkdir -p $LIB_DIR/precomp/spec/$UNIX_PLATFORM
+cp $ISE_EIFFEL/precomp/spec/$ISE_PLATFORM/* $LIB_DIR/precomp/spec/$UNIX_PLATFORM/
+rm -f $LIB_DIR/precomp/spec/$UNIX_PLATFORM/wel*
+
+
+# Copy documentation
+cp $ISE_EIFFEL/VERSION $DOC_DIR
+cp $ISE_EIFFEL/INSTALL.readme $DOC_DIR
+cp -r $ISE_EIFFEL/examples $DOC_DIR
+
+if test -d "$ISE_EIFFEL/docs"; then
+    cp -r $ISE_EIFFEL/docs $DOC_DIR
+else
+    echo $0: New unix layout will not contain eiffel documentation
+fi
+
+# Copy esbuilder
+cp $ISE_EIFFEL/esbuilder/spec/$ISE_PLATFORM/bin/esbuilder $BIN_DIR/esbuilder$PRODUCT_VERSION
+cp -r $ISE_EIFFEL/esbuilder $SHARE_DIR
+rm -r $SHARE_DIR/esbuilder/spec
+
+# Copy vision2_demo
+cp $ISE_EIFFEL/vision2_demo/spec/$ISE_PLATFORM/bin/vision2_demo $BIN_DIR/vision2_demo$PRODUCT_VERSION
+cp -r $ISE_EIFFEL/vision2_demo $SHARE_DIR
+cp $ISE_EIFFEL/vision2_demo/readme.html $DOC_DIR/readme-vision2_demo.html
+rm -r $SHARE_DIR/vision2_demo/spec
+rm -f $SHARE_DIR/vision2_demo/readme.html
+
+# Copy internal binaries
+cp $SRC_BIN_DIR/ecdbgd $LIB_BIN_DIR/ecdbgd
+cp $SRC_BIN_DIR/prelink $LIB_BIN_DIR/prelink
+cp $SRC_BIN_DIR/quick_finalize $LIB_BIN_DIR/quick_finalize
+cp $SRC_BIN_DIR/x2c $LIB_BIN_DIR/x2c
+
+# Copy main binaries
+cp $SRC_BIN_DIR/ec $BIN_DIR/ec$PRODUCT_VERSION
+cp $SRC_BIN_DIR/estudio $BIN_DIR/estudio$PRODUCT_VERSION
+cp $SRC_BIN_DIR/finish_freezing $BIN_DIR/finish_freezing$PRODUCT_VERSION
+
+# Copy wizards
+cp -r $ISE_EIFFEL/studio/wizards $LIB_BIN_DIR
+
+# Copy studio
+cp -r $ISE_EIFFEL/studio $SHARE_DIR/studio
+rm -r $SHARE_DIR/studio/spec
+rm -r $SHARE_DIR/studio/wizards
+
+# Create make_install file and move it to share directory
+. $PACKAGING_DIR/make_install.sh
+mv $PACKAGING_DIR/make_install $SHARE_DIR/
+
+# Copy application information
+cp $PACKAGING_DIR/desktop $APPLICATIONS_DIR/eiffelstudio.desktop
+cp $PACKAGING_DIR/logo.png $ICONS_DIR/eiffelstudio.png
+
+OLD_PWD=`pwd`
+# Create symlinks
+cd $DST_DIR/usr/bin
+ln -s ec$PRODUCT_VERSION ec
+ln -s estudio$PRODUCT_VERSION estudio
+ln -s finish_freezing$PRODUCT_VERSION finish_freezing
+ln -s esbuilder$PRODUCT_VERSION esbuilder
+ln -s vision2_demo$PRODUCT_VERSION vision2_demo
+cd $OLD_PWD
+
+if [ $ISE_PLATFORM != "unix" ]; then
+    mv $LIB_BIN_DIR/wizards/new_projects/vision2/spec/$ISE_PLATFORM $LIB_BIN_DIR/wizards/new_projects/vision2/spec/unix
+    mv $LIB_BIN_DIR/wizards/others/precompile/spec/$ISE_PLATFORM $LIB_BIN_DIR/wizards/others/precompile/spec/unix
+    mv $LIB_DIR/library/gobo/spec/$ISE_PLATFORM $LIB_DIR/library/gobo/spec/unix
+    mv $LIB_DIR/library/vision2/spec/$ISE_PLATFORM $LIB_DIR/library/vision2/spec/unix
+    mv $LIB_DIR/library/net/spec/$ISE_PLATFORM $LIB_DIR/library/net/spec/unix
+    mv $SHARE_DIR/studio/config/$ISE_PLATFORM $SHARE_DIR/studio/config/unix
+fi

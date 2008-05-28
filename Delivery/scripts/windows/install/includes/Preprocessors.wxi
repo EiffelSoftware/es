@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<Include xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?ifndef Preprocessors?>
+    <?define Preprocessors = "1"?>
+
+    <?ifdef x64?>
+      <?define IsWin64  = "yes"?>
+      <?define Platform = "x64" ?>
+    <?else?>
+      <?define IsWin64  = "no"?>
+      <?define Platform = "x86" ?>
+    <?endif?>
+
+    <?ifdef x64?>   
+      <?define PrgFiles = "ProgramFiles64Folder" ?>
+      <?define MsiVersion = "300" ?>
+      <?define MsiPlatform = "x64" ?>
+    <?else?>
+      <?define PrgFiles = "ProgramFilesFolder" ?>
+      <?define MsiVersion = "200" ?>
+      <?define MsiPlatform = "Intel" ?>
+    <?endif?>
+
+    <!-- PRODUCT SPECIFIC -->
+    
+    <?ifdef EiffelStudio?>
+      <?ifdef Enterprise?>
+        <?define Edition = "Enterprise"?>
+        <?define LicenseFile = "enterprise.rtf"?>
+      <?else?>
+        <?define Edition = "GPL"?>
+        <?define LicenseFile = "gpl.rtf"?>
+      <?endif?>
+      <?ifdef x64?>
+        <?define ProductGuid = "73C573FC-D414-4135-BAB4-4E951AB1001D" ?>
+      <?else?>
+        <?define ProductGuid = "D1F9F7D8-CFCC-4048-B35A-134CDF21513F" ?>
+      <?endif?>
+      <?define UpgradeGuid = "C75AD30A-754A-4d6e-8E39-E48458C98315" ?>
+      <?define Product = "EiffelStudio" ?>
+      <?define ProductVersion = "6.2" ?>
+      <?define ProductDescription = "EiffelStudio 6.2 Integrated Development Environment (IDE) Installer" ?>
+      <?define ProductKey = "Eiffel62" ?>
+    <?else?>
+      <?ifdef EiffelEnvision?>
+        <?ifdef Enterprise?>
+          <?define Edition = "Enterprise Edition"?>
+          <?define LicenseFile = "enterprise.rtf"?>
+        <?else?>
+          <?define Edition = "Lite"?>
+          <?define LicenseFile = "free.rtf"?>
+        <?endif?>
+        <?ifdef x64?>
+          <?define ProductGuid = "A8D26619-266C-49C3-A257-F9F8C4F958A0" ?>
+          <?else?>
+          <?define ProductGuid = "C0FD2907-AC52-42C6-8420-1D37A400C770" ?>
+        <?endif?>
+        <?define UpgradeGuid = "F98A29ED-2E72-45E8-8F45-E936B25774DB" ?>
+        <?define Product = "EiffelEnvision" ?>
+        <?define ProductVersion = "2.8" ?>
+        <?define ProductDescription = "EiffelEnvision 2.8 The Eiffel for .NET Language Package for Visual Studio .NET 2005" ?>
+        <?define ProductKey = "Eiffel62" ?>
+      <?else?>
+        <?define Edition = "Test"?>
+        <?define LicenseFile = "gpl.rtf"?>
+        <?define ProductGuid = "9FF8F00B-86B0-41AD-962C-00517951FB62" ?>
+        <?define UpgradeGuid = "1263FA71-F9CA-4F2E-BFEC-988C77F7DF50" ?>
+        <?define Product = "EiffelStudio" ?>
+        <?define ProductVersion = "2.8" ?>
+        <?define ProductDescription = "Test" ?>
+        <?define ProductKey = "Eiffel62" ?>
+      <?endif?>
+    <?endif?>
+    <?define ProductName = "$(var.Product) $(var.ProductVersion) ($(var.Platform)) $(var.Edition)" ?>
+    <?define InstallName = "$(var.Product) $(var.ProductVersion) $(var.Edition)" ?>
+    
+    <!-- END PRODUCT SPECIFIC -->
+  <?endif?>
+  
+</Include>

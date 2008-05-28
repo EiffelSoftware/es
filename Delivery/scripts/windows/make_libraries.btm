@@ -1,0 +1,109 @@
+remtrace Retrieve libraries
+cdd %STUDIO_DIR
+md library
+cd library
+remtrace base
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/library/base base
+remtrace base2
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/library/base_original base_original
+remtrace com
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/library/com com
+remtrace Eiffel2Java
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/library/Eiffel2Java Eiffel2Java
+remtrace gobo
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/library/gobo gobo
+fullrd gobo\svn\work
+remtrace gobo_extension
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/library/gobo_extension gobo_extension
+remtrace graph
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/library/graph graph
+remtrace lex
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/library/lex lex
+remtrace memory_analyzer
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/library/memory_analyzer memory_analyzer
+remtrace net
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/library/net net
+remtrace obsolete
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/library/obsolete obsolete
+remtrace parse
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/library/parse parse
+remtrace preferences
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/library/preferences preferences
+remtrace process
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/library/process process
+remtrace store
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/library/store store
+remtrace thread
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/library/thread thread
+remtrace time
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/library/time time
+remtrace vision
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/library/vision vision
+remtrace vision2
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/library/vision2 vision2
+fullrd vision2\implementation\gtk
+fullrd vision2\implementation\carbon
+remtrace vision2_extension
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/library/vision2_extension vision2_extension
+remtrace uuid
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/library/uuid uuid
+remtrace web
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/library/web web
+remtrace wel
+exprt -r %ORIGO_SVN_REVISION %DEFAULT_ORIGO_SVN/Src/library/wel wel
+
+iff not defined NO_COMPILE then
+	remtrace Retrieve the header files
+	cdd %EIFFEL_SRC
+	safe_md headers
+	REM "We keep a copy of vendors specific header files at EiffelSoftware as they cannot be"
+	REM "redistributed freely."
+	exprtfile %DEFAULT_ISE_SVN/Src/library/headers.tar.gz  > headers\headers.tar.gz
+	cd headers
+	tar xvfz headers.tar.gz
+	iff not isdir apps then
+		remtrace Couldnt retrieve the header files.
+	endiff
+	set JDK_HOME=%EIFFEL_SRC\headers\apps\jdk1.1.8
+	set ORACLE_HOME=%EIFFEL_SRC\headers\apps\oracle
+	cdd %STUDIO_DIR
+	remtrace Compile the C code, and remove extra clib's
+	iff isdir %STUDIO_DIR\library\com then
+		remtrace com
+		cd %STUDIO_DIR\library\com\Clib
+		all_makes
+		cd %STUDIO_DIR\library\com\Clib_runtime
+		all_makes
+		cd %STUDIO_DIR\library\com
+	endiff
+	remtrace net
+	cd %STUDIO_DIR\library\net\Clib
+	all_makes
+	remtrace store
+	cd %STUDIO_DIR\library\store\dbms\rdbms\odbc\clib
+	all_makes
+	cd %STUDIO_DIR\library\store\dbms\rdbms\oracle\clib
+	all_makes
+	remtrace vision2
+	cd %STUDIO_DIR\library\vision2\Clib
+	all_makes
+	remtrace wel
+	cd %STUDIO_DIR\library\wel\clib
+	all_makes
+	fullrf %STUDIO_DIR\library\wel\clib\make.log
+	remtrace C_library
+	cd %STUDIO_DIR\C_library\zlib
+	all_makes
+	cd %STUDIO_DIR\C_library\libpng
+	all_makes
+else
+	quick_move /s library\com\spec
+	fullrd %STUDIO_DIR\library\com\Clib
+	fullrd %STUDIO_DIR\library\com\Clib_runtime
+	quick_move /s library\net\spec
+	quick_move /s library\store\spec
+	quick_move /s library\vision2\spec
+	quick_move /s library\wel\spec
+endiff
+
+cd ..\..

@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?include includes\Preprocessors.wxi?> 
+  
+  <Product Name="$(var.ProductName)"
+           Id="$(var.ProductGuid)"
+           Language="1033"
+           Codepage="1252"
+           Version="$(var.ProductVersion)"
+           Manufacturer="Eiffel Software"
+           UpgradeCode="$(var.UpgradeGuid)">
+    
+    <!-- PACKAGE -->
+    <Package Id="*" Keywords="Installer" Description="$(var.ProductDescription)"
+			Comments="$(var.ProductName) is a registered trademark of Eiffel Software" Manufacturer="Eiffel Software Inc."
+			InstallerVersion="$(var.MsiVersion)" Platforms="$(var.MsiPlatform)" Languages="1033" Compressed="yes" SummaryCodepage="1252"/>
+    
+    <EnsureTable Id="ControlCondition"/>
+    <!-- END PACKAGE -->
+
+    <!-- MEDIA -->
+    <Media Id="1" EmbedCab="yes" DiskPrompt="Disc #1" Cabinet="data.cab" CompressionLevel="high"/>
+    <Property Id="DiskPrompt" Value="$(var.ProductName) Installation [1]" />
+    <?ifdef Enterprise?>
+      <Property Id="USERNAME">Eiffel User</Property>
+      <Property Id="PIDTemplate" Hidden="yes"><![CDATA[12345<#####-#####-#####-#####-#####-#####>@@@@@]]></Property>
+      <?ifdef EiffelStudio?>
+        <Property Id="PIDKEY" Hidden="yes">15150-70574-84354-91751-92576-03575</Property>
+      <?else?>
+        <Property Id="PIDKEY" Hidden="yes">91169-08119-81772-37111-92871-67979</Property>
+      <?endif?>
+    <?endif?>
+    <Property Id="PidKeySet" Hidden="yes">0</Property>
+    <!-- END MEDIA -->
+
+    <!-- BINARIES -->
+    <Binary Id="app.ico" SourceFile="$(sys.SOURCEFILEDIR)images\app.ico" />
+    <!-- END BINARIES -->
+    
+    <!-- ADD REMOVE PROGRAM -->
+    <Property Id='ARPCOMMENTS'>$(var.ProductDescription)</Property>
+    <Property Id='ARPCONTACT'>info@eiffel.com</Property>
+    <Property Id='ARPHELPLINK'>http://support.eiffel.com</Property>
+    <Property Id='ARPURLINFOABOUT'>http://www.eiffel.com</Property>
+    <Property Id='ARPPRODUCTICON'>app.ico</Property>
+    <Property Id='ARPNOMODIFY'>1</Property>
+    <!-- END ADD REMOVE PROGRAM -->
+
+    <!-- PROPERTIES -->
+    <?ifdef x64?>
+      <Property Id="ISEPLATFORM">win64</Property>
+    <?else?>
+      <Property Id="ISEPLATFORM">windows</Property>
+    <?endif?>
+    <Property Id="INSTALLDIR" Secure="yes" />
+    <Property Id="INSTALLCURL">http://dev.eiffel.com/Installing_Microsoft_C_compiler</Property>   <!-- URL for How-To-Install a C/C++ compiler -->
+    <Property Id="CHECKCCOMPILER"><?ifdef x64?>1<?else?><?ifdef EiffelEnvision?>1<?else?>0<?endif?><?endif?></Property>   <!-- Determines if a C/C++ compiler should be checked -->
+    <Property Id="HASMSCCOMPILER">0</Property>                                                                            <!-- Indicates if a MS C/C++ has been found -->
+    <Property Id="CANCCOMPILE">0</Property>                                                                               <!-- Indicates if a MSC C/C++ can actually be used -->
+    <Property Id="CANCCOMPILEERROR">Unknown reason.</Property>                                                            <!-- When CANCCOMPILE is non-zero then this is the error message -->
+    <Property Id="SELECTEDCCOMPILER"><?ifdef EiffelStudio?>mingw<?else?>msc<?endif?></Property>                             <!-- Type of C/C++ compiler -->
+    <Property Id="FXINSTALLROOT">0<RegistrySearch Id="RegFxPath" Root="HKLM" Key="SOFTWARE\Microsoft\.NETFramework" Name="InstallRoot" Type="raw" Win64="$(var.IsWin64)" /></Property>
+    <Property Id="VIEWEDLICENSE">0</Property>                                                                             <!-- Indicates if the license agreement has been viewed -->
+    <!-- END PROPERTIES -->
+
+    <!-- INSTALL DESCRIPTION -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="$(var.PrgFiles)" Name="$(var.PrgFiles)">
+        <Directory Id="Dir.EiffelSoftware" Name="Eiffel Software">
+          <Directory Id="INSTALLDIR" Name="$(var.InstallName)">
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <FeatureRef Id="Feat.root">
+    </FeatureRef>
+    <!-- END INSTALL DESCRIPTION -->
+
+    <!-- INSTALL SEQUENCING -->
+    <InstallExecuteSequence>
+    </InstallExecuteSequence>
+    <AdminExecuteSequence>
+    </AdminExecuteSequence>
+    <!-- END INSTALL SEQUENCING -->
+
+    <!-- USER INTERFACE -->
+
+    <UIRef Id="UI.configuration"/>
+    <UIRef Id="UI.dialog_files_in_use"/>
+    <!-- END USER INTERFACE -->
+  </Product>
+</Wix>

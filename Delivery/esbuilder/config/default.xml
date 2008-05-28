@@ -1,0 +1,25 @@
+<EIFFEL_DOCUMENT>
+
+	<PREF NAME="global_preferences.show_tip_of_the_day" DESCRIPTION="Show tip of the day at start up"><BOOLEAN>True</BOOLEAN></PREF>
+	<PREF NAME="global_preferences.number_of_recent_projects" DESCRIPTION="Number of projects kept in the recent project list" IMMEDIATE_EFFECT="yes"><INTEGER>10</INTEGER></PREF>
+
+	<PREF NAME="graphical_elements.dialogs.show_deleting_keyboard_warning" DESCRIPTION="Display warning when deleting via the keyboard"><BOOLEAN>True</BOOLEAN></PREF>
+	<PREF NAME="graphical_elements.dialogs.show_deleting_directories_warning" DESCRIPTION="Display warning when deleting a directory containing one or more windows"><BOOLEAN>True</BOOLEAN></PREF>
+	<PREF NAME="graphical_elements.dialogs.show_deleting_final_directory_warning" DESCRIPTION="Display warning when deleting final directory containing root window"><BOOLEAN>True</BOOLEAN></PREF>
+	<PREF NAME="graphical_elements.dialogs.show_changing_client_type_warning" DESCRIPTION="Display warning when changing client status of already generated window"><BOOLEAN>True</BOOLEAN></PREF>
+
+	<PREF NAME="global_preferences.build_window_width" HIDDEN="true"><INTEGER>640</INTEGER></PREF>
+	<PREF NAME="global_preferences.build_window_height" HIDDEN="true"><INTEGER>480</INTEGER></PREF>
+	<PREF NAME="global_preferences.build_window_x_position" HIDDEN="true"><INTEGER>200</INTEGER></PREF>
+	<PREF NAME="global_preferences.build_window_y_position" HIDDEN="true"><INTEGER>200</INTEGER></PREF>
+	<PREF NAME="global_preferences.main_split_position" HIDDEN="true"><INTEGER>100</INTEGER></PREF>
+	<PREF NAME="global_preferences.tool_order" HIDDEN="true"><LIST>typeselector_normal_100_100;componentselector_normal_100_100;widgetselector_normal_100_100</LIST></PREF>
+	<PREF NAME="global_preferences.external_tool_order" HIDDEN="true"><LIST></LIST></PREF>
+	<PREF NAME="global_preferences.tip_of_day_index" HIDDEN="true"><INTEGER>1</INTEGER></PREF>
+	<PREF NAME="global_preferences.recent_projects" HIDDEN="true"><LIST></LIST></PREF>
+	<PREF NAME="global_preferences.tools_on_top" HIDDEN="true"><BOOLEAN>True</BOOLEAN></PREF>
+	<PREF NAME="global_preferences.type_selector_classic_mode" HIDDEN="true"><BOOLEAN>True</BOOLEAN></PREF>
+			
+	<PREF NAME="code_generation.generate_empty_directories" DESCRIPTION="Generate empty directories to disk"><BOOLEAN>False</BOOLEAN></PREF>
+
+</EIFFEL_DOCUMENT>

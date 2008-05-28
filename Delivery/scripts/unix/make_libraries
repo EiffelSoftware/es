@@ -1,0 +1,123 @@
+#!/bin/sh
+
+remtrace Retrieve libraries
+cd $INSTALL_DIR
+md library
+cd library
+remtrace base
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/base base 
+remtrace diff
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/diff diff
+remtrace Eiffel2Java
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/Eiffel2Java Eiffel2Java 
+remtrace event
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/event event 
+remtrace gobo
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/gobo gobo
+fullrd gobo/svn/work
+remtrace gobo_extension
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/gobo_extension gobo_extension 
+remtrace graph
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/graph graph 
+remtrace lex
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/lex lex 
+remtrace mel
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/mel mel 
+remtrace memory_analyzer
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/memory_analyzer memory_analyzer 
+remtrace net
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/net net 
+remtrace obsolete
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/obsolete obsolete 
+remtrace parse
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/parse parse 
+remtrace preferences
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/preferences preferences 
+remtrace process
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/process process 
+remtrace store
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/store store 
+remtrace thread
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/thread thread 
+remtrace time
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/time time 
+remtrace uuid
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/uuid uuid 
+remtrace vision
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/vision vision 
+remtrace vision2
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/vision2 vision2 
+fullrd vision2/implementation/mswin
+fullrd vision2/implementation/carbon
+if [ "$1" = "gtk" ]; then
+	# TODO
+	# Copy GTK 1.2 implementation over gtk directory
+	cd vision2/implementation
+	exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/vision2_for_gtk12 gtk --force 
+fi
+remtrace vision2_extension
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/vision2_extension vision2_extension
+remtrace web
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/web web 
+remtrace wel
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/library/wel wel 
+
+
+cd ../..
+
+remtrace Retrieve examples
+cd $INSTALL_DIR
+md examples
+cd examples
+remtrace base
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/examples/base base 
+remtrace Eiffel2Java
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/examples/Eiffel2Java Eiffel2Java 
+remtrace cecil
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/examples/cecil cecil 
+remtrace cpp
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/examples/cpp cpp 
+remtrace lex
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/examples/lex lex 
+remtrace net
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/examples/net net 
+remtrace parse
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/examples/parse parse 
+remtrace preferences
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/examples/preferences preferences 
+remtrace store
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/examples/store store 
+fullrd store/matisse
+remtrace thread
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/examples/thread thread 
+cd thread
+fullrd fancy
+cd ..
+remtrace time
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/examples/time time 
+remtrace vision2
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/examples/vision2 vision2 
+cd vision2
+fullrd Boxes
+fullrd drawing_area
+fullrd ev_list
+fullrd fake_event
+fullrd figure
+fullrd grid
+fullrd hello_world
+fullrd menu
+fullrd multicolumn_list
+fullrd pixmap
+fullrd split_area
+fullrd test_all_widgets
+fullrd test_events
+fullrd widget_test
+fullrd tests
+fullrd tutorial
+cd ..
+remtrace web
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/examples/web web 
+remtrace studio
+exprt -r $ORIGO_SVN_REVISION $DEFAULT_ORIGO_SVN/Src/examples/studio studio 
+
+cd ../..
