@@ -7,9 +7,9 @@ set FINALIZATION_DIR=c:\work\62dev_deliv
 REM NB: The following directory must contain document.exe
 set DOCUMENT_DIR=c:\work\Deliv_62
 REM Tag to export files in SVN at ETHZ
-set DEFAULT_ORIGO_SVN=svn://%USERNAME%@svn.ise/origo.eiffelstudio/trunk
+set DEFAULT_ORIGO_SVN=svn://%USERNAME%@svn.ise/origo.eiffelstudio/branches/Eiffel_62
 REM Tag to export files in SVN at ISE
-set DEFAULT_ISE_SVN=svn://%USERNAME%@svn.ise/ise_svn/trunk
+set DEFAULT_ISE_SVN=svn://%USERNAME%@svn.ise/ise_svn/branches/Eiffel_62
 REM NB: The following directory will be erased!
 set TMP_EIFFEL_SRC=c:\work\tmpdev
 iff not defined ORIGO_SVN_REVISION then
