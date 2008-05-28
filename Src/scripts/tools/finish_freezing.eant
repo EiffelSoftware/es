@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<project name="PROJECT_finish_freezing" default="help">
+	<description>
+		description: "finish_freezing compilation"
+	</description>
+	<inherit>
+		<parent location="${PROJECT_finish_freezing.absdir}/_inc/_eiffel_tools_compilation.eant">
+			<redefine target="init"/>
+			<redefine target="copy_resources"/>
+		</parent>
+	</inherit>
+
+	<target name="init" >
+		<precursor/>
+		<geant target="set_ECF" arguments="${EIFFEL_SRC}${path_separator}tools${path_separator}finish_freezing${path_separator}finish_freezing.ecf" />
+		<geant target="set_TARGET" arguments="finish_freezing" />
+		<geant target="set_NAME" arguments="finish_freezing" />
+
+		<geant target="set_SKIP" arguments="true" unless="${is_windows}"/>
+		<geant target="set_SKIP_MESSAGE" arguments="Skipped: [finish_freezing] is a Windows only application" unless="${is_windows}"/>
+	</target>
+
+	<target name="copy_resources" if="$is_windows">
+		<argument name="a_dir" />
+		<precursor arguments="$a_dir" />
+		<echo message="Copy resources to $a_dir ..." />
+		<set name="_ecf_dir" value="${EIFFEL_SRC}${path_separator}tools${path_separator}finish_freezing" />
+		<copy dir="$_ecf_dir" file="appl.ico" to_directory="$a_dir" />
+		<copy dir="$_ecf_dir" file="finish_freezing.rc" to_directory="$a_dir" />
+		<unset name="_ecf_dir" />
+	</target>
+	
+</project>
