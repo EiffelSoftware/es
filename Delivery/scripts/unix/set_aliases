@@ -13,8 +13,8 @@ DOCUMENT_DIR=`pwd`
 # Where all.tar.bz2 files should be stored
 EXPORT_DIR=`pwd`/PorterPackage
 # What tag to use to CVS export everything
-DEFAULT_ISE_SVN=svn://$LOGNAME@svn.ise/ise_svn/branches/Eiffel_62
-DEFAULT_ORIGO_SVN=svn://$LOGNAME@svn.ise/origo.eiffelstudio/branches/Eiffel_62
+DEFAULT_ISE_SVN=svn://$LOGNAME@svn.ise/ise_svn/tags/Eiffel_62
+DEFAULT_ORIGO_SVN=svn://$LOGNAME@svn.ise/origo.eiffelstudio/tags/Eiffel_62/R1
 if [ ! "$ORIGO_SVN_REVISION" ]; then
 	ORIGO_SVN_REVISION=HEAD
 fi
