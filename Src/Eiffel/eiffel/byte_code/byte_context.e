@@ -26,6 +26,8 @@ inherit
 	COMPILER_EXPORTER
 	REFACTORING_HELPER
 
+	SAT_SHARED_INSTRUMENTATION
+
 create
 	make, make_from_context
 
@@ -48,6 +50,20 @@ feature -- Initialization
 			create generated_inlines.make (5)
 			create generic_wrappers.make (0)
 			create object_test_local_offset.make (0)
+
+				-- Setup code instrumentors.
+			create instrumentor_manager.make
+			instrumentor_manager.set_veto_instrumentation_function (
+				agent: BOOLEAN
+					do
+						if instrumentor_manager.is_instrument_enabled then
+							if included_instrument_classes.is_empty then
+								Result := not excluded_instrument_classes.has (Current.associated_class.name_in_upper)
+							else
+								Result := included_instrument_classes.has (Current.associated_class.name_in_upper)
+							end
+						end
+					end)
 		end
 
 feature -- Access
@@ -2369,6 +2385,9 @@ feature -- Clearing
 				-- effect of bugs in register allocation (if any).
 			register_server.clear_all
 			object_test_local_offset.wipe_out
+
+				-- Reset code coverage instrumentor for feature
+			instrumentor_manager.clear_feature_data
 		end
 
 	clear_class_type_data is
@@ -2595,6 +2614,22 @@ feature {NONE} -- Implementation
 
 	expanded_descendants: PACKED_BOOLEANS
 			-- Marks for class types whether they have an expanded descendant or not
+
+feature -- Code instrumentation
+
+	instrumentor_manager: SAT_INSTRUMENTOR_MANAGER
+			-- Instrumentor to inject code into generated C code
+			-- for code coverage statistics
+
+	set_instrumentor (a_instrumentor: like instrumentor_manager) is
+			-- Set `instrumentor' with `a_instrumentor'.
+		require
+			a_instrumentor_attached: a_instrumentor /= Void
+		do
+			instrumentor_manager := a_instrumentor
+		ensure
+			instrumentor_set: instrumentor_manager = a_instrumentor
+		end
 
 invariant
 	global_onces_not_void: global_onces /= Void

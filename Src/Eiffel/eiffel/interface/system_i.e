@@ -77,6 +77,8 @@ inherit
 			{NONE} all
 		end
 
+	SAT_SHARED_INSTRUMENTATION
+
 create
 	make
 
@@ -2083,8 +2085,22 @@ end
 	process_degree_minus_1 is
 			-- Process Degree -1.
 			-- Freeze system: generate C files.
+		local
+			l_branch_instrumentor: SAT_DECISION_INSTRUMENTOR
 		do
+			analyze_classes_for_instrumentation (instrument_config_file_name, universe)
+			if is_decision_coverage_enabled then
+				byte_context.instrumentor_manager.set_is_instrument_enabled (True)
+				create l_branch_instrumentor.make
+				l_branch_instrumentor.open_map_file
+				byte_context.instrumentor_manager.register_instrumentor (l_branch_instrumentor)
+			end
+
 			Degree_minus_1.execute
+
+			if is_decision_coverage_enabled then
+				l_branch_instrumentor.close_map_file
+			end
 		end
 
 	check_generics is

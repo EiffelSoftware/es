@@ -1495,6 +1495,13 @@ RT_LNK EIF_TYPE_INDEX fcount;
 #define RTAP_BASIC(cast,x,val,i) \
 	*(cast*)(CAT2(x,_area_minus_lower)+(i)*sizeof(cast)) = val;
 
+#ifdef WORKBENCH
+#define SATDCS(n)		sat_dcs_record (n)
+#else
+#define SATDCS(n)		
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif

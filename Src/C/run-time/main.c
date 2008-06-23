@@ -75,6 +75,7 @@ doc:<file name="main.c" header="eif_main.h" version="$Id$" summary="Initializati
 #include "rt_debug.h"
 #include "rt_main.h"
 #include "rt_macros.h"
+#include "time.h"
 
 #ifdef BOEHM_GC
 #include "rt_boehm.h"
@@ -819,7 +820,16 @@ rt_public void eif_rtinit(int argc, char **argv, char **envp)
 		egc_routdisp_fl = (void (*)(EIF_REFERENCE, EIF_POINTER, EIF_POINTER, EIF_POINTER, EIF_REFERENCE, EIF_BOOLEAN, EIF_INTEGER)) egc_routdisp;
 	}
 #endif
+
+#ifdef WORKBENCH
+	sat_initialize();
+
+#endif
+
 	init_emnger();					/* Initialize ISE_EXCEPTION_MANAGER */
+
+/* Create a file to store SAT instrumentation information. */
+
 }
 
 rt_public void failure(void)
@@ -893,6 +903,140 @@ rt_shared void dexit(int code)
 	 */
 
 	esdie(code);						/* Propagate dying request */
+}
+
+/* SATS related variables */
+rt_public FILE* sat_log_file;                 /* File to store information from code instrumentation */
+
+	/* Boolean to indicate whether instrument recording should be enabled. If False, no recording will be done. 
+	 * It is used to disable recording shortly because some tested classes such as ANY, STRING_8 will be used in non-testing context, 
+	 * want to avoid recording for those cases. So right before AutoTest interpretor invoke a method, we set this to True. And right after
+	 * the invocation of the tested feature finished, we set this to False.
+	 * */
+rt_public EIF_BOOLEAN sat_is_recording_enabled = EIF_FALSE; 
+
+/* SATS decision coverage variables */
+rt_public time_t* sat_dcs_data;               /* Storage for decision coverage information. Index to this array is decision index.*/
+rt_public EIF_INTEGER sat_dcs_count;              /* Number of branch in the instrumented code. */
+rt_public EIF_INTEGER sat_dcs_mem_cnt;        /* Newly covered decisions which are not flushed to log file yet. */ 
+rt_public EIF_BOOLEAN sat_dcs_is_enabled = EIF_FALSE; /* Is decision coverage recording enabled? Has effects only when sat_is_recording_enabled is True. */
+rt_private EIF_INTEGER sat_dcs_flush_thresold = 50;  /* Thresold of number of new covered decisions to cause data flush. */
+
+/* Time of last decision coverage data flush 
+ * Every time we do flush, we only need to write data equal to or newer than this time.
+ * */
+rt_public time_t sat_dcs_last_flush_time = 0;     
+
+
+void sat_flush_data()
+	/* Flush SATS related data into log file. */
+{
+	if(sat_dcs_is_enabled) {
+		sat_dcs_flush_data();
+		fflush(sat_log_file);
+	}
+}
+
+void sat_dcs_flush_data()
+	/* Flush data in `sat_dcs_data' into file `sat_log_file'. */
+{
+	int i;
+	int cnt = sat_dcs_count;
+	time_t* data = sat_dcs_data;
+	FILE* file = sat_log_file;
+	time_t last_flush_time;
+
+	last_flush_time = sat_dcs_last_flush_time;
+	fprintf(file, "--DCS\n");
+	for(i=0; i<cnt; i++) {
+		if(data[i]>=last_flush_time) {
+			fprintf (file, "%d,%d\n", i, data[i]);
+		}
+	}
+	time (&sat_dcs_last_flush_time);
+	sat_dcs_mem_cnt = 0;
+}
+
+void sat_dcs_record (int decision_index)
+{
+	time_t* data = sat_dcs_data;
+
+	if(sat_is_recording_enabled) {
+			  /* We only log new decision coverage. */
+		if(data[decision_index]==0) {
+			time (&data[decision_index]);
+			sat_dcs_mem_cnt++;
+			if(sat_dcs_mem_cnt > sat_dcs_flush_thresold) {
+				sat_dcs_flush_data();
+			}
+		}
+	}
+}
+
+void sat_dcs_reclaim()
+	  /* Cleanup of instrument data. */
+{
+	if(sat_dcs_mem_cnt>0) sat_dcs_flush_data();
+	free (sat_dcs_data);
+}
+
+void sat_dcs_log_file (char* file_name)
+	/* Set SAT log file name into buffer `file_name'. */
+{
+	time_t cur_time;
+	time (&cur_time);
+	sprintf(file_name, "sat_instru_%i.log", cur_time);
+}
+
+void sat_dcs_initialize()
+	/* Initialize for SAT code instrumentation. */
+{
+	int i;
+
+		/* Initialize storage for instrument data. */
+	sat_dcs_data = (time_t *)malloc (sizeof (time_t) * sat_dcs_count);	
+	for(i=0; i<sat_dcs_count; i++) sat_dcs_data[i] = 0;
+}
+
+void sat_disable_recording()
+{
+	sat_is_recording_enabled = EIF_FALSE;
+}
+
+void sat_enable_recording()
+{
+	sat_is_recording_enabled = EIF_TRUE;
+}
+
+void sat_initialize()
+	/* Initialize for SATS. */
+{
+	char* log_file_name;
+		
+		/* Create log file under current directory
+		 * Note: It is better to create log file in the meltpath of current program.
+		 * */
+	log_file_name = (char*)malloc (32);
+	sat_dcs_log_file (log_file_name);
+	sat_log_file = fopen (log_file_name, "w");
+	free(log_file_name);
+		  
+		/* Initialize for decision coverage recording.
+		 */
+	if(sat_dcs_is_enabled) {
+		sat_dcs_initialize();
+	}
+}
+
+void sat_reclaim()
+{
+		/* Reclaim for decision coverage recording. */
+	if(sat_dcs_is_enabled) {
+		sat_dcs_reclaim();
+	}
+
+		/* Close log file. */
+	fclose(sat_log_file);
 }
 
 /*

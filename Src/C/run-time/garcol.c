@@ -85,6 +85,10 @@ doc:<file name="garcol.c" header="eif_garcol.h" version="$Id$" summary="Garbage 
 #include "rt_interp.h"
 #endif
 
+#ifdef WORKBENCH
+#include "eif_main.h"
+#endif
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -1255,6 +1259,11 @@ rt_public void reclaim(void)
 			exitprf();			/* Store profile information */
 		}
 #endif
+
+/* Clean up for code instrument. */
+#ifdef WORKBENCH
+	sat_reclaim();
+#endif		
 
 #ifdef ISE_GC
 		if (!eif_no_reclaim && !(rt_g_data.status & GC_STOP)) {	/* Does user want no reclaim? */

@@ -82,14 +82,18 @@ feature -- C generation
 			-- Generate C code in `buffer'.
 		local
 			buf: GENERATION_BUFFER
+			l_instrumentor: SAT_INSTRUMENTOR
 		do
+			l_instrumentor := context.instrumentor_manager
 			generate_line_info
 			interval.generate
 			buf := buffer
 			buf.indent
+			l_instrumentor.process_when_part_start
 			if compound /= Void then
 				compound.generate
 			end
+			l_instrumentor.process_when_part_end
 			buf.put_new_line
 			buf.put_string ("break;")
 			buf.exdent

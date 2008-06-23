@@ -439,6 +439,9 @@ feature -- Plug and Makefile file
 				buffer.put_string ("#include %"eoffsets.h%"")
 			end
 
+				-- Generate possibly needed header file inclusions for registered code instrument strategies.
+			context.instrumentor_manager.process_header_file_initialization
+
 			buffer.start_c_specific_code
 
 				-- Extern declarations
@@ -447,6 +450,9 @@ feature -- Plug and Makefile file
 			str_type_id := cl_type.type_id
 			creators := string_cl.creators
 			creators.start
+
+				-- Generate possible extern function or variable declaration.
+			context.instrumentor_manager.process_declaration
 
 				-- Make ANY declaration
 			any_cl := system.any_class.compiled_class
@@ -971,6 +977,8 @@ feature -- Plug and Makefile file
 					buffer.put_new_line
 				end
 			end
+				-- Generate possible code initializations for registered instrument strategies.
+			context.instrumentor_manager.process_initialization
 
 			if final_mode then
 					-- Initialize polymorphic tables

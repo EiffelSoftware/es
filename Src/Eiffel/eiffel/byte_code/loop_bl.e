@@ -85,9 +85,11 @@ feature -- Access
 			end
 
 				-- Generate the "from" part
+			context.instrumentor_manager.process_from_part_start
 			if from_part /= Void then
 				from_part.generate
 			end
+			context.instrumentor_manager.process_from_part_end
 
 			if workbench_mode or else system.exception_stack_managed then
 					-- Record the place where we will generate
@@ -131,7 +133,10 @@ feature -- Access
 				-- Number of the first breakpoint slot of the
 				-- "body" clause.
 			check_slot: INTEGER -- debugging purpose
+			l_instrumentor: SAT_INSTRUMENTOR
 		do
+			l_instrumentor := context.instrumentor_manager
+			l_instrumentor.process_loop_b (Current)
 			buf := buffer
 			workbench_mode := context.workbench_mode
 			if workbench_mode or else context.assertion_level.is_loop then
@@ -145,7 +150,9 @@ feature -- Access
 
 				-- Generate the "until" clause (pre-while evaluation)
 			generate_frozen_debugger_hook
+			l_instrumentor.process_loop_stop_condition_start (stop)
 			stop.generate
+			l_instrumentor.process_loop_stop_condition_end (stop)
 				-- The code for the evaluation of the expression is
 				-- generated twice, once before the while and once at
 				-- the end of the while body.
@@ -155,6 +162,7 @@ feature -- Access
 			buf.put_string ("while (!(")
 			stop.print_register
 			buf.put_string (")) {")
+			context.instrumentor_manager.process_loop_body_part_start
 			buf.indent
 			if compound /= Void then
 				compound.generate
@@ -202,16 +210,19 @@ feature -- Access
 
 				-- Regenerate the "until" clause
 			generate_frozen_debugger_hook
+			l_instrumentor.process_loop_stop_condition_start (stop)
 			stop.generate
+			l_instrumentor.process_loop_stop_condition_end (stop)
 
 			if workbench_mode or else system.exception_stack_managed then
 					-- Restore the hook number
 				set_current_frozen_debugger_hook (body_breakpoint_slot)
 			end
-
+			l_instrumentor.process_loop_body_part_end
 			buf.exdent
 			buf.put_new_line
 			buf.put_character ('}')
+			l_instrumentor.process_loop_b_end (Current)
 		end
 
 	generate_workbench_test is

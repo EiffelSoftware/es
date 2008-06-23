@@ -108,7 +108,10 @@ feature -- C code generation
 			-- Generate C code in `buffer'.
 		local
 			buf: GENERATION_BUFFER
+			l_instrumentor: SAT_INSTRUMENTOR
 		do
+			l_instrumentor := context.instrumentor_manager
+			l_instrumentor.process_inspect_b (Current)
 			buf := buffer
 			generate_line_info
 			generate_frozen_debugger_hook
@@ -121,21 +124,25 @@ feature -- C code generation
 			if case_list /= Void then
 				case_list.generate
 			end
-			if else_part = Void or else not else_part.is_empty then
+			if else_part = Void or else not else_part.is_empty or else context.instrumentor_manager.should_generate_inspect_else_part then
 				buf.put_new_line
 				buf.put_string ("default:")
 				buf.indent
+				context.instrumentor_manager.process_inspect_else_part_start
 				if else_part = Void then
 						-- Raise an exception
 					buf.put_new_line
 					buf.put_string ("RTEC(EN_WHEN);")
+					context.instrumentor_manager.process_inspect_else_part_end
 				else
 					else_part.generate
 					buf.put_new_line
+					context.instrumentor_manager.process_inspect_else_part_end
 					buf.put_string ("break;")
 				end
 				buf.exdent
 			end
+			l_instrumentor.process_inspect_end (Current)
 			buf.exdent
 			buf.put_new_line
 			buf.put_character ('}')

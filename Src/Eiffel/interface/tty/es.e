@@ -51,6 +51,11 @@ inherit
 
 	SHARED_BATCH_NAMES
 
+	SAT_SHARED_INSTRUMENTATION
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -1169,6 +1174,16 @@ feature -- Update
 							option_error := True
 						end
 					end
+				else
+					option_error := True
+				end
+			elseif option.is_equal ("-decision-coverage") then
+					-- Option to enable decision coverage recording.
+				set_is_decision_coverage_enabled (True)
+			elseif option.is_equal ("-instrument-config") then
+				if current_option + 1 < argument_count then
+					current_option := current_option + 1
+					set_instrument_config_file_name (argument (current_option))
 				else
 					option_error := True
 				end

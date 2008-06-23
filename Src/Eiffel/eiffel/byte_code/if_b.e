@@ -322,32 +322,41 @@ feature -- Settings
 			-- Generate C code in `buffer'.
 		local
 			buf: GENERATION_BUFFER
+			l_instrumentor: SAT_INSTRUMENTOR
 		do
+			l_instrumentor := context.instrumentor_manager
+			l_instrumentor.process_if_b (Current)
 			buf := buffer
 			generate_line_info
 				-- Generate the hook for "if cond then"
 			generate_frozen_debugger_hook
-
+			l_instrumentor.process_then_part_condition_start (condition)
 			condition.generate
-
+			l_instrumentor.process_then_part_condition_end (condition)
 			buf.put_new_line
 			buf.put_string (gc_if_l_paran)
 			condition.print_register
 			buf.put_string (") {")
+			context.instrumentor_manager.process_then_part_start
 			if compound /= Void then
 				buf.indent
 				compound.generate
 				buf.exdent
 			end
+			context.instrumentor_manager.process_then_part_end
 			buf.put_new_line
 			buf.put_character ('}')
 			if elsif_list /= Void then
 				elsif_list.generate
 			end
-			if else_part /= Void then
+			if else_part /= Void or else context.instrumentor_manager.should_generate_conditional_else_part then
 				buf.put_string (" else {")
+				context.instrumentor_manager.process_if_else_part_start
 				buf.indent
-				else_part.generate
+				if else_part /= Void then
+					else_part.generate
+				end
+				context.instrumentor_manager.process_if_else_part_end
 				buf.exdent
 				buf.put_new_line
 				buf.put_character ('}')

@@ -80,6 +80,15 @@ RT_LNK char **eif_environ;
 RT_LNK int is_debug_mode (void);
 RT_LNK void set_debug_mode (int);
 
+RT_LNK void sat_disable_recording();
+RT_LNK void sat_enable_recording();
+RT_LNK void sat_initialize();
+RT_LNK void sat_reclaim();
+RT_LNK void sat_flush_data();
+
+RT_LNK void sat_dcs_flush_data();
+RT_LNK void sat_dcs_reclaim();
+
 #ifdef __cplusplus
 }
 #endif

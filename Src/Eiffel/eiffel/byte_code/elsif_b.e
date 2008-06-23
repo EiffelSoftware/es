@@ -110,18 +110,23 @@ feature -- Basic Operations
 			-- Generate C code in `buffer'.
 		local
 			buf: GENERATION_BUFFER
+			l_instrumentor: SAT_INSTRUMENTOR
 		do
+			l_instrumentor := context.instrumentor_manager
 			buf := buffer
 			buf.put_string (" else {")
 			generate_line_info
 			buf.indent
 				-- Generate a hook for the evaluation/test of the condition.
 			generate_frozen_debugger_hook
+			l_instrumentor.process_then_part_condition_start (expr)
 			expr.generate
+			l_instrumentor.process_then_part_condition_end (expr)
 			buf.put_new_line
 			buf.put_string (gc_if_l_paran)
 			expr.print_register
 			buf.put_string (") {")
+			context.instrumentor_manager.process_elsif_b (Current)
 			if compound /= Void then
 				buf.indent
 				compound.generate
