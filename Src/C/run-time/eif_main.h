@@ -89,6 +89,8 @@ RT_LNK void sat_flush_data();
 RT_LNK void sat_dcs_flush_data();
 RT_LNK void sat_dcs_reclaim();
 
+RT_LNK EIF_INTEGER sat_time();
+
 #ifdef __cplusplus
 }
 #endif

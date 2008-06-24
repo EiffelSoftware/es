@@ -979,6 +979,13 @@ void sat_dcs_reclaim()
 	if(sat_dcs_mem_cnt>0) sat_dcs_flush_data();
 	free (sat_dcs_data);
 }
+		  
+EIF_INTEGER sat_time()
+{
+	time_t cur_time;
+	time (&cur_time);
+	return cur_time;
+}
 
 void sat_dcs_log_file (char* file_name)
 	/* Set SAT log file name into buffer `file_name'. */
