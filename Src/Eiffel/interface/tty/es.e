@@ -1177,10 +1177,10 @@ feature -- Update
 				else
 					option_error := True
 				end
-			elseif option.is_equal ("-decision-coverage") then
+			elseif option.is_equal ("-decision_coverage") then
 					-- Option to enable decision coverage recording.
 				set_is_decision_coverage_enabled (True)
-			elseif option.is_equal ("-instrument-config") then
+			elseif option.is_equal ("-instrument_config") then
 				if current_option + 1 < argument_count then
 					current_option := current_option + 1
 					set_instrument_config_file_name (argument (current_option))
