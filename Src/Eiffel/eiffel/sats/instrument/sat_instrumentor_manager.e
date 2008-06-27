@@ -86,9 +86,9 @@ feature -- Status report
 		require
 			a_instrumentor_attached: a_instrumentor /= Void
 		do
-			Result := not instrumentors.has (a_instrumentor)
+			Result := instrumentors.has (a_instrumentor)
 		ensure
-			good_result: Result = not instrumentors.has (a_instrumentor)
+			good_result: Result = instrumentors.has (a_instrumentor)
 		end
 
 feature -- Instrumentor registeration
