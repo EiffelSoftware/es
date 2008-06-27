@@ -83,41 +83,43 @@ feature -- Setting
 			l_excluded := excluded_instrument_classes
 			l_included.wipe_out
 			l_excluded.wipe_out
-			create l_config_reader
-			l_config_reader.read_config (a_config_file)
-			l_config := l_config_reader.last_config
-			if not l_config.is_empty then
-				from
-					l_config.start
-				until
-					l_config.after
-				loop
-					l_class_config := l_config.item
-					if l_class_config.is_excluded then
-						l_classes := l_excluded
-					else
-						l_classes := l_included
-					end
-					l_classes_i := a_universe.classes_with_name (l_class_config.class_name)
-					if not l_classes_i.is_empty then
-						l_classes.force_last (l_classes_i.first.name)
-							-- Read ancestors of current class.
-						if l_class_config.is_proper_ancestor_included then
-							create l_new_classes.make
-							calculate_parents (l_classes_i.first, l_new_classes)
+			if a_config_file /= Void and then not a_config_file.is_empty then
+				create l_config_reader
+				l_config_reader.read_config (a_config_file)
+				l_config := l_config_reader.last_config
+				if not l_config.is_empty then
+					from
+						l_config.start
+					until
+						l_config.after
+					loop
+						l_class_config := l_config.item
+						if l_class_config.is_excluded then
+							l_classes := l_excluded
+						else
+							l_classes := l_included
+						end
+						l_classes_i := a_universe.classes_with_name (l_class_config.class_name)
+						if not l_classes_i.is_empty then
+							l_classes.force_last (l_classes_i.first.name)
+								-- Read ancestors of current class.
+							if l_class_config.is_proper_ancestor_included then
+								create l_new_classes.make
+								calculate_parents (l_classes_i.first, l_new_classes)
 
-							l_cursor := l_new_classes.new_cursor
-							from
-								l_cursor.start
-							until
-								l_cursor.after
-							loop
-								l_classes.force_last (l_cursor.item.name_in_upper)
-								l_cursor.forth
+								l_cursor := l_new_classes.new_cursor
+								from
+									l_cursor.start
+								until
+									l_cursor.after
+								loop
+									l_classes.force_last (l_cursor.item.name_in_upper)
+									l_cursor.forth
+								end
 							end
 						end
+						l_config.forth
 					end
-					l_config.forth
 				end
 			end
 		end

@@ -44,7 +44,12 @@ feature -- Access
 		local
 			l_file_name: FILE_NAME
 		do
-			create l_file_name.make_from_string (project_location.workbench_path)
+			if context.final_mode then
+				create l_file_name.make_from_string (project_location.final_path)
+			else
+				create l_file_name.make_from_string (project_location.workbench_path)
+			end
+
 			l_file_name.set_file_name ("sat_dcs_map.txt")
 			create map_file.make_create_read_write (l_file_name)
 		end

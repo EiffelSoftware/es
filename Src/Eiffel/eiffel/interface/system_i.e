@@ -2090,7 +2090,7 @@ end
 		do
 			analyze_classes_for_instrumentation (instrument_config_file_name, universe)
 			if is_decision_coverage_enabled then
-				byte_context.instrumentor_manager.set_is_instrument_enabled (True)
+				byte_context.instrumentor_manager.set_has_instrument (True)
 				create l_branch_instrumentor.make
 				l_branch_instrumentor.open_map_file
 				byte_context.instrumentor_manager.register_instrumentor (l_branch_instrumentor)

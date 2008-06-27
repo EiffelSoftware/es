@@ -56,7 +56,7 @@ feature -- Initialization
 			instrumentor_manager.set_veto_instrumentation_function (
 				agent: BOOLEAN
 					do
-						if instrumentor_manager.is_instrument_enabled then
+						if instrumentor_manager.has_instrument then
 							if included_instrument_classes.is_empty then
 								Result := not excluded_instrument_classes.has (Current.associated_class.name_in_upper)
 							else

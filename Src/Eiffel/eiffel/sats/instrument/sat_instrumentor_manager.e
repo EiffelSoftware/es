@@ -17,6 +17,10 @@ inherit
 
 		end
 
+	PROJECT_CONTEXT
+
+	SHARED_WORKBENCH
+
 create
 	make
 
@@ -38,6 +42,23 @@ feature -- Access
 			-- If this function is false or returns true, instrumentation is generated,
 			-- otherwise, instrumentation is not generated.
 
+	log_file_path: STRING is
+			-- Full path (including file name) of the log file
+		local
+			l_file_name: FILE_NAME
+		do
+			create l_file_name.make
+			if context.final_mode then
+				l_file_name.set_directory (project_location.final_path)
+			else
+				l_file_name.set_directory (project_location.workbench_path)
+			end
+			l_file_name.set_file_name ("sat_%%d.log")
+			Result := l_file_name
+		ensure
+			result_attached: Result /= Void
+		end
+
 feature -- Status report
 
 	instrumentor_count: INTEGER is
@@ -48,7 +69,7 @@ feature -- Status report
 			good_result: Result = instrumentors.count
 		end
 
-	is_instrument_enabled: BOOLEAN
+	has_instrument: BOOLEAN
 			-- Is instrument enabled?
 
 	is_instrument_enabled_in_class: BOOLEAN is
@@ -98,12 +119,12 @@ feature -- Instrumentor registeration
 
 feature -- Setting
 
-	set_is_instrument_enabled (b: BOOLEAN) is
-			-- Set `is_instrument_enabled' with `b'.
+	set_has_instrument (b: BOOLEAN) is
+			-- Set `has_instrument' with `b'.
 		do
-			is_instrument_enabled := b
+			has_instrument := b
 		ensure
-			is_instrument_enabled_set: is_instrument_enabled = b
+			is_instrument_enabled_set: has_instrument = b
 		end
 
 	set_veto_instrumentation_function (a_function: like veto_instrumentation_function) is
@@ -377,7 +398,7 @@ feature -- Byte node processing
 			l_instrumentors: like instrumentors
 			l_cursor: CURSOR
 		do
-			if is_instrument_enabled then
+			if has_instrument then
 				l_instrumentors := instrumentors
 				l_cursor := l_instrumentors.cursor
 				from
@@ -398,7 +419,18 @@ feature -- Byte node processing
 			l_instrumentors: like instrumentors
 			l_cursor: CURSOR
 		do
-			if is_instrument_enabled then
+			if has_instrument then
+				context.buffer.put_new_line
+				context.buffer.put_string ("sat_has_instrument = EIF_TRUE;")
+				context.buffer.put_new_line
+				context.buffer.put_string ("sat_log_file_name = (char*)malloc(" + (log_file_path.count + 40).out + ");")
+				context.buffer.put_new_line
+
+				context.buffer.put_string ("sprintf(sat_log_file_name, ")
+				context.buffer.put_string_literal (log_file_path)
+				context.buffer.put_string(", sat_time());")
+				context.buffer.put_new_line
+
 				l_instrumentors := instrumentors
 				l_cursor := l_instrumentors.cursor
 				from
@@ -419,7 +451,13 @@ feature -- Byte node processing
 			l_instrumentors: like instrumentors
 			l_cursor: CURSOR
 		do
-			if is_instrument_enabled then
+			if has_instrument then
+				context.buffer.put_new_line
+				context.buffer.put_string ("extern EIF_BOOLEAN sat_has_instrument;")
+				context.buffer.put_new_line
+				context.buffer.put_string ("extern char* sat_log_file_name;")
+				context.buffer.put_new_line
+
 				l_instrumentors := instrumentors
 				l_cursor := l_instrumentors.cursor
 				from
