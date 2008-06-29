@@ -87,8 +87,6 @@ RT_LNK void sat_initialize();
 RT_LNK void sat_reclaim();
 
 RT_LNK void sat_flush_data();
-RT_LNK void sat_record_coverage (int decision_index, struct sat_coverage* cov);
-RT_LNK void sat_flush_coverage (struct sat_coverage* cov);
 
 RT_LNK EIF_INTEGER sat_time();
 
@@ -100,6 +98,9 @@ struct sat_coverage { /* Struct to hold information for a certain kind of code c
 	EIF_INTEGER flush_threshold; /* Threshold of dirty records which causes log file flush */
 	char* header;	/* Header string to indicate a certain block of data in log file */
 };
+
+RT_LNK void sat_record_coverage (int decision_index, struct sat_coverage* cov);
+RT_LNK void sat_flush_coverage (struct sat_coverage* cov);
 
 #ifdef __cplusplus
 }
