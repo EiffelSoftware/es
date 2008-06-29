@@ -1180,6 +1180,9 @@ feature -- Update
 			elseif option.is_equal ("-decision_coverage") then
 					-- Option to enable decision coverage recording.
 				set_is_decision_coverage_enabled (True)
+			elseif option.is_equal ("-feature_coverage") then
+					-- Option to enable featur entry coverage recording.
+				set_is_feature_coverage_enabled (True)
 			elseif option.is_equal ("-instrument_config") then
 				if current_option + 1 < argument_count then
 					current_option := current_option + 1

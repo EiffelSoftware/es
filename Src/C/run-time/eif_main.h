@@ -82,14 +82,24 @@ RT_LNK void set_debug_mode (int);
 
 RT_LNK void sat_disable_recording();
 RT_LNK void sat_enable_recording();
+
 RT_LNK void sat_initialize();
 RT_LNK void sat_reclaim();
-RT_LNK void sat_flush_data();
 
-RT_LNK void sat_dcs_flush_data();
-RT_LNK void sat_dcs_reclaim();
+RT_LNK void sat_flush_data();
+RT_LNK void sat_record_coverage (int decision_index, struct sat_coverage* cov);
+RT_LNK void sat_flush_coverage (struct sat_coverage* cov);
 
 RT_LNK EIF_INTEGER sat_time();
+
+struct sat_coverage { /* Struct to hold information for a certain kind of code coverage cirteria */
+	EIF_INTEGER slot_count;	/* Number of slots used to identify positions for a certain instrument criteria */
+	time_t* record;	/* Array of visited time for every slot */
+	time_t last_flush_time;	/* Last time when data is flushed into log file */
+	EIF_INTEGER dirty_record_count; /* Number of records which have not been flushed into log file */
+	EIF_INTEGER flush_threshold; /* Threshold of dirty records which causes log file flush */
+	char* header;	/* Header string to indicate a certain block of data in log file */
+};
 
 #ifdef __cplusplus
 }

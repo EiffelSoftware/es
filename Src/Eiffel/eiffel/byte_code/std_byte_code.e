@@ -407,6 +407,7 @@ feature -- Analyzis
 				-- Generate old variables
 			generate_old_variables
 
+			context.instrumentor_manager.process_feature_entry
 				-- Now we want the body
 			generate_compound
 

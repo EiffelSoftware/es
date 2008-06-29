@@ -7,6 +7,9 @@ indexing
 class
 	SAT_SHARED_INSTRUMENTATION
 
+inherit
+	SHARED_WORKBENCH
+
 feature -- Access
 
 	included_instrument_classes: DS_HASH_SET [STRING] is
@@ -28,6 +31,19 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
+	map_file: PLAIN_TEXT_FILE is
+			-- File to contain code instrument mappings
+		do
+			Result := map_file_internal.item
+		end
+
+	map_file_internal: CELL [PLAIN_TEXT_FILE] is
+			--
+		once
+			create Result.put (Void)
+		end
+
+
 feature -- Status report
 
 	is_decision_coverage_enabled: BOOLEAN is
@@ -36,6 +52,14 @@ feature -- Status report
 			Result := decision_coverage_enabled.item
 		ensure
 			good_result:  Result = decision_coverage_enabled.item
+		end
+
+	is_feature_coverage_enabled: BOOLEAN is
+			-- Is feature coverage recording enabled?
+		do
+			Result := feature_coverage_enabled.item
+		ensure
+			good_result:  Result = feature_coverage_enabled.item
 		end
 
 	instrument_config_file_name: STRING is
@@ -54,6 +78,14 @@ feature -- Setting
 			is_decision_coverage_enabled_set: is_decision_coverage_enabled = b
 		end
 
+	set_is_feature_coverage_enabled (b: BOOLEAN) is
+			-- Set `is_feature_coverage_enabled' with `b'.
+		do
+			feature_coverage_enabled.put (b)
+		ensure
+			is_feature_coverage_enabled_set: is_feature_coverage_enabled = b
+		end
+
 	set_instrument_config_file_name (a_name: like instrument_config_file_name) is
 			-- Set `instrument_config_file_name' with `a_name'.
 		require
@@ -63,6 +95,29 @@ feature -- Setting
 			instrument_config_file_name.append (a_name)
 		ensure
 			instrument_config_file_name_set: instrument_config_file_name.is_equal (a_name)
+		end
+
+	open_map_file is
+			--
+		local
+			l_file_name: FILE_NAME
+			l_file: PLAIN_TEXT_FILE
+		do
+			if workbench.system.byte_context.final_mode then
+				create l_file_name.make_from_string (system.project_location.final_path)
+			else
+				create l_file_name.make_from_string (system.project_location.workbench_path)
+			end
+
+			l_file_name.set_file_name ("sat_map.txt")
+			create l_file.make_create_read_write (l_file_name)
+			map_file_internal.put (l_file)
+		end
+
+	close_map_file is
+			--
+		do
+			map_file.close
 		end
 
 	analyze_classes_for_instrumentation (a_config_file: STRING; a_universe: UNIVERSE_I) is
@@ -153,6 +208,12 @@ feature -- Setting
 feature{NONE} -- Implementation
 
 	decision_coverage_enabled: CELL [BOOLEAN] is
+			--
+		once
+			create Result.put (False)
+		end
+
+	feature_coverage_enabled: CELL [BOOLEAN] is
 			--
 		once
 			create Result.put (False)

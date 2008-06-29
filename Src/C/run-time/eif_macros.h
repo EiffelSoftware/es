@@ -1495,12 +1495,11 @@ RT_LNK EIF_TYPE_INDEX fcount;
 #define RTAP_BASIC(cast,x,val,i) \
 	*(cast*)(CAT2(x,_area_minus_lower)+(i)*sizeof(cast)) = val;
 
-#ifdef WORKBENCH
-#define SATDCS(n)		sat_dcs_record (n)
-#else
-#define SATDCS(n)		
-#endif
-
+/* SATS code coverage related code */ 
+extern struct sat_coverage* sat_dcs_record;
+extern struct sat_coverage* sat_fac_record;
+#define SATDCS(n)		sat_record_coverage (n, sat_dcs_record)
+#define SATFAC(n)		sat_record_coverage (n, sat_fac_record)
 
 #ifdef __cplusplus
 }

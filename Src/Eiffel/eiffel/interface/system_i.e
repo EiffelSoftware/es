@@ -2087,19 +2087,34 @@ end
 			-- Freeze system: generate C files.
 		local
 			l_branch_instrumentor: SAT_DECISION_INSTRUMENTOR
+			l_feature_entry_instrumentor: SAT_FEATURE_ACCESS_INSTRUMENTOR
+			l_has_instrument: BOOLEAN
 		do
 			analyze_classes_for_instrumentation (instrument_config_file_name, universe)
-			if is_decision_coverage_enabled then
+
+				-- Check if any instrumentor is needed.
+			l_has_instrument := is_decision_coverage_enabled or is_feature_coverage_enabled
+			if l_has_instrument then
 				byte_context.instrumentor_manager.set_has_instrument (True)
-				create l_branch_instrumentor.make
-				l_branch_instrumentor.open_map_file
-				byte_context.instrumentor_manager.register_instrumentor (l_branch_instrumentor)
+				open_map_file
+
+					-- Prepare decision coverage instrumentor.
+				if is_decision_coverage_enabled then
+					create l_branch_instrumentor.make
+					byte_context.instrumentor_manager.register_instrumentor (l_branch_instrumentor)
+				end
+
+					-- Prepare procedure entry instrumentor.
+				if is_feature_coverage_enabled then
+					create l_feature_entry_instrumentor
+					byte_context.instrumentor_manager.register_instrumentor (l_feature_entry_instrumentor)
+				end
 			end
 
 			Degree_minus_1.execute
 
-			if is_decision_coverage_enabled then
-				l_branch_instrumentor.close_map_file
+			if l_has_instrument then
+				close_map_file
 			end
 		end
 

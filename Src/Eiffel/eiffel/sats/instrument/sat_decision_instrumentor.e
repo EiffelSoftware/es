@@ -17,6 +17,8 @@ inherit
 
 	PROJECT_CONTEXT
 
+	SAT_SHARED_INSTRUMENTATION
+
 create
 	make
 
@@ -25,8 +27,6 @@ feature{NONE} -- Initialization
 	make is
 			-- Initialize.
 		do
-			set_is_decision_coverage_enabled (True)
-			set_is_condition_coverage_enabled (True)
 			create condition_stack.make
 			create loop_stack.make
 			create when_part_stack.make
@@ -37,54 +37,31 @@ feature -- Access
 	branch_slot_number: INTEGER
 			-- 1-based Slot number for branches, used to locate the position of a particular covered branch in source code.			
 
-	map_file: PLAIN_TEXT_FILE
-
-	open_map_file is
-			--
-		local
-			l_file_name: FILE_NAME
-		do
-			if context.final_mode then
-				create l_file_name.make_from_string (project_location.final_path)
-			else
-				create l_file_name.make_from_string (project_location.workbench_path)
-			end
-
-			l_file_name.set_file_name ("sat_dcs_map.txt")
-			create map_file.make_create_read_write (l_file_name)
-		end
-
-	close_map_file is
-			--
-		do
-			map_file.close
-		end
-
 feature -- Status report
 
-	is_condition_coverage_enabled: BOOLEAN
-			-- Is condition coverage enabled?
+--	is_condition_coverage_enabled: BOOLEAN
+--			-- Is condition coverage enabled?
 
-	is_decision_coverage_enabled: BOOLEAN
-			-- Is decision coverage enabled?
+--	is_decision_coverage_enabled: BOOLEAN
+--			-- Is decision coverage enabled?
 
 feature -- Setting
 
-	set_is_condition_coverage_enabled (b: BOOLEAN) is
-			-- Set `is_condition_coverage_enabled' with `b'.
-		do
-			is_condition_coverage_enabled := b
-		ensure
-			is_condition_coverage_enabled_set: is_condition_coverage_enabled = b
-		end
+--	set_is_condition_coverage_enabled (b: BOOLEAN) is
+--			-- Set `is_condition_coverage_enabled' with `b'.
+--		do
+--			is_condition_coverage_enabled := b
+--		ensure
+--			is_condition_coverage_enabled_set: is_condition_coverage_enabled = b
+--		end
 
-	set_is_decision_coverage_enabled (b: BOOLEAN) is
-			-- Set `is_decision_coverage_enabled' with `b'.
-		do
-			is_decision_coverage_enabled := b
-		ensure
-			is_decision_coverage_enabled_set: is_decision_coverage_enabled = b
-		end
+--	set_is_decision_coverage_enabled (b: BOOLEAN) is
+--			-- Set `is_decision_coverage_enabled' with `b'.
+--		do
+--			is_decision_coverage_enabled := b
+--		ensure
+--			is_decision_coverage_enabled_set: is_decision_coverage_enabled = b
+--		end
 
 feature -- Data clearing
 
@@ -105,6 +82,11 @@ feature -- Data clearing
 		end
 
 feature -- Byte node processing
+
+	process_feature_entry is
+			-- Process when a feature is entered.			
+		do
+		end
 
 	process_if_b (a_node: IF_B) is
 			-- Process `a_node'.
@@ -130,10 +112,22 @@ feature -- Byte node processing
 
 	increase_decision_index is
 			-- Increase `branch_slot_number' by one.
+		local
+			l_buffer: STRING
 		do
 			branch_slot_number := branch_slot_number + 1
 			decision_index := decision_index + 1
-			map_file.put_string (context.associated_class.name_in_upper + "." + context.current_feature.feature_name + "." + decision_index.out + "." + branch_slot_number.out + "%N")
+			create l_buffer.make (128)
+			l_buffer.append ("DCS ")
+			l_buffer.append (context.associated_class.name_in_upper)
+			l_buffer.append_character ('.')
+			l_buffer.append (context.current_feature.feature_name)
+			l_buffer.append_character ('.')
+			l_buffer.append (decision_index.out)
+			l_buffer.append_character ('.')
+			l_buffer.append (branch_slot_number.out)
+			l_buffer.append_character ('%N')
+			map_file.put_string (l_buffer)
 		ensure
 			branch_slot_number_increased: branch_slot_number = old branch_slot_number + 1
 		end
@@ -243,11 +237,9 @@ feature -- Byte node processing
 			-- Process for possible function or variable declaration.
 		do
 			context.buffer.put_new_line
-			context.buffer.put_string ("extern EIF_INTEGER sat_dcs_count;")
+			context.buffer.put_string ("extern EIF_INTEGER sat_dcs_slot_count;")
 			context.buffer.put_new_line
 			context.buffer.put_string ("extern EIF_BOOLEAN sat_dcs_is_enabled;")
-			context.buffer.put_new_line
-			context.buffer.put_string ("extern time_t sat_dcs_last_flush_time;")
 			context.buffer.put_new_line
 		end
 
@@ -255,11 +247,9 @@ feature -- Byte node processing
 			-- Process for possible C code generation for current instrument strategy.
 		do
 			context.buffer.put_new_line
-			context.buffer.put_string ("sat_dcs_count = " + branch_slot_number.out + ";")
+			context.buffer.put_string ("sat_dcs_slot_count = " + branch_slot_number.out + ";")
 			context.buffer.put_new_line
 			context.buffer.put_string ("sat_dcs_is_enabled = EIF_TRUE;")
-			context.buffer.put_new_line
-			context.buffer.put_string ("time (&sat_dcs_last_flush_time);")
 			context.buffer.put_new_line
 		end
 
@@ -268,8 +258,6 @@ feature -- Byte node processing
 		do
 			context.buffer.put_new_line
 			context.buffer.put_string ("#include %"eif_main.h%"")
-			context.buffer.put_new_line
-			context.buffer.put_string ("#include %"time.h%"")
 			context.buffer.put_new_line
 		end
 
