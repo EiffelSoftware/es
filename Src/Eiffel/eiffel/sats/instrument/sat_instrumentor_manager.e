@@ -75,9 +75,12 @@ feature -- Status report
 	is_instrument_enabled_in_class: BOOLEAN is
 			-- Should instrumentation be generated?
 		do
-			Result := veto_instrumentation_function = Void
-			if not Result then
-				Result := veto_instrumentation_function.item (Void)
+			Result := has_instrument
+			if Result then
+				Result := veto_instrumentation_function = Void
+				if not Result then
+					Result := veto_instrumentation_function.item (Void)
+				end
 			end
 		end
 

@@ -1184,7 +1184,7 @@ feature -- Update
 					-- Option to enable featur entry coverage recording.
 				set_is_feature_coverage_enabled (True)
 			elseif option.is_equal ("-instrument_config") then
-				if current_option + 1 < argument_count then
+				if current_option + 1 <= argument_count then
 					current_option := current_option + 1
 					set_instrument_config_file_name (argument (current_option))
 				else

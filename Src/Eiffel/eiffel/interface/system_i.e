@@ -2115,6 +2115,7 @@ end
 
 			if l_has_instrument then
 				close_map_file
+				byte_context.instrumentor_manager.set_has_instrument (False)
 			end
 		end
 
