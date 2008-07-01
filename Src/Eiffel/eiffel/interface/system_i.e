@@ -2096,6 +2096,7 @@ end
 			l_has_instrument := is_decision_coverage_enabled or is_feature_coverage_enabled
 			if l_has_instrument then
 				byte_context.instrumentor_manager.set_has_instrument (True)
+				byte_context.instrumentor_manager.set_should_generate_instrument_now (True)
 				open_map_file
 
 					-- Prepare decision coverage instrumentor.
@@ -2114,8 +2115,8 @@ end
 			Degree_minus_1.execute
 
 			if l_has_instrument then
+				byte_context.instrumentor_manager.set_should_generate_instrument_now (False)
 				close_map_file
-				byte_context.instrumentor_manager.set_has_instrument (False)
 			end
 		end
 

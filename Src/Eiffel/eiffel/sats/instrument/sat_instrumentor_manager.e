@@ -72,10 +72,13 @@ feature -- Status report
 	has_instrument: BOOLEAN
 			-- Is instrument enabled?
 
+	should_generate_instrument_now: BOOLEAN
+			-- Should instrument be generated now?
+
 	is_instrument_enabled_in_class: BOOLEAN is
 			-- Should instrumentation be generated?
 		do
-			Result := has_instrument
+			Result := has_instrument and then should_generate_instrument_now
 			if Result then
 				Result := veto_instrumentation_function = Void
 				if not Result then
@@ -128,6 +131,14 @@ feature -- Setting
 			has_instrument := b
 		ensure
 			is_instrument_enabled_set: has_instrument = b
+		end
+
+	set_should_generate_instrument_now (b: BOOLEAN) is
+			-- Set `should_generate_instrument_now' with `b'.
+		do
+			should_generate_instrument_now := b
+		ensure
+			is_instrument_enabled_set: should_generate_instrument_now = b
 		end
 
 	set_veto_instrumentation_function (a_function: like veto_instrumentation_function) is
