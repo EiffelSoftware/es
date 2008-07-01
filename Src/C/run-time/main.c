@@ -921,12 +921,12 @@ rt_public EIF_BOOLEAN sat_is_recording_enabled = EIF_FALSE;
 /* SATS decision coverage variables */
 rt_public EIF_INTEGER sat_dcs_slot_count;              /* Number of branch in the instrumented code. */
 rt_public EIF_BOOLEAN sat_dcs_is_enabled = EIF_FALSE; /* Is decision coverage recording enabled? Has effects only when sat_is_recording_enabled is True. */
-rt_public struct sat_coverage* sat_dcs_record = 0;		/* Struct to store recorded decision coverage related data. */
+rt_public struct sat_dcs_coverage* sat_dcs_record = 0;		/* Struct to store recorded decision coverage related data. */
 
 /*  SATS feature access coverage variables */
 rt_public EIF_INTEGER sat_fac_slot_count;              /* Number of procedures in the instrumented code. */
 rt_public EIF_BOOLEAN sat_fac_is_enabled = EIF_FALSE; /* Is feature access coverage recording enabled? Has effects only when sat_is_recording_enabled is True. */
-rt_public struct sat_coverage* sat_fac_record = 0; 	/* Struct to store recorded feature access coverage related data. */
+rt_public struct sat_fac_coverage* sat_fac_record = 0; 	/* Struct to store recorded feature access coverage related data. */
 
 
 
@@ -936,12 +936,12 @@ void sat_flush_data()
 	if(sat_has_instrument) {
 		/* Flush decision coverage related data. */
 		if(sat_dcs_is_enabled) {
-			sat_flush_coverage (sat_dcs_record);	
+			sat_dcs_flush_coverage (sat_dcs_record);	
 		}
 
 		/* Flush feature access coverage related data. */
 		if(sat_fac_is_enabled) {
-			sat_flush_coverage (sat_fac_record);
+			sat_fac_flush_coverage (sat_fac_record);
 		}
 
 		/* Flush file. */		
@@ -949,7 +949,28 @@ void sat_flush_data()
 	}
 }
 
-void sat_flush_coverage (struct sat_coverage* cov) {	
+void sat_dcs_flush_coverage (struct sat_dcs_coverage* cov) {
+	int i;
+	int cnt = cov->slot_count;
+	time_t last_flush_time;
+	time_t* record = cov->record;
+	FILE* file = sat_log_file;
+	time_t visited_time;
+
+	last_flush_time = cov->last_flush_time;
+
+	fprintf(file, cov->header);
+	for(i=0; i<cnt; i++) {
+		visited_time = record[i];
+		if(visited_time>=last_flush_time) {
+			fprintf (file, "%d,%d\n", i, visited_time);
+		}
+	}
+	cov->last_flush_time = sat_time();
+	cov->dirty_record_count = 0;	
+}
+
+void sat_fac_flush_coverage (struct sat_fac_coverage* cov) {	
 	int i;
 	int cnt = cov->slot_count;
 	time_t last_flush_time;
@@ -971,7 +992,8 @@ void sat_flush_coverage (struct sat_coverage* cov) {
 
 }
 
-void sat_record_coverage (int decision_index, struct sat_coverage* cov)
+void sat_dcs_record_coverage (int decision_index, struct sat_dcs_coverage* cov)
+	/* Record in `cov' that decision with index `decision_index' has been reached. */
 {
 	time_t* record;
 
@@ -984,7 +1006,27 @@ void sat_record_coverage (int decision_index, struct sat_coverage* cov)
 
 				/* We flush newly recorded data if it is big enough. */
 			if(cov->dirty_record_count > cov->flush_threshold) {
-				sat_flush_coverage (cov);
+				sat_dcs_flush_coverage (cov);
+			}
+		}
+	}
+}
+
+void sat_fac_record_coverage (int feature_index, struct sat_fac_coverage* cov)
+	/* Record in `cov' that feature with index `feature_index' has been reached. */
+{
+	time_t* record;
+
+	if(sat_is_recording_enabled) {
+			  /* We only log new decision coverage. */
+		record = cov->record;
+		if(record[feature_index]==0) {
+			record[feature_index] = sat_time();
+			cov->dirty_record_count++;
+
+				/* We flush newly recorded data if it is big enough. */
+			if(cov->dirty_record_count > cov->flush_threshold) {
+				sat_fac_flush_coverage (cov);
 			}
 		}
 	}
@@ -997,58 +1039,63 @@ EIF_INTEGER sat_time()
 	return cur_time;
 }
 
-void sat_coverage_initialize (struct sat_coverage* cov, char* header, int slot_count, int threshold)
-	  	  /* Initialize `cov' using `header', `slot_count' and `threshold'. */
-{
-	int i;
-		  
-	cov->header = (char *)malloc (10);
-	sprintf(cov->header, header);
-
-	cov->record = (time_t *)malloc (sizeof (time_t) * slot_count);	
-	for(i=0; i<slot_count; i++) cov->record[i] = 0;
-
-	cov->slot_count = slot_count;
-	cov->last_flush_time = sat_time();
-	cov->dirty_record_count = 0;
-	cov->flush_threshold = threshold;
-}
-
-void sat_coverage_reclaim (struct sat_coverage* cov)
-		  /* Dispose `cov'. */
-{
-	if(cov->dirty_record_count>0) sat_flush_coverage(cov);
-	free (cov->header);
-	free (cov->record);
-	free (cov);
-}
-
 void sat_dcs_initialize()
 	/* Initialize for SAT code instrumentation. */
 {
+		
+	int i;
+
 		/* Initialize storage for decision coverage data. */
-	sat_dcs_record = (struct sat_coverage*)malloc (sizeof (struct sat_coverage));	
-	sat_coverage_initialize (sat_dcs_record, "--DCS\n", sat_dcs_slot_count, 50);
+	sat_dcs_record = (struct sat_dcs_coverage*)malloc (sizeof (struct sat_dcs_coverage));			  
+	sat_dcs_record->header = (char *)malloc (10);
+	sprintf(sat_dcs_record->header, "--DCS\n");
+
+	sat_dcs_record->record = (time_t *)malloc (sizeof (time_t) * sat_dcs_slot_count);	
+	for(i=0; i<sat_dcs_slot_count; i++) sat_dcs_record->record[i] = 0;
+
+	sat_dcs_record->slot_count = sat_dcs_slot_count;
+	sat_dcs_record->last_flush_time = sat_time();
+	sat_dcs_record->dirty_record_count = 0;
+	sat_dcs_record->flush_threshold = 50;	
 }
 
 void sat_dcs_reclaim()
 	  /* Cleanup of instrument data. */
 {
-	sat_coverage_reclaim (sat_dcs_record);
+	if(sat_dcs_record->dirty_record_count>0) sat_dcs_flush_coverage(sat_dcs_record);
+	free (sat_dcs_record->header);
+	free (sat_dcs_record->record);
+	free (sat_dcs_record);
 }
 
 void sat_fac_initialize()
 	/* Initialize for SAT code instrumentation. */
 {
-		/* Initialize storage for decision coverage data. */
-	sat_fac_record = (struct sat_coverage*)malloc (sizeof (struct sat_coverage));	
-	sat_coverage_initialize (sat_fac_record, "--FAC\n", sat_fac_slot_count, 50);
+		
+	int i;
+
+		/* Initialize storage for feature access coverage data. */
+	sat_fac_record = (struct sat_fac_coverage*)malloc (sizeof (struct sat_fac_coverage));			  
+	sat_fac_record->header = (char *)malloc (10);
+	sprintf(sat_fac_record->header, "--FAC\n");
+
+	sat_fac_record->record = (time_t *)malloc (sizeof (time_t) * sat_fac_slot_count);	
+	for(i=0; i<sat_fac_slot_count; i++) sat_fac_record->record[i] = 0;
+
+	sat_fac_record->slot_count = sat_fac_slot_count;
+	sat_fac_record->last_flush_time = sat_time();
+	sat_fac_record->dirty_record_count = 0;
+	sat_fac_record->flush_threshold = 50;	
 }
 
 void sat_fac_reclaim()
 	  /* Cleanup of instrument data. */
 {
-	sat_coverage_reclaim (sat_fac_record);
+	if(sat_fac_record->dirty_record_count>0) sat_fac_flush_coverage(sat_fac_record);
+	free (sat_fac_record->header);
+	free (sat_fac_record->record);
+	free (sat_fac_record);
+
 }
 
 void sat_disable_recording()
