@@ -1162,6 +1162,7 @@ end
 					buf.put_integer (nb_refs)
 					buf.put_string (gc_rparan_semi_c)
 				end
+				context.instrumentor_manager.process_rescue_entry
 				rescue_clause.generate
 				generate_profile_stop
 				buf.put_new_line

@@ -54,6 +54,11 @@ feature -- Data clearing
 
 feature -- Byte node processing
 
+	process_rescue_entry is
+			-- Process when a rescue clause is entered.
+		deferred
+		end
+
 	process_feature_entry is
 			-- Process when a feature is entered.			
 		deferred

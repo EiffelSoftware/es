@@ -165,6 +165,27 @@ feature -- Data clearing
 
 feature -- Byte node processing
 
+	process_rescue_entry is
+			-- Process when a rescue clause is entered.
+		local
+			l_instrumentors: like instrumentors
+			l_cursor: CURSOR
+		do
+			if is_instrument_enabled_in_class then
+				l_instrumentors := instrumentors
+				l_cursor := l_instrumentors.cursor
+				from
+					l_instrumentors.start
+				until
+					l_instrumentors.after
+				loop
+					l_instrumentors.item.process_rescue_entry
+					l_instrumentors.forth
+				end
+				l_instrumentors.go_to (l_cursor)
+			end
+		end
+
 	process_if_b (a_node: IF_B) is
 			-- Process `a_node'.
 		do

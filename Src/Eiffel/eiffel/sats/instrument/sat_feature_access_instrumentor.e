@@ -30,20 +30,16 @@ feature -- Reset
 
 feature -- Byte node processing
 
+	process_rescue_entry is
+			-- Process when a rescue clause is entered.
+		do
+			generate_slot_hook
+		end
+
 	process_feature_entry is
 			-- Process when a feature is entered.			
-		local
-			l_buffer: GENERATION_BUFFER
 		do
-			increase_feature_index
-			l_buffer := context.buffer
-			l_buffer.put_new_line
-			l_buffer.indent
-			l_buffer.put_string (satfacl)
-			l_buffer.put_integer (feature_index)
-			l_buffer.put_character (')')
-			l_buffer.put_character (';')
-			l_buffer.put_new_line
+			generate_slot_hook
 		end
 
 	process_inspect_b (a_node: INSPECT_B) is
@@ -209,6 +205,23 @@ feature{NONE} -- Implementation
 			map_file.put_string (l_buffer)
 		ensure
 			feature_index_increased: feature_index = old feature_index + 1
+		end
+
+	generate_slot_hook is
+			-- Generate next hook to record feature/rescue entry.
+		local
+			l_buffer: GENERATION_BUFFER
+		do
+			increase_feature_index
+			l_buffer := context.buffer
+			l_buffer.put_new_line
+			l_buffer.indent
+			l_buffer.put_string (satfacl)
+			l_buffer.put_integer (feature_index)
+			l_buffer.put_character (')')
+			l_buffer.put_character (';')
+			l_buffer.put_new_line
+			l_buffer.exdent
 		end
 
 end
