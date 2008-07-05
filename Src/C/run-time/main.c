@@ -975,6 +975,8 @@ void sat_fac_flush_coverage (struct sat_fac_coverage* cov) {
 	int cnt = cov->slot_count;
 	time_t last_flush_time;
 	time_t* record = cov->record;
+	time_t* last_visit_time = cov->last_visit_time;
+	EIF_INTEGER* visit_times = cov->visit_times;
 	FILE* file = sat_log_file;
 	time_t visited_time;
 
@@ -985,6 +987,11 @@ void sat_fac_flush_coverage (struct sat_fac_coverage* cov) {
 		visited_time = record[i];
 		if(visited_time>=last_flush_time) {
 			fprintf (file, "%d,%d\n", i, visited_time);
+		}
+
+		visited_time = last_visit_time[i];
+		if(visited_time>=last_flush_time) {
+			fprintf (file, "%d,%d,%d\n", i, visited_time, visit_times[i]);
 		}
 	}
 	cov->last_flush_time = sat_time();
@@ -1016,18 +1023,21 @@ void sat_fac_record_coverage (int feature_index, struct sat_fac_coverage* cov)
 	/* Record in `cov' that feature with index `feature_index' has been reached. */
 {
 	time_t* record;
+	time_t time_now = sat_time();
 
 	if(sat_is_recording_enabled) {
 			  /* We only log new decision coverage. */
 		record = cov->record;
 		if(record[feature_index]==0) {
-			record[feature_index] = sat_time();
-			cov->dirty_record_count++;
+			record[feature_index] = time_now;
+		}
+		cov->last_visit_time[feature_index] = time_now;
+		cov->visit_times[feature_index]++;
+		cov->dirty_record_count++;
 
-				/* We flush newly recorded data if it is big enough. */
-			if(cov->dirty_record_count > cov->flush_threshold) {
-				sat_fac_flush_coverage (cov);
-			}
+			/* We flush newly recorded data if it is big enough. */
+		if(cov->dirty_record_count > cov->flush_threshold) {
+			sat_fac_flush_coverage (cov);
 		}
 	}
 }
@@ -1051,7 +1061,10 @@ void sat_dcs_initialize()
 	sprintf(sat_dcs_record->header, "--DCS\n");
 
 	sat_dcs_record->record = (time_t *)malloc (sizeof (time_t) * sat_dcs_slot_count);	
-	for(i=0; i<sat_dcs_slot_count; i++) sat_dcs_record->record[i] = 0;
+
+	for(i=0; i<sat_dcs_slot_count; i++) {
+		sat_dcs_record->record[i] = 0;
+	}
 
 	sat_dcs_record->slot_count = sat_dcs_slot_count;
 	sat_dcs_record->last_flush_time = sat_time();
@@ -1080,7 +1093,14 @@ void sat_fac_initialize()
 	sprintf(sat_fac_record->header, "--FAC\n");
 
 	sat_fac_record->record = (time_t *)malloc (sizeof (time_t) * sat_fac_slot_count);	
-	for(i=0; i<sat_fac_slot_count; i++) sat_fac_record->record[i] = 0;
+	sat_fac_record->last_visit_time = (time_t *)malloc (sizeof (time_t) * sat_fac_slot_count);
+	sat_fac_record->visit_times = (EIF_INTEGER *)malloc (sizeof (EIF_INTEGER) * sat_fac_slot_count);
+	
+	for(i=0; i<sat_fac_slot_count; i++) {
+		sat_fac_record->record[i] = 0;
+		sat_fac_record->last_visit_time[i] = 0;
+		sat_fac_record->visit_times[i] = 0;				
+	}
 
 	sat_fac_record->slot_count = sat_fac_slot_count;
 	sat_fac_record->last_flush_time = sat_time();
@@ -1094,6 +1114,8 @@ void sat_fac_reclaim()
 	if(sat_fac_record->dirty_record_count>0) sat_fac_flush_coverage(sat_fac_record);
 	free (sat_fac_record->header);
 	free (sat_fac_record->record);
+	free (sat_fac_record->last_visit_time);
+	free (sat_fac_record->visit_times);	
 	free (sat_fac_record);
 
 }
