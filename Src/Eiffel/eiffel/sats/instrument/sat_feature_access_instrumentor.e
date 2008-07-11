@@ -183,17 +183,17 @@ feature -- Byte node processing
 feature{NONE} -- Implementation
 
 	feature_index: INTEGER
-			-- 1-based index of feature which we have processed
+			-- 0-based index of feature which we have processed
+			-- It is 0-based because the C array used in run-time is 0-based.
 
 	satfacl: STRING is "SATFAC("
 			-- Starting string for feature access coverage
 
-	increase_feature_index is
-			-- Increase `feature_index' by one.
+	store_map_file is
+			--
 		local
 			l_buffer: STRING
 		do
-			feature_index := feature_index + 1
 			create l_buffer.make (128)
 			l_buffer.append ("FAC ")
 			l_buffer.append (context.associated_class.name_in_upper)
@@ -203,6 +203,12 @@ feature{NONE} -- Implementation
 			l_buffer.append (feature_index.out)
 			l_buffer.append_character ('%N')
 			map_file.put_string (l_buffer)
+		end
+
+	increase_feature_index is
+			-- Increase `feature_index' by one.
+		do
+			feature_index := feature_index + 1
 		ensure
 			feature_index_increased: feature_index = old feature_index + 1
 		end
@@ -212,7 +218,7 @@ feature{NONE} -- Implementation
 		local
 			l_buffer: GENERATION_BUFFER
 		do
-			increase_feature_index
+			store_map_file
 			l_buffer := context.buffer
 			l_buffer.put_new_line
 			l_buffer.indent
@@ -222,6 +228,7 @@ feature{NONE} -- Implementation
 			l_buffer.put_character (';')
 			l_buffer.put_new_line
 			l_buffer.exdent
+			increase_feature_index
 		end
 
 end

@@ -458,6 +458,12 @@ feature -- Byte node processing
 				context.buffer.put_new_line
 				context.buffer.put_string ("sat_has_instrument = EIF_TRUE;")
 				context.buffer.put_new_line
+
+					-- Uncomment the following two lines to enable instrumentor recording for ease of debugging.
+					-- By default, recording is disabled, we only enable it when necessary. (Jason 2008.7.11)
+--				context.buffer.put_string ("sat_enable_recording();")
+--				context.buffer.put_new_line
+
 				context.buffer.put_string ("sat_log_file_name = (char*)malloc(" + (log_file_path.count + 40).out + ");")
 				context.buffer.put_new_line
 
@@ -490,6 +496,7 @@ feature -- Byte node processing
 				context.buffer.put_new_line
 				context.buffer.put_string ("extern EIF_BOOLEAN sat_has_instrument;")
 				context.buffer.put_new_line
+
 				context.buffer.put_string ("extern char* sat_log_file_name;")
 				context.buffer.put_new_line
 

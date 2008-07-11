@@ -35,7 +35,8 @@ feature{NONE} -- Initialization
 feature -- Access
 
 	branch_slot_number: INTEGER
-			-- 1-based Slot number for branches, used to locate the position of a particular covered branch in source code.			
+			-- 0-based Slot number for branches, used to locate the position of a particular covered branch in source code.			
+			-- It is 0-based because the C array used in run-time is 0-based.
 
 feature -- Status report
 
@@ -111,8 +112,8 @@ feature -- Byte node processing
 	process_then_part_start is
 			-- Process at the beginning of a "Then_part" from a Conditional.
 		do
-			increase_decision_index
 			generate_branch_hook (branch_slot_number)
+			increase_decision_index
 		end
 
 	increase_decision_index is
@@ -145,8 +146,8 @@ feature -- Byte node processing
 	process_if_else_part_start is
 			-- Process at the beginning of a "Else_part" from a Conditional.
 		do
-			increase_decision_index
 			generate_branch_hook (branch_slot_number)
+			increase_decision_index
 		end
 
 	process_if_else_part_end is
@@ -157,8 +158,8 @@ feature -- Byte node processing
 	process_when_part_start is
 			-- Process at the beginning of a "When_part" from a Multi_branch instruction.
 		do
-			increase_decision_index
 			generate_branch_hook (branch_slot_number)
+			increase_decision_index
 		end
 
 	process_when_part_end is
@@ -169,8 +170,8 @@ feature -- Byte node processing
 	process_inspect_else_part_start is
 			-- Process at the beginning of a "Else_part" from a Multi_branch_instruction.
 		do
-			increase_decision_index
 			generate_branch_hook (branch_slot_number)
+			increase_decision_index
 		end
 
 	process_inspect_else_part_end is
@@ -191,8 +192,8 @@ feature -- Byte node processing
 	process_loop_body_part_start is
 			-- Process at the beginning of a "Loop_body" part from Loop instruction.
 		do
-			increase_decision_index
 			generate_branch_hook (branch_slot_number)
+			increase_decision_index
 		end
 
 	process_loop_body_part_end is
@@ -208,8 +209,8 @@ feature -- Byte node processing
 	process_loop_b_end (a_node: LOOP_B) is
 			-- Process after all code of `a_node' has been generated.
 		do
-			increase_decision_index
 			generate_branch_hook (branch_slot_number)
+			increase_decision_index
 		end
 
 	process_loop_stop_condition_start (a_expr: EXPR_B) is
