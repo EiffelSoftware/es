@@ -80,6 +80,11 @@ RT_LNK char **eif_environ;
 RT_LNK int is_debug_mode (void);
 RT_LNK void set_debug_mode (int);
 
+/*
+ * Structures and functions related to SATS project.
+ *
+*/
+
 RT_LNK void sat_disable_recording();
 RT_LNK void sat_enable_recording();
 
@@ -90,36 +95,31 @@ RT_LNK void sat_flush_data();
 
 RT_LNK EIF_INTEGER sat_time();
 
-struct sat_feature_access_record {	/* Struct to record feature access */
-	EIF_INTEGER visited_time;			/* Number of times that a feature is visited */
-	time_t	last_visited_time;		/* Time of last visit */
+struct sat_dcs_coverage {             /* Struct to hold information for a certain kind of code coverage cirteria */
+	EIF_INTEGER slot_count;	           /* Number of slots used to identify positions for a certain instrument criteria */
+	time_t* record;	                 /* Array of recorded data */
+	time_t last_flush_time;	           /* Last time when data is flushed into log file */
+	EIF_INTEGER dirty_record_count;    /* Number of records which have not been flushed into log file */
+	EIF_INTEGER flush_threshold;       /* Threshold of dirty records which causes log file flush */
+	char* header;	                    /* Header string to indicate a certain block of data in log file */
 };
 
-struct sat_dcs_coverage { /* Struct to hold information for a certain kind of code coverage cirteria */
-	EIF_INTEGER slot_count;	/* Number of slots used to identify positions for a certain instrument criteria */
-	time_t* record;	/* Array of recorded data */
-	time_t last_flush_time;	/* Last time when data is flushed into log file */
-	EIF_INTEGER dirty_record_count; /* Number of records which have not been flushed into log file */
-	EIF_INTEGER flush_threshold; /* Threshold of dirty records which causes log file flush */
-	char* header;	/* Header string to indicate a certain block of data in log file */
+struct sat_fac_coverage {             /* Struct to hold information for a certain kind of code coverage cirteria */
+	EIF_INTEGER slot_count;	           /* Number of slots used to identify positions for a certain instrument criteria */
+	time_t* record;	                 /* Array of recorded data storing the time of first access of every slot */
+//	time_t* last_visit_time;           /* Array of last access time of every slot */
+	EIF_INTEGER* visit_times;          /* Array of number of access times of every slot */
+	time_t last_flush_time;	           /* Last time when data is flushed into log file */
+	EIF_INTEGER dirty_record_count;    /* Number of records which have not been flushed into log file */
+	EIF_INTEGER flush_threshold;       /* Threshold of dirty records which causes log file flush */
+	char* header;	                    /* Header string to indicate a certain block of data in log file */
 };
 
-struct sat_fac_coverage { /* Struct to hold information for a certain kind of code coverage cirteria */
-	EIF_INTEGER slot_count;	/* Number of slots used to identify positions for a certain instrument criteria */
-	time_t* record;	/* Array of recorded data storing the time of first access of every slot */
-	time_t* last_visit_time; /* Array of last access time of every slot */
-	EIF_INTEGER* visit_times; /* Array of number of access times of every slot */
-	time_t last_flush_time;	/* Last time when data is flushed into log file */
-	EIF_INTEGER dirty_record_count; /* Number of records which have not been flushed into log file */
-	EIF_INTEGER flush_threshold; /* Threshold of dirty records which causes log file flush */
-	char* header;	/* Header string to indicate a certain block of data in log file */
-};
+RT_LNK void sat_dcs_record_coverage (int decision_index);
+RT_LNK void sat_fac_record_coverage (int feature_index);
 
-RT_LNK void sat_dcs_record_coverage (int decision_index, struct sat_dcs_coverage* cov);
-RT_LNK void sat_fac_record_coverage (int feature_index, struct sat_fac_coverage* cov);
-
-RT_LNK void sat_dcs_flush_coverage (struct sat_dcs_coverage* cov);
-RT_LNK void sat_fac_flush_coverage (struct sat_fac_coverage* cov);
+RT_LNK void sat_dcs_flush_coverage ();
+RT_LNK void sat_fac_flush_coverage ();
 
 #ifdef __cplusplus
 }
