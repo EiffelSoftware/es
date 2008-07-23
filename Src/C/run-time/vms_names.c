@@ -38,8 +38,12 @@
 /* Uppercase entry points for cecil code. */
 /* $Id$ */
 
-#ifdef __VMS  /* scope: here to end of file */
-#pragma module VMS_NAMES	/* force uppercase module name */
+#ifdef __VMS  /* scope: to end of file */
+#if __INITIAL_POINTER_SIZE > 32
+#pragma module VMS_NAMES "VMS_Eiffel_57_65176/64"	/* force uppercase module name, ident */
+#else
+#pragma module VMS_NAMES "VMS_Eiffel_57_65176/32"	/* force uppercase module name, ident */
+#endif // __INITIAL_POINTER_SIZE
 
 
 /* Native code on VMS defaults to coercing all external names to UPPERCASE.	*/
@@ -118,10 +122,23 @@ rt_public EIFUVISEX (void)
 /*** hector.c ***/
 rt_public EIF_REFERENCE EWEAN (EIF_OBJECT object)
     { return ewean (object); }
+rt_public EIF_REFERENCE EIF_WEAN (EIF_OBJECT object)   /* eif_wean: new (<= 6.0) name for ewean */
+    { return ewean (object); }
+#ifdef eif_wean
+#undef eif_wean
+rt_public EIF_REFERENCE eif_wean (EIF_OBJECT object)   /* eif_wean: new (<= 6.0) name for ewean */
+    { return ewean (object); }
+#endif
 
 rt_public EIF_OBJECT HENTER (EIF_REFERENCE object)
     { return henter (object); }
-
+rt_public EIF_OBJECT EIF_PROTECT (EIF_REFERENCE object)  /* eif_proect: new (>=6.0) name for henter */
+    { return henter (object); }
+#ifdef eif_protect
+#undef eif_protect
+rt_public EIF_OBJECT eif_protect (EIF_REFERENCE object)  /* eif_proect: new (>=6.0) name for henter */
+    { return henter (object); }
+#endif
 
 /*** plug.c ***/
 rt_public EIF_REFERENCE MAKESTR (register char *s, register int len)
@@ -189,7 +206,7 @@ xxx rt_public int32 EIF_TYPE_ID (char *type_string)
 #endif
 
 
-/*** These symbols are defined in the generated code. ***/
+/*** These symbols are defined in the Eiffel-generated code. ***/
 
 /* emain.c (in [.EIFGEN.%_Code.E1]) */
 rt_public void EGC_INIT_PLUG (void)
