@@ -150,6 +150,7 @@
 #endif
 
 #ifdef EIF_VMS			/* VMS supports POSIX 1003.1c threads */
+#undef EIF_POSIX_THREADS	/* suppress warning if already defined */
 #define EIF_POSIX_THREADS
 #define EIF_NO_SEM
 #define EIF_NO_POSIX_SEM
@@ -507,7 +508,6 @@ typedef struct tag_EIF_process_once_value_t {
 
 #ifdef __cplusplus
 }
-
 #endif
 
 #endif	/* _eif_threads_h_ */
