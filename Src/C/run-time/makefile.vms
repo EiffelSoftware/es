@@ -327,8 +327,8 @@ $(LOBJ) $(MT_LOBJ) : $(EXTRA_DEPENDENCIES)
 $(LOBJ_EXTRA) $(MT_LOBJ_EXTRA) : $(EXTRA_DEPENDENCIES)
 
 all ::
-	show logical eiffel_src,ise_eiffel,ise_library,ise_platform
-	show default
+#	show logical eiffel_src,ise_eiffel,ise_library,ise_platform
+#	show default
 
 # ancillary targets; need to be created before any compilation is done
 all :: ancillary
@@ -337,7 +337,7 @@ ancillary : eif_size.h
 
 eif_size.h : size.vms ### nono $(LOCAL_MAKEFILE)
 #	backup $?;0 $@/new/log	# backup preserves dates; we dont want that here
-	copy $? $@ 
+	copy/log $? $@ 
 
 .PHONY : size size.exe
 size : size.exe # size.obj size.vms
@@ -391,10 +391,10 @@ eiflib : $(EIFLIB)finalized.olb $(EIFLIB)MTfinalized.olb
 eiflib_finalized : $(EIFLIB)finalized.olb
 
 $(EIFLIB)finalized.olb : []finalized.olb
-	copy $^ $(EIFLIB)
+	copy/log $^ $(EIFLIB)
 
 $(EIFLIB)MTfinalized.olb : []MTfinalized.olb
-	copy $^ $(EIFLIB)
+	copy/log $^ $(EIFLIB)
 
 
 all :: finalized.olb
@@ -405,18 +405,18 @@ local_realclean ::
 finalized.olb : $(VMS_OBJ) $(LOBJ) $(LOBJ_EXTRA)
 	libr/create/insert $@ $^
 	libr/insert $@ [-.ipc.shared]shword.obj,system.obj	! needed by eifrtvms
-##	copy $@ ise_eiffel:[studio.spec.$(ISE_PLATFORM).lib] ! eiflib: 
+##	copy/log $@ ise_eiffel:[studio.spec.$(ISE_PLATFORM).lib] ! eiflib: 
 	@purge/nolog *.*obj*
 	@-if f$$search("*.dia") .nes. "" then purge/nolog *.dia
 
 all :: MTfinalized.olb
 
 #MTfinalized.olb : finalized.olb
-#	copy $^ $@
+#	copy/log $^ $@
 MTfinalized.olb : $(VMS_OBJ) $(MT_LOBJ) $(MT_LOBJ_EXTRA)
 	libr/create/insert $@ $^
 	libr/insert $@ [-.ipc.shared]shword.obj,system.obj	! needed by eifrtvms
-##	copy $@ ise_eiffel:[studio.spec.$(ISE_PLATFORM).lib] ! eiflib: 
+##	copy/log $@ ise_eiffel:[studio.spec.$(ISE_PLATFORM).lib] ! eiflib: 
 	@purge/nolog *.*obj*
 	@-if f$$search("*.dia") .nes. "" then purge/nolog *.dia
 
@@ -437,7 +437,7 @@ runtime.olb : $(ROBJ) $(COMOBJ)
 	libr/create/insert $@ $(COMOBJC), *.robj
 	libr/insert $@ [-.ipc.shared]shword.obj,system.obj
 	libr/insert $@ [-.idrs]idrs.obj
-	copy $@ ise_eiffel:[studio.spec.$(ISE_PLATFORM).lib] 
+	copy/log $@ ise_eiffel:[studio.spec.$(ISE_PLATFORM).lib] 
 
 
 #all :: wkbench.olb
@@ -450,7 +450,7 @@ local_realclean ::
 wkbench.olb : $(WKOBJ) $(COMOBJ) 
 	libr/create/insert $@ $(COMOBJC), *.wkobj,*.wobj
 	libr/insert $@ [-.ipc.app]*.obj,[-.ipc.shared]*.obj,[-.idrs]idrs.obj
-	copy $@ ise_eiffel:[studio.spec.$(ISE_PLATFORM).lib] 
+	copy/log $@ ise_eiffel:[studio.spec.$(ISE_PLATFORM).lib] 
 
 #all :: ebench.olb
 
@@ -481,7 +481,7 @@ local_realclean ::
 #	$(CC) $</obj=$@ /NOOBJ $(DECC_FLAGS) /INCLUDE=
 
 x2c.exe : x2c.obj
-	link /exe=$@ x2c.obj,ISE_EIFFEL:[C_library.VMS.Porting.LIB]VMS_JACKETS.OLB/libr
+	link/exe=$@/map/full/cross$(MY_LINKFLAGS) x2c.obj,ISE_EIFFEL:[C_library.VMS.Porting.LIB]VMS_JACKETS.OLB/libr
 
 
 #all :: $(TOP)eif_config.h $(TOP)eif_portable.h $(TOP)eif_confmagic.h
