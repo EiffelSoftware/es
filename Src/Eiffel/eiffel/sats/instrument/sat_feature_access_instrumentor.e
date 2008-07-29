@@ -9,9 +9,31 @@ class
 
 inherit
 	SAT_INSTRUMENTOR
+		redefine
+			config_sections
+		end
 
 	SAT_SHARED_INSTRUMENTATION
 
+create
+	make
+
+feature{NONE} -- Initialization
+
+	make is
+			-- Initialize Current.
+		do
+			create {LINKED_LIST [STRING]} config_sections.make
+			config_sections.extend (fac_section_name)
+		end
+
+feature -- Status report
+
+	is_instrument_enabled: BOOLEAN is
+			-- Should instrumentation be generated?
+		do
+			Result := config.there_exists (agent {SAT_INSTRUMENT_CONFIG}.is_instrument_enabled (context))
+		end
 
 feature -- Reset
 
@@ -26,6 +48,9 @@ feature -- Reset
 	clear_feature_data is
 			-- Clear data related to currently processing feature.
 		do
+			position_index := 0
+		ensure then
+			position_index_reset: position_index = 0
 		end
 
 feature -- Byte node processing
@@ -33,23 +58,16 @@ feature -- Byte node processing
 	process_rescue_entry is
 			-- Process when a rescue clause is entered.
 		do
-			generate_slot_hook
+			if is_instrument_enabled then
+				position_index := position_index + 1
+				generate_slot_hook
+			end
 		end
 
 	process_feature_entry is
 			-- Process when a feature is entered.			
 		do
 			generate_slot_hook
-		end
-
-	process_inspect_b (a_node: INSPECT_B) is
-			-- Process `a_node'.
-		do
-		end
-
-	process_case_b (a_node: CASE_B) is
-			-- Process `a_node'.
-		do
 		end
 
 	process_declaration is
@@ -78,11 +96,6 @@ feature -- Byte node processing
 			context.buffer.put_new_line
 			context.buffer.put_string ("#include %"eif_main.h%"")
 			context.buffer.put_new_line
-		end
-
-	process_if_b (a_node: IF_B) is
-			-- Process `a_node'.
-		do
 		end
 
 	process_then_part_condition_start (a_expr: EXPR_B) is
@@ -155,11 +168,6 @@ feature -- Byte node processing
 		do
 		end
 
-	process_loop_b (a_node: LOOP_B) is
-			-- Process `a_node'.
-		do
-		end
-
 	process_loop_b_end (a_node: LOOP_B) is
 			-- Process after all code of `a_node' has been generated.
 		do
@@ -184,7 +192,13 @@ feature{NONE} -- Implementation
 
 	feature_index: INTEGER
 			-- 0-based index of feature which we have processed
+			-- Feature index increases through the whole system
 			-- It is 0-based because the C array used in run-time is 0-based.
+
+	position_index: INTEGER
+			-- Index of the position of the hook
+			-- For feature body entry, the index is 0,
+			-- for rescue body entry, the index is 1
 
 	satfacl: STRING is "SATFAC("
 			-- Starting string for feature access coverage
@@ -195,14 +209,19 @@ feature{NONE} -- Implementation
 			l_buffer: STRING
 		do
 			create l_buffer.make (128)
-			l_buffer.append ("FAC ")
+			l_buffer.append (fac_section_name)
+			l_buffer.append_character (' ')
 			l_buffer.append (context.associated_class.name_in_upper)
 			l_buffer.append_character ('.')
 			l_buffer.append (context.current_feature.feature_name)
-			l_buffer.append_character ('.')
+			l_buffer.append_character ('%T')
+			l_buffer.append ("local_id=")
+			l_buffer.append (position_index.out)
+			l_buffer.append_character ('%T')
+			l_buffer.append ("global_id=")
 			l_buffer.append (feature_index.out)
 			l_buffer.append_character ('%N')
-			map_file.put_string (l_buffer)
+			log_string_in_map_file (l_buffer)
 		end
 
 	increase_feature_index is
@@ -218,17 +237,41 @@ feature{NONE} -- Implementation
 		local
 			l_buffer: GENERATION_BUFFER
 		do
-			store_map_file
-			l_buffer := context.buffer
-			l_buffer.put_new_line
-			l_buffer.indent
-			l_buffer.put_string (satfacl)
-			l_buffer.put_integer (feature_index)
-			l_buffer.put_character (')')
-			l_buffer.put_character (';')
-			l_buffer.put_new_line
-			l_buffer.exdent
-			increase_feature_index
+			if is_instrument_enabled then
+				l_buffer := context.buffer
+				l_buffer.put_new_line
+				l_buffer.indent
+				l_buffer.put_string (satfacl)
+				l_buffer.put_integer (feature_index)
+				l_buffer.put_character (')')
+				l_buffer.put_character (';')
+				l_buffer.put_new_line
+				l_buffer.exdent
+
+				store_map_file
+				increase_feature_index
+			end
 		end
+
+
+feature{NONE} -- Config file analysis
+
+	config_analyzer_reset is
+			-- Reset Current analyzer and prepare it for a new analysis.
+		do
+			config.wipe_out
+		end
+
+	process_config_record (a_section_name: STRING; a_record_line: STRING) is
+			-- Process record line text in `a_record_line'.
+			-- This record line is in one of the section defined in `sections'.
+		do
+			config.extend (instrument_config_from_string (a_record_line))
+		end
+
+	config_sections: LIST [STRING]
+			-- List of name of sections that Current analyzer is interested in.
+			-- Only data in sections contained in this list will be passed to Current analyzer.
+			-- Section names are case-sensitive.
 
 end

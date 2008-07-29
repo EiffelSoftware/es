@@ -8,46 +8,41 @@ class
 	SAT_FILE_SEARCHER
 
 create
-	make
+	make_with_pattern
 
 feature{NONE} -- Initialization
 
-	make (a_location: like location) is
-			-- Initialize `location' with `a_location'.
+	make_with_pattern (a_pattern: STRING) is
+			-- Prepare current searcher using regular expression `a_pattern' to match files.
 		require
-			a_location_attached: a_location /= Void
-			not_a_location_is_empty: not a_location.is_empty
+			a_pattern_valid: a_pattern /= Void and then not a_pattern.is_empty
+		local
+			l_matcher: RX_PCRE_REGULAR_EXPRESSION
 		do
-			set_location (a_location)
+			create l_matcher.make
+			l_matcher.set_caseless (True)
+			l_matcher.set_extended (True)
+			l_matcher.compile (a_pattern)
+			create {LINKED_LIST [STRING]} locations.make
+
+			set_veto_file_function (agent is_file_matched (?, l_matcher))
 		end
 
 feature -- Access
 
-	location: STRING
-			-- The location where files are stored.
-			-- Can be an file name or a directory
-			-- In the case of directory, all files in that directory (recursively, if enabled) will be loaded.
-			-- For one particular testing session, there may be more than one files generated because
-			-- every time the interpretor is start, a file is generated.
+	locations: LIST [STRING]
+			-- List of locations to search
 
-	last_found_files: LIST [like location]
-			-- List of files found by last invocation of `search'
+	last_found_files: LIST [STRING]
+			-- List of files found by last invocation of `search' or `search_locations'
 
 	veto_file_function: FUNCTION [ANY, TUPLE [a_path: STRING], BOOLEAN]
 			-- Function to decide whether a file `a_path' (absolute path included).
 			-- should be included in `last_found_files'. If the return value is True, the file is included, otherwise, not included.
 			-- If Void, every found file is included in `last_file_files'.
 
-	regular_expression_matcher (a_pattern: STRING; a_case: BOOLEAN; a_extended: BOOLEAN): RX_PCRE_REGULAR_EXPRESSION is
-			-- Regular expression matcher which matches `a_pattern'.
-			-- `a_case' indicates if the matching is case-sensitive.
-			-- `a_extended' indicates if extended regular expression format is used.
-		do
-			create Result.make
-			Result.set_caseless (a_case)
-			Result.set_extended (a_extended)
-			Result.compile (a_pattern)
-		end
+	file_found_action: PROCEDURE [ANY, TUPLE [a_path: STRING]]
+			-- Action to be performed if a file `a_path' is found.
 
 feature -- Status report
 
@@ -55,27 +50,27 @@ feature -- Status report
 			-- Does subdirectories are recursively searched for files?
 			-- Only has effect when `location' is a directory.
 
+	is_dir_matched: BOOLEAN
+			-- Should directories be matched?
+
 feature -- Basic operations
 
 	search is
-			-- Search files satisfying `veto_file_function' and store result in `last_found_files'.
+			-- Search files in `locations' satisfying `veto_file_function' and store result in `last_found_files'.
+			-- In the case of directory, all files in that directory (recursively, if enabled) will be loaded.
+			-- For one particular testing session, there may be more than one files generated because
+			-- every time the interpretor is start, a file is generated.
+		local
+			l_locations: like locations
 		do
-			create {LINKED_LIST [like location]} last_found_files.make
-			search_files (location, last_found_files)
+			create {LINKED_LIST [STRING]} last_found_files.make
+			l_locations := locations
+			if not l_locations.is_empty then
+				l_locations.do_all (agent search_files (?, last_found_files))
+			end
 		end
 
 feature -- Setting
-
-	set_location (a_location: like location) is
-			-- Set `location' with `a_location'.
-		require
-			a_location_attached: a_location /= Void
-			not_a_location_is_empty: not a_location.is_empty
-		do
-			location := a_location.twin
-		ensure
-			location_set: location /= Void and then location.is_equal (a_location)
-		end
 
 	set_is_search_recursive (b: BOOLEAN) is
 			-- Set `is_search_recursive' with `b'.
@@ -83,6 +78,14 @@ feature -- Setting
 			is_search_recursive := b
 		ensure
 			is_search_recursive_set: is_search_recursive = b
+		end
+
+	set_is_dir_matched (b: BOOLEAN) is
+			-- Set `is_dir_matched' with `b'.
+		do
+			is_dir_matched := b
+		ensure
+			is_dir_matched_set: is_search_recursive = b
 		end
 
 	set_veto_file_function (a_function: like veto_file_function) is
@@ -93,9 +96,17 @@ feature -- Setting
 			veto_file_function_set: veto_file_function = a_function
 		end
 
+	set_file_found_action (a_action: like file_found_action) is
+			-- Set `file_found_action' with `a_action'.			
+		do
+			file_found_action := a_action
+		ensure
+			file_found_action_set: file_found_action = a_action
+		end
+
 feature{NONE} -- Implementation
 
-	search_files (a_start_location: like location; a_file_list: LIST [STRING]) is
+	search_files (a_start_location: STRING; a_file_list: LIST [STRING]) is
 			-- Search for files matching `file_pattern' in location `a_start_location' and
 			-- store found files in `a_file_list'.
 			-- If `a_start_location' is a file and it matches `file_pattern', it will be added in `a_file_list'.
@@ -112,7 +123,11 @@ feature{NONE} -- Implementation
 			l_location: STRING
 			l_location_count: INTEGER
 			l_veto_function: like veto_file_function
+			l_file_found_action: like file_found_action
+			l_is_dir_matched: BOOLEAN
 		do
+			l_is_dir_matched := is_dir_matched
+			l_file_found_action := file_found_action
 			l_veto_function := veto_file_function
 			l_location_count := a_start_location.count
 			l_dot := "."
@@ -136,22 +151,55 @@ feature{NONE} -- Implementation
 						l_location.append (l_entry)
 
 						create l_file.make (l_location)
-						if not l_file.is_directory or else is_search_recursive then
+						if l_file.is_directory then
+							if l_is_dir_matched then
+								match_location (l_location, a_file_list)
+							end
+							if is_search_recursive then
+								search_files (l_location, a_file_list)
+							end
+						else
 							search_files (l_location, a_file_list)
 						end
 					end
 					l_dir.readentry
 				end
 			else
-				if l_veto_function = Void then
-					a_file_list.extend (a_start_location)
-				elseif l_veto_function.item ([a_start_location]) then
-					a_file_list.extend (a_start_location)
+				match_location (a_start_location, a_file_list)
+			end
+		end
+
+	match_location (a_location: STRING; a_result_list: like last_found_files) is
+			-- Try to match `a_location' against `veto_file_function'.
+			-- If matched, store `a_location' into `a_result_list'.
+		require
+			a_location_attached: a_location /= Void
+			a_result_list_attached: a_result_list /= Void
+		local
+			l_veto_function: like veto_file_function
+			l_file_found_action: like file_found_action
+		do
+			l_veto_function := veto_file_function
+			l_file_found_action := file_found_action
+			if l_veto_function = Void or else l_veto_function.item ([a_location]) then
+				a_result_list.extend (a_location)
+				if l_file_found_action /= Void then
+					l_file_found_action.call ([a_location])
 				end
 			end
 		end
 
+	is_file_matched (a_file_path: STRING; a_matcher: RX_PCRE_REGULAR_EXPRESSION): BOOLEAN is
+			-- Does `a_file_path' match `a_matcher'?
+		require
+			a_file_path_attached: a_file_path /= Void
+			a_matcher_attached: a_matcher /= Void
+		do
+			a_matcher.match (a_file_path)
+			Result := a_matcher.has_matched
+		end
+
 invariant
-	location_valid: location /= Void and then not location.is_empty
+	locations_attached: locations /= Void
 
 end

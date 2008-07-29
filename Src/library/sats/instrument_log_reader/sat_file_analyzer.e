@@ -9,9 +9,6 @@ deferred class
 
 feature -- Status report
 
-	is_registered: BOOLEAN
-			-- Is Current analyzer registered in a log reader/searcher?
-
 	is_section_contained (a_section_name: STRING): BOOLEAN is
 			-- Is `a_section_name' contained in `sections'?
 		require
@@ -41,14 +38,6 @@ feature{SAT_FILE_LOADER} -- Basic operations
 			not_a_record_line_is_empty: not a_record_line.is_empty
 			a_section_name_interesting: is_section_contained (a_section_name)
 		deferred
-		end
-
-	set_is_registered (b: BOOLEAN) is
-			-- Set `is_registered' with `b'.
-		do
-			is_registered := b
-		ensure
-			is_registered_set: is_registered = b
 		end
 
 	reset is

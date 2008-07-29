@@ -10,7 +10,7 @@ class
 inherit
 	SAT_INSTRUMENTOR
 		redefine
-			process_if_b
+			config_sections
 		end
 
 	SHARED_WORKBENCH
@@ -27,42 +27,18 @@ feature{NONE} -- Initialization
 	make is
 			-- Initialize.
 		do
-			create condition_stack.make
-			create loop_stack.make
-			create when_part_stack.make
+				-- Initialize `config_sections'.
+			create {LINKED_LIST [STRING]} config_sections.make
+			config_sections.extend (dcs_section_name)
 		end
-
-feature -- Access
-
-	branch_slot_number: INTEGER
-			-- 0-based Slot number for branches, used to locate the position of a particular covered branch in source code.			
-			-- It is 0-based because the C array used in run-time is 0-based.
 
 feature -- Status report
 
---	is_condition_coverage_enabled: BOOLEAN
---			-- Is condition coverage enabled?
-
---	is_decision_coverage_enabled: BOOLEAN
---			-- Is decision coverage enabled?
-
-feature -- Setting
-
---	set_is_condition_coverage_enabled (b: BOOLEAN) is
---			-- Set `is_condition_coverage_enabled' with `b'.
---		do
---			is_condition_coverage_enabled := b
---		ensure
---			is_condition_coverage_enabled_set: is_condition_coverage_enabled = b
---		end
-
---	set_is_decision_coverage_enabled (b: BOOLEAN) is
---			-- Set `is_decision_coverage_enabled' with `b'.
---		do
---			is_decision_coverage_enabled := b
---		ensure
---			is_decision_coverage_enabled_set: is_decision_coverage_enabled = b
---		end
+	is_instrument_enabled: BOOLEAN is
+			-- Should instrumentation be generated?
+		do
+			Result := config.there_exists (agent {SAT_INSTRUMENT_CONFIG}.is_instrument_enabled (context))
+		end
 
 feature -- Data clearing
 
@@ -70,16 +46,19 @@ feature -- Data clearing
 			-- Reset
 		do
 			branch_slot_number := 0
+			decision_index := 0
+			config.wipe_out
+		ensure then
+			branch_slot_number_is_zero: branch_slot_number = 0
+			decision_index_is_zero: decision_index = 0
 		end
 
 	clear_feature_data is
 			-- Clear data related to currently processing feature.
 		do
 			decision_index := 0
-			condition_stack.wipe_out
-			loop_stack.wipe_out
-			when_part_stack.wipe_out
 		ensure then
+			decision_index_is_zero: decision_index = 0
 		end
 
 feature -- Byte node processing
@@ -91,11 +70,6 @@ feature -- Byte node processing
 
 	process_feature_entry is
 			-- Process when a feature is entered.			
-		do
-		end
-
-	process_if_b (a_node: IF_B) is
-			-- Process `a_node'.
 		do
 		end
 
@@ -112,30 +86,7 @@ feature -- Byte node processing
 	process_then_part_start is
 			-- Process at the beginning of a "Then_part" from a Conditional.
 		do
-			generate_branch_hook (branch_slot_number)
-			increase_decision_index
-		end
-
-	increase_decision_index is
-			-- Increase `branch_slot_number' by one.
-		local
-			l_buffer: STRING
-		do
-			branch_slot_number := branch_slot_number + 1
-			decision_index := decision_index + 1
-			create l_buffer.make (128)
-			l_buffer.append ("DCS ")
-			l_buffer.append (context.associated_class.name_in_upper)
-			l_buffer.append_character ('.')
-			l_buffer.append (context.current_feature.feature_name)
-			l_buffer.append_character ('.')
-			l_buffer.append (decision_index.out)
-			l_buffer.append_character ('.')
-			l_buffer.append (branch_slot_number.out)
-			l_buffer.append_character ('%N')
-			map_file.put_string (l_buffer)
-		ensure
-			branch_slot_number_increased: branch_slot_number = old branch_slot_number + 1
+			generate_instrument
 		end
 
 	process_then_part_end is
@@ -146,8 +97,7 @@ feature -- Byte node processing
 	process_if_else_part_start is
 			-- Process at the beginning of a "Else_part" from a Conditional.
 		do
-			generate_branch_hook (branch_slot_number)
-			increase_decision_index
+			generate_instrument
 		end
 
 	process_if_else_part_end is
@@ -158,8 +108,7 @@ feature -- Byte node processing
 	process_when_part_start is
 			-- Process at the beginning of a "When_part" from a Multi_branch instruction.
 		do
-			generate_branch_hook (branch_slot_number)
-			increase_decision_index
+			generate_instrument
 		end
 
 	process_when_part_end is
@@ -170,8 +119,7 @@ feature -- Byte node processing
 	process_inspect_else_part_start is
 			-- Process at the beginning of a "Else_part" from a Multi_branch_instruction.
 		do
-			generate_branch_hook (branch_slot_number)
-			increase_decision_index
+			generate_instrument
 		end
 
 	process_inspect_else_part_end is
@@ -192,8 +140,7 @@ feature -- Byte node processing
 	process_loop_body_part_start is
 			-- Process at the beginning of a "Loop_body" part from Loop instruction.
 		do
-			generate_branch_hook (branch_slot_number)
-			increase_decision_index
+			generate_instrument
 		end
 
 	process_loop_body_part_end is
@@ -201,16 +148,10 @@ feature -- Byte node processing
 		do
 		end
 
-	process_loop_b (a_node: LOOP_B) is
-			-- Process `a_node'.
-		do
-		end
-
 	process_loop_b_end (a_node: LOOP_B) is
 			-- Process after all code of `a_node' has been generated.
 		do
-			generate_branch_hook (branch_slot_number)
-			increase_decision_index
+			generate_instrument
 		end
 
 	process_loop_stop_condition_start (a_expr: EXPR_B) is
@@ -223,19 +164,8 @@ feature -- Byte node processing
 		do
 		end
 
-	process_inspect_b (a_node: INSPECT_B) is
-			-- Process `a_node'.
-		do
-			when_part_stack.extend (0)
-		end
-
 	process_inspect_end (a_node: INSPECT_B) is
 			-- Process when finishing `a_node'.
-		do
-		end
-
-	process_case_b (a_node: CASE_B) is
-			-- Process `a_node'.
 		do
 		end
 
@@ -284,62 +214,77 @@ feature{NONE} -- Implementation
 			l_buffer.put_new_line
 		end
 
-	condition_stack: LINKED_STACK [INTEGER]
-			-- Stack of condition index
-
-	loop_stack: LINKED_STACK [INTEGER]
-			-- Stack of loop index
-
-	loop_decision_index: INTEGER is
-			-- Decision index in `loop_stack'
-		require
-			not_loop_stack_is_empty: not loop_stack.is_empty
-		do
-			Result := loop_stack.item
-		ensure
-			good_result: Result = loop_stack.item
-		end
-
-	when_part_stack: LINKED_STACK [INTEGER]
-			-- Stack of when part
-
-feature{NONE} -- Hooks
+feature{NONE} -- Implementation
 
 	branch_hook_l_paran: STRING is "SATDCS("
 
 	decision_index: INTEGER
 			-- Index of decision
 
-	condition_index: INTEGER is
-			-- Index of condition
-		require
-			not_stack_is_empty: not condition_stack.is_empty
+	branch_slot_number: INTEGER
+			-- 0-based Slot number for branches, used to locate the position of a particular covered branch in source code.			
+			-- It is 0-based because the C array used in run-time is 0-based.
+
+	increase_decision_index is
+			-- Increase `branch_slot_number' by one.
 		do
-			Result := condition_stack.item
+			branch_slot_number := branch_slot_number + 1
+			decision_index := decision_index + 1
 		ensure
-			good_result: Result = condition_stack.item
+			branch_slot_number_increased: branch_slot_number = old branch_slot_number + 1
 		end
 
-	increase_condition_index is
-			-- Increase `condition_index' by 1.
-		require
-			not_stack_is_empty: not condition_stack.is_empty
+	store_map_entry is
+			-- Generate map information for mapping from branch slot number to class and feature.
 		local
-			l_new_condition_stack: INTEGER
-			l_stack: like condition_stack
+			l_buffer: STRING
 		do
-			l_stack := condition_stack
-			l_new_condition_stack := l_stack.item + 1
-			l_stack.remove
-			l_stack.extend (l_new_condition_stack)
-		ensure
-			condition_index_increased: condition_index = old condition_index + 1
+			create l_buffer.make (128)
+			l_buffer.append (dcs_section_name)
+			l_buffer.append_character (' ')
+			l_buffer.append (context.associated_class.name_in_upper)
+			l_buffer.append_character ('.')
+			l_buffer.append (context.current_feature.feature_name)
+			l_buffer.append_character ('%T')
+			l_buffer.append ("local_id=")
+			l_buffer.append (decision_index.out)
+			l_buffer.append_character ('%T')
+			l_buffer.append ("global_id=")
+			l_buffer.append (branch_slot_number.out)
+			l_buffer.append_character ('%N')
+			log_string_in_map_file (l_buffer)
 		end
 
-	leave_decision is
-			-- Leave current decision.
+	generate_instrument is
+			-- Generate next branch slot instrument.
 		do
-			condition_stack.remove
+			if is_instrument_enabled then
+				generate_branch_hook (branch_slot_number)
+				store_map_entry
+				increase_decision_index
+			end
 		end
+
+feature{NONE} -- Config file analysis
+
+	config_analyzer_reset is
+			-- Reset Current analyzer and prepare it for a new analysis.
+		do
+		end
+
+	process_config_record (a_section_name: STRING; a_record_line: STRING) is
+			-- Process record line text in `a_record_line'.
+			-- This record line is in one of the section defined in `sections'.
+		do
+			config.extend (instrument_config_from_string (a_record_line))
+		end
+
+	config_sections: LIST [STRING]
+			-- List of name of sections that Current analyzer is interested in.
+			-- Only data in sections contained in this list will be passed to Current analyzer.
+			-- Section names are case-sensitive.
+
+invariant
+	config_sections_attached: config_sections /= Void
 
 end

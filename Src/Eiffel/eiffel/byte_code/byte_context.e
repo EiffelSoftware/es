@@ -53,17 +53,6 @@ feature -- Initialization
 
 				-- Setup code instrumentors.
 			create instrumentor_manager.make
-			instrumentor_manager.set_veto_instrumentation_function (
-				agent: BOOLEAN
-					do
-						if instrumentor_manager.has_instrument then
-							if included_instrument_classes.is_empty then
-								Result := not excluded_instrument_classes.has (Current.associated_class.name_in_upper)
-							else
-								Result := included_instrument_classes.has (Current.associated_class.name_in_upper)
-							end
-						end
-					end)
 		end
 
 feature -- Access

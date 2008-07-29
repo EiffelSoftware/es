@@ -19,7 +19,7 @@ feature --
 			l_config: like last_config
 		do
 			create l_file.make_open_read (a_file_name)
-			create {LINKED_LIST [SAT_INSTRUMENT_CLASS_CONFIG]} last_config.make
+			create {LINKED_LIST [SAT_INSTRUMENT_CLASS_CONFIG2]} last_config.make
 			from
 				l_config := last_config
 				l_file.read_line
@@ -34,7 +34,7 @@ feature --
 			l_file.close
 		end
 
-	class_config_from_line (a_line: STRING): SAT_INSTRUMENT_CLASS_CONFIG is
+	class_config_from_line (a_line: STRING): SAT_INSTRUMENT_CLASS_CONFIG2 is
 			-- Class config from line `a_line'
 		require
 			a_line_attached: a_line /= Void
@@ -59,7 +59,7 @@ feature --
 
 feature -- Access
 
-	last_config: LIST [SAT_INSTRUMENT_CLASS_CONFIG]
+	last_config: LIST [SAT_INSTRUMENT_CLASS_CONFIG2]
 			-- List of config for classes.
 
 end

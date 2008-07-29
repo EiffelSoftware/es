@@ -2085,39 +2085,8 @@ end
 	process_degree_minus_1 is
 			-- Process Degree -1.
 			-- Freeze system: generate C files.
-		local
-			l_branch_instrumentor: SAT_DECISION_INSTRUMENTOR
-			l_feature_entry_instrumentor: SAT_FEATURE_ACCESS_INSTRUMENTOR
-			l_has_instrument: BOOLEAN
 		do
-			analyze_classes_for_instrumentation (instrument_config_file_name, universe)
-
-				-- Check if any instrumentor is needed.
-			l_has_instrument := is_decision_coverage_enabled or is_feature_coverage_enabled
-			if l_has_instrument then
-				byte_context.instrumentor_manager.set_has_instrument (True)
-				byte_context.instrumentor_manager.set_should_generate_instrument_now (True)
-				open_map_file
-
-					-- Prepare decision coverage instrumentor.
-				if is_decision_coverage_enabled then
-					create l_branch_instrumentor.make
-					byte_context.instrumentor_manager.register_instrumentor (l_branch_instrumentor)
-				end
-
-					-- Prepare procedure entry instrumentor.
-				if is_feature_coverage_enabled then
-					create l_feature_entry_instrumentor
-					byte_context.instrumentor_manager.register_instrumentor (l_feature_entry_instrumentor)
-				end
-			end
-
 			Degree_minus_1.execute
-
-			if l_has_instrument then
-				byte_context.instrumentor_manager.set_should_generate_instrument_now (False)
-				close_map_file
-			end
 		end
 
 	check_generics is
@@ -2969,9 +2938,11 @@ end
 			shake
 
 				-- Generation of the descriptor tables
+			byte_context.instrumentor_manager.prepare_before_generation
 			process_degree_minus_1
 			m_desc_server.clear
 			generate_main_eiffel_files
+			byte_context.instrumentor_manager.dispose_after_generation
 		end
 
 	generate_main_eiffel_files is
