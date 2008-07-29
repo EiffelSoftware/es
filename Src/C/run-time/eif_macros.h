@@ -1498,8 +1498,8 @@ RT_LNK EIF_TYPE_INDEX fcount;
 /* SATS code coverage related code */ 
 extern struct sat_dcs_coverage* sat_dcs_record;
 extern struct sat_fac_coverage* sat_fac_record;
-#define SATDCS(n)		sat_dcs_record_coverage (n, sat_dcs_record)
-#define SATFAC(n)		sat_fac_record_coverage (n, sat_fac_record)
+#define SATDCS(n)		sat_dcs_record_coverage (n)
+#define SATFAC(n)		sat_fac_record_coverage (n)
 
 #ifdef __cplusplus
 }
