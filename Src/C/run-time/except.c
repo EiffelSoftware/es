@@ -1099,9 +1099,9 @@ rt_public void eif_check_catcall_at_runtime (EIF_REFERENCE arg, EIF_TYPE_INDEX d
 				 * actually record the full type information. */
 			if (!((dftype == egc_bit_dtype) && (eif_register_bit_type (LENGTH(arg)) == expected_dftype))) {
 				if (catcall_detection_console_enabled) {
-					print_err_msg(stderr, "Catcall detected in {%s}.%s for arg#%d: expected %s but got %s\n",
-						System(dtype).cn_generator,
-						a_feature_name, a_pos, eif_typename (expected_dftype), eif_typename (dftype));
+				/*	print_err_msg(stderr, "Catcall detected in {%s}.%s for arg#%d: expected %s but got %s\n", */
+				/*		System(dtype).cn_generator, */
+				/*		a_feature_name, a_pos, eif_typename (expected_dftype), eif_typename (dftype)); */
 				}
 				if (catcall_detection_debugger_enabled) {
 					dcatcall(a_pos, expected_dftype, dftype);
