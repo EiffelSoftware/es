@@ -977,7 +977,6 @@ void sat_fac_flush_coverage () {
 	int cnt = cov->slot_count;
 	time_t last_flush_time;
 	time_t* record = cov->record;
-//	time_t* last_visit_time = cov->last_visit_time;
 	EIF_INTEGER* visit_times = cov->visit_times;
 	FILE* file = sat_log_file;
 	time_t visited_time;
@@ -990,10 +989,6 @@ void sat_fac_flush_coverage () {
 		if(visited_time>=last_flush_time) {
 			fprintf (file, "%d,%d,%d\n", i, visit_times[i], visited_time);
 		}
-//		visited_time = last_visit_time[i];
-//		if(visited_time>=last_flush_time) {
-//		  fprintf (file, "%d,%d,%d\n", i, visited_time, visit_times[i]);		  
-//		}
 	}
 	cov->last_flush_time = sat_time();
 	cov->dirty_record_count = 0;	

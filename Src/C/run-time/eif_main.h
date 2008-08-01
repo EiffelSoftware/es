@@ -107,7 +107,6 @@ struct sat_dcs_coverage {             /* Struct to hold information for a certai
 struct sat_fac_coverage {             /* Struct to hold information for a certain kind of code coverage cirteria */
 	EIF_INTEGER slot_count;	           /* Number of slots used to identify positions for a certain instrument criteria */
 	time_t* record;	                 /* Array of recorded data storing the time of first access of every slot */
-//	time_t* last_visit_time;           /* Array of last access time of every slot */
 	EIF_INTEGER* visit_times;          /* Array of number of access times of every slot */
 	time_t last_flush_time;	           /* Last time when data is flushed into log file */
 	EIF_INTEGER dirty_record_count;    /* Number of records which have not been flushed into log file */
