@@ -41,17 +41,8 @@ feature -- Access
 
 	log_file_path: STRING is
 			-- Full path (including file name) of the log file
-		local
-			l_file_name: FILE_NAME
 		do
-			create l_file_name.make
-			if context.final_mode then
-				l_file_name.set_directory (project_location.final_path)
-			else
-				l_file_name.set_directory (project_location.workbench_path)
-			end
-			l_file_name.set_file_name ("sat_%%d.log")
-			Result := l_file_name
+			Result := "sat_%%d.log"
 		ensure
 			result_attached: Result /= Void
 		end
@@ -459,7 +450,7 @@ feature{NONE} -- Implementation
 		do
 			Result := is_instrument_enabled and then is_instrument_generation_enabled
 		ensure
-			good_result: Result = is_instrument_enabled and then is_instrument_generation_enabled
+			good_result: Result = (is_instrument_enabled and then is_instrument_generation_enabled)
 		end
 
 feature{NONE} -- Config file analysis
