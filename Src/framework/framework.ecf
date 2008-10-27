@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-4-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-4-0 http://www.eiffel.com/developers/xml/configuration-1-4-0.xsd" name="framework" uuid="E8301E84-30F3-48A0-907D-8569594A1D51" library_target="framework">
+	<target name="framework">
+		<root all_classes="true"/>
+		<file_rule>
+			<exclude>/.svn$</exclude>
+		</file_rule>
+		<file_rule>
+			<exclude>/unix$</exclude>
+			<exclude>/gtk$</exclude>
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</file_rule>
+		<file_rule>
+			<exclude>/mswin$</exclude>
+			<exclude>/windows$</exclude>
+			<condition>
+				<platform excluded_value="windows"/>
+			</condition>
+		</file_rule>
+		<option>
+			<assertions precondition="true"/>
+		</option>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="base_extension" location="$ISE_LIBRARY\library\base_extension\base_extension.ecf"/>
+		<library name="docking" location="$ISE_LIBRARY\library\docking\docking.ecf">
+			<condition>
+				<custom name="batch_framework" excluded_value="true"/>
+			</condition>
+		</library>
+		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
+		<library name="gobo_extension" location="$ISE_LIBRARY\library\gobo_extension\gobo_extension.ecf"/>
+
+		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf">
+			<condition>
+				<custom name="batch_framework" excluded_value="true"/>
+			</condition>
+		</library>
+		<library name="wel" location="$ISE_LIBRARY\library\wel\wel.ecf">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</library>
+		<library name="interface_names" location=".\interface_names\interface_names.ecf"/>
+		<cluster name="fmwk_base" location=".\base\" recursive="true"/>
+		<cluster name="fmwk_vision2" location=".\vision2\" recursive="true">
+			<condition>
+				<custom name="batch_framework" excluded_value="true"/>
+			</condition>
+		</cluster>
+		<cluster name="utilities" location=".\utilities\" recursive="true"/>
+	</target>
+</system>

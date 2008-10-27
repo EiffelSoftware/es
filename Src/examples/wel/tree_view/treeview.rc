@@ -1,0 +1,13 @@
+#define ID_ICO_APPLICATION		1
+
+#define IDB_FOLDER_NORMAL		401
+#define IDB_FOLDER_SELECTED		402
+#define IDB_DOCUMENT_NORMAL		403
+#define IDB_DOCUMENT_SELECTED	404
+
+ID_ICO_APPLICATION ICON "treeview_demo.ico"
+
+IDB_FOLDER_NORMAL		BITMAP folder_normal.bmp
+IDB_FOLDER_SELECTED		BITMAP folder_selected.bmp
+IDB_DOCUMENT_NORMAL		BITMAP document_normal.bmp
+IDB_DOCUMENT_SELECTED	BITMAP document_selected.bmp

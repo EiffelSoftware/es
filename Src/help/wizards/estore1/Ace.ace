@@ -1,0 +1,77 @@
+system
+	STORE_WIZARD_ORACLE
+
+root
+	WIZARD_PROJECT_MANAGER(wizard_tool): "make_and_launch"
+
+default
+	assertion (no)
+	multithreaded (no)
+	exception_trace (yes)
+	console_application (no)
+	dynamic_runtime (no)
+	dead_code_removal (yes)
+	profile (no)
+	line_generation (no)
+	debug  (no)
+	array_optimization (no)
+	inlining (no)
+	inlining_size ("4")
+	--precompiled ("$EIFFEL_SRC/precomp/spec/$ISE_PLATFORM/base");
+
+
+cluster
+	
+	root_cluster: "d:\46dev\wizards\estore1"
+	wizard(root_cluster): "$\src"
+
+
+		-- EiffelBase
+	all base:				"$EIFFEL_SRC\library\base"
+		exclude
+			"desc";"table_eiffel3"
+		end
+
+	all vision2: 			"$EIFFEL_SRC\library\vision2"
+		exclude
+			"gtk"
+			"test"
+		end
+
+	all Events:				"$EIFFEL_SRC\library\event"
+
+	all web: 				"$EIFFEL_SRC\library\wel"
+
+	all wizard_tool:				"$EIFFEL_SRC\library\wizard"
+		exclude
+			"unix"
+		end
+
+-- EiffelTime
+	time:				"$EIFFEL_SRC\library\time";
+	time_format(time):	"$\format";
+	time_english(time):	"$\format\english";
+
+	-- EiffelStore
+	estore_support:		"$EIFFEL_SRC\library\store\support"
+	estore_interface:	"$EIFFEL_SRC\library\store\interface"
+	estore_db_support:	"$EIFFEL_SRC\library\store\dbms\support"
+	estore_rdbms:		"$EIFFEL_SRC\library\store\dbms\rdbms\oracle"
+--	estore_odbc:		"$EIFFEL_SRC\library\store\dbms\rdbms\odbc"
+
+
+external
+	include_path:		
+						"$EIFFEL_SRC\library\store\dbms\rdbms\oracle\Clib",
+--						"$EIFFEL_SRC\library\store\dbms\rdbms\odbc\Clib",
+						"$EIFFEL_SRC\library\new_wel\spec\windows\include",
+						"$(ORACLE_HOME)\OCI\include"
+
+	object: 			"$EIFFEL_SRC\library\store\spec\$(ISE_C_COMPILER)\lib\support.lib",
+						"$EIFFEL_SRC\library\new_wel\spec\msc\lib\wel.lib",
+						"$EIFFEL_SRC\library\store\spec\$(ISE_C_COMPILER)\lib\oracle_store.lib",
+--						"$EIFFEL_SRC\library\store\spec\$(ISE_C_COMPILER)\lib\odbc32.lib",
+--						"$EIFFEL_SRC\library\store\spec\$(ISE_C_COMPILER)\lib\odbc_store.lib",
+						"$(ORACLE_HOME)\OCI\lib\msvc\oci.lib"
+end
+
