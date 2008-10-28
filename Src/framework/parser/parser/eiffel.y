@@ -84,6 +84,7 @@ create
 %token <KEYWORD_AS> TE_REQUIRE TE_RESCUE TE_SELECT TE_SEPARATE TE_STRIP
 %token <KEYWORD_AS> TE_THEN TE_UNDEFINE	TE_UNTIL TE_VARIANT TE_WHEN	
 %token <KEYWORD_AS> TE_XOR
+%token <KEYWORD_AS> TE_USE TE_MODIFY
 
 %token TE_STRING TE_EMPTY_STRING TE_VERBATIM_STRING	TE_EMPTY_VERBATIM_STRING
 %token TE_STR_LT TE_STR_LE TE_STR_GT TE_STR_GE TE_STR_MINUS
@@ -206,6 +207,9 @@ create
 %type <CONSTRAINT_TRIPLE>	Constraint
 %type <CONSTRAINT_LIST_AS> Multiple_constraint_list
 %type <CONSTRAINING_TYPE_AS> Single_constraint
+
+%type <USE_AS> Use
+%type <MODIFY_AS> Modify
 
 %expect 109
 
@@ -1330,6 +1334,8 @@ Routine:
 		Obsolete
 			{	set_fbody_pos (position) }
 		Precondition
+		Use
+		Modify
 		Local_declarations
 		Routine_body
 		Postcondition
@@ -1343,10 +1349,10 @@ Routine:
 					temp_string_as1 := Void
 					temp_keyword_as := Void
 				end
-				if $7 /= Void then
-					$$ := ast_factory.new_routine_as (temp_string_as1, $3, $4, $5, $6, $7.second, $8, once_manifest_string_count, fbody_pos, temp_keyword_as, $7.first, object_test_locals)
+				if $9 /= Void then
+					$$ := ast_factory.new_routine_as (temp_string_as1, $3, $4, $5, $6, $7, $8, $9.second, $10, once_manifest_string_count, fbody_pos, temp_keyword_as, $9.first, object_test_locals)
 				else
-					$$ := ast_factory.new_routine_as (temp_string_as1, $3, $4, $5, $6, Void, $8, once_manifest_string_count, fbody_pos, temp_keyword_as, Void, object_test_locals)
+					$$ := ast_factory.new_routine_as (temp_string_as1, $3, $4, $5, $6, $7, $8, Void, $10, once_manifest_string_count, fbody_pos, temp_keyword_as, Void, object_test_locals)
 				end
 				once_manifest_string_count := 0
 				object_test_locals := Void
@@ -1479,6 +1485,28 @@ Instruction_impl: Creation
 			{ $$ := $1 }
 	|	TE_RETRY
 			{ $$ := $1 }
+	;
+
+Use: -- Empty
+			-- { $$ := Void }
+	|	TE_USE
+			{ set_id_level (Assert_level) }
+		Assertion
+			{
+				set_id_level (Normal_level)
+				$$ := ast_factory.new_use_as ($3, $1)
+			}
+	;
+
+Modify: -- Empty
+			-- { $$ := Void }
+	|	TE_MODIFY
+			{ set_id_level (Assert_level) }
+		Assertion
+			{
+				set_id_level (Normal_level)
+				$$ := ast_factory.new_modify_as ($3, $1)
+			}
 	;
 
 Precondition: -- Empty

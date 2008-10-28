@@ -167,6 +167,7 @@ UTF8_tail	[\x80-\xBF]
 [lL][iI][kK][eE]						|
 [lL][oO][cC][aA][lL]					|
 [lL][oO][oO][pP]						|
+[mM][oO][dD][iI][fF][yY]				|
 [nN][oO][tT]							|
 [nN][oO][tT][eE]							|
 [oO][bB][sS][oO][lL][eE][tT][eE]		|
@@ -190,6 +191,7 @@ UTF8_tail	[\x80-\xBF]
 [uU][nN][dD][eE][fF][iI][nN][eE]		|
 [uU][nN][iI][qQ][uU][eE]				|
 [uU][nN][tT][iI][lL]					|
+[uU][sS][eE]							|
 [vV][aA][rR][iI][aA][nN][tT]			|
 [vV][oO][iI][dD]						|
 [wW][hH][eE][nN]						|

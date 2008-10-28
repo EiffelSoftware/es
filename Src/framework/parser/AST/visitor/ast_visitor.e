@@ -1117,6 +1117,22 @@ feature {AST_EIFFEL} -- Clickable visitor
 		deferred
 		end
 
+feature {AST_EIFFEL} -- Frame conditions visitor
+
+	process_modify_as (l_as: MODIFY_AS) is
+			-- Process `l_as'.
+		require
+			non_void_as: l_as /= Void
+		deferred
+		end
+
+	process_use_as (l_as: USE_AS) is
+			-- Process `l_as'.
+		require
+			non_void_as: l_as /= Void
+		deferred
+		end
+
 indexing
 	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

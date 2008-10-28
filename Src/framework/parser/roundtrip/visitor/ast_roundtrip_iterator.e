@@ -1314,6 +1314,20 @@ feature
 			safe_process (l_as.rsqure_symbol (match_list))
 		end
 
+	process_modify_as (l_as: MODIFY_AS) is
+			-- Process `l_as'.
+		do
+			safe_process (l_as.modify_keyword (match_list))
+			safe_process (l_as.full_assertion_list)
+		end
+
+	process_use_as (l_as: USE_AS) is
+			-- Process `l_as'.
+		do
+			safe_process (l_as.use_keyword (match_list))
+			safe_process (l_as.full_assertion_list)
+		end
+
 feature
 
 	process_all_break_as is

@@ -975,7 +975,7 @@ feature -- Access
 		do
 		end
 
-	new_routine_as (o: STRING_AS; pr: REQUIRE_AS;
+	new_routine_as (o: STRING_AS; pr: REQUIRE_AS; uf: USE_AS; mf: MODIFY_AS;
 			l: LOCAL_DEC_LIST_AS; b: ROUT_BODY_AS; po: ENSURE_AS;
 			r: EIFFEL_LIST [INSTRUCTION_AS]; end_loc: KEYWORD_AS;
 			oms_count, a_pos: INTEGER; k_as, r_as: KEYWORD_AS;

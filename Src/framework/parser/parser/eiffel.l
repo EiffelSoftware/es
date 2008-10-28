@@ -414,6 +414,10 @@ U		([0-9]|[0-9][0-9]|[0-9][0-9][0-9])
 				last_keyword_as_value := ast_factory.new_keyword_as (TE_LOOP, Current)
 				last_token := TE_LOOP
 			}
+[mM][oO][dD][iI][fF][yY]	{
+				last_keyword_as_value := ast_factory.new_keyword_as (TE_MODIFY, Current)
+				last_token := TE_MODIFY
+			}
 [nN][oO][tT]	{				
 				last_keyword_as_value := ast_factory.new_keyword_as (TE_NOT, Current)
 				last_token := TE_NOT
@@ -555,6 +559,10 @@ U		([0-9]|[0-9][0-9]|[0-9][0-9][0-9])
 [uU][nN][tT][iI][lL]	{				
 				last_keyword_as_value := ast_factory.new_keyword_as (TE_UNTIL, Current)
 				last_token := TE_UNTIL
+			}
+[uU][sS][eE]	{
+				last_keyword_as_value := ast_factory.new_keyword_as (TE_USE, Current)
+				last_token := TE_USE
 			}
 [vV][aA][rR][iI][aA][nN][tT]	{			
 				last_keyword_as_value := ast_factory.new_keyword_as (TE_VARIANT, Current)

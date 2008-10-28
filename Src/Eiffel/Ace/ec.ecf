@@ -229,6 +229,7 @@
 				<exclude>/ewb_case_storage\.e$</exclude>
 			</file_rule>
 		</cluster>
+		<cluster name="ballet" location="$EIFFEL_SRC\ballet" recursive="true"/>
 		<override name="eiffel_override" location="$EIFFEL_SRC\Eiffel\override\" recursive="true"/>
 		<override name="graphical_overrides" location="$EIFFEL_SRC\Eiffel\interface\new_graphical\overrides\" recursive="true"/>
 	</target>

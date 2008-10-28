@@ -3689,6 +3689,26 @@ feature {NONE} -- Implementation
 			process_eiffel_list (l_as)
 		end
 
+	process_modify_as (l_as: MODIFY_AS) is
+			-- Process `l_as'.
+		do
+			check
+				not_expr_type_visiting: not expr_type_visiting
+			end
+				-- TODO juliant: make constants for strings
+			format_assert_list_as (l_as, "modify")
+		end
+
+	process_use_as (l_as: USE_AS) is
+			-- Process `l_as'.
+		do
+			check
+				not_expr_type_visiting: not expr_type_visiting
+			end
+				-- TODO juliant: make constants for strings
+			format_assert_list_as (l_as, "use")
+		end
+
 feature -- Expression visitor
 
 	expr_type (a_expr: EXPR_AS): TYPE_A is

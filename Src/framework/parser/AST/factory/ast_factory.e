@@ -1674,7 +1674,7 @@ feature -- Access
 			end
 		end
 
-	new_routine_as (o: STRING_AS; pr: REQUIRE_AS;
+	new_routine_as (o: STRING_AS; pr: REQUIRE_AS; uf: USE_AS; mf: MODIFY_AS;
 			l: LOCAL_DEC_LIST_AS; b: ROUT_BODY_AS; po: ENSURE_AS;
 			r: EIFFEL_LIST [INSTRUCTION_AS]; end_loc: KEYWORD_AS;
 			oms_count, a_pos: INTEGER; k_as, r_as: KEYWORD_AS;
@@ -1686,7 +1686,7 @@ feature -- Access
 			a_pos_positive: a_pos > 0
 		do
 			if b /= Void and end_loc /= Void then
-				create Result.initialize (o, pr, l, b, po, r, end_loc, oms_count, a_pos, k_as, r_as, object_test_locals)
+				create Result.initialize (o, pr, uf, mf, l, b, po, r, end_loc, oms_count, a_pos, k_as, r_as, object_test_locals)
 			end
 		end
 
@@ -1928,6 +1928,18 @@ feature -- Access
 			-- New CREATION_CONSTRAIN_TRIPLE object
 		do
 			create Result.make (fl, c_as, e_as)
+		end
+
+	new_use_as (a: EIFFEL_LIST [TAGGED_AS]; k_as: KEYWORD_AS): USE_AS is
+			-- New USE AST node
+		do
+			create Result.make (a, k_as)
+		end
+
+	new_modify_as (a: EIFFEL_LIST [TAGGED_AS]; k_as: KEYWORD_AS): MODIFY_AS is
+			-- New MODIFY AST node
+		do
+			create Result.make (a, k_as)
 		end
 
 indexing

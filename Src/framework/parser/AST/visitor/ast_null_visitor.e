@@ -688,6 +688,16 @@ feature -- Implementation
 			process_eiffel_list (l_as)
 		end
 
+	process_modify_as (l_as: MODIFY_AS) is
+			-- Process `l_as'.
+		do
+		end
+
+	process_use_as (l_as: USE_AS) is
+			-- Process `l_as'.
+		do
+		end
+
 indexing
 	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

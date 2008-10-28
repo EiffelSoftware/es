@@ -22,6 +22,7 @@ create
 feature {NONE} -- Initialization
 
 	initialize (o: like obsolete_message; pr: like precondition;
+		uf: like use_frame; mf: like modify_frame;
 		l: like internal_locals; b: like routine_body; po: like postcondition;
 		r: like rescue_clause; ek: like end_keyword;
 		oms_count: like once_manifest_string_count; a_pos: like body_start_position; k_as, r_as: like obsolete_keyword;
@@ -35,6 +36,8 @@ feature {NONE} -- Initialization
 		do
 			obsolete_message := o
 			precondition := pr
+			use_frame := uf
+			modify_frame := mf
 			internal_locals := l
 			routine_body := b
 			postcondition := po
@@ -116,6 +119,12 @@ feature -- Attributes
 
 	precondition: REQUIRE_AS
 			-- Precondition list
+
+	use_frame: USE_AS
+			-- Use frame
+
+	modify_frame: MODIFY_AS
+			-- Modify frame
 
 	locals: EIFFEL_LIST [TYPE_DEC_AS] is
 			-- Local declarations
