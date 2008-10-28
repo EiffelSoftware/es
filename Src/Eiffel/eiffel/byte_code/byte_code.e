@@ -109,6 +109,12 @@ feature -- Access
 	postcondition: ASSERTION_BYTE_CODE
 			-- List of ASSERT_B instances: can be Void.
 
+	use_frame: BYTE_LIST [BYTE_NODE]
+			-- List of ASSERT_B instances: can be Void.
+
+	modify_frame: BYTE_LIST [BYTE_NODE]
+			-- List of ASSERT_B instances: can be Void.
+
 	old_expressions: LINKED_LIST [UN_OLD_B]
 			-- List of UN_OLD_B instances: can be Void.
 
@@ -267,6 +273,18 @@ feature -- Settings
 			-- Assign `var' to `postcondition'.
 		do
 			postcondition := var
+		end
+
+	set_use_frame (var: like use_frame) is
+			-- Assign `var' to `use_frame'
+		do
+			use_frame := var
+		end
+
+	set_modify_frame (var: like modify_frame) is
+			-- Assign `var' to `modify_frame'
+		do
+			modify_frame := var
 		end
 
 	set_old_expressions (var: like old_expressions) is

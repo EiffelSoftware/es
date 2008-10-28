@@ -27,7 +27,15 @@ inherit
 
 	EB_SHARED_WINDOW_MANAGER
 
-	EB_CONSTANTS
+inherit {NONE}
+
+	SHARED_WORKBENCH
+
+	SHARED_BPL_ENVIRONMENT
+		export {NONE} all end
+
+	SHARED_ERROR_HANDLER
+		export {NONE} all end
 
 create
 	make
@@ -38,8 +46,6 @@ feature -- Initialization
 			-- Creation method.
 		require
 			dev_window_attached: dev_window /= Void
-		local
-			l_shortcut: SHORTCUT_PREFERENCE
 		do
 			development_window := dev_window
 			enable_sensitive
@@ -66,9 +72,42 @@ feature -- Execution
 	execute_with_stone_content (a_stone: STONE; a_content: SD_CONTENT) is
 			-- Create a new tab which stone is `a_stone' and create at side of `a_content' if exists.
 		local
-			l_editor : EB_SMART_EDITOR
+			l_class_stone: CLASSI_STONE
+			l_eiffel_class: EIFFEL_CLASS_I
 		do
+			if a_stone = Void then
+				l_class_stone ?= development_window.stone
+			else
+				l_class_stone ?= a_stone
+			end
 				-- Check for a valid stone and start verification
+			if l_class_stone /= Void then
+				l_eiffel_class ?= l_class_stone.class_i
+				if l_eiffel_class /= Void then
+					--development_window.commands.melt_cmd.execute_and_wait
+					if workbench.successful then
+						verify_class (l_eiffel_class)
+					end
+				end
+			end
+		end
+
+	verify_class (a_class: EIFFEL_CLASS_I)
+			-- Verify `a_class' with Boogie.
+		require
+			a_class_not_void: a_class /= Void
+		local
+			l_ballet: BALLET
+		do
+			create l_ballet.make
+			l_ballet.set_class (a_class)
+			l_ballet.execute_verification
+			if environment.error_log.has_error then
+				error_handler.error_list.append (environment.error_log.error_list)
+				error_handler.error_displayer.force_display
+			else
+				development_window.tools.output_tool.force_display
+			end
 		end
 
 feature -- Items
