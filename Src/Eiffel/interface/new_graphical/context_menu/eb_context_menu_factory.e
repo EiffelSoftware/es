@@ -573,6 +573,8 @@ feature {NONE} -- Menu section, Granularity 2.
 				extend_class_refactoring_menus (a_menu, l_stonec)
 				extend_debug_class_menus (a_menu, l_stonec.e_class)
 				extend_add_to_menu (a_menu, l_stone)
+				extend_separator (a_menu)
+				extend_ballet_class_menu (a_menu, l_stonec)
 			elseif l_stonei /= Void then
 				extend_basic_opening_menus (a_menu, l_stonei, True)
 				extend_separator (a_menu)
@@ -1783,6 +1785,21 @@ feature {NONE} -- Metrics tool section, Granularity 1.
 				a_menu.extend (new_menu_item (names.m_remove_all))
 				a_menu.last.select_actions.extend (agent a_selector.on_remove_all_scopes)
 			end
+		end
+
+feature {NONE} -- Ballet menu
+
+	extend_ballet_class_menu (a_menu: EV_MENU; a_class_stone: CLASSC_STONE) is
+			-- Extend metric Delete.
+		require
+			a_menu_not_void: a_menu /= Void
+			a_class_stone_not_void: a_class_stone /= Void
+		do
+			a_menu.extend (dev_window.commands.verify_class_command.new_menu_item_unmanaged)
+				-- TODO: internationalization
+			a_menu.last.set_text ("Verify class " + last_name)
+			a_menu.last.select_actions.wipe_out
+			a_menu.last.select_actions.extend (agent (dev_window.commands.verify_class_command).execute_with_stone (a_class_stone))
 		end
 
 feature {NONE} -- Implementation

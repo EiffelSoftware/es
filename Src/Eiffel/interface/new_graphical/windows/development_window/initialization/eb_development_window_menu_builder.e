@@ -966,6 +966,14 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			auto_recycle (l_command_menu_item)
 			l_tools_menu.extend (l_command_menu_item)
 
+				-- Separator -------------------------------------------------
+			l_tools_menu.extend (create {EV_MENU_SEPARATOR})
+
+				-- Ballet verify command
+			l_command_menu_item := develop_window.commands.verify_class_command.new_menu_item
+			auto_recycle (l_command_menu_item)
+			l_tools_menu.extend (l_command_menu_item)
+
 			rebuild_tools_menu
 		end
 

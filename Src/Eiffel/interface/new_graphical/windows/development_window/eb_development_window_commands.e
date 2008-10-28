@@ -168,6 +168,9 @@ feature -- Query
 	edit_contracts_command: !ES_EDIT_CONTRACTS_COMMAND
 			-- Edit contracts command
 
+	verify_class_command: !EB_VERIFY_CLASS_COMMAND
+			-- Verify class command
+
 feature -- Commands
 
 	toolbarable_commands: ARRAYED_LIST [EB_TOOLBARABLE_COMMAND]
@@ -590,6 +593,14 @@ feature {EB_DEVELOPMENT_WINDOW_BUILDER, EB_DEVELOPMENT_WINDOW_TOOLBAR_BUILDER} -
 			edit_contracts_command := a_command
 		ensure
 			edit_contracts_command_set: edit_contracts_command = a_command
+		end
+
+	set_verify_class_command (a_command: like verify_class_command)
+			-- Sets `verify_class_command' with `a_command'
+		do
+			verify_class_command := a_command
+		ensure
+			verify_class_command_set: verify_class_command = a_command
 		end
 
 feature -- Recycle
