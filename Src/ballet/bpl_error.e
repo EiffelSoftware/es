@@ -8,14 +8,15 @@ class
 	BPL_ERROR
 
 inherit
-
-	ERROR
+	COMPILER_ERROR
 		redefine
-			out
+			out,
+			trace,
+			trace_single_line,
+			trace_primary_context
 		end
 
 create
-
 	make
 
 feature{NONE} -- Initialization
@@ -23,6 +24,8 @@ feature{NONE} -- Initialization
 	make (a_text:STRING) is
 			-- Create an error message with `a_text' as message
 		do
+				-- TODO: this should be an argument
+			short_error_message := "Internal error"
 			message := a_text
 		ensure
 			text_set: message = a_text
@@ -30,18 +33,51 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
+	short_error_message: STRING
+			-- Short error message
+
 	message: STRING
 			-- Error message
 
-	code: STRING_8 is
-			-- Code error
-		once
-			Result := "BALLET"
-		end
+	code: STRING_8 is "Ballet"
+			-- Error code
 
 	file_name: STRING
 			-- Path to file involved in error.
 			-- Could be Void if not a file specific error.
+
+feature -- Output
+
+	trace (a_text_formatter: TEXT_FORMATTER) is
+			-- Display full error message in `a_text_formatter'.
+		do
+			a_text_formatter.add_error (Current, code)
+			a_text_formatter.add (":")
+			a_text_formatter.add_space
+			a_text_formatter.add (short_error_message)
+			a_text_formatter.add_new_line
+
+			build_explain (a_text_formatter)
+		end
+
+	trace_single_line (a_text_formatter: TEXT_FORMATTER) is
+			-- Display short error, single line message in `a_text_formatter'.
+		do
+			a_text_formatter.add_error (Current, code)
+			a_text_formatter.add (":")
+			a_text_formatter.add_space
+			a_text_formatter.add (short_error_message)
+		end
+
+	trace_primary_context (a_text_formatter: TEXT_FORMATTER) is
+			-- Build the primary context string so errors can be navigated to
+		do
+			if has_associated_file then
+				a_text_formatter.add (file_name)
+			else
+				a_text_formatter.add ("context")
+			end
+		end
 
 	out: STRING_8 is
 		do
@@ -54,30 +90,9 @@ feature -- Features from ERROR
 			-- Build specific explanation image for current error
 			-- in `error_window'.
 		do
-			-- TODO
-		end
-
-	print_error_message (a_text_formatter: TEXT_FORMATTER) is
-			-- Print the error message.
-		do
-			a_text_formatter.add (error_string)
-			a_text_formatter.add (" code: ")
-			a_text_formatter.add_error (Current, code)
-			a_text_formatter.add (" (")
-			a_text_formatter.add_int (line)
-			a_text_formatter.add (",")
-			a_text_formatter.add_int (column)
-			a_text_formatter.add (")")
-			a_text_formatter.add_new_line
+				-- TODO
 			a_text_formatter.add (message)
 			a_text_formatter.add_new_line
-		end
-
-feature -- Visitor
-
-	process (a_visitor: ERROR_VISITOR) is
-		do
-			a_visitor.process_error (Current)
 		end
 
 end

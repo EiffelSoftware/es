@@ -55,7 +55,7 @@ feature -- Process output
 
 				if
 					lines.item.count > 0 and then
-					not (lines.item.substring_index ("Spec# Program Verifier", 1) = 1)
+					not (lines.item.substring_index ("Boogie program verifier", 1) = 1)
 				then
 					regexp.match (lines.item)
 

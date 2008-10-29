@@ -11,6 +11,11 @@ class
 inherit
 	BOOGIE_VERIFIER
 
+inherit {NONE}
+
+	SHARED_WORKBENCH
+		export {NONE} all end
+
 create
 	make
 
@@ -35,7 +40,11 @@ feature	-- Verification
 			output_file: KL_TEXT_OUTPUT_FILE;
 		do
 			create ee
-			tmp_filename := ee.get("TEMP") + "\output" + process_factory.current_process_info.process_id.out + ".bpl"
+--			tmp_filename := ee.get("TEMP") + "\output" + process_factory.current_process_info.process_id.out + ".bpl"
+
+				-- Output name
+			--"ballet_" + workbench.eiffel_universe.conf_system.name + "_" + classname + ".bpl"
+			tmp_filename := "C:\Temp\output" + process_factory.current_process_info.process_id.out + ".bpl"
 			bpl_code := input.string.twin
 
 			create output_file.make (tmp_filename)

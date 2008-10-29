@@ -10,7 +10,8 @@ class
 inherit
 	BPL_ERROR
 		redefine
-			out, print_error_message
+			out, build_explain,
+			trace_primary_context
 		end
 
 	SHARED_WORKBENCH
@@ -32,10 +33,11 @@ feature{NONE} -- Initialization
 			class_name_not_void: a_class_name /= Void
 		do
 			make(a_text)
+			short_error_message := "Verification error"
 			class_name := a_class_name
 			line := a_line
 			tag := a_tag
-			file_name := universe.class_named (a_class_name, universe.groups.first).file_name.string
+			file_name := universe.classes_with_name (a_class_name).first.file_name.string
 		ensure
 			text_set: message = a_text
 			line_start: line = a_line
@@ -60,14 +62,14 @@ feature -- Output
 			end
 		end
 
-	print_error_message (a_text_formatter: TEXT_FORMATTER) is
+	build_explain (a_text_formatter: TEXT_FORMATTER) is
 			-- Print the error message.
 		do
 			a_text_formatter.add (error_string)
 			a_text_formatter.add (" code: ")
 			a_text_formatter.add_error (Current, code)
 			a_text_formatter.add_new_line
-			a_text_formatter.add_class (universe.class_named (class_name, universe.groups.first))
+			a_text_formatter.add_class (universe.classes_with_name (class_name).first)
 
 			a_text_formatter.add (" (line ")
 			a_text_formatter.add_int (line)
@@ -80,6 +82,13 @@ feature -- Output
 				a_text_formatter.add (")")
 			end
 			a_text_formatter.add_new_line
+		end
+
+	trace_primary_context (a_text_formatter: TEXT_FORMATTER)
+			-- TODO
+		do
+			a_text_formatter.add ("Class: ")
+			a_text_formatter.add_class (universe.classes_with_name (class_name).first)
 		end
 
 end

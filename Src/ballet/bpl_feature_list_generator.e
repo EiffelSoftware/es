@@ -147,7 +147,9 @@ feature -- Processing
 			parents: FIXED_LIST[CLASS_C]
 			byte_code: BYTE_CODE
 		do
-			used_feature := system.class_of_id (a_node.written_in).feature_of_feature_id (a_node.feature_id)
+				-- TODO: Check why this doesn't work
+			-- used_feature := system.class_of_id (a_node.written_in).feature_of_rout_id (a_node.routine_id)
+			used_feature := system.class_of_id (a_node.written_in).feature_of_name_id (a_node.feature_name_id)
 			if Mapping_table.item (used_feature.written_class.name) = Void and then not used_feature_list.has (used_feature) then
 				if used_feature.is_attribute or used_feature.is_function or used_feature.is_constant then
 					used_query_list.extend (used_feature)
@@ -198,8 +200,7 @@ feature -- Processing
 		local
 			used_feature: FEATURE_I
 		do
--- TODO: get feature table
---			used_feature := Feat_tbl_server.item (a_node.written_in).feature_of_feature_id (a_node.attribute_id)
+			used_feature := system.class_of_id (a_node.written_in).feature_of_rout_id (a_node.routine_id)
 			if Mapping_table.item (used_feature.written_class.name) = Void and then not used_feature_list.has (used_feature) then
 				used_query_list.extend (used_feature)
 				used_feature_list.extend (used_feature)

@@ -27,9 +27,13 @@ inherit
 
 	EB_SHARED_WINDOW_MANAGER
 
+	COMPILER_EXPORTER
+		export {NONE} all end
+
 inherit {NONE}
 
 	SHARED_WORKBENCH
+		export {NONE} all end
 
 	SHARED_BPL_ENVIRONMENT
 		export {NONE} all end
@@ -104,7 +108,9 @@ feature -- Execution
 			l_ballet.execute_verification
 			if environment.error_log.has_error then
 				error_handler.error_list.append (environment.error_log.error_list)
+				error_handler.error_list.finish
 				error_handler.error_displayer.force_display
+				error_handler.trace
 			else
 				development_window.tools.output_tool.force_display
 			end
