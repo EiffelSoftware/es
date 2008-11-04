@@ -45,7 +45,7 @@ feature -- Eiffel source line information
 				-- Unknown by default.
 			Result := -1
 		ensure
-			Result_positive: Result > 0
+			--Result_positive: Result > 0
 		end
 
 	set_line_number (lnr: INTEGER) is

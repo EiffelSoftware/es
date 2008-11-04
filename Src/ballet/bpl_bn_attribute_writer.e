@@ -31,8 +31,8 @@ feature -- Main
 			bpl_out ("const unique " + field_name + ":name;%N")
 
 			write_function (feat)
-			
-			bpl_out ("  axiom (forall H:[ref,name]any, C:ref :: {" + result_call + "} " +
+
+			bpl_out ("  axiom (forall H:[ref,<x>name]x, C:ref :: {" + result_call + "} " +
 				result_call + " == H[C," + field_name + "]);%N")
 			bpl_out ("%N")
 		end

@@ -3,10 +3,10 @@ indexing
 	date		: "$Date$"
 	revision	: "$Revision$"
 
-class
-	EB_VERIFY_CLASS_COMMAND
+class EB_VERIFY_CLASS_COMMAND
 
 inherit
+
 	EB_TOOLBARABLE_AND_MENUABLE_COMMAND
 		redefine
 			tooltext,
@@ -20,13 +20,6 @@ inherit
 			make as make_old
 		end
 
-	EB_SHARED_PREFERENCES
-		export
-			{NONE} all
-		end
-
-	EB_SHARED_WINDOW_MANAGER
-
 	COMPILER_EXPORTER
 		export {NONE} all end
 
@@ -39,6 +32,15 @@ inherit {NONE}
 		export {NONE} all end
 
 	SHARED_ERROR_HANDLER
+		export {NONE} all end
+
+	SHARED_EIFFEL_PROJECT
+		export {NONE} all end
+
+	EB_SHARED_PREFERENCES
+		export {NONE} all end
+
+	EB_SHARED_WINDOW_MANAGER
 		export {NONE} all end
 
 create
@@ -89,6 +91,9 @@ feature -- Execution
 				l_eiffel_class ?= l_class_stone.class_i
 				if l_eiffel_class /= Void then
 					--development_window.commands.melt_cmd.execute_and_wait
+
+					eiffel_project.quick_melt
+
 					if workbench.successful then
 						verify_class (l_eiffel_class)
 					end

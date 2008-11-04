@@ -206,24 +206,6 @@ feature {NONE} -- Supporting Features
 			Result_not_void: Result /= Void
 		end
 
---	bpl_type_for_type_i (type: TYPE_I): STRING is
---			-- Compute the suitable type in BPL for `type'.
---		require
---			type_not_void: type /= Void
---		do
---			if mapping_table.item(type.name) /= Void then
---				Result := mapping_table.item (type.name)
---			elseif type.is_expanded then
---				add_error(create {BPL_ERROR}.make("Cannot handle type '" + type.name
---											  + "' since it's expanded."))
---				Result := once "any"
---			else
---				Result := once "ref"
---			end
---		ensure
---			Result_not_void: Result /= Void
---		end
-
 	bpl_type_for_class (a_class: CLASS_C):STRING is
 			-- BPL type for class `a_class'.
 		require
@@ -873,11 +855,12 @@ feature{NONE} -- Tables
 
 	Mapping_table: TABLE[STRING, STRING] is
 			-- Table of mappings between Eiffel and BPL types
-			-- features for all classes which ware mentioned here will not be generated
+			-- features for all classes which are mentioned here will not be generated
 		once
 			create {HASH_TABLE[STRING, STRING]}Result.make(19)
 			Result.compare_objects
 			Result.put("ref", "ANY")
+			Result.put("bool", "BOOLEAN")
 			Result.put("int", "INTEGER")
 			Result.put("int", "INTEGER_8")
 			Result.put("int", "INTEGER_16")

@@ -43,6 +43,8 @@ feature {BYTE_NODE} -- Routine visitors
 			safe_process (a_node.class_custom_attributes)
 			safe_process (a_node.property_custom_attributes)
 			safe_process (a_node.interface_custom_attributes)
+			safe_process (a_node.use_frame)
+			safe_process (a_node.modify_frame)
 			safe_process (a_node.precondition)
 			if a_node.old_expressions /= Void then
 				from

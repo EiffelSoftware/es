@@ -133,11 +133,11 @@ feature -- Output
 			bpl_out (a_feature.feature_name)
 			bpl_out (" of ")
 			bpl_out (a_feature.written_class.name)
-			if a_feature.written_in = 1 then
+			if a_feature.written_in = system.any_class.compiled_class.class_id then
 				bpl_out (" (ignored)")
 			end
 			bpl_out ("%N")
-			if a_feature.written_in /= 1 then
+			if a_feature.written_in /= system.any_class.compiled_class.class_id then
 				Precursor {BPL_BN_ITERATOR}(a_feature)
 			end
 		end

@@ -61,7 +61,7 @@ feature -- Generation
 			bpl_out (current_class.name)
 			bpl_out (".")
 			bpl_out (bpl_mangled_feature_name (a_feature.feature_name))
-			bpl_out ("(Current: ref")
+			bpl_out ("(Current: ref where Current != null && Heap[Current, $allocated]")
 			from
 				i := 1
 			until
@@ -73,6 +73,21 @@ feature -- Generation
 				bpl_out (arg_name)
 				bpl_out (":")
 				bpl_out (bpl_type_for_type_a (arg_type))
+				if bpl_type_for_type_a (arg_type).is_equal ("ref") then
+					if arg_type.is_attached then
+						bpl_out (" where arg.")
+						bpl_out (arg_name)
+						bpl_out (" != null && Heap[arg.")
+						bpl_out (arg_name)
+						bpl_out (", $allocated]")
+					else
+						bpl_out (" where arg.")
+						bpl_out (arg_name)
+						bpl_out (" != null ==> Heap[arg.")
+						bpl_out (arg_name)
+						bpl_out (", $allocated]")
+					end
+				end
 				i := i + 1
 			end
 			bpl_out (")")
@@ -107,6 +122,11 @@ feature -- Generation
 					ass_list.forth
 				end
 			end
+
+	-- TODO: refactor me
+	bpl_out ("  // Frame condition: feature association of an agent can't change%N")
+	bpl_out ("  ensures (forall $o: ref :: { Heap[$o, $feature] } $o != null && old(Heap)[$o, $allocated] ==> old(Heap)[$o, $feature] == Heap[$o, $feature]);%N")
+
 
 			if a_feature.type.is_void then
 				bpl_out ("  modifies Heap;%N")
@@ -172,7 +192,7 @@ feature -- Generation
 							byte_code := Byte_server.item (all_queries.item.code_id)
 							if byte_code.use_frame /= Void then
 								bpl_out ("  free ensures (")
-								
+
 								from
 									byte_code.use_frame.start
 									use_expression := Void
@@ -229,7 +249,7 @@ feature -- Generation
 									use_expression + "))")
 
 								bpl_out (" ==> (fun." + all_queries.item.written_class.name +
-									"." + all_queries.item.feature_name + " (Heap, o" + call_arguments + ") == fun." + 
+									"." + all_queries.item.feature_name + " (Heap, o" + call_arguments + ") == fun." +
 									all_queries.item.written_class.name + "." +
 									all_queries.item.feature_name + " (old (Heap), o" + call_arguments + "))));%N")
 							end
@@ -239,7 +259,7 @@ feature -- Generation
 				end
 			end
 			bpl_out ("%N")
-			current_class := last_current_class			
+			current_class := last_current_class
 		end
 
 feature -- Settors

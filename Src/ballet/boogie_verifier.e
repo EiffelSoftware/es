@@ -53,6 +53,18 @@ feature -- Process output
 					lines.item.prune_all ('%R')
 				end
 
+					-- Skip an 'execution trace' message
+				if lines.item.starts_with ("Execution trace") then
+					from
+						lines.forth
+					until
+						not lines.item.starts_with ("    ")
+					loop
+						lines.forth
+					end
+					lines.item.prune_all ('%R')
+				end
+
 				if
 					lines.item.count > 0 and then
 					not (lines.item.substring_index ("Boogie program verifier", 1) = 1)
@@ -98,18 +110,23 @@ feature -- Process output
 								add_error (create {BPL_ERROR}.make("Ballet Error BP5002 incomplete: no related location given."))
 							else
 								src_expr.match (bpl_lines.i_th (bpl_error_line.to_integer))
-								if src_expr.match_count > 2 then
-									tag := src_expr.captured_substring (3)
+								if src_expr.has_matched then
+									if src_expr.match_count > 2 then
+										tag := src_expr.captured_substring (3)
+									else
+										tag := Void
+									end
+
+									line_start := src_expr.captured_substring (2).to_integer
+
+									add_error (create {BPL_VERIFICATION_ERROR}.make_verification
+												  ("Precondition of call not met",
+													src_expr.captured_substring (1),
+													line_start, tag))
 								else
-									tag := Void
+									add_error (create {BPL_ERROR}.make("Ballet Error BP5002: no Eiffel mapping for related location."))
 								end
 
-								line_start := src_expr.captured_substring (2).to_integer
-
-								add_error (create {BPL_VERIFICATION_ERROR}.make_verification
-											  ("Precondition of call not met",
-												src_expr.captured_substring (1),
-												line_start, tag))
 							end
 						else
 							src_expr.match (bpl_lines.i_th (bpl_error_line.to_integer))

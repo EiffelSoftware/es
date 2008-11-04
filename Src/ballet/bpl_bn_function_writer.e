@@ -53,7 +53,8 @@ inherit
 			process_un_not_b,
 			process_un_old_b,
 			process_void_b,
-			process_feature_without_code
+			process_feature_without_code,
+			process_routine_creation_b
 		end
 
 create
@@ -103,7 +104,7 @@ feature -- Main
 			bpl_out ("// Function: " + a_function.feature_name + " of class " + current_class.name + "%N")
 			bpl_out ("function ")
 			bpl_out (func_name)
-			bpl_out ("([ref, name]any, ")
+			bpl_out ("([ref, <x>name]x, ")
 			bpl_out (bpl_type_for_class (current_class))
 			result_call := func_name + "(H, C"
 
@@ -128,7 +129,7 @@ feature -- Main
 
 			bpl_out (") returns (" + return_type + ");%N")
 			result_call.append (")")
-			intro := "forall H:[ref, name]any, C:ref"
+			intro := "forall H:[ref, <x>name]x, C:ref"
 
 			from
 				i := 1
@@ -194,7 +195,7 @@ feature -- Main
 				return_type := bpl_type_for_type_a (a_function.type)
 				bpl_out ("%Nfunction ")
 				bpl_out (func_name)
-				bpl_out ("([ref, name]any, ")
+				bpl_out ("([ref, <x>name]x, ")
 				bpl_out (bpl_type_for_class (last_current_class))
 
 				precursor_call := result_call
@@ -719,7 +720,57 @@ feature -- Processing
 	process_creation_expr_b (a_node: CREATION_EXPR_B) is
 			-- Process `a_node'.
 		do
+				-- Store new locals in here
+			local_vars.append ("")
+				-- Store side effects in here
+			side_effect.append ("")
+				-- Store expression which is assigned in here
+			expr.append ("TODO")
+		end
 
+	process_routine_creation_b (a_node: ROUTINE_CREATION_B) is
+			-- Process `a_node'.
+		local
+			l_agent_variable: STRING
+			l_agent_feature_name: STRING
+			l_agent_class: CLASS_C
+			l_agent_feature: FEATURE_I
+			l_target_name: STRING
+		do
+			l_agent_variable := "l_agent"
+			l_agent_class := system.class_of_id (a_node.origin_class_id)
+			l_agent_feature := l_agent_class.feature_of_feature_id (a_node.feature_id)
+			l_agent_feature_name := "feature." + l_agent_class.name_in_upper + "." + l_agent_feature.feature_name
+
+			check a_node.is_target_closed end
+
+			if {l_arg: !ARGUMENT_B} a_node.arguments.expressions[1] then
+				l_target_name := "arg." + current_feature.arguments.item_name (l_arg.position)
+			else
+				check false end
+			end
+
+				-- New local for created agent
+			record_local_var (l_agent_variable, "ref") -- TODO: "ref" as constant
+				-- Store side effects in here
+			side_effect.append ("// Create agent%N")
+			side_effect.append ("havoc " + l_agent_variable + ";%N")
+			side_effect.append ("assume Heap[" + l_agent_variable + ", $allocated] == false && " + l_agent_variable + " != null;%N")
+			side_effect.append ("assert ValidCreateTarget(Heap, " + l_agent_variable + ");%N")
+			side_effect.append ("call create.ROUTINE.create_with_target (" + l_agent_variable + ", " + l_agent_feature_name + ", " + l_target_name + ");%N")
+    		side_effect.append ("assert ValidCreation(Heap, " + l_agent_variable + ");%N")
+			side_effect.append ("assume IsHeap(Heap);%N")
+
+--			side_effect.append ("// Agent properties%N")
+--			side_effect.append ("assume (forall h: [ref, <x>name]x, a: ref :: %N")
+--            side_effect.append ("            { fun.ROUTINE.precondition(h, " + l_agent_variable + ", a) } // Trigger%N")
+--            side_effect.append ("        IsHeap(h) ==> (fun.ROUTINE.precondition(h, " + l_agent_variable + ", a) <==> ACTUAL_PRECONDITION ));%N")
+--			side_effect.append ("assume (forall h: [ref, <x>name]x, a: ref :: %N")
+--			side_effect.append ("            { fun.ROUTINE.postcondition(h, " + l_agent_variable + ", a) } // Trigger%N")
+--            side_effect.append ("        IsHeap(h) ==> (fun.ROUTINE.postcondition(h, " + l_agent_variable + ", a) <==> ACTUAL_POSTCONDITION ));%N")
+
+				-- Store expression which is assigned in here
+			expr.append (l_agent_variable)
 		end
 
 	process_int64_val_b (a_node: INT64_VAL_B) is
