@@ -142,8 +142,8 @@ feature -- Process output
 												src_expr.captured_substring (1),
 												line_start, tag))
 							else
-								add_error (create {BPL_ERROR}.make("Cannot associate ballet output '" +
-																			  lines.item + "' to a eiffel source."))
+								add_error (create {BPL_ERROR}.make("Cannot associate ballet error to eiffel location: " +
+																			  lines.item))
 							end
 						end
 					end

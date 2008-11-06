@@ -885,8 +885,20 @@ feature{NONE} -- Tables
 			Result.put("set", "FRAME")
 			Result.put("set", "MML_SET")
 			Result.put("set", "MML_DEFAULT_SET")
-
+			Result.put ("ref", "ROUTINE")
 		end
+
+	Agent_classes: LIST [STRING] is
+			-- List of classes which have a special handling to verify agents
+		once
+			create {ARRAYED_LIST [STRING]} Result.make (5)
+			Result.compare_objects
+			Result.extend ("ROUTINE")
+			Result.extend ("PROCEDURE")
+			Result.extend ("FUNCTION")
+			Result.extend ("PREDICATE")
+		end
+
 
 	Infix_Operator_table: TABLE[STRING, STRING] is
 			-- String-Versions of Operators

@@ -28,7 +28,7 @@ feature -- Main
 		do
 			field_name := "field." + current_class.name + "." + feat.feature_name
 			bpl_out ("// Attribute: " + feat.feature_name + " of class " + current_class.name + "%N")
-			bpl_out ("const unique " + field_name + ":name;%N")
+			bpl_out ("const unique " + field_name + ": <any>name;%N")
 
 			write_function (feat)
 

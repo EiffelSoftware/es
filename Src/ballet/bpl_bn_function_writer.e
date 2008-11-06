@@ -637,6 +637,85 @@ feature -- Processing
 	process_feature_b (a_node: FEATURE_B) is
 			-- Process `a_node'.
 		local
+			cls_name: STRING
+		do
+			cls_name := System.class_of_id(a_node.written_in).name
+
+			if Agent_classes.has (cls_name) then
+				process_feature_b_for_agents (a_node)
+			else
+				process_feature_b_normal (a_node)
+			end
+
+		end
+
+	process_feature_b_for_agents (a_node: FEATURE_B) is
+			-- Process `a_node'.
+		local
+			l_feature_name: STRING
+			l_boogie_function: STRING
+			l_open_argument_count: INTEGER
+			l_tuple_argument: TUPLE_CONST_B
+			l_tuple_content: BYTE_LIST [BYTE_NODE]
+			l_args: STRING
+			tmp_expr: STRING
+			tmp_this_ref: STRING
+			i: INTEGER
+		do
+			l_feature_name := a_node.feature_name
+
+			check a_node.parameters.count = 1 end
+			l_tuple_argument ?= a_node.parameters [1].expression
+			check l_tuple_argument /= Void end
+			l_tuple_content := l_tuple_argument.expressions
+			l_open_argument_count := l_tuple_content.count
+			l_boogie_function := "agent." + l_feature_name + "_" + l_open_argument_count.out
+
+				-- Construct arguments
+			l_args := ""
+			if l_feature_name.is_equal ("precondition") then
+				l_args := "Heap"
+			elseif l_feature_name.is_equal ("postcondition") then
+				l_args := "Heap, old(Heap)"
+			elseif l_feature_name.is_equal ("call") then
+				check false end
+			else
+				check false end
+			end
+
+			tmp_expr := expr
+			tmp_this_ref := current_this_ref
+
+			current_this_ref := this_ref
+			expr := ""
+			safe_process (a_node.parent.target)
+			l_args.append (", ")
+			l_args.append(expr)
+
+			from
+				i := 1
+			until
+				i > l_tuple_content.count
+			loop
+				current_this_ref := this_ref
+				expr := ""
+				safe_process (l_tuple_content.i_th (i))
+				l_args.append (", ")
+				l_args.append(expr)
+				i := i + 1
+			end
+			current_this_ref := tmp_this_ref
+			expr := tmp_expr
+
+			expr.append (l_boogie_function)
+			expr.append ("(")
+			expr.append (l_args)
+			expr.append (")")
+		end
+
+	process_feature_b_normal (a_node: FEATURE_B) is
+			-- Process `a_node'.
+		local
 			var: STRING
 			i: INTEGER
 			args: STRING
@@ -657,11 +736,6 @@ feature -- Processing
 				args.append (heap_ref)
 				args.append (", ")
 			end
-
-		-- TODO: REMOVE VERY BAD HACK!
-		if cls_name.is_equal ("ROUTINE") and then a_node.feature_name.is_equal ("postcondition") then
-			args.append ("old(Heap), ")
-		end
 
 			args.append (current_this_ref)
 			side_effect_args := ""
@@ -743,6 +817,10 @@ feature -- Processing
 			l_agent_class: CLASS_C
 			l_agent_feature: FEATURE_I
 			l_target_name: STRING
+			l_open_argument_count: INTEGER
+			l_byte_code: BYTE_CODE
+			l_precondition: STRING
+			l_postcondition: STRING
 		do
 			l_agent_variable := "l_agent"
 			l_agent_class := system.class_of_id (a_node.origin_class_id)
@@ -757,6 +835,8 @@ feature -- Processing
 				check false end
 			end
 
+			l_open_argument_count := a_node.arguments.expressions.count
+
 				-- New local for created agent
 			record_local_var (l_agent_variable, "ref") -- TODO: "ref" as constant
 				-- Store side effects in here
@@ -764,17 +844,42 @@ feature -- Processing
 			side_effect.append ("havoc " + l_agent_variable + ";%N")
 			side_effect.append ("assume Heap[" + l_agent_variable + ", $allocated] == false && " + l_agent_variable + " != null;%N")
 			side_effect.append ("assert ValidCreateTarget(Heap, " + l_agent_variable + ");%N")
-			side_effect.append ("call create.ROUTINE.create_with_target (" + l_agent_variable + ", " + l_agent_feature_name + ", " + l_target_name + ");%N")
+
+			if a_node.is_target_closed then
+				side_effect.append ("assert " + l_target_name + " != null;%N")
+			end
+
+
+			side_effect.append ("call agent.create (" + l_agent_variable + ");%N")
     		side_effect.append ("assert ValidCreation(Heap, " + l_agent_variable + ");%N")
 			side_effect.append ("assume IsHeap(Heap);%N")
 
---			side_effect.append ("// Agent properties%N")
---			side_effect.append ("assume (forall h: [ref, <x>name]x, a: ref :: %N")
---            side_effect.append ("            { fun.ROUTINE.precondition(h, " + l_agent_variable + ", a) } // Trigger%N")
---            side_effect.append ("        IsHeap(h) ==> (fun.ROUTINE.precondition(h, " + l_agent_variable + ", a) <==> ACTUAL_PRECONDITION ));%N")
---			side_effect.append ("assume (forall h: [ref, <x>name]x, a: ref :: %N")
---			side_effect.append ("            { fun.ROUTINE.postcondition(h, " + l_agent_variable + ", a) } // Trigger%N")
---            side_effect.append ("        IsHeap(h) ==> (fun.ROUTINE.postcondition(h, " + l_agent_variable + ", a) <==> ACTUAL_POSTCONDITION ));%N")
+			if byte_server.has (l_agent_feature.code_id) then
+				l_byte_code := byte_server.item (l_agent_feature.code_id)
+					-- TODO: create precondition / postcondition
+
+				if l_agent_feature_name.is_equal ("feature.FORMATTER.align_left") then
+					l_precondition := "a1 != null && !fun.PARAGRAPH.is_left_aligned (heap, a1)"
+					l_postcondition := "fun.PARAGRAPH.is_left_aligned(heap, a1)"
+				elseif l_agent_feature_name.is_equal ("feature.FORMATTER.align_right") then
+					l_precondition := "a1 != null && fun.PARAGRAPH.is_left_aligned (heap, a1)"
+					l_postcondition := "!fun.PARAGRAPH.is_left_aligned(heap, a1)"
+				else
+					check false end
+				end
+
+			else
+				check false end
+			end
+
+
+			side_effect.append ("// Agent properties%N")
+			side_effect.append ("assume (forall heap: [ref, <x>name]x, a1: ref :: %N")
+            side_effect.append ("            { agent.precondition_" + l_open_argument_count.out + "(heap, " + l_agent_variable + ", a1) } // Trigger%N")
+            side_effect.append ("        IsHeap(heap) ==> (agent.precondition_" + l_open_argument_count.out + "(heap, " + l_agent_variable + ", a1) <==> " + l_precondition + " ));%N")
+			side_effect.append ("assume (forall heap: [ref, <x>name]x, old_heap: [ref, <x>name]x, a1: ref :: %N")
+			side_effect.append ("            { agent.postcondition_" + l_open_argument_count.out + "(heap, old_heap, " + l_agent_variable + ", a1) } // Trigger%N")
+            side_effect.append ("        IsHeap(heap) ==> (agent.postcondition_" + l_open_argument_count.out + "(heap, old_heap, " + l_agent_variable + ", a1) <==> " + l_postcondition + " ));%N")
 
 				-- Store expression which is assigned in here
 			expr.append (l_agent_variable)

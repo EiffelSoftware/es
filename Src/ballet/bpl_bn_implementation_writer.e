@@ -324,6 +324,10 @@ feature -- Processors
 			i,n: INTEGER
 			call_access_b: CALL_ACCESS_B
 			nested_b: NESTED_B
+
+			l_call_target: STRING
+			l_tuple_argument: TUPLE_CONST_B
+			l_arg_count: INTEGER
 		do
 			nested_b ?= a_node.call
 			if nested_b /= Void then
@@ -332,10 +336,24 @@ feature -- Processors
 				call_access_b ?= a_node.call
 			end
 			if call_access_b /= Void then
-				new_code := "    call proc."
-				new_code.append (system.class_of_id (call_access_b.written_in).name)
-				new_code.append (".")
-				new_code.append (call_access_b.feature_name)
+				new_code := "    call "
+
+-- TODO: remove bad hack
+				if agent_classes.has (system.class_of_id (call_access_b.written_in).name) then
+					check call_access_b.feature_name.is_equal ("call") end
+
+					l_tuple_argument ?= call_access_b.parameters [1].expression
+					l_arg_count := l_tuple_argument.expressions.count
+
+					new_code.append ("agent.call_" + l_arg_count.out)
+
+				else
+					new_code.append ("proc.")
+					new_code.append (system.class_of_id (call_access_b.written_in).name)
+					new_code.append (".")
+					new_code.append (call_access_b.feature_name)
+				end
+
 				new_code.append ("(")
 				if nested_b /= Void then
 					function_writer.reset
@@ -343,8 +361,10 @@ feature -- Processors
 					append_local_vars (function_writer.local_vars)
 					code.append (function_writer.side_effect)
 					new_code.append (function_writer.expr)
+					l_call_target := function_writer.expr
 				else
 					new_code.append ("Current")
+					l_call_target := "Current"
 				end
 				if call_access_b.parameters /= Void then
 					from
@@ -363,6 +383,7 @@ feature -- Processors
 					end
 				end
 				new_code.append (");")
+				code.append ("    assert ValidCallTarget(Heap, " + l_call_target + ");%N")
 				code.append (new_code)
 				code.append (location_info (a_node))
 			else

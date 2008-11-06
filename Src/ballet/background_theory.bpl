@@ -227,97 +227,99 @@ function any_string (int) returns (ref);
 // FRAME functions
 
 
+
 // ----------------------------------------------------------------------
-// ROUTINE functions
+// Agent functions
 
-// Agent call
-procedure proc.ROUTINE.call (
-        Current: ref where Current != null && Heap[Current,$allocated],     // The agent object
-        arg: any);
-    requires fun.ROUTINE.precondition(Heap, Current, arg);
+// Agent creation
+
+procedure agent.create(
+        Current: ref where Current != null && !Heap[Current,$allocated]    // The agent object
+    );
     modifies Heap;
-    ensures fun.ROUTINE.postcondition(Heap, old(Heap), Current, arg);
-
-
-// Pseudo-attribute `feature' for agents
-// Denotes the name of the feature which an agent represents
-const unique $feature: <name>name;
-
-// Attribute `target' of class ROUTINE
-const unique field.ROUTINE.target: <ref>name;
-
-// Function `target' of class ROUTINE
-function fun.ROUTINE.target(heap: [ref, <x>name]x, agent: ref) returns (ref);
-axiom (forall heap:[ref, <x>name]x, agent:ref ::
-            { fun.ROUTINE.target(heap, agent) } // Trigger
-        IsHeap(heap) ==> (fun.ROUTINE.target(heap, agent) == heap[agent, field.ROUTINE.target]));
-
-// Creation feature
-procedure create.ROUTINE.create_with_target(
-        Current: ref where Current != null && !Heap[Current,$allocated],    // The agent object
-        feature: name,                                                      // The name of the associated feature
-        target: ref);                                                       // The closed target object
-    // Precondition: valid target object
-    requires target != null && Heap[target,$allocated];
-    modifies Heap;
-    // Postcondition: target set
-    ensures fun.ROUTINE.target(Heap, Current) == target;
-    // Frame condition
-    ensures (forall $o: ref, $f: name :: { Heap[$o, $f] } $o != null && old(Heap)[$o, $allocated] && $o != Current ==> old(Heap)[$o, $f] == Heap[$o, $f]);
+    // Frame condition: agent creation has no side effects
+    ensures (forall $o: ref, $f: name :: 
+                { Heap[$o, $f] } // Trigger
+            $o != null && old(Heap)[$o, $allocated] && $o != Current ==> old(Heap)[$o, $f] == Heap[$o, $f]);
     // Object allocated
     free ensures Heap[Current, $allocated];
-    // Feature association set
-    free ensures Heap[Current, $feature] == feature;
 
+// Precondition functions for different number of arguments
 
-// Precondition, closed target, 1 argument
-function fun.ROUTINE.precondition(heap: [ref,<x>name]x, agent: ref, arg: any) returns (bool);
+function agent.precondition_0 (heap: [ref,<x>name]x, agent: ref) returns (bool);
+function agent.precondition_1 (heap: [ref,<x>name]x, agent: ref, arg1: ref) returns (bool);
+function agent.precondition_2 (heap: [ref,<x>name]x, agent: ref, arg1: ref, arg2: ref) returns (bool);
+function agent.precondition_3 (heap: [ref,<x>name]x, agent: ref, arg1: ref, arg2: ref, arg3: ref) returns (bool);
+function agent.precondition_4 (heap: [ref,<x>name]x, agent: ref, arg1: ref, arg2: ref, arg3: ref, arg4: ref) returns (bool);
+function agent.precondition_5 (heap: [ref,<x>name]x, agent: ref, arg1: ref, arg2: ref, arg3: ref, arg4: ref, arg5: ref) returns (bool);
 
-// Postcondition, closed target, 1 argument
-function fun.ROUTINE.postcondition(heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref, arg: any) returns (bool);
+// Postcondition functions for different number of arguments
 
-// The actual precondition of an agent.
-// Add axioms for all features which are used as an agent
-function actual_precondition(feature: name, heap: [ref, <x>name]x, agent: ref, arg: ref) returns (bool);
+function agent.postcondition_0 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref) returns (bool);
+function agent.postcondition_1 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref, arg1: ref) returns (bool);
+function agent.postcondition_2 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref, arg1: ref, arg2: ref) returns (bool);
+function agent.postcondition_3 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref, arg1: ref, arg2: ref, arg3: ref) returns (bool);
+function agent.postcondition_4 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref, arg1: ref, arg2: ref, arg3: ref, arg4: ref) returns (bool);
+function agent.postcondition_5 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref, arg1: ref, arg2: ref, arg3: ref, arg4: ref, arg5: ref) returns (bool);
 
-// The actual postcondition of an agent.
-// Add axioms for all features which are used as an agent
-function actual_postcondition(feature: name, heap: [ref, <x>name]x, old_heap: [ref, <x>name]x, agent: ref, arg: ref) returns (bool);
+// Call functions for different number of arguments
 
+procedure agent.call_0 (
+        Current: ref where Current != null && Heap[Current,$allocated]     // The agent object
+    );
+    requires agent.precondition_0(Heap, Current);
+    modifies Heap;
+    ensures agent.postcondition_0(Heap, old(Heap), Current);
 
-// Associate general precondition of an agent with the actual precondition
-axiom (forall heap: [ref, <x>name]x, agent: ref, arg: ref :: 
-            { fun.ROUTINE.precondition(heap, agent, arg) } // Trigger
-        IsHeap(heap) ==> (fun.ROUTINE.precondition(heap, agent, arg) <==> actual_precondition(heap[agent,$feature], heap, agent, arg) ));
+procedure agent.call_1 (
+        Current: ref where Current != null && Heap[Current,$allocated],     // The agent object
+        arg1: ref                                                           // First argument
+    );
+    requires agent.precondition_1(Heap, Current, arg1);
+    modifies Heap;
+    ensures agent.postcondition_1(Heap, old(Heap), Current, arg1);
 
-// Associate general postcondition of an agent with the actual postcondition
-axiom (forall heap: [ref, <x>name]x, old_heap: [ref, <x>name]x, agent: ref, arg: ref :: 
-            { fun.ROUTINE.postcondition(heap, old_heap, agent, arg) } // Trigger
-        IsHeap(heap) ==> (fun.ROUTINE.postcondition(heap, old_heap, agent, arg) <==> actual_postcondition(heap[agent,$feature], heap, old_heap, agent, arg) ));
+procedure agent.call_2 (
+        Current: ref where Current != null && Heap[Current,$allocated],     // The agent object
+        arg1: ref,                                                          // First argument
+        arg2: ref                                                           // Second argument
+    );
+    requires agent.precondition_2(Heap, Current, arg1, arg2);
+    modifies Heap;
+    ensures agent.postcondition_2(Heap, old(Heap), Current, arg1, arg2);
 
-  
+procedure agent.call_3 (
+        Current: ref where Current != null && Heap[Current,$allocated],     // The agent object
+        arg1: ref,                                                          // First argument
+        arg2: ref,                                                          // Second argument
+        arg3: ref                                                           // Third argument
+    );
+    requires agent.precondition_3(Heap, Current, arg1, arg2, arg3);
+    modifies Heap;
+    ensures agent.postcondition_3(Heap, old(Heap), Current, arg1, arg2, arg3);
+
+procedure agent.call_4 (
+        Current: ref where Current != null && Heap[Current,$allocated],     // The agent object
+        arg1: ref,                                                          // First argument
+        arg2: ref,                                                          // Second argument
+        arg3: ref,                                                          // Third argument
+        arg4: ref                                                           // Fourth argument
+    );
+    requires agent.precondition_4(Heap, Current, arg1, arg2, arg3, arg4);
+    modifies Heap;
+    ensures agent.postcondition_4(Heap, old(Heap), Current, arg1, arg2, arg3, arg4);
+
+procedure agent.call_5 (
+        Current: ref where Current != null && Heap[Current,$allocated],     // The agent object
+        arg1: ref,                                                          // First argument
+        arg2: ref,                                                          // Second argument
+        arg3: ref,                                                          // Third argument
+        arg4: ref,                                                          // Fourth argument
+        arg5: ref                                                           // Fifth argument
+    );
+    requires agent.precondition_5(Heap, Current, arg1, arg2, arg3, arg4, arg5);
+    modifies Heap;
+    ensures agent.postcondition_5(Heap, old(Heap), Current, arg1, arg2, arg3, arg4, arg5);
+
 // Background theory ends here
 // ======================================================================
-
-
-// **********************************************************************
-
-// Feature {FORMATTER}.align_left
-const unique feature.FORMATTER.align_left: name;
-axiom (forall heap: [ref, <x>name]x, agent: ref, arg: ref ::
-            { actual_precondition(feature.FORMATTER.align_left, heap, agent, arg) } // Trigger
-        actual_precondition(feature.FORMATTER.align_left, heap, agent, arg) <==> arg != null && !fun.PARAGRAPH.is_left_aligned(heap, arg));
-axiom (forall heap: [ref, <x>name]x, old_heap: [ref, <x>name]x, agent: ref, arg: ref ::
-            { actual_postcondition(feature.FORMATTER.align_left, heap, old_heap, agent, arg) } // Trigger
-        actual_postcondition(feature.FORMATTER.align_left, heap, old_heap, agent, arg) <==> fun.PARAGRAPH.is_left_aligned(heap, arg));
-
-// Feature {FORMATTER}.align_right
-const unique feature.FORMATTER.align_right: name;
-axiom (forall heap: [ref, <x>name]x, agent: ref, arg: ref ::
-            { actual_precondition(feature.FORMATTER.align_right, heap, agent, arg) } // Trigger
-        actual_precondition(feature.FORMATTER.align_right, heap, agent, arg) <==> arg != null && fun.PARAGRAPH.is_left_aligned(heap, arg));
-axiom (forall heap: [ref, <x>name]x, old_heap: [ref, <x>name]x, agent: ref, arg: ref ::
-            { actual_postcondition(feature.FORMATTER.align_right, heap, old_heap, agent, arg) } // Trigger
-        actual_postcondition(feature.FORMATTER.align_right, heap, old_heap, agent, arg) <==> !fun.PARAGRAPH.is_left_aligned(heap, arg));
-
-// **********************************************************************

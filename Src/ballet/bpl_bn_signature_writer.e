@@ -123,10 +123,6 @@ feature -- Generation
 				end
 			end
 
-	-- TODO: refactor me
-	bpl_out ("  // Frame condition: feature association of an agent can't change%N")
-	bpl_out ("  ensures (forall $o: ref :: { Heap[$o, $feature] } $o != null && old(Heap)[$o, $allocated] ==> old(Heap)[$o, $feature] == Heap[$o, $feature]);%N")
-
 
 			if a_feature.type.is_void then
 				bpl_out ("  modifies Heap;%N")
