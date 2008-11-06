@@ -230,19 +230,14 @@ function any_string (int) returns (ref);
 // ----------------------------------------------------------------------
 // ROUTINE functions
 
-// Precondition, closed target, 1 argument
-function fun.ROUTINE.precondition(heap: [ref,<x>name]x, agent: ref, arg: any) returns (bool);
-
-// Postcondition, closed target, 1 argument
-function fun.ROUTINE.postcondition(heap: [ref,<x>name]x, agent: ref, arg: any) returns (bool);
-
 // Agent call
 procedure proc.ROUTINE.call (
         Current: ref where Current != null && Heap[Current,$allocated],     // The agent object
         arg: any);
     requires fun.ROUTINE.precondition(Heap, Current, arg);
     modifies Heap;
-    ensures fun.ROUTINE.postcondition(Heap, Current, arg);
+    ensures fun.ROUTINE.postcondition(Heap, old(Heap), Current, arg);
+
 
 // Pseudo-attribute `feature' for agents
 // Denotes the name of the feature which an agent represents
@@ -275,6 +270,11 @@ procedure create.ROUTINE.create_with_target(
     free ensures Heap[Current, $feature] == feature;
 
 
+// Precondition, closed target, 1 argument
+function fun.ROUTINE.precondition(heap: [ref,<x>name]x, agent: ref, arg: any) returns (bool);
+
+// Postcondition, closed target, 1 argument
+function fun.ROUTINE.postcondition(heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref, arg: any) returns (bool);
 
 // The actual precondition of an agent.
 // Add axioms for all features which are used as an agent
@@ -282,7 +282,7 @@ function actual_precondition(feature: name, heap: [ref, <x>name]x, agent: ref, a
 
 // The actual postcondition of an agent.
 // Add axioms for all features which are used as an agent
-function actual_postcondition(feature: name, heap: [ref, <x>name]x, agent: ref, arg: ref) returns (bool);
+function actual_postcondition(feature: name, heap: [ref, <x>name]x, old_heap: [ref, <x>name]x, agent: ref, arg: ref) returns (bool);
 
 
 // Associate general precondition of an agent with the actual precondition
@@ -291,9 +291,9 @@ axiom (forall heap: [ref, <x>name]x, agent: ref, arg: ref ::
         IsHeap(heap) ==> (fun.ROUTINE.precondition(heap, agent, arg) <==> actual_precondition(heap[agent,$feature], heap, agent, arg) ));
 
 // Associate general postcondition of an agent with the actual postcondition
-axiom (forall heap: [ref, <x>name]x, agent: ref, arg: ref :: 
-            { fun.ROUTINE.postcondition(heap, agent, arg) } // Trigger
-        IsHeap(heap) ==> (fun.ROUTINE.postcondition(heap, agent, arg) <==> actual_postcondition(heap[agent,$feature], heap, agent, arg) ));
+axiom (forall heap: [ref, <x>name]x, old_heap: [ref, <x>name]x, agent: ref, arg: ref :: 
+            { fun.ROUTINE.postcondition(heap, old_heap, agent, arg) } // Trigger
+        IsHeap(heap) ==> (fun.ROUTINE.postcondition(heap, old_heap, agent, arg) <==> actual_postcondition(heap[agent,$feature], heap, old_heap, agent, arg) ));
 
   
 // Background theory ends here
@@ -307,17 +307,17 @@ const unique feature.FORMATTER.align_left: name;
 axiom (forall heap: [ref, <x>name]x, agent: ref, arg: ref ::
             { actual_precondition(feature.FORMATTER.align_left, heap, agent, arg) } // Trigger
         actual_precondition(feature.FORMATTER.align_left, heap, agent, arg) <==> arg != null && !fun.PARAGRAPH.is_left_aligned(heap, arg));
-axiom (forall heap: [ref, <x>name]x, agent: ref, arg: ref ::
-            { actual_postcondition(feature.FORMATTER.align_left, heap, agent, arg) } // Trigger
-        actual_postcondition(feature.FORMATTER.align_left, heap, agent, arg) <==> fun.PARAGRAPH.is_left_aligned(heap, arg));
+axiom (forall heap: [ref, <x>name]x, old_heap: [ref, <x>name]x, agent: ref, arg: ref ::
+            { actual_postcondition(feature.FORMATTER.align_left, heap, old_heap, agent, arg) } // Trigger
+        actual_postcondition(feature.FORMATTER.align_left, heap, old_heap, agent, arg) <==> fun.PARAGRAPH.is_left_aligned(heap, arg));
 
 // Feature {FORMATTER}.align_right
 const unique feature.FORMATTER.align_right: name;
 axiom (forall heap: [ref, <x>name]x, agent: ref, arg: ref ::
             { actual_precondition(feature.FORMATTER.align_right, heap, agent, arg) } // Trigger
         actual_precondition(feature.FORMATTER.align_right, heap, agent, arg) <==> arg != null && fun.PARAGRAPH.is_left_aligned(heap, arg));
-axiom (forall heap: [ref, <x>name]x, agent: ref, arg: ref ::
-            { actual_postcondition(feature.FORMATTER.align_right, heap, agent, arg) } // Trigger
-        actual_postcondition(feature.FORMATTER.align_right, heap, agent, arg) <==> !fun.PARAGRAPH.is_left_aligned(heap, arg));
+axiom (forall heap: [ref, <x>name]x, old_heap: [ref, <x>name]x, agent: ref, arg: ref ::
+            { actual_postcondition(feature.FORMATTER.align_right, heap, old_heap, agent, arg) } // Trigger
+        actual_postcondition(feature.FORMATTER.align_right, heap, old_heap, agent, arg) <==> !fun.PARAGRAPH.is_left_aligned(heap, arg));
 
 // **********************************************************************

@@ -14,7 +14,9 @@ inherit
 			process_attribute_b,
 			process_feature_i,
 			process_feature_b,
-			process_byte_code
+			process_byte_code,
+			process_routine_creation_b,
+			process_creation_expr_b
 		end
 
 create
@@ -211,6 +213,37 @@ feature -- Processing
 				-- TODO: add precursors of feature_b, too
 			end
 		end
+
+
+	process_routine_creation_b (a_node: ROUTINE_CREATION_B) is
+			-- Process `a_node'.
+		local
+			l_feature: FEATURE_I
+		do
+			if a_node.is_inline_agent then
+					-- TODO: Check if this needs special handling
+				check not_implemented: false end
+			else
+				l_feature := system.class_of_id (a_node.class_id).feature_of_feature_id (a_node.feature_id)
+				check l_feature /= Void end
+
+			end
+		end
+
+	process_creation_expr_b (a_node: CREATION_EXPR_B) is
+			-- Process `a_node'.
+		do
+			
+		end
+
+feature {NONE} -- Implementation
+
+	record_feature (a_feature: FEATURE_I) is
+			-- Record usage of `a_feature'.
+		do
+
+		end
+
 
 
 invariant

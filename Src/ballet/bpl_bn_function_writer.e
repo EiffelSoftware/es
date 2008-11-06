@@ -651,11 +651,18 @@ feature -- Processing
 			cls_name := System.class_of_id(a_node.written_in).name
 			special_call := Mapping_table.item (cls_name) /= Void
 
+
 			args := ""
 			if not special_call then
 				args.append (heap_ref)
 				args.append (", ")
 			end
+
+		-- TODO: REMOVE VERY BAD HACK!
+		if cls_name.is_equal ("ROUTINE") and then a_node.feature_name.is_equal ("postcondition") then
+			args.append ("old(Heap), ")
+		end
+
 			args.append (current_this_ref)
 			side_effect_args := ""
 			side_effect_args.append (current_this_ref)

@@ -108,6 +108,7 @@ feature -- Execution
 		local
 			l_ballet: BALLET
 		do
+			development_window.tools.output_tool.clear
 			create l_ballet.make
 			l_ballet.set_class (a_class)
 			l_ballet.execute_verification
