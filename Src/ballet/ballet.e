@@ -94,7 +94,7 @@ feature -- Verification
 					output_manager.add_string ("Ballet: generating BoogiePL%N")
 					output_manager.end_processing
 					window_manager.display_message ("Generating BoogiePL")
-					process_events_and_idle
+					ev_application.process_events
 
 					verifier.reset
 					environment.set_out_stream (verifier.input)
@@ -121,7 +121,7 @@ feature -- Verification
 						output_manager.add_string ("Ballet: starting verifier%N")
 						window_manager.display_message ("Running verifier")
 						output_manager.end_processing
-						process_events_and_idle
+						ev_application.process_events
 						verifier.verify
 						output_manager.add_string ("Ballet: finished%N")
 						if not environment.error_log.has_error then
@@ -135,7 +135,7 @@ feature -- Verification
 						output_manager.add_string ("Ballet: there were errors during BoogiePL generation%N")
 						output_manager.add_string ("Ballet: not running verified%N")
 						window_manager.display_message ("BoogiePL generation failed")
-						process_events_and_idle
+						ev_application.process_events
 						verifier.verify
 			  		end
 			  		output_manager.end_processing

@@ -214,8 +214,8 @@ feature {NONE} -- Supporting Features
 			if mapping_table.item(a_class.name) /= Void then
 				Result := mapping_table.item (a_class.name)
 			elseif a_class.is_expanded then
-				add_error(create {BPL_AST_ERROR}.make_ast("Cannot handle type '" + a_class.name
-											  + "' since it's expanded.", a_class.ast))
+				add_error(create {BPL_ERROR}.make("Cannot handle type '" + a_class.name
+											  + "' since it's expanded."))
 				Result := "any"
 			else
 				Result := once "ref"

@@ -90,44 +90,6 @@ feature -- Processing
 
 feature -- Helper
 
-	type_for (l_as: EXPR_AS): TYPE_A is
-			-- Type for `l_as'.
-		require
-			not_void: l_as /= Void
-		local
-			ntf: NULL_TEXT_FORMATTER
-			tfd: TEXT_FORMATTER_DECORATOR
-			ados: BPL_AST_TYPE_INFERER
-			routine: ROUTINE_AS
-		do
-			create ntf
-			create tfd.make_for_appending (ntf)
-			create ados.make (tfd)
-			ados.set_current_class (current_class)
-			ados.set_current_feature (current_feature)
-			ados.set_source_class (current_class)
-			ados.set_source_feature (current_feature)
-			ados.reset_last_class_and_type
-			ados.reset_locals
-			ados.set_source_class (current_class)
-			if current_feature /= Void then
-				routine ?= current_feature.body.body.content
-				if routine /= Void and then routine.locals /= Void then
-					ados.set_processing_locals (True)
-					routine.locals.process (ados)
-					ados.set_processing_locals (False)
-				end
-			else
-				ados.set_current_feature (current_class.feature_named ("do_nothing"))
-			end
-			Result := ados.expr_type (l_as)
-			check
-				no_error: not ados.has_error
-			end
-		ensure
-			not_void: Result /= Void
-		end
-
 	nested_as_to_nested_expr_as (a_nested_as: NESTED_AS): NESTED_EXPR_AS is
 			-- Transform a NESTED_AS subtree into a NESTED_EXPR_AS subtree
 		require
@@ -192,71 +154,6 @@ feature -- Helper
 			Result.append ("%N")
 		end
 
-	record_usage (a_node: AST_EIFFEL) is
-			-- Record the usage of the topmost feature that appears in `a_node'.
-		require
-			not_void: a_node /= Void
-		local
-			def_search: BPL_DEFINITION_SEARCH
-			feat: FEATURE_I
-		do
-			create def_search.make (current_class)
-			def_search.setup (current_class.ast, match_list, will_process_leading_leaves, will_process_trailing_leaves)
-			def_search.set_current_feature (current_feature)
-			a_node.process (def_search)
-			feat := def_search.last_feature
-			check
-				feature_found: feat /= Void
-			end
-         io.put_string("feat.written_class.name = " + feat.written_class.name + "%N")
-         if Mapping_table.item(feat.written_class.name) = Void then
-            print ("Using: ")
-            print (feat.feature_name)
-            print (" of ")
-            print (feat.written_class.name)
-            print ("%N")
-         end
-		end
-
-	bpl_type_for (type: TYPE_AS): STRING is
-			-- Compute the suitable type in BPL for `type'.
-		require
-			type_not_void: type /= Void
-		local
-			cls_t: CLASS_TYPE_AS
-			frm_t: FORMAL_AS
-			like_cur_t: LIKE_CUR_AS
-			like_id_t: LIKE_ID_AS
-		do
-			cls_t ?= type
-			frm_t ?= type
-			like_cur_t ?= type
-			like_id_t ?= type
-			if cls_t /= Void then
-				if mapping_table.item(cls_t.class_name.name) /= Void then
-					Result := mapping_table.item (cls_t.class_name.name)
-				elseif cls_t.is_expanded then
-					add_error(create {BPL_AST_ERROR}.make_ast("Cannot handle type '" + type.dump
-												  + "' since it's expanded.", type))
-					Result := ""
-				else
-					Result := once "ref"
-				end
-			elseif frm_t /= Void then
-				Result := "ref"
-			elseif like_cur_t /= Void then
-				Result := "ref"
-			elseif like_id_t /= Void then
-				Result := "ref"
-			else
-				Result := "wrong_type"
-				add_error(create {BPL_AST_ERROR}.make_ast("Cannot handle type '" + type.dump
-											+ "' so far because it is a " + type.generating_type + ".", type))
-			end
-		ensure
-			Result_not_void: Result /= Void
-		end
-
 	bpl_type_for_class (a_class: CLASS_C):STRING is
 			-- BPL type for class `a_class'.
 		require
@@ -265,8 +162,8 @@ feature -- Helper
 			if mapping_table.item(a_class.name) /= Void then
 				Result := mapping_table.item (a_class.name)
 			elseif a_class.is_expanded then
-				add_error(create {BPL_AST_ERROR}.make_ast("Cannot handle type '" + a_class.name
-											  + "' since it's expanded.", a_class.ast))
+				add_error(create {BPL_ERROR}.make("Cannot handle type '" + a_class.name
+											  + "' since it's expanded."))
 				Result := ""
 			else
 				Result := once "ref"
