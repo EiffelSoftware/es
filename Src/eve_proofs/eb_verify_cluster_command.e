@@ -1,9 +1,9 @@
 indexing
-	description	: "Command to statically verify a class with Ballet"
-	date		: "$Date$"
-	revision	: "$Revision$"
+	description: "Command to statically verify a class with Ballet."
+	date: "$Date$"
+	revision: "$Revision$"
 
-class EB_VERIFY_CLASS_COMMAND
+class EB_VERIFY_CLUSTER_COMMAND
 
 inherit
 
@@ -76,47 +76,51 @@ feature -- Execution
 	execute_with_stone_content (a_stone: STONE; a_content: SD_CONTENT) is
 			-- Create a new tab which stone is `a_stone' and create at side of `a_content' if exists.
 		local
-			l_class_stone: CLASSI_STONE
-			l_eiffel_class: EIFFEL_CLASS_I
+			l_cluster_stone: CLUSTER_STONE
 		do
-			if a_stone = Void then
-				l_class_stone ?= development_window.stone
-			else
-				l_class_stone ?= a_stone
-			end
 				-- Check for a valid stone and start verification
-			if l_class_stone /= Void then
-				l_eiffel_class ?= l_class_stone.class_i
-				if l_eiffel_class /= Void then
+			l_cluster_stone ?= a_stone
+			if l_cluster_stone /= Void then
 
-						-- Compile the project and only verify if it was succesfull
-					eiffel_project.quick_melt
-					if workbench.successful then
-						verify_class (l_eiffel_class)
-					end
+					-- Compile the project and only verify if it was succesfull
+				eiffel_project.quick_melt
+				if workbench.successful then
+					verify_cluster (l_cluster_stone.group)
 				end
 			end
 		end
 
-	verify_class (a_class: EIFFEL_CLASS_I)
-			-- Verify `a_class' with Boogie.
+	verify_cluster (a_group: CONF_GROUP)
+			-- Verify `a_group' with Boogie.
 		require
-			a_class_not_void: a_class /= Void
+			a_group_not_void: a_group /= Void
 		local
-			l_ballet: BALLET
+			l_eve_proofs: EVE_PROOFS
+			l_conf_class: CONF_CLASS
+			l_class_i: CLASS_I
+			l_class_c: CLASS_C
 		do
-			development_window.tools.output_tool.clear
-			create l_ballet.make
-			l_ballet.set_class (a_class)
-			l_ballet.execute_verification
-			if environment.error_log.has_error then
-				error_handler.error_list.append (environment.error_log.error_list)
-				error_handler.error_list.finish
-				error_handler.error_displayer.force_display
-				error_handler.trace
-			else
-				development_window.tools.output_tool.force_display
+			create l_eve_proofs.make
+			check l_eve_proofs.is_ready end
+
+			from
+				a_group.classes.start
+			until
+				a_group.classes.after
+			loop
+				l_conf_class := a_group.classes.item_for_iteration
+				l_class_i := eiffel_universe.class_named (l_conf_class.name, a_group)
+				if l_class_i.is_compiled then
+					l_class_c := l_class_i.compiled_class
+					check l_class_c /= Void end
+					l_eve_proofs.add_class_to_verify (l_class_c)
+				end
+				a_group.classes.forth
 			end
+
+			l_eve_proofs.execute_verification
+
+			-- TODO: check for errors
 		end
 
 feature -- Items
@@ -141,7 +145,7 @@ feature {NONE} -- Implementation
 			-- Name as it appears in the menu (with & symbol).
 		do
 				-- TODO: internationalization
-			Result := "Verify class"
+			Result := "Verify cluster"
 		end
 
 	pixmap: EV_PIXMAP is
@@ -160,7 +164,7 @@ feature {NONE} -- Implementation
 			-- Tooltip for the toolbar button.
 		do
 				-- TODO: internationalization
-			Result := "Verify class"
+			Result := "Verify cluster"
 		end
 
 	tooltext: STRING_GENERAL is
@@ -174,14 +178,14 @@ feature {NONE} -- Implementation
 			-- Description for this command.
 		do
 				-- TODO: internationalization
-			Result := "Statically verify the class using Ballet"
+			Result := "Statically verify the cluster using Ballet"
 		end
 
 	name: STRING_GENERAL is
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 		do
-			Result := "Verify_class"
+			Result := "Verify_cluster"
 		end
 
 end

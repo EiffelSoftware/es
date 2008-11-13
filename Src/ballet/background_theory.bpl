@@ -1,6 +1,3 @@
-
-
-//======================================================================
 // Background theory starts here
 
 // ----------------------------------------------------------------------
@@ -11,16 +8,30 @@ function IsHeap(heap:[ref,<x>name]x) returns (bool);
 
 // Given a heap, some things are allocated
 const unique $allocated: <bool>name;
-function IsAllocated(heap: [ref,<x>name]x, o: any) returns (bool);
-//axiom (forall heap: [ref,<x>name]x, o: ref ::
-//            { IsAllocated(heap, o) } // Trigger
-//        IsAllocated(heap,o) <==> cast(heap[o,$allocated],bool));
+function IsAllocated(heap: [ref, <x>name]x, o: any) returns (bool);
+axiom (forall heap: [ref, <x>name]x, o: ref ::
+            { IsAllocated(heap, o) } // Trigger
+        IsAllocated(heap,o) <==> heap[o, $allocated]);
+
+function IsAllocatedAndNotVoid(heap: [ref, <x>name]x, o: ref) returns (bool);
+axiom (forall heap: [ref, <x>name]x, o: ref ::
+            { IsAllocatedAndNotVoid(heap, o) } // Trigger
+        IsHeap(heap) ==> (IsAllocatedAndNotVoid(heap, o) <==> o != null && heap[o, $allocated]));
+
+function IsAllocatedIfNotVoid(heap: [ref, <x>name]x, o: ref) returns (bool);
+axiom (forall heap: [ref, <x>name]x, o: ref ::
+            { IsAllocatedIfNotVoid(heap, o) } // Trigger
+        IsHeap(heap) ==> (IsAllocatedIfNotVoid(heap, o) <==> (o != null ==> heap[o, $allocated])));
+
 
 // Every reference stored in the heap is allocated
-axiom (forall heap: [ref,<x>name]x, o: ref, f: name ::
-            { IsAllocated(heap, heap[o,f]) } // Trigger
-        IsHeap(heap) ==> IsAllocated(heap, heap[o,f]));
+// TODO: is this necessary?
+axiom (forall heap: [ref, <x>name]x, o: ref, f: <ref>name ::
+            { IsAllocated(heap, heap[o, f]) } // Trigger
+        IsHeap(heap) ==> IsAllocated(heap, heap[o, f]));
 
+
+// TODO: are these functions still needed?
 //function new([ref,<x>name]x) returns (ref);
 //function X([ref,<x>name]x) returns ([ref,<x>name]x);
 
@@ -36,35 +47,36 @@ axiom (forall heap: [ref,<x>name]x, o: ref, f: name ::
 //	IsAllocated(h,o) ==> (X(h)[o,f] == h[o,f]));
 
 // Void are always allocated
-axiom (forall heap: [ref,<x>name]x :: 
+axiom (forall heap: [ref, <x>name]x :: 
             { IsAllocated(heap, null) } // Trigger
-        IsAllocated(heap, null));
+        IsHeap(heap) ==> IsAllocated(heap, null));
 
-// The global heap is a heap
-var Heap: [ref,<x>name]x where IsHeap(Heap);
+// The global heap (which is always a heap).
+var Heap: [ref, <x>name]x where IsHeap(Heap);
 
 
 // ----------------------------------------------------------------------
 // Function call checks
 
+
 // Only objects which are not null and are allocated are valid to call.
 // Assert this function before every regular feature call.
-function ValidCallTarget(heap: [ref,<x>name]x, o: ref) returns (bool);
-axiom (forall heap: [ref,<x>name]x, o: ref ::
+function ValidCallTarget(heap: [ref, <x>name]x, o: ref) returns (bool);
+axiom (forall heap: [ref, <x>name]x, o: ref ::
             { ValidCallTarget(heap, o) } // Trigger
         IsHeap(heap) ==> (ValidCallTarget(heap, o) <==> o != null && heap[o, $allocated]));
 
 // Only objects which are not null and are not yet allocated are valid for
 // creation. Assert this function before every call to a creation feature.
-function ValidCreateTarget(heap: [ref,<x>name]x, o: ref) returns (bool);
-axiom (forall heap: [ref,<x>name]x, o: ref  ::
+function ValidCreateTarget(heap: [ref, <x>name]x, o: ref) returns (bool);
+axiom (forall heap: [ref, <x>name]x, o: ref  ::
             { ValidCreateTarget(heap, o) } // Trigger
         IsHeap(heap) ==> (ValidCreateTarget(heap, o) <==> o != null && !heap[o, $allocated]));
 
 // Created objects need to be allocated on the heap. Assert this function
 // after every call to a creation feature.
-function ValidCreation(heap: [ref,<x>name]x, o: ref) returns (bool);
-axiom (forall heap: [ref,<x>name]x, o: ref  ::
+function ValidCreation(heap: [ref, <x>name]x, o: ref) returns (bool);
+axiom (forall heap: [ref, <x>name]x, o: ref  ::
             { ValidCreation(heap, o) } // Trigger
         IsHeap(heap) ==> (ValidCreation(heap, o) <==> o != null && heap[o, $allocated]));
 
@@ -181,8 +193,6 @@ function set.difference (set,set) returns (set);
 axiom (forall s1:set,s2:set :: {set.difference(s1,s2)}
   set.difference(s1,s2) == set.subtracted(set.united(s1,s2),set.intersected(s1,s2)));
 
-
-
 // ----------------------------------------------------------------------
 // ANY functions
 
@@ -240,7 +250,7 @@ procedure agent.create(
     // Frame condition: agent creation has no side effects
     ensures (forall $o: ref, $f: name :: 
                 { Heap[$o, $f] } // Trigger
-            $o != null && old(Heap)[$o, $allocated] && $o != Current ==> old(Heap)[$o, $f] == Heap[$o, $f]);
+            ($o != null && old(Heap)[$o, $allocated] && $o != Current) ==> (old(Heap)[$o, $f] == Heap[$o, $f]));
     // Object allocated
     free ensures Heap[Current, $allocated];
 
@@ -322,4 +332,3 @@ procedure agent.call_5 (
     ensures agent.postcondition_5(Heap, old(Heap), Current, arg1, arg2, arg3, arg4, arg5);
 
 // Background theory ends here
-// ======================================================================

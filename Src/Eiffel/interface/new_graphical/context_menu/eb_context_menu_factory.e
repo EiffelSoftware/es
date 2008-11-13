@@ -583,6 +583,8 @@ feature {NONE} -- Menu section, Granularity 2.
 			elseif l_cluster_stone /= Void then
 				extend_basic_opening_menus (a_menu, l_stone, False)
 				extend_add_to_menu (a_menu, l_stone)
+				extend_separator (a_menu)
+				extend_ballet_cluster_menu (a_menu, l_cluster_stone)
 			end
 		end
 
@@ -1790,7 +1792,7 @@ feature {NONE} -- Metrics tool section, Granularity 1.
 feature {NONE} -- Ballet menu
 
 	extend_ballet_class_menu (a_menu: EV_MENU; a_class_stone: CLASSC_STONE) is
-			-- Extend metric Delete.
+			-- Extend class menu with verify command.
 		require
 			a_menu_not_void: a_menu /= Void
 			a_class_stone_not_void: a_class_stone /= Void
@@ -1800,6 +1802,19 @@ feature {NONE} -- Ballet menu
 			a_menu.last.set_text ("Verify class " + last_name)
 			a_menu.last.select_actions.wipe_out
 			a_menu.last.select_actions.extend (agent (dev_window.commands.verify_class_command).execute_with_stone (a_class_stone))
+		end
+
+	extend_ballet_cluster_menu (a_menu: EV_MENU; a_cluster_stone: CLUSTER_STONE) is
+			-- Extend cluster menu with verify command.
+		require
+			a_menu_not_void: a_menu /= Void
+			a_class_stone_not_void: a_cluster_stone /= Void
+		do
+			a_menu.extend (dev_window.commands.verify_cluster_command.new_menu_item_unmanaged)
+				-- TODO: internationalization
+			a_menu.last.set_text ("Verify cluster " + last_name)
+			a_menu.last.select_actions.wipe_out
+			a_menu.last.select_actions.extend (agent (dev_window.commands.verify_cluster_command).execute_with_stone (a_cluster_stone))
 		end
 
 feature {NONE} -- Implementation

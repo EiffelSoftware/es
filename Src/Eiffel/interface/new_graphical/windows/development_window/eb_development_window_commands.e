@@ -171,6 +171,9 @@ feature -- Query
 	verify_class_command: !EB_VERIFY_CLASS_COMMAND
 			-- Verify class command
 
+	verify_cluster_command: !EB_VERIFY_CLUSTER_COMMAND
+			-- Verify cluster command
+
 feature -- Commands
 
 	toolbarable_commands: ARRAYED_LIST [EB_TOOLBARABLE_COMMAND]
@@ -601,6 +604,14 @@ feature {EB_DEVELOPMENT_WINDOW_BUILDER, EB_DEVELOPMENT_WINDOW_TOOLBAR_BUILDER} -
 			verify_class_command := a_command
 		ensure
 			verify_class_command_set: verify_class_command = a_command
+		end
+
+	set_verify_cluster_command (a_command: like verify_cluster_command)
+			-- Sets `verify_cluster_command' with `a_command'
+		do
+			verify_cluster_command := a_command
+		ensure
+			verify_cluster_command_set: verify_cluster_command = a_command
 		end
 
 feature -- Recycle
