@@ -10,10 +10,11 @@ class EP_EXPRESSION_WRITER
 
 inherit
 
-	SHARED_EP_ENVIRONMENT
-		export {NONE} all end
+	EP_VISITOR
 
-	EP_DEFAULT_NAMES
+inherit {NONE}
+
+	SHARED_EP_ENVIRONMENT
 		export {NONE} all end
 
 create
@@ -25,6 +26,9 @@ feature {NONE} -- Initialization
 			-- Initialize expression writer with `a_mapper'.
 		do
 			name_mapper := a_mapper
+			create expression.make
+			create side_effect.make
+			create {LINKED_LIST [TUPLE [name: STRING; type: STRING]]} locals.make
 		ensure
 			name_mapper_set: name_mapper = a_mapper
 		end
@@ -37,6 +41,20 @@ feature -- Access
 	old_handler: !EP_OLD_HANDLER
 			-- Handler for old expressions
 
+	expression: !EP_OUTPUT_BUFFER
+			-- Output produced from expression
+
+	side_effect: !EP_OUTPUT_BUFFER
+			-- Side effect instructions
+
+	locals: LIST [TUPLE [name: STRING; type: STRING]]
+			-- List of locals needed for side effects
+
+feature -- Status report
+
+	is_recording_side_effects: BOOLEAN
+			-- Is writer recording side effects of expressions?
+
 feature -- Element change
 
 	set_name_mapper (a_mapper: like name_mapper)
@@ -46,5 +64,18 @@ feature -- Element change
 		ensure
 			name_mapper_set: name_mapper = a_mapper
 		end
+
+	reset
+			-- Reset expression writer for a new expression.
+		do
+			expression.reset
+			side_effect.reset
+			locals.wipe_out
+		end
+
+feature {BYTE_NODE} -- Visitors
+
+
+
 
 end

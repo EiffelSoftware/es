@@ -1,5 +1,8 @@
 indexing
-	description: "TODO"
+	description:
+		"[
+			TODO
+		]"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -18,13 +21,27 @@ feature {NONE} -- Initialization
 	make
 			-- Initialize generator.
 		do
+			create output_buffer.make
+
 			create attribute_writer
 			create constant_writer
 			create signature_writer.make
 			create implementation_writer.make
 		end
 
+feature -- Access
+
+	output_buffer: !EP_OUTPUT_BUFFER
+			-- Output buffer to store generated code
+
 feature -- Basic operations
+
+	reset
+			-- Reset code generator.
+		do
+			output_buffer.reset
+			environment.set_output_buffer (output_buffer)
+		end
 
 	process_class (a_class: !CLASS_C)
 			-- Generate code for `a_class'.
@@ -62,7 +79,7 @@ feature -- Basic operations
 				signature_writer.write_feature_signature (a_feature)
 
 					-- Generate implementation
-				-- TODO: make this check look nicer
+					-- TODO: make this check look nicer
 				if verify_value_in_indexing (a_feature.written_class.ast.feature_with_name (a_feature.feature_name_id).indexes) then
 					implementation_writer.write_feature_implementation (a_feature)
 				else

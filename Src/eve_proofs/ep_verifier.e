@@ -57,12 +57,19 @@ feature -- Element change
 
 feature -- Basic operations
 
+	reset
+			-- Reset verifier.
+		do
+			verification_content.wipe_out
+		end
+
 	verify
 			-- Do verification.
 		do
 			generate_boogie_file
-
 			-- TODO: launch boogie on boogie_output_file_name
+			--launch_boogie
+			--evaluate_boogie_output
 		end
 
 feature {NONE} -- Implementation

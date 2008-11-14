@@ -16,6 +16,9 @@ inherit
 	EP_DEFAULT_NAMES
 		export {NONE} all end
 
+	SHARED_SERVER
+		export {NONE} all end
+
 create
 	make
 
@@ -24,7 +27,7 @@ feature {NONE} -- Initialization
 	make
 			-- TODO
 		do
-
+			create instruction_writer.make
 		end
 
 feature -- Basic operations
@@ -32,10 +35,10 @@ feature -- Basic operations
 	write_feature_implementation (a_feature: !FEATURE_I)
 			-- Write Boogie code for implementation of `a_feature'.
 		local
-			l_procedure_name: STRING
+			l_procedure_name, l_argument_name: STRING
 			i: INTEGER
-			l_argument_name: STRING
 			l_argument_type: TYPE_A
+			l_byte_code: BYTE_CODE
 		do
 			l_procedure_name := procedural_feature_name (a_feature)
 
@@ -59,11 +62,33 @@ feature -- Basic operations
 				put (" returns (Result: " + type_mapper.boogie_type_for_type (a_feature.type) + ")")
 			end
 			put (";%N")
+
+
+			instruction_writer.reset
+
+			if byte_server.has (a_feature.body_index) then
+				l_byte_code := byte_server.item (a_feature.body_index)
+				if l_byte_code.compound /= Void and then not l_byte_code.compound.is_empty then
+					l_byte_code.compound.process (instruction_writer)
+				end
+			end
+
 			put_line ("{")
 
-			-- TODO
+				-- Local variables
 
+			put_line ("  entry:")
+
+				-- Feature body
+			put_line (instruction_writer.output.string)
+
+			put_line ("    return;")
 			put_line ("}")
 		end
+
+feature {NONE} -- Implementation
+
+	instruction_writer: !EP_INSTRUCTION_WRITER
+			-- Writer to transform instructions to Boogie code
 
 end

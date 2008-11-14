@@ -8,6 +8,11 @@ indexing
 
 deferred class EP_NAME_MAPPER
 
+inherit {NONE}
+
+	SHARED_SERVER
+		export {NONE} all end
+
 feature -- Access
 
 	heap_name: STRING

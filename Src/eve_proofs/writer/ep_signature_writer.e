@@ -8,9 +8,12 @@ indexing
 
 class EP_SIGNATURE_WRITER
 
-inherit
+inherit {NONE}
 
 	SHARED_EP_ENVIRONMENT
+		export {NONE} all end
+
+	SHARED_SERVER
 		export {NONE} all end
 
 create
@@ -74,11 +77,11 @@ feature -- Basic operations
 			end
 			put (";%N")
 
-			-- TODO: generate preconditions
+			write_preconditions (a_feature)
 
 			put_line ("    modifies Heap;")
 
-			-- TODO: generate postconditions
+			write_postconditions (a_feature)
 
 			-- TODO: generate invariants
 
@@ -89,6 +92,28 @@ feature -- Basic operations
 			-- Write Boogie code signature of `a_feature' as a creation routine.
 		do
 			-- TODO
+		end
+
+feature {NONE} -- Implementation
+
+	expression_writer: EP_EXPRESSION_WRITER
+
+	write_preconditions (a_feature: !FEATURE_I)
+			-- Write Boogie code for preconditions of `a_feature'.
+		local
+			byte_code: BYTE_CODE
+		do
+			if body_server.has (a_feature.code_id) then
+				byte_code := byte_server.item (a_feature.code_id)
+				if byte_code.precondition /= Void then
+				end
+			end
+		end
+
+	write_postconditions (a_feature: !FEATURE_I)
+			-- Write Boogie code for postconditions of `a_feature'.
+		do
+
 		end
 
 end

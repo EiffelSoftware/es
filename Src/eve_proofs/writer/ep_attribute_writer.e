@@ -33,7 +33,7 @@ feature -- Basic operations
 			put_new_line
 
 			put_comment_line ("Functional represenation of attribute")
-			put_line ("function " + l_functional_name + "(heap: [ref, <x>name]x, current: ref) returns (" + l_type + ";")
+			put_line ("function " + l_functional_name + "(heap: [ref, <x>name]x, current: ref) returns (" + l_type + ");")
 			put_new_line
 
 			put_comment_line ("Axiomatic mapping of attribute to heap location")

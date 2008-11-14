@@ -90,8 +90,11 @@ feature -- Basic operations
 			output_manager.clear
 			show_messages ("Ballet started", "Ballet started")
 
-				-- Set up environment
+				-- Prepare environment for new verification
 			set_up_environment
+
+				-- Add background theory
+			verifier.add_file_content (background_theory_file_name)
 
 				-- Generate Boogie code for classes
 			show_messages ("Generating Boogie code for:", "Generating Boogie code")
@@ -102,7 +105,7 @@ feature -- Basic operations
 			loop
 				l_current_class := classes_to_verify.item
 
-					-- Print byte nodes of class (for debugging)
+					-- Print byte nodes of class for debugging
 				print_byte_nodes (l_current_class)
 
 					-- Generate Boogie code of class
@@ -115,8 +118,6 @@ feature -- Basic operations
 				end
 
 				classes_to_verify.forth
-			variant
-				classes_to_verify.count - classes_to_verify.index + 1
 			end
 
 				-- Generate Boogie code for referenced features
@@ -133,11 +134,11 @@ feature -- Basic operations
 
 feature {NONE} -- Implementation
 
-	verifier: EP_VERIFIER
-			-- Verifier used to run Boogie
-
 	boogie_generator: EP_GENERATOR
 			-- Generator used to generate Boogie code
+
+	verifier: EP_VERIFIER
+			-- Verifier used to run Boogie
 
 	show_messages (l_output_line, l_status_bar: STRING)
 			-- Show `l_output_line' in output window and `l_status_bar' in status bar.
@@ -153,7 +154,8 @@ feature {NONE} -- Implementation
 			-- Set up environment for a new verification session.
 		do
 			feature_list.reset
-			verifier.add_file_content (inclusion_file_name)
+			boogie_generator.reset
+			verifier.reset
 		end
 
 	print_byte_nodes (a_class: !CLASS_C)
@@ -165,16 +167,12 @@ feature {NONE} -- Implementation
 	generate_boogie_code (a_class: !CLASS_C)
 			-- Generate Boogie code for `a_class'.
 		local
-			l_output_stream: KL_STRING_OUTPUT_STREAM
 			l_content, l_name: !STRING
 		do
-			create l_output_stream.make_empty
-			environment.set_output_buffer (l_output_stream)
-
+			boogie_generator.reset
 			boogie_generator.process_class (a_class)
 
-			check l_output_stream.string /= Void and a_class.name_in_upper /= Void end
-			l_content ?= l_output_stream.string
+			l_content ?= boogie_generator.output_buffer.string
 			l_name ?= "Class: " + a_class.name_in_upper
 			verifier.add_string_content (l_content, l_name)
 		end
@@ -183,11 +181,9 @@ feature {NONE} -- Implementation
 			-- Generate Boogie code for all referenced features.
 		local
 			l_list: !LIST [!FEATURE_I]
-			l_output_stream: KL_STRING_OUTPUT_STREAM
 			l_content: !STRING
 		do
-			create l_output_stream.make_empty
-			environment.set_output_buffer (l_output_stream)
+			boogie_generator.reset
 
 				-- Generate code for creation routines
 			from
@@ -207,23 +203,19 @@ feature {NONE} -- Implementation
 				boogie_generator.process_feature (l_list.first)
 			end
 
-			l_content ?= l_output_stream.string
+			l_content ?= boogie_generator.output_buffer.string
 			verifier.add_string_content (l_content, "Referenced features")
 		end
 
 
 -- TODO: move file someplace else
-	inclusion_file_name: !STRING is
-			-- Name of the file to include for the background theory
+	background_theory_file_name: !STRING is
+			-- File to include for the background theory
 		local
 			ee: EXECUTION_ENVIRONMENT
 		once
 			create ee
 			Result ?= ee.get("EIFFEL_SRC") + "/ballet/background_theory.bpl"
 		end
-
-
-
-anchor: SHARED_EP_OUTPUT_BUFFER
 
 end

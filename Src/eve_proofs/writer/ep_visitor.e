@@ -12,6 +12,11 @@ inherit
 
 	BYTE_NODE_VISITOR
 
+inherit {NONE}
+
+	SHARED_SERVER
+		export {NONE} all end
+
 feature {BYTE_NODE} -- Visitors
 
 	process_access_expr_b (a_node: ACCESS_EXPR_B) is
@@ -572,25 +577,28 @@ feature {BYTE_NODE} -- Visitors
 	process_object_test_b (a_node: OBJECT_TEST_B) is
 			-- Process `a_node'.
 		do
-			-- TODO
+			safe_process (a_node.target)
+			safe_process (a_node.expression)
 		end
 
 	process_object_test_local_b (a_node: OBJECT_TEST_LOCAL_B) is
 			-- Process `a_node'.
 		do
-			-- TODO
+			-- No subnode
 		end
 
 	process_bin_tilde_b (a_node: BIN_TILDE_B) is
 			-- Process `a_node'.
 		do
-			-- TODO
+			safe_process (a_node.left)
+			safe_process (a_node.right)
 		end
 
 	process_bin_not_tilde_b (a_node: BIN_NOT_TILDE_B) is
 			-- Process `a_node'.
 		do
-			-- TODO
+			safe_process (a_node.left)
+			safe_process (a_node.right)
 		end
 
 	process_std_byte_code (a_node: STD_BYTE_CODE) is

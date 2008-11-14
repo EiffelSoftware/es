@@ -15,6 +15,7 @@ feature -- Access
 		end
 
 	feature_list: !EP_FEATURE_LIST
+			-- Shared list of processed features
 		once
 			create Result.make
 		end
@@ -68,22 +69,19 @@ feature -- Convenience
 	put (a_string: STRING)
 			-- Put `a_string' to output buffer.
 		do
-			environment.output_buffer.put_string (a_string)
+			environment.output_buffer.put (a_string)
 		end
 
 	put_line (a_line: STRING)
 			-- Put `a_line' to output buffer and append a new line.
 		do
-			environment.output_buffer.put_string (a_line)
-			environment.output_buffer.put_new_line
+			environment.output_buffer.put_line (a_line)
 		end
 
 	put_comment_line (a_line: STRING)
 			-- Put `a_line' to output buffer as a comment and append a new line.
 		do
-			environment.output_buffer.put_string ("// ")
-			environment.output_buffer.put_string (a_line)
-			environment.output_buffer.put_new_line
+			environment.output_buffer.put_comment_line (a_line)
 		end
 
 	put_new_line

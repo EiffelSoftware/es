@@ -30,7 +30,7 @@ feature -- Basic operations
 			l_type := type_mapper.boogie_type_for_type (a_feature.type)
 
 			put_comment_line ("Functional represenation of constant")
-			put_line ("function " + l_functional_name + "(heap: [ref, <x>name]x, current: ref) returns (" + l_type + ";")
+			put_line ("function " + l_functional_name + "(heap: [ref, <x>name]x, current: ref) returns (" + l_type + ");")
 			put_new_line
 
 			if l_constant.value.is_boolean then
