@@ -8,7 +8,7 @@ indexing
 
 class EP_IMPLEMENTATION_WRITER
 
-inherit
+inherit {NONE}
 
 	SHARED_EP_ENVIRONMENT
 		export {NONE} all end
@@ -39,6 +39,7 @@ feature -- Basic operations
 			i: INTEGER
 			l_argument_type: TYPE_A
 			l_byte_code: BYTE_CODE
+			l_has_locals: BOOLEAN
 		do
 			l_procedure_name := procedural_feature_name (a_feature)
 
@@ -61,28 +62,46 @@ feature -- Basic operations
 			if not a_feature.type.is_void then
 				put (" returns (Result: " + type_mapper.boogie_type_for_type (a_feature.type) + ")")
 			end
-			put (";%N")
-
+			put ("%N")
 
 			instruction_writer.reset
+			instruction_writer.set_current_feature (a_feature)
+
+			put_line ("{")
+			environment.output_buffer.set_indentation ("    ")
 
 			if byte_server.has (a_feature.body_index) then
 				l_byte_code := byte_server.item (a_feature.body_index)
 				if l_byte_code.compound /= Void and then not l_byte_code.compound.is_empty then
 					l_byte_code.compound.process (instruction_writer)
 				end
+				l_has_locals := l_byte_code.local_count > 0
 			end
 
-			put_line ("{")
+			if l_has_locals then
+				write_locals (l_byte_code)
+			end
 
-				-- Local variables
+			put ("  entry:%N")
 
-			put_line ("  entry:")
+				-- Initialize local variables
+			if l_has_locals then
+				put_comment_line ("Initialization of locals")
+				write_locals_initialization (l_byte_code)
+			end
+
+				-- Initialize result
+			if not a_feature.type.is_void then
+				put_comment_line ("Initialization of result")
+				put_line ("Result := " + default_value (a_feature.type) + ";")
+			end
 
 				-- Feature body
-			put_line (instruction_writer.output.string)
+			put (instruction_writer.output.string)
 
-			put_line ("    return;")
+			put_line ("return;")
+
+			environment.output_buffer.set_indentation ("")
 			put_line ("}")
 		end
 
@@ -90,5 +109,56 @@ feature {NONE} -- Implementation
 
 	instruction_writer: !EP_INSTRUCTION_WRITER
 			-- Writer to transform instructions to Boogie code
+
+	write_locals (a_byte_code: BYTE_CODE)
+			-- Write local declaration
+		local
+			i: INTEGER
+		do
+			from
+				i := 1
+			until
+				i > a_byte_code.local_count
+			loop
+				if i = 1 then
+					put ("  var ")
+				else
+					put (", ")
+				end
+				put (name_generator.local_name (i) + ": ")
+				put (type_mapper.boogie_type_for_type (a_byte_code.locals.item (i).actual_type))
+				i := i + 1
+				if i > a_byte_code.local_count then
+					put (";%N")
+				end
+			end
+		end
+
+	write_locals_initialization (a_byte_code: BYTE_CODE)
+			-- Write locals initialization
+		local
+			i: INTEGER
+		do
+			from
+				i := 1
+			until
+				i > a_byte_code.local_count
+			loop
+				put_line (name_generator.local_name (i) + " := " + default_value (a_byte_code.locals.item (i)) + ";")
+				i := i + 1
+			end
+		end
+
+	default_value (a_type: TYPE_A): STRING
+			-- Default value for variable of type `a_type'
+		do
+			if a_type.is_integer or a_type.is_character then
+				Result := "0"
+			elseif a_type.is_boolean then
+				Result := "false"
+			else
+				Result := "null"
+			end
+		end
 
 end

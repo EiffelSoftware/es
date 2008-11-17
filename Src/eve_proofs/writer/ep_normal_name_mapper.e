@@ -23,7 +23,7 @@ feature {NONE} -- Initialization
 	make
 			-- TODO
 		do
-
+			internal_current_name := "Current"
 		end
 
 feature -- Access
@@ -37,13 +37,13 @@ feature -- Access
 			Result := "Heap"
 		end
 
-	current_name (a_node: CURRENT_B): STRING
+	current_name: STRING
 			-- Name of current reference in Boogie code
 		do
-			Result := "Current"
+			Result := internal_current_name
 		end
 
-	result_name (a_node: RESULT_B): STRING
+	result_name: STRING
 			-- Name of result reference in Boogie code
 		do
 			Result := "Result"
@@ -72,7 +72,28 @@ feature -- Access
 	local_name (a_node: LOCAL_B): STRING
 			-- Name of local in Boogie code
 		do
-
+			Result := name_generator.local_name (a_node.position)
 		end
+
+feature -- Element change
+
+	set_current_feature (a_feature: like current_feature)
+			-- Set `current_feature' to `a_feature'.
+		do
+			current_feature := a_feature
+		ensure
+			current_feature_set: current_feature = a_feature
+		end
+
+	set_current_name (a_name: STRING)
+			-- Set `current_name' to `a_name'.
+		do
+			internal_current_name := a_name
+		end
+
+feature {NONE} -- Implementation
+
+	internal_current_name: STRING
+			-- TODO
 
 end

@@ -50,10 +50,14 @@ feature -- Basic operations
 			-- TODO
 
 				-- Creation routines
-			process_creation_routines (a_class)
+			if a_class.creators /= Void then
+				process_creation_routines (a_class)
+			end
 
 				-- Normal features
-			process_features (a_class)
+			if a_class.has_feature_table then
+				process_features (a_class)
+			end
 		end
 
 	process_feature (a_feature: !FEATURE_I)
@@ -66,6 +70,9 @@ feature -- Basic operations
 			if a_feature.is_attribute then
 					-- Generate field name, function and axiom
 				attribute_writer.write_attribute (a_feature)
+
+					-- Generate signature
+				signature_writer.write_attribute_signature (a_feature)
 			elseif a_feature.is_constant then
 					-- Generate function and axiom
 				constant_writer.write_constant (a_feature)
@@ -127,6 +134,8 @@ feature {NONE} -- Implementation
 
 	process_creation_routines (a_class: !CLASS_C)
 			-- Process creation routines of class `a_class'.
+		require
+			creators_not_void: a_class.creators /= Void
 		local
 			l_creator_name: STRING
 			l_feature: FEATURE_I
@@ -151,6 +160,8 @@ feature {NONE} -- Implementation
 
 	process_features (a_class: !CLASS_C)
 			-- Process features of class `a_class'.
+		require
+			has_feature_table: a_class.has_feature_table
 		local
 			l_feature: FEATURE_I
 			l_attached_feature: !FEATURE_I

@@ -78,6 +78,12 @@ feature -- Basic operations
 			buffer.put_new_line
 		end
 
+	put_indentation
+			-- Put a new line to output buffer.
+		do
+			buffer.put_string (indentation)
+		end
+
 feature {NONE} -- Implementation
 
 	buffer: KL_STRING_OUTPUT_STREAM

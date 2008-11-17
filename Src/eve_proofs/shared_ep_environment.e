@@ -66,6 +66,12 @@ feature -- Convenience
 			end
 		end
 
+	put_indentation
+			-- Put indentation to output buffer.
+		do
+			environment.output_buffer.put_indentation
+		end
+
 	put (a_string: STRING)
 			-- Put `a_string' to output buffer.
 		do

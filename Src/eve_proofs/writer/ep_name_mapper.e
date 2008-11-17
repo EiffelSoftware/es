@@ -20,12 +20,12 @@ feature -- Access
 		deferred
 		end
 
-	current_name (a_node: CURRENT_B): STRING
+	current_name: STRING
 			-- Name of current reference in Boogie code
 		deferred
 		end
 
-	result_name (a_node: RESULT_B): STRING
+	result_name: STRING
 			-- Name of result reference in Boogie code
 		deferred
 		end
@@ -43,6 +43,17 @@ feature -- Access
 	local_name (a_node: LOCAL_B): STRING
 			-- Name of local in Boogie code
 		deferred
+		end
+
+feature -- Element change
+
+	set_current_name (a_name: STRING)
+			-- Set `current_name' to `a_name'.
+		require
+			a_name_not_void: a_name /= Void
+		deferred
+		ensure
+			current_name_set: current_name.is_equal (a_name)
 		end
 
 end

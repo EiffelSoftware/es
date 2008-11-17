@@ -54,6 +54,12 @@ feature -- Access
 			Result := "arg." + a_name
 		end
 
+	local_name (a_index: INTEGER): STRING
+			-- Name of local as used in Boogie code
+		do
+			Result := "local" + a_index.out
+		end
+
 feature {NONE} -- Implementation
 
 	mangled_feature_name (a_feature: !FEATURE_I): STRING
