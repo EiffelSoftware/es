@@ -1,7 +1,7 @@
 indexing
 	description:
 		"[
-			TODO
+			Provides mapping of Eiffel types to Boogie types.
 		]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -10,7 +10,7 @@ class EP_TYPE_MAPPER
 
 feature -- Access
 
-	boogie_type_for_type (a_type: TYPE_A): STRING is
+	boogie_type_for_type (a_type: TYPE_A): STRING
 			-- Boogie type for type `a_type'
 		require
 			type_not_void: a_type /= Void
@@ -28,7 +28,7 @@ feature -- Access
 			result_not_void: Result /= Void
 		end
 
-	boogie_type_for_class (a_class: CLASS_C): STRING is
+	boogie_type_for_class (a_class: CLASS_C): STRING
 			-- Boogie type for class `a_class'
 		require
 			not_void: a_class /= Void

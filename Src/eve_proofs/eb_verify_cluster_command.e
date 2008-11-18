@@ -48,7 +48,7 @@ create
 
 feature -- Initialization
 
-	make (dev_window: EB_DEVELOPMENT_WINDOW) is
+	make (dev_window: EB_DEVELOPMENT_WINDOW)
 			-- Creation method.
 		require
 			dev_window_attached: dev_window /= Void
@@ -61,13 +61,13 @@ feature -- Initialization
 
 feature -- Execution
 
-	execute is
+	execute
 			-- Create new tab.
 		do
 			execute_with_stone_content (Void, Void)
 		end
 
-	execute_with_stone (a_stone: STONE) is
+	execute_with_stone (a_stone: STONE)
 			-- Execute with `a_stone'.
 		do
 			execute_with_stone_content (a_stone, Void)
@@ -125,14 +125,14 @@ feature -- Execution
 
 feature -- Items
 
-	new_sd_toolbar_item (display_text: BOOLEAN): EB_SD_COMMAND_TOOL_BAR_BUTTON is
+	new_sd_toolbar_item (display_text: BOOLEAN): EB_SD_COMMAND_TOOL_BAR_BUTTON
 			-- New toolbar item for dockable toolbar.
 		do
 			Result := Precursor {EB_TOOLBARABLE_AND_MENUABLE_COMMAND}(display_text)
 			Result.drop_actions.extend (agent execute_with_stone)
 		end
 
-	new_mini_sd_toolbar_item: EB_SD_COMMAND_TOOL_BAR_BUTTON is
+	new_mini_sd_toolbar_item: EB_SD_COMMAND_TOOL_BAR_BUTTON
 			-- New mini toolbar item.
 		do
 			Result := Precursor {EB_TOOLBARABLE_AND_MENUABLE_COMMAND}
@@ -141,47 +141,47 @@ feature -- Items
 
 feature {NONE} -- Implementation
 
-	menu_name: STRING_GENERAL is
+	menu_name: STRING_GENERAL
 			-- Name as it appears in the menu (with & symbol).
 		do
 				-- TODO: internationalization
 			Result := "Verify cluster"
 		end
 
-	pixmap: EV_PIXMAP is
+	pixmap: EV_PIXMAP
 			-- Pixmap representing the command.
 		do
 			Result := pixmaps.icon_pixmaps.general_tick_icon
 		end
 
-	pixel_buffer: EV_PIXEL_BUFFER is
+	pixel_buffer: EV_PIXEL_BUFFER
 			-- Pixel buffer representing the command.
 		do
 			Result := pixmaps.icon_pixmaps.general_tick_icon_buffer
 		end
 
-	tooltip: STRING_GENERAL is
+	tooltip: STRING_GENERAL
 			-- Tooltip for the toolbar button.
 		do
 				-- TODO: internationalization
 			Result := "Verify cluster"
 		end
 
-	tooltext: STRING_GENERAL is
+	tooltext: STRING_GENERAL
 			-- Text for the toolbar button.
 		do
 				-- TODO: internationalization
 			Result := "Verify"
 		end
 
-	description: STRING_GENERAL is
+	description: STRING_GENERAL
 			-- Description for this command.
 		do
 				-- TODO: internationalization
 			Result := "Statically verify the cluster using Ballet"
 		end
 
-	name: STRING_GENERAL is
+	name: STRING_GENERAL
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 		do

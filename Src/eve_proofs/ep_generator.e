@@ -22,6 +22,7 @@ feature {NONE} -- Initialization
 			-- Initialize generator.
 		do
 			create output_buffer.make
+			is_generating_implementation := True
 
 			create attribute_writer
 			create constant_writer
@@ -33,6 +34,29 @@ feature -- Access
 
 	output_buffer: !EP_OUTPUT_BUFFER
 			-- Output buffer to store generated code
+
+feature -- Status report
+
+	is_generating_implementation: BOOLEAN
+			-- Is implementation for features generated?
+
+feature -- Status setting
+
+	generate_implementation
+			-- Generate implementation for processed features.
+		do
+			is_generating_implementation := True
+		ensure
+			is_generating_implementation: is_generating_implementation
+		end
+
+	omit_implementation
+			-- Omit implementation for processed features.
+		do
+			is_generating_implementation := False
+		ensure
+			not_is_generating_implementation: not is_generating_implementation
+		end
 
 feature -- Basic operations
 
@@ -86,11 +110,13 @@ feature -- Basic operations
 				signature_writer.write_feature_signature (a_feature)
 
 					-- Generate implementation
-					-- TODO: make this check look nicer
-				if verify_value_in_indexing (a_feature.written_class.ast.feature_with_name (a_feature.feature_name_id).indexes) then
-					implementation_writer.write_feature_implementation (a_feature)
-				else
-					put_comment_line ("Implementation ignored due to indexing clause")
+				if is_generating_implementation then
+						-- TODO: make this check look nicer
+					if verify_value_in_indexing (a_feature.written_class.ast.feature_with_name (a_feature.feature_name_id).indexes) then
+						implementation_writer.write_feature_implementation (a_feature)
+					else
+						put_comment_line ("Implementation ignored due to indexing clause")
+					end
 				end
 			end
 			put_new_line

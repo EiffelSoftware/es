@@ -167,23 +167,25 @@ feature {NONE} -- Implementation
 	generate_boogie_code (a_class: !CLASS_C)
 			-- Generate Boogie code for `a_class'.
 		local
-			l_content, l_name: !STRING
+			l_name: !STRING
 		do
 			boogie_generator.reset
+			boogie_generator.generate_implementation
+
 			boogie_generator.process_class (a_class)
 
-			l_content ?= boogie_generator.output_buffer.string
-			l_name ?= "Class: " + a_class.name_in_upper
-			verifier.add_string_content (l_content, l_name)
+			l_name := "Class: "
+			l_name.append (a_class.name_in_upper)
+			verifier.add_buffer_content (boogie_generator.output_buffer, l_name)
 		end
 
 	generate_code_for_referenced_features
 			-- Generate Boogie code for all referenced features.
 		local
 			l_list: !LIST [!FEATURE_I]
-			l_content: !STRING
 		do
 			boogie_generator.reset
+			boogie_generator.omit_implementation
 
 				-- Generate code for creation routines
 			from
@@ -203,8 +205,7 @@ feature {NONE} -- Implementation
 				boogie_generator.process_feature (l_list.first)
 			end
 
-			l_content ?= boogie_generator.output_buffer.string
-			verifier.add_string_content (l_content, "Referenced features")
+			verifier.add_buffer_content (boogie_generator.output_buffer, "Referenced features")
 		end
 
 

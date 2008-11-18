@@ -48,6 +48,7 @@ inherit
 			process_nat_val_b,
 			process_nested_b,
 			process_paran_b,
+			process_parameter_b,
 			process_result_b,
 			process_routine_creation_b,
 			process_un_minus_b,
@@ -127,14 +128,15 @@ feature {BYTE_NODE} -- Visitors
 			l_feature: !FEATURE_I
 			l_field_name, l_function_name: STRING
 		do
-			l_feature ?= system.class_of_id (a_node.written_in).feature_of_feature_id (a_node.attribute_id)
+				-- TODO: why go over feature name and not feature id?
+			l_feature ?= system.class_of_id (a_node.written_in).feature_of_name_id (a_node.attribute_name_id)
 
---			l_field_name := name_generator.attribute_name (l_feature)
---			expression.put (name_mapper.heap_name + "[" + name_mapper.current_name + ", " + l_field_name + "]")
+			l_field_name := name_generator.attribute_name (l_feature)
+			expression.put (name_mapper.heap_name + "[" + name_mapper.current_name + ", " + l_field_name + "]")
 
-				-- TODO: compute side effect
-			l_function_name := name_generator.functional_feature_name (l_feature)
-			expression.put (l_function_name + "(" + name_mapper.heap_name + ", " + name_mapper.current_name + ")")
+--				-- TODO: compute side effect
+--			l_function_name := name_generator.functional_feature_name (l_feature)
+--			expression.put (l_function_name + "(" + name_mapper.heap_name + ", " + name_mapper.current_name + ")")
 		end
 
 	process_bin_and_b (a_node: BIN_AND_B)
@@ -328,6 +330,7 @@ feature {BYTE_NODE} -- Visitors
 			l_attached_feature: !FEATURE_I
 			l_creation_routine_name: STRING
 			l_local_name: STRING
+			l_temp_expression, l_arguments: STRING
 			l_type: CL_TYPE_A
 		do
 			l_type ?= a_node.type
@@ -338,13 +341,24 @@ feature {BYTE_NODE} -- Visitors
 			feature_list.record_creation_routine_needed (l_attached_feature)
 			l_creation_routine_name := name_generator.creation_routine_name (l_attached_feature)
 
-				-- TODO: create new local, register local, add arguments
+				-- TODO: create new local, register local
 			l_local_name := "c";
+
+				-- Store expression
+			l_temp_expression := expression.string
+				-- Evaluate parameters with fresh expression
+			expression.reset
+			expression.put (l_local_name)
+			safe_process (a_node.parameters)
+			l_arguments := expression.string
+				-- Restore original expression
+			expression.reset
+			expression.put (l_temp_expression)
 
 			side_effect.put_comment_line ("Object creation")
 			side_effect.put_line ("havoc " + l_local_name + ";")
 			side_effect.put_line ("assume !" + name_mapper.heap_name + "[" + l_local_name + ", $allocated] && " + l_local_name + " != null;")
-			side_effect.put_line (l_local_name + " := call " + l_creation_routine_name + "(" + l_local_name + ");")
+			side_effect.put_line (l_local_name + " := call " + l_creation_routine_name + "(" + l_arguments + ");")
 
 			expression.put (l_local_name)
 		end
@@ -360,14 +374,35 @@ feature {BYTE_NODE} -- Visitors
 		local
 			l_feature: FEATURE_I
 			l_attached_feature: !FEATURE_I
-			l_creation_routine_name: STRING
+			l_function_name, l_procedure_name: STRING
+			l_temp_expression, l_arguments: STRING
+			l_local_name: STRING
 		do
-			l_feature := system.class_of_id (a_node.written_in).feature_of_feature_id (a_node.feature_id)
+				-- TODO: why go over feature name and not feature id?
+			l_feature := system.class_of_id (a_node.written_in).feature_of_name_id (a_node.feature_name_id)
 			check l_feature /= Void end
 			l_attached_feature ?= l_feature
 
 			feature_list.record_feature_needed (l_feature)
-			-- TODO
+			l_function_name := name_generator.functional_feature_name (l_feature)
+			l_procedure_name := name_generator.procedural_feature_name (l_feature)
+
+			l_local_name := "c_local"
+
+				-- Store expression
+			l_temp_expression := expression.string
+				-- Evaluate parameters with fresh expression
+			expression.reset
+			expression.put (name_mapper.current_name)
+			safe_process (a_node.parameters)
+			l_arguments := expression.string
+				-- Restore original expression
+			expression.reset
+			expression.put (l_temp_expression)
+
+				-- TODO
+			side_effect.put_line (l_local_name + " := call " + l_procedure_name + "(" + l_arguments + ");")
+			expression.put (l_function_name + "(" + name_mapper.heap_name + ", " + l_arguments + ")")
 		end
 
 	process_int64_val_b (a_node: INT64_VAL_B)
@@ -426,23 +461,6 @@ feature {BYTE_NODE} -- Visitors
 			safe_process (a_node.message)
 				-- Restore `Current' reference
 			name_mapper.set_current_name (l_current_name)
-
-			-- TODO
---			-- First, store the expr somewhere
---			tmp_expr := expr
---			-- Evatuate the target expression
---			expr := ""
---			safe_process (a_node.target)
---			-- Safe the current_this_ref
---			tmp_this_ref := current_this_ref
---			-- Make the target expression the this expression
---			current_this_ref := expr
---			-- Restore the expr
---			expr := tmp_expr
---			-- Call the actual query
---			safe_process (a_node.message)
---			-- Restore the this expression to its original value
---			current_this_ref := tmp_this_ref
 		end
 
 	process_paran_b (a_node: PARAN_B)
@@ -451,6 +469,13 @@ feature {BYTE_NODE} -- Visitors
 			expression.put ("(")
 			safe_process (a_node.expr)
 			expression.put (")")
+		end
+
+	process_parameter_b (a_node: PARAMETER_B)
+			-- Process `a_node'.
+		do
+			expression.put (", ")
+			safe_process (a_node.expression)
 		end
 
 	process_result_b (a_node: RESULT_B)
@@ -491,6 +516,23 @@ feature {BYTE_NODE} -- Visitors
 			-- Process `a_node'.
 		do
 			expression.put ("null")
+		end
+
+feature {NONE} -- Implementation
+
+	last_parameters: STRING
+			-- TODO
+
+	reset_parameters
+			-- TODO
+		do
+			last_parameters.wipe_out
+		end
+
+	process_parameters (a_parameters: BYTE_LIST [BYTE_NODE])
+			-- TODO
+		do
+
 		end
 
 end

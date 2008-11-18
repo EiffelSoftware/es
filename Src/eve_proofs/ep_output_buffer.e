@@ -21,10 +21,12 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	string: STRING
+	string: !STRING
 			-- Output string
 		do
-			Result := buffer.string
+			if {l_string: STRING} buffer.string then
+				Result := l_string
+			end
 		end
 
 	indentation: !STRING

@@ -108,7 +108,7 @@ feature -- Processing
 				output.put ("[")
 				output.put (name_mapper.current_name)
 				output.put (", ")
-				l_feature ?= system.class_of_id (l_attribute.written_in).feature_of_feature_id (l_attribute.attribute_id)
+				l_feature ?= system.class_of_id (l_attribute.written_in).feature_of_name_id (l_attribute.attribute_name_id)
 				output.put (name_generator.attribute_name (l_feature))
 				output.put ("]")
 			else
@@ -274,9 +274,60 @@ feature -- Processing
 
 	process_instr_call_b (a_node: INSTR_CALL_B)
 			-- Process `a_node'.
+		local
+			l_nested_b: NESTED_B
+			l_call_access_b: CALL_ACCESS_B
+			l_feature: FEATURE_I
+			l_attached_feature: !FEATURE_I
+			l_procedure_name, l_arguments: STRING
 		do
-			output.put_comment_line ("Instruction call: ignored")
-				-- TODO: add error
+			output.put_comment_line ("Instruction call --- " + file_location(a_node))
+
+--			expression_writer.reset
+--			a_node.call.process (expression_writer)
+--			locals.append (expression_writer.locals)
+--			output.put (expression_writer.side_effect.string)
+--			output.put (expression_writer.expression.string)
+
+
+			l_nested_b ?= a_node.call
+			if l_nested_b /= Void then
+				l_call_access_b ?= l_nested_b.message
+			else
+				l_call_access_b ?= a_node.call
+			end
+			if l_call_access_b /= Void then
+				l_feature := system.class_of_id (l_call_access_b.written_in).feature_of_feature_id (l_call_access_b.feature_id)
+				l_attached_feature ?= l_feature
+				check l_feature /= Void end
+				check l_attached_feature.feature_name.is_equal (l_call_access_b.feature_name) end
+				l_procedure_name := name_generator.procedural_feature_name (l_attached_feature)
+
+				feature_list.record_feature_needed (l_attached_feature)
+
+				if l_nested_b /= Void then
+					expression_writer.reset
+					l_nested_b.target.process (expression_writer)
+					locals.append (expression_writer.locals)
+					output.put (expression_writer.side_effect.string)
+
+					l_arguments := expression_writer.expression.string
+				else
+					l_arguments := name_mapper.current_name
+				end
+				if l_call_access_b.parameters /= Void then
+					expression_writer.reset
+					l_call_access_b.parameters.process (expression_writer)
+					locals.append (expression_writer.locals)
+					output.put (expression_writer.side_effect.string)
+
+					l_arguments.append (expression_writer.expression.string)
+				end
+				output.put_line ("call " + l_procedure_name + "(" + l_arguments + ");")
+				output.put_new_line
+			else
+				check unknown_instruction: false end
+			end
 		end
 
 	process_loop_b (a_node: LOOP_B)

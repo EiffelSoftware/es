@@ -1,6 +1,7 @@
 indexing
 	description:
 		"[
+			TODO: rename class, maybe merge with EP_NAME_MAPPER
 			Generator for default names
 		]"
 	date: "$Date$"

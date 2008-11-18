@@ -55,6 +55,14 @@ feature -- Element change
 			string_content_added: verification_content.count = old verification_content.count + 1
 		end
 
+	add_buffer_content (a_content: !EP_OUTPUT_BUFFER; a_content_name: !STRING)
+			-- Add Boogie code in `a_content' to verifier.
+		do
+			verification_content.extend ([a_content_name, a_content.string])
+		ensure
+			string_content_added: verification_content.count = old verification_content.count + 1
+		end
+
 feature -- Basic operations
 
 	reset
