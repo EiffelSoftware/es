@@ -75,6 +75,8 @@ feature -- Basic operations
 			-- Reset the classes and feature.
 		do
 			classes_to_verify.wipe_out
+			errors.wipe_out
+			warnings.wipe_out
 		ensure
 			no_classes_to_verify: classes_to_verify.is_empty
 		end
@@ -124,12 +126,19 @@ feature -- Basic operations
 			show_messages(" - Referenced features", "Generating Boogie code: Referenced features")
 			generate_code_for_referenced_features
 
-				-- Start Boogie
-			show_messages("Starting verifier", "Running verifier")
-			verifier.verify
+			if errors.is_empty then
+					-- Start Boogie
+				show_messages("Starting verifier", "Running verifier")
+				verifier.verify
 
-				-- React on errors
-			-- TODO
+				if errors.is_empty then
+					show_messages ("Verification successful", "Verification successful")
+				else
+					show_messages ("Verification failed", "Verification failed")
+				end
+			else
+				show_messages ("Code generation failed", "Code generation failed")
+			end
 		end
 
 feature {NONE} -- Implementation

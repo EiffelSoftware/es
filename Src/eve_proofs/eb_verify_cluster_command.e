@@ -1,5 +1,8 @@
 indexing
-	description: "Command to statically verify a class with Ballet."
+	description:
+		"[
+			Command to statically verify a cluster.
+		]"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -28,7 +31,7 @@ inherit {NONE}
 	SHARED_WORKBENCH
 		export {NONE} all end
 
-	SHARED_BPL_ENVIRONMENT
+	SHARED_EP_ENVIRONMENT
 		export {NONE} all end
 
 	SHARED_ERROR_HANDLER
@@ -120,7 +123,18 @@ feature -- Execution
 
 			l_eve_proofs.execute_verification
 
-			-- TODO: check for errors
+				-- Add warninigs and errors
+			error_handler.warning_list.append (warnings)
+			error_handler.warning_list.finish
+			error_handler.error_list.append (errors)
+			error_handler.error_list.finish
+			error_handler.trace
+
+			if not errors.is_empty then
+				error_handler.error_displayer.force_display
+			else
+				development_window.tools.output_tool.force_display
+			end
 		end
 
 feature -- Items

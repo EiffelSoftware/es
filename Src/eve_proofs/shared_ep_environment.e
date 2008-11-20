@@ -32,6 +32,18 @@ feature -- Access
 			create Result
 		end
 
+	errors: !LIST [EP_ERROR]
+			-- Shared error list
+		once
+			create {LINKED_LIST [EP_ERROR]} Result.make
+		end
+
+	warnings: !LIST [EP_ERROR]
+			-- Shared warnings list
+		once
+			create {LINKED_LIST [EP_ERROR]} Result.make
+		end
+
 feature -- Convenience
 
 -- TODO: move to its own class?

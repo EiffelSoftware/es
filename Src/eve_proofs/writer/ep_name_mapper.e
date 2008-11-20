@@ -56,4 +56,13 @@ feature -- Element change
 			current_name_set: current_name.is_equal (a_name)
 		end
 
+	set_heap_name (a_name: STRING)
+			-- Set `heap_name' to `a_name'.
+		require
+			a_name_not_void: a_name /= Void
+		deferred
+		ensure
+			heap_name_set: heap_name.is_equal (a_name)
+		end
+
 end

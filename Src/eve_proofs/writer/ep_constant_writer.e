@@ -22,6 +22,7 @@ feature -- Basic operations
 		local
 			l_functional_name, l_type, l_value: STRING
 			l_constant: CONSTANT_I
+			l_error: EP_UNSUPPORTED_ERROR
 		do
 			l_constant ?= a_feature
 			check l_constant /= Void end
@@ -40,7 +41,11 @@ feature -- Basic operations
 			elseif l_constant.value.is_character then
 				l_value := character_value (l_constant.value)
 			else
-				-- TODO: add error
+				create l_error.make ("Unsupported constant type")
+				l_error.set_class (a_feature.written_class)
+				l_error.set_feature (a_feature)
+				l_error.set_location (a_feature.body.body.type.start_location)
+				warnings.extend (l_error)
 			end
 
 			if l_value = Void then

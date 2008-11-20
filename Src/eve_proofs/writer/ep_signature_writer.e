@@ -16,6 +16,9 @@ inherit {NONE}
 	SHARED_SERVER
 		export {NONE} all end
 
+	SHARED_BYTE_CONTEXT
+		export {NONE} all end
+
 create
 	make
 

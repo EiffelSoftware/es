@@ -1,0 +1,232 @@
+indexing
+	description:
+		"[
+			Boogie code writer used to transform contracts.
+		]"
+	date: "$Date$"
+	revision: "$Revision$"
+
+class EP_CONTRACT_WRITER
+
+inherit {NONE}
+
+	SHARED_SERVER
+		export {NONE} all end
+
+	SHARED_BYTE_CONTEXT
+		export {NONE} all end
+
+create
+	make
+
+feature {NONE} -- Initialization
+
+	make
+			-- Initialize contract writer.
+		do
+			create {LINKED_LIST [TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER]]} preconditions.make
+			create {LINKED_LIST [TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER]]} postconditions.make
+			create full_precondition.make_empty
+			create full_postcondition.make_empty
+		end
+
+feature -- Access
+
+	current_feature: FEATURE_I
+			-- Feature which is currently being processed
+
+	preconditions: !LIST [TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER]]
+			-- List of generated preconditions
+
+	postconditions: !LIST [TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER]]
+			-- List of generated postconditions
+
+	full_precondition: !STRING
+			-- Full precondition
+			-- Preconditions are combined with conjunctions and disjunctions
+
+	full_postcondition: !STRING
+			-- Full postcondition, with con
+			-- Postconditions are combined with conjunctions
+
+	expression_writer: EP_EXPRESSION_WRITER
+			-- Writer used to generate contracts
+
+feature -- Element change
+
+	set_feature (a_feature: FEATURE_I)
+			-- Set `current_feature' to `a_feature'.
+		do
+			current_feature := a_feature
+
+			if byte_server.has (current_feature.code_id) then
+				byte_code := byte_server.item (current_feature.code_id)
+			else
+				byte_code := Void
+			end
+		ensure
+			current_feature_set: current_feature = a_feature
+		end
+
+	set_expression_writer (a_expression_writer: EP_EXPRESSION_WRITER)
+			-- Set `expression_writer' to `a_expression_writer'.
+		do
+			expression_writer := a_expression_writer
+		ensure
+			expression_writer_set: expression_writer = a_expression_writer
+		end
+
+feature -- Basic operations
+
+	reset
+			-- Reset contract writer.
+		do
+			preconditions.wipe_out
+			postconditions.wipe_out
+			create full_precondition.make_empty
+			create full_postcondition.make_empty
+		ensure
+			current_feature_void: current_feature = Void
+			preconditions_reset: preconditions.is_empty
+			postconditions_reset: postconditions.is_empty
+			full_precondition_empty: full_precondition.is_empty
+			full_postcondition_empty: full_postcondition.is_empty
+		end
+
+	generate_contracts
+			-- Generate Boogie code for pre- and postconditions.
+		require
+			current_feature_set: current_feature /= Void
+			expression_writer_set: expression_writer /= Void
+		do
+				-- `byte_code' is Void if feature has no body, i.e. no contracts
+			if byte_code /= Void then
+				if byte_code.precondition /= Void then
+					process_assertion (byte_code.precondition, preconditions, current_feature.written_class.class_id)
+				end
+				if byte_code.postcondition /= Void then
+					process_assertion (byte_code.postcondition, postconditions, current_feature.written_class.class_id)
+				end
+			end
+
+				-- TODO: handle case of generics
+			Context.init (current_feature.written_class.types.first)
+			Context.clear_feature_data
+			Context.set_current_feature (current_feature)
+			Context.inherited_assertion.wipe_out
+			byte_code.formulate_inherited_assertions (current_feature.assert_id_set)
+
+			process_inherited_assertions (Context.inherited_assertion)
+
+			generate_full_precondition
+			generate_full_postcondition
+		end
+
+feature {NONE} -- Implementation
+
+	byte_code: BYTE_CODE
+			-- Byte code of `current_feature'
+
+	process_assertion (a_assertion: ASSERTION_BYTE_CODE; a_list: !LIST [TUPLE [tag: STRING; expression: STRING; class_id: INTEGER]]; a_class_id: INTEGER)
+			-- Process `a_assertion' and store result in `a_list'.
+		require
+			a_assertion_not_void: a_assertion /= Void
+			valid_class_id: a_class_id > 0
+		local
+			l_assert: ASSERT_B
+		do
+			from
+				a_assertion.start
+			until
+				a_assertion.after
+			loop
+				l_assert ?= a_assertion.item_for_iteration
+				check l_assert /= Void end
+				expression_writer.reset
+				l_assert.expr.process (expression_writer)
+
+				a_list.extend ([l_assert.tag, expression_writer.expression.string, a_class_id])
+
+				a_assertion.forth
+			end
+		end
+
+	process_inherited_assertions (a_list: INHERITED_ASSERTION)
+			-- Process inherited assertions
+		require
+			a_list_not_void: a_list /= Void
+		do
+			from
+				a_list.precondition_start
+			until
+				a_list.precondition_after
+			loop
+				process_assertion (
+					a_list.precondition_list.item_for_iteration,
+					preconditions,
+					a_list.precondition_types.item_for_iteration.associated_class.class_id)
+
+				a_list.precondition_forth
+			end
+			from
+				a_list.postcondition_start
+			until
+				a_list.postcondition_after
+			loop
+				process_assertion (
+					a_list.postcondition_list.item_for_iteration,
+					postconditions,
+					a_list.postcondition_types.item_for_iteration.associated_class.class_id)
+
+				a_list.postcondition_forth
+			end
+		end
+
+	generate_full_precondition
+			-- Generate `full_precondition' from `preconditions'.
+		local
+			l_current_class_id: INTEGER
+		do
+				-- TODO: check if preconditions are really sorted by class id (it should be...)
+			create full_precondition.make_empty
+			from
+				preconditions.start
+			until
+				preconditions.after
+			loop
+				if l_current_class_id = 0 then
+					full_precondition.append ("(")
+					l_current_class_id := preconditions.item.class_id
+				end
+
+				full_precondition.append (preconditions.item.expression)
+				preconditions.forth
+
+				if preconditions.after then
+					full_precondition.append (")")
+				elseif l_current_class_id /= preconditions.item.class_id then
+					full_precondition.append (") || (")
+				else
+					full_precondition.append (" && ")
+				end
+			end
+		end
+
+	generate_full_postcondition
+			-- Generate `full_postcondition' from `postconditions'.
+		do
+			create full_postcondition.make_empty
+			from
+				postconditions.start
+			until
+				postconditions.after
+			loop
+				full_postcondition.append (postconditions.item.expression)
+				postconditions.forth
+				if not postconditions.after then
+					full_postcondition.append (" && ")
+				end
+			end
+		end
+
+end

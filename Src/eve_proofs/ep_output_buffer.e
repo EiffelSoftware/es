@@ -53,12 +53,17 @@ feature -- Basic operations
 
 	put (a_string: STRING)
 			-- Put `a_string' to output buffer.
+		require
+			a_string_not_void: a_string /= Void
 		do
 			buffer.put_string (a_string)
 		end
 
 	put_line (a_line: STRING)
-			-- Put `a_line' to output buffer and append a new line.
+			-- Put `a_line' to output buffer.
+			-- The line is indented using `indentation' and a new line is appended.
+		require
+			a_line_not_void: a_line /= Void
 		do
 			buffer.put_string (indentation)
 			buffer.put_string (a_line)
@@ -66,7 +71,10 @@ feature -- Basic operations
 		end
 
 	put_comment_line (a_line: STRING)
-			-- Put `a_line' to output buffer as a comment and append a new line.
+			-- Put `a_line' to output buffer as a comment.
+			-- The line is indented using `indentation' and a new line is appended.
+		require
+			a_line_not_void: a_line /= Void
 		do
 			buffer.put_string (indentation)
 			buffer.put_string ("// ")

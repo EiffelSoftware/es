@@ -1,12 +1,13 @@
 indexing
 	description:
 		"[
-			Boogie code writer to generate expressions
+			Boogie code writer to generate pure (side effect free) expressions
+			TODO: merge back with EP_EXPRESSION_WRITER
 		]"
 	date: "$Date$"
 	revision: "$Revision$"
 
-class EP_EXPRESSION_WRITER
+class EP_PURE_EXPRESSION_WRITER
 
 inherit
 
@@ -72,8 +73,6 @@ feature {NONE} -- Initialization
 		do
 			name_mapper := a_mapper
 			create expression.make
-			create side_effect.make
-			create {LINKED_LIST [TUPLE [name: STRING; type: STRING]]} locals.make
 		ensure
 			name_mapper_set: name_mapper = a_mapper
 		end
@@ -89,12 +88,6 @@ feature -- Access
 	expression: !EP_OUTPUT_BUFFER
 			-- Output produced from expression
 
-	side_effect: !EP_OUTPUT_BUFFER
-			-- Side effect instructions
-
-	locals: LIST [TUPLE [name: STRING; type: STRING]]
-			-- List of locals needed for side effects
-
 feature -- Element change
 
 	set_name_mapper (a_mapper: like name_mapper)
@@ -109,9 +102,6 @@ feature -- Element change
 			-- Reset expression writer for a new expression.
 		do
 			expression.reset
-			side_effect.reset
-			side_effect.set_indentation ("    ")
-			locals.wipe_out
 		end
 
 feature {BYTE_NODE} -- Visitors
@@ -131,12 +121,11 @@ feature {BYTE_NODE} -- Visitors
 				-- TODO: why go over feature name and not feature id?
 			l_feature ?= system.class_of_id (a_node.written_in).feature_of_name_id (a_node.attribute_name_id)
 
-			l_field_name := name_generator.attribute_name (l_feature)
-			expression.put (name_mapper.heap_name + "[" + name_mapper.current_name + ", " + l_field_name + "]")
+--			l_field_name := name_generator.attribute_name (l_feature)
+--			expression.put (name_mapper.heap_name + "[" + name_mapper.current_name + ", " + l_field_name + "]")
 
---				-- TODO: compute side effect
---			l_function_name := name_generator.functional_feature_name (l_feature)
---			expression.put (l_function_name + "(" + name_mapper.heap_name + ", " + name_mapper.current_name + ")")
+			l_function_name := name_generator.functional_feature_name (l_feature)
+			expression.put (l_function_name + "(" + name_mapper.heap_name + ", " + name_mapper.current_name + ")")
 		end
 
 	process_bin_and_b (a_node: BIN_AND_B)
@@ -299,6 +288,7 @@ feature {BYTE_NODE} -- Visitors
 			-- Process `a_node'.
 		do
 			-- TODO: add error
+			check false end
 		end
 
 	process_bool_const_b (a_node: BOOL_CONST_B)
@@ -333,34 +323,9 @@ feature {BYTE_NODE} -- Visitors
 			l_temp_expression, l_arguments: STRING
 			l_type: CL_TYPE_A
 		do
-			l_type ?= a_node.type
-			l_feature := system.class_of_id (l_type.class_id).feature_of_feature_id (a_node.call.feature_id)
-			check l_feature /= Void end
-			l_attached_feature ?= l_feature
-
-			feature_list.record_creation_routine_needed (l_attached_feature)
-			l_creation_routine_name := name_generator.creation_routine_name (l_attached_feature)
-
-				-- TODO: create new local, register local
-			l_local_name := "c";
-
-				-- Store expression
-			l_temp_expression := expression.string
-				-- Evaluate parameters with fresh expression
-			expression.reset
-			expression.put (l_local_name)
-			safe_process (a_node.parameters)
-			l_arguments := expression.string
-				-- Restore original expression
-			expression.reset
-			expression.put (l_temp_expression)
-
-			side_effect.put_comment_line ("Object creation")
-			side_effect.put_line ("havoc " + l_local_name + ";")
-			side_effect.put_line ("assume !" + name_mapper.heap_name + "[" + l_local_name + ", $allocated] && " + l_local_name + " != null;")
-			side_effect.put_line (l_local_name + " := call " + l_creation_routine_name + "(" + l_arguments + ");")
-
-			expression.put (l_local_name)
+				-- Generally not side effect free
+			-- TODO: add error
+			check false end
 		end
 
 	process_current_b (a_node: CURRENT_B)
@@ -374,9 +339,8 @@ feature {BYTE_NODE} -- Visitors
 		local
 			l_feature: FEATURE_I
 			l_attached_feature: !FEATURE_I
-			l_function_name, l_procedure_name: STRING
+			l_function_name: STRING
 			l_temp_expression, l_arguments: STRING
-			l_local_name: STRING
 		do
 				-- TODO: why go over feature name and not feature id?
 			l_feature := system.class_of_id (a_node.written_in).feature_of_name_id (a_node.feature_name_id)
@@ -385,9 +349,6 @@ feature {BYTE_NODE} -- Visitors
 
 			feature_list.record_feature_needed (l_feature)
 			l_function_name := name_generator.functional_feature_name (l_feature)
-			l_procedure_name := name_generator.procedural_feature_name (l_feature)
-
-			l_local_name := "c_local"
 
 				-- Store expression
 			l_temp_expression := expression.string
@@ -400,8 +361,6 @@ feature {BYTE_NODE} -- Visitors
 			expression.reset
 			expression.put (l_temp_expression)
 
-				-- TODO
-			side_effect.put_line (l_local_name + " := call " + l_procedure_name + "(" + l_arguments + ");")
 			expression.put (l_function_name + "(" + name_mapper.heap_name + ", " + l_arguments + ")")
 		end
 
@@ -487,7 +446,8 @@ feature {BYTE_NODE} -- Visitors
 	process_routine_creation_b (a_node: ROUTINE_CREATION_B)
 			-- Process `a_node'.
 		do
-			-- TODO
+			-- TODO: side effect free?
+			check false end
 		end
 
 	process_un_minus_b (a_node: UN_MINUS_B)
@@ -510,31 +470,14 @@ feature {BYTE_NODE} -- Visitors
 			-- Process `a_node'.
 		do
 			check a_node.expr /= Void end
-			old_handler.set_expression_writer (Current)
-			old_handler.process_un_old_b (a_node)
+--			old_handler.set_expression_writer (Current)
+--			old_handler.process_un_old_b (a_node)
 		end
 
 	process_void_b (a_node: VOID_B)
 			-- Process `a_node'.
 		do
 			expression.put ("null")
-		end
-
-feature {NONE} -- Implementation
-
-	last_parameters: STRING
-			-- TODO
-
-	reset_parameters
-			-- TODO
-		do
-			last_parameters.wipe_out
-		end
-
-	process_parameters (a_parameters: BYTE_LIST [BYTE_NODE])
-			-- TODO
-		do
-
 		end
 
 end

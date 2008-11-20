@@ -24,6 +24,7 @@ feature {NONE} -- Initialization
 			-- TODO
 		do
 			internal_current_name := "Current"
+			internal_heap_name := "Heap"
 		end
 
 feature -- Access
@@ -34,7 +35,7 @@ feature -- Access
 	heap_name: STRING
 			-- Name of heap in Boogie code
 		do
-			Result := "Heap"
+			Result := internal_heap_name
 		end
 
 	current_name: STRING
@@ -91,9 +92,18 @@ feature -- Element change
 			internal_current_name := a_name
 		end
 
+	set_heap_name (a_name: STRING)
+			-- Set `heap_name' to `a_name'.
+		do
+			internal_heap_name := a_name
+		end
+
 feature {NONE} -- Implementation
 
 	internal_current_name: STRING
+			-- TODO
+
+	internal_heap_name: STRING
 			-- TODO
 
 end
