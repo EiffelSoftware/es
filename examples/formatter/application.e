@@ -19,8 +19,11 @@ feature {NONE} -- Initialization
 			-- Use `a_formatter' to left-align `a_paragraph'.
 		require
 			 not a_paragraph.is_left_aligned
+		local
+			l_agent: PROCEDURE [FORMATTER, TUPLE [PARAGRAPH]]
 		do
-			a_paragraph.format (agent a_formatter.align_left)
+			l_agent := agent a_formatter.align_left
+			a_paragraph.format (l_agent)
 		ensure
 			a_paragraph.is_left_aligned
 		end
@@ -29,8 +32,11 @@ feature {NONE} -- Initialization
 			-- Use `a_formatter' to right-align `a_paragraph'.
 		require
 			a_paragraph.is_left_aligned
+		local
+			l_agent: PROCEDURE [FORMATTER, TUPLE [PARAGRAPH]]
 		do
-			a_paragraph.format (agent a_formatter.align_right)
+			l_agent := agent a_formatter.align_right
+			a_paragraph.format (l_agent)
 		ensure
 			not a_paragraph.is_left_aligned
 		end

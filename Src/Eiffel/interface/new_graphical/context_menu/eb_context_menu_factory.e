@@ -1811,8 +1811,7 @@ feature {NONE} -- Ballet menu
 			a_class_stone_not_void: a_cluster_stone /= Void
 		do
 			a_menu.extend (dev_window.commands.verify_cluster_command.new_menu_item_unmanaged)
-				-- TODO: internationalization
-			a_menu.last.set_text ("Verify cluster " + last_name)
+			a_menu.last.set_text (dev_window.commands.verify_cluster_command.context_menu_name (a_cluster_stone, last_name))
 			a_menu.last.select_actions.wipe_out
 			a_menu.last.select_actions.extend (agent (dev_window.commands.verify_cluster_command).execute_with_stone (a_cluster_stone))
 		end

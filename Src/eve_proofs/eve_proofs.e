@@ -26,16 +26,18 @@ feature {NONE} -- Initialization
 
 	make is
 			-- Initialize object.
+		local
+			l_error: EP_GENERAL_ERROR
 		do
 			if {PLATFORM}.is_windows then
 				create verifier.make
---				create {BOOGIE_WINDOWS_EXEC}verifier.make
 			else
---				add_error (create {BPL_ERROR}.make("unsupported system for Ballet"))
+				create l_error.make (names.error_unsupported_platform)
+				l_error.set_description (names.description_unsupported_platform)
+				errors.extend (l_error)
 			end
 			create boogie_generator.make
 			create {LINKED_LIST [!CLASS_C]} classes_to_verify.make
-			is_file_per_class_generated := False
 		ensure
 			supporting_windows: {PLATFORM}.is_windows implies is_ready
 		end
@@ -48,13 +50,10 @@ feature -- Access
 feature -- Status report
 
 	is_ready: BOOLEAN
-			-- Is Ballet ready for verification?
+			-- Is ready for verification?
 		do
 			Result := verifier /= Void
 		end
-
-	is_file_per_class_generated: BOOLEAN
-			-- Is a single file generated per verified class?
 
 feature -- Element change
 
@@ -90,7 +89,7 @@ feature -- Basic operations
 			l_current_class: !CLASS_C
 		do
 			output_manager.clear
-			show_messages ("Ballet started", "Ballet started")
+			show_messages (names.message_eve_proofs_started, names.window_message_eve_proofs_started)
 
 				-- Prepare environment for new verification
 			set_up_environment
@@ -99,7 +98,7 @@ feature -- Basic operations
 			verifier.add_file_content (background_theory_file_name)
 
 				-- Generate Boogie code for classes
-			show_messages ("Generating Boogie code for:", "Generating Boogie code")
+			show_messages (names.message_generating_boogie_code, names.window_message_eve_proofs_started)
 			from
 				classes_to_verify.start
 			until
@@ -113,31 +112,35 @@ feature -- Basic operations
 					-- Generate Boogie code of class
 					-- First check if class is ignored due to an indexing clause
 				if verify_value_in_indexing (l_current_class.ast.internal_top_indexes) then
-					show_messages (" - Class " + l_current_class.name_in_upper, "Generating Boogie code: " + l_current_class.name_in_upper)
+					show_messages (
+						names.message_generating_boogie_code_for_class (l_current_class.name_in_upper),
+						names.window_message_generating_boogie_code_for_class (l_current_class.name_in_upper))
 					generate_boogie_code (l_current_class)
 				else
-					show_messages (" - Class " + l_current_class.name_in_upper + " (ignored due to indexing clause)", "Generating Boogie code")
+					show_messages (
+						names.message_generating_boogie_class_ignored (l_current_class.name_in_upper),
+						names.window_message_generating_boogie_code_for_class (l_current_class.name_in_upper))
 				end
 
 				classes_to_verify.forth
 			end
 
 				-- Generate Boogie code for referenced features
-			show_messages(" - Referenced features", "Generating Boogie code: Referenced features")
+			show_messages (names.message_generating_referenced_features, names.window_message_generating_referenced_features)
 			generate_code_for_referenced_features
 
 			if errors.is_empty then
 					-- Start Boogie
-				show_messages("Starting verifier", "Running verifier")
+				show_messages(names.message_starting_verifier, names.message_verifier_running)
 				verifier.verify
 
 				if errors.is_empty then
-					show_messages ("Verification successful", "Verification successful")
+					show_messages (names.message_verification_successful, names.message_verification_successful)
 				else
-					show_messages ("Verification failed", "Verification failed")
+					show_messages (names.message_verification_failed, names.message_verification_failed)
 				end
 			else
-				show_messages ("Code generation failed", "Code generation failed")
+				show_messages (names.message_code_generation_failed, names.message_code_generation_failed)
 			end
 		end
 
@@ -225,7 +228,7 @@ feature {NONE} -- Implementation
 			ee: EXECUTION_ENVIRONMENT
 		once
 			create ee
-			Result ?= ee.get("EIFFEL_SRC") + "/ballet/background_theory.bpl"
+			Result ?= ee.get("EIFFEL_SRC") + "/eve_proofs/eve_proofs_theory.bpl"
 		end
 
 end

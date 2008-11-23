@@ -41,6 +41,7 @@ feature -- Basic operations
 			elseif l_constant.value.is_character then
 				l_value := character_value (l_constant.value)
 			else
+					-- TODO: internationalization
 				create l_error.make ("Unsupported constant type")
 				l_error.set_class (a_feature.written_class)
 				l_error.set_feature (a_feature)

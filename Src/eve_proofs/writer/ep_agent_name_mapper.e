@@ -6,7 +6,7 @@ indexing
 	date: "$Date$"
 	revision: "$Revision$"
 
-class EP_NORMAL_NAME_MAPPER
+class EP_AGENT_NAME_MAPPER
 
 inherit
 

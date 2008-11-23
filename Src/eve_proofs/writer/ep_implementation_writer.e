@@ -53,7 +53,7 @@ feature -- Basic operations
 			until
 				i > a_feature.argument_count
 			loop
-				l_argument_name := a_feature.arguments.item_name (i)
+				l_argument_name := name_generator.argument_name (a_feature.arguments.item_name (i))
 				l_argument_type := a_feature.arguments.i_th (i)
 				put (", " + l_argument_name + ": " + type_mapper.boogie_type_for_type (l_argument_type))
 				i := i + 1
@@ -81,6 +81,7 @@ feature -- Basic operations
 			if l_has_locals then
 				write_locals (l_byte_code)
 			end
+			write_temproary_locals
 
 			put ("  entry:%N")
 
@@ -115,6 +116,7 @@ feature {NONE} -- Implementation
 		local
 			i: INTEGER
 		do
+				-- TODO: refactor
 			from
 				i := 1
 			until
@@ -132,6 +134,29 @@ feature {NONE} -- Implementation
 					put (";%N")
 				end
 			end
+		end
+
+	write_temproary_locals
+			-- Write temporary locals
+		do
+			from
+				instruction_writer.locals.start
+			until
+				instruction_writer.locals.after
+			loop
+				if instruction_writer.locals.index = 1 then
+					put ("  var ")
+				else
+					put (", ")
+				end
+				put (instruction_writer.locals.item.name + ": ")
+				put (instruction_writer.locals.item.type)
+				instruction_writer.locals.forth
+				if instruction_writer.locals.after then
+					put (";%N")
+				end
+			end
+			put_new_line
 		end
 
 	write_locals_initialization (a_byte_code: BYTE_CODE)

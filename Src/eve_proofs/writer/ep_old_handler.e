@@ -8,6 +8,14 @@ indexing
 
 deferred class EP_OLD_HANDLER
 
+inherit {NONE}
+
+	SHARED_EP_ENVIRONMENT
+		export {NONE} all end
+
+	SHARED_EP_CONTEXT
+		export {NONE} all end
+
 feature -- Access
 
 	expression_writer: EP_EXPRESSION_WRITER

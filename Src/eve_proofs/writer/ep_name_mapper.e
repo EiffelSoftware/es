@@ -25,6 +25,11 @@ feature -- Access
 		deferred
 		end
 
+	target_name: STRING
+			-- Name of target for nested feature invocations
+		deferred
+		end
+
 	result_name: STRING
 			-- Name of result reference in Boogie code
 		deferred
@@ -63,6 +68,24 @@ feature -- Element change
 		deferred
 		ensure
 			heap_name_set: heap_name.is_equal (a_name)
+		end
+
+	set_target_name (a_name: STRING)
+			-- Set `target_name' to `a_name'.
+		require
+			a_name_not_void: a_name /= Void
+		deferred
+		ensure
+			target_name_set: target_name.is_equal (a_name)
+		end
+
+	set_result_name (a_name: STRING)
+			-- Set `result_name' to `a_name'.
+		require
+			a_name_not_void: a_name /= Void
+		deferred
+		ensure
+			result_name_set: result_name.is_equal (a_name)
 		end
 
 end

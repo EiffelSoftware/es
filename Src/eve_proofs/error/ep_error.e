@@ -1,7 +1,7 @@
 indexing
 	description:
 		"[
-			TODO
+			Parent class for errors of EVE Proofs.
 		]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -12,7 +12,7 @@ inherit
 
 	FEATURE_ERROR
 		export
-			{ANY} set_feature, set_class
+			{ANY} set_feature, set_class, set_position
 		redefine
 			build_explain,
 			trace,
@@ -22,6 +22,9 @@ inherit
 inherit {NONE}
 
 	ERROR_CONTEXT_PRINTER
+		export {NONE} all end
+
+	SHARED_EP_CONTEXT
 		export {NONE} all end
 
 feature {NONE} -- Initialization
@@ -40,6 +43,16 @@ feature -- Access
 	code: STRING_8 is "EVE"
 			-- Error code
 
+feature -- Element change
+
+	set_from_context
+			-- Use data from `ev_context'.
+		do
+			set_class (ev_context.current_class)
+			set_feature (ev_context.current_feature)
+			set_position (ev_context.line_number, ev_context.column_number)
+		end
+
 feature -- Output
 
 	build_explain (a_text_formatter: TEXT_FORMATTER)
@@ -53,7 +66,7 @@ feature -- Output
 	trace (a_text_formatter: TEXT_FORMATTER) is
 			-- Display full error message in `a_text_formatter'.
 		do
-			a_text_formatter.add ("trace")
+			build_explain (a_text_formatter)
 			a_text_formatter.add_new_line
 		end
 

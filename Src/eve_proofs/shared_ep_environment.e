@@ -44,6 +44,12 @@ feature -- Access
 			create {LINKED_LIST [EP_ERROR]} Result.make
 		end
 
+	names: !EP_NAMES
+			-- Shared access to interface names
+		once
+			create Result
+		end
+
 feature -- Convenience
 
 -- TODO: move to its own class?

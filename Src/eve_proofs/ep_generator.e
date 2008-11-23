@@ -13,6 +13,9 @@ inherit {NONE}
 	SHARED_EP_ENVIRONMENT
 		export {NONE} all end
 
+	SHARED_EP_CONTEXT
+		export {NONE} all end
+
 create
 	make
 
@@ -27,6 +30,7 @@ feature {NONE} -- Initialization
 			create attribute_writer
 			create constant_writer
 			create signature_writer.make
+			create function_writer.make
 			create implementation_writer.make
 		end
 
@@ -87,6 +91,10 @@ feature -- Basic operations
 	process_feature (a_feature: !FEATURE_I)
 			-- Generate code for `a_feature'.
 		do
+			ev_context.set_current_class (a_feature.written_class)
+			ev_context.set_current_feature (a_feature)
+			ev_context.set_location (a_feature.body.start_location)
+
 			put_comment_line ("Feature " + a_feature.feature_name + " from class " + a_feature.written_class.name_in_upper)
 			put_comment_line ("--------------------------------------")
 			put_new_line
@@ -96,14 +104,15 @@ feature -- Basic operations
 				attribute_writer.write_attribute (a_feature)
 
 					-- Generate signature
+					-- TODO: really needed?
 				signature_writer.write_attribute_signature (a_feature)
 			elseif a_feature.is_constant then
 					-- Generate function and axiom
 				constant_writer.write_constant (a_feature)
 			else
-				if a_feature.type.is_void then
+				if not a_feature.type.is_void then
 						-- It's a query, so generate functional representation
-					-- TODO
+					function_writer.write_functional_representation (a_feature)
 				end
 
 					-- Generate signature
@@ -138,6 +147,8 @@ feature -- Basic operations
 			signature_writer.write_creation_routine_signature (a_feature)
 			put_new_line
 
+				-- TODO: create implmementation
+
 			feature_list.mark_creation_routine_as_generated (a_feature)
 		ensure
 			feature_not_needed: not feature_list.creation_routines_needed.has (a_feature)
@@ -154,6 +165,9 @@ feature {NONE} -- Implementation
 
 	signature_writer: !EP_SIGNATURE_WRITER
 			-- Writer to procduce feature signatures
+
+	function_writer: !EP_FUNCTION_WRITER
+			-- Writer to produce functional feature representation
 
 	implementation_writer: !EP_IMPLEMENTATION_WRITER
 			-- Writer to procduce feature implementations

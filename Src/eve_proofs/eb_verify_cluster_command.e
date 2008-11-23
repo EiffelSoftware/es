@@ -49,7 +49,7 @@ inherit {NONE}
 create
 	make
 
-feature -- Initialization
+feature {NONE} -- Initialization
 
 	make (dev_window: EB_DEVELOPMENT_WINDOW)
 			-- Creation method.
@@ -104,24 +104,25 @@ feature -- Execution
 			l_class_c: CLASS_C
 		do
 			create l_eve_proofs.make
-			check l_eve_proofs.is_ready end
 
-			from
-				a_group.classes.start
-			until
-				a_group.classes.after
-			loop
-				l_conf_class := a_group.classes.item_for_iteration
-				l_class_i := eiffel_universe.class_named (l_conf_class.name, a_group)
-				if l_class_i.is_compiled then
-					l_class_c := l_class_i.compiled_class
-					check l_class_c /= Void end
-					l_eve_proofs.add_class_to_verify (l_class_c)
+			if l_eve_proofs.is_ready then
+				from
+					a_group.classes.start
+				until
+					a_group.classes.after
+				loop
+					l_conf_class := a_group.classes.item_for_iteration
+					l_class_i := eiffel_universe.class_named (l_conf_class.name, a_group)
+					if l_class_i.is_compiled then
+						l_class_c := l_class_i.compiled_class
+						check l_class_c /= Void end
+						l_eve_proofs.add_class_to_verify (l_class_c)
+					end
+					a_group.classes.forth
 				end
-				a_group.classes.forth
-			end
 
-			l_eve_proofs.execute_verification
+				l_eve_proofs.execute_verification
+			end
 
 				-- Add warninigs and errors
 			error_handler.warning_list.append (warnings)
@@ -153,13 +154,25 @@ feature -- Items
 			Result.drop_actions.extend (agent execute_with_stone)
 		end
 
+feature -- Context menu
+
+	context_menu_name (a_cluster_stone: CLUSTER_STONE; a_name: STRING_GENERAL): STRING_32
+			-- Name of context menu for `a_cluster_stone'
+		do
+			if a_cluster_stone.group.is_library then
+				Result := names.verify_library_context_menu_name (a_name)
+			else
+				Result := names.verify_cluster_context_menu_name (a_name)
+			end
+		end
+
 feature {NONE} -- Implementation
 
 	menu_name: STRING_GENERAL
 			-- Name as it appears in the menu (with & symbol).
 		do
 				-- TODO: internationalization
-			Result := "Verify cluster"
+			Result := names.verify_cluster_menu_name
 		end
 
 	pixmap: EV_PIXMAP
@@ -177,22 +190,19 @@ feature {NONE} -- Implementation
 	tooltip: STRING_GENERAL
 			-- Tooltip for the toolbar button.
 		do
-				-- TODO: internationalization
-			Result := "Verify cluster"
+			Result := names.verify_cluster_menu_name
 		end
 
 	tooltext: STRING_GENERAL
 			-- Text for the toolbar button.
 		do
-				-- TODO: internationalization
-			Result := "Verify"
+			Result := names.verify_cluster_menu_name
 		end
 
 	description: STRING_GENERAL
 			-- Description for this command.
 		do
-				-- TODO: internationalization
-			Result := "Statically verify the cluster using Ballet"
+			Result := names.verify_cluster_menu_description
 		end
 
 	name: STRING_GENERAL

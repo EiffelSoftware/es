@@ -13,7 +13,7 @@ feature
 			a_paragraph /= Void
 			not_left_aligned: not a_paragraph.is_left_aligned
 		do
-			a_paragraph.align_right
+			a_paragraph.align_left
 		ensure
 			is_left_aligned: a_paragraph.is_left_aligned
 		end

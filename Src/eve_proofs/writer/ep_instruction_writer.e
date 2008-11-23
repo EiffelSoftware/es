@@ -28,6 +28,9 @@ inherit {NONE}
 	SHARED_EP_ENVIRONMENT
 		export {NONE} all end
 
+	SHARED_EP_CONTEXT
+		export {NONE} all end
+
 create
 	make
 
@@ -38,7 +41,7 @@ feature {NONE} -- Initialization
 		do
 			create output.make
 			create name_mapper.make
-			create expression_writer.make (name_mapper)
+			create expression_writer.make (name_mapper, create {EP_INVALID_OLD_HANDLER}.make)
 			create {LINKED_LIST [TUPLE [name: STRING; type: STRING]]} locals.make
 		end
 
@@ -118,7 +121,9 @@ feature -- Processing
 			output.put (expression_writer.expression.string)
 			output.put (";")
 			output.put_new_line
-			output.put_line ("assume IsHeap(" + name_mapper.heap_name + ");")
+			if a_node.target.is_attribute then
+				output.put_line ("assume IsHeap(" + name_mapper.heap_name + ");")
+			end
 		end
 
 	process_check_b (a_node: CHECK_B)
@@ -363,7 +368,7 @@ feature {NONE} -- Implementation
 			-- Current label number
 
 	create_new_label (a_name: STRING)
-			-- Create a new label
+			-- Create a new label.
 		do
 			current_label_number := current_label_number + 1
 			last_label := "label_" + a_name + current_label_number.out

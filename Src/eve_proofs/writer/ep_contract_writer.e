@@ -24,8 +24,8 @@ feature {NONE} -- Initialization
 	make
 			-- Initialize contract writer.
 		do
-			create {LINKED_LIST [TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER]]} preconditions.make
-			create {LINKED_LIST [TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER]]} postconditions.make
+			create {LINKED_LIST [TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER; line_number: INTEGER]]} preconditions.make
+			create {LINKED_LIST [TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER; line_number: INTEGER]]} postconditions.make
 			create full_precondition.make_empty
 			create full_postcondition.make_empty
 		end
@@ -35,10 +35,10 @@ feature -- Access
 	current_feature: FEATURE_I
 			-- Feature which is currently being processed
 
-	preconditions: !LIST [TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER]]
+	preconditions: !LIST [TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER; line_number: INTEGER]]
 			-- List of generated preconditions
 
-	postconditions: !LIST [TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER]]
+	postconditions: !LIST [TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER; line_number: INTEGER]]
 			-- List of generated postconditions
 
 	full_precondition: !STRING
@@ -51,6 +51,11 @@ feature -- Access
 
 	expression_writer: EP_EXPRESSION_WRITER
 			-- Writer used to generate contracts
+
+feature -- Status report
+
+	has_weakened_preconditions: BOOLEAN
+			-- Does feature have weakened its precondition?
 
 feature -- Element change
 
@@ -81,10 +86,12 @@ feature -- Basic operations
 	reset
 			-- Reset contract writer.
 		do
+			current_feature := Void
 			preconditions.wipe_out
 			postconditions.wipe_out
 			create full_precondition.make_empty
 			create full_postcondition.make_empty
+			has_weakened_preconditions := False
 		ensure
 			current_feature_void: current_feature = Void
 			preconditions_reset: preconditions.is_empty
@@ -101,6 +108,9 @@ feature -- Basic operations
 		do
 				-- `byte_code' is Void if feature has no body, i.e. no contracts
 			if byte_code /= Void then
+					-- TODO: where to do this?
+				Context.set_byte_code (byte_code)
+				
 				if byte_code.precondition /= Void then
 					process_assertion (byte_code.precondition, preconditions, current_feature.written_class.class_id)
 				end
@@ -114,9 +124,10 @@ feature -- Basic operations
 			Context.clear_feature_data
 			Context.set_current_feature (current_feature)
 			Context.inherited_assertion.wipe_out
-			byte_code.formulate_inherited_assertions (current_feature.assert_id_set)
-
-			process_inherited_assertions (Context.inherited_assertion)
+			if current_feature.assert_id_set /= Void then
+				byte_code.formulate_inherited_assertions (current_feature.assert_id_set)
+				process_inherited_assertions (Context.inherited_assertion)
+			end
 
 			generate_full_precondition
 			generate_full_postcondition
@@ -145,7 +156,7 @@ feature {NONE} -- Implementation
 				expression_writer.reset
 				l_assert.expr.process (expression_writer)
 
-				a_list.extend ([l_assert.tag, expression_writer.expression.string, a_class_id])
+				a_list.extend ([l_assert.tag, expression_writer.expression.string, a_class_id, l_assert.line_number])
 
 				a_assertion.forth
 			end
@@ -155,19 +166,33 @@ feature {NONE} -- Implementation
 			-- Process inherited assertions
 		require
 			a_list_not_void: a_list /= Void
+		local
+			l_last_class_id, l_current_class_id: INTEGER
 		do
+			-- TODO: check if implicit precondition "True" is in list if a "require else" occurs without a "require" of the parent feature
+
+				-- Feature has defined new preconditions, but has inherited contracts
+			has_weakened_preconditions := not preconditions.is_empty
 			from
 				a_list.precondition_start
 			until
 				a_list.precondition_after
 			loop
+					-- If there are preconditions from two different classes, they have to be weakened
+				l_current_class_id := a_list.precondition_types.item_for_iteration.associated_class.class_id
+				if l_last_class_id /= 0 and then l_last_class_id /= l_current_class_id then
+					has_weakened_preconditions := True
+				end
+				l_last_class_id := l_current_class_id
+
 				process_assertion (
 					a_list.precondition_list.item_for_iteration,
 					preconditions,
-					a_list.precondition_types.item_for_iteration.associated_class.class_id)
+					l_current_class_id)
 
 				a_list.precondition_forth
 			end
+
 			from
 				a_list.postcondition_start
 			until
@@ -189,26 +214,33 @@ feature {NONE} -- Implementation
 		do
 				-- TODO: check if preconditions are really sorted by class id (it should be...)
 			create full_precondition.make_empty
-			from
-				preconditions.start
-			until
-				preconditions.after
-			loop
-				if l_current_class_id = 0 then
-					full_precondition.append ("(")
-					l_current_class_id := preconditions.item.class_id
-				end
+			if preconditions.is_empty then
+				full_precondition.append ("(true)")
+			else
+				full_precondition.append ("((")
+				from
+					preconditions.start
+				until
+					preconditions.after
+				loop
+					if l_current_class_id = 0 then
+						l_current_class_id := preconditions.item.class_id
+					end
 
-				full_precondition.append (preconditions.item.expression)
-				preconditions.forth
+					full_precondition.append (preconditions.item.expression)
+					preconditions.forth
 
-				if preconditions.after then
-					full_precondition.append (")")
-				elseif l_current_class_id /= preconditions.item.class_id then
-					full_precondition.append (") || (")
-				else
-					full_precondition.append (" && ")
+					if preconditions.after then
+-- TODO: refactor
+--						full_precondition.append (")")
+					elseif l_current_class_id /= preconditions.item.class_id then
+						full_precondition.append (") || (")
+						l_current_class_id := preconditions.item.class_id
+					else
+						full_precondition.append (") && (")
+					end
 				end
+				full_precondition.append ("))")
 			end
 		end
 
@@ -216,16 +248,22 @@ feature {NONE} -- Implementation
 			-- Generate `full_postcondition' from `postconditions'.
 		do
 			create full_postcondition.make_empty
-			from
-				postconditions.start
-			until
-				postconditions.after
-			loop
-				full_postcondition.append (postconditions.item.expression)
-				postconditions.forth
-				if not postconditions.after then
-					full_postcondition.append (" && ")
+			if postconditions.is_empty then
+				full_postcondition.append ("(true)")
+			else
+				full_postcondition.append ("((")
+				from
+					postconditions.start
+				until
+					postconditions.after
+				loop
+					full_postcondition.append (postconditions.item.expression)
+					postconditions.forth
+					if not postconditions.after then
+						full_postcondition.append (") && (")
+					end
 				end
+				full_postcondition.append ("))")
 			end
 		end
 

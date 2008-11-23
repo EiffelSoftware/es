@@ -28,7 +28,9 @@ feature {NONE} -- Initialization
 			-- TODO
 		do
 			create name_mapper.make
-			create expression_writer.make (name_mapper)
+			create expression_writer.make (name_mapper, create {EP_OLD_KEYWORD_HANDLER}.make)
+			create contract_writer.make
+			contract_writer.set_expression_writer (expression_writer)
 		end
 
 feature -- Basic operations
@@ -36,17 +38,88 @@ feature -- Basic operations
 	write_feature_signature (a_feature: !FEATURE_I)
 			-- Write Boogie code signature of `a_feature'.
 		local
-			l_procedure_name, l_argument_name: STRING
-			i: INTEGER
-			l_argument_type: TYPE_A
-			l_byte_code: BYTE_CODE
+			l_procedure_name: STRING
 		do
 			name_mapper.set_current_feature (a_feature)
 			l_procedure_name := name_generator.procedural_feature_name (a_feature)
 
+			write_procedure_definition (a_feature, l_procedure_name)
+
+			environment.output_buffer.set_indentation ("    ")
+
+			put_comment_line ("Frame condition")
+			put_line ("modifies Heap;")
+
+			environment.output_buffer.set_indentation ("")
+			put_new_line
+		end
+
+	write_creation_routine_signature (a_feature: !FEATURE_I)
+			-- Write Boogie code signature of `a_feature' as a creation routine.
+		local
+			l_procedure_name: STRING
+		do
+			name_mapper.set_current_feature (a_feature)
+			l_procedure_name := name_generator.creation_routine_name (a_feature)
+
+			write_procedure_definition (a_feature, l_procedure_name)
+
+			environment.output_buffer.set_indentation ("    ")
+
+			put_comment_line ("Frame condition")
+			put_line ("modifies Heap;")
+			put_comment_line ("Creation routine condition")
+			put_line ("free ensures Heap[Current, $allocated];")
+
+			environment.output_buffer.set_indentation ("")
+			put_new_line
+		end
+
+	write_attribute_signature (a_feature: !FEATURE_I)
+			-- TODO
+		require
+			is_attribute: a_feature.is_attribute
+		local
+			l_procedure_name, l_function_name: STRING
+		do
+			name_mapper.set_current_feature (a_feature)
+			l_procedure_name := name_generator.procedural_feature_name (a_feature)
+			l_function_name := name_generator.functional_feature_name (a_feature)
+
 			put_comment_line ("Signature")
 
-			put ("procedure " + l_procedure_name + "(")
+			put ("procedure ")
+			put (l_procedure_name)
+			put ("(Current: ref where Current != null && Heap[Current, $allocated]) returns (Result:")
+			put (type_mapper.boogie_type_for_type (a_feature.type))
+			put (");%N")
+			put ("    free ensures ")
+			put (l_function_name)
+			put ("(Heap, Current) == Result;%N")
+			put_new_line
+		end
+
+feature {NONE} -- Implementation
+
+	expression_writer: !EP_EXPRESSION_WRITER
+			-- TODO
+
+	contract_writer: !EP_CONTRACT_WRITER
+			-- TODO
+
+	name_mapper: !EP_NORMAL_NAME_MAPPER
+			-- TODO
+
+	write_procedure_definition (a_feature: !FEATURE_I; a_procedure_name: STRING)
+			-- TODO
+		local
+			l_argument_name: STRING
+			i: INTEGER
+			l_argument_type: TYPE_A
+		do
+			put_comment_line ("Signature")
+
+			put ("procedure " + a_procedure_name + "(")
 			if a_feature.argument_count = 0 then
 				put ("Current: ref where Current != null && Heap[Current, $allocated]")
 			else
@@ -84,116 +157,79 @@ feature -- Basic operations
 
 			environment.output_buffer.set_indentation ("    ")
 
-			put_line ("modifies Heap;")
+			contract_writer.reset
+			contract_writer.set_feature (a_feature)
+			contract_writer.generate_contracts
 
-			if body_server.has (a_feature.code_id) then
-				l_byte_code := byte_server.item (a_feature.code_id)
-				if l_byte_code.precondition /= Void then
-					write_preconditions (l_byte_code.precondition)
-				end
-				if l_byte_code.postcondition /= Void then
-					write_postconditions (l_byte_code.postcondition)
-				end
+			if not contract_writer.preconditions.is_empty then
+				write_preconditions
+			end
+			if not contract_writer.postconditions.is_empty then
+				write_postconditions
 			end
 
 			-- TODO: generate invariants
 
 			environment.output_buffer.set_indentation ("")
-			put_new_line
 		end
 
-	write_creation_routine_signature (a_feature: !FEATURE_I)
-			-- Write Boogie code signature of `a_feature' as a creation routine.
-		do
-			-- TODO
-		end
-
-	write_attribute_signature (a_feature: !FEATURE_I)
-			-- TODO
-		require
-			is_attribute: a_feature.is_attribute
+	write_preconditions
+			-- Write Boogie code for preconditions from `contract_writer'.
 		local
-			l_procedure_name, l_function_name: STRING
-		do
-			name_mapper.set_current_feature (a_feature)
-			l_procedure_name := name_generator.procedural_feature_name (a_feature)
-			l_function_name := name_generator.functional_feature_name (a_feature)
-
-			put_comment_line ("Signature")
-
-			put ("procedure ")
-			put (l_procedure_name)
-			put ("(Current: ref where Current != null && Heap[Current, $allocated]) returns (Result:")
-			put (type_mapper.boogie_type_for_type (a_feature.type))
-			put (");%N")
-			put ("    free ensures (")
-			put (l_function_name)
-			put ("(Heap, Current) == Result%N")
-			put_new_line
-		end
-
-feature {NONE} -- Implementation
-
-	expression_writer: !EP_EXPRESSION_WRITER
-			-- TODO
-
-	name_mapper: !EP_NORMAL_NAME_MAPPER
-			-- TODO
-
-	write_preconditions (a_preconditions: ASSERTION_BYTE_CODE)
-			-- Write Boogie code for preconditions of `a_feature'.
-		require
-			a_preconditions_not_void: a_preconditions /= Void
-		local
-			l_assertion: ASSERT_B
+			l_item: TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER; line_number: INTEGER]
 		do
 			put_comment_line ("User preconditions")
-			from
-				a_preconditions.start
-			until
-				a_preconditions.after
-			loop
-				l_assertion ?= a_preconditions.item_for_iteration
+			if contract_writer.has_weakened_preconditions then
+					-- Write combined precondition
+				put_line ("requires " + contract_writer.full_precondition + "; // combined precondition")
+			else
+					-- Write individual preconditions
+				from
+					contract_writer.preconditions.start
+				until
+					contract_writer.preconditions.after
+				loop
+					l_item := contract_writer.preconditions.item
+					put_indentation
+					put ("requires ")
+					put (l_item.expression)
+					put ("; //")
+					if l_item.tag /= Void then
+						put (" tag:" + l_item.tag)
+					end
+					put (" class:" + system.class_of_id (l_item.class_id).name_in_upper + ":" + l_item.line_number.out)
+					put ("%N")
 
-				put_indentation
-				put ("requires ")
-				write_assertion (l_assertion)
-				put (";%N")
-
-				a_preconditions.forth
+					contract_writer.preconditions.forth
+				end
 			end
 		end
 
-	write_postconditions (a_postconditions: ASSERTION_BYTE_CODE)
-			-- Write Boogie code for postconditions of `a_feature'.
-		require
-			a_postconditions_not_void: a_postconditions /= Void
+	write_postconditions
+			-- Write Boogie code for postconditions from `contract_writer'.
 		local
-			l_assertion: ASSERT_B
+			l_item: TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER; line_number: INTEGER]
 		do
 			put_comment_line ("User postconditions")
+				-- Write individual preconditions
 			from
-				a_postconditions.start
+				contract_writer.postconditions.start
 			until
-				a_postconditions.after
+				contract_writer.postconditions.after
 			loop
-				l_assertion ?= a_postconditions.item_for_iteration
-
+				l_item := contract_writer.postconditions.item
 				put_indentation
 				put ("ensures ")
-				write_assertion (l_assertion)
-				put (";%N")
+				put (l_item.expression)
+				put ("; //")
+				if l_item.tag /= Void then
+					put (" tag:" + l_item.tag)
+				end
+				put (" class:" + system.class_of_id (l_item.class_id).name_in_upper + ":" + l_item.line_number.out)
+				put ("%N")
 
-				a_postconditions.forth
+				contract_writer.postconditions.forth
 			end
-		end
-
-	write_assertion (a_assertion: ASSERT_B)
-			-- Write Boogie code for assertion `a_assertion'.
-		do
-			expression_writer.reset
-			a_assertion.expr.process (expression_writer)
-			put (expression_writer.expression.string)
 		end
 
 end
