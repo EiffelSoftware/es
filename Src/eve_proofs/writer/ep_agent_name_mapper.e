@@ -23,16 +23,17 @@ feature {NONE} -- Initialization
 	make
 			-- TODO
 		do
-			internal_current_name := "Current"
-			internal_heap_name := "Heap"
-			internal_target_name := "Current"
-			internal_result_name := "Result"
+			internal_current_name := "a1"
+			internal_heap_name := "heap"
+			internal_target_name := "a1"
+			internal_result_name := "result"
+			create argument_mappings.make (1, 5)
 		end
 
 feature -- Access
 
-	current_feature: !FEATURE_I
-			-- Current feature where mapping is made
+	argument_mappings: ARRAY [STRING]
+			-- Mappings of arguments
 
 	heap_name: STRING
 			-- Name of heap in Boogie code
@@ -61,7 +62,7 @@ feature -- Access
 	argument_name (a_node: ARGUMENT_B): STRING
 			-- Name of argument in Boogie code
 		do
-			Result := name_generator.argument_name (current_feature.arguments.item_name (a_node.position))
+			Result := argument_mappings.item (a_node.position)
 		end
 
 	feature_name (a_node: FEATURE_B): STRING
@@ -81,18 +82,10 @@ feature -- Access
 	local_name (a_node: LOCAL_B): STRING
 			-- Name of local in Boogie code
 		do
-			Result := name_generator.local_name (a_node.position)
+			check false end
 		end
 
 feature -- Element change
-
-	set_current_feature (a_feature: like current_feature)
-			-- Set `current_feature' to `a_feature'.
-		do
-			current_feature := a_feature
-		ensure
-			current_feature_set: current_feature = a_feature
-		end
 
 	set_current_name (a_name: STRING)
 			-- Set `current_name' to `a_name'.

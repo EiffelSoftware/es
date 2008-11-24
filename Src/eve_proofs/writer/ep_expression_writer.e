@@ -532,10 +532,11 @@ feature {BYTE_NODE} -- Visitors
 			l_contract_writer: !EP_CONTRACT_WRITER
 			l_expression_writer: !EP_EXPRESSION_WRITER
 			l_name_mapper: !EP_AGENT_NAME_MAPPER
-			l_old_handler: !EP_OLD_HEAP_HANDLER
-			l_open_argument_count: INTEGER
+			l_open_argument_count, l_closed_argument_count: INTEGER
+			l_open_argument_mapping: INTEGER
 			l_arguments, l_typed_arguments: STRING
-			i: INTEGER
+			l_temp_expression: STRING
+			i, j, k: INTEGER
 		do
 			l_agent_class := system.class_of_id (a_node.origin_class_id)
 			l_agent_feature := l_agent_class.feature_of_feature_id (a_node.feature_id)
@@ -552,25 +553,64 @@ feature {BYTE_NODE} -- Visitors
 			side_effect.put_line ("call agent.create (" + l_agent_variable + ");")
 
 				-- Create arguments
-			l_open_argument_count := a_node.arguments.expressions.count
+			create l_name_mapper.make
+
+			l_open_argument_count := a_node.omap.count
+			l_closed_argument_count := a_node.arguments.expressions.count
+			check l_attached_feature.argument_count + 1 = l_open_argument_count + l_closed_argument_count end
+
 			create l_arguments.make_from_string (", " + l_agent_variable)
 			create l_typed_arguments.make_empty
+
 			from
 				i := 1
+				j := 1
+				k := 1
+				l_temp_expression := expression.string
 			until
-				i > l_open_argument_count
+				i > l_attached_feature.argument_count + 1
 			loop
-				l_arguments.append (", a" + i.out)
-				l_typed_arguments.append (", a" + i.out + ": any")
+				if j <= a_node.omap.count and then a_node.omap.i_th (j) = i then
+						-- Next is an open argument
+					check j <= a_node.omap.count end
+					if i = 1 then
+						check not a_node.is_target_closed end
+						l_name_mapper.set_current_name ("a1")
+						l_name_mapper.set_target_name ("a1")
+					else
+						l_name_mapper.argument_mappings.put ("a" + j.out, i - 1)
+					end
+
+					l_arguments.append (", a" + j.out)
+						-- TODO: use correct type
+					l_typed_arguments.append (", a" + j.out + ": ref")
+
+					j := j + 1
+				else
+						-- Next is a closed argument
+					check k <= a_node.arguments.expressions.count end
+
+					expression.reset
+					a_node.arguments.expressions.i_th (k).process (Current)
+
+					if i = 1 then
+						check a_node.is_target_closed end
+						l_name_mapper.set_current_name (expression.string)
+						l_name_mapper.set_target_name (expression.string)
+					else
+						l_name_mapper.argument_mappings.put (expression.string, i - 1)
+					end
+					k := k + 1
+				end
 				i := i + 1
 			end
+			expression.reset
+			expression.put (l_temp_expression)
+
 
 			-- TODO: assert closed target is not void
 
-			create l_name_mapper.make
-			l_name_mapper.set_current_feature (l_attached_feature)
-			create l_old_handler.make ("old_heap")
-			create l_expression_writer.make (l_name_mapper, l_old_handler)
+			create l_expression_writer.make (l_name_mapper, create {EP_OLD_HEAP_HANDLER}.make ("old_heap"))
 			create l_contract_writer.make
 			l_contract_writer.set_expression_writer (l_expression_writer)
 			l_contract_writer.set_feature (l_attached_feature)
@@ -599,7 +639,7 @@ feature {BYTE_NODE} -- Visitors
 	process_un_not_b (a_node: UN_NOT_B)
 			-- Process `a_node'.
 		do
-			expression.put ("( !")
+			expression.put ("(!")
 			safe_process (a_node.expr)
 			expression.put (")")
 		end
@@ -644,6 +684,50 @@ feature {NONE} -- Implementation
 
 	process_feature_call (a_feature: !FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B])
 			-- Process feature call of feature `a_feature' with parameters `a_parameters'.
+		do
+			if has_special_mapping (a_feature) then
+				process_special_feature_call (a_feature, a_parameters)
+			else
+				process_normal_feature_call (a_feature, a_parameters)
+			end
+		end
+
+	process_special_feature_call (a_feature: !FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B])
+			-- Process feature call of feature `a_feature' with parameters `a_parameters'.
+		local
+			l_feature_name, l_function_name, l_procedure_name: STRING
+			l_temp_expression, l_arguments: STRING
+			l_tuple_argument: TUPLE_CONST_B
+			l_tuple_content: BYTE_LIST [BYTE_NODE]
+			l_boogie_function: STRING
+			l_open_argument_count: INTEGER
+		do
+			l_feature_name := a_feature.feature_name
+
+			check a_parameters.count = 1 end
+			l_tuple_argument ?= a_parameters [1].expression
+			check l_tuple_argument /= Void end
+			l_tuple_content := l_tuple_argument.expressions
+			l_open_argument_count := l_tuple_content.count
+			l_boogie_function := "agent." + l_feature_name + "_" + l_open_argument_count.out
+
+
+				-- Construct arguments
+			l_arguments := ""
+			if l_feature_name.is_equal ("precondition") then
+				l_arguments := "Heap"
+			elseif l_feature_name.is_equal ("postcondition") then
+				l_arguments := "Heap, old(Heap)"
+			elseif l_feature_name.is_equal ("call") then
+				check false end
+			else
+				check false end
+			end
+
+		end
+
+	process_normal_feature_call (a_feature: !FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B])
+			-- Process feature call of feature `a_feature' with parameters `a_parameters'.
 		local
 			l_function_name, l_procedure_name: STRING
 			l_temp_expression, l_arguments: STRING
@@ -664,11 +748,11 @@ feature {NONE} -- Implementation
 			expression.reset
 			expression.put (l_temp_expression)
 
-			if a_feature.type.is_void then
-				side_effect.put_line ("call " + l_procedure_name + "(" + l_arguments + ");")
-			else
+			if a_feature.has_return_value then
 				create_new_local (a_feature.type)
 				side_effect.put_line (last_local + " := call " + l_procedure_name + "(" + l_arguments + ");")
+			else
+				side_effect.put_line ("call " + l_procedure_name + "(" + l_arguments + ");")
 			end
 			expression.put (l_function_name + "(" + name_mapper.heap_name + ", " + l_arguments + ")")
 		end
@@ -709,5 +793,15 @@ feature {NONE} -- Implementation
 				-- Restore `Current' reference
 			name_mapper.set_target_name (l_target_name)
 		end
+
+	has_special_mapping (a_feature: FEATURE_I): BOOLEAN
+			-- TODO: refactor
+		local
+			l_class: STRING
+		do
+			l_class := a_feature.written_class.name_in_upper
+			Result := l_class.is_equal ("ROUTINE") or l_class.is_equal ("FUNCTION") or l_class.is_equal ("PROCEDURE")
+		end
+
 
 end
