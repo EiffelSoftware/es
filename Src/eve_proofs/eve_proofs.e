@@ -106,9 +106,6 @@ feature -- Basic operations
 			loop
 				l_current_class := classes_to_verify.item
 
-					-- Print byte nodes of class for debugging
-				print_byte_nodes (l_current_class)
-
 					-- Generate Boogie code of class
 					-- First check if class is ignored due to an indexing clause
 				if verify_value_in_indexing (l_current_class.ast.internal_top_indexes) then
@@ -133,12 +130,7 @@ feature -- Basic operations
 					-- Start Boogie
 				show_messages(names.message_starting_verifier, names.message_verifier_running)
 				verifier.verify
-
-				if errors.is_empty then
-					show_messages (names.message_verification_successful, names.message_verification_successful)
-				else
-					show_messages (names.message_verification_failed, names.message_verification_failed)
-				end
+				show_messages (names.message_verification_finished, names.message_verification_finished)
 			else
 				show_messages (names.message_code_generation_failed, names.message_code_generation_failed)
 			end
@@ -168,12 +160,6 @@ feature {NONE} -- Implementation
 			feature_list.reset
 			boogie_generator.reset
 			verifier.reset
-		end
-
-	print_byte_nodes (a_class: !CLASS_C)
-			-- Print byte node tree for debugging.
-		do
-			-- TODO
 		end
 
 	generate_boogie_code (a_class: !CLASS_C)

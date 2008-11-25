@@ -104,6 +104,7 @@ feature -- Execution
 			l_class_c: CLASS_C
 		do
 			create l_eve_proofs.make
+			l_eve_proofs.reset
 
 			if l_eve_proofs.is_ready then
 				from

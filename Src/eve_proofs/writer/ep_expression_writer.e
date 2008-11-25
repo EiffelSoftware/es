@@ -12,6 +12,7 @@ inherit
 
 	EP_VISITOR
 		redefine
+			process_agent_call_b,
 			process_attribute_b,
 			process_argument_b,
 			process_bin_and_b,
@@ -52,6 +53,7 @@ inherit
 			process_parameter_b,
 			process_result_b,
 			process_routine_creation_b,
+			process_string_b,
 			process_un_minus_b,
 			process_un_not_b,
 			process_un_old_b,
@@ -118,6 +120,12 @@ feature -- Element change
 		end
 
 feature {BYTE_NODE} -- Visitors
+
+	process_agent_call_b (a_node: AGENT_CALL_B)
+			-- Process `a_node'.
+		do
+			process_feature_b (a_node)
+		end
 
 	process_argument_b (a_node: ARGUMENT_B)
 			-- Process `a_node'.
@@ -628,6 +636,15 @@ feature {BYTE_NODE} -- Visitors
 			expression.put (l_agent_variable)
 		end
 
+	process_string_b (a_node: STRING_B)
+			-- Process `a_node'.
+		do
+			create_new_reference_local
+			side_effect.put_line ("havoc " + last_local + ";")
+			side_effect.put_line ("assume " + last_local + " != null && Heap[" + last_local + ", $allocated];")
+			expression.put (last_local)
+		end
+
 	process_un_minus_b (a_node: UN_MINUS_B)
 			-- Process `a_node'.
 		do
@@ -711,18 +728,50 @@ feature {NONE} -- Implementation
 			l_open_argument_count := l_tuple_content.count
 			l_boogie_function := "agent." + l_feature_name + "_" + l_open_argument_count.out
 
-
 				-- Construct arguments
 			l_arguments := ""
 			if l_feature_name.is_equal ("precondition") then
-				l_arguments := "Heap"
+				l_arguments := "Heap, "
 			elseif l_feature_name.is_equal ("postcondition") then
-				l_arguments := "Heap, old(Heap)"
+				l_arguments := "Heap, old(Heap), "
 			elseif l_feature_name.is_equal ("call") then
-				check false end
+				l_arguments := ""
 			else
 				check false end
 			end
+
+				-- Store expression
+			l_temp_expression := expression.string
+				-- Evaluate parameters with fresh expression
+			expression.reset
+			expression.put (l_arguments)
+			expression.put (name_mapper.target_name)
+
+			from
+				l_tuple_content.start
+			until
+				l_tuple_content.after
+			loop
+				expression.put (", ")
+				safe_process (l_tuple_content.item_for_iteration)
+
+				l_tuple_content.forth
+			end
+
+			l_arguments := expression.string
+				-- Restore original expression
+			expression.reset
+			expression.put (l_temp_expression)
+
+				-- TODO: this is not correct!
+
+			if a_feature.has_return_value then
+				create_new_local (a_feature.type)
+				side_effect.put_line (last_local + " := call " + l_boogie_function + "(" + l_arguments + ");")
+			else
+				side_effect.put_line ("call " + l_boogie_function + "(" + l_arguments + ");")
+			end
+			expression.put (l_boogie_function + "(" + l_arguments + ")")
 
 		end
 
@@ -802,6 +851,5 @@ feature {NONE} -- Implementation
 			l_class := a_feature.written_class.name_in_upper
 			Result := l_class.is_equal ("ROUTINE") or l_class.is_equal ("FUNCTION") or l_class.is_equal ("PROCEDURE")
 		end
-
 
 end

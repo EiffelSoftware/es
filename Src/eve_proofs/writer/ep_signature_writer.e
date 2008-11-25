@@ -67,7 +67,11 @@ feature -- Basic operations
 			environment.output_buffer.set_indentation ("    ")
 
 			put_comment_line ("Frame condition")
+
+			-- TODO: reenable this line
 			put_line ("modifies Heap;")
+			put_line ("ensures (forall $o: ref, $f: name :: { Heap[$o, $f] } ($o != null && old(Heap)[$o, $allocated] && $o != Current) ==> (old(Heap)[$o, $f] == Heap[$o, $f]));")
+
 			put_comment_line ("Creation routine condition")
 			put_line ("free ensures Heap[Current, $allocated];")
 
@@ -167,6 +171,9 @@ feature {NONE} -- Implementation
 			if not contract_writer.postconditions.is_empty then
 				write_postconditions
 			end
+			if not contract_writer.invariants.is_empty then
+				write_invariants
+			end
 
 			-- TODO: generate invariants
 
@@ -193,12 +200,9 @@ feature {NONE} -- Implementation
 					put_indentation
 					put ("requires ")
 					put (l_item.expression)
-					put ("; //")
-					if l_item.tag /= Void then
-						put (" tag:" + l_item.tag)
-					end
-					put (" class:" + system.class_of_id (l_item.class_id).name_in_upper + ":" + l_item.line_number.out)
-					put ("%N")
+					put ("; // ")
+					put (assert_location ("pre", l_item))
+					put_new_line
 
 					contract_writer.preconditions.forth
 				end
@@ -221,14 +225,68 @@ feature {NONE} -- Implementation
 				put_indentation
 				put ("ensures ")
 				put (l_item.expression)
-				put ("; //")
-				if l_item.tag /= Void then
-					put (" tag:" + l_item.tag)
-				end
-				put (" class:" + system.class_of_id (l_item.class_id).name_in_upper + ":" + l_item.line_number.out)
-				put ("%N")
+				put ("; // ")
+				put (assert_location ("post", l_item))
+				put_new_line
 
 				contract_writer.postconditions.forth
+			end
+		end
+
+	write_invariants
+			-- Write Boogie code for postconditions from `contract_writer'.
+		local
+			l_item: TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER; line_number: INTEGER]
+		do
+			put_comment_line ("User invariants (entry)")
+			from
+				contract_writer.invariants.start
+			until
+				contract_writer.invariants.after
+			loop
+				l_item := contract_writer.invariants.item
+				put_indentation
+				put ("free requires ")
+				put (l_item.expression)
+				put ("; // ")
+				put (assert_location ("inv", l_item))
+				put_new_line
+
+				contract_writer.invariants.forth
+			end
+			put_comment_line ("User invariants (exit)")
+			from
+				contract_writer.invariants.start
+			until
+				contract_writer.invariants.after
+			loop
+				l_item := contract_writer.invariants.item
+				put_indentation
+				put ("ensures ")
+				put (l_item.expression)
+				put ("; // ")
+				put (assert_location ("inv", l_item))
+				put_new_line
+
+				contract_writer.invariants.forth
+			end
+		end
+
+-- TODO: this is some code duplication from {EP_INSTRUCTION_WRITER}
+	assert_location (a_type: STRING; a_item: TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER; line_number: INTEGER]): STRING
+			-- Location of `a_assert'
+		require
+			a_type_not_void: a_type /= Void
+			a_item_not_void: a_item /= Void
+		do
+			Result := a_type.twin
+			Result.append (" ")
+			Result.append (system.class_of_id (a_item.class_id).name_in_upper)
+			Result.append (":")
+			Result.append (a_item.line_number.out)
+			if a_item.tag /= Void then
+				Result.append (" tag:")
+				Result.append (a_item.tag)
 			end
 		end
 

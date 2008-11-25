@@ -125,16 +125,10 @@ feature -- Access: Message strings
 			Result := locale.translation ("Verifier running")
 		end
 
-	message_verification_successful: STRING_32
+	message_verification_finished: STRING_32
 			-- Message that verification was successful
 		do
-			Result := locale.translation ("Verification successful")
-		end
-
-	message_verification_failed: STRING_32
-			-- Message that verification failed
-		do
-			Result := locale.translation ("Verification failed")
+			Result := locale.translation ("Verification finished")
 		end
 
 	message_code_generation_failed: STRING_32

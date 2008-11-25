@@ -26,6 +26,7 @@ feature {NONE} -- Initialization
 		do
 			create {LINKED_LIST [TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER; line_number: INTEGER]]} preconditions.make
 			create {LINKED_LIST [TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER; line_number: INTEGER]]} postconditions.make
+			create {LINKED_LIST [TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER; line_number: INTEGER]]} invariants.make
 			create full_precondition.make_empty
 			create full_postcondition.make_empty
 		end
@@ -40,6 +41,9 @@ feature -- Access
 
 	postconditions: !LIST [TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER; line_number: INTEGER]]
 			-- List of generated postconditions
+
+	invariants: !LIST [TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER; line_number: INTEGER]]
+			-- List of generated ivariants
 
 	full_precondition: !STRING
 			-- Full precondition
@@ -89,6 +93,7 @@ feature -- Basic operations
 			current_feature := Void
 			preconditions.wipe_out
 			postconditions.wipe_out
+			invariants.wipe_out
 			create full_precondition.make_empty
 			create full_postcondition.make_empty
 			has_weakened_preconditions := False
@@ -128,6 +133,9 @@ feature -- Basic operations
 				byte_code.formulate_inherited_assertions (current_feature.assert_id_set)
 				process_inherited_assertions (Context.inherited_assertion)
 			end
+
+-- TODO: reenable
+--			generate_invariants
 
 			generate_full_precondition
 			generate_full_postcondition
@@ -264,6 +272,52 @@ feature {NONE} -- Implementation
 					end
 				end
 				full_postcondition.append ("))")
+			end
+		end
+
+	generate_invariants
+			-- Generate invariants for current feature.
+			-- TODO: this is actually per class, we do too much work here.
+		local
+			l_classes: FIXED_LIST [CLASS_C]
+		do
+			process_invariants (current_feature.written_class)
+			from
+				l_classes := current_feature.written_class.parents_classes
+				l_classes.start
+			until
+				l_classes.after
+			loop
+				process_invariants (l_classes.item)
+				l_classes.forth
+			end
+		end
+
+
+	process_invariants (a_class: CLASS_C)
+			-- TODO
+		require
+			a_class_not_void: a_class /= Void
+		local
+			l_list: BYTE_LIST [BYTE_NODE]
+			l_assert: ASSERT_B
+		do
+			if inv_byte_server.has (a_class.class_id) then
+				from
+					l_list := inv_byte_server.item (a_class.class_id).byte_list
+					l_list.start
+				until
+					l_list.after
+				loop
+					l_assert ?= l_list.item
+					check l_assert /= Void end
+					expression_writer.reset
+					l_assert.expr.process (expression_writer)
+
+					invariants.extend ([l_assert.tag, expression_writer.expression.string, a_class.class_id, l_assert.line_number])
+
+					l_list.forth
+				end
 			end
 		end
 

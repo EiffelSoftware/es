@@ -148,10 +148,9 @@ feature -- Processing
 				output.put (output.indentation)
 				output.put ("assert (")
 				output.put (expression_writer.expression.string)
-				output.put (");")
-				if l_assert.tag /= Void then
-					output.put (" // Tag " + l_assert.tag)
-				end
+				output.put ("); // ")
+				output.put (assert_location ("check", l_assert))
+
 				output.put_new_line
 				a_node.check_list.forth
 			end
@@ -272,81 +271,107 @@ feature -- Processing
 
 	process_inspect_b (a_node: INSPECT_B)
 			-- Process `a_node'.
+		local
+			l_error: EP_UNSUPPORTED_ERROR
 		do
 			output.put_comment_line ("Inspect statement: ignored")
-				-- TODO: add error
+				-- TODO: implement
+			create l_error.make ("Inspect statement not supported")
+			errors.extend (l_error)
 		end
 
 	process_instr_call_b (a_node: INSTR_CALL_B)
 			-- Process `a_node'.
-		local
-			l_nested_b: NESTED_B
-			l_call_access_b: CALL_ACCESS_B
-			l_feature: FEATURE_I
-			l_attached_feature: !FEATURE_I
-			l_procedure_name, l_arguments: STRING
 		do
 			output.put_comment_line ("Instruction call --- " + file_location(a_node))
 
---			expression_writer.reset
---			a_node.call.process (expression_writer)
---			locals.append (expression_writer.locals)
---			output.put (expression_writer.side_effect.string)
---			output.put (expression_writer.expression.string)
-
-
-			l_nested_b ?= a_node.call
-			if l_nested_b /= Void then
-				l_call_access_b ?= l_nested_b.message
-			else
-				l_call_access_b ?= a_node.call
-			end
-			if l_call_access_b /= Void then
-				l_feature := system.class_of_id (l_call_access_b.written_in).feature_of_feature_id (l_call_access_b.feature_id)
-				l_attached_feature ?= l_feature
-				check l_feature /= Void end
-				check l_attached_feature.feature_name.is_equal (l_call_access_b.feature_name) end
-				l_procedure_name := name_generator.procedural_feature_name (l_attached_feature)
-
-				feature_list.record_feature_needed (l_attached_feature)
-
-				if l_nested_b /= Void then
-					expression_writer.reset
-					l_nested_b.target.process (expression_writer)
-					locals.append (expression_writer.locals)
-					output.put (expression_writer.side_effect.string)
-
-					l_arguments := expression_writer.expression.string
-				else
-					l_arguments := name_mapper.current_name
-				end
-				if l_call_access_b.parameters /= Void then
-					expression_writer.reset
-					l_call_access_b.parameters.process (expression_writer)
-					locals.append (expression_writer.locals)
-					output.put (expression_writer.side_effect.string)
-
-					l_arguments.append (expression_writer.expression.string)
-				end
-				output.put_line ("call " + l_procedure_name + "(" + l_arguments + ");")
-				output.put_new_line
-			else
-				check unknown_instruction: false end
-			end
+			expression_writer.reset
+			a_node.call.process (expression_writer)
+			locals.append (expression_writer.locals)
+				-- The actual expression of the call is ignored.
+				-- Only functional representations will be in the expression
+				-- while the actual calls are in the side effect.
+			output.put (expression_writer.side_effect.string)
 		end
 
 	process_loop_b (a_node: LOOP_B)
 			-- Process `a_node'.
+		local
+			l_head_label, l_end_label: STRING
+			l_until_expression, l_until_side_effect: STRING
+			l_invariant_asserts, l_invariant_side_effect: STRING
+			l_assert: ASSERT_B
 		do
-			output.put_comment_line ("Loop: ignored")
-				-- TODO: add error
+			output.put_comment_line ("Loop --- " + file_location(a_node))
+
+			create_new_label ("loop_head")
+			l_head_label := last_label
+			create_new_label ("loop_end")
+			l_end_label := last_label
+
+			safe_process (a_node.from_part)
+
+			expression_writer.reset
+			a_node.stop.process (expression_writer)
+			locals.append (expression_writer.locals)
+			l_until_expression := expression_writer.expression.string
+			l_until_side_effect := expression_writer.side_effect.string
+
+			create l_invariant_asserts.make_empty
+			create l_invariant_side_effect.make_empty
+			if a_node.invariant_part /= Void then
+				from
+					a_node.invariant_part.start
+				until
+					a_node.invariant_part.after
+				loop
+					l_assert ?= a_node.invariant_part.item
+					check l_assert /= Void end
+					expression_writer.reset
+					l_assert.process (expression_writer)
+					locals.append (expression_writer.locals)
+					l_invariant_asserts.append ("    assert (")
+					l_invariant_asserts.append (expression_writer.expression.string)
+					l_invariant_asserts.append ("); // ")
+					l_invariant_asserts.append (assert_location ("loop", l_assert))
+					l_invariant_asserts.append ("%N")
+					l_invariant_side_effect := expression_writer.side_effect.string
+					a_node.invariant_part.forth
+				end
+			end
+
+			-- TODO: generate assertion for variant
+
+			output.put (l_until_side_effect)
+			output.put (l_invariant_side_effect)
+			output.put (l_invariant_asserts)
+			output.put_line ("goto " + l_head_label + ", " + l_end_label + ";")
+			output.put_new_line
+
+			output.put ("  " + l_head_label + ":%N")
+			output.put_line ("assume (!(" + l_until_expression + "));")
+
+			safe_process (a_node.compound)
+
+			output.put (l_until_side_effect)
+			output.put (l_invariant_side_effect)
+			output.put (l_invariant_asserts)
+			output.put_line ("goto " + l_head_label + ", " + l_end_label + ";")
+			output.put_new_line
+
+			output.put ("  " + l_end_label + ":%N")
+
+			output.put_line ("assume (" + l_until_expression + ");")
 		end
 
 	process_retry_b (a_node: RETRY_B)
 			-- Process `a_node'.
+		local
+			l_error: EP_UNSUPPORTED_ERROR
 		do
 			output.put_comment_line ("Retry instruction: ignored")
-				-- TODO: add error
+			create l_error.make ("Retry instruction not supported")
+			errors.extend (l_error)
 		end
 
 	process_reverse_b (a_node: REVERSE_B)
@@ -354,6 +379,7 @@ feature -- Processing
 		do
 			output.put_comment_line ("Reverse assignment: treated as normal assignment!")
 			process_assign_b (a_node)
+				-- TODO: implement
 		end
 
 feature {NONE} -- Implementation
@@ -379,8 +405,27 @@ feature {NONE} -- Implementation
 
 	file_location (a_node: INSTR_B): STRING
 			-- Location of `a_node'
+		require
+			a_node_not_void: a_node /= Void
 		do
 			Result := current_feature.written_class.file_name + ":" + a_node.line_number.out
+		end
+
+	assert_location (a_type: STRING; a_assert: ASSERT_B): STRING
+			-- Location of `a_assert'
+		require
+			a_type_not_void: a_type /= Void
+			a_assert_not_void: a_assert /= Void
+		do
+			Result := a_type.twin
+			Result.append (" ")
+			Result.append (current_feature.written_class.name_in_upper)
+			Result.append (":")
+			Result.append (a_assert.line_number.out)
+			if a_assert.tag /= Void then
+				Result.append (" tag:")
+				Result.append (a_assert.tag)
+			end
 		end
 
 end
