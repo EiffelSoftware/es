@@ -28,8 +28,6 @@ feature
 
 	format (proc: PROCEDURE [FORMATTER, TUPLE [PARAGRAPH]])
 			-- Format the paragraph with the given formatter.
-		indexing
-			verify: False
 		require
 			proc /= Void
 			proc.precondition ([Current])

@@ -78,6 +78,9 @@ feature {NONE} -- Initialization
 			create expression.make
 			create side_effect.make
 			create {LINKED_LIST [TUPLE [name: STRING; type: STRING]]} locals.make
+			create {LINKED_LIST [STRING]}modified_objects.make
+			modified_objects.compare_objects
+			create {LINKED_LIST [STRING]}agents_called.make
 		ensure
 			name_mapper_set: name_mapper = a_name_mapper
 			old_handler_set: old_handler = a_old_handler
@@ -100,6 +103,12 @@ feature -- Access
 	locals: LIST [TUPLE [name: STRING; type: STRING]]
 			-- List of locals needed for side effects
 
+	modified_objects: !LIST [STRING]
+			-- TODO: should this be done in a more generic way?
+
+	agents_called: !LIST [STRING]
+			-- TODO: should this be done in a more generic way?
+
 feature -- Element change
 
 	set_name_mapper (a_mapper: like name_mapper)
@@ -117,6 +126,8 @@ feature -- Element change
 			side_effect.reset
 			side_effect.set_indentation ("    ")
 			locals.wipe_out
+			agents_called.wipe_out
+			modified_objects.wipe_out
 		end
 
 feature {BYTE_NODE} -- Visitors
@@ -131,6 +142,10 @@ feature {BYTE_NODE} -- Visitors
 			-- Process `a_node'.
 		do
 			expression.put (name_mapper.argument_name (a_node))
+				-- TODO: ?
+			if not modified_objects.has (name_mapper.argument_name (a_node)) then
+				modified_objects.extend (name_mapper.argument_name (a_node))
+			end
 		end
 
 	process_attribute_b (a_node: ATTRIBUTE_B)
@@ -147,6 +162,11 @@ feature {BYTE_NODE} -- Visitors
 			l_attached_feature ?= l_feature
 
 			feature_list.record_feature_needed (l_attached_feature)
+
+				-- TODO: ?
+			if not modified_objects.has (name_mapper.target_name) then
+				modified_objects.extend (name_mapper.target_name)
+			end
 
 --			l_field_name := name_generator.attribute_name (l_feature)
 --			expression.put (name_mapper.heap_name + "[" + name_mapper.target_name + ", " + l_field_name + "]")
@@ -421,6 +441,10 @@ feature {BYTE_NODE} -- Visitors
 			-- Process `a_node'.
 		do
 			expression.put (name_mapper.current_name)
+				-- TODO: ?
+			if not modified_objects.has (name_mapper.current_name) then
+				modified_objects.extend (name_mapper.current_name)
+			end
 		end
 
 	process_external_b (a_node: EXTERNAL_B)
@@ -631,6 +655,9 @@ feature {BYTE_NODE} -- Visitors
 			side_effect.put_line ("assume (forall heap: [ref, <x>name]x, old_heap: [ref, <x>name]x" + l_typed_arguments + " :: ")
 			side_effect.put_line ("            { agent.postcondition_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ") } // Trigger")
 			side_effect.put_line ("        agent.postcondition_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ") <==> " + l_contract_writer.full_postcondition + ");")
+			side_effect.put_line ("assume (forall $o: ref, $f: name :: ")
+			side_effect.put_line ("            { agent.modifies(" + l_agent_variable + ", $o, $f) } // Trigger")
+			side_effect.put_line ("        agent.modifies(" + l_agent_variable + ", $o, $f) <==> ($o == arg.a_paragraph));")
 
 				-- Store expression which is assigned in here
 			expression.put (l_agent_variable)
@@ -734,6 +761,8 @@ feature {NONE} -- Implementation
 				l_arguments := "Heap, "
 			elseif l_feature_name.is_equal ("postcondition") then
 				l_arguments := "Heap, old(Heap), "
+					-- TODO: this needs actually a code analysis
+				agents_called.extend (name_mapper.target_name)
 			elseif l_feature_name.is_equal ("call") then
 				l_arguments := ""
 			else

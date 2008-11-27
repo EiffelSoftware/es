@@ -80,6 +80,12 @@ feature -- Basic operations
 							related_regexp.captured_substring (2),
 							related_regexp.captured_substring (3),
 							related_regexp.captured_substring (4))
+					elseif syntax_error_regexp.matches (l_line) then
+						handle_syntax_error (
+							syntax_error_regexp.captured_substring (1),
+							syntax_error_regexp.captured_substring (2),
+							syntax_error_regexp.captured_substring (3),
+							syntax_error_regexp.captured_substring (4))
 					else
 						-- Ignored line
 					end
@@ -105,9 +111,6 @@ feature {NONE} -- Implementation
 
 	current_feature: FEATURE_I
 			-- Current feature
-
-	use_related_for_location: BOOLEAN
-			-- Use related error information for actual error location
 
 feature {NONE} -- Implementation
 
@@ -182,7 +185,6 @@ feature {NONE} -- Implementation
 	handle_assertion_error (a_source_line: STRING)
 			-- TODO
 		local
-			l_line_number: INTEGER
 			l_type: STRING
 		do
 			if assert_regexp.matches (a_source_line) then
@@ -200,8 +202,9 @@ feature {NONE} -- Implementation
 				else
 					check false end
 				end
-				l_line_number := assert_regexp.captured_substring (4).to_integer
-				last_error.set_position (l_line_number, 0)
+				if assert_regexp.captured_substring (4).is_integer then
+					last_error.set_position (assert_regexp.captured_substring (4).to_integer, 0)
+				end
 				if assert_regexp.match_count > 5 then
 					last_error.set_tag (assert_regexp.captured_substring (6))
 				end
@@ -237,42 +240,62 @@ feature {NONE} -- Implementation
 				input_lines.back
 			end
 
-			use_related_for_location := False
 			errors.extend (last_error)
 		end
 
 	handle_postcondition_error (a_source_line_number: INTEGER)
 			-- TODO
 		do
-			create last_error.make ("Postcondition violated")
-			last_error.set_description ("The postcondition of this feature is violated.")
-			last_error.set_class (current_class)
-			last_error.set_feature (current_feature)
-
-			use_related_for_location := True
-			errors.extend (last_error)
+				-- We have to look at the related section to know what happened
 		end
 
 	handle_related (a_file, a_line, a_column, a_message: STRING)
 			-- TODO
 		local
-			l_line_number: INTEGER
+			l_type, l_tag: STRING
 		do
-			check last_error /= Void end
-
-
 			if assert_regexp.matches (input_lines.i_th (a_line.to_integer)) then
-				l_line_number := assert_regexp.captured_substring (4).to_integer
-				if use_related_for_location then
-					last_error.set_position (l_line_number, 0)
-				end
+
 				if assert_regexp.match_count > 5 then
-					last_error.set_tag (assert_regexp.captured_substring (6))
+					l_tag := assert_regexp.captured_substring (6)
+				end
+
+				l_type := assert_regexp.captured_substring (2)
+				if l_type.is_equal ("pre") then
+					check last_error /= Void end
+					last_error.set_position (assert_regexp.captured_substring (4).to_integer, 0)
+					if l_tag /= Void then
+						last_error.set_tag (l_tag)
+					end
+				elseif l_type.is_equal ("post") then
+					create last_error.make ("Postcondition violated")
+					last_error.set_description ("The postcondition of this feature is violated.")
+					last_error.set_class (current_class)
+					last_error.set_feature (current_feature)
+					last_error.set_position (assert_regexp.captured_substring (4).to_integer, 0)
+					if l_tag /= Void then
+						last_error.set_tag (l_tag)
+					end
+					errors.extend (last_error)
+				elseif l_type.is_equal ("inv") then
+
+				elseif l_type.is_equal ("frame") then
+
 				end
 			else
-					-- TODO: Loop invariant will also be here
 				check false end
 			end
+		end
+
+	handle_syntax_error (a_file, a_line, a_column, a_message: STRING)
+			-- TODO
+		local
+			l_error: EP_GENERAL_ERROR
+		do
+			create l_error.make ("Syntax error in Boogie code")
+			l_error.set_description ("The generated Boogie code contains a syntax error.%NPlease report this to the developers of EVE Proofs.")
+
+			errors.extend (l_error)
 		end
 
 feature {NONE} -- Regular expressions
@@ -319,11 +342,18 @@ feature {NONE} -- Regular expressions
 			Result.compile ("^(.*)\(([0-9]*),([0-9]*)\): Related location: (.*)$")
 		end
 
+	syntax_error_regexp: RX_PCRE_REGULAR_EXPRESSION
+			-- TODO
+		once
+			create Result.make
+			Result.compile ("^(.*)\(([0-9]*),([0-9]*)\): syntax error: (.*)$")
+		end
+
 	assert_regexp: RX_PCRE_REGULAR_EXPRESSION
 			-- TODO
 		once
 			create Result.make
-			Result.compile ("^(.*)// (\w+) (\w+):(\d+)(\s*tag:(\w*))?$")
+			Result.compile ("^(.*)// (\w+) (\w+):(\w+)(\s*tag:(\w*))?$")
 		end
 
 	instruction_location_regexp: RX_PCRE_REGULAR_EXPRESSION

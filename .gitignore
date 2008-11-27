@@ -381,3 +381,4 @@ Src/tools/vms/ES5SH/*.wb
 Src/tools/vms/ES5SH/EIFGEN
 Src/tools/vms/ES5SH/EIFGENs
 Src/tools/vms/ES5SH/es5sh.rc
+examples/formatter/EIFGENs

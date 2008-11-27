@@ -1,7 +1,7 @@
 indexing
-	description : "Formatter example to show agent verification"
-	date        : "$Date$"
-	revision    : "$Revision$"
+	description: "Formatter example to show agent verification"
+	date: "$Date$"
+	revision: "$Revision$"
 
 class APPLICATION
 
@@ -15,15 +15,18 @@ feature {NONE} -- Initialization
 		do
 		end
 
-	apply_align_left (a_formatter: !FORMATTER; a_paragraph: !PARAGRAPH)
+	apply_align_left (a_formatter: !FORMATTER; a_paragraph: !PARAGRAPH; a_paragraph2: !PARAGRAPH)
 			-- Use `a_formatter' to left-align `a_paragraph'.
 		require
 			 not a_paragraph.is_left_aligned
+			 not a_paragraph2.is_left_aligned
+			 a_paragraph /= a_paragraph2
 		local
 			l_agent: PROCEDURE [FORMATTER, TUPLE [PARAGRAPH]]
 		do
 			l_agent := agent a_formatter.align_left
 			a_paragraph.format (l_agent)
+			check not a_paragraph2.is_left_aligned end
 		ensure
 			a_paragraph.is_left_aligned
 		end
@@ -37,6 +40,7 @@ feature {NONE} -- Initialization
 		do
 			l_agent := agent a_formatter.align_right
 			a_paragraph.format (l_agent)
+
 		ensure
 			not a_paragraph.is_left_aligned
 		end

@@ -49,6 +49,7 @@ feature -- Basic operations
 
 			put_comment_line ("Frame condition")
 			put_line ("modifies Heap;")
+			put_line ("ensures " + contract_writer.frame_expression + "; // frame " + a_feature.written_class.name_in_upper + ":" + a_feature.feature_name)
 
 			environment.output_buffer.set_indentation ("")
 			put_new_line
@@ -68,7 +69,7 @@ feature -- Basic operations
 
 			put_comment_line ("Frame condition")
 
-			-- TODO: reenable this line
+			-- TODO: Generate real frame condition
 			put_line ("modifies Heap;")
 			put_line ("ensures (forall $o: ref, $f: name :: { Heap[$o, $f] } ($o != null && old(Heap)[$o, $allocated] && $o != Current) ==> (old(Heap)[$o, $f] == Heap[$o, $f]));")
 
@@ -154,7 +155,7 @@ feature {NONE} -- Implementation
 			end
 
 			put (")")
-			if not a_feature.type.is_void then
+			if a_feature.has_return_value then
 				put (" returns (Result: " + type_mapper.boogie_type_for_type (a_feature.type) + ")")
 			end
 			put (";%N")

@@ -32,39 +32,15 @@ axiom (forall heap: [ref, <x>name]x, o: ref ::
 
 // Every reference stored in the heap is allocated
 // TODO: is this necessary?
-axiom (forall heap: [ref, <x>name]x, o: ref, f: <ref>name ::
-            { IsAllocated(heap, heap[o, f]) } // Trigger
-        IsHeap(heap) ==> IsAllocated(heap, heap[o, f]));
+//axiom (forall heap: [ref, <x>name]x, o: ref, f: <ref>name ::
+//            { IsAllocated(heap, heap[o, f]) } // Trigger
+//        IsHeap(heap) ==> IsAllocated(heap, heap[o, f]));
 
 // Void are always allocated
 axiom (forall heap: [ref, <x>name]x :: 
             { IsAllocated(heap, null) } // Trigger
         IsHeap(heap) ==> IsAllocated(heap, null));
 
-
-// ----------------------------------------------------------------------
-// Function call checks
-
-// Only objects which are not null and are allocated are valid to call.
-// Assert this function before every regular feature call.
-function ValidCallTarget(heap: [ref, <x>name]x, o: ref) returns (bool);
-axiom (forall heap: [ref, <x>name]x, o: ref ::
-            { ValidCallTarget(heap, o) } // Trigger
-        IsHeap(heap) ==> (ValidCallTarget(heap, o) <==> o != null && heap[o, $allocated]));
-
-// Only objects which are not null and are not yet allocated are valid for
-// creation. Assert this function before every call to a creation feature.
-function ValidCreateTarget(heap: [ref, <x>name]x, o: ref) returns (bool);
-axiom (forall heap: [ref, <x>name]x, o: ref  ::
-            { ValidCreateTarget(heap, o) } // Trigger
-        IsHeap(heap) ==> (ValidCreateTarget(heap, o) <==> o != null && !heap[o, $allocated]));
-
-// Created objects need to be allocated on the heap. Assert this function
-// after every call to a creation feature.
-function ValidCreation(heap: [ref, <x>name]x, o: ref) returns (bool);
-axiom (forall heap: [ref, <x>name]x, o: ref  ::
-            { ValidCreation(heap, o) } // Trigger
-        IsHeap(heap) ==> (ValidCreation(heap, o) <==> o != null && heap[o, $allocated]));
 
 // ----------------------------------------------------------------------
 // Set theory
@@ -187,10 +163,8 @@ procedure agent.create(
         Current: ref where Current != null && !Heap[Current,$allocated]    // The agent object
     );
     modifies Heap;
-    // Frame condition: agent creation has no side effects
-    ensures (forall $o: ref, $f: name :: 
-                { Heap[$o, $f] } // Trigger
-            ($o != null && old(Heap)[$o, $allocated] && $o != Current) ==> (old(Heap)[$o, $f] == Heap[$o, $f]));
+    // Frame condition
+    ensures frame.modifies_current (Heap, old(Heap), Current);
     // Object allocated
     free ensures Heap[Current, $allocated];
 
@@ -212,21 +186,37 @@ function agent.postcondition_3 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, 
 function agent.postcondition_4 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref, arg1: any, arg2: any, arg3: any, arg4: any) returns (bool);
 function agent.postcondition_5 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref, arg1: any, arg2: any, arg3: any, arg4: any, arg5: any) returns (bool);
 
+// Frame condition function
+
+function agent.modifies_0 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref) returns (bool);
+function agent.modifies_1 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref, arg1: any) returns (bool);
+function agent.modifies_2 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref, arg1: any, arg2: any) returns (bool);
+function agent.modifies_3 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref, arg1: any, arg2: any, arg3: any) returns (bool);
+function agent.modifies_4 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref, arg1: any, arg2: any, arg3: any, arg4: any) returns (bool);
+function agent.modifies_5 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref, arg1: any, arg2: any, arg3: any, arg4: any, arg5: any) returns (bool);
+
+
+function agent.modifies(agent: ref, $o: ref, $f: name) returns (bool);
+
 // Call functions for different number of arguments
 
 procedure agent.call_0 (
         Current: ref where Current != null && Heap[Current,$allocated]     // The agent object
     );
-    requires agent.precondition_0(Heap, Current);
+    requires agent.precondition_0(Heap, Current); // pre ROUTINE:call tag:precondition
     modifies Heap;
+    ensures (forall $o: ref, $f: name :: { Heap[$o, $f] } ($o != null && old(Heap)[$o, $allocated] && !agent.modifies(Current, $o, $f)) ==> (old(Heap)[$o, $f] == Heap[$o, $f])); // frame ROUTINE:call
+//    ensures agent.modifies_0(Heap, old(Heap), Current);
     ensures agent.postcondition_0(Heap, old(Heap), Current);
 
 procedure agent.call_1 (
         Current: ref where Current != null && Heap[Current,$allocated],     // The agent object
         arg1: any                                                           // First argument
     );
-    requires agent.precondition_1(Heap, Current, arg1);
+    requires agent.precondition_1(Heap, Current, arg1); // pre ROUTINE:call tag:precondition
     modifies Heap;
+    ensures (forall $o: ref, $f: name :: { Heap[$o, $f] } ($o != null && old(Heap)[$o, $allocated] && !agent.modifies(Current, $o, $f)) ==> (old(Heap)[$o, $f] == Heap[$o, $f])); // frame ROUTINE:call
+//    ensures agent.modifies_1(Heap, old(Heap), Current, arg1);
     ensures agent.postcondition_1(Heap, old(Heap), Current, arg1);
 
 procedure agent.call_2 (
@@ -234,8 +224,10 @@ procedure agent.call_2 (
         arg1: any,                                                          // First argument
         arg2: any                                                           // Second argument
     );
-    requires agent.precondition_2(Heap, Current, arg1, arg2);
+    requires agent.precondition_2(Heap, Current, arg1, arg2); // pre ROUTINE:call tag:precondition
     modifies Heap;
+    ensures (forall $o: ref, $f: name :: { Heap[$o, $f] } ($o != null && old(Heap)[$o, $allocated] && !agent.modifies(Current, $o, $f)) ==> (old(Heap)[$o, $f] == Heap[$o, $f])); // frame ROUTINE:call
+//    ensures agent.modifies_2(Heap, old(Heap), Current, arg1, arg2);
     ensures agent.postcondition_2(Heap, old(Heap), Current, arg1, arg2);
 
 procedure agent.call_3 (
@@ -246,6 +238,7 @@ procedure agent.call_3 (
     );
     requires agent.precondition_3(Heap, Current, arg1, arg2, arg3);
     modifies Heap;
+    ensures agent.modifies_3(Heap, old(Heap), Current, arg1, arg2, arg3);
     ensures agent.postcondition_3(Heap, old(Heap), Current, arg1, arg2, arg3);
 
 procedure agent.call_4 (
@@ -270,3 +263,56 @@ procedure agent.call_5 (
     requires agent.precondition_5(Heap, Current, arg1, arg2, arg3, arg4, arg5);
     modifies Heap;
     ensures agent.postcondition_5(Heap, old(Heap), Current, arg1, arg2, arg3, arg4, arg5);
+
+// Postcondition functions for different number of arguments and return values
+
+function agent.function.postcondition_0 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref, result: any) returns (bool);
+function agent.function.postcondition_1 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref, arg1: any, result: any) returns (bool);
+function agent.function.postcondition_2 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref, arg1: any, arg2: any, result: any) returns (bool);
+
+// Call functions for different number of arguments
+
+procedure agent.item_0 (
+        Current: ref where Current != null && Heap[Current,$allocated]     // The agent object
+    ) returns (Result: any);
+    requires agent.precondition_0(Heap, Current);
+    modifies Heap;
+    ensures agent.function.postcondition_0(Heap, old(Heap), Current, Result);
+
+procedure agent.item_1 (
+        Current: ref where Current != null && Heap[Current,$allocated],     // The agent object
+        arg1: any                                                           // First argument
+    ) returns (Result: any);
+    requires agent.precondition_1(Heap, Current, arg1);
+    modifies Heap;
+    ensures agent.function.postcondition_1(Heap, old(Heap), Current, arg1, Result);
+
+procedure agent.item_2 (
+        Current: ref where Current != null && Heap[Current,$allocated],     // The agent object
+        arg1: any,                                                          // First argument
+        arg2: any                                                           // Second argument
+    ) returns (Result: any);
+    requires agent.precondition_2(Heap, Current, arg1, arg2);
+    modifies Heap;
+    ensures agent.function.postcondition_2(Heap, old(Heap), Current, arg1, arg2, Result);
+
+// ----------------------------------------------------------------------
+// Frame conditions
+
+// Frame condition for a feature which modifies nothing.
+function frame.modifies_nothing(heap: [ref,<x>name]x, old_heap: [ref,<x>name]x) returns (bool);
+axiom (forall heap: [ref,<x>name]x, old_heap: [ref,<x>name]x :: 
+            { frame.modifies_nothing(heap, old_heap) } // Trigger
+        frame.modifies_nothing(heap, old_heap) <==> 
+            (forall $o: ref, $f: name :: 
+                    { heap[$o, $f] } // Trigger
+                ($o != null && old_heap[$o, $allocated]) ==> (old_heap[$o, $f] == heap[$o, $f])));
+
+// Frame condition for a feature which modifies only the `Current' object.
+function frame.modifies_current(heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, current: ref) returns (bool);
+axiom (forall heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, current: ref :: 
+            { frame.modifies_current(heap, old_heap, current) } // Trigger
+        frame.modifies_current(heap, old_heap, current) <==> 
+            (forall $o: ref, $f: name :: 
+                    { heap[$o, $f] } // Trigger
+                ($o != null && old_heap[$o, $allocated] && $o != current) ==> (old_heap[$o, $f] == heap[$o, $f])));

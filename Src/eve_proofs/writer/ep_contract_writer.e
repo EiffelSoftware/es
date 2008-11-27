@@ -29,6 +29,7 @@ feature {NONE} -- Initialization
 			create {LINKED_LIST [TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER; line_number: INTEGER]]} invariants.make
 			create full_precondition.make_empty
 			create full_postcondition.make_empty
+			create frame_expression.make_empty
 		end
 
 feature -- Access
@@ -55,6 +56,9 @@ feature -- Access
 
 	expression_writer: EP_EXPRESSION_WRITER
 			-- Writer used to generate contracts
+
+	frame_expression: !STRING
+			-- Frame expression
 
 feature -- Status report
 
@@ -97,6 +101,7 @@ feature -- Basic operations
 			create full_precondition.make_empty
 			create full_postcondition.make_empty
 			has_weakened_preconditions := False
+			create frame_expression.make_empty
 		ensure
 			current_feature_void: current_feature = Void
 			preconditions_reset: preconditions.is_empty
@@ -115,7 +120,7 @@ feature -- Basic operations
 			if byte_code /= Void then
 					-- TODO: where to do this?
 				Context.set_byte_code (byte_code)
-				
+
 				if byte_code.precondition /= Void then
 					process_assertion (byte_code.precondition, preconditions, current_feature.written_class.class_id)
 				end
@@ -139,6 +144,8 @@ feature -- Basic operations
 
 			generate_full_precondition
 			generate_full_postcondition
+
+			generate_frame_condition
 		end
 
 feature {NONE} -- Implementation
@@ -165,6 +172,8 @@ feature {NONE} -- Implementation
 				l_assert.expr.process (expression_writer)
 
 				a_list.extend ([l_assert.tag, expression_writer.expression.string, a_class_id, l_assert.line_number])
+
+				extend_frame_condition (expression_writer)
 
 				a_assertion.forth
 			end
@@ -319,6 +328,34 @@ feature {NONE} -- Implementation
 					l_list.forth
 				end
 			end
+		end
+
+	extend_frame_condition (a_expression_writer: EP_EXPRESSION_WRITER)
+			-- TODO
+		do
+			from
+				a_expression_writer.modified_objects.start
+			until
+				a_expression_writer.modified_objects.after
+			loop
+				frame_expression.append (" && $o!=" + a_expression_writer.modified_objects.item)
+				a_expression_writer.modified_objects.forth
+			end
+			from
+				a_expression_writer.agents_called.start
+			until
+				a_expression_writer.agents_called.after
+			loop
+				frame_expression.append (" && !agent.modifies(" + a_expression_writer.agents_called.item + ", $o, $f)")
+				a_expression_writer.agents_called.forth
+			end
+		end
+
+	generate_frame_condition
+			-- TODO
+		do
+			frame_expression.prepend ("(forall $o: ref, $f: name :: { Heap[$o, $f] } ($o != null && old(Heap)[$o, $allocated]")
+			frame_expression.append (") ==> (old(Heap)[$o, $f] == Heap[$o, $f]))")
 		end
 
 end
