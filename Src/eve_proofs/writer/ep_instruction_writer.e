@@ -1,7 +1,8 @@
 indexing
 	description:
 		"[
-			TODO
+			Code generator for instructions.
+			This class is used to process descendants of INSTR_B.
 		]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -37,11 +38,11 @@ create
 feature {NONE} -- Initialization
 
 	make
-			-- TODO
+			-- Initialize instruction writer.
 		do
 			create output.make
 			create name_mapper.make
-			create expression_writer.make (name_mapper, create {EP_INVALID_OLD_HANDLER}.make)
+			create expression_writer.make (name_mapper, create {EP_INVALID_OLD_HANDLER})
 			create {LINKED_LIST [TUPLE [name: STRING; type: STRING]]} locals.make
 		end
 
@@ -272,7 +273,7 @@ feature -- Processing
 	process_inspect_b (a_node: INSPECT_B)
 			-- Process `a_node'.
 		local
-			l_error: EP_UNSUPPORTED_ERROR
+			l_error: EP_GENERAL_ERROR
 		do
 			output.put_comment_line ("Inspect statement: ignored")
 				-- TODO: implement
@@ -367,7 +368,7 @@ feature -- Processing
 	process_retry_b (a_node: RETRY_B)
 			-- Process `a_node'.
 		local
-			l_error: EP_UNSUPPORTED_ERROR
+			l_error: EP_GENERAL_ERROR
 		do
 			output.put_comment_line ("Retry instruction: ignored")
 			create l_error.make ("Retry instruction not supported")

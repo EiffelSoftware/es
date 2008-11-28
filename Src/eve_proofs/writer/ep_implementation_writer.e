@@ -19,13 +19,16 @@ inherit {NONE}
 	SHARED_SERVER
 		export {NONE} all end
 
+	SHARED_BYTE_CONTEXT
+		export {NONE} all end
+
 create
 	make
 
 feature {NONE} -- Initialization
 
 	make
-			-- TODO
+			-- Initialize implementation writer.
 		do
 			create instruction_writer.make
 		end
@@ -72,6 +75,14 @@ feature -- Basic operations
 
 			if byte_server.has (a_feature.body_index) then
 				l_byte_code := byte_server.item (a_feature.body_index)
+
+					-- Set up byte context
+				Context.clear_feature_data
+				Context.clear_class_type_data
+				Context.init (a_feature.written_class.types.first)
+				Context.set_current_feature (a_feature)
+				Context.set_byte_code (l_byte_code)
+
 				if l_byte_code.compound /= Void and then not l_byte_code.compound.is_empty then
 					l_byte_code.compound.process (instruction_writer)
 				end
@@ -116,7 +127,6 @@ feature {NONE} -- Implementation
 		local
 			i: INTEGER
 		do
-				-- TODO: refactor
 			from
 				i := 1
 			until

@@ -1,7 +1,8 @@
 indexing
 	description:
 		"[
-			TODO
+			Name mapper to map arguments and other entities to
+			values needed for axiomatic agent properties.
 		]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -21,7 +22,7 @@ create
 feature {NONE} -- Initialization
 
 	make
-			-- TODO
+			-- Initialize name mapper.
 		do
 			internal_current_name := "a1"
 			internal_heap_name := "heap"
@@ -114,15 +115,15 @@ feature -- Element change
 feature {NONE} -- Implementation
 
 	internal_current_name: STRING
-			-- TODO
+			-- Internal vale for `current_name'
 
 	internal_heap_name: STRING
-			-- TODO
+			-- Internal vale for `heap_name'
 
 	internal_target_name: STRING
-			-- TODO
+			-- Internal vale for `target_name'
 
 	internal_result_name: STRING
-			-- TODO
+			-- Internal vale for `result_name'
 
 end

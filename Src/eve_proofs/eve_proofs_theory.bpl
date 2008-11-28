@@ -188,14 +188,6 @@ function agent.postcondition_5 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, 
 
 // Frame condition function
 
-function agent.modifies_0 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref) returns (bool);
-function agent.modifies_1 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref, arg1: any) returns (bool);
-function agent.modifies_2 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref, arg1: any, arg2: any) returns (bool);
-function agent.modifies_3 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref, arg1: any, arg2: any, arg3: any) returns (bool);
-function agent.modifies_4 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref, arg1: any, arg2: any, arg3: any, arg4: any) returns (bool);
-function agent.modifies_5 (heap: [ref,<x>name]x, old_heap: [ref,<x>name]x, agent: ref, arg1: any, arg2: any, arg3: any, arg4: any, arg5: any) returns (bool);
-
-
 function agent.modifies(agent: ref, $o: ref, $f: name) returns (bool);
 
 // Call functions for different number of arguments
@@ -206,7 +198,6 @@ procedure agent.call_0 (
     requires agent.precondition_0(Heap, Current); // pre ROUTINE:call tag:precondition
     modifies Heap;
     ensures (forall $o: ref, $f: name :: { Heap[$o, $f] } ($o != null && old(Heap)[$o, $allocated] && !agent.modifies(Current, $o, $f)) ==> (old(Heap)[$o, $f] == Heap[$o, $f])); // frame ROUTINE:call
-//    ensures agent.modifies_0(Heap, old(Heap), Current);
     ensures agent.postcondition_0(Heap, old(Heap), Current);
 
 procedure agent.call_1 (
@@ -216,7 +207,6 @@ procedure agent.call_1 (
     requires agent.precondition_1(Heap, Current, arg1); // pre ROUTINE:call tag:precondition
     modifies Heap;
     ensures (forall $o: ref, $f: name :: { Heap[$o, $f] } ($o != null && old(Heap)[$o, $allocated] && !agent.modifies(Current, $o, $f)) ==> (old(Heap)[$o, $f] == Heap[$o, $f])); // frame ROUTINE:call
-//    ensures agent.modifies_1(Heap, old(Heap), Current, arg1);
     ensures agent.postcondition_1(Heap, old(Heap), Current, arg1);
 
 procedure agent.call_2 (
@@ -227,7 +217,6 @@ procedure agent.call_2 (
     requires agent.precondition_2(Heap, Current, arg1, arg2); // pre ROUTINE:call tag:precondition
     modifies Heap;
     ensures (forall $o: ref, $f: name :: { Heap[$o, $f] } ($o != null && old(Heap)[$o, $allocated] && !agent.modifies(Current, $o, $f)) ==> (old(Heap)[$o, $f] == Heap[$o, $f])); // frame ROUTINE:call
-//    ensures agent.modifies_2(Heap, old(Heap), Current, arg1, arg2);
     ensures agent.postcondition_2(Heap, old(Heap), Current, arg1, arg2);
 
 procedure agent.call_3 (
@@ -236,9 +225,9 @@ procedure agent.call_3 (
         arg2: any,                                                          // Second argument
         arg3: any                                                           // Third argument
     );
-    requires agent.precondition_3(Heap, Current, arg1, arg2, arg3);
+    requires agent.precondition_3(Heap, Current, arg1, arg2, arg3); // pre ROUTINE:call tag:precondition
     modifies Heap;
-    ensures agent.modifies_3(Heap, old(Heap), Current, arg1, arg2, arg3);
+    ensures (forall $o: ref, $f: name :: { Heap[$o, $f] } ($o != null && old(Heap)[$o, $allocated] && !agent.modifies(Current, $o, $f)) ==> (old(Heap)[$o, $f] == Heap[$o, $f])); // frame ROUTINE:call
     ensures agent.postcondition_3(Heap, old(Heap), Current, arg1, arg2, arg3);
 
 procedure agent.call_4 (
@@ -248,8 +237,9 @@ procedure agent.call_4 (
         arg3: any,                                                          // Third argument
         arg4: any                                                           // Fourth argument
     );
-    requires agent.precondition_4(Heap, Current, arg1, arg2, arg3, arg4);
+    requires agent.precondition_4(Heap, Current, arg1, arg2, arg3, arg4); // pre ROUTINE:call tag:precondition
     modifies Heap;
+    ensures (forall $o: ref, $f: name :: { Heap[$o, $f] } ($o != null && old(Heap)[$o, $allocated] && !agent.modifies(Current, $o, $f)) ==> (old(Heap)[$o, $f] == Heap[$o, $f])); // frame ROUTINE:call
     ensures agent.postcondition_4(Heap, old(Heap), Current, arg1, arg2, arg3, arg4);
 
 procedure agent.call_5 (
@@ -260,8 +250,9 @@ procedure agent.call_5 (
         arg4: any,                                                          // Fourth argument
         arg5: any                                                           // Fifth argument
     );
-    requires agent.precondition_5(Heap, Current, arg1, arg2, arg3, arg4, arg5);
+    requires agent.precondition_5(Heap, Current, arg1, arg2, arg3, arg4, arg5); // pre ROUTINE:call tag:precondition
     modifies Heap;
+    ensures (forall $o: ref, $f: name :: { Heap[$o, $f] } ($o != null && old(Heap)[$o, $allocated] && !agent.modifies(Current, $o, $f)) ==> (old(Heap)[$o, $f] == Heap[$o, $f])); // frame ROUTINE:call
     ensures agent.postcondition_5(Heap, old(Heap), Current, arg1, arg2, arg3, arg4, arg5);
 
 // Postcondition functions for different number of arguments and return values

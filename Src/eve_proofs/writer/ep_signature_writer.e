@@ -25,10 +25,10 @@ create
 feature {NONE} -- Initialization
 
 	make
-			-- TODO
+			-- Initialize signature writer.
 		do
 			create name_mapper.make
-			create expression_writer.make (name_mapper, create {EP_OLD_KEYWORD_HANDLER}.make)
+			create expression_writer.make (name_mapper, create {EP_OLD_KEYWORD_HANDLER})
 			create contract_writer.make
 			contract_writer.set_expression_writer (expression_writer)
 		end
@@ -81,7 +81,7 @@ feature -- Basic operations
 		end
 
 	write_attribute_signature (a_feature: !FEATURE_I)
-			-- TODO
+			-- Write Boogie code signature of `a_feature' as an attribute.
 		require
 			is_attribute: a_feature.is_attribute
 		local
@@ -107,16 +107,17 @@ feature -- Basic operations
 feature {NONE} -- Implementation
 
 	expression_writer: !EP_EXPRESSION_WRITER
-			-- TODO
+			-- Expression writer used for the contract writer
 
 	contract_writer: !EP_CONTRACT_WRITER
-			-- TODO
+			-- Contract writer used to generate Boogie code
 
 	name_mapper: !EP_NORMAL_NAME_MAPPER
-			-- TODO
+			-- Name mapper used for the expression writer
 
 	write_procedure_definition (a_feature: !FEATURE_I; a_procedure_name: STRING)
-			-- TODO
+			-- Write procedure definition of feature `a_feature_name' 
+			-- using `a_procedure_name' for the Boogie name.
 		local
 			l_argument_name: STRING
 			i: INTEGER

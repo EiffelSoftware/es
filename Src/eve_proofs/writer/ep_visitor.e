@@ -1,7 +1,7 @@
 indexing
 	description:
 		"[
-			TODO
+			Parent class for byte node visitors.
 		]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -277,8 +277,7 @@ feature {BYTE_NODE} -- Visitors
 	process_custom_attribute_b (a_node: CUSTOM_ATTRIBUTE_B)
 			-- Process `a_node'.
 		do
-			safe_process (a_node.creation_expr)
-			-- TODO: Names arguments
+			check no_cil: false end
 		end
 
 	process_debug_b (a_node: DEBUG_B)
@@ -487,7 +486,7 @@ feature {BYTE_NODE} -- Visitors
 	process_routine_creation_b (a_node: ROUTINE_CREATION_B)
 			-- Process `a_node'.
 		do
-			-- TODO: Do not understand this
+			safe_process (a_node.arguments)
 		end
 
 	process_string_b (a_node: STRING_B)
@@ -604,7 +603,7 @@ feature {BYTE_NODE} -- Visitors
 	process_std_byte_code (a_node: STD_BYTE_CODE)
 			-- Process `a_node'.
 		do
-			-- TODO
+			safe_process (a_node.compound)
 		end
 
 end

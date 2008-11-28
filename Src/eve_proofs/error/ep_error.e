@@ -24,6 +24,9 @@ inherit {NONE}
 	ERROR_CONTEXT_PRINTER
 		export {NONE} all end
 
+	SHARED_EP_ENVIRONMENT
+		export {NONE} all end
+
 	SHARED_EP_CONTEXT
 		export {NONE} all end
 
@@ -40,7 +43,7 @@ feature -- Access
 	message: STRING
 			-- Error message
 
-	code: STRING_8 is "EVE"
+	code: STRING_8 is "EVE Proofs"
 			-- Error code
 
 feature -- Element change
@@ -73,6 +76,9 @@ feature -- Output
 	trace_single_line (a_text_formatter: TEXT_FORMATTER) is
 			-- Display short error, single line message in `a_text_formatter'.
 		do
+			a_text_formatter.add_error (Current, code)
+			a_text_formatter.add (":")
+			a_text_formatter.add_space
 			a_text_formatter.add (message)
 		end
 

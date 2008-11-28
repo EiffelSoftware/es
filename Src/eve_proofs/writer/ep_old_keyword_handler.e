@@ -1,7 +1,7 @@
 indexing
 	description:
 		"[
-			TODO
+			Old Handler which uses the `old' keyword.
 		]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -11,16 +11,6 @@ class EP_OLD_KEYWORD_HANDLER
 inherit
 
 	EP_OLD_HANDLER
-
-create
-	make
-
-feature {NONE} -- Initialization
-
-	make
-			-- TODO
-		do
-		end
 
 feature -- Processing
 

@@ -1,7 +1,7 @@
 indexing
 	description:
 		"[
-			TODO
+			Old handler which maps old expressions using a second heap.
 		]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -18,7 +18,7 @@ create
 feature {NONE} -- Initialization
 
 	make (a_old_heap_name: STRING)
-			-- TODO
+			-- Initialize old handler with name of old heap as `a_old_heap_name'.
 		do
 			old_heap_name := a_old_heap_name
 		ensure

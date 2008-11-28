@@ -1,7 +1,7 @@
 indexing
 	description:
 		"[
-			TODO
+			Handler which issues an error for old expressions.
 		]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -12,25 +12,15 @@ inherit
 
 	EP_OLD_HANDLER
 
-create
-	make
-
-feature {NONE} -- Initialization
-
-	make
-			-- TODO
-		do
-		end
-
 feature -- Processing
 
 	process_un_old_b (a_node: UN_OLD_B)
 			-- Process `a_node'.
 		local
-			l_error: EP_UNSUPPORTED_ERROR
+			l_error: EP_GENERAL_ERROR
 		do
-				-- TODO: internationalization
-			create l_error.make ("Old expression in this context not allowed")
+			create l_error.make (names.error_old_expression_not_allowed)
+			l_error.set_description (names.description_old_expression_not_allowed)
 			l_error.set_from_context
 			errors.extend (l_error)
 		end

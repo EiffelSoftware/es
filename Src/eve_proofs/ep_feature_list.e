@@ -16,7 +16,6 @@ feature {NONE} -- Implementation
 	make
 			-- Initialize object with emtpy lists.
 		do
-				-- TODO: use more efficient data structures
 			create {LINKED_LIST [!FEATURE_I]} creation_routines_needed.make
 			create {LINKED_LIST [!FEATURE_I]} creation_routines_generated.make
 			create {LINKED_LIST [!FEATURE_I]} features_needed.make

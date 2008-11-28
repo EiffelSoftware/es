@@ -22,7 +22,7 @@ feature -- Basic operations
 		local
 			l_functional_name, l_type, l_value: STRING
 			l_constant: CONSTANT_I
-			l_error: EP_UNSUPPORTED_ERROR
+			l_error: EP_GENERAL_ERROR
 		do
 			l_constant ?= a_feature
 			check l_constant /= Void end
@@ -41,8 +41,8 @@ feature -- Basic operations
 			elseif l_constant.value.is_character then
 				l_value := character_value (l_constant.value)
 			else
-					-- TODO: internationalization
-				create l_error.make ("Unsupported constant type")
+				create l_error.make (names.error_constant_type_not_supported)
+				l_error.set_description (names.description_constant_type_not_supported)
 				l_error.set_class (a_feature.written_class)
 				l_error.set_feature (a_feature)
 				l_error.set_location (a_feature.body.body.type.start_location)

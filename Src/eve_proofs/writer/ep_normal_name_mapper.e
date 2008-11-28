@@ -1,7 +1,7 @@
 indexing
 	description:
 		"[
-			TODO
+			Name mapper used to map entities to their Boogie code counterpart.
 		]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -21,7 +21,7 @@ create
 feature {NONE} -- Initialization
 
 	make
-			-- TODO
+			-- Initialize name mapper.
 		do
 			internal_current_name := "Current"
 			internal_heap_name := "Heap"
@@ -121,15 +121,15 @@ feature -- Element change
 feature {NONE} -- Implementation
 
 	internal_current_name: STRING
-			-- TODO
+			-- Internal vale for `current_name'
 
 	internal_heap_name: STRING
-			-- TODO
+			-- Internal vale for `heap_name'
 
 	internal_target_name: STRING
-			-- TODO
+			-- Internal vale for `target_name'
 
 	internal_result_name: STRING
-			-- TODO
+			-- Internal vale for `result_name'
 
 end

@@ -13,6 +13,9 @@ inherit {NONE}
 	SHARED_EP_ENVIRONMENT
 		export {NONE} all end
 
+	SHARED_WORKBENCH
+		export {NONE} all end
+
 create
 	make
 
@@ -181,8 +184,15 @@ feature {NONE} -- Implementation
 
 	boogie_output_file_name: STRING
 			-- Output file name for Boogie code file
+		local
+			l_output_path: FILE_NAME
 		do
-				-- TODO: move to EIFGENs directory
+			create l_output_path.make_from_string (system.eiffel_project.project_directory.target_path)
+			l_output_path.extend ("Boogie")
+			l_output_path.extend ("output.bpl")
+			Result := l_output_path
+
+				-- TODO: remove this to use the EIFGENs directory
 			Result := "C:\Temp\output.bpl"
 		end
 

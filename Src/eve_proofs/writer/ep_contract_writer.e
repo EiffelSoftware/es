@@ -115,10 +115,21 @@ feature -- Basic operations
 		require
 			current_feature_set: current_feature /= Void
 			expression_writer_set: expression_writer /= Void
+		local
+			l_previous_byte_code: BYTE_CODE
+			l_previous_feature: FEATURE_I
 		do
+				-- Save byte context
+			l_previous_byte_code := Context.byte_code
+			l_previous_feature := Context.current_feature
+				-- Set up byte context
+			Context.clear_feature_data
+			Context.clear_class_type_data
+			Context.init (current_feature.written_class.types.first)
+			Context.set_current_feature (current_feature)
+
 				-- `byte_code' is Void if feature has no body, i.e. no contracts
 			if byte_code /= Void then
-					-- TODO: where to do this?
 				Context.set_byte_code (byte_code)
 
 				if byte_code.precondition /= Void then
@@ -129,10 +140,6 @@ feature -- Basic operations
 				end
 			end
 
-				-- TODO: handle case of generics
-			Context.init (current_feature.written_class.types.first)
-			Context.clear_feature_data
-			Context.set_current_feature (current_feature)
 			Context.inherited_assertion.wipe_out
 			if current_feature.assert_id_set /= Void then
 				byte_code.formulate_inherited_assertions (current_feature.assert_id_set)
@@ -146,6 +153,17 @@ feature -- Basic operations
 			generate_full_postcondition
 
 			generate_frame_condition
+
+				-- Restore byte context
+			Context.clear_feature_data
+			Context.clear_class_type_data
+			if l_previous_feature /= Void then
+				Context.init (l_previous_feature.written_class.types.first)
+				Context.set_current_feature (l_previous_feature)
+			end
+			if l_previous_byte_code /= Void then
+				Context.set_byte_code (l_previous_byte_code)
+			end
 		end
 
 feature {NONE} -- Implementation
@@ -234,7 +252,7 @@ feature {NONE} -- Implementation
 			if preconditions.is_empty then
 				full_precondition.append ("(true)")
 			else
-				full_precondition.append ("((")
+				full_precondition.append ("(((")
 				from
 					preconditions.start
 				until
@@ -248,16 +266,15 @@ feature {NONE} -- Implementation
 					preconditions.forth
 
 					if preconditions.after then
--- TODO: refactor
---						full_precondition.append (")")
+						-- Do nothing
 					elseif l_current_class_id /= preconditions.item.class_id then
-						full_precondition.append (") || (")
+						full_precondition.append (")) || ((")
 						l_current_class_id := preconditions.item.class_id
 					else
 						full_precondition.append (") && (")
 					end
 				end
-				full_precondition.append ("))")
+				full_precondition.append (")))")
 			end
 		end
 

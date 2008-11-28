@@ -23,17 +23,17 @@ create
 feature {NONE} -- Initialization
 
 	make
-			-- TODO
+			-- Initialize function writer.
 		do
 			create name_mapper.make
-			create expression_writer.make (name_mapper, create {EP_INVALID_OLD_HANDLER}.make)
+			create expression_writer.make (name_mapper, create {EP_INVALID_OLD_HANDLER})
 			create contract_writer.make
 		end
 
 feature -- Basic operations
 
 	write_functional_representation (a_feature: !FEATURE_I)
-			-- TODO
+			-- Write functional representation of `a_feature'.
 		require
 			is_query: not a_feature.type.is_void
 		local
@@ -90,12 +90,12 @@ feature -- Basic operations
 feature {NONE} -- Implementation
 
 	name_mapper: !EP_NORMAL_NAME_MAPPER
-			-- TODO
+			-- Name mapper used for the expression writer
 
 	expression_writer: !EP_EXPRESSION_WRITER
-			-- TODO
+			-- Expression writer used for the contracts
 
 	contract_writer: !EP_CONTRACT_WRITER
-			-- TODO
+			-- Contract writer used to generate the contracts
 
 end

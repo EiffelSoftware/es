@@ -15,6 +15,12 @@ inherit {NONE}
 
 feature -- Access: Error strings
 
+	description_no_description: STRING_32
+			-- Error description that no description is available
+		do
+			Result := locale.translation ("No description available.")
+		end
+
 	error_unsupported_platform: STRING_32
 			-- Error message for unsupported platform
 		do
@@ -69,6 +75,126 @@ feature -- Access: Error strings
 			Result := locale.translation ("Unsupported constant type")
 		end
 
+	error_unknown_verification_error: STRING_32
+			-- Error message that an unknown error occured
+		do
+			Result := locale.translation ("An unknown error occured")
+		end
+
+	description_unknown_verification_error: STRING_32
+			-- Error description that an unknown error occured
+		do
+			Result := locale.translation ("Boogie produced an unknown error.%NPlease report this to the developers of EVE Proofs.")
+		end
+
+	error_precondition_violation: STRING_32
+			-- Error message that precondition is violated
+		do
+			Result := locale.translation ("Precondition of call may be violated")
+		end
+
+	description_precondition_violation: STRING_32
+			-- Error description that precondition is violated
+		do
+			Result := locale.translation ("The precondition of this call may be violated.")
+		end
+
+	error_postcondition_violation: STRING_32
+			-- Error message that postcondition is violated
+		do
+			Result := locale.translation ("Postcondition may be violated")
+		end
+
+	description_postcondition_violation: STRING_32
+			-- Error description that postcondition is violated
+		do
+			Result := locale.translation ("The postcondition of this feature may be violated.")
+		end
+
+	error_invariant_violation: STRING_32
+			-- Error message that invariant is violated
+		do
+			Result := locale.translation ("Invariant may be violated")
+		end
+
+	description_invariant_violation: STRING_32
+			-- Error description that invariant is violated
+		do
+			Result := locale.translation ("The invariant of this class may be violated at the end of the feature.")
+		end
+
+	error_loop_invariant_violation: STRING_32
+			-- Error message that loop invariant is violated
+		do
+			Result := locale.translation ("Loop invariant may be violated")
+		end
+
+	description_loop_invariant_violation: STRING_32
+			-- Error description that loop invariant is violated
+		do
+			Result := locale.translation ("This loop invariant may be violated.")
+		end
+
+	error_check_violation: STRING_32
+			-- Error message that check instruction is violated
+		do
+			Result := locale.translation ("Check may be violated")
+		end
+
+	description_check_violation: STRING_32
+			-- Error description that check is violated
+		do
+			Result := locale.translation ("This check instruction may be violated.")
+		end
+
+	error_frame_violation: STRING_32
+			-- Error message that frame condition is violated
+		do
+			Result := locale.translation ("Frame condition may be violated")
+		end
+
+	description_frame_violation: STRING_32
+			-- Error description that frame condition is violated
+		do
+			Result := locale.translation ("The frame condition of this feature may be violated.")
+		end
+
+	error_syntax_error: STRING_32
+			-- Error message that a syntax error occured
+		do
+			Result := locale.translation ("Syntax error in Boogie code")
+		end
+
+	description_syntax_error: STRING_32
+			-- Error description that a syntax error occured
+		do
+			Result := locale.translation ("The generated Boogie code contains a syntax error.%NPlease report this to the developers of EVE Proofs.")
+		end
+
+	error_old_expression_not_allowed: STRING_32
+			-- Error message that a syntax error occured
+		do
+			Result := locale.translation ("Old expression not allowed")
+		end
+
+	description_old_expression_not_allowed: STRING_32
+			-- Error description that a syntax error occured
+		do
+			Result := locale.translation ("An old expression in this context is not allowed for the verification.")
+		end
+
+	error_constant_type_not_supported: STRING_32
+			-- Error message that a syntax error occured
+		do
+			Result := locale.translation ("Constant type not supported")
+		end
+
+	description_constant_type_not_supported: STRING_32
+			-- Error description that a syntax error occured
+		do
+			Result := locale.translation ("The type of the constant is not supported.")
+		end
+
 feature -- Access: Message strings
 
 	message_eve_proofs_started, window_message_eve_proofs_started: STRING_32
@@ -86,7 +212,7 @@ feature -- Access: Message strings
 	message_generating_boogie_code_for_class (a_class: STRING_GENERAL): STRING_32
 			-- Message that Boogie code is generated for `a_class'
 		do
-			Result := locale.formatted_string (locale.translation (" - Generating code for class $1"), [a_class])
+			Result := locale.formatted_string (locale.translation (" - Class $1"), [a_class])
 		end
 
 	message_generating_boogie_class_ignored (a_class: STRING_GENERAL): STRING_32
@@ -135,6 +261,36 @@ feature -- Access: Message strings
 			-- Message that code generation failed
 		do
 			Result := locale.translation ("Code generation failed")
+		end
+
+	message_boogie_version (a_version: STRING_GENERAL): STRING_32
+			-- Message which Boogie version is used
+		do
+			Result := locale.formatted_string (locale.translation ("Boogie version $1"), [a_version])
+		end
+
+	message_boogie_finished (a_verified, a_errors: STRING_GENERAL): STRING_32
+			-- Message that Boogie has finished
+		do
+			Result := locale.formatted_string (locale.translation ("Boogie finished ($1 verified, $2 errors)"), [a_verified, a_errors])
+		end
+
+	message_verifying: STRING_32
+			-- Message that Boogie is verifying
+		do
+			Result := locale.translation ("Veryfing")
+		end
+
+	message_failed: STRING_32
+			-- Message that Boogie verification failed
+		do
+			Result := locale.translation ("failed")
+		end
+
+	message_successful: STRING_32
+			-- Message that Boogie verification was successful
+		do
+			Result := locale.translation ("successful")
 		end
 
 feature -- Access: Command strings

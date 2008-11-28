@@ -1,7 +1,7 @@
 indexing
 	description:
 		"[
-			TODO
+			Launcher to start an executable.
 		]"
 	date: "$Date$"
 	revision: "$Revision$"

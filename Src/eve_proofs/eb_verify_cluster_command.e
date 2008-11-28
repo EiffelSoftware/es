@@ -80,16 +80,42 @@ feature -- Execution
 			-- Create a new tab which stone is `a_stone' and create at side of `a_content' if exists.
 		local
 			l_cluster_stone: CLUSTER_STONE
+			l_save_confirm: ES_DISCARDABLE_COMPILE_SAVE_FILES_PROMPT
+			l_classes: DS_ARRAYED_LIST [CLASS_I]
 		do
 				-- Check for a valid stone and start verification
 			l_cluster_stone ?= a_stone
 			if l_cluster_stone /= Void then
+				if not eiffel_project.is_compiling then
 
-					-- Compile the project and only verify if it was succesfull
-				eiffel_project.quick_melt
-				if workbench.successful then
-					verify_cluster (l_cluster_stone.group)
+					if window_manager.has_modified_windows then
+						create l_classes.make_default
+						window_manager.all_modified_classes.do_all (agent l_classes.force_last)
+						create l_save_confirm.make (l_classes)
+						l_save_confirm.set_button_action (l_save_confirm.dialog_buttons.yes_button, agent save_compile_and_verify (l_cluster_stone.group))
+						l_save_confirm.set_button_action (l_save_confirm.dialog_buttons.no_button, agent compile_and_verify (l_cluster_stone.group))
+						l_save_confirm.show_on_active_window
+					else
+						compile_and_verify (l_cluster_stone.group)
+					end
 				end
+			end
+		end
+
+	save_compile_and_verify (a_group: CONF_GROUP)
+			-- Save modified windows, compile project and start verification.
+		do
+			window_manager.save_all_before_compiling
+			compile_and_verify (a_group)
+		end
+
+	compile_and_verify (a_group: CONF_GROUP)
+			-- Compile project and start verification.
+		do
+				-- Compile the project and only verify if it was succesfull
+			eiffel_project.quick_melt
+			if workbench.successful then
+				verify_cluster (a_group)
 			end
 		end
 
@@ -172,7 +198,6 @@ feature {NONE} -- Implementation
 	menu_name: STRING_GENERAL
 			-- Name as it appears in the menu (with & symbol).
 		do
-				-- TODO: internationalization
 			Result := names.verify_cluster_menu_name
 		end
 

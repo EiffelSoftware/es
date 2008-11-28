@@ -55,8 +55,7 @@ feature -- Output
 			if description /= Void then
 				a_text_formatter.add (description)
 			else
-					-- TODO: internationalization
-				a_text_formatter.add ("No description available")
+				a_text_formatter.add (names.description_no_description)
 			end
 			a_text_formatter.add_new_line
 		end

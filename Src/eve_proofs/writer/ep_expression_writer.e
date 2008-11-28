@@ -1,7 +1,8 @@
 indexing
 	description:
 		"[
-			Boogie code writer to generate expressions
+			Boogie code writer to generate expressions.
+			This class is used to process descendants of EXPR_B.
 		]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -565,7 +566,6 @@ feature {BYTE_NODE} -- Visitors
 			l_expression_writer: !EP_EXPRESSION_WRITER
 			l_name_mapper: !EP_AGENT_NAME_MAPPER
 			l_open_argument_count, l_closed_argument_count: INTEGER
-			l_open_argument_mapping: INTEGER
 			l_arguments, l_typed_arguments: STRING
 			l_temp_expression: STRING
 			i, j, k: INTEGER

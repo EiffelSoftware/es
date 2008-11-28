@@ -1,7 +1,7 @@
 indexing
 	description:
 		"[
-			TODO
+			Boogie code generation.
 		]"
 	date: "$Date$"
 	revision: "$Revision$"
