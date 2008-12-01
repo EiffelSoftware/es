@@ -8,6 +8,12 @@ class SHARED_EP_ENVIRONMENT
 
 feature -- Access
 
+	eve_proofs: EVE_PROOFS
+			-- Shared EVE Proofs
+		once
+			create Result.make
+		end
+
 	environment: EP_ENVIRONMENT
 			-- Shared Eve Proofs environement
 		once

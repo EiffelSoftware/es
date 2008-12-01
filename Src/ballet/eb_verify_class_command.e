@@ -2,8 +2,9 @@ indexing
 	description	: "Command to statically verify a class with Ballet"
 	date		: "$Date$"
 	revision	: "$Revision$"
-
-class EB_VERIFY_CLASS_COMMAND
+-- done to keep file in subversion for the moment
+-- class is moved into eve_proofs directory
+class EB_VERIFY_CLASS_COMMAND_OBSOLETE
 
 inherit
 

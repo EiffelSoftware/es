@@ -796,7 +796,7 @@ feature {NONE} -- Implementation
 
 			if a_feature.has_return_value then
 				create_new_local (a_feature.type)
-				side_effect.put_line (last_local + " := call " + l_boogie_function + "(" + l_arguments + ");")
+				side_effect.put_line ("call " + last_local + " := " + l_boogie_function + "(" + l_arguments + ");")
 			else
 				side_effect.put_line ("call " + l_boogie_function + "(" + l_arguments + ");")
 			end
@@ -828,7 +828,7 @@ feature {NONE} -- Implementation
 
 			if a_feature.has_return_value then
 				create_new_local (a_feature.type)
-				side_effect.put_line (last_local + " := call " + l_procedure_name + "(" + l_arguments + ");")
+				side_effect.put_line ("call " + last_local + " := " + l_procedure_name + "(" + l_arguments + ");")
 			else
 				side_effect.put_line ("call " + l_procedure_name + "(" + l_arguments + ");")
 			end
