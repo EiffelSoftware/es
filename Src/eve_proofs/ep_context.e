@@ -77,4 +77,18 @@ feature -- Basic operations
 			column_number := 0
 		end
 
+feature -- Output
+
+	assert_location (a_type: STRING): STRING
+			-- Location of `a_assert'
+		require
+			a_type_not_void: a_type /= Void
+		do
+			Result := a_type.twin
+			Result.append (" ")
+			Result.append (current_feature.written_class.name_in_upper)
+			Result.append (":")
+			Result.append (line_number.out)
+		end
+
 end

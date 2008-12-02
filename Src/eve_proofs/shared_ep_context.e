@@ -10,7 +10,7 @@ class SHARED_EP_CONTEXT
 
 feature -- Access
 
-	ev_context: !EP_CONTEXT
+	ep_context: !EP_CONTEXT
 			-- Shared access to context
 		once
 			create Result

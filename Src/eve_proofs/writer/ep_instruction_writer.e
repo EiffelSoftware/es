@@ -89,11 +89,13 @@ feature -- Processing
 			l_result: RESULT_B
 			l_feature: !FEATURE_I
 		do
+			ep_context.set_line_number (a_node.line_number)
+			output.put_comment_line ("Assignment --- " + file_location(a_node))
+
 			expression_writer.reset
 			a_node.source.process (expression_writer)
 			locals.append (expression_writer.locals)
 
-			output.put_comment_line ("Assignment --- " + file_location(a_node))
 			output.put (expression_writer.side_effect.string)
 
 			output.put (output.indentation)
@@ -132,6 +134,7 @@ feature -- Processing
 		local
 			l_assert: ASSERT_B
 		do
+			ep_context.set_line_number (a_node.line_number)
 			output.put_comment_line ("Check instruction --- " + file_location(a_node))
 			from
 				a_node.check_list.start
@@ -186,6 +189,9 @@ feature -- Processing
 			l_condition: STRING
 			l_elseif: ELSIF_B
 		do
+			ep_context.set_line_number (a_node.line_number)
+			output.put_comment_line ("Conditional --- " + file_location(a_node))
+
 			create_new_label ("if_branch")
 			l_if_label := last_label
 			create_new_label ("else_branch")
@@ -194,7 +200,6 @@ feature -- Processing
 			l_end_label := last_label
 
 				-- Branch condition
-			output.put_comment_line ("Conditional --- " + file_location(a_node))
 			expression_writer.reset
 			a_node.condition.process (expression_writer)
 			locals.append (expression_writer.locals)
@@ -275,6 +280,7 @@ feature -- Processing
 		local
 			l_error: EP_GENERAL_ERROR
 		do
+			ep_context.set_line_number (a_node.line_number)
 			output.put_comment_line ("Inspect statement: ignored")
 				-- TODO: implement
 			create l_error.make ("Inspect statement not supported")
@@ -284,6 +290,7 @@ feature -- Processing
 	process_instr_call_b (a_node: INSTR_CALL_B)
 			-- Process `a_node'.
 		do
+			ep_context.set_line_number (a_node.line_number)
 			output.put_comment_line ("Instruction call --- " + file_location(a_node))
 
 			expression_writer.reset
@@ -303,6 +310,7 @@ feature -- Processing
 			l_invariant_asserts, l_invariant_side_effect: STRING
 			l_assert: ASSERT_B
 		do
+			ep_context.set_line_number (a_node.line_number)
 			output.put_comment_line ("Loop --- " + file_location(a_node))
 
 			create_new_label ("loop_head")
@@ -370,6 +378,7 @@ feature -- Processing
 		local
 			l_error: EP_GENERAL_ERROR
 		do
+			ep_context.set_line_number (a_node.line_number)
 			output.put_comment_line ("Retry instruction: ignored")
 			create l_error.make ("Retry instruction not supported")
 			errors.extend (l_error)
@@ -378,6 +387,7 @@ feature -- Processing
 	process_reverse_b (a_node: REVERSE_B)
 			-- Process `a_node'.
 		do
+			ep_context.set_line_number (a_node.line_number)
 			output.put_comment_line ("Reverse assignment: treated as normal assignment!")
 			process_assign_b (a_node)
 				-- TODO: implement

@@ -91,9 +91,9 @@ feature -- Basic operations
 	process_feature (a_feature: !FEATURE_I)
 			-- Generate code for `a_feature'.
 		do
-			ev_context.set_current_class (a_feature.written_class)
-			ev_context.set_current_feature (a_feature)
-			ev_context.set_location (a_feature.body.start_location)
+			ep_context.set_current_class (a_feature.written_class)
+			ep_context.set_current_feature (a_feature)
+			ep_context.set_location (a_feature.body.start_location)
 
 			put_comment_line ("Feature " + a_feature.feature_name + " from class " + a_feature.written_class.name_in_upper)
 			put_comment_line ("--------------------------------------")

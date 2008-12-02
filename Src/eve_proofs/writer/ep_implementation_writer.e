@@ -82,6 +82,7 @@ feature -- Basic operations
 				Context.init (a_feature.written_class.types.first)
 				Context.set_current_feature (a_feature)
 				Context.set_byte_code (l_byte_code)
+				l_byte_code.setup_local_variables (False)
 
 				if l_byte_code.compound /= Void and then not l_byte_code.compound.is_empty then
 					l_byte_code.compound.process (instruction_writer)

@@ -198,6 +198,11 @@ feature {NONE} -- Implementation
 					last_error.set_description (names.description_loop_invariant_violation)
 					last_error.set_class (current_class)
 					last_error.set_feature (current_feature)
+				elseif l_type.is_equal ("attached") then
+						-- TODO: internationalization
+					create last_error.make ("Target may not be attached")
+					last_error.set_class (current_class)
+					last_error.set_feature (current_feature)
 				else
 					check false end
 				end
@@ -281,6 +286,8 @@ feature {NONE} -- Implementation
 					last_error.set_class (current_class)
 					last_error.set_feature (current_feature)
 					errors.extend (last_error)
+				else
+					check false end
 				end
 			else
 				check false end

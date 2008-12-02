@@ -50,6 +50,8 @@ inherit
 			process_nat64_val_b,
 			process_nat_val_b,
 			process_nested_b,
+			process_object_test_b,
+			process_object_test_local_b,
 			process_paran_b,
 			process_parameter_b,
 			process_result_b,
@@ -64,6 +66,12 @@ inherit
 inherit {NONE}
 
 	SHARED_EP_ENVIRONMENT
+		export {NONE} all end
+
+	SHARED_EP_CONTEXT
+		export {NONE} all end
+
+	SHARED_BYTE_CONTEXT
 		export {NONE} all end
 
 create
@@ -129,6 +137,7 @@ feature -- Element change
 			locals.wipe_out
 			agents_called.wipe_out
 			modified_objects.wipe_out
+			last_target_type := Void
 		end
 
 feature {BYTE_NODE} -- Visitors
@@ -518,6 +527,8 @@ feature {BYTE_NODE} -- Visitors
 			l_temp_expression: STRING
 			l_target_name: STRING
 		do
+			last_target_type := a_node.target.type
+
 				-- Store expression
 			l_temp_expression := expression.string
 				-- Evaluate target with fresh expression
@@ -526,12 +537,43 @@ feature {BYTE_NODE} -- Visitors
 				-- Use target as new `Current' reference
 			l_target_name := name_mapper.target_name
 			name_mapper.set_target_name (expression.string)
+
+				-- Test if target is valid
+			side_effect.put_line ("assert IsAllocatedAndNotVoid(" + name_mapper.heap_name + ", " + name_mapper.target_name + "); // " + ep_context.assert_location ("attached"))
+
 				-- Evaluate message with original expression
 			expression.reset
 			expression.put (l_temp_expression)
 			safe_process (a_node.message)
 				-- Restore `Current' reference
 			name_mapper.set_target_name (l_target_name)
+
+			last_target_type := Void
+		end
+
+	process_object_test_b (a_node: OBJECT_TEST_B)
+			-- Process `a_node'.
+		local
+			l_position: INTEGER
+			l_name, l_type: STRING
+		do
+			l_position := context.object_test_local_position (a_node.target)
+			l_name := name_generator.local_name (l_position)
+			-- TODO: this doesnt work as the context is not initialized for locals
+			l_type := type_mapper.boogie_type_for_type (a_node.target.type)
+			--l_type := "any"
+			locals.extend ([l_name, l_type])
+				-- TODO: generate code for object test
+			expression.put ("true")
+		end
+
+	process_object_test_local_b (a_node: OBJECT_TEST_LOCAL_B)
+			-- Process `a_node'.
+		local
+			l_position: INTEGER
+		do
+			l_position := context.object_test_local_position (a_node)
+			expression.put (name_generator.local_name (l_position))
 		end
 
 	process_paran_b (a_node: PARAN_B)
@@ -582,7 +624,7 @@ feature {BYTE_NODE} -- Visitors
 			side_effect.put_comment_line ("Create agent")
 			side_effect.put_line ("havoc " + l_agent_variable + ";")
 			side_effect.put_line ("assume Heap[" + l_agent_variable + ", $allocated] == false && " + l_agent_variable + " != null;")
-			side_effect.put_line ("call agent.create (" + l_agent_variable + ");")
+			side_effect.put_line ("call routine.create (" + l_agent_variable + ");")
 
 				-- Create arguments
 			create l_name_mapper.make
@@ -639,8 +681,10 @@ feature {BYTE_NODE} -- Visitors
 			expression.reset
 			expression.put (l_temp_expression)
 
-
-			-- TODO: assert closed target is not void
+			if a_node.is_target_closed then
+					-- Test if target is valid
+				side_effect.put_line ("assert IsAllocatedAndNotVoid(" + name_mapper.heap_name + ", " + l_name_mapper.target_name + "); // " + ep_context.assert_location ("attached"))
+			end
 
 			create l_expression_writer.make (l_name_mapper, create {EP_OLD_HEAP_HANDLER}.make ("old_heap"))
 			create l_contract_writer.make
@@ -650,14 +694,20 @@ feature {BYTE_NODE} -- Visitors
 
 			side_effect.put_comment_line ("Agent properties")
 			side_effect.put_line ("assume (forall heap: [ref, <x>name]x" + l_typed_arguments + " :: ")
-			side_effect.put_line ("            { agent.precondition_" + l_open_argument_count.out + "(heap" + l_arguments + ") } // Trigger")
-			side_effect.put_line ("        agent.precondition_" + l_open_argument_count.out + "(heap" + l_arguments + ") <==> " + l_contract_writer.full_precondition + ");")
-			side_effect.put_line ("assume (forall heap: [ref, <x>name]x, old_heap: [ref, <x>name]x" + l_typed_arguments + " :: ")
-			side_effect.put_line ("            { agent.postcondition_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ") } // Trigger")
-			side_effect.put_line ("        agent.postcondition_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ") <==> " + l_contract_writer.full_postcondition + ");")
+			side_effect.put_line ("            { routine.precondition_" + l_open_argument_count.out + "(heap" + l_arguments + ") } // Trigger")
+			side_effect.put_line ("        routine.precondition_" + l_open_argument_count.out + "(heap" + l_arguments + ") <==> " + l_contract_writer.full_precondition + ");")
 			side_effect.put_line ("assume (forall $o: ref, $f: name :: ")
 			side_effect.put_line ("            { agent.modifies(" + l_agent_variable + ", $o, $f) } // Trigger")
 			side_effect.put_line ("        agent.modifies(" + l_agent_variable + ", $o, $f) <==> ($o == arg.a_paragraph));")
+			if l_attached_feature.has_return_value then
+				side_effect.put_line ("assume (forall heap: [ref, <x>name]x, old_heap: [ref, <x>name]x" + l_typed_arguments + " :: ")
+				side_effect.put_line ("            { function.postcondition_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ") } // Trigger")
+				side_effect.put_line ("        function.postcondition_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ") <==> " + l_contract_writer.full_postcondition + ");")
+			else
+				side_effect.put_line ("assume (forall heap: [ref, <x>name]x, old_heap: [ref, <x>name]x" + l_typed_arguments + ", result:any :: ")
+				side_effect.put_line ("            { routine.postcondition_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ", result) } // Trigger")
+				side_effect.put_line ("        routine.postcondition_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ", result) <==> " + l_contract_writer.full_postcondition + ");")
+			end
 
 				-- Store expression which is assigned in here
 			expression.put (l_agent_variable)
@@ -704,6 +754,9 @@ feature {BYTE_NODE} -- Visitors
 
 feature {NONE} -- Implementation
 
+	last_target_type: TYPE_A
+			-- Type of last target in a nested node
+
 	last_local: STRING
 			-- Last created local
 
@@ -740,31 +793,48 @@ feature {NONE} -- Implementation
 			-- Process feature call of feature `a_feature' with parameters `a_parameters'.
 		local
 			l_feature_name, l_function_name, l_procedure_name: STRING
-			l_temp_expression, l_arguments: STRING
+			l_temp_expression, l_arguments, l_arguments_suffix: STRING
 			l_tuple_argument: TUPLE_CONST_B
 			l_tuple_content: BYTE_LIST [BYTE_NODE]
 			l_boogie_function: STRING
 			l_open_argument_count: INTEGER
+			l_is_function: BOOLEAN
 		do
 			l_feature_name := a_feature.feature_name
+
+			l_is_function := last_target_type.associated_class.name_in_upper.is_equal ("FUNCTION")
 
 			check a_parameters.count = 1 end
 			l_tuple_argument ?= a_parameters [1].expression
 			check l_tuple_argument /= Void end
 			l_tuple_content := l_tuple_argument.expressions
 			l_open_argument_count := l_tuple_content.count
-			l_boogie_function := "agent." + l_feature_name + "_" + l_open_argument_count.out
 
 				-- Construct arguments
 			l_arguments := ""
 			if l_feature_name.is_equal ("precondition") then
 				l_arguments := "Heap, "
+				l_arguments_suffix := ""
+				l_boogie_function := "routine.precondition_" + l_open_argument_count.out
 			elseif l_feature_name.is_equal ("postcondition") then
 				l_arguments := "Heap, old(Heap), "
+				if l_is_function then
+					l_arguments_suffix := ", Result"
+					l_boogie_function := "function.postcondition_" + l_open_argument_count.out
+				else
+					l_arguments_suffix := ""
+					l_boogie_function := "routine.postcondition_" + l_open_argument_count.out
+				end
 					-- TODO: this needs actually a code analysis
 				agents_called.extend (name_mapper.target_name)
 			elseif l_feature_name.is_equal ("call") then
 				l_arguments := ""
+				l_arguments_suffix := ""
+				l_boogie_function := "routine.call_" + l_open_argument_count.out
+			elseif l_feature_name.is_equal ("item") then
+				l_arguments := ""
+				l_arguments_suffix := ""
+				l_boogie_function := "function.item_" + l_open_argument_count.out
 			else
 				check false end
 			end
@@ -787,7 +857,7 @@ feature {NONE} -- Implementation
 				l_tuple_content.forth
 			end
 
-			l_arguments := expression.string
+			l_arguments := expression.string + l_arguments_suffix
 				-- Restore original expression
 			expression.reset
 			expression.put (l_temp_expression)

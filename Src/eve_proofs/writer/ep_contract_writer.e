@@ -321,7 +321,7 @@ feature {NONE} -- Implementation
 
 
 	process_invariants (a_class: CLASS_C)
-			-- TODO
+			-- Process invariants of `a_class'.
 		require
 			a_class_not_void: a_class /= Void
 		local

@@ -51,9 +51,9 @@ feature -- Element change
 	set_from_context
 			-- Use data from `ev_context'.
 		do
-			set_class (ev_context.current_class)
-			set_feature (ev_context.current_feature)
-			set_position (ev_context.line_number, ev_context.column_number)
+			set_class (ep_context.current_class)
+			set_feature (ep_context.current_feature)
+			set_position (ep_context.line_number, ep_context.column_number)
 		end
 
 feature -- Output
