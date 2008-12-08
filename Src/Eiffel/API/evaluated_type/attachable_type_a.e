@@ -10,12 +10,14 @@ deferred class ATTACHABLE_TYPE_A
 inherit
 	TYPE_A
 		redefine
+			as_attached_type,
 			as_implicitly_attached,
 			as_implicitly_detachable,
+			as_attachment_mark_free,
 			is_attached,
 			is_implicitly_attached,
-			set_attached_mark,
-			set_detachable_mark
+			to_other_attachment,
+			to_other_immediate_attachment
 		end
 
 feature -- Status report
@@ -115,6 +117,13 @@ feature -- Comparison
 
 feature -- Duplication
 
+	as_attached_type: like Current
+			-- Attached variant of the current type
+		do
+			Result := duplicate
+			Result.set_attached_mark
+		end
+
 	as_implicitly_attached: like Current
 			-- Implicitly attached type
 		do
@@ -126,7 +135,7 @@ feature -- Duplication
 			end
 		ensure then
 			result_is_implicitly_attached: Result.is_implicitly_attached
-			result_is_attachable_to_attached: Result.is_attachable_to (as_attached)
+			result_is_attachable_to_attached: Result.is_attachable_to (as_attached_type)
 		end
 
 	as_implicitly_detachable: like Current
@@ -140,13 +149,75 @@ feature -- Duplication
 			end
 		end
 
+	as_attachment_mark_free: like Current
+			-- Same as Current but without any attachment mark
+		local
+			l_bits: like attachment_bits
+		do
+			l_bits := attachment_bits
+			if l_bits = 0 then
+				Result := Current
+			else
+				attachment_bits := 0
+				Result := duplicate
+				attachment_bits := l_bits
+			end
+		end
+
+	to_other_attachment (other: ATTACHABLE_TYPE_A): like Current
+			-- Current type to which attachment status of `other' is applied
+		local
+			c: TYPE_A
+			o: ATTACHABLE_TYPE_A
+		do
+			Result := Current
+			if other /= Result then
+				if other.is_like_current then
+					c := other.conformance_type
+				else
+					c := other.actual_type
+				end
+				if c /= Void and then c /= Result and then {t: ATTACHABLE_TYPE_A} c then
+						-- Apply attachment settings of anchor if applicable and current type has none.
+					o := t
+				else
+					o := other
+				end
+				Result := to_other_immediate_attachment (o)
+			end
+		end
+
+	to_other_immediate_attachment (other: ATTACHABLE_TYPE_A): like Current
+			-- Current type to which attachment status of `other' is applied
+			-- without taking into consideration attachment status of an anchor (if any)
+		do
+			Result := Current
+			if other.has_attached_mark then
+				if not has_attached_mark then
+					Result := duplicate
+					Result.set_attached_mark
+				end
+			elseif other.is_implicitly_attached then
+				if not is_attached and then not is_implicitly_attached then
+					Result := as_implicitly_attached
+				end
+			elseif other.has_detachable_mark then
+				if not is_expanded and then not has_detachable_mark then
+					Result := duplicate
+					Result.set_detachable_mark
+				end
+			elseif not other.is_implicitly_attached and then is_implicitly_attached then
+				Result := as_implicitly_detachable
+			end
+		end
+
 feature {NONE} -- Attachment properties
 
 	attachment_bits: NATURAL_8
 			-- Associated attachment flags
 
 	has_detachable_mark_mask: NATURAL_8 is 1
-			-- Mask in `attachment_bits' that tells whether the type has an explicit detachanble mark
+			-- Mask in `attachment_bits' that tells whether the type has an explicit detachable mark
 
 	has_attached_mark_mask: NATURAL_8 is 2
 			-- Mask in `attachment_bits' that tells whether the type has an explicit attached mark

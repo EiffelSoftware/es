@@ -17,28 +17,44 @@ inherit
 
 	KL_SHARED_FILE_SYSTEM
 
+--inherit {NONE}
+	EC_SHARED_PREFERENCES
+		export
+			{NONE} all
+		end
+
 feature -- Basic operations
 
-	render_template (a_template: ?STRING_GENERAL; a_parameters: ?DS_HASH_TABLE [!ANY, !STRING]): !STRING_32
+	render_template (a_template: !READABLE_STRING_GENERAL; a_parameters: ?DS_HASH_TABLE [!ANY, !STRING]): !STRING_32
 			-- <Precursor>
 		local
 			l_templates: !like build_code_template
 			l_renderer: !CODE_TEMPLATE_STRING_RENDERER
+			l_result: STRING_32
 		do
 			l_templates := build_code_template (a_template.as_string_32, a_parameters)
 			if {l_default_template: CODE_TEMPLATE} l_templates.template.applicable_default_item then
 				create l_renderer
 				l_renderer.render_template (l_default_template, l_templates.symbol_table)
-				Result ?= l_renderer.code
+				l_result := l_renderer.code
+				check l_result /= Void end
+					-- Remove carriage return characters
+				l_result.replace_substring_all ("%R", "")
+				if preferences.misc_data.text_mode_is_windows then
+						-- Add carriage returns when requested.
+					l_result.replace_substring_all ("%N", "%N%R")
+				end
+				Result := l_result
 			else
 				create Result.make_empty
 			end
 		end
 
-	render_template_from_file (a_file_name: ?STRING_GENERAL; a_parameters: ?DS_HASH_TABLE [!ANY, !STRING]): ?STRING_32
+	render_template_from_file (a_file_name: !READABLE_STRING_GENERAL; a_parameters: ?DS_HASH_TABLE [!ANY, !STRING]): ?STRING_32
 			-- <Precursor>
 		local
 			l_file: KI_TEXT_INPUT_FILE
+			l_contents: ?STRING
 			l_count: INTEGER
 		do
 			l_file := file_system.new_input_file (a_file_name.as_string_8)
@@ -48,7 +64,10 @@ feature -- Basic operations
 				if l_count > 0 then
 					l_file.open_read
 					l_file.read_string (l_count)
-					Result := render_template (l_file.last_string, a_parameters)
+					l_contents := l_file.last_string
+					if l_contents /= Void then
+						Result := render_template (l_contents, a_parameters)
+					end
 				else
 					create Result.make_empty
 				end
@@ -60,7 +79,7 @@ feature -- Basic operations
 			end
 		end
 
-	render_template_to_file (a_template: ?STRING_GENERAL; a_parameters: ?DS_HASH_TABLE [!ANY, !STRING]; a_destination_file: ?STRING_GENERAL)
+	render_template_to_file (a_template: !READABLE_STRING_GENERAL; a_parameters: ?DS_HASH_TABLE [!ANY, !STRING]; a_destination_file: !READABLE_STRING_GENERAL)
 			-- <Precursor>
 		local
 			l_file: KI_TEXT_OUTPUT_FILE
@@ -81,7 +100,7 @@ feature -- Basic operations
 			end
 		end
 
-	render_template_from_file_to_file (a_file_name: ?STRING_GENERAL; a_parameters: ?DS_HASH_TABLE [!ANY, !STRING]; a_destination_file: ?STRING_GENERAL)
+	render_template_from_file_to_file (a_file_name: !READABLE_STRING_GENERAL; a_parameters: ?DS_HASH_TABLE [!ANY, !STRING]; a_destination_file: !READABLE_STRING_GENERAL)
 			-- <Precursor>
 		local
 			l_file: KI_TEXT_OUTPUT_FILE

@@ -67,10 +67,11 @@ extern "C" {
  * stack (eif_stack) and the exception trace stack (eif_trace).
  */
 struct ex_vect {
-	unsigned char	ex_type;	/* Function call, pre-condition, etc... */
-	unsigned char	ex_retry;	/* True if function has been retried */
-	unsigned char	ex_rescue;	/* True if function entered its rescue clause */
-	int				ex_linenum;	/* current line number (line number <=> breakpoint slot) */
+	unsigned char	ex_type;		/* Function call, pre-condition, etc... */
+	unsigned char	ex_retry;		/* True if function has been retried */
+	unsigned char	ex_rescue;		/* True if function entered its rescue clause */
+	unsigned char	ex_is_invariant;/* True if function entered is the _invariant routine */
+	int				ex_linenum;		/* current line number (line number <=> breakpoint slot) */
 #if defined(WORKBENCH) || defined(EIF_IPC)
 	BODY_INDEX 		ex_bodyid;	/* body id of the feature */
 	uint32			ex_locnum;	/* number of local variables in the function */
@@ -154,6 +155,8 @@ struct eif_exception {
 	char *ex_rt;			/* Routine associated with current exception */
 	EIF_TYPE_INDEX ex_class;/* Class associated with current exception */
 	int ex_entry;			/* Is entry or exit of a routine when evaluating invariant. */
+	int ex_error_handled;	/* Used as flag in `fatal_error' to avoid fatal cascade */
+	int ex_panic_handled;	/* Used as flag in `eif_pannic' to avoid panic cascade */
 };
 
 

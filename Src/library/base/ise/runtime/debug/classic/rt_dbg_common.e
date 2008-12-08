@@ -13,16 +13,20 @@ inherit
 
 feature -- Query
 
-	changes_between (csr1: RT_DBG_CALL_RECORD; csr2: ?RT_DBG_CALL_RECORD): ARRAYED_LIST [RT_DBG_VALUE_RECORD] is
+	changes_between (csr1: RT_DBG_CALL_RECORD; csr2: ?RT_DBG_CALL_RECORD): ?ARRAYED_LIST [RT_DBG_VALUE_RECORD] is
 			-- Return records from `r1' to -beginning-of- `r2'.
 		require
 			csr1_not_void: csr1 /= Void
 		local
 			chgs: like changes_between
 			c,v: CURSOR
+			r: ?like changes_between
 		do
 			if csr1.is_flat then
-				Result := csr1.value_records
+				r := csr1.value_records
+			end
+			if r /= Void then
+				Result := r
 			else
 				create Result.make (30)
 					--| Get Full records
@@ -39,7 +43,9 @@ feature -- Query
 						crecs.after or crecs.item_for_iteration = csr2
 					loop
 						chgs := changes_between (crecs.item_for_iteration, csr2)
-						Result.append (chgs)
+						if chgs /= Void then
+							Result.append (chgs)
+						end
 						crecs.forth
 					end
 					crecs.go_to (c)
@@ -49,10 +55,9 @@ feature -- Query
 			result_not_void: Result /= Void
 		end
 
-
 indexing
 	library:   "EiffelBase: Library of reusable components for Eiffel."
-	copyright: "Copyright (c) 1984-2006, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

@@ -27,7 +27,7 @@ create
 
 feature {NONE}
 
-	make_with_address (add: STRING; dtype: CLASS_C; g: like parent_grid) is
+	make_with_address (add: DBG_ADDRESS; dtype: CLASS_C; g: like parent_grid) is
 		require
 			add /= Void
 		do
@@ -73,7 +73,7 @@ feature -- Properties
 			Result := title
 		end
 
-	object_address: STRING
+	object_address: DBG_ADDRESS
 
 	object_dynamic_class: CLASS_C
 
@@ -86,22 +86,31 @@ feature -- Query
 
 	has_attributes_values: BOOLEAN is
 		do
-			if is_valid_object_address (object_address) then
-				Result := debugger_manager.object_manager.object_at_address_has_attributes (object_address)
+			if {oadd: like object_address} object_address and then is_valid_object_address (oadd) then
+				Result := debugger_manager.object_manager.object_at_address_has_attributes (oadd)
 			end
 		end
 
 	sorted_attributes_values: DS_LIST [ABSTRACT_DEBUG_VALUE] is
 		do
-			if is_valid_object_address (object_address) then
-				Result := debugger_manager.object_manager.sorted_attributes_at_address (object_address, object_spec_lower, object_spec_upper)
+			if {oadd: like object_address} object_address and then is_valid_object_address (oadd) then
+				Result := debugger_manager.object_manager.sorted_attributes_at_address (oadd, object_spec_lower, object_spec_upper)
 			end
 		end
 
 	sorted_once_routines: LIST [E_FEATURE] is
+			-- <Precursor>	
 		do
-			if object_dynamic_class /= Void then
-				Result := object_dynamic_class.once_routines
+			if {cl: like object_dynamic_class} object_dynamic_class then
+				Result := cl.once_routines
+			end
+		end
+
+	sorted_constant_features: LIST [E_CONSTANT] is
+			-- <Precursor>
+		do
+			if {cl: like object_dynamic_class} object_dynamic_class then
+				Result := cl.constant_features
 			end
 		end
 
@@ -172,9 +181,9 @@ feature -- Graphical changes
 		end
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -185,19 +194,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

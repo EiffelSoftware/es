@@ -1,6 +1,6 @@
 indexing
 	description: "[
-		A utility for clients accessing a service (globally or locally via a service provider) and determining a service's existance.
+		A utility for clients accessing a service (globally or locally via a service provider) and determining a service's existence.
 	]"
 	doc: "wiki://Service Consumers"
 	legal: "See notice at end of class."
@@ -12,6 +12,8 @@ class
 	SERVICE_CONSUMER [G -> SERVICE_I]
 
 inherit
+	ANY
+
 	SHARED_SERVICE_PROVIDER
 		rename
 			service_provider as global_service_provider
@@ -25,10 +27,11 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_provider (a_provider: like service_provider)
-			-- Initialize a service consumer using an alternative (local) service provider
+	make_with_provider (a_provider: ?like service_provider)
+			-- Initialize a service consumer using an alternative (local) service provider.
 			--
-			-- `a_provider': A service provider to use when querying for a service
+			-- `a_provider': A service provider to use when querying for a service, instead of the global
+			--               one.
 		indexing
 			doc: "wiki://Service Consumers:Using Local Service Providers"
 		require
@@ -41,32 +44,37 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	service: G
+	service: !G
 			-- Access to the service
 		require
 			is_service_available: is_service_available
+		local
+			l_service: ?G
 		do
-			Result := internal_service
-			if Result = Void then
-				Result ?= service_provider.query_service ({G})
-				if Result /= Void then
-						-- Cache service once it becomes available
-					internal_service := Result
+			if {l_internal_service: G} internal_service then
+				Result := l_internal_service
+			else
+				if {l_other_service: G} service_provider.service ({G}) then
+					l_service := l_other_service
+				else
+					check False end
 				end
+				check l_service_attached: l_service /= Void end
+				Result := l_service
+				internal_service := Result
 			end
 		end
 
 feature {NONE} -- Access
 
-	service_provider: SERVICE_PROVIDER
-			-- Access to the service provider
+	service_provider: !SERVICE_PROVIDER_I
+			-- Access to the set service provider, or global service provider if no local provider was set.
 		do
-			Result := internal_service_provider
-			if Result = Void then
+			if {l_provider :like internal_service_provider} internal_service_provider then
+				Result := l_provider
+			else
 				Result := global_service_provider
 			end
-		ensure
-			result_attached: Result /= Void
 		end
 
 feature -- Status report
@@ -76,24 +84,23 @@ feature -- Status report
 		indexing
 			doc: "wiki://Service Consumers:Services Are Tentative"
 		do
-			Result := internal_service /= Void or else (service_provider.query_service ({G}) /= Void)
+			Result := internal_service /= Void or else (service_provider.service ({G}) /= Void)
+		ensure
+			has_service: Result implies (internal_service /= Void) or else service_provider.service ({G}) /= Void
 		end
 
-feature {NONE} -- Internal implementation cache
+feature {NONE} -- Implementation: Internal cache
 
-	internal_service: like service
-			-- Cached version of `service'
+	internal_service: ?G
+			-- Cached version of `service'.
 			-- Note: Do not use directly!
 
-	internal_service_provider: like service_provider
+	internal_service_provider: ?like service_provider
 			-- Cached version of `service_provider'
 			-- Note: Do not use directly!
 
-invariant
-	service_attached: is_service_available implies service /= Void
-
 ;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

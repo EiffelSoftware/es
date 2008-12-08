@@ -63,14 +63,14 @@ doc:<file name="cecil.c" header="eif_cecil.h" version="$Id$" summary="C-Eiffel C
 #endif
 
 /*
-doc:	<attribute name="eif_visible_is_off" return_type="char" export="shared">
+doc:	<attribute name="eif_visible_is_off" return_type="char" export="public">
 doc:		<summary>If set to True, we will not throw an exception if feature cannot be found or is not visible.</summary>
 doc:		<access>Read/Write</access>
 doc:		<thread_safety>Safe as access is done through `eif_cecil_mutex'.</thread_safety>
 doc:		<synchronization>eif_cecil_mutex</synchronization>
 doc:	</attribute>
 */
-rt_shared unsigned char eif_visible_is_off = (unsigned char) 1;
+rt_public unsigned char eif_visible_is_off = (unsigned char) 1;
 
 /*
 doc:	<attribute name="eif_default_pointer" return_type="void *" export="private">
@@ -618,7 +618,7 @@ rt_shared char *ct_value(struct ctable *ct, register char *key)
 /*----------------------------------------*/
 
 #ifdef EIF_THREADS
-rt_shared void eif_set_thr_context () {
+rt_shared void eif_set_thr_context (void) {
 	/* Initialize thread context for non Eiffel Threads.
      * There is not much to initialize, but this is necessary
 	 * so that `eif_thr_is_root ()' can distinguish the root thread

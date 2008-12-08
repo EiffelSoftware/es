@@ -198,6 +198,9 @@ feature -- Constants
 	any_name_id: INTEGER is 185
 	system_void_name_id: INTEGER is 186
 	call_name_id: INTEGER is 187
+	put_default_name_id: INTEGER is 188
+	as_attached_name_id: INTEGER is 189
+	is_default_name_id: INTEGER is 190
 
 feature -- Classification
 
@@ -215,7 +218,7 @@ feature -- Classification
 		end
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

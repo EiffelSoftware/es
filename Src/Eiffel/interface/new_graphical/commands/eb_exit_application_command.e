@@ -108,20 +108,21 @@ feature {NONE} -- Callbacks
 			l_error: ES_ERROR_PROMPT
 			l_eb_debugger_manager: EB_DEBUGGER_MANAGER
 		do
+			eiffel_project.degree_output.user_has_requested_cancellation
 			l_eb_debugger_manager := eb_Debugger_manager
 			if l_eb_debugger_manager /= Void and then l_eb_debugger_manager.raised then
 				l_eb_debugger_manager.enable_exiting_eiffel_studio
 			end
 				-- If an application was being debugged, kill it.			
-			if Debugger_manager.application_is_executing then
-				Debugger_manager.application.kill
+			if l_eb_debugger_manager.debug_mode_forced then
+				l_eb_debugger_manager.debugging_window.docking_layout_manager.save_debug_docking_layout
 			end
-			if Eb_debugger_manager.debug_mode_forced then
-				Eb_debugger_manager.save_debug_docking_layout
+			if l_eb_debugger_manager.application_is_executing then
+				l_eb_debugger_manager.application.kill
 			end
 
-				-- If we are going to kill the application, we'd better warn project observers that the project will
-				-- soon be unloaded before EiffelStudio is destroyed.
+				-- If we are going to kill the application, we'd better warn project observers
+				-- that the project will soon be unloaded before EiffelStudio is destroyed.
 			if Workbench.Eiffel_project.initialized then
 				Workbench.Eiffel_project.manager.on_project_close;
 			end
@@ -145,7 +146,10 @@ feature {NONE} -- Callbacks
 				customized_formatter_manager.store
 			end
 
-			window_manager.a_development_window.save_tools_docking_layout
+			window_manager.for_all_development_windows (agent (a_window: EB_DEVELOPMENT_WINDOW)
+																	do
+																		a_window.docking_layout_manager.save_tools_docking_layout
+																	end)
 
 				-- Destroy all development windows.
 			window_manager.close_all

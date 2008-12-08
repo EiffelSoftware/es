@@ -34,28 +34,34 @@ feature -- Properties
 	set_text (a_text: STRING_GENERAL) is
 			-- Set `text', can set Void text.
 		do
-			text := a_text
+			if a_text /= Void then
+				text := a_text
+			else
+				text := Void
+			end
 			if tool_bar /= Void then
 				tool_bar.update_size
 			end
 		ensure
-			set: text = a_text
+			set: a_text /= Void implies text.is_equal (a_text.as_string_32)
 		end
 
-	text: STRING_GENERAL
+	text: STRING_32
 			-- Text shown on item.
 
-	set_tooltip (a_tip: like tooltip) is
+	set_tooltip (a_tip: STRING_GENERAL) is
 			-- Set `a_tooltip' with `a_tip'
-		require
-			not_void: a_tip /= Void
 		do
-			tooltip := a_tip
+			if a_tip /= Void then
+				tooltip := a_tip
+			else
+				tooltip := Void
+			end
 		ensure
-			set: tooltip =  a_tip
+			set: a_tip /= Void implies tooltip.is_equal (a_tip.as_string_32)
 		end
 
-	tooltip: STRING_GENERAL
+	tooltip: STRING_32
 			-- Tooltip shown on item.
 
 feature -- Command
@@ -76,14 +82,6 @@ feature -- Command
 			update
 		ensure
 			set: is_sensitive = False
-		end
-
-	remove_tooltip is
-			-- Remove `tooltip'
-		do
-			tooltip := Void
-		ensure
-			set: tooltip = Void
 		end
 
 feature -- Query
@@ -377,9 +375,21 @@ feature{SD_TOOL_BAR} -- Implementation
 	internal_shared: SD_SHARED
 			-- All singletons.
 
+feature -- Obsolete
+
+	remove_tooltip is
+			-- Remove `tooltip'
+		obsolete
+			"Use set_tooltip (Void) instead"
+		do
+			tooltip := Void
+		ensure
+			set: tooltip = Void
+		end
+
 invariant
-	not_void: select_actions /= Void
-	not_void: internal_shared /= Void
+	select_actions_not_void: select_actions /= Void
+	internal_shared_not_void: internal_shared /= Void
 
 indexing
 	library:	"SmartDocking: Library of reusable components for Eiffel."

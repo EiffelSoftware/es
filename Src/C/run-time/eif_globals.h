@@ -120,7 +120,10 @@ typedef struct tag_eif_globals		/* Structure containing all global variables to 
 		/* Polymorphism. */
 	int eif_optimize_return_cx;	/* Should caller optimize return? */
 	EIF_TYPED_VALUE eif_optimized_return_value_cx;	/* Location where data is stored. */
-	
+
+		/* eif_threads.c */
+	int is_external_cx;					/* Is current thread created by an external entity. */
+
 } eif_global_context_t;
 
 
@@ -151,7 +154,7 @@ rt_private eif_global_context_t * eif_pthread_getspecific (EIF_TSD_TYPE global_k
 	eif_global_context_t * EIF_VOLATILE eif_globals = eif_pthread_getspecific(eif_global_key);
 #else /* EIF_NONPOSIX_TSD */
 #define EIF_GET_CONTEXT \
-	eif_global_context_t * EIF_VOLATILE eif_globals = pthread_getspecific (eif_global_key);
+	eif_global_context_t * EIF_VOLATILE eif_globals = (eif_global_context_t *) pthread_getspecific (eif_global_key);
 #endif /* EIF_NONPOSIX_TSD */
 
 #elif defined VXWORKS			/* VxWorks Threads */

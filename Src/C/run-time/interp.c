@@ -2,7 +2,7 @@
 	description: "The byte code interpreter."
 	date:		"$Date$"
 	revision:	"$Revision$"
-	copyright:	"Copyright (c) 1985-2007, Eiffel Software."
+	copyright:	"Copyright (c) 1985-2008, Eiffel Software."
 	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"Commercial license is available at http://www.eiffel.com/licensing"
 	copying: "[
@@ -37,6 +37,8 @@
 /*
 doc:<file name="interp.c" header="eif_interp.h" version="$Id$" summary="Byte code interpreter for Eiffel byte code.">
 */
+
+#ifdef WORKBENCH
 
 #include "eif_portable.h"
 #include "eif_project.h"
@@ -228,7 +230,7 @@ rt_private void irecursive_chkinv(EIF_TYPE_INDEX dtype, EIF_REFERENCE obj, struc
 
 /* Getting constants */
 rt_shared EIF_TYPE_INDEX get_compound_id(EIF_REFERENCE obj, EIF_TYPE_INDEX dtype);			/* Get a compound type id */
-rt_private EIF_TYPE_INDEX get_creation_type(void);		/* Get a creation type id */
+rt_private EIF_TYPE_INDEX get_creation_type(int for_creation);		/* Get a creation type id */
 
 /* Interpreter interface */
 rt_public void exp_call(void);				/* Sets IC before calling interpret */ /* %%ss undefine */
@@ -249,7 +251,7 @@ rt_private void interp_paccess(int32 origin, int32 f_offset, uint32 type);			/* 
 rt_private void address(int32 aid);													/* Address of a routine */
 rt_private void assign(long offset, uint32 type);									/* Assignment in an attribute */
 rt_private void reverse_attribute(long offset, uint32 type);						/* Reverse assignment to attribute */
-rt_private void reverse_local(EIF_TYPED_VALUE * it, uint32 type);						/* Reverse assignment to local or result*/
+rt_private void reverse_local(EIF_TYPED_VALUE * it, EIF_TYPE_INDEX type);						/* Reverse assignment to local or result*/
 
 /* Calling protocol */
 rt_private void put_once_result (EIF_TYPED_VALUE * ptr, long int rtype, MTOT OResult); /* Save local result to permanent once storage */
@@ -259,7 +261,7 @@ rt_private void init_registers(void);			/* Intialize registers in callee */
 rt_private void allocate_registers(void);		/* Allocate the register array */
 rt_shared void sync_registers(struct stochunk *stack_cur, EIF_TYPED_VALUE *stack_top); /* Resynchronize the register array */
 rt_private void pop_registers(void);						/* Remove local vars and arguments */
-rt_private void create_expanded_locals (struct stochunk * scur, EIF_TYPED_VALUE * stop); /* Initialize expanded locals and result (if required) */
+rt_private void create_expanded_locals (struct stochunk * scur, EIF_TYPED_VALUE * stop, int create_result); /* Initialize expanded locals and result (if required) */
 
 /* Operational stack handling routines */
 rt_public EIF_TYPED_VALUE *opush(register EIF_TYPED_VALUE *val);	/* Push one value on op stack */
@@ -578,6 +580,7 @@ rt_private void interpret(int flag, int where)
 	long volatile once_key = 0;				/* Index in once table */
 	int  volatile is_once = 0;				/* Is it a once routine? */
 	int  volatile is_process_once = 0;		/* Is once routine process-relative? */
+	int  volatile create_result = 1;			/* Should result be created? */
 	RTSN;							/* Save nested flag */
 	STACK_PRESERVE_FOR_OLD;
  
@@ -599,6 +602,9 @@ rt_private void interpret(int flag, int where)
 		once_key = get_int32(&IC);
 		break;
 #endif
+	case ONCE_MARK_ATTRIBUTE:
+		create_result = 0;
+		break;
 	}
 
 	for (;;) {
@@ -786,10 +792,16 @@ rt_private void interpret(int flag, int where)
 			break;
 
 		case INTERP_INVA:			/* An invariant */
+			string = get_string8(&IC, -1);
+			type = get_int16(&IC);		/* Dynamic type where feature is written */
 #ifdef DEBUG
 		dprintf(1)("\tInvariant on 0x%lx [%s]\n",
 			icurrent->it_ref, System(Dtype(icurrent->it_ref)).cn_generator);
 #endif
+
+			RTEAINV((char *) string, type, (icurrent->it_ref), (unsigned char)locnum, 0 /* Invariant has no body id for now */);
+			dexset(exvect);
+
 			scur = op_stack.st_cur;		/* Save stack context */
 			stop = op_stack.st_top;		/* needed for setjmp() and calls */
 			dostk();					/* Record position in calling context */
@@ -926,18 +938,23 @@ rt_private void interpret(int flag, int where)
 		{
 			EIF_TYPE_INDEX l_expected_dftype;
 			EIF_TYPE_INDEX l_written_dtype;
-			EIF_REFERENCE l_obj;
 			int l_pos;
 
-			l_expected_dftype = get_creation_type();
+			l_expected_dftype = get_creation_type(0);
+				/* Possibly adapt type to match the actual argument signature since the
+				 * above `get_creation_type' has been generated and discard the attachment mark. */
+			if (*IC++) {
+				if (*IC++) {
+					l_expected_dftype = eif_attached_type (l_expected_dftype);
+				} else {
+					l_expected_dftype = eif_non_attached_type (l_expected_dftype);
+				}
+			}
 			l_written_dtype = get_int16(&IC);
 			string = get_string8(&IC, get_int32(&IC));
 			l_pos = get_int32(&IC);
 
-			l_obj = otop()->it_ref;
-			if (l_obj) {
-				RTCC(l_obj, l_written_dtype, (char *) string, l_pos, l_expected_dftype);
-			}
+			RTCC(otop()->it_ref, l_written_dtype, (char *) string, l_pos, l_expected_dftype);
 		}
 		break;
 
@@ -1569,7 +1586,7 @@ rt_private void interpret(int flag, int where)
 #ifdef DEBUG
 		dprintf(2)("BC_RREVERSE\n");
 #endif
-		type = get_creation_type();			/* Get the reverse type */
+		type = get_creation_type(1);			/* Get the reverse type */
 		last = otop();
 
 		if (!RTRA(type, last->it_ref))
@@ -1593,7 +1610,7 @@ rt_private void interpret(int flag, int where)
 		dprintf(2)("BC_LREVERSE\n");
 #endif
 		code = get_int16(&IC);			/* Get local number */
-		type = get_creation_type ();
+		type = get_creation_type (1);
 		last = otop();
 
 		if (!RTRA(type, last->it_ref))
@@ -1614,7 +1631,7 @@ rt_private void interpret(int flag, int where)
 			offset = get_int32(&IC);		/* Get the feature id */
 			code = get_int16(&IC);			/* Get the static type */
 			meta = get_uint32(&IC);		/* Get the attribute meta-type */
-			type = get_creation_type ();
+			type = get_creation_type (1);
 			last = otop();
 
 			if (!RTRA(type, last->it_ref))
@@ -1637,7 +1654,7 @@ rt_private void interpret(int flag, int where)
 			origin = get_int32(&IC);		/* Get the origin class id */
 			ooffset = get_int32(&IC);		/* Get the offset in origin */
 			meta = get_uint32(&IC);		/* Get the attribute meta-type */
-			type = get_creation_type ();
+			type = get_creation_type (1);
 			last = otop();
 
 			if (!RTRA(type, last->it_ref))
@@ -1654,7 +1671,7 @@ rt_private void interpret(int flag, int where)
 		dprintf(2)("BC_OBJECT_TEST\n");
 #endif
 		code = get_int16(&IC);			/* Get local number */
-		type = get_creation_type ();
+		type = get_creation_type (1);
 		last = otop();
 
 		if (RTRA(type, last->it_ref)) {
@@ -1668,6 +1685,27 @@ rt_private void interpret(int flag, int where)
 		else {
 				/* Replace expression value with False. */
 			last->type = SK_BOOL;
+			last->it_char = EIF_FALSE;
+		}
+		break;
+	
+	/*
+	 * Object test to an object test local.
+	 */
+	case BC_IS_ATTACHED:
+#ifdef DEBUG
+		dprintf(2)("BC_IS_ATTACHED\n");
+#endif
+		type = get_creation_type (0);
+		last = iget();
+		last->type = SK_BOOL;
+
+		if (RTAT(type)) {
+				/* Put True on the stack. */
+			last->it_char = EIF_TRUE;
+		}
+		else {
+				/* Put True on the stack. */
 			last->it_char = EIF_FALSE;
 		}
 		break;
@@ -1993,7 +2031,7 @@ rt_private void interpret(int flag, int where)
 			}
 			stagval = tagval;
 				/* Create new object */
-			new_obj = RTLNRW(type, 0, 0, 0, class_id, feature_id, open_map, is_precompiled, 
+			new_obj = RTLNRW(type, NULL, NULL, NULL, class_id, feature_id, open_map, is_precompiled, 
 							 is_basic, is_target_closed, is_inline_agent, closed_operands, open_count);
 			
 			last = iget();				/* Push a new value onto the stack */
@@ -2039,7 +2077,7 @@ rt_private void interpret(int flag, int where)
 		need_push = *IC++;		/* If there is a creation routine to call
 								   we need to push twice the created object */
 
-		type = get_creation_type ();
+		type = get_creation_type (1);
 
 		/* Creation of a new object. We know there will be no call to a
 		 * creation routine, so it's useless to resynchronize registers--RAM.
@@ -2080,10 +2118,9 @@ rt_private void interpret(int flag, int where)
 			uint32 elem_size = 0, bit_size = 0, i = 0;
 			uint16 flags = 0;
 			EIF_TYPED_VALUE *nb_item;
-			EIF_TYPE_INDEX exp_type;
 			uint32 nb = 0;
 
-			type = get_creation_type ();
+			type = get_creation_type (1);
 
 			is_ref = EIF_TEST(*IC++);
 			is_basic = EIF_TEST(*IC++);
@@ -2091,9 +2128,7 @@ rt_private void interpret(int flag, int where)
 			is_expanded = EIF_TEST(*IC++);
 
 			if (is_expanded) {
-					/* Need local since RTUD evaluates twice its argument. */
-				exp_type = get_int16(&IC);
-				elem_size = OVERHEAD + EIF_Size(RTUD(exp_type));
+				elem_size = OVERHEAD + EIF_Size(get_int16(&IC));
 			} else {
 				switch (get_uint32(&IC) & SK_HEAD) {
 					case SK_CHAR: elem_size = sizeof(EIF_CHARACTER); break;
@@ -3581,6 +3616,7 @@ rt_private void interpret(int flag, int where)
 #endif
 		caller_assertion_level = saved_caller_assertion_level;
 		pop_registers();	/* Pop registers */
+		RTEE;	/* remove execution vector from stack */
 		return;
 
 	default:
@@ -3702,7 +3738,7 @@ rt_private void interpret(int flag, int where)
 #endif
 				MTOE(OResult, RTOC(0));
 
-				create_expanded_locals (scur, stop);
+				create_expanded_locals (scur, stop, create_result);
 					/* Initialize permanent storage */
 				put_once_result (iresult, rtype, OResult);
 					/* Register rescue handler (if any). */
@@ -3723,14 +3759,14 @@ rt_private void interpret(int flag, int where)
 					RTOPLU (POResult -> mutex);
 				}
 #endif /* EIF_THREADS */
-					/* Raise the exception. */
-				oraise (*MTOF(OResult));
+					/* Propagate the exception. */
+				ereturn ();
 			}
 		}
 	} else {
 		if (flag == INTERP_CMPD) {
 				/* Initialize expanded locals */
-			create_expanded_locals (scur, stop);
+			create_expanded_locals (scur, stop, create_result);
 		}
 			/* Register rescue handler (if any). */
 		SET_RESCUE;
@@ -3779,7 +3815,6 @@ rt_private void irecursive_chkinv(EIF_TYPE_INDEX dtype, EIF_REFERENCE obj, struc
 
 	RT_GET_CONTEXT
 	EIF_GET_CONTEXT
-	struct cnode *node = esystem + dtype;
 	EIF_TYPE_INDEX *cn_parents;
 	EIF_TYPE_INDEX p_type;
 
@@ -3794,14 +3829,25 @@ rt_private void irecursive_chkinv(EIF_TYPE_INDEX dtype, EIF_REFERENCE obj, struc
 	RT_GC_PROTECT(obj);
 
 	/* Recursion on parents first. */
-	cn_parents = node->cn_parents;
+	cn_parents = par_info(dtype)->parents;
 
-	/* The list of parent dynamic types is always terminated by a
-	 * -1 value. -- FREDD
-	 */
-	while ((p_type = *cn_parents++) != TERMINATOR)
-		/* Call to potential parent invariant */
-		irecursive_chkinv(MTC p_type, obj, scur, stop, where);
+		/* The list of parent dynamic types is always terminated by TERMINATOR,
+		 * and between parents by PARENT_TYPE_SEPARATOR.
+		 */
+	cn_parents++;	/* We skip the annotation mark. */
+	p_type = *cn_parents++;
+	while (p_type != TERMINATOR) {
+			/* Call to potential parent invariant */
+		irecursive_chkinv(p_type, obj, scur, stop, where);
+			/* Iterate `cn_parents' until we reach the next parent or the end. */
+		while ((p_type != PARENT_TYPE_SEPARATOR) && (p_type != TERMINATOR)) {
+			p_type = *cn_parents++;
+		}
+		if (p_type == PARENT_TYPE_SEPARATOR) {
+			cn_parents++;	/* We skip the annotation mark. */
+			p_type = *cn_parents++;
+		}
+	}
 
 	/* Invariant check */
 	{
@@ -4698,7 +4744,7 @@ rt_public void dynamic_eval(int fid_or_offset, int stype_or_origin, int dtype, i
 		if ((is_inline_agent) || (is_static_call)) {
 				/* For an inline agent or a static call, the call is always relative to
 				 * the type declaring the inline agent or the type target of the static call. */
-			CBodyId(body_id,rout_id,RTUD(stype));
+			CBodyId(body_id,rout_id,stype);
 		} else {
 			CBodyId(body_id,rout_id,Dtype(otop()->it_ref));		
 		}
@@ -4707,7 +4753,7 @@ rt_public void dynamic_eval(int fid_or_offset, int stype_or_origin, int dtype, i
 		int offset = fid_or_offset;
 		CHECK("Not an inline agent", !is_inline_agent);
 		if (is_static_call) {
-			body_id = desc_tab[origin][RTUD(dtype)][offset].body_index;
+			body_id = desc_tab[origin][dtype][offset].body_index;
 		} else {
 			body_id = desc_tab[origin][Dtype(otop()->it_ref)][offset].body_index;
 		}
@@ -4774,7 +4820,7 @@ rt_private int icall(int fid, int stype, int ptype)
 	if (ptype == -1) {
 		CBodyId(body_id,rout_id,Dtype(otop()->it_ref));
 	} else {
-		CBodyId(body_id,rout_id,RTUD(ptype));
+		CBodyId(body_id,rout_id,ptype);
 	}
 
 	OLD_IC = IC;				/* IC back up */
@@ -4826,7 +4872,7 @@ rt_private int ipcall(int32 origin, int32 offset, int ptype)
 	if (ptype == -1)
 		body_id = desc_tab[origin][Dtype(otop()->it_ref)][offset].body_index;
 	else
-		body_id = desc_tab[origin][RTUD(ptype)][offset].body_index;
+		body_id = desc_tab[origin][ptype][offset].body_index;
 
 	OLD_IC = IC;				/* IC back up */
 	if (egc_frozen [body_id]) {		/* We are below zero Celsius, i.e. ice */
@@ -5062,7 +5108,7 @@ rt_private void reverse_attribute(long offset, uint32 type)
 	}
 }
 
-rt_private void reverse_local(EIF_TYPED_VALUE * it, uint32 type) {
+rt_private void reverse_local(EIF_TYPED_VALUE * it, EIF_TYPE_INDEX type) {
 			/* pointer to local to assign to
 			 * type of object
 			 */
@@ -5093,10 +5139,12 @@ rt_private void reverse_local(EIF_TYPED_VALUE * it, uint32 type) {
 			default:
 				eif_panic(MTC RT_UNKNOWN_TYPE_MSG);
 			}
+		} else {
+			/* Do nothing, we keep the previous value. */
 		}
-	}
-	else
+	} else {
 		it->it_ref = last->it_ref;
+	}
 }
 
 rt_shared void call_disp(EIF_TYPE_INDEX dtype, EIF_REFERENCE object)
@@ -5108,6 +5156,21 @@ rt_shared void call_disp(EIF_TYPE_INDEX dtype, EIF_REFERENCE object)
 	unsigned char *OLD_IC;
 	OLD_IC = IC;
 	(wdisp (dtype))(object);
+	IC = OLD_IC;
+}
+
+rt_shared void call_copy (EIF_TYPE_INDEX dtype, EIF_REFERENCE Current, EIF_REFERENCE other)
+{
+	/* Save the interpreter counter and restore it after the copy
+	 * routine for `Current' with dynamic type `dtype' and argument `other'.
+	 */
+	EIF_GET_CONTEXT
+	unsigned char *OLD_IC;
+	EIF_TYPED_VALUE o;
+	OLD_IC = IC;
+	o.type = SK_REF;
+	o.it_r = other;
+	(FUNCTION_CAST(void, (EIF_REFERENCE, EIF_TYPED_VALUE)) wcopy (dtype))(Current, o);
 	IC = OLD_IC;
 }
 
@@ -5140,11 +5203,11 @@ rt_private EIF_TYPE_INDEX get_next_compound_id (EIF_REFERENCE Current)
 	{
 		case LIKE_ARG_TYPE: /* like argument */
 			pos = (int) get_int16(&IC);
-			result = get_creation_type ();
-			result = RTID(RTCA(arg(pos)->it_ref, result));
+			result = get_creation_type (0);
+			result = RTCA(arg(pos)->it_ref, result);
 			break;
 		case LIKE_CURRENT_TYPE: /* like Current */
-			result = RTID(Dftype(Current));
+			result = Dftype(Current);
 			break;
 		case LIKE_PFEATURE_TYPE: /* like feature - see BC_PCLIKE */
 			{
@@ -5154,7 +5217,7 @@ rt_private EIF_TYPE_INDEX get_next_compound_id (EIF_REFERENCE Current)
 				stype = get_int16(&IC);			/* Get static type of caller */
 				origin = get_int32(&IC);			/* Get the origin class id */
 				ooffset = get_int32(&IC);			/* Get the offset in origin */
-				result = RTID(RTWPCT(stype, origin, ooffset, Current));
+				result = RTWPCT(stype, origin, ooffset, Current);
 			}
 			break;
 		case LIKE_FEATURE_TYPE: /* like feature - see BC_CLIKE */
@@ -5164,7 +5227,7 @@ rt_private EIF_TYPE_INDEX get_next_compound_id (EIF_REFERENCE Current)
 
 				code = get_int16(&IC);		/* Get the static type first */
 				offset = get_int32(&IC);	/* Get the feature id of the anchor */
-				result = RTID(RTWCT(code, offset, Current));
+				result = RTWCT(code, offset, Current);
 			}
 			break;
 		default:
@@ -5198,7 +5261,7 @@ rt_shared EIF_TYPE_INDEX get_compound_id(EIF_REFERENCE Current, EIF_TYPE_INDEX d
 	return eif_compound_id (NULL, Dftype (Current), dtype, gen_types);
 }
 
-rt_private EIF_TYPE_INDEX get_creation_type (void)
+rt_private EIF_TYPE_INDEX get_creation_type (int for_creation)
 {
 	EIF_GET_CONTEXT
 	RT_GET_CONTEXT
@@ -5213,7 +5276,7 @@ rt_private EIF_TYPE_INDEX get_creation_type (void)
 		type = get_compound_id(MTC icurrent->it_ref,(short)type);
 		break;
 	case BC_CARG:				/* Like argument creation type */
-		type = get_creation_type ();
+		type = get_creation_type (1);
 		code = get_int16(&IC);		/* Argument position */
 		type = RTCA(arg(code)->it_ref, type);
 		break;
@@ -5238,24 +5301,17 @@ rt_private EIF_TYPE_INDEX get_creation_type (void)
 	case BC_CCUR:				/* Like Current creation type */
 		type = icur_dftype;
 		break;
-	case BC_GEN_PARAM_CREATE:
-		{
-		EIF_TYPE_INDEX current_type;
-		int32 formal_position;
-
-		current_type = get_int16(&IC);		/* Get static type of caller */
-		formal_position = get_int32(&IC);	/* Get position of formal generic
-										   we want to create */
-		type = RTGPTID(current_type, icurrent->it_ref, formal_position);
-		}
-		break;
 	default:
 		type = 0;	/* To avoid C compiler warning */
 		eif_panic(MTC "creation type lost");
 		/* NOTREACHED */
 	}
 
-	return type;
+	if (for_creation) {
+		return eif_non_attached_type(type);
+	} else {
+		return type;
+	}
 }
 
 /*
@@ -5559,7 +5615,8 @@ rt_private void pop_registers(void)
 /* Initialize expanded locals and result (if required) */
 rt_private void create_expanded_locals (
 	struct stochunk * scur,		/* Current chunk (stack context) */
-	EIF_TYPED_VALUE * stop			/* To save stack context */
+	EIF_TYPED_VALUE * stop,			/* To save stack context */
+	int create_result		/* Should result be created? */
 )
 {
 	RT_GET_CONTEXT
@@ -5594,25 +5651,27 @@ rt_private void create_expanded_locals (
 			break;
 		}							
 	}
-	last = iresult;
-	type = last->type;
-	switch (type & SK_HEAD) {
-	case SK_EXP:
-		stagval = tagval;
-		last->type = SK_POINTER;		/* For GC */
-		last->it_ref = RTLX((EIF_TYPE_INDEX) (type & SK_DTYPE));
-		last->type = SK_EXP;
-		if (tagval != stagval)
-			sync_registers(MTC scur, stop);
-		break;
-	case SK_BIT:
-		stagval = tagval;
-		last->type = SK_POINTER;    /* GC: wait for malloc */
-		last->it_bit = RTLB((EIF_TYPE_INDEX) (type & SK_BMASK));
-		last->type = SK_BIT;
-		if (tagval != stagval)
-			sync_registers(MTC scur, stop);
-		break;
+	if (create_result) {
+		last = iresult;
+		type = last->type;
+		switch (type & SK_HEAD) {
+		case SK_EXP:
+			stagval = tagval;
+			last->type = SK_POINTER;		/* For GC */
+			last->it_ref = RTLX((EIF_TYPE_INDEX) (type & SK_DTYPE));
+			last->type = SK_EXP;
+			if (tagval != stagval)
+				sync_registers(MTC scur, stop);
+			break;
+		case SK_BIT:
+			stagval = tagval;
+			last->type = SK_POINTER;    /* GC: wait for malloc */
+			last->it_bit = RTLB((EIF_TYPE_INDEX) (type & SK_BMASK));
+			last->type = SK_BIT;
+			if (tagval != stagval)
+				sync_registers(MTC scur, stop);
+			break;
+		}
 	}
 }
 
@@ -6000,8 +6059,8 @@ rt_public void ivalue(EIF_DEBUG_VALUE * value, int code, uint32 num, uint32 star
 		case IV_LOCAL:								/* Nth local */
 			if (num > ilocnum->it_uint32) {
 				value -> value.type = SK_VOID;
-				value -> value.it_ptr = 0;
-				value -> address = (void *) 0;
+				value -> value.it_ptr = NULL;
+				value -> address = NULL;
 				return;
 			}
 			else if (num == ilocnum->it_uint32){		/* Off by one */
@@ -6011,8 +6070,8 @@ rt_public void ivalue(EIF_DEBUG_VALUE * value, int code, uint32 num, uint32 star
 					return;
 				} else {
 					value -> value.type = SK_VOID; /* Else signal out of range */
-					value -> value.it_ptr = 0;
-					value -> address = (void *) 0;
+					value -> value.it_ptr = NULL;
+					value -> address = NULL;
 					return;
 				}
 			}
@@ -6023,8 +6082,8 @@ rt_public void ivalue(EIF_DEBUG_VALUE * value, int code, uint32 num, uint32 star
 		case IV_ARG:								/* Nth argument */
 			if (num >= iargnum->it_uint32) {
 				value -> value.type = SK_VOID; /* Out of range */
-				value -> value.it_ptr = 0;
-				value -> address = (void *) 0;
+				value -> value.it_ptr = NULL;
+				value -> address = NULL;
 				return;
 			}
 			value -> value = * arg(num + 1);		/* Arguments from 1 to iargnum */
@@ -6090,8 +6149,8 @@ rt_public void ivalue(EIF_DEBUG_VALUE * value, int code, uint32 num, uint32 star
 		/* transform the 'c_item' into an regular item (like the one used with melted features) */
 		if (result_item == (EIF_TYPED_ADDRESS *)0) {
 			value -> value.type = SK_VOID;
-			value -> value.it_ptr = 0;
-			value -> address = (void *) 0;
+			value -> value.it_ptr = NULL;
+			value -> address = NULL;
 		}
 		else {
 			value -> value.type = result_item -> type;
@@ -6129,6 +6188,28 @@ rt_public void ivalue(EIF_DEBUG_VALUE * value, int code, uint32 num, uint32 star
 
 	/* NOT REACHED */
 }
+
+rt_public void eif_override_byte_code_of_body (int body_id, int pattern_id, unsigned char *bc, int count) {
+	unsigned char *bcode;
+	
+		/* Let's free the previously allocated byte code. */
+	bcode = melt [body_id];
+	if(bcode!=NULL) {
+		eif_rt_xfree (bcode);
+	}	
+		/* Allocate a new area for the new byte code to store. */
+	bcode = (unsigned char *) cmalloc (count * sizeof(unsigned char));
+	if (!bcode) {
+		enomem();
+	} else {
+		memcpy(bcode, bc, count * sizeof(unsigned char));
+		melt [body_id] = bcode;
+		mpatidtab [body_id] = pattern_id;
+		egc_frozen [body_id] = 0;
+	}
+}
+
+#endif
 
 /*
 doc:</file>

@@ -122,8 +122,13 @@ feature -- Access
 			-- Unique static_type_id for current class type
 			--| Useful to set name of associated generated file
 			--| which has to be dynamic type (`type_id') independant.
-			--| Remeber that after during each freezing, dynamic types
+			--| Remember that after during each finalization, dynamic types
 			--| are reprocessed.
+
+	type_id: INTEGER
+			-- Identification of the class type. In classic mode for workbench code generation
+			-- it is identical to `static_type_id'. Only in classic finalized mode where we shuffle
+			-- the `type_id' and in .NET mode they are different.
 
 	implementation_id: INTEGER
 			-- Same as `static_type_id' but used in IL mode only to
@@ -139,9 +144,6 @@ feature -- Access
 	type: CL_TYPE_A
 			-- Type of the class: it includes meta-instantiation of
 			-- possible generic parameters
-
-	type_id: INTEGER
-			-- Identification of the class type
 
 	last_type_token, last_implementation_type_token, last_create_type_token: INTEGER
 			-- Last definition tokens computed for Current. They correspond respectively
@@ -357,9 +359,6 @@ feature -- Status report
 											-- The formal generic parameter of `a_type' was instantiated via inheritance.
 											-- Let's check that it is a conforming type to the actual generic parameter of `a_type'.
 										Result := l_type_feat.type.associated_class.simple_conform_to (l_type.associated_class)
-										if not Result then
-											do_nothing
-										end
 									end
 								end
 								i := i + 1
@@ -614,8 +613,8 @@ feature -- Conveniences
 			-- of Current
 		require
 			good_argument: a_class /= Void
-			consistency: associated_class.conform_to (a_class) or else
-				(associated_class.non_conforming_parents_classes /= Void and then associated_class.non_conforming_parents_classes.has (a_class))
+--			consistency: associated_class.conform_to (a_class) or else
+--				(associated_class.non_conforming_parents_classes /= Void and then associated_class.non_conforming_parents_classes.has (a_class))
 		do
 			Result := a_class.meta_type (Current)
 		ensure
@@ -630,40 +629,6 @@ feature -- Conveniences
 			consistency: associated_class.conform_to (a_class)
 		do
 			Result := written_type (a_class).type_id
-		end
-
-	parent_types: LINKED_LIST [CLASS_TYPE] is
-			-- List of parent types used for checking the invariant
-		local
-			parents: FIXED_LIST [CL_TYPE_A]
-			parent_type: CL_TYPE_A
-			already_in: BOOLEAN
-		do
-			from
-				create Result.make
-				parents := associated_class.parents
-				parents.start
-			until
-				parents.after
-			loop
-				parent_type := parents.item
-				from
-						-- Check if the parent type is not already in
-						-- the list (repeated inheritance ...).
-					already_in := False
-					Result.start
-				until
-					Result.after or else already_in
-				loop
-					already_in := parent_type.same_generic_derivation_as (type, Result.item.type)
-					Result.forth
-				end
-				if not already_in then
-					Result.extend (parent_type.associated_class_type (type))
-				end
-
-				parents.forth
-			end
 		end
 
 feature -- Generation
@@ -689,6 +654,7 @@ feature -- Generation
 
 			current_class := associated_class
 			current_eiffel_class ?= current_class
+			check current_eiffel_class_not_void: current_eiffel_class /= Void end
 
 			l_byte_context := byte_context
 
@@ -725,6 +691,19 @@ feature -- Generation
 						generate_c_code := l_feature_i.used
 					end
 					i := i + 1
+				end
+
+					-- We have to also process inline agents (see eweasel test#final063)
+				if not generate_c_code and current_eiffel_class.has_inline_agents then
+					from
+						l_inline_agent_table := current_eiffel_class.inline_agent_table
+						l_inline_agent_table.start
+					until
+						generate_c_code or l_inline_agent_table.after
+					loop
+						generate_c_code := l_inline_agent_table.item_for_iteration.used
+						l_inline_agent_table.forth
+					end
 				end
 			else
 				generate_c_code := is_modifiable
@@ -801,16 +780,15 @@ feature -- Generation
 					i := i + 1
 				end
 
-				if current_eiffel_class /= Void and then current_eiffel_class.has_inline_agents then
+				if current_eiffel_class.has_inline_agents then
 					from
 						l_inline_agent_table := current_eiffel_class.inline_agent_table
 						l_inline_agent_table.start
 					until
 						l_inline_agent_table.after
 					loop
-						l_feature_i := l_inline_agent_table.item_for_iteration
 							-- Generate the C code of `feature_i'
-						generate_feature (l_feature_i, buffer)
+						generate_feature (l_inline_agent_table.item_for_iteration, buffer)
 						l_inline_agent_table.forth
 					end
 				end
@@ -1273,11 +1251,9 @@ feature {NONE} -- Implementation
 
 			if gen_type /= Void and then gen_type.generics /= Void then
 				Par_table.init (type.generated_id (final_mode, Void),
-								gen_type.generics.count,
-								a_class.name, a_class.is_expanded);
+								gen_type.generics.count, a_class.is_expanded);
 			else
-				Par_table.init (type.generated_id (final_mode, Void), 0,
-								a_class.name, a_class.is_expanded);
+				Par_table.init (type.generated_id (final_mode, Void), 0, a_class.is_expanded);
 			end
 
 			if is_expanded then
@@ -1320,8 +1296,6 @@ feature -- Skeleton generation
 			-- Generate skeleton names and types of Current class type
 		require
 			skeleton_exists: skeleton /= Void
-		local
-			parent_list: like parent_types
 		do
 			if not skeleton.empty then
 					-- Generate attribute names sequence
@@ -1355,24 +1329,6 @@ feature -- Skeleton generation
 					skeleton.generate_rout_id_array
 				end
 			end
-
-				-- Generate parent dynamic type array
-			parent_list := parent_types
-			buffer.put_string ("static EIF_TYPE_INDEX cn_parents")
-			buffer.put_integer (type_id)
-			buffer.put_string (" [] = {")
-			from
-				parent_list.start
-			until
-				parent_list.after
-			loop
-				buffer.put_type_id (parent_list.item.type_id)
-				buffer.put_character (',')
-				buffer.put_character (' ')
-				parent_list.forth
-			end
-			buffer.put_hex_natural_16 ({SHARED_GEN_CONF_LEVEL}.terminator_type)
-			buffer.put_string ("};%N%N")
 
 			if
 				byte_context.final_mode and
@@ -1413,10 +1369,6 @@ feature -- Skeleton generation
 			else
 				buffer.put_string ("NULL")
 			end
-			buffer.put_character (',')
-			buffer.put_new_line
-			buffer.put_string ("cn_parents")
-			buffer.put_integer (type_id)
 			buffer.put_character (',')
 			buffer.put_new_line
 			if not skeleton_empty then
@@ -1752,7 +1704,6 @@ feature -- Byte code generation
 
 	melted_feature_table: MELTED_FEATURE_TABLE is
 		local
-			parent_list: like parent_types
 			ba: BYTE_ARRAY
 			creation_feature: FEATURE_I
 			class_name: STRING
@@ -1778,30 +1729,16 @@ feature -- Byte code generation
 			skeleton.make_type_byte_code (ba)
 			skeleton.make_gen_type_byte_code (ba)
 
-				-- 5. Parent list
-			from
-				parent_list := parent_types
-					-- 5.1: parent count
-				ba.append_short_integer (parent_list.count)
-				parent_list.start
-			until
-				parent_list.after
-			loop
-					-- 5.2: parent dynamic type
-				ba.append_short_integer (parent_list.item.type_id - 1)
-				parent_list.forth
-			end
-
-				-- 6. Store skeleton flags
+				-- 5. Store skeleton flags
 			ba.append_natural_16 (skeleton_flags)
 
-				-- 7. Routine ids of attributes
+				-- 6. Routine ids of attributes
 			skeleton.make_rout_id_array (ba)
 
-				-- 8. Reference number
+				-- 7. Reference number
 			ba.append_integer (skeleton.nb_reference + skeleton.nb_expanded)
 
-				-- 9. Skeleton size
+				-- 8. Skeleton size
 			skeleton.make_size_byte_code (ba)
 
 				-- Creation feature id if any.

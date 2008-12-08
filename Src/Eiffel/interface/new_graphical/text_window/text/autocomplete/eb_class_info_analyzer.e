@@ -296,20 +296,36 @@ feature {NONE} -- Click ast exploration
 			c_not_void: c /= Void
 		local
 			l_eiffel_class: EIFFEL_CLASS_C
+			is_retried: BOOLEAN
 		do
-			if not c.is_precompiled and c.file_is_readable then
-				l_eiffel_class ?= c
-				check l_eiffel_class_not_void: l_eiffel_class /= Void end
-				current_class_as := l_eiffel_class.parsed_ast (after_save)
-				if current_class_as = Void then
-						-- If a syntax error ocurred, we retrieve the old ast.
+			if not is_retried then
+				if not c.is_precompiled and c.file_is_readable then
+					last_syntax_error := Void
+					l_eiffel_class ?= c
+					check
+						l_eiffel_class_not_void: l_eiffel_class /= Void
+						not_error_handler_has_error: not error_handler.has_error
+					end
+					current_class_as := l_eiffel_class.parsed_ast (after_save)
+					if current_class_as = Void then
+							-- If a syntax error ocurred, we retrieve the old ast.
+						current_class_as := c.ast
+						if error_handler.has_error and then {l_syn: SYNTAX_ERROR} error_handler.error_list.first then
+								-- Set the new syntax error
+							last_syntax_error := l_syn
+						end
+							-- Clear error handler, as per-note in parsed_ast
+						error_handler.wipe_out
+					end
+				else
+						-- Class is precompiled, we should not reparse it since its definition
+						-- is frozen for the compiler.
 					current_class_as := c.ast
 				end
-			else
-					-- Class is precompiled, we should not reparse it since its definition
-					-- is frozen for the compiler.
-				current_class_as := c.ast
 			end
+		rescue
+			is_retried := True
+			retry
 		end
 
 feature {NONE}-- Clickable/Editable implementation
@@ -505,7 +521,8 @@ feature {NONE} -- Implementation (`type_from')
 						end
 					end
 				else
-					name := current_token.image.as_lower
+						-- "precursor" is safe to compare to STRING_8.
+					name := string_32_to_lower (current_token.wide_image).as_string_8
 					if name.is_equal ("precursor") then
 						go_to_next_token
 						if token_image_is_same_as_word (current_token, opening_brace) then
@@ -613,7 +630,8 @@ feature {NONE} -- Implementation (`type_from')
 			until
 				error or else after_searched_token
 			loop
-				name := current_token.image.as_lower
+					-- Safe to use STRING_8 to get type.
+				name := string_32_to_lower (current_token.wide_image).as_string_8
 
 				type := internal_type_from_name (name)
 
@@ -748,44 +766,46 @@ feature {NONE} -- Implementation (`type_from')
 			l_class: CLASS_C
 			l_is_named_tuple: BOOLEAN
 		do
-			l_is_named_tuple := a_parent_type.is_named_tuple
-			l_class := current_class_c
-			if a_type.is_loose then
-				if l_is_named_tuple then
-					last_target_type := a_type.actual_type.instantiation_in (a_type, a_class.class_id)
-				else
-					last_target_type := a_type.actual_type.instantiation_in (a_parent_type, a_class.class_id)
-				end
-				last_type := last_target_type
-				if last_target_type /= Void then
-					last_target_type := last_target_type.actual_type
-					last_was_constrained := last_target_type.is_formal
-					last_formal ?= last_target_type
-					if last_was_constrained then
-						last_was_multi_constrained := not last_formal.is_single_constraint_without_renaming (l_class)
-						if last_was_multi_constrained then
-								-- We're in the multi constraint case, let's compute a flat version (without formals) of all constraints.							
-							last_constraints := last_formal.constraints (l_class).constraining_types_if_possible (l_class)
-								-- We don't know yet the real target type (it'll be one out of last_constraints)
-							last_target_type := Void
-						else
-							last_target_type := last_formal.constrained_type (l_class)
-						end
+			if a_type.is_valid then
+				l_is_named_tuple := a_parent_type.is_named_tuple
+				l_class := current_class_c
+				if a_type.is_loose then
+					if l_is_named_tuple then
+						last_target_type := a_type.actual_type.instantiation_in (a_type, a_class.class_id)
+					else
+						last_target_type := a_type.actual_type.instantiation_in (a_parent_type, a_class.class_id)
 					end
+					last_type := last_target_type
+					if last_target_type /= Void and then last_target_type.is_valid then
+						last_target_type := last_target_type.actual_type
+						last_was_constrained := last_target_type.is_formal
+						last_formal ?= last_target_type
+						if last_was_constrained then
+							last_was_multi_constrained := not last_formal.is_single_constraint_without_renaming (l_class)
+							if last_was_multi_constrained then
+									-- We're in the multi constraint case, let's compute a flat version (without formals) of all constraints.							
+								last_constraints := last_formal.constraints (l_class).constraining_types_if_possible (l_class)
+									-- We don't know yet the real target type (it'll be one out of last_constraints)
+								last_target_type := Void
+							else
+								last_target_type := last_formal.constrained_type (l_class)
+							end
+						end
+						error := False
+					end
+				else
+						-- Non formal status.
+					if not a_parent_type.is_tuple then
+						last_target_type := a_type.actual_type.instantiation_in (a_parent_type, a_class.class_id)
+					else
+						last_target_type := a_type
+					end
+
+					last_type := last_target_type
+					last_was_multi_constrained := False
+					last_was_constrained := False
 					error := False
 				end
-			else
-					-- Non formal status.
-				if not a_parent_type.is_tuple then
-					last_target_type := a_type.actual_type.instantiation_in (a_parent_type, a_class.class_id)
-				else
-					last_target_type := a_type
-				end
-
-				last_type := last_target_type
-				last_was_multi_constrained := False
-				last_was_constrained := False
-				error := False
 			end
 		end
 
@@ -1008,9 +1028,9 @@ feature {NONE}-- Implementation
 			if current_token /= Void then
 				if
 						-- not the "~feature" case
-					current_token.image.is_empty
+					current_token.wide_image.is_empty
 						or else
-					current_token.image @ 1 /= '%L'
+					current_token.wide_image @ 1 /= ('%L').to_character_32
 						or else
 					not is_beginning_of_expression (current_token.previous)
 				then
@@ -1118,7 +1138,8 @@ feature {NONE}-- Implementation
 						-- the infix must be in our list
 						-- otherwise, we will not analyze this expression
 					if is_known_infix (exp.item) then
-						infix_list.extend (exp.item.image)
+							-- Disallow infix rather than ASCII.
+						infix_list.extend (exp.item.wide_image.as_string_8)
 					else
 						error := True
 					end
@@ -1355,7 +1376,8 @@ feature {NONE}-- Implementation
 						end
 					else
 							-- type is Void
-						name := sub_exp.item.image.as_lower
+							-- Safe to get feature from STRING_8.
+						name := string_32_to_lower (sub_exp.item.wide_image).as_string_8
 						if l_current_class_c.has_feature_table then
 							processed_feature := l_current_class_c.feature_with_name (name)
 						end
@@ -1393,7 +1415,8 @@ feature {NONE}-- Implementation
 						if sub_exp.after then
 							error := True
 						else
-							name := sub_exp.item.image.as_lower
+								-- Safe to get feature from STRING_8.
+							name := string_32_to_lower (sub_exp.item.wide_image).as_string_8
 							if type.is_formal then
 								formal ?= type
 								if l_current_class_c.is_valid_formal_position (formal.position) then
@@ -1409,9 +1432,9 @@ feature {NONE}-- Implementation
 							if type.has_associated_class then
 									-- This case includes the ordinary case and the case were we had
 									-- a single constrained formal without a renaming (constrained_type has been called).
-							l_processed_class := type.associated_class
-							if l_processed_class /= Void and then l_processed_class.has_feature_table then
-								processed_feature := l_processed_class.feature_with_name (name)
+								l_processed_class := type.associated_class
+								if l_processed_class /= Void and then l_processed_class.has_feature_table then
+									processed_feature := l_processed_class.feature_with_name (name)
 								end
 							else
 									-- Maybe we computed a type set?
@@ -1471,7 +1494,8 @@ feature {NONE}-- Implementation
 				Result := found_class.actual_type
 			end
 			if Result = Void then
-				image := current_token.image.as_upper
+					-- Class name can only be STRING_8.
+				image := string_32_to_upper (current_token.wide_image).as_string_8
 				class_i := Universe.safe_class_named (image, group)
 				if class_i /= Void and then class_i.is_compiled then
 					found_class := class_i.compiled_class
@@ -1479,12 +1503,14 @@ feature {NONE}-- Implementation
 				end
 			end
 			if Result = Void then
-				image := current_token.image.as_lower
+					-- "like" is safe to compare to STRING_8.
+				image := string_32_to_lower (current_token.wide_image).as_string_8
 				if image.is_equal ("like") then
 					if current_token.next /= Void and then current_token.next.next /= Void then
 						l_token := current_token.next.next
 						if l_token.is_text then
-							image := l_token.image.as_lower
+								-- A feature name is safe to compare to STRING_8.
+							image := string_32_to_lower (l_token.wide_image).as_string_8
 							if current_class_c /= Void then
 								l_feat := current_class_c.feature_with_name (image)
 								if l_feat /= Void then
@@ -1501,7 +1527,8 @@ feature {NONE}-- Implementation
 					end
 				end
 				if Result = Void then
-					Result := type_of_generic (current_token.image)
+						-- Safe get type of generic by STING_8.
+					Result := type_of_generic (current_token.wide_image.as_string_8)
 				end
 				if Result /= Void then
 					if not Result.is_loose then
@@ -1546,70 +1573,48 @@ feature {NONE}-- Implementation
 			end
 		end
 
-	type_of_local_entity_named (name: STRING): TYPE_A is
+	type_of_local_entity_named (a_name: STRING): TYPE_A is
 			-- return type of argument or local variable named `name' found in `current_feature_as'
 			-- Void if there is none
 		require
 			current_class_c_not_void: current_class_c /= Void
+			a_name_attached: a_name /= Void
+			not_a_name_is_empty: not a_name.is_empty
 		local
-			current_feature: FEATURE_I
-			entities_list: EIFFEL_LIST [TYPE_DEC_AS]
-			id_list: IDENTIFIER_LIST
-			stop: BOOLEAN
-			name_id: INTEGER
+			l_token: EDITOR_TOKEN
+			l_line: EDITOR_LINE
+			l_name: STRING_32
+			l_analyzer: !ES_EDITOR_CLASS_ANALYZER
+			l_result: ?ES_EDITOR_ANALYZER_STATE_INFO
+			l_locals: !HASH_TABLE [?TYPE_A, STRING_32]
+			l_feature: like current_feature_i
+			l_class: like current_class_c
 			retried: BOOLEAN
-			l_current_class_c: CLASS_C
-			l_class_type_as: CLASS_TYPE_AS
-			l_class_name_as: ID_AS
-			l_name: STRING
 		do
-			if retried then
-				Result := Void
-			else
-				l_current_class_c := current_class_c
-				current_feature := current_feature_i
-
-				if current_token /= Void and then current_line /= Void then
-					set_up_local_analyzer (current_line, current_token, l_current_class_c)
-					entities_list := local_analyzer.found_locals_list
-
-					name_id := Names_heap.id_of (name)
-					if name_id > 0 and not entities_list.is_empty then
-							-- There is a `name_id' corresponding to `name' so let's
-							-- look further.
-						from
-							entities_list.start
-						until
-							entities_list.after or stop
-						loop
-							from
-								id_list := entities_list.item.id_list
-								id_list.start
-							until
-								id_list.after or stop
-							loop
-								if name_id = id_list.item then
-									stop := True
-										-- Compute actual type for local
-									Result := local_evaluated_type (entities_list.item.type,
-										l_current_class_c,
-										current_feature)
-									if Result = Void then
-										l_class_type_as ?= entities_list.item.type
-										if l_class_type_as /= Void then
-											l_class_name_as := l_class_type_as.class_name
-											if l_class_name_as /= Void then
-												l_name := l_class_name_as.name
-												if l_name /= Void then
-													Result := type_of_generic (l_name)
+			if not retried then
+				l_feature := current_feature_i
+				l_class := current_class_c
+				if l_feature /= Void and then l_class /= Void and then a_name /= Void and then not a_name.is_empty then
+					l_token := current_token
+					l_line := current_line
+					if l_token /= Void and then l_line /= Void then
+						create l_analyzer.make_with_feature (l_class, l_feature)
+						l_result := l_analyzer.scan (l_token, l_line)
+						if l_result /= Void and then l_result.has_current_frame then
+							if not l_result.current_frame.is_empty then
+								l_locals := l_result.current_frame.all_locals
+								l_name := a_name.as_string_32
+								if l_locals.has (l_name) then
+									Result := l_locals.item (l_name)
 								end
-											end
-										end
-									end
-								end
-								id_list.forth
 							end
-							entities_list.forth
+						else
+							if {l_found_locals: HASH_TABLE [?TYPE_A, STRING_32]} locals_from_local_entities_finder then
+								l_name := a_name.as_string_32
+								if l_found_locals.has (l_name) then
+									Result := l_found_locals.item (l_name)
+								end
+							end
 						end
 					end
 				end
@@ -1617,6 +1622,15 @@ feature {NONE}-- Implementation
 		rescue
 			retried := True
 			retry
+		end
+
+	locals_from_local_entities_finder: HASH_TABLE [?TYPE_A, !STRING_32]
+			-- Stack entities from finder
+			--| could be finder from AST for instance
+			-- i.e: Locals,arguments,object test locals
+		do
+			--| FIXME jfiat [2008/11/28] : this is to fix bug#15080
+			--| this should be reintegrated in new completion engine/scanner
 		end
 
 	type_of_constants_or_reserved_word (token: EDITOR_TOKEN): TYPE_A is
@@ -1638,10 +1652,15 @@ feature {NONE}-- Implementation
 					token_image_is_same_as_word (token, Result_word) and then
 					current_feature_as /= Void and then l_current_class_c.has_feature_table
 				then
-					current_feature := l_current_class_c.feature_with_name (
-						current_feature_as.name.internal_name.name)
-					if current_feature /= Void then
-						Result := current_feature.type
+						-- First check the local declarations
+					Result := type_of_local_entity_named ({EIFFEL_KEYWORD_CONSTANTS}.result_keyword)
+					if Result = Void then
+							-- Used the compiled information
+						current_feature := l_current_class_c.feature_with_name (
+							current_feature_as.name.internal_name.name)
+						if current_feature /= Void then
+							Result := current_feature.type
+						end
 					end
 				elseif token_image_is_in_array (token, boolean_values) then
 					Result := boolean_type
@@ -1649,7 +1668,7 @@ feature {NONE}-- Implementation
 			else
 				nb ?= token
 				if nb /= Void then
-					if nb.image.occurrences('.') > 0 then
+					if nb.wide_image.occurrences('.') > 0 then
 						Result := real_64_type
 					else
 						Result := integer_type
@@ -1713,13 +1732,21 @@ feature {NONE}-- Implementation
 
 	after_searched_token: BOOLEAN is
 			-- is `current_token' after `searched_token' ?
-			-- True if current_token is Void
+			-- True if `current_token' is Void
+		local
+			l_cur_index, l_searched_index: INTEGER
 		do
 			if current_token = Void then
 				Result := True
 			else
-				Result := (current_line.index > searched_line.index) or else
-					((current_line.index = searched_line.index) and then (current_token.position > searched_token.position))
+				check
+					current_line_is_valid: current_line.is_valid
+					searched_line_is_valid: searched_line.is_valid
+				end
+				l_cur_index := current_line.index
+				l_searched_index := searched_line.index
+				Result := (l_cur_index > l_searched_index) or else
+					((l_cur_index = l_searched_index) and then (current_token.position > searched_token.position))
 			end
 		end
 
@@ -1729,11 +1756,14 @@ feature {NONE}-- Implementation
 			found: BOOLEAN
 			uncomplete_string: BOOLEAN
 		do
-			if current_token /= Void then
+			check
+				current_line_attached: current_token /= Void implies current_line /= Void
+			end
+			if current_token /= Void and current_line /= Void then
 				from
-					if is_string (current_token) and then not current_token.image.is_empty then
+					if is_string (current_token) and then not current_token.wide_image.is_empty then
 							-- we check if there is a string split on several lines
-						if current_token.image @ 1 = '%%' then
+						if current_token.wide_image @ 1 = ('%%').to_character_32 then
 							uncomplete_string := True
 						end
 					end
@@ -1768,9 +1798,9 @@ feature {NONE}-- Implementation
 								current_token := Void
 							end
 						else
-							if is_string (current_token) and then not current_token.image.is_empty then
+							if is_string (current_token) and then not current_token.wide_image.is_empty then
 									-- we check if a string is split on several lines
-								if current_token.image @ 1 = '%%' then
+								if current_token.wide_image @ 1 = ('%%').to_character_32 then
 									uncomplete_string := True
 								else
 										-- if the string is on one lines, we skip it
@@ -1813,11 +1843,14 @@ feature {NONE}-- Implementation
 			found: BOOLEAN
 			uncomplete_string: BOOLEAN
 		do
-			if current_token /= Void then
+			check
+				current_line_attached: current_token /= Void implies current_line /= Void
+			end
+			if current_token /= Void and current_line /= Void then
 				from
-					if is_string (current_token) and then not current_token.image.is_empty then
+					if is_string (current_token) and then not current_token.wide_image.is_empty then
 							-- we check if there is a string split on several lines
-						if current_token.image @ current_token.image.count = '%%' then
+						if current_token.wide_image @ current_token.wide_image.count = ('%%').to_character_32 then
 							uncomplete_string := True
 						end
 					end
@@ -1851,9 +1884,9 @@ feature {NONE}-- Implementation
 								current_token := Void
 							end
 						else
-							if is_string (current_token) and then not current_token.image.is_empty then
+							if is_string (current_token) and then not current_token.wide_image.is_empty then
 									-- we check if a string is split on several lines
-								if current_token.image @ 1 = '%%' then
+								if current_token.wide_image @ 1 = ('%%').to_character_32 then
 									uncomplete_string := True
 								else
 										-- if the string is on one lines, we skip it
@@ -2026,36 +2059,6 @@ feature {NONE} -- Implementation
 			Result := (create {PLATFORM_CONSTANTS}).is_windows
 		end
 
-	local_analyzer: EB_LOCAL_ENTITIES_FINDER is
-			--
-		do
-			Result := local_analyzer_cell.item
-		ensure
-			local_analyzer_not_void: Result /= Void
-		end
-
-	local_analyzer_cell: CELL [EB_LOCAL_ENTITIES_FINDER] is
-		local
-			l_analyzer: EB_LOCAL_ENTITIES_FINDER_FROM_TEXT
-		once
-			create Result
-			create l_analyzer.make
-			Result.put (l_analyzer)
-		end
-
-	set_up_local_analyzer (a_line: EDITOR_LINE; a_token: EDITOR_TOKEN; a_class_c: CLASS_C) is
-			-- Set up local analyzer.
-		local
-			l_analyzer: EB_LOCAL_ENTITIES_FINDER_FROM_TEXT
-		do
-			l_analyzer ?= local_analyzer
-			if l_analyzer = Void then
-				create l_analyzer.make
-				local_analyzer_cell.put (l_analyzer)
-			end
-			l_analyzer.build_entities_list (a_line, a_token, a_class_c)
-		end
-
 feature {NONE} -- Implementation
 
 	is_sorted (positions: ARRAY [EB_CLICKABLE_POSITION]): BOOLEAN is
@@ -2202,9 +2205,9 @@ invariant
 	current_token_in_current_line: (current_line = Void and current_token = Void) or else (current_line /= Void and then current_line.has_token (current_token))
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -2215,19 +2218,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

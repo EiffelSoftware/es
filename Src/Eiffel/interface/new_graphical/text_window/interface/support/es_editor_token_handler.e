@@ -50,9 +50,13 @@ feature {NONE} -- Access
 
 feature -- Status report
 
-	is_active: BOOLEAN assign set_is_active
+	is_active: BOOLEAN
 			-- Determines if the handler is active. This is to be used by clients
 			-- to determine when and when not to use the handler.
+		require
+			is_interface_usable: is_interface_usable
+		deferred
+		end
 
 	is_interface_usable: BOOLEAN
 			-- Dtermines if the interface was usable
@@ -60,18 +64,6 @@ feature -- Status report
 			Result := Precursor {EB_RECYCLABLE} and then editor.is_interface_usable
 		ensure then
 			editor_is_interface_usable: Result implies editor.is_interface_usable
-		end
-
-feature {NONE} -- Status setting
-
-	set_is_active (a_active: BOOLEAN)
-			-- Set's handler's active state.
-			--
-			-- `a_active': True to indicate the handler is active; False otherwise
-		do
-			is_active := a_active
-		ensure
-			is_active_set: is_active = a_active
 		end
 
 feature -- Query
@@ -102,7 +94,7 @@ feature -- Basic operations
 			-- `a_line': The line number where the token is located in the editor.
 		require
 			is_interface_usable: is_interface_usable
-			not_is_active: not is_active
+			--not_is_active: not is_active
 			a_line_positive: a_line > 0
 		do
 			last_token_handled := a_token
@@ -112,9 +104,10 @@ feature -- Basic operations
 			last_token_handled_set: last_token_handled = a_token
 		end
 
-	perform_on_token_with_mouse_coords (a_token: !EDITOR_TOKEN; a_line: INTEGER; a_x: INTEGER; a_y: INTEGER; a_screen_x: INTEGER; a_screen_y: INTEGER)
+	perform_on_token_with_mouse_coords (a_instant: BOOLEAN; a_token: !EDITOR_TOKEN; a_line: INTEGER; a_x: INTEGER; a_y: INTEGER; a_screen_x: INTEGER; a_screen_y: INTEGER)
 			-- Performs an action on a token, respecting the current mouse x and y coordinates.
 			--
+			-- `a_instant': Indicates if the user held the instant-action key.
 			-- `a_token': The editor token to process.
 			-- `a_line': The line number where the token is located in the editor.
 			-- `a_x': The relative x position of the mouse pointer, to the editor,  when processing was requested.
@@ -123,7 +116,7 @@ feature -- Basic operations
 			-- `a_screen_y': The absolute screen y position of the mouse pointer when processing was requested.
 		require
 			is_interface_usable: is_interface_usable
-			not_is_active: not is_active
+			--not_is_active: not is_active
 			a_line_positive: a_line > 0
 		do
 			last_token_handled := a_token
@@ -145,7 +138,6 @@ feature -- Basic operations
 			can_perform_exit: can_perform_exit (a_force)
 		do
 			last_token_handled := Void
-			is_active := False
 		ensure
 			last_token_handled_detached: can_perform_exit (a_force) implies last_token_handled = Void
 			not_is_active: can_perform_exit (a_force) implies not is_active

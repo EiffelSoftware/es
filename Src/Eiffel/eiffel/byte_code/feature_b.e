@@ -12,7 +12,7 @@ inherit
 		redefine
 			is_feature, set_parameters,
 			parameters, enlarged, enlarged_on, context_type,
-			is_feature_special, make_special_byte_code,
+			is_feature_special,
 			is_unsafe, optimized_byte_node,
 			calls_special_features, is_special_feature,
 			size, pre_inlined_code, inlined_byte_code
@@ -61,7 +61,7 @@ feature {NONE} -- Initialization
 						-- much choice at the moment. The good thing is that
 						-- since it is done at degree 3, we are most likely
 						-- to hit the feature table cache.
-					written_in := f.written_in
+					written_in := f.access_in
 					feat_tbl := System.class_of_id (written_in).feature_table
 					feat := feat_tbl.feature_of_rout_id_set (f.rout_id_set)
 					feature_id := feat.feature_id
@@ -128,10 +128,20 @@ feature -- Access
 
 	set_parameters (p: like parameters) is
 			-- Assign `p' to `parameters'.
+		local
+			i: INTEGER
 		do
 			parameters := p
 			if p /= Void then
-				p.do_all (agent {PARAMETER_B}.set_parent (Current))
+					-- Set all parameter parents to `Current'.
+				from
+					i := p.count
+				until
+					i = 0
+				loop
+					p [i].set_parent (Current)
+					i := i - 1
+				end
 			end
 		end
 
@@ -139,12 +149,6 @@ feature -- Access
 			-- Assign `t' to `type'.
 		do
 			type := t
-		end
-
-	special_routines: SPECIAL_FEATURES is
-			-- Array containing special routines.
-		once
-			create Result
 		end
 
 	is_any_feature: BOOLEAN is
@@ -235,14 +239,6 @@ feature -- Context type
 			else
 				Result := Context.real_type (precursor_type)
 			end
-		end
-
-feature -- Byte code generation
-
-	make_special_byte_code (ba: BYTE_ARRAY; basic_type: BASIC_A) is
-			-- Make byte code for special calls.
-		do
-			special_routines.make_byte_code (ba, basic_type)
 		end
 
 feature -- Array optimization
@@ -378,7 +374,8 @@ feature -- Inlining
 							inliner := System.remover.inliner
 							entry := l_rout_table.item
 							l_body_index := entry.body_index
-							inline := inliner.inline (type, l_body_index)
+								-- We need to instantiate `type' in current context to fix eweasel test#final065.
+							inline := inliner.inline (type.instantiated_in (context.context_cl_type), l_body_index)
 						end
 					end
 				end
@@ -440,6 +437,18 @@ feature -- Inlining
 								-- Ensured that formal generics in `written_cl_type' are valid for `f.written_class'.
 							written_cl_type := written_cl_type.find_descendant_type (f.written_class)
 						end
+
+							-- We have to limit the inlining here because of eweasel test#final062 and test#final061
+							-- where if the ancestor and the written class do not share the same number of formal
+							-- generic, or if they are not the same generic parameters, then it causes the compiler
+							-- to fail during finalization.
+						if
+							(cl_type.has_formal_generic or written_cl_type.has_formal_generic) and
+							not same_for_generics (cl_type.associated_class, written_cl_type.associated_class)
+						then
+							context_class_type := written_class_type
+							cl_type := written_cl_type
+						end
 					else
 							-- We are going to perform the inlining as if we were generating the class in
 							-- which `f' is defined. To be clear, here is a sample:
@@ -483,6 +492,12 @@ feature -- Inlining
 						cl_type := written_cl_type
 					end
 
+						-- When types involved a generic formal parameter,
+						-- then we cannot use a type adapted from the original
+						-- current context. See eweasel test#final061.
+					cl_type := normalized (cl_type, context_class_type)
+					written_cl_type := normalized (written_cl_type, written_class_type)
+
 						-- Create inlined byte node.
 					if cl_type.associated_class.is_special then
 						create {SPECIAL_INLINED_FEAT_B} inlined_feat_b
@@ -519,8 +534,91 @@ feature -- Inlining
 			end
 		end
 
+feature {NONE} -- Normalization of types
+
+	normalized (a_type: CL_TYPE_A; a_class_type: CLASS_TYPE): CL_TYPE_A is
+			-- Replace all formals of `a_type' with formals of `a_class_type'.
+		require
+			a_type_not_void: a_type /= Void
+			a_class_type_not_void: a_class_type /= Void
+			a_class_type_valid: a_class_type.associated_class = a_type.associated_class
+		local
+			l_generics: ARRAY [TYPE_A]
+			l_type: TYPE_A
+			i, nb: INTEGER
+		do
+			Result := a_type
+			l_generics := a_type.generics
+			if l_generics /= Void then
+				from
+					i := l_generics.lower
+					nb := l_generics.upper
+				until
+					i > nb
+				loop
+					l_type := l_generics.item (i)
+					if l_type.has_formal_generic then
+							-- If it is a generic at the right position, no need to duplicate
+							-- the generics.
+						if not (l_type.is_formal and then {l_formal: FORMAL_A} l_type and then l_formal.position = i) then
+							if l_generics = a_type.generics then
+								Result := a_type.duplicate
+								l_generics := Result.generics
+							end
+							l_generics.put (a_class_type.type.generics.item (i), i)
+						end
+					end
+					i := i + 1
+				end
+			end
+		ensure
+			normalized: Result /= Void
+		end
+
+	same_for_generics (a_current_class, a_class: CLASS_C): BOOLEAN is
+			-- Is `a_current_class' using the same sets of generics as `a_class'.
+			-- That is to say that `a_current_class' and `a_class' have the same number of
+			-- generic parameter, and that each of them have the same routine ID.
+			-- If `a_current_class' has not generic parameter then it is safe to assume True.
+		require
+			a_class_not_void: a_class /= Void
+		local
+			i, j, k, nb: INTEGER
+			l_id_set, l_other_id_set: ROUT_ID_SET
+		do
+			if a_current_class.generics = Void then
+				Result := True
+			elseif a_class.generics /= Void and then (a_current_class.generics.count = a_class.generics.count) then
+					-- They have the same number of generics, let's check they relate.
+				from
+					i := 1
+					nb := a_current_class.generics.count
+					Result := True
+				until
+					i > nb or not Result
+				loop
+					l_id_set := a_current_class.formal_at_position (i).rout_id_set
+					l_other_id_set := a_class.formal_at_position (i).rout_id_set
+					from
+						j := 1
+						k := l_id_set.count
+						Result := False
+					until
+						j > k
+					loop
+						if l_other_id_set.has (l_id_set.item (j)) then
+							Result := True
+							j := k
+						end
+						j := j + 1
+					end
+					i := i + 1
+				end
+			end
+		end
+
 indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

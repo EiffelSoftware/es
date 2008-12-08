@@ -32,8 +32,7 @@ feature {NONE} -- Initialization
 			eiffel_layout.check_environment_variable
 
 				-- get arguments
-			create arguments.make (False, True)
-			arguments.set_use_separated_switch_values (True)
+			create arguments.make
 			arguments.execute (agent start)
 		end
 
@@ -218,7 +217,7 @@ feature {NONE} -- Implementation
 
 			l_system := a_target.system.name
 			l_target := a_target.name
-			print ("Parsing "+l_target+" from "+l_system+"("+a_target.system.file_name+")...")
+			print ("Parsing "+l_target+" from "+l_system+" ("+a_target.system.file_name+")...")
 
 			create l_vis.make_build (l_state, a_target, create {CONF_PARSE_FACTORY})
 			a_target.process (l_vis)
@@ -291,7 +290,7 @@ feature {NONE} -- Implementation
 				print ("Finalizing")
 				l_args.extend ("-finalize")
 			end
-			print (" "+l_target+" from "+l_system+"...")
+			print (" "+l_target+" from "+l_system+" ("+a_target.system.file_name+")...")
 
 			create l_prc_factory
 			l_prc_launcher := l_prc_factory.process_launcher (eiffel_layout.ec_command_name, l_args, Void)

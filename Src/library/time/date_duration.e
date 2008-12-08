@@ -55,10 +55,10 @@ feature -- Initialization
 
 feature -- Access
 
-	Zero: DATE_DURATION is
+	zero: like Current is
 			-- Neutral element for "+" and "-"
-		once
-				create Result.make_by_days (0)
+		do
+			create Result.make_by_days (0)
 		ensure then
 			definite: Result.definite
 		end
@@ -170,7 +170,7 @@ feature -- Status report
 
 feature -- Status setting
 
-	set_origin_date (d: DATE) is
+	set_origin_date (d: ?DATE) is
 			-- Set `origin_date' to `d'.
 		do
 			origin_date := d

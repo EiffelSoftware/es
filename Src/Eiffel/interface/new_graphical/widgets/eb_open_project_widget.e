@@ -51,6 +51,11 @@ inherit
 			{NONE} all
 		end
 
+	EV_SHARED_APPLICATION
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -387,35 +392,36 @@ feature {NONE} -- Initialization
 			hb.disable_item_expand (l_label)
 			create action_combo
 			action_combo.disable_edit
+			l_font := action_combo.font
 				-- Create items
-			l_minimum_size := interface_names.l_open.count
+			l_minimum_size := l_font.string_width (interface_names.l_open)
 			create open_action_item.make_with_text (interface_names.l_open)
 			open_action_item.set_pixmap (icon_pixmaps.general_open_icon)
 			action_combo.extend (open_action_item)
 
-			l_minimum_size := l_minimum_size.max (interface_names.l_compile.count)
+			l_minimum_size := l_minimum_size.max (l_font.string_width (interface_names.l_compile))
 			create compile_action_item.make_with_text (interface_names.l_compile)
 			compile_action_item.set_pixmap (icon_pixmaps.project_melt_icon)
 			action_combo.extend (compile_action_item)
 
-			l_minimum_size := l_minimum_size.max (interface_names.l_freeze.count)
+			l_minimum_size := l_minimum_size.max (l_font.string_width (interface_names.l_freeze))
 			create freeze_action_item.make_with_text (interface_names.l_freeze)
 			freeze_action_item.set_pixmap (icon_pixmaps.project_freeze_icon)
 			action_combo.extend (freeze_action_item)
 
-			l_minimum_size := l_minimum_size.max (interface_names.l_finalize.count)
+			l_minimum_size := l_minimum_size.max (l_font.string_width (interface_names.l_finalize))
 			create finalize_action_item.make_with_text (interface_names.l_finalize)
 			finalize_action_item.set_pixmap (icon_pixmaps.project_finalize_icon)
 			action_combo.extend (finalize_action_item)
 
-			l_minimum_size := l_minimum_size.max (interface_names.l_precompile.count)
+			l_minimum_size := l_minimum_size.max (l_font.string_width (interface_names.l_precompile))
 			create precompile_action_item.make_with_text (interface_names.l_precompile)
 			precompile_action_item.set_pixmap (icon_pixmaps.project_melt_icon)
 			action_combo.extend (precompile_action_item)
 
 			action_combo.select_actions.extend (agent on_action_selected)
 
-			action_combo.set_minimum_width_in_characters (l_minimum_size)
+			action_combo.set_minimum_width (l_minimum_size + action_combo.pixmaps_width + extra_space_in_combo)
 			hb.extend (action_combo)
 			hb.disable_item_expand (action_combo)
 			create clean_button.make_with_text (interface_names.l_clean)
@@ -924,7 +930,7 @@ feature {NONE} -- Actions
 				end
 
 				l_system := l_load.last_system
-				create l_window.make (l_system, l_fact, Void, pixmaps, agent (preferences.misc_data).external_editor_cli)
+				create l_window.make (l_system, l_fact, Void, pixmaps.configuration_pixmaps, agent (preferences.misc_data).external_editor_cli)
 
 				l_window.set_size (preferences.dialog_data.project_settings_width, preferences.dialog_data.project_settings_height)
 				l_window.set_position (preferences.dialog_data.project_settings_position_x, preferences.dialog_data.project_settings_position_y)
@@ -1161,7 +1167,11 @@ feature {NONE} -- Actions
 		local
 			l_item: EV_GRID_CHOICE_ITEM
 		do
-			if a_key /= Void and then a_key.code = {EV_KEY_CONSTANTS}.key_f4 and then has_selected_item then
+			if
+				a_key /= Void and then a_key.code = {EV_KEY_CONSTANTS}.key_f4 and then
+				not ev_application.alt_pressed and then not ev_application.ctrl_pressed and then
+				not ev_application.shift_pressed and then has_selected_item
+			then
 				l_item ?= projects_list.selected_rows.first.item (target_column_index)
 				check l_item /= Void end
 				l_item.activate
@@ -1221,6 +1231,9 @@ feature {NONE} -- Convenience
 	target_column_index: INTEGER is 2
 	path_column_index: INTEGER is 3
 			-- Index in grid for each column.
+
+	extra_space_in_combo: INTEGER = 32
+			-- Extra width in a combo box including dropdown button and space between pixmap and text.
 
 invariant
 	last_state_not_void: last_state /= Void

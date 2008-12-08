@@ -479,8 +479,6 @@ feature -- Access
 			-- `Void' if none.
 		require
 			not_destroyed: not is_destroyed
-			virtual_x_valid: a_virtual_x >=0 and a_virtual_x <= virtual_width
-			virtual_y_valid: a_virtual_y >=0 and a_virtual_y <= virtual_height
 		do
 			Result := implementation.item_at_virtual_position (a_virtual_x, a_virtual_y)
 		end
@@ -489,7 +487,6 @@ feature -- Access
 			-- Row at virtual y position `a_virtual_y'.
 		require
 			not_destroyed: not is_destroyed
-			virtual_y_valid: a_virtual_y >=0 and a_virtual_y <= virtual_height
 		do
 			Result := implementation.row_at_virtual_position (a_virtual_y, ignore_locked_rows)
 		end
@@ -498,7 +495,6 @@ feature -- Access
 			-- Column at virtual x position `a_virtual_x'.
 		require
 			not_destroyed: not is_destroyed
-			virtual_x_valid: a_virtual_x >=0 and a_virtual_x <= virtual_width
 		do
 			Result := implementation.column_at_virtual_position (a_virtual_x)
 		end
@@ -2336,6 +2332,13 @@ feature -- Removal
 			valid_upper_index: upper_index >= lower_index and upper_index <= row_count
 			valid_final_row_in_tree_structure: (is_tree_enabled and then
 			highest_parent_row_within_bounds (lower_index, upper_index) /= Void implies
+				upper_index = highest_parent_row_within_bounds (lower_index,
+				upper_index).index + highest_parent_row_within_bounds (lower_index,
+				upper_index).subrow_count_recursive) or
+				            (is_tree_enabled and then highest_parent_row_within_bounds
+				(lower_index, upper_index) = Void implies row (upper_index).subrow_count = 0)
+			valid_final_row_in_tree_structure: (is_tree_enabled and then
+				highest_parent_row_within_bounds (lower_index, upper_index) /= Void implies
 				upper_index = highest_parent_row_within_bounds (lower_index,
 				upper_index).index + highest_parent_row_within_bounds (lower_index,
 				upper_index).subrow_count_recursive) or

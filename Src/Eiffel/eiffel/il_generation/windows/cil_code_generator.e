@@ -978,13 +978,13 @@ feature -- Generation Structure
 				(current_module /= Void and then current_module.is_generated)
 			then
 					-- Mark now entry point for debug information
-				if has_root_type and is_debug_info_enabled and system.root_creation_name /= Void then
+				if has_root_type and is_debug_info_enabled and not system.root_creation_name.is_empty then
 					a_class := system.root_type.associated_class
 					root_feat := a_class.feature_table.item (system.root_creation_name)
-					l_decl_type := system.root_class_type.type.implemented_type (root_feat.origin_class_id)
+					l_decl_type := system.root_class_type (system.root_type).type.implemented_type (root_feat.origin_class_id)
 
 					entry_point_token := current_module.implementation_feature_token (
-						l_decl_type.associated_class_type (system.root_class_type.type).implementation_id,
+						l_decl_type.associated_class_type (system.root_class_type (system.root_type).type).implementation_id,
 						root_feat.origin_feature_id)
 						-- Debugger API does not allow to use MethodRef token for user entry point
 					if entry_point_token & {MD_TOKEN_TYPES}.md_mask = {MD_TOKEN_TYPES}.md_method_def then
@@ -1117,7 +1117,8 @@ feature -- Class info
 				external_class_mapping.put (class_type.type, class_type.full_il_type_name)
 			end
 
-			parents := class_c.parents
+				-- Only conforming parents should be iterated as non-conforming features will get generated locally.
+			parents := class_c.conforming_parents
 			create class_interface.make_from_context (class_c.class_interface, class_type)
 			create pars.make (parents.count)
 
@@ -1187,7 +1188,7 @@ feature -- Class info
 			if System.root_type /= Void and then System.root_type.associated_class.original_class.is_compiled then
 				l_cur_mod := current_module
 				current_module := main_module
-				current_class_type := System.root_class_type
+				current_class_type := System.root_class_type (system.root_type)
 				l_class := current_class_type.associated_class
 				create l_ca_factory
 
@@ -2132,12 +2133,12 @@ feature -- Features info
 					l_meth_sig.set_parameter_count (l_parameter_count)
 				end
 
-				if l_feat.is_function or l_is_attribute or l_feat.is_constant then
-					set_method_return_type (l_meth_sig, l_return_type, l_class_type)
-				elseif l_feat.is_type_feature then
+				if l_feat.is_type_feature then
 					l_meth_sig.set_return_type (
 						{MD_SIGNATURE_CONSTANTS}.Element_type_class,
 						current_module.ise_type_token)
+				elseif l_feat.is_function or l_is_attribute or l_feat.is_constant then
+					set_method_return_type (l_meth_sig, l_return_type, l_class_type)
 				else
 					l_meth_sig.set_return_type (
 						{MD_SIGNATURE_CONSTANTS}.Element_type_void, 0)
@@ -2288,12 +2289,12 @@ feature -- Features info
 					l_meth_sig.set_parameter_count (l_parameter_count)
 				end
 
-				if feat.is_function or l_is_attribute or feat.is_constant then
-					set_method_return_type (l_meth_sig, l_return_type, signature_declaration_type)
-				elseif feat.is_type_feature then
+				if feat.is_type_feature then
 					l_meth_sig.set_return_type (
 						{MD_SIGNATURE_CONSTANTS}.Element_type_class,
 						current_module.ise_type_token)
+				elseif feat.is_function or l_is_attribute or feat.is_constant then
+					set_method_return_type (l_meth_sig, l_return_type, signature_declaration_type)
 				else
 					l_meth_sig.set_return_type (
 						{MD_SIGNATURE_CONSTANTS}.Element_type_void, 0)
@@ -6178,7 +6179,10 @@ feature -- Assertions
 			l_list: SEARCH_TABLE [INTEGER]
 		do
 			from
-				parents := current_class_type.associated_class.parents
+					--| FIXME IEK: We currently only iterate conforming parents for invariant generation
+					--| as invariants from a non-conforming branch would have to be flat generated in the
+					--| current class.
+				parents := current_class_type.associated_class.conforming_parents
 				create l_list.make (parents.count)
 				parents.start
 			until
@@ -6269,7 +6273,7 @@ feature -- Constants generation
 			create_object (string_implementation_id)
 			duplicate_top
 			generate_local (n)
-			internal_generate_feature_access (string_type_id, string_make_feat_id, 1, False, True)
+			internal_generate_feature_access (string_implementation_id, string_make_feat_id, 1, False, True)
 		end
 
 	put_manifest_string (s: STRING) is
@@ -6278,7 +6282,7 @@ feature -- Constants generation
 			create_object (string_implementation_id)
 			duplicate_top
 			put_system_string (s)
-			internal_generate_feature_access (string_type_id, string_make_feat_id, 1, False, True)
+			internal_generate_feature_access (string_implementation_id, string_make_feat_id, 1, False, True)
 		end
 
 	put_system_string (s: STRING) is
@@ -6717,10 +6721,7 @@ feature -- Basic feature
 			put_dummy_local_info (System_string_type, local_number)
 			generate_local_assignment (local_number)
 
-			create_object (string_implementation_id)
-			duplicate_top
-			generate_local (local_number)
-			internal_generate_feature_access (string_type_id, string_make_feat_id, 1, False, True)
+			put_manifest_string_from_system_string_local (local_number)
 
 			if type.is_pointer or type.is_typed_pointer then
 					-- Handling a POINTER type, we need to prepend `0x' to the output.

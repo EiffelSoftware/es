@@ -38,6 +38,8 @@
 doc:<file name="update.c" header="rt_update.h" version="$Id$" summary="Update runtime data with melted information.">
 */
 
+#ifdef WORKBENCH
+
 #include "eif_portable.h"
 #include "eif_project.h"
 #include "rt_dir.h"
@@ -360,8 +362,11 @@ rt_public void update(char ignore_updt, char *argv0)
 
 		/* Allocation of the variable `melt' */
 	SAFE_ALLOC(melt, unsigned char *, melt_count);
+	memset (melt, 0, melt_count * sizeof(unsigned char *));
+
 		/* Allocation of the variable `mpatidtab' */
 	SAFE_ALLOC(mpatidtab, int, melt_count);
+	memset (mpatidtab, 0, melt_count * sizeof(int));
 
 	while ((body_id = wuint32()) != INVALID_ID) {
 		bsize = wint32();
@@ -374,7 +379,7 @@ rt_public void update(char ignore_updt, char *argv0)
 		wread((char *) bcode, (int)(bsize * sizeof(unsigned char)));
 
 		melt[body_id] = bcode;		/* Assign Byte code array of feature of `body_id' */
-		egc_frozen [body_id] = 0;	/* Reset the frozen feature to force call on new
+		egc_frozen [body_id] = NULL;	/* Reset the frozen feature to force call on new
 									 * melted feature */
 
 		switch (*bcode) {
@@ -390,9 +395,11 @@ rt_public void update(char ignore_updt, char *argv0)
 			write_long ((char *) (bcode + 1), process_once_index (once_body_id));
 			break;
 #endif
+		case ONCE_MARK_NONE:
+		case ONCE_MARK_ATTRIBUTE:
+			break;
 		default:
-			if (*bcode)
-				eif_panic(MTC "Invalid kind of once routine");
+			eif_panic(MTC "Invalid kind of once routine");
 
 		}
 #ifdef DEBUG
@@ -438,21 +445,46 @@ rt_public void update(char ignore_updt, char *argv0)
 rt_private void root_class_updt (void)
 {
 	EIF_GET_CONTEXT
+	int32 l_rcount, l_strcount, i;
 	EIF_REFERENCE l_obj;
 	unsigned char *old_IC = IC;
 	/* Update the root class info */
 
-	egc_rcorigin = wint32();
+	l_rcount = wint32();
+	if (l_rcount > egc_rcount) {
+		free (egc_rlist);
+		free (egc_rcorigin);
+		free (egc_rcdt);
+		free (egc_rcoffset);
+		free (egc_rcarg);
+		SAFE_ALLOC (egc_rlist, char*, l_rcount);
+		SAFE_ALLOC (egc_rcorigin, int32, l_rcount);
+		SAFE_ALLOC (egc_rcdt, int32, l_rcount);
+		SAFE_ALLOC (egc_rcoffset, int32, l_rcount);
+		SAFE_ALLOC (egc_rcarg, int32, l_rcount);
+	}
+	egc_rcount = l_rcount;
+	for (i = 0; i < egc_rcount; i++) {
 
-		/* Create an instance of ANY, to give us a context. */
-	l_obj = RTLNSMART((EIF_TYPE_INDEX) wint32());
-		/* compute the full dynamic type for `root_obj'. */
-	IC = (unsigned char *) wtype_array(NULL);
-	egc_rcdt = get_compound_id (l_obj, get_int16(&IC));
-	IC = old_IC;
+			/* Read root class/feature name */
+		l_strcount = wint32();
+		SAFE_ALLOC(egc_rlist[i], char, l_strcount + 1);
+		wread(egc_rlist[i], l_strcount * sizeof(char));
+		egc_rlist[i][l_strcount] = '\0';
 
-	egc_rcoffset = wint32();
-	egc_rcarg = wint32();
+		egc_rcorigin[i] = wint32();
+
+			/* Create an instance of ANY, to give us a context. */
+		l_obj = RTLNSMART((EIF_TYPE_INDEX) wint32());
+			/* compute the full dynamic type for `root_obj'. */
+		IC = (unsigned char *) wtype_array(NULL);
+		egc_rcdt[i] = get_compound_id (l_obj, get_int16(&IC));
+		IC = old_IC;
+
+		egc_rcoffset[i] = wint32();
+		egc_rcarg[i] = wint32();
+
+	}
 
 #ifdef DEBUG
 	dprintf(1)("Root class info:\n\tegc_rcorigin = %ld, egc_rcdt = %ld\n", egc_rcorigin, egc_rcdt);
@@ -472,8 +504,6 @@ rt_public void cnode_updt(void)
 	char **names;			/* Name array */
 	uint32 *types;			/* Attribute meta-type array */
 	EIF_TYPE_INDEX **gtypes;/* Attribute full-type array */
-	short nbparents;		/* Parent count */
-	EIF_TYPE_INDEX *parents;/* Parent dynmaic type array */
 	int32 *rout_ids;		/* Routine id array */
 	int i;
 
@@ -547,25 +577,10 @@ rt_public void cnode_updt(void)
 		node->cn_gtypes = NULL;
 	}
 
-		/* 5. Parent dynamic type array */
-	nbparents = wshort();
-	SAFE_ALLOC(parents, EIF_TYPE_INDEX, nbparents + 1);
-	node->cn_parents = parents;
-#ifdef DEBUG
-	dprintf(4)("\n\tparents = ");
-#endif
-	for (i=0; i<nbparents; i++) {
-		parents[i] = (EIF_TYPE_INDEX) wshort();
-#ifdef DEBUG
-	dprintf(4)("%d ", parents[i]);
-#endif
-	}
-	parents[nbparents] = TERMINATOR;
-
-		/* 6.: Skeleton flags */
+		/* 5.: Skeleton flags */
 	node->cn_flags = (uint16) wshort();
 
-		/* 7. Attribute routine id array */
+		/* 6. Attribute routine id array */
 	if (nbattr > 0) {
 		SAFE_ALLOC(rout_ids, int32, nbattr);
 		node->cn_attr = rout_ids;
@@ -578,13 +593,13 @@ rt_public void cnode_updt(void)
 	} else
 		node->cn_attr = (int32 *) 0;
 
-		/* 8. Reference number */
+		/* 7. Reference number */
 	node->cn_nbref = wint32();
 #ifdef DEBUG
 	dprintf(4)("\n\treference number = %ld\n", node->cn_nbref);
 #endif
 
-		/* 9. Node size */
+		/* 8. Node size */
 	node->cn_size = wint32();
 #ifdef DEBUG
 	dprintf(4)("\tsize = %ld\n", node->cn_size);
@@ -697,7 +712,7 @@ rt_private void parents_updt(void)
 
 		/* Read class name */
 
-		pt->class_name = wclass_name();
+		pt->dtype = (EIF_TYPE_INDEX) wshort ();
 
 		/* Is it expanded? */
 
@@ -935,15 +950,15 @@ rt_public void desc_updt(void)
 					desc_ptr[i].gen_type = wtype_array(NULL);
 				}
 #ifdef DEBUG
-	dprintf(4)("Melted descriptor\n\torigin = %d, dtype = %d, RTUD = %d, size = %d\n",
-						org_id, type_id, RTUD(type_id-1), rout_count);
+	dprintf(4)("Melted descriptor\n\torigin = %d, dtype = %d, size = %d\n",
+						org_id, type_id, rout_count);
 	{
 		int i;
 		for (i=0;i<rout_count;i++)
 			dprintf(4) ("\t%d: body_index = %d, offset = %d, type = %d\n", i, desc_ptr[i].body_index, desc_ptr[i].offset, desc_ptr[i].type);
 	}
 #endif
-				IMDSC(desc_ptr, org_id, RTUD(type_id-1));
+				IMDSC(desc_ptr, org_id, type_id-1);
 			}
 
 		}
@@ -1057,6 +1072,8 @@ rt_private void write_long(char *where, EIF_INTEGER value)
 {
 	memcpy (where, &value, sizeof(EIF_INTEGER));
 }
+
+#endif
 
 /*
 doc:</file>

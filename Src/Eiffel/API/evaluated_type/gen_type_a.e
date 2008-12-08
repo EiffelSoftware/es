@@ -21,10 +21,11 @@ inherit
 			actual_argument_type, update_dependance, hash_code,
 			is_full_named_type, process, evaluated_type_in_descendant,
 			generate_cid, generate_cid_array, generate_cid_init,
-			make_gen_type_byte_code, il_type_name, generic_il_type_name,
+			make_type_byte_code, il_type_name, generic_il_type_name,
 			generate_gen_type_il, adapted_in, internal_generic_derivation,
 			internal_same_generic_derivation_as, is_class_valid,
-			is_valid_generic_derivation, skeleton_adapted_in, dispatch_anchors
+			is_valid_generic_derivation, skeleton_adapted_in, dispatch_anchors,
+			check_labels
 		end
 
 create
@@ -387,7 +388,7 @@ feature -- Generic conformance
 			end
 		end
 
-	make_gen_type_byte_code (ba: BYTE_ARRAY; use_info : BOOLEAN; a_context_type: TYPE_A) is
+	make_type_byte_code (ba: BYTE_ARRAY; use_info : BOOLEAN; a_context_type: TYPE_A) is
 			-- Put type id's in byte array.
 			-- `use_info' is true iff we generate code for a
 			-- creation instruction.
@@ -404,7 +405,7 @@ feature -- Generic conformance
 			until
 				i > nb
 			loop
-				l_generics.item (i).make_gen_type_byte_code (ba, use_info, a_context_type)
+				l_generics.item (i).make_type_byte_code (ba, use_info, a_context_type)
 				i := i + 1
 			end
 		end
@@ -890,15 +891,19 @@ feature {COMPILER_EXPORTER} -- Primitives
 	is_full_named_type: BOOLEAN is
 			-- Is Current a fully named type?
 		local
-			i, count: INTEGER
+			i, nb: INTEGER
 		do
 			from
 				i := 1
-				count := generics.count
+				nb := generics.count + 1
+				Result := True
 			until
-				i > count or else Result
+				i = nb
 			loop
-				Result := generics.item (i).is_full_named_type
+				if not generics.item (i).is_full_named_type then
+					Result := False
+					i := nb - 1
+				end
 				i := i + 1
 			end
 		end
@@ -1210,7 +1215,7 @@ feature {COMPILER_EXPORTER} -- Primitives
 	parent_type (parent: CL_TYPE_A): TYPE_A is
 			-- Parent actual type in the current context
 		do
-			Result := instantiate (parent.duplicate)
+			Result := instantiate (parent)
 		end
 
 	instantiate (type: TYPE_A): TYPE_A is
@@ -1223,6 +1228,7 @@ feature {COMPILER_EXPORTER} -- Primitives
 			i, count: INTEGER
 			gen_type: GEN_TYPE_A
 			gen_type_generics: like generics
+			l_old_generic, l_new_generic: TYPE_A
 			formal_type: FORMAL_A
 			l_like_type: LIKE_TYPE_A
 		do
@@ -1235,7 +1241,7 @@ feature {COMPILER_EXPORTER} -- Primitives
 					-- as otherwise we would break eweasel test exec206, but we
 					-- still need to adapt its actual_type to the current context
 					-- otherwise we would break valid168.
-				l_like_type ?= type
+				l_like_type ?= type.duplicate
 				check
 					l_like_type_not_void: l_like_type /= Void
 				end
@@ -1244,19 +1250,28 @@ feature {COMPILER_EXPORTER} -- Primitives
 			elseif type.has_generics then
 					-- Instantiation of the generic parameter of `type'
 				gen_type ?= type
-				Result := gen_type.duplicate
 				from
 					i := 1
-					gen_type_generics := Result.generics
+					gen_type_generics := gen_type.generics
 					count := gen_type_generics.count
 				until
 					i > count
 				loop
-					gen_type_generics.put
-						(instantiate (gen_type_generics.item (i)), i)
+					l_old_generic := gen_type_generics [i]
+					l_new_generic := instantiate (l_old_generic)
+					if l_old_generic /= l_new_generic then
+							-- If a new object is generated as a result of the generic type instantiation
+							-- then we need to duplicate `gen_type'.
+						if Result = Void then
+							Result := gen_type.duplicate
+							gen_type_generics := Result.generics
+						end
+						gen_type_generics [i] := l_new_generic
+					end
 					i := i + 1
 				end
-			else
+			end
+			if Result = Void then
 				Result := type
 			end
 		end
@@ -1348,6 +1363,24 @@ feature {COMPILER_EXPORTER} -- Primitives
 					Result := generics.item (i).good_generics
 					i := i + 1
 				end
+			end
+		end
+
+	check_labels (a_context_class: CLASS_C; a_node: TYPE_AS) is
+			-- <Precursor>
+		local
+			i, nb: INTEGER
+			l_generics: like generics
+		do
+			from
+				l_generics := generics
+				i  := l_generics.lower
+				nb := l_generics.upper
+			until
+				i > nb
+			loop
+				l_generics.item (i).check_labels (a_context_class, a_node)
+				i := i + 1
 			end
 		end
 
@@ -1443,6 +1476,11 @@ feature {COMPILER_EXPORTER} -- Primitives
 								--| Knowing that formals (FORMAL_A) just take of their "layers" and fall back to their constraints and ask and ask again until they match.
 								--| Example: [G -> H, H -> I, I -> J] Question: Is G conform to J? Answer of `conform_to' is yes.
 								--| Knowing that there is no recursion in such a case: X -> LIST[X] because either the input really matches LIST and then we _have_ to continue or then it does not and we stop.
+							if {a: ATTACHABLE_TYPE_A} l_generic_parameter then
+									-- Use attachment status of an actual generic parameter
+									-- to check conformance to the formal generic parameter.
+								l_constraint_item := l_constraint_item.to_other_attachment (a)
+							end
 							if l_generic_parameter.conformance_type.conform_to (l_constraint_item) then
 								-- Everything is fine, we conform
 							else

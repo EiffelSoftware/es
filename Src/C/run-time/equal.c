@@ -143,23 +143,15 @@ rt_public EIF_BOOLEAN eequal(register EIF_REFERENCE target, register EIF_REFEREN
 				* class. `source' and/or `target' cannot be NULL.
 				* Return a boolean.
 				*/
-			EIF_REFERENCE s_ref;
-			EIF_REFERENCE t_ref;
-			rt_uint_ptr s_size = (HEADER(source)->ov_size) & B_SIZE; /* Size of source special */
-			rt_uint_ptr t_size = (HEADER(target)->ov_size) & B_SIZE; /* Size of target special */
 		
 				/* First condition: same count */
-			s_ref = (EIF_REFERENCE) (source + s_size - LNGPAD_2);
-			t_ref = (EIF_REFERENCE) (target + t_size - LNGPAD_2);
-			if (*(EIF_INTEGER *) s_ref != *(EIF_INTEGER *) t_ref)
+			rt_uint_ptr s_size = RT_SPECIAL_COUNT(source);
+			if (RT_SPECIAL_COUNT(target) != s_size) {
 				return EIF_FALSE;
-		
-			/* Since dynamic type of `source' conforms to dynamic type of
-			* `target', the element size must be the same. No need to test it.
-			*/
-		
-			/* Second condition: block equality */
-			return EIF_TEST(!memcmp (source, target, s_size * sizeof(char)));
+			} else {
+					/* Second condition: block equality */
+				return EIF_TEST(!memcmp (source, target, s_size * RT_SPECIAL_ELEM_SIZE(source)));
+			}
 		} else if (Dftype(source) == egc_bit_dtype) {
 				/* Eiffel standard equality on BIT objects */
 			return b_equal (source, target);
@@ -225,8 +217,6 @@ rt_public EIF_BOOLEAN spiso(register EIF_REFERENCE target, register EIF_REFERENC
 	union overhead *t_zone;				/* Target header */
 	uint32 s_flags;						/* Source flags */
 	/*uint32 t_flags;*/					/* Target flags */
-	rt_uint_ptr s_size;						/* Source size */
-	rt_uint_ptr t_size;						/* Target size */
 	EIF_REFERENCE s_ref;
 	EIF_REFERENCE t_ref;
 	EIF_INTEGER count;				/* Common count */
@@ -238,8 +228,6 @@ rt_public EIF_BOOLEAN spiso(register EIF_REFERENCE target, register EIF_REFERENC
 
 	s_zone = HEADER(source);
 	t_zone = HEADER(target);
-	s_size = s_zone->ov_size & B_SIZE;
-	t_size = t_zone->ov_size & B_SIZE;
 
 	/* First condition: same count */
 	s_ref = RT_SPECIAL_INFO_WITH_ZONE(source, s_zone);
@@ -310,7 +298,7 @@ rt_public EIF_BOOLEAN spiso(register EIF_REFERENCE target, register EIF_REFERENC
 			/* Evaluation of two references */
 			s_field = *(EIF_REFERENCE *) s_ref;
 			t_field = *(EIF_REFERENCE *) t_ref;
-			if ((0 == s_field) && (0 == t_field))
+			if ((!s_field) && (!t_field))
 				/* Two void references */
 				continue;
 			else if (		(((EIF_REFERENCE) 0) != s_field) &&
@@ -515,12 +503,12 @@ rt_private EIF_BOOLEAN rdeepiter(register EIF_REFERENCE target, register EIF_REF
 		/* One test an a de-reference is only useful since the source and
 		 * the target are isomorhic
 		 */
-		if (s_ref == 0)
-			if (t_ref == 0)
+		if (!s_ref)
+			if (!t_ref)
 				continue;
 			else
 				return EIF_FALSE;
-		else if (t_ref == 0)
+		else if (!t_ref)
 			return EIF_FALSE;
 		else if (!(rdeepiso(t_ref, s_ref)))
 			return EIF_FALSE;
@@ -792,10 +780,9 @@ rt_private EIF_BOOLEAN e_field_iso(register EIF_REFERENCE target,
 				if (((EIF_REFERENCE) 0 == ref1) && ((EIF_REFERENCE)0 == ref2))
 					/* Void reference */
 					continue;
-				if (	(0 != ref1) &&
-						(0 != ref2) &&
-						(Dftype(ref1) == Dftype(ref2)))
+				if ((ref1) && (ref2) && (Dftype(ref1) == Dftype(ref2))) {
 					continue;
+				}
 				return EIF_FALSE;
 			}
 		}

@@ -13,8 +13,6 @@ inherit
 	ICOR_OBJECT
 		export
 			{ICOR_OBJECTS_MANAGER} clean_on_dispose
-		redefine
-			init_icor
 		end
 
 create {ICOR_OBJECTS_MANAGER}
@@ -22,16 +20,12 @@ create {ICOR_OBJECTS_MANAGER}
 
 feature {ICOR_EXPORTER} -- Access
 
-	init_icor is
-			--
+	token: NATURAL_32
+			-- Class's token
 		do
-			Precursor
-			token := get_token
+			--| FIXME jfiat [2008/11/12] : maybe try to cache the value ...
+			Result := get_token
 		end
-
-feature {ICOR_EXPORTER} -- Properties
-
-	token: INTEGER
 
 feature {ICOR_EXPORTER} -- Access
 
@@ -47,14 +41,7 @@ feature {ICOR_EXPORTER} -- Access
 			success: last_call_success = 0
 		end
 
-	get_token: INTEGER is
-		do
-			last_call_success := cpp_get_token (item, $Result)
-		ensure
-			success: last_call_success = 0
-		end
-
-	get_static_field_value (mdfielddef: INTEGER; a_frame: ICOR_DEBUG_FRAME): ICOR_DEBUG_VALUE is
+	get_static_field_value (mdfielddef: NATURAL_32; a_frame: ICOR_DEBUG_FRAME): ICOR_DEBUG_VALUE is
 			-- GetStaticFieldValue returns a value object (ICorDebugValue)
 			-- for the given static field
 			-- variable. If the static field could possibly be relative to either
@@ -72,9 +59,18 @@ feature {ICOR_EXPORTER} -- Access
 			end
 		end
 
+feature {NONE} -- Access
+
+	get_token: like token is
+		do
+			last_call_success := cpp_get_token (item, $Result)
+		ensure
+			success: last_call_success = 0
+		end
+
 feature {NONE} -- Implementation
 
-	cpp_get_module (obj: POINTER; a_p: POINTER): INTEGER is
+	cpp_get_module (obj: POINTER; a_p: TYPED_POINTER [POINTER]): INTEGER is
 		external
 			"[
 				C++ ICorDebugClass signature(ICorDebugModule**): EIF_INTEGER 
@@ -84,7 +80,7 @@ feature {NONE} -- Implementation
 			"GetModule"
 		end
 
-	cpp_get_token (obj: POINTER; a_p: POINTER): INTEGER is
+	cpp_get_token (obj: POINTER; a_p: TYPED_POINTER [NATURAL_32]): INTEGER is
 		external
 			"[
 				C++ ICorDebugClass signature(mdTypeDef*): EIF_INTEGER 
@@ -94,7 +90,7 @@ feature {NONE} -- Implementation
 			"GetToken"
 		end
 
-	cpp_get_static_field_value (obj: POINTER; a_mdfielddef: INTEGER; a_p_frame: POINTER; a_p: POINTER): INTEGER is
+	cpp_get_static_field_value (obj: POINTER; a_mdfielddef: NATURAL_32; a_p_frame: POINTER; a_p: TYPED_POINTER [POINTER]): INTEGER is
 		external
 			"[
 				C++ ICorDebugClass signature(mdFieldDef, ICorDebugFrame*, ICorDebugValue**): EIF_INTEGER 

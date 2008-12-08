@@ -23,7 +23,9 @@ feature {DEBUGGER_MANAGER} -- Access
 			-- and using `levlim' as level limit
 		do
 			if is_tool_instantiated then
-				panel.activate_execution_replay_mode (b, levlim)
+				if panel.is_initialized then
+					panel.activate_execution_replay_mode (b, levlim)
+				end
 				if b then
 					show (False)
 				end
@@ -41,46 +43,32 @@ feature {DEBUGGER_MANAGER} -- Access
 			end
 		end
 
-feature -- Query
-
-	is_stone_usable (a_stone: STONE): BOOLEAN
-			-- Determines if a stone can be used by Current.
-			--
-			-- `a_stone': Stone to determine usablity.
-			-- `Result': True if the stone can be used, False otherwise.
-		do
-			Result := {cst: CALL_STACK_STONE} a_stone or else {fst: FEATURE_STONE} a_stone
-		end
-
 feature -- Access
 
 	icon: EV_PIXEL_BUFFER
-			-- Tool icon
-			-- Note: Do not call `tool.icon' as it will create the tool unnecessarly!
+			-- <Precursor>
 		do
 			Result := stock_pixmaps.tool_call_stack_icon_buffer
 		end
 
 	icon_pixmap: EV_PIXMAP
-			-- Tool icon pixmap
-			-- Note: Do not call `tool.icon' as it will create the tool unnecessarly!
+			-- <Precursor>
 		do
 			Result := stock_pixmaps.tool_call_stack_icon
 		end
 
 	title: STRING_32
-			-- Tool title.
-			-- Note: Do not call `tool.title' as it will create the tool unnecessarly!
+			-- <Precursor>
 		do
 			Result := interface_names.t_call_stack_tool
 		end
 
-	shortcut_preference_name: STRING_32
-			-- An optional shortcut preference name, for automatic preference binding.
-			-- Note: The preference should be registered in the default.xml file
-			--       as well as in the {EB_MISC_SHORTCUT_DATA} class.
+feature {NONE} -- Status report
+
+	internal_is_stone_usable (a_stone: !like stone): BOOLEAN
+			-- <Precursor>
 		do
-			Result := "show_call_stack_tool"
+			Result := ({cst: CALL_STACK_STONE} a_stone or else {fst: FEATURE_STONE} a_stone)
 		end
 
 feature {NONE} -- Factory
@@ -89,7 +77,6 @@ feature {NONE} -- Factory
 			-- Creates the tool for first use on the development `window'
 		do
 			create Result.make (window, Current)
-			Result.set_debugger_manager (debugger_manager)
 		end
 
 ;indexing

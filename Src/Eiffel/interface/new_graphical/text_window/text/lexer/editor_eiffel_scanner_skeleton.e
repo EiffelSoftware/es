@@ -5,8 +5,11 @@ indexing
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	EDITOR_EIFFEL_SCANNER_SKELETON
+
+inherit
+	EC_ENCODINGS
 
 feature -- Access
 
@@ -59,6 +62,124 @@ feature {NONE} -- Implementation
 			end
 		ensure
 			result_not_void: Result /= Void
+		end
+
+feature -- Token factory
+		-- Arguments are assumed as UTF-8 encoding
+		-- Since the scanner only accepts text of UTF-8
+
+	new_space (a_count: INTEGER): EDITOR_TOKEN_SPACE is
+		require
+			a_count_positive: a_count > 0
+		do
+			create Result.make (a_count)
+		ensure
+			result_not_void: Result /= Void
+		end
+
+	new_tabulation (a_count: INTEGER): EDITOR_TOKEN_TABULATION is
+		require
+			a_count_positive: a_count > 0
+		do
+			create Result.make (a_count)
+		ensure
+			result_not_void: Result /= Void
+		end
+
+	new_eol: EDITOR_TOKEN_EOL is
+		do
+			create Result.make
+		ensure
+			result_not_void: Result /= Void
+		end
+
+	new_comment (a_str: STRING): EDITOR_TOKEN_COMMENT is
+		require
+			a_str_not_void: a_str /= Void
+		do
+			create Result.make (utf8_to_utf32 (a_str))
+		ensure
+			result_not_void: Result /= Void
+		end
+
+	new_text (a_str: STRING): EDITOR_TOKEN_TEXT is
+		require
+			a_str_not_void: a_str /= Void
+		do
+			create Result.make (utf8_to_utf32 (a_str))
+		ensure
+			result_not_void: Result /= Void
+		end
+
+	new_operator (a_str: STRING): EDITOR_TOKEN_OPERATOR is
+		require
+			a_str_not_void: a_str /= Void
+		do
+			create Result.make (utf8_to_utf32 (a_str))
+		ensure
+			result_not_void: Result /= Void
+		end
+
+	new_keyword (a_str: STRING): EDITOR_TOKEN_KEYWORD is
+		require
+			a_str_not_void: a_str /= Void
+		do
+			create Result.make (utf8_to_utf32 (a_str))
+		ensure
+			result_not_void: Result /= Void
+		end
+
+	new_class (a_str: STRING): EDITOR_TOKEN_CLASS is
+		require
+			a_str_not_void: a_str /= Void
+		do
+			create Result.make (utf8_to_utf32 (a_str))
+		ensure
+			result_not_void: Result /= Void
+		end
+
+	new_character (a_str: STRING): EDITOR_TOKEN_CHARACTER is
+		require
+			a_str_not_void: a_str /= Void
+		do
+			create Result.make (utf8_to_utf32 (a_str))
+		ensure
+			result_not_void: Result /= Void
+		end
+
+	new_string (a_str: STRING): EDITOR_TOKEN_STRING is
+		require
+			a_str_not_void: a_str /= Void
+		do
+			create Result.make (utf8_to_utf32 (a_str))
+		ensure
+			result_not_void: Result /= Void
+		end
+
+	new_number (a_str: STRING): EDITOR_TOKEN_NUMBER is
+		require
+			a_str_not_void: a_str /= Void
+		do
+			create Result.make (utf8_to_utf32 (a_str))
+		ensure
+			result_not_void: Result /= Void
+		end
+
+feature {NONE} -- Encoding conversion
+
+	utf8_to_utf32 (a_string: STRING_8): STRING_32 is
+			-- UTF32 to UTF8 conversion, Eiffel implementation.
+		require
+			a_string_not_void: a_string /= Void
+		do
+			utf8.convert_to (utf32, a_string)
+			if utf8.last_conversion_successful then
+				Result := utf8.last_converted_string
+			else
+				Result := a_string
+			end
+		ensure
+			Result_not_void: Result /= Void
 		end
 
 invariant

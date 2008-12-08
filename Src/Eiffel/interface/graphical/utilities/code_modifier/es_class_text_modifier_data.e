@@ -10,7 +10,9 @@ indexing
 class
 	ES_CLASS_TEXT_MODIFIER_DATA
 
-inherit --{NONE}
+inherit
+	ANY
+
 	SHARED_WORKBENCH
 		export
 			{NONE} all
@@ -38,7 +40,7 @@ feature {NONE} -- Initialization
 			-- `a_text': Actual class text to modify.
 		do
 			associated_class := a_class
-			text ?= a_text.twin
+			text := a_text.twin
 			create position_adjustments.make_default
 			original_count := text.count
 		ensure
@@ -49,7 +51,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	text: !STRING assign set_text
+	text: !STRING_32 assign set_text
 			-- Modified text.
 
 	original_count: INTEGER

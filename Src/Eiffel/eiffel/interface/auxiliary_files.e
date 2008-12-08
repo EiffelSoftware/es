@@ -296,9 +296,7 @@ feature -- Dynamic Library file
 									buffer.put_string ("%N%Tmain_obj = RTLN(")
 
 									if Context.workbench_mode then
-										buffer.put_string ("RTUD(");
 										buffer.put_static_type_id (dl_exp.compiled_class.actual_type.associated_class_type (Void).static_type_id)
-										buffer.put_character (')');
 									else
 										buffer.put_type_id (dl_exp.compiled_class.actual_type.type_id (Void));
 									end
@@ -384,7 +382,7 @@ feature -- Plug and Makefile file
 			-- Generate plug with run-time
 		local
 			any_cl, string_cl, bit_cl, array_cl, rout_cl, exception_manager_cl: CLASS_C
-			arr_type_id, str_type_id, type_id: INTEGER
+			arr_type_id, type_id: INTEGER
 			id: INTEGER
 			str_make_feat, set_count_feat: FEATURE_I
 			count_feat, internal_hash_code_feat: ATTRIBUTE_I
@@ -400,6 +398,7 @@ feature -- Plug and Makefile file
 			once_raise_name: STRING
 			correct_mismatch_name: STRING
 			equal_name: STRING
+			copy_name: STRING
 			twin_name: STRING
 			special_cl: SPECIAL_B
 			cl_type: CLASS_TYPE
@@ -407,19 +406,20 @@ feature -- Plug and Makefile file
 			plug_file: INDENT_FILE
 			buffer: GENERATION_BUFFER
 
-			has_argument: BOOLEAN
-			root_cl: CLASS_C
-			rout_info: ROUT_INFO
-			root_feat: FEATURE_I
-			rcorigin: INTEGER
-			rcoffset: INTEGER
-
-			l_create_type: CREATE_TYPE
-			l_creation_type: CL_TYPE_A
-			l_gen_type: GEN_TYPE_A
-
 			l_rt_dbg_cl: CLASS_C
 			l_rt_extension_notify_name, l_rt_extension_notify_argument_name: STRING
+
+			l_root_malloc: STRING
+			l_root: SYSTEM_ROOT
+			l_root_type: CL_TYPE_A
+			l_root_gen_type: ?GEN_TYPE_A
+			l_root_create_type: CREATE_TYPE
+			l_root_cl: CLASS_C
+			l_rout_info: ROUT_INFO
+			l_root_ft: FEATURE_I
+			l_rcorigin, l_rcoffset: INTEGER
+			cs: CURSOR
+			i: INTEGER
 		do
 				-- Clear buffer for current generation
 			buffer := generation_buffer
@@ -447,7 +447,6 @@ feature -- Plug and Makefile file
 				-- Extern declarations
 			string_cl := system.class_of_id (system.string_8_id)
 			cl_type := string_cl.types.first
-			str_type_id := cl_type.type_id
 			creators := string_cl.creators
 			creators.start
 
@@ -480,7 +479,8 @@ feature -- Plug and Makefile file
 
 				-- Make STRING declaration
 			str_make_feat := string_cl.feature_table.item_id (Names_heap.make_name_id)
-			str_make_name := Encoder.feature_name (str_type_id, str_make_feat.body_index).twin
+			str_make_name := Encoder.feature_name (str_make_feat.written_class.types.first.type_id,
+				str_make_feat.body_index).twin
 			buffer.put_string ("extern void ")
 			buffer.put_string (str_make_name)
 			buffer.put_string ("();%N")
@@ -489,7 +489,8 @@ feature -- Plug and Makefile file
 				internal_hash_code_feat ?= string_cl.feature_table.item_id (Names_heap.internal_hash_code_name_id)
 			else
 				set_count_feat ?= string_cl.feature_table.item_id (Names_heap.set_count_name_id)
-				set_count_name := Encoder.feature_name (str_type_id, set_count_feat.body_index).twin
+				set_count_name := Encoder.feature_name (set_count_feat.written_class.types.first.type_id,
+					set_count_feat.body_index).twin
 				buffer.put_string ("extern void ")
 				buffer.put_string (set_count_name)
 				buffer.put_string ("();%N")
@@ -656,6 +657,11 @@ feature -- Plug and Makefile file
 				buffer.put_string ("extern char *(*")
 				buffer.put_string (dispose_name)
 				buffer.put_string ("[])();%N%N")
+
+				copy_name := Encoder.routine_table_name (system.routine_id_counter.copy_rout_id).twin
+				buffer.put_string ("extern char *(*")
+				buffer.put_string (copy_name)
+				buffer.put_string ("[])();%N%N")
 			end
 
 				-- Declaration and definition of the egc_init_plug function.
@@ -809,7 +815,7 @@ feature -- Plug and Makefile file
 
 				-- Dynamic type of class STRING
 			buffer.put_string ("%N%Tegc_str_dtype = ")
-			buffer.put_type_id (str_type_id)
+			buffer.put_type_id (string_cl.types.first.type_id)
 			buffer.put_string (";%N")
 
 				-- Dynamic type of class ARRAY[ANY]
@@ -826,6 +832,15 @@ feature -- Plug and Makefile file
 			buffer.put_string ("%Tegc_disp_rout_id = ")
 			if System.disposable_class /= Void and System.disposable_class.is_compiled then
 				buffer.put_integer (System.disposable_dispose_id)
+			else
+				buffer.put_string ("-1")
+			end
+			buffer.put_string (";%N")
+
+				-- Copy routine id from class ANY (if compiled)
+			buffer.put_string ("%Tegc_copy_rout_id = ")
+			if System.any_class /= Void and System.any_class.is_compiled then
+				buffer.put_integer (System.any_copy_id)
 			else
 				buffer.put_string ("-1")
 			end
@@ -864,8 +879,6 @@ feature -- Plug and Makefile file
 
 				buffer.put_string ("%N%Tegc_fcall = egc_fcall_init;%N")
 				buffer.put_string ("%Tegc_forg_table = egc_forg_table_init;%N")
-				buffer.put_string ("%Tegc_fdtypes = egc_fdtypes_init;%N")
-
 			else
 					-- Do we need to protect the exception stack?
 				buffer.put_string ("%Texception_stack_managed = (EIF_BOOLEAN) ")
@@ -893,6 +906,12 @@ feature -- Plug and Makefile file
 				buffer.put_string (dispose_name)
 				buffer.put_string (";%N")
 
+					-- Copy routines
+				buffer.put_string ("%Tegc_copy = ")
+				buffer.put_string ("(void (**)(EIF_REFERENCE, EIF_REFERENCE)) ")
+				buffer.put_string (copy_name)
+				buffer.put_string (";%N")
+
 				buffer.put_string ("%Tegc_ce_rname = egc_ce_rname_init;%N")
 				buffer.put_string ("%Tegc_fnbref = egc_fnbref_init;%N")
 				buffer.put_string ("%Tegc_fsize = egc_fsize_init;%N")
@@ -914,35 +933,119 @@ feature -- Plug and Makefile file
 				-- Generate the number of dynamic types.
 			buffer.put_string (";%N%Tscount = ")
 			buffer.put_integer (System.type_id_counter.value)
-			buffer.put_string (";%N%N")
+			buffer.put_character (';')
+			buffer.put_new_line
+
+
+				-- Generate root procedure lists
+			check
+				has_root: not system.root_creators.is_empty
+			end
+			buffer.indent
+
+			buffer.put_new_line
+			buffer.put_string ("egc_rcount = ")
+			buffer.put_integer (system.root_creators.count)
+			buffer.put_character (';')
+			buffer.put_new_line
+			buffer.put_string ("egc_ridx = 0;")
+			buffer.put_new_line
+
+			buffer.put_string ("egc_rlist = (char**) eif_malloc (sizeof(char*)*egc_rcount);");
+			buffer.put_new_line
+
+			l_root_malloc := "(int32 *) eif_malloc (sizeof(int32)*egc_rcount);"
+			buffer.put_string ("egc_rcdt = ")
+			buffer.put_string (l_root_malloc)
+			buffer.put_new_line
 
 			if not final_mode then
-				check system.root_type /= Void end
-				root_cl := System.root_type.associated_class
-				if not Compilation_modes.is_precompiling and then System.root_creation_name /= Void then
-					root_feat := root_cl.feature_table.item (System.root_creation_name)
-					has_argument := root_feat.has_arguments
-					rout_info := System.rout_info_table.item (root_feat.rout_id_set.first)
-					rcorigin := rout_info.origin
-					rcoffset := rout_info.offset
-				else
-					rcorigin := -1
-				end
-
-				buffer.put_string ("%Tegc_rcorigin = ")
-				buffer.put_integer (rcorigin)
-				buffer.put_string (";%N%Tegc_rcdt = 0")
-				buffer.put_string (";%N%Tegc_rcoffset = ")
-				buffer.put_integer (rcoffset)
-				buffer.put_string (";%N%Tegc_rcarg = ")
-				if has_argument then
-					buffer.put_string ("1")
-				else
-					buffer.put_string ("0")
-				end
-				buffer.put_string (";%N%N")
+				buffer.put_string ("egc_rcorigin = ")
+				buffer.put_string (l_root_malloc)
+				buffer.put_new_line
+				buffer.put_string ("egc_rcoffset = ")
+				buffer.put_string (l_root_malloc)
+				buffer.put_new_line
+				buffer.put_string ("egc_rcarg = ")
+				buffer.put_string (l_root_malloc)
+				buffer.put_new_line
 			end
 
+			from
+				cs := system.root_creators.cursor
+				system.root_creators.start
+				i := 0
+			until
+				system.root_creators.after
+			loop
+				l_root := system.root_creators.item_for_iteration
+				check
+					type_set: l_root.is_class_type_set
+				end
+				l_root_cl := l_root.class_type.associated_class
+				if not compilation_modes.is_precompiling then
+					l_root_ft := l_root_cl.feature_table.item (l_root.procedure_name)
+					l_rout_info := system.rout_info_table.item (l_root_ft.rout_id_set.first)
+					l_rcorigin := l_rout_info.origin
+					l_rcoffset := l_rout_info.offset
+				else
+					l_rcorigin := -1
+				end
+
+				buffer.put_string ("egc_rlist[")
+				buffer.put_integer (i)
+				buffer.put_string ("] = %"")
+				if not compilation_modes.is_precompiling then
+					buffer.put_string (l_root_cl.name_in_upper)
+					buffer.put_character ('.')
+					buffer.put_string (l_root.procedure_name.as_lower)
+				else
+					buffer.put_string ("ANY")
+				end
+				buffer.put_string ("%";")
+				buffer.put_new_line
+
+				buffer.put_string ("egc_rcdt[")
+				buffer.put_integer (i)
+				buffer.put_string ("] = 0;")
+				buffer.put_new_line
+
+				if not final_mode then
+					buffer.put_string ("egc_rcorigin[")
+					buffer.put_integer (i)
+					buffer.put_string ("] = ")
+					buffer.put_integer (l_rcorigin)
+					buffer.put_string (";")
+					buffer.put_new_line
+
+					buffer.put_string ("egc_rcoffset[")
+					buffer.put_integer (i)
+					buffer.put_string ("] = ")
+					buffer.put_integer (l_rcoffset)
+					buffer.put_string (";")
+					buffer.put_new_line
+
+					buffer.put_string ("egc_rcarg[")
+					buffer.put_integer (i)
+					buffer.put_string ("] = ")
+					if not compilation_modes.is_precompiling and then l_root_ft.has_arguments then
+						buffer.put_integer (1)
+					else
+						buffer.put_integer (0)
+					end
+					buffer.put_string (";")
+					buffer.put_new_line
+				end
+				buffer.put_new_line
+
+				i := i + 1
+				system.root_creators.forth
+			end
+			system.root_creators.go_to (cs)
+
+			buffer.exdent
+
+			buffer.put_new_line
 			buffer.put_string ("%Tegc_platform_level = 0x00000D00;")
 			buffer.put_new_line
 
@@ -992,44 +1095,67 @@ feature -- Plug and Makefile file
 			buffer.put_string ("void egc_rcdt_init (void)")
 			buffer.generate_block_open
 			buffer.put_new_line
-			buffer.put_string ("if (egc_rcdt == 0) {")
-			buffer.indent
-			l_creation_type := system.root_type
-			l_gen_type ?= l_creation_type
-			if l_gen_type /= Void then
-				context.set_buffer (buffer)
-				context.init (system.root_class_type)
-				buffer.put_new_line
-					-- Because generic object creation requires a context object,
-					-- we simply create a temporary one of type ANY, used to
-					-- create an instance of our generic type.
-				buffer.put_string ("EIF_REFERENCE l_root_obj, Current = RTLN(")
-				buffer.put_type_id (context.context_class_type.type_id)
-				buffer.put_string (");")
-				buffer.put_new_line
-					-- Go ahead an create our generic type.
-				create l_create_type.make (l_creation_type)
-				l_create_type.generate_start (buffer)
-				l_create_type.generate_gen_type_conversion (0)
-				buffer.put_new_line
-				buffer.put_string ("l_root_obj = ")
-				l_create_type.generate
-				buffer.put_character (';')
-				buffer.put_new_line
-				l_create_type.generate_end (buffer)
-					-- Set `egc_rcdt' to the right dynamic type
-				buffer.put_string ("egc_rcdt = Dftype(l_root_obj);")
-			else
-				buffer.put_new_line
-				buffer.put_string ("egc_rcdt = ")
-				buffer.put_type_id (l_creation_type.type_id (Void))
-				buffer.put_character (';')
-			end
-			buffer.exdent
-			buffer.put_new_line
-			buffer.put_character ('}')
-			buffer.generate_block_close
 
+			from
+				cs := system.root_creators.cursor
+				system.root_creators.start
+				i := 0
+			until
+				system.root_creators.after
+			loop
+				buffer.put_string ("if (egc_rcdt[")
+				buffer.put_integer (i)
+				buffer.put_string ("] == 0) {")
+				buffer.indent
+				buffer.put_new_line
+
+				l_root := system.root_creators.item_for_iteration
+				l_root_type := l_root.class_type
+				l_root_gen_type ?= l_root_type
+				if l_root_gen_type /= Void then
+					context.set_buffer (buffer)
+					context.init (system.root_class_type (l_root_type))
+						-- Because generic object creation requires a context object,
+						-- we simply create a temporary one of type ANY, used to
+						-- create an instance of our generic type.
+					buffer.put_string ("EIF_REFERENCE l_root_obj, Current = RTLN(")
+					buffer.put_type_id (context.context_class_type.type_id)
+					buffer.put_string (");")
+					buffer.put_new_line
+						-- Go ahead an create our generic type.
+					create l_root_create_type.make (l_root_type)
+					l_root_create_type.generate_start (buffer)
+					l_root_create_type.generate_gen_type_conversion (0)
+					buffer.put_new_line
+					buffer.put_string ("l_root_obj = ")
+					l_root_create_type.generate
+					buffer.put_character (';')
+					buffer.put_new_line
+					l_root_create_type.generate_end (buffer)
+						-- Set `egc_rcdt' to the right dynamic type
+					buffer.put_string ("egc_rcdt[")
+					buffer.put_integer (i)
+					buffer.put_string ("] = Dftype(l_root_obj);")
+				else
+					buffer.put_string ("egc_rcdt[")
+					buffer.put_integer (i)
+					buffer.put_string ("] = ")
+					buffer.put_type_id (l_root_type.type_id (Void))
+					buffer.put_string ("; /* ")
+					buffer.put_string (l_root_type.name)
+					buffer.put_string (" */")
+				end
+
+				buffer.exdent
+				buffer.put_new_line
+				buffer.put_character ('}')
+
+				i := i + 1
+				system.root_creators.forth
+			end
+			system.root_creators.go_to (cs)
+
+			buffer.generate_block_close
 			buffer.end_c_specific_code
 
 			create plug_file.make_c_code_file (gen_file_name (final_mode, Eplug));
@@ -1120,7 +1246,7 @@ feature -- Plug and Makefile file
 		end
 
 indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

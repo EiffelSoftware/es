@@ -40,11 +40,6 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_SERVICE_PROVIDER
-		export
-			{NONE} all
-		end
-
 	SHARED_FORMAT_INFO
 		export
 			{NONE} all
@@ -54,9 +49,13 @@ feature {NONE} -- Initialization
 
 	initialize_services
 			-- Initializes graphical services
+		local
+			l_container: !SERVICE_CONSUMER [SERVICE_CONTAINER_S]
 		do
-			if {l_container: !SERVICE_CONTAINER} service_provider.query_service ({SERVICE_HEAP}) then
-				service_initializer.add_core_services (l_container)
+			create l_container
+			check is_service_available: l_container.is_service_available end
+			if l_container.is_service_available and then {l_service: SERVICE_CONTAINER_S} l_container.service then
+				service_initializer.add_core_services (l_service)
 			end
 		end
 
@@ -139,15 +138,27 @@ feature {NONE} -- Initialization
 			set_recent_projects_manager (l_recent_projects_manager)
 
 					-- Formatting includes breakpoints
-			set_is_with_breakable
+			set_is_with_breakable;
+
+				-- Initialize compiler encoding converter.
+			(create {SHARED_ENCODING_CONVERTER}).set_encoding_converter (create {EC_ENCODING_CONVERTER})
 		ensure
 			eiffel_layout_not_void: eiffel_layout /= Void
+		end
+
+	initialize_debugger	is
+			-- Various initialization of the debugger
+		local
+			dbg: DEBUGGER_MANAGER
+		do
+			create {EB_DEBUGGER_MANAGER} dbg.make
+			dbg.register
 		end
 
 feature {NONE} -- Access
 
 	service_initializer: !SERVICE_INITIALIZER
-			-- Initializer used to register all services
+			-- Initializer used to register all services.
 		once
 			create {!ES_SERVICE_INITIALIZER} Result
 		end
@@ -169,6 +180,8 @@ feature {NONE} -- Implementation (preparation of all widgets)
 			initialize_services
 
 			compiler_initialization
+
+			initialize_debugger
 
 				-- Create a development window
 			window_manager.create_window
@@ -225,9 +238,6 @@ feature {NONE} -- Implementation (preparation of all widgets)
 					display_starting_dialog
 				end
 			end
-
-				-- Register help engine
-			an_app.set_help_engine (create {EB_HELP_ENGINE}.make)
 		end
 
 	display_starting_dialog is

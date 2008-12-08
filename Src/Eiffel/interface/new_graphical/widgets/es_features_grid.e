@@ -77,6 +77,11 @@ inherit
 			default_create, is_equal, copy
 		end
 
+	EB_SHARED_FORMAT_TABLES
+		undefine
+			default_create, is_equal, copy
+		end
+
 create
 	make
 
@@ -237,7 +242,7 @@ feature -- Basic operations
 			-- `a_clause': The feature clause to navigate too.
 			-- `a_focus': True to set focus, False otherwise.
 		local
-			l_text: STRING_8
+			l_text: STRING_32
 			l_line, l_pos: INTEGER
 			l_window: EB_DEVELOPMENT_WINDOW
 		do
@@ -250,7 +255,7 @@ feature -- Basic operations
 					l_text := l_class.text
 				end
 				if l_text = Void then
-					l_text := l_editor.text
+					l_text := l_editor.wide_text
 				end
 
 				if l_text /= Void and then {l_formatter: EB_BASIC_TEXT_FORMATTER} l_window.pos_container then
@@ -455,6 +460,7 @@ feature -- Tree construction
 			retried: BOOLEAN
 			l_dev_win: EB_DEVELOPMENT_WINDOW
 			l_clauses: ARRAYED_LIST [DOTNET_FEATURE_CLAUSE_AS [CONSUMED_ENTITY]]
+			l_class: DOTNET_CLASS_AS
 		do
 			if not retried then
 				last_class := a_class.lace_class
@@ -464,9 +470,12 @@ feature -- Tree construction
 				expand_tree := preferences.feature_tool_data.expand_feature_tree
 				l_dev_win := Window_manager.last_focused_development_window
 				if l_dev_win /= Void then
-					l_clauses := l_dev_win.get_feature_clauses (a_class.name)
+					if consumed_types.has (last_class.name) then
+						create l_class.make (consumed_types.item (last_class.name), True, last_class)
+						l_clauses := l_class.features
+					end
 				end
-				if l_clauses.is_empty then
+				if l_clauses = Void then
 					extend_message_item (Interface_names.l_compile_first)
 				else
 					from
@@ -596,11 +605,13 @@ feature {NONE} -- Event handler
 		local
 			d: like data_from_item
 		do
-			if {gf: EB_GRID_EDITOR_TOKEN_ITEM} a_item then
-			else
-				d := data_from_item (a_item)
-				if {ef: E_FEATURE} d  then
-					create {FEATURE_STONE} Result.make (ef)
+			if not ev_application.ctrl_pressed then
+				if {gf: EB_GRID_EDITOR_TOKEN_ITEM} a_item then
+				else
+					d := data_from_item (a_item)
+					if {ef: E_FEATURE} d  then
+						create {FEATURE_STONE} Result.make (ef)
+					end
 				end
 			end
 		end
@@ -648,9 +659,20 @@ feature {NONE} -- Event handler
 			-- Target `features_tool' to `ef'.
 		require
 			ef_not_void: ef /= Void
+		local
+			l_stone: FEATURE_STONE
 		do
-			if a_button = 1 and then {l_ef: E_FEATURE} ef then
-				nagivate_to_feature (l_ef)
+			if {l_ef: E_FEATURE} ef then
+				if a_button = 1 then
+					nagivate_to_feature (l_ef)
+				elseif a_button = 3 then
+					if ev_application.ctrl_pressed then
+						create l_stone.make (ef)
+						if l_stone /= Void and then l_stone.is_valid then
+							(create {EB_CONTROL_PICK_HANDLER}).launch_stone (l_stone)
+						end
+					end
+				end
 			end
 		end
 

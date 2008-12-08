@@ -44,10 +44,10 @@ feature
 		end
 
 	is_predefined: BOOLEAN is True
-			-- Is Current a predefined entity ?
+			-- Is Current a predefined entity?
 
 	is_local: BOOLEAN is
-			-- Is Current an access to a local variable ?
+			-- Is Current an access to a local variable?
 		do
 			Result := True
 		end
@@ -72,12 +72,8 @@ feature
 
 	enlarged: LOCAL_B is
 			-- Enlarge current node
-		local
-			loc_bl: LOCAL_BL
 		do
-			create loc_bl
-			loc_bl.fill_from (Current)
-			Result := loc_bl
+			create {LOCAL_BL} Result.make (Current)
 		end
 
 	register_name: STRING is
@@ -96,7 +92,7 @@ feature
 
 feature -- IL code generation
 
-	is_fast_as_local: BOOLEAN is true
+	is_fast_as_local: BOOLEAN = True
 			-- Is expression calculation as fast as loading a local?
 
 feature -- Byte code generation
@@ -158,7 +154,7 @@ feature -- Setting
 		end
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

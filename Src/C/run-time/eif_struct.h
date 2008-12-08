@@ -49,7 +49,6 @@ extern "C" {
  *  - cn_nbattr is the number of attributes in the class.
  *  - cn_generator is the class name.
  *  - cn_names is a pointer to an array of attributes' name.
- *  - cn_parents is a sequence of dymanic types, used for invariant checking.
  *  - cn_types is a pointer on an array of attributes' type (non workbench).
  *  - cn_gtypes is a pointer to generic type arrays.
  *  - cn_flags is a set of flags describing current type.
@@ -60,7 +59,6 @@ struct cnode {
 	long cn_nbattr;				/* Number of attributes */
 	char *cn_generator;			/* Class name */
 	char **cn_names;			/* Attribute names */
-	EIF_TYPE_INDEX *cn_parents;	/* Dynamic types of parents (TERMINATOR marks end) */
 	uint32 *cn_types;			/* Attribute types */
 	EIF_TYPE_INDEX **cn_gtypes;	/* Attribute generic types (expanded attributes only) */
 	uint16 cn_flags;			/* Flags of Current type */
@@ -149,10 +147,10 @@ struct conform {
 */
 
 struct eif_par_types {
-	char    *class_name;    /* Name of this class */
-	EIF_TYPE_INDEX   *parents;       /* Parent types */
-	uint16   nb_generics;    /* Number of formal generics */
-	char    is_expanded;    /* Is it expanded? */
+	EIF_TYPE_INDEX dtype;	/* Dynamic type of this class per esystem */
+	EIF_TYPE_INDEX *parents;/* Parent types */
+	uint16 nb_generics;		/* Number of formal generics */
+	char is_expanded;		/* Is it expanded? */
 };
 
 RT_LNK EIF_TYPE_INDEX scount;				/* Numner of dynamic types */

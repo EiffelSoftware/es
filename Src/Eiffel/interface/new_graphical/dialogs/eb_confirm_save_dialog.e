@@ -9,6 +9,8 @@ class
 	EB_CONFIRM_SAVE_DIALOG
 
 inherit
+	ANY
+
 	EB_SHARED_WINDOW_MANAGER
 		export
 			{NONE} all
@@ -36,10 +38,10 @@ feature {NONE} -- Initialization
 			target := a_target
 			caller := a_caller
 			clsi_stone ?= target.stone
-			if clsi_stone /= Void then
+			if clsi_stone /= Void and clsi_stone.is_valid then
 				cls_name := clsi_stone.class_name
 			end
-			create l_question.make_standard (Warning_messages.w_File_changed (cls_name))
+			create l_question.make_standard_with_cancel (Warning_messages.w_File_changed (cls_name))
 			l_question.set_default_button (l_question.dialog_buttons.yes_button)
 			l_question.set_button_action (l_question.dialog_buttons.yes_button, agent save_text)
 			l_question.set_button_action (l_question.dialog_buttons.no_button, agent dont_save_text)

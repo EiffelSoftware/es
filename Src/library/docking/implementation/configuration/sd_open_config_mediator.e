@@ -104,7 +104,7 @@ feature -- Open inner container data.
 		end
 
 	open_tools_config (a_file: STRING_GENERAL): BOOLEAN is
-			-- Open tools config, excpet all editors
+			-- Open tools config, except all editors
 		require
 			not_called: top_container = Void
 		local
@@ -119,6 +119,8 @@ feature -- Open inner container data.
 			l_config_data: SD_CONFIG_DATA
 			l_env: EV_ENVIRONMENT
 		do
+			internal_docking_manager.query.set_opening_tools_layout (True)
+
 			-- We have to set all zones to normal state, otherwise we can't find the editor parent.
 			internal_docking_manager.command.recover_normal_state
 
@@ -132,16 +134,27 @@ feature -- Open inner container data.
 				top_container := internal_docking_manager.query.inner_container_main.editor_parent
 				if top_container = internal_docking_manager.query.inner_container_main then
 					l_container ?= top_container
-					check not_void: l_container /= Void end
-					-- It must be only one zone in top container
-					l_only_one_item := l_container.item
-					l_container.wipe_out
-					create l_temp_split
-					l_container.extend (l_temp_split)
-					l_temp_split.extend (l_only_one_item)
-					top_container := l_temp_split
+					if l_container /= Void then
+						-- It must be only one zone in top container
+						l_only_one_item := l_container.item
+						if l_only_one_item /= Void then
+							l_container.wipe_out
+							create l_temp_split
+							l_container.extend (l_temp_split)
+							l_temp_split.extend (l_only_one_item)
+							top_container := l_temp_split
+						else
+							check not_possible: False end
+						end
+					else
+						check not_possible: False end
+					end
 				end
-				internal_docking_manager.query.inner_container_main.save_spliter_position (top_container)
+				if top_container /= Void then
+					internal_docking_manager.query.inner_container_main.save_spliter_position (top_container)
+				else
+					check not_possible: False end
+				end
 				internal_docking_manager.contents.extend (internal_docking_manager.zones.place_holder_content)
 			else
 				l_has_place_holder := True
@@ -156,22 +169,36 @@ feature -- Open inner container data.
 				if l_place_holder_zone /= Void then
 				-- l_place_holder_zone maybe void because open_config fail.
 					l_parent := l_place_holder_zone.parent
+					if l_parent /= Void then
+						l_split ?= l_parent
+						if l_split /= Void then
+							l_split_position := l_split.split_position
+						end
+						l_parent.prune (l_place_holder_zone)
 
-					l_split ?= l_parent
-					if l_split /= Void then
-						l_split_position := l_split.split_position
-					end
-					l_parent.prune (l_place_holder_zone)
+						if top_container /= Void then
+							if top_container.parent /= Void then
+								top_container.parent.prune (top_container)
+							end
+							l_parent.extend (top_container)
+						else
+							check not_possible: False end
+						end
 
-					if top_container.parent /= Void then
-						top_container.parent.prune (top_container)
+						if l_split /= Void and then l_split.minimum_split_position <= l_split_position and l_split_position <= l_split.maximum_split_position then
+							l_split.set_split_position (l_split_position)
+						end
+					else
+						check not_possible: False end
 					end
-					l_parent.extend (top_container)
-					if l_split /= Void and then l_split.minimum_split_position <= l_split_position and l_split_position <= l_split.maximum_split_position then
-						l_split.set_split_position (l_split_position)
-					end
+
 				end
-				internal_docking_manager.query.inner_container_main.restore_spliter_position (top_container)
+				if top_container /= Void then
+					internal_docking_manager.query.inner_container_main.restore_spliter_position (top_container)
+				else
+					check not_possible: False end
+				end
+
 				internal_docking_manager.zones.place_holder_content.close
 				if l_place_holder_zone /= Void then
 					internal_docking_manager.query.inner_container_main.update_middle_container
@@ -182,7 +209,6 @@ feature -- Open inner container data.
 
 			if Result then
 				open_editor_minimized_data_minimize (l_config_data)
-
 			end
 
 			internal_docking_manager.command.resize (True)
@@ -192,6 +218,8 @@ feature -- Open inner container data.
 			l_env.application.do_once_on_idle (agent internal_open_maximized_tool_data (l_config_data))
 
 			call_show_actions
+
+			internal_docking_manager.query.set_opening_tools_layout (False)
 		ensure
 			cleared: top_container = Void
 		end
@@ -257,6 +285,7 @@ feature {NONE} -- Implementation
 			l_retried: BOOLEAN
 			l_cmd: SD_DOCKING_MANAGER_COMMAND
 		do
+			found_place_holder_already := False
 			internal_docking_manager.property.set_is_opening_config (True)
 			if not l_retried then
 				l_config_data := config_data_from_file (a_file)
@@ -698,7 +727,20 @@ feature {NONE} -- Implementation
 				check a_type_exist: l_type_id /= -1 end
 				l_state ?= l_internal.new_instance_of (l_type_id)
 				l_state.set_docking_manager (internal_docking_manager)
-				l_state.restore (a_config_data, a_container)
+
+				if a_config_data.titles /= Void and then not a_config_data.titles.is_empty
+					and then a_config_data.titles.first.is_equal (internal_shared.editor_place_holder_content_name) then
+					-- We do something special for place holder zone.
+					-- Ignore duplicated place holder zones
+					-- Because, sometimes the docking data saved is strange such as the docking data in bug#14698
+					if not found_place_holder_already then
+						found_place_holder_already := True
+						l_state.restore (a_config_data, a_container)
+					end
+				else
+					l_state.restore (a_config_data, a_container)
+				end
+
 				-- We should check if we really restored content.
 				if l_state.content /= Void then
 					l_state.set_last_floating_height (a_config_data.height)
@@ -1146,6 +1188,9 @@ feature {NONE} -- Implementation
 				l_all_contents.forth
 			end
 		end
+
+	found_place_holder_already: BOOLEAN
+			-- When executing `open_tools_config', does place holder content already restored?
 
 feature {NONE} -- Internals.
 

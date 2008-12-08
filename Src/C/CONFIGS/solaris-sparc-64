@@ -164,7 +164,7 @@ fi
 if [ -n "$CFLAGS" ]; then
 	ccflags=$CFLAGS
 else
-	ccflags='-D__BUILTIN_VA_ARG_INCR -m64 -xcode=pic32 -K PIC'
+	ccflags='-D__BUILTIN_VA_ARG_INCR -m64 -xcode=pic32'
 fi
 ccldflags='-m64'
 if [ -n "$CPP" ]; then
@@ -205,9 +205,10 @@ concurrent_prefix='c'
 cp='/bin/cp'
 eiflib='finalized'
 ld='ld'
+lintflags='-m -x -errsecurity=extended -Ncheck=%all -Nlevel=4 -errfmt=tab -errchk=locfmtchk,parentheses,no%signext,no%sizematch,structarg'
 ldflags="-64"
 ldsharedflags="$ldflags -G -o"
-libs='-lsocket -lnsl -lm'
+libs='-lsocket -lnsl -lm -lrt'
 ln='/bin/ln'
 if [ -n "$MAKE" ]; then
 	make=$MAKE
@@ -218,7 +219,7 @@ mkdep='\$(EIFFEL_SRC)/C/mkdep'
 mkdir='mkdir'
 mtldflags="$ldflags"
 mtldsharedflags="$ldsharedflags"
-mtlibs="$libs -lrt -lthread"
+mtlibs="$libs -lthread"
 mt_prefix='mt'
 mv='/bin/mv'
 prefix='lib'
@@ -226,7 +227,7 @@ ranlib=':'
 shared_prefix='lib'
 shared_suffix='.so'
 shared_rt_suffix='.so'
-sharedlibs='-lsocket -lnsl -lm'
+sharedlibs='-lsocket -lnsl -lm -lrt'
 sharedlibversion='.5.6'
 sharedlink='ld'
 suffix='.a'

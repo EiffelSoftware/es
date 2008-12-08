@@ -20,6 +20,11 @@ inherit
 			show
 		end
 
+	ES_HELP_CONTEXT
+		export
+			{NONE} all
+		end
+
 	REFACTORING_HELPER
 
 	ES_OBJECTS_GRID_SPECIFIC_LINE_CONSTANTS
@@ -179,6 +184,14 @@ feature {NONE} -- Initialization
 			Precursor {ES_DEBUGGER_DOCKABLE_STONABLE_TOOL_PANEL} (a_docking_manager)
 			content.drop_actions.extend (agent add_debugged_object)
 			content.drop_actions.extend (agent drop_stack_element)
+		end
+
+feature -- Access: Help
+
+	help_context_id: !STRING_GENERAL
+			-- <Precursor>
+		once
+			Result := "6B736424-1729-0B6F-6DDD-8240F9F8FFD6"
 		end
 
 feature {NONE} -- Factory
@@ -589,7 +602,8 @@ feature {NONE} -- Notebook item's behavior
 				end
 				if
 					content /= Void and then
-					content.is_docking_manager_attached
+					content.is_docking_manager_attached and then
+					not content.is_destroyed
 				then
 					content.update_mini_tool_bar_size
 				end
@@ -691,7 +705,7 @@ feature {NONE} -- Notebook item's behavior
 
 feature {ES_OBJECTS_GRID_SLICES_CMD} -- Query
 
-	objects_grid_object_line (addr: STRING): ES_OBJECTS_GRID_OBJECT_LINE is
+	objects_grid_object_line (addr: DBG_ADDRESS): ES_OBJECTS_GRID_OBJECT_LINE is
 			-- Return managed object located at address `addr'.
 		local
 			found: BOOLEAN
@@ -1172,6 +1186,7 @@ feature {NONE} -- Impl : Debugged objects grid specifics
 			application_is_running: debugger_manager.application_is_executing
 			dropped_objects_grid_not_void: dropped_objects_grid /= Void
 		local
+			l_stone_addr: DBG_ADDRESS
 			n_obj: ES_OBJECTS_GRID_OBJECT_LINE
 			conv_spec: SPECIAL_VALUE
 			abstract_value: ABSTRACT_DEBUG_VALUE
@@ -1183,6 +1198,7 @@ feature {NONE} -- Impl : Debugged objects grid specifics
 				print (generator + ".add_object%N")
 			end
 			g := dropped_objects_grid
+			l_stone_addr := a_stone.object_address
 			from
 				displayed_objects.start
 			until
@@ -1192,7 +1208,7 @@ feature {NONE} -- Impl : Debugged objects grid specifics
 				check
 					n_obj.object_address /= Void
 				end
-				exists := n_obj.object_address.is_equal (a_stone.object_address)
+				exists := n_obj.object_address.is_equal (l_stone_addr)
 				displayed_objects.forth
 			end
 			n_obj := Void
@@ -1213,11 +1229,11 @@ feature {NONE} -- Impl : Debugged objects grid specifics
 					end
 				end
 				if n_obj = Void then
-					create {ES_OBJECTS_GRID_ADDRESS_LINE} n_obj.make_with_address (a_stone.object_address, a_stone.dynamic_class, g)
+					create {ES_OBJECTS_GRID_ADDRESS_LINE} n_obj.make_with_address (l_stone_addr, a_stone.dynamic_class, g)
 				end
 
-				n_obj.set_title (a_stone.name + Left_address_delim + a_stone.object_address + Right_address_delim)
-				debugger_manager.application_status.keep_object (a_stone.object_address)
+				n_obj.set_title (a_stone.name + Left_address_delim + l_stone_addr.output + Right_address_delim)
+				debugger_manager.application_status.keep_object (l_stone_addr)
 				displayed_objects.extend (n_obj)
 				g.insert_new_row (g.row_count + 1)
 				n_obj.attach_to_row (g.row (g.row_count))
@@ -1341,7 +1357,7 @@ feature {NONE} -- Impl : Debugged objects grid specifics
 			Result := row.parent_row = Void
 		end
 
-	is_removable_debugged_object_address (addr: STRING): BOOLEAN is
+	is_removable_debugged_object_address (addr: DBG_ADDRESS): BOOLEAN is
 		do
 			if addr /= Void then
 				from
@@ -1349,7 +1365,9 @@ feature {NONE} -- Impl : Debugged objects grid specifics
 				until
 					displayed_objects.after or else Result
 				loop
-					Result := displayed_objects.item.object_address.is_equal (addr)
+					if {oa: DBG_ADDRESS} displayed_objects.item.object_address then
+						Result := oa.is_equal (addr)
+					end
 					displayed_objects.forth
 				end
 			end
@@ -1506,10 +1524,8 @@ feature {NONE} -- Constants
 	Right_address_delim: STRING is ">";
 
 invariant
-
 	debugger_manager_not_void: debugger_manager /= Void
-
-	objects_grids_not_void: objects_grids /= Void
+	objects_grids_not_void: (is_initialized and is_interface_usable) implies objects_grids /= Void
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

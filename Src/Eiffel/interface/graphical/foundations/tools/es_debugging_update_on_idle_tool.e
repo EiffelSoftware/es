@@ -11,17 +11,9 @@ deferred class
 	ES_DEBUGGING_UPDATE_ON_IDLE_TOOL [G -> {ES_DOCKABLE_TOOL_PANEL [EV_WIDGET], ES_DEBUGGING_UPDATE_ON_IDLE_TOOL_PANEL_I}]
 
 inherit
-	ES_TOOL [G]
+	ES_DEBUGGER_TOOL [G]
 
 feature -- Access
-
-	frozen debugger_manager: EB_DEBUGGER_MANAGER
-			-- Debugger manager to use for tool creation
-		do
-			Result ?= window.debugger_manager
-		ensure
-			result_attached: Result /= Void
-		end
 
 feature {DEBUGGER_MANAGER, EB_TOOL} -- Access		
 

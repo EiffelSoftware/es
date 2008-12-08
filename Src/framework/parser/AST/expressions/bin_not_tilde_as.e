@@ -11,7 +11,12 @@ class
 inherit
 	BIN_TILDE_AS
 		redefine
-			op_name, process
+			process, op_name
+		end
+
+	BIN_NE_AS
+		redefine
+			process, op_name
 		end
 
 create

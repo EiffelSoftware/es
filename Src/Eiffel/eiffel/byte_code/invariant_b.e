@@ -86,6 +86,7 @@ feature
 			internal_name: STRING
 			buf: GENERATION_BUFFER
 			o: like object_test_locals
+			l_inv_is_call: BOOLEAN
 		do
 			buf := buffer
 
@@ -112,6 +113,8 @@ feature
 				--| Always mark current as used in all modes
 			context.mark_current_used;
 
+			l_inv_is_call := context.workbench_mode or else system.exception_stack_managed
+
 				-- Routine's name				
 			if context.final_mode then
 				body_index := Invariant_body_index;
@@ -125,25 +128,32 @@ feature
 
 			internal_name := Encoder.feature_name (context.class_type.type_id, body_index)
 
+			buf.put_string ("%N/* {" + context.class_type.associated_class.name_in_upper + "}._invariant */")
 			buf.generate_function_signature ("void", internal_name,
 					True, Context.header_buffer,
 					<<"Current", "where">>, <<"EIF_REFERENCE", "int">>);
+
 			buf.generate_block_open
 			buf.put_gtcx
+			if l_inv_is_call then
+				context.set_has_feature_name_stored (True)
+				buf.put_new_line
+				buf.put_string ("char *")
+				buf.put_string ({BYTE_CONTEXT}.feature_name_local)
+				buf.put_three_character (' ', '=', ' ')
+				buf.put_string_literal ("_invariant")
+				buf.put_character (';')
+
+				buf.put_new_line
+				buf.put_string ("RTEX;")
+			end
 
 			context.generate_local_declaration (0, False)
 				-- Generation of temporary variables under the control
 				-- of the GC
-			context.generate_temporary_ref_variables;
-				-- Dynamic type of Current
-			if context.dftype_current > 1 then
-				buf.put_new_line;
-				buf.put_string ("RTCFDT;");
-			end;
-			if context.dt_current > 1 then
-				buf.put_new_line;
-				buf.put_string ("RTCDT;");
-			end;
+			context.generate_temporary_ref_variables
+				-- Generate dynamic type of Current.
+			context.generate_dtype_declaration (False)
 
 				-- Generation of the local variable array
 			i := context.ref_var_used;
@@ -164,6 +174,22 @@ feature
 				-- Allocate memory for once manifest strings.
 			context.generate_once_manifest_string_allocation (once_manifest_string_count)
 
+			if l_inv_is_call then
+				buf.put_new_line
+				buf.put_string ("RTEAINV")
+				buf.put_character ('(')
+				context.generate_feature_name (buf)
+				buf.put_string (gc_comma)
+				buf.put_static_type_id (context.class_type.static_type_id)
+				buf.put_string (gc_comma)
+				context.current_register.print_register
+				buf.put_string (gc_comma)
+				buf.put_integer (context.local_list.count)
+				buf.put_string (gc_comma)
+				buf.put_real_body_id (body_index)
+				buf.put_string (gc_rparan_semi_c)
+			end
+
 			byte_list.generate;
 
 				-- Generate the update of the locals stack used to debug.
@@ -175,6 +201,11 @@ feature
 				buf.put_new_line
 				buf.put_string ("RTLE;");
 			end;
+
+			if l_inv_is_call then
+				buf.put_new_line
+				buf.put_string ("RTEE;");
+			end
 
 				-- Undefines all macros defined for temporary locals.
 			context.generate_temporary_ref_macro_undefintion

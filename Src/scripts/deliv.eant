@@ -54,7 +54,8 @@
 	<target name="check_environment" once="true">
 		<precursor/>
 		<available resource="${ISE_EIFFEL}/studio/spec/${ISE_PLATFORM}/bin/ec${exe}" variable="tmp_ecbin_available"/>
-		<echo message="Error: executable ec${exe} does not exists" if="${tmp_ecbin_available}=false" />
+		<available resource="${ISE_EIFFEL}/studio/spec/${ISE_PLATFORM}/bin/ecb${exe}" variable="tmp_ecbin_available" if="$tmp_ecbin_available=false" />
+		<echo message="Error: executable ec${exe} or (ecb${exe}) does not exists" if="${tmp_ecbin_available}=false" />
 		<set name="environment_valid" value="false" if="${tmp_ecbin_available}=false" />
 		<unset name="tmp_ecbin_available" />
 	</target>
@@ -114,6 +115,9 @@
 
 		<set name="_KEEP_F_CODE" value="false" unless="$_KEEP_F_CODE" />
 		<set name="_KEEP_F_CODE" value="false" if="-$_KEEP_F_CODE=-" />
+
+		<set name="_REUSE_F_CODE" value="false" unless="$_REUSE_F_CODE" />
+		<set name="_REUSE_F_CODE" value="false" if="-$_REUSE_F_CODE=-" />
 	</target>
 
 	<target name="load_local_config"  once="true" >
@@ -145,6 +149,7 @@
 		&lt;set name="_INCLUDE_DEVPACK" value="#_INCLUDE_DEVPACK#" unless="$_INCLUDE_DEVPACK" /&gt;
 		&lt;set name="_INCLUDE_DOTNET" value="#_INCLUDE_DOTNET#" unless="$_INCLUDE_DOTNET" /&gt;
 		&lt;set name="_KEEP_F_CODE" value="#_KEEP_F_CODE#" unless="$_KEEP_F_CODE" /&gt;
+		&lt;set name="_REUSE_F_CODE" value="#_REUSE_F_CODE#" unless="$_REUSE_F_CODE" /&gt;
 	&lt;/target&gt;
 &lt;/project&gt;</echo>
 		<replace file="$l_local_script" token="#_FORCE_CLEAN#" replace="$_FORCE_CLEAN" flags="g" />
@@ -155,6 +160,7 @@
 		<replace file="$l_local_script" token="#_INCLUDE_DEVPACK#" replace="$_INCLUDE_DEVPACK" flags="g" />
 		<replace file="$l_local_script" token="#_INCLUDE_DOTNET#" replace="$_INCLUDE_DOTNET" flags="g" />
 		<replace file="$l_local_script" token="#_KEEP_F_CODE#" replace="$_KEEP_F_CODE" flags="g" />
+		<replace file="$l_local_script" token="#_REUSE_F_CODE#" replace="$_REUSE_F_CODE" flags="g" />
 	</target>
 
 <!-- ================ -->
@@ -257,6 +263,9 @@
 		<replace file="$_TARGET_DELIV_DIR/studio/config/$ISE_PLATFORM/$ISE_C_COMPILER/config.eif" token="windows_flags: &quot;-SUBSYSTEM:WINDOWS&quot;" replace="windows_flags: &quot;-SUBSYSTEM:CONSOLE&quot;" flags="g" if="$is_windows" />
 
 		<setenv name="EWEASEL" value="$EIFFEL_SRC${path_separator}..${path_separator}eweasel" />
+		<exec executable="move ec${exe} ecg${exe}" dir="$_TARGET_DELIV_DIR/studio/spec/$ISE_PLATFORM/bin" />
+		<exec executable="copy ecb${exe} ec${exe}" dir="$_TARGET_DELIV_DIR/studio/spec/$ISE_PLATFORM/bin" />
+		<replace file="$EWEASEL/compilation/install_eweasel.bat" token="gvim.exe" replace="gvim.bat" flags="g" if="$is_windows" />
 		<exec executable="install_eweasel.bat" dir="$EWEASEL/compilation" 
 			accept_errors="true" exit_code_variable="no_return_code" />
 		<set name="_TARGET_DELIV_DIR" value="${old_TARGET_DELIV_DIR}" />
@@ -464,6 +473,7 @@
 		<geant target="get_bin__" arguments="ec_lite,${devpack_binary_dir},ecl${exe}" />
 		<geant target="get_bin__" arguments="compile_all,${devpack_binary_dir},compile_all${exe}" />
 		<geant target="get_bin__" arguments="eimgemb,${devpack_binary_dir},eimgemb${exe}" />
+		<geant target="get_bin__" arguments="copyright_tool,${devpack_binary_dir},copyright_tool${exe}" />
 		<!--
 		<geant target="get_bin__" arguments="escln,${devpack_binary_dir},escln${exe}" />
 		-->
@@ -528,6 +538,7 @@
 		<geant target="get_f_code__" arguments="ec_lite,${devpack_f_codes_dir}" />
 		<geant target="get_f_code__" arguments="compile_all,${devpack_f_codes_dir}" />
 		<geant target="get_f_code__" arguments="eimgemb,${devpack_f_codes_dir}" />
+		<geant target="get_f_code__" arguments="copyright_tool,${devpack_f_codes_dir}" />
 		<!--
 		<geant target="get_f_code__" arguments="escln,${devpack_f_codes_dir}" />
 		-->
@@ -930,6 +941,7 @@
 		<geant target="copy_exec_file" arguments="${devpack_binary_dir},${a_target_dir},ecl${exe}" />
 		<geant target="copy_exec_file" arguments="${devpack_binary_dir},${a_target_dir},compile_all${exe}" />
 		<geant target="copy_exec_file" arguments="${devpack_binary_dir},${a_target_dir},eimgemb${exe}" />
+		<geant target="copy_exec_file" arguments="${devpack_binary_dir},${a_target_dir},copyright_tool${exe}" />
 		<!--
 		<geant target="copy_exec_file" arguments="${devpack_binary_dir},${a_target_dir},escln${exe}" />
 		-->
@@ -949,6 +961,7 @@
 		<geant target="_log" arguments=" - Copy library.. to ${a_target_dir}${path_separator}library" />
 		<geant target="copy_library_to" arguments="base,${a_target_dir}" />
 		<geant target="copy_library_to" arguments="base_original,${a_target_dir}" />
+		<geant target="copy_library_to" arguments="testing,${a_target_dir}" />
 		<geant target="copy_library_to" arguments="com,${a_target_dir}" if="${is_windows}" />
 		<geant target="copy_library_to" arguments="Eiffel2Java,${a_target_dir}" />
 		<geant target="copy_library_to" arguments="gobo,${a_target_dir}" />
@@ -957,6 +970,7 @@
 		<geant target="copy_library_to" arguments="lex,${a_target_dir}" />
 		<geant target="copy_library_to" arguments="memory_analyzer,${a_target_dir}" />
 		<geant target="copy_library_to" arguments="net,${a_target_dir}" />
+		<geant target="copy_library_to" arguments="net_ipv6,${a_target_dir}" />
 		<geant target="copy_library_to" arguments="obsolete,${a_target_dir}" />
 		<geant target="copy_library_to" arguments="parse,${a_target_dir}" />
 		<geant target="copy_library_to" arguments="preferences,${a_target_dir}" />
@@ -980,7 +994,7 @@
 		<geant target="copy_library_to" arguments="event,${a_target_dir}"/>
 
 		<!-- C_library -->
-		<mkdir directory="C_library"/>
+		<mkdir directory="C_library" dir="${a_target_dir}" />
 		<geant target="_log" arguments=" - Copy C_library to ${a_target_dir}${path_separator}C_library" />
 		<geant target="copy_full_tree" arguments="${EIFFEL_SRC}${path_separator}C_library,${a_target_dir}${path_separator}C_library" />
 
@@ -1023,7 +1037,7 @@
 		<argument name="a_target_dir" />
 
 		<available resource="docs" dir="${a_binary_dir}" variable="tmp_docs_available" />
-		<copy dir="${a_binary_dir}\docs" to_directory="${a_target_dir}\docs" if="$tmp_docs_available=true" >
+		<copy dir="${a_binary_dir}${path_separator}docs" to_directory="${a_target_dir}${path_separator}docs" if="$tmp_docs_available=true" >
 			<fileset include="@(*.*)" />
 		</copy>
 		<unset name="tmp_docs_available" />
@@ -1128,7 +1142,7 @@
 		<!-- 'etc' must exists to allow shell binaries -->
 		<mkdir directory="${l_platf_dir}\etc"/>
 		<!-- 'compile_library.bat' must exists to allow 'finish_freezing -library' -->
-		<geant target="copy_exec_file" arguments="${_DELIVERY_DIR}\studio\spec\windows,${l_platf_dir}\bin,compile_library.bat" />
+		<geant target="copy_exec_file" arguments="${_DELIVERY_DIR}\studio\spec\${ISE_PLATFORM},${l_platf_dir}\bin,compile_library.bat" />
 		<!-- copy related config file on Windows -->
 		<set name="tmp_config_fn" value="windows-x86-${ISE_C_COMPILER}" if="${ISE_PLATFORM}=windows" />
 		<set name="tmp_config_fn" value="windows-x86-64-${ISE_C_COMPILER}" if="${ISE_PLATFORM}=win64" />
@@ -1136,8 +1150,8 @@
 		<unset name="tmp_config_fn" />
 
 		<!-- wel_hook.dll -->
-		<geant target="copy_file" arguments="${EIFFEL_SRC}\library\wel\spec\msc\windows\dll,${a_install_dir}\esbuilder\spec\${ISE_PLATFORM}\bin,wel_hook.dll"  if="$a_only_core=false"/>
-		<geant target="copy_file" arguments="${EIFFEL_SRC}\library\wel\spec\msc\windows\dll,${l_bin_dir},wel_hook.dll" />
+		<geant target="copy_file" arguments="${EIFFEL_SRC}\library\wel\spec\msc\${ISE_PLATFORM}\dll,${a_install_dir}\esbuilder\spec\${ISE_PLATFORM}\bin,wel_hook.dll"  if="$a_only_core=false"/>
+		<geant target="copy_file" arguments="${EIFFEL_SRC}\library\wel\spec\msc\${ISE_PLATFORM}\dll,${l_bin_dir},wel_hook.dll" />
 
 		<!-- finish_freezing -->
 		<geant target="copy_exec_file" arguments="${a_binary_dir},${l_bin_dir},finish_freezing${exe}" />
@@ -1168,7 +1182,7 @@
 		<!-- Delivery Scripts -->
 		<geant target="made_file_executable" arguments="make_install" dir="${a_install_dir}" />
 		<!-- Gobo binaries -->
-		<available resource="gobo/spec/${ISE_PLATFORM}/bin" dir="$a_install_dir/library" variable="tmp_gobo_bin_available" />
+		<available resource="library/gobo/spec/${ISE_PLATFORM}/bin" dir="$a_install_dir" variable="tmp_gobo_bin_available" />
 		<geant target="made_file_executable" arguments="*" dir="${a_install_dir}/library/gobo/spec/${ISE_PLATFORM}/bin" if="$tmp_gobo_bin_available=true" />
 		<unset name="tmp_gobo_bin_available" />
 
@@ -1319,6 +1333,14 @@
 		<set name="l_f_codes_dir" value="${a_output_dir}${path_separator}spec${path_separator}windows${path_separator}F_codes" if="$is_windows" />
 		<set name="l_f_codes_dir" value="${a_output_dir}${path_separator}spec${path_separator}unices${path_separator}F_codes" unless="$is_windows" />
 		<mkdir directory="${l_f_codes_dir}" if="$tmp_bin_res_avail=false" />
+
+		<!-- Clean F_code if needed -->
+		<!-- We delete F_code, if the binary is not yet available, and if _REUSE_F_CODE is false -->
+		<set name="tmp_keep_f_code" value="true" if="$tmp_bin_res_avail=true" /><!-- if already available, we don't mind about F_code -->
+		<set name="tmp_keep_f_code" value="$_REUSE_F_CODE" if="$tmp_bin_res_avail=false" /><!-- if not already available, and $_REUSE_F_CODE is true -->
+		<geant target="_log" arguments=" -> remove existing F_code (if any)" 	if="$tmp_keep_f_code=false" />
+		<geant target="clean_folder" arguments="$l_f_codes_dir${path_separator}$a_product_name" if="$tmp_keep_f_code=false" />
+		<unset name="tmp_keep_f_code" />
 
 		<!-- Get F_code if needed -->
 		<unset name="tmp_f_code_available" />

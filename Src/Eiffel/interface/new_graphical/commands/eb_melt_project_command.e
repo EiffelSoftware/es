@@ -286,10 +286,15 @@ feature -- Execution
 
 	go_on_compile is
 			-- Go on running Eiffel compilation.
+		local
+			l_dev_window: EB_DEVELOPMENT_WINDOW
 		do
 			output_manager.clear
 			execute_with_c_compilation_flag (True)
-			window_manager.last_focused_development_window.tools.output_tool.update_pixmap
+			l_dev_window := window_manager.last_focused_development_window
+			if l_dev_window /= Void and then not l_dev_window.tools.is_recycled then
+				l_dev_window.tools.output_tool.update_pixmap
+			end
 		end
 
 feature {NONE} -- Execution
@@ -335,8 +340,14 @@ feature {NONE} -- Execution
 
 	compile_no_save is
 			-- Launch compilation.
+		local
+			l_last_window: EV_WINDOW
 		do
-			window_manager.last_focused_development_window.window.set_focus
+			l_last_window := window_manager.last_focused_development_window.window
+			if l_last_window.is_displayed and l_last_window.is_sensitive then
+				l_last_window.set_focus
+			end
+			--window_manager.last_focused_development_window.window.set_focus
 			confirm_and_compile
 		end
 
@@ -391,19 +402,39 @@ feature {NONE} -- Implementation
 			create Result.make (Current)
 			initialize_sd_toolbar_item (Result, display_text)
 			Result.select_actions.extend (agent execute)
-			Result.set_menu (drop_down_menu)
+			Result.set_menu (drop_down_menu (Result))
 		end
 
-	drop_down_menu: EV_MENU is
+	drop_down_menu (a_cmd: like new_sd_toolbar_item): EV_MENU is
 			-- Drop down menu for `new_sd_toolbar_item'.
+		local
+			l_item: EB_COMMAND_MENU_ITEM
 		do
 			create Result
-			Result.extend (new_menu_item)
-			Result.extend (discover_melt_cmd.new_menu_item)
-			Result.extend (override_scan_cmd.new_menu_item)
-			Result.extend (freeze_project_cmd.new_menu_item)
-			Result.extend (finalize_project_cmd.new_menu_item)
-			Result.extend (precompilation_cmd.new_menu_item)
+
+			l_item := new_menu_item
+			a_cmd.auto_recycle (l_item)
+			Result.extend (l_item)
+
+			l_item := discover_melt_cmd.new_menu_item
+			a_cmd.auto_recycle (l_item)
+			Result.extend (l_item)
+
+			l_item := override_scan_cmd.new_menu_item
+			a_cmd.auto_recycle (l_item)
+			Result.extend (l_item)
+
+			l_item := freeze_project_cmd.new_menu_item
+			a_cmd.auto_recycle (l_item)
+			Result.extend (l_item)
+
+			l_item := finalize_project_cmd.new_menu_item
+			a_cmd.auto_recycle (l_item)
+			Result.extend (l_item)
+
+			l_item := precompilation_cmd.new_menu_item
+			a_cmd.auto_recycle (l_item)
+			Result.extend (l_item)
 		ensure
 			not_void: Result /= Void
 		end

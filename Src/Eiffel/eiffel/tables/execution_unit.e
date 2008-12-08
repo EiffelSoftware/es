@@ -109,19 +109,17 @@ feature -- Access
 		-- unit
 
 	written_in: INTEGER
-		-- Id of class in which the feature corresponding
-		-- to Current execution unit is written.
-		--|Note: for ATTRIBUTE_I it is the `generate_in' value.
+		-- Id of the class where the associated feature of the unit is written in.
 
 	real_pattern_id: INTEGER is
 			-- Pattern id associated with Current execution unit
 		local
-			written_type: CLASS_TYPE
-			written_class: CLASS_C
+			l_written_type_id: INTEGER_32
+			l_system: like system
 		do
-			written_class := System.class_of_id (written_in)
-			written_type :=	class_type.written_type (written_class)
-			Result := Pattern_table.c_pattern_id_in (pattern_id, written_type) - 1
+			l_system := System
+			l_written_type_id := l_system.class_of_id (written_in).meta_type (class_type).type_id
+			Result := l_system.pattern_table.c_pattern_id_in (pattern_id, l_system.class_type_of_id (l_written_type_id)) - 1
 		end
 
 	is_valid: BOOLEAN is
@@ -134,7 +132,8 @@ feature -- Access
 			written_class := System.class_of_id (written_in)
 			if
 				written_class /= Void and then
-				System.class_type_of_id (type_id) = class_type
+				System.class_type_of_id (type_id) = class_type and then
+				class_type.associated_class.inherits_from (written_class)
 			then
 				written_type :=	class_type.written_type (written_class)
 				if written_type.is_precompiled then
@@ -175,14 +174,14 @@ feature -- Access
 		local
 			feat_tbl: FEATURE_TABLE
 			encapsulated_feat: ENCAPSULATED_I
-			l_written_class: CLASS_C
+			l_access_class: CLASS_C
 		do
-			l_written_class := system.class_of_id (written_in)
+			l_access_class := system.class_of_id (written_in)
 			check
-				has_feature_table: l_written_class.has_feature_table
+				has_feature_table: l_access_class.has_feature_table
 			end
-				-- Load feature table associated to class id `written_in'.
-			feat_tbl := l_written_class.feature_table
+				-- Load feature table associated to class id `access_in'.
+			feat_tbl := l_access_class.feature_table
 
 				-- Slow part, but we do not have any other way to find the
 				-- associated feature with current information.
@@ -246,7 +245,7 @@ feature -- Setting
 		end
 
 	set_written_in (id: INTEGER) is
-			-- Assign `id' to `pattern_id'.
+			-- Assign `id' to `written_in'.
 		require
 			valid_id: id >= 0
 		do
@@ -279,7 +278,7 @@ feature -- Generation
 			good_argument: buffer /= Void
 		do
 			buffer.put_new_line
-			buffer.put_string ("extern ")
+			buffer.put_string (once "extern ")
 			type.generate (buffer)
 			buffer.put_string (compound_name)
 			buffer.put_three_character ('(', ')', ';')
@@ -291,7 +290,7 @@ feature -- Generation
 			good_argument: buffer /= Void
 		do
 			buffer.put_new_line
-			buffer.put_string ("(fnptr) ")
+			buffer.put_string (once "(fnptr) ")
 			buffer.put_string (compound_name)
 			buffer.put_character (',')
 		end

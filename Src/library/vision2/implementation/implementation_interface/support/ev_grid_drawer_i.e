@@ -128,6 +128,8 @@ feature -- Basic operations
 			l_found_index: INTEGER
 			l_found_row_offset: INTEGER
 			l_visible_indexes_to_row_indexes: EV_GRID_ARRAYED_LIST [INTEGER]
+			l_is_row_height_fixed: BOOLEAN
+			l_row_height: INTEGER
 		do
 			create Result.make (20)
 			if not grid.header.is_empty then
@@ -228,7 +230,18 @@ feature -- Basic operations
 						l_first_visible := grid.row_indexes_to_visible_indexes.i_th (l_found_index) + 1
 						l_found_index := l_visible_indexes_to_row_indexes.i_th (l_first_visible)
 						Result.extend (l_found_index)
-						l_visible_cumulative_height := l_row_offsets.i_th (l_found_index) + grid.row (l_found_index).height
+
+						l_is_row_height_fixed := grid.is_row_height_fixed
+						l_row_height := grid.row_height
+
+						l_visible_cumulative_height := l_row_offsets.i_th (l_found_index)
+						if l_is_row_height_fixed then
+								-- If the row height is fixed then we add the grid row height.
+							l_visible_cumulative_height := l_visible_cumulative_height + l_row_height
+						else
+							l_visible_cumulative_height := l_visible_cumulative_height + grid.row (l_found_index).height
+						end
+
 						from
 							i := l_first_visible + 1
 						until
@@ -236,7 +249,12 @@ feature -- Basic operations
 						loop
 							l_found_index := l_visible_indexes_to_row_indexes.i_th (i)
 							Result.extend (l_found_index)
-							l_visible_cumulative_height := l_visible_cumulative_height + grid.row (l_found_index).height
+							if l_is_row_height_fixed then
+									-- If the row height is fixed then we add the grid row height.
+								l_visible_cumulative_height := l_visible_cumulative_height + l_row_height
+							else
+								l_visible_cumulative_height := l_visible_cumulative_height + grid.row (l_found_index).height
+							end
 							i := i + 1
 						end
 					end
@@ -594,7 +612,7 @@ feature -- Basic operations
 			if not grid.is_locked then
 				-- Perform no re-drawing if the update of the grid is locked.
 
-				grid.reset_redraw_item_counter
+				grid.reset_redraw_object_counter
 					-- Although this feature is connected to the `expose_actions' of a drawing area,
 					-- there is currently a bug/feature on Windows where it is possible for the Wm_paint
 					-- message to be generated even though there is no invalid area (width and height are 0).
@@ -1048,27 +1066,25 @@ feature -- Basic operations
 																		-- drawing.
 																	l_parent_row := loop_parent_row.interface
 																	l_subrow_index := l_parent_row.subrow_count
-																	loop_parent_row_last_displayed_subrow := l_parent_row.subrow (l_subrow_index)
-
-																	if not loop_parent_row_last_displayed_subrow.is_show_requested then
-																			-- The final subrow of the parent row is not displayed, so we must iterate until we find the last that is.
-																		from
-																		until
-																			loop_parent_row_last_displayed_subrow.is_show_requested
-																		loop
-																			l_subrow_index := l_subrow_index - 1
-																			loop_parent_row_last_displayed_subrow := l_parent_row.subrow (l_subrow_index)
+																	if l_subrow_index > 0 then
+																		loop_parent_row_last_displayed_subrow := l_parent_row.subrow (l_subrow_index)
+																		if not loop_parent_row_last_displayed_subrow.is_show_requested then
+																				-- The final subrow of the parent row is not displayed, so we must iterate until we find the last that is.
+																			from
+																			until
+																				loop_parent_row_last_displayed_subrow.is_show_requested
+																			loop
+																				l_subrow_index := l_subrow_index - 1
+																				loop_parent_row_last_displayed_subrow := l_parent_row.subrow (l_subrow_index)
+																			end
+																		end
+																		if loop_parent_row_last_displayed_subrow.index > loop_current_row.index then
+																				-- If the current item is not the last visible item contained within the parent then a line must be drawn.
+																			item_buffer_pixmap.draw_segment (current_horizontal_pos, row_vertical_bottom, current_horizontal_pos, 0)
+																				-- Draw the vertical line from the bottom of the item to the top.
 																		end
 																	end
-
-																	if loop_parent_row_last_displayed_subrow.index > loop_current_row.index then
-																			-- If the current item is not the last visible item contained within the parent then a line must be drawn.
-
-																		item_buffer_pixmap.draw_segment (current_horizontal_pos, row_vertical_bottom, current_horizontal_pos, 0)
-																			-- Draw the vertical line from the bottom of the item to the top.
-																	end
 																end
-
 																	-- Move one position upwards within the parenting node structure
 																loop_current_row := loop_parent_row
 																loop_parent_row := loop_parent_row.parent_row_i
@@ -1122,17 +1138,13 @@ feature -- Basic operations
 														-- node of `parent_row_i' is contained, then vertical lines must be drawn
 														-- to connect the lines.
 
-													if parent_row_i.subrow_count > (current_row.index - parent_row_i.index) then
-															-- In this case, there are more subrows of `parent_row_i' to be drawn,
-															-- so the vertical line is drawn to span the complete height of the current row.
-														item_buffer_pixmap.draw_segment (translated_parent_x_indent_position, row_vertical_bottom, translated_parent_x_indent_position, 0)
-
-													else
-															-- There are no subsequent rows for `parent_row_i' so we must draw the vertical line
-															-- from the start of the current row to the center only.
+													if current_row = parent_row_i.subrows [parent_row_i.subrow_count] then
+															-- We are drawing the last subrow of `parent_row_i' so we only draw the vertical line to the center of the line.
 														item_buffer_pixmap.draw_segment (translated_parent_x_indent_position, row_vertical_center, translated_parent_x_indent_position, 0)
+													else
+															-- Draw a vertical line down to the next item
+														item_buffer_pixmap.draw_segment (translated_parent_x_indent_position, row_vertical_bottom, translated_parent_x_indent_position, 0)
 													end
-
 												end
 											end
 										end

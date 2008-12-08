@@ -100,6 +100,72 @@ rt_public EIF_INTEGER upintdiv(EIF_INTEGER n1, EIF_INTEGER n2)
 	return ((n1 >= 0) ^ (n2 > 0)) ? n1 / n2: ((n1 % n2) ? n1 / n2 + 1: n1 / n2);
 }
 
+/*
+doc:	<routine name="eif_sleep" export="public">
+doc:		<summary>Suspend execution of current thread by interval `nanoseconds'. It uses the most precise sleep function available for a given platform.</summary>
+doc:		<param name="nanoseconds" type="EIF_INTEGER_64">Number of nanoseconds to sleep.</param>
+doc:		<thread_safety>Safe</thread_safety>
+doc:		<synchronization>None required</synchronization>
+doc:	</routine>
+*/
+
+rt_public void eif_sleep(EIF_INTEGER_64 nanoseconds)
+{
+	/*
+	 * Suspend thread execution for interval specified by `nanoseconds'.
+	 * Use the most precise sleep function if possible.
+	 */
+
+#ifdef VXWORKS
+		/* No sleep routine by default. We fake a sleep. */
+	EIF_THR_YIELD;
+#else
+#ifdef HAS_NANOSLEEP
+	struct timespec req;
+	struct timespec rem;
+	req.tv_sec = nanoseconds / 1000000000;
+	req.tv_nsec = nanoseconds % 1000000000;
+	while ((nanosleep (&req, &rem) == -1) && (errno == EINTR)) {
+			/* Function is interrupted by a signal.   */
+			/* Let's call it again to complete pause. */
+		req = rem;
+	}
+#else
+#	ifdef HAS_USLEEP
+#		define EIF_SLEEP_PRECISION 1000
+#		define EIF_SLEEP_TYPE      unsigned long
+#		define EIF_SLEEP_FUNCTION  usleep
+#	elif defined EIF_WINDOWS
+#		define EIF_SLEEP_PRECISION 1000000
+#		define EIF_SLEEP_TYPE      DWORD
+#		define EIF_SLEEP_FUNCTION  Sleep
+#	else
+#		define EIF_SLEEP_PRECISION 1000000000
+#		define EIF_SLEEP_TYPE      unsigned int
+#		define EIF_SLEEP_FUNCTION  sleep
+#	endif
+		/* Set total delay time */
+	EIF_INTEGER_64 total_time = nanoseconds / EIF_SLEEP_PRECISION;
+		/* Set maximum timeout that can be handled by one API call */
+	EIF_SLEEP_TYPE timeout = ~((~ (EIF_SLEEP_TYPE) 0) << (sizeof timeout * 8 - 1));
+	if ((nanoseconds % EIF_SLEEP_PRECISION) > 0) {
+			/* Increase delay to handle underflow */
+		total_time++;
+	}
+	while (total_time > 0) {
+			/* Sleep for maximum timeout not exceeding time left */
+		if (timeout > total_time) {
+			timeout = (EIF_SLEEP_TYPE) total_time;
+		}
+		EIF_SLEEP_FUNCTION (timeout);
+		total_time -= timeout;
+	}
+#  undef EIF_SLEEP_PRECISION
+#  undef EIF_SLEEP_TYPE
+#  undef EIF_SLEEP_FUNCTION
+#endif
+#endif
+}
 
 /*
  * Protected call to system
@@ -264,6 +330,7 @@ rt_public void eif_system_asynchronous (char *cmd)
 
 /* Obsolete but kept for backward compatibility. To remove in 6.x where x > 1 */
 /* **VMS** Required for Eiffel compiler to run on VMS -- davids. */
+extern char *eif_getenv (char * k);
 rt_public char * eif_getenv (char * k)
 {
 #if defined EIF_VMS
@@ -279,6 +346,7 @@ rt_public char * eif_getenv (char * k)
 /* reporting purposes. It is called by a variant of get in a VMS-specific   */
 /* descendant of EXECUTION_ENVIRONMENT.					    */
 /* For non-VMS platforms, it is the same as eif_getenv().		    */
+extern char *eif_getenv_native (char *name);
 rt_public char* eif_getenv_native (char* nam)
 {
 #ifdef EIF_VMS
@@ -288,6 +356,7 @@ rt_public char* eif_getenv_native (char* nam)
 	return getenv (nam);
 } /* end eif_getenv_native() */
 
+extern union overhead *eif_header (EIF_REFERENCE);
 rt_shared union overhead * eif_header (EIF_REFERENCE object) {
 	REQUIRE("object not null", object);
 
@@ -358,7 +427,7 @@ rt_public EIF_REFERENCE arycpy(EIF_REFERENCE area, EIF_INTEGER i, EIF_INTEGER j,
 	 * OVERHEAD bytes in the computation of 'dtype'--RAM.
 	 */
 
-	exp_dftype = eif_gen_param_id (INVALID_DTYPE, Dftype(new_area), 1);
+	exp_dftype = eif_gen_param_id (Dftype(new_area), 1);
 
 		/* Initialize expanded objects from 0 to (j - 1) */
 	new_area = sp_init(new_area, exp_dftype, 0, j - 1);

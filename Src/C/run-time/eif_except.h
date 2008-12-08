@@ -78,6 +78,8 @@ RT_LNK struct eif_exception exdata;	/* Exception handling global flags */
 #define echrt		exdata.ex_rt
 #define echclass	exdata.ex_class
 #define echentry	exdata.ex_entry
+#define echerror	exdata.ex_error_handled
+#define echpanic	exdata.ex_panic_handled
 
 /* Flags for ex_nomem */
 #define MEM_FULL	0x01	/* A simple "Out of memory" condition */
@@ -201,6 +203,7 @@ RT_LNK void set_last_exception (EIF_REFERENCE ex);				/* Set `last_exception' of
 RT_LNK void chk_old(EIF_REFERENCE ex);							/* Check if ex is NULL, if not raise an OLD_VIOLATION */
 RT_LNK struct ex_vect *exold(void);								/* Push excution stack at entrance of old expression evaluation */
 RT_LNK void init_emnger (void);									/* Initialize once object and preallocate trace string */
+RT_LNK void ereturn(EIF_CONTEXT_NOARG);							/* Return to lastly recorded rescue entry */
 
 #ifdef __cplusplus
 }

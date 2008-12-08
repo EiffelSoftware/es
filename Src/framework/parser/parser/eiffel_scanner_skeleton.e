@@ -56,6 +56,7 @@ feature {NONE} -- Initialization
 			filename := ""
 			is_indexing_keyword := True
 			is_note_keyword := False
+			is_attribute_keyword := False
 		ensure
 			ast_factory_set: ast_factory = a_factory
 		end
@@ -73,6 +74,7 @@ feature -- Initialization
 			verbatim_marker.clear_all
 			is_indexing_keyword := True
 			is_note_keyword := False
+			is_attribute_keyword := False
 		end
 
 feature -- Roundtrip
@@ -135,12 +137,6 @@ feature -- Access
 	has_syntax_warning: BOOLEAN
 			-- Do we create SYNTAX_WARNING instances for obsolte syntactical constructs?
 
-	has_old_verbatim_strings: BOOLEAN
-			-- Is old semantics of verbatim strings used?
-
-	has_old_verbatim_strings_warning: BOOLEAN
-			-- Are warnings produces for old semantics of verbatim strings?
-
 	Maximum_string_character_code: INTEGER is 0xFF
 			-- Maximum value for character code inside a string
 
@@ -162,6 +158,9 @@ feature {NONE} -- Status
 
 	is_indexing_keyword: BOOLEAN
 			-- Is "indexing" keyword allowed in current context?
+
+	is_attribute_keyword: BOOLEAN
+			-- Is "attribute" keyword allowed in current context?
 
 feature -- Convenience
 
@@ -201,22 +200,6 @@ feature -- Settings
 			has_syntax_warning_set: has_syntax_warning = b
 		end
 
-	set_has_old_verbatim_strings (b: BOOLEAN) is
-			-- Set `has_old_verbatim_strings' to `b'
-		do
-			has_old_verbatim_strings := b
-		ensure
-			has_old_verbatim_strings_set: has_old_verbatim_strings = b
-		end
-
-	set_has_old_verbatim_strings_warning (b: BOOLEAN) is
-			-- Set `has_old_verbatim_strings_warning' to `b'.
-		do
-			has_old_verbatim_strings_warning := b
-		ensure
-			has_old_verbatim_strings_warning_set: has_old_verbatim_strings_warning = b
-		end
-
 	set_is_indexing_keyword (value: BOOLEAN)
 			-- Set `is_indexing_keyword' to `value'
 		do
@@ -231,6 +214,14 @@ feature -- Settings
 			is_note_keyword := value
 		ensure
 			is_note_keyword_set: is_note_keyword = value
+		end
+
+	set_is_attribute_keyword (value: BOOLEAN)
+			-- Set `is_attribute_keyword' to `value'
+		do
+			is_attribute_keyword := value
+		ensure
+			is_attribute_keyword_set: is_attribute_keyword = value
 		end
 
 feature {NONE} -- Error handling

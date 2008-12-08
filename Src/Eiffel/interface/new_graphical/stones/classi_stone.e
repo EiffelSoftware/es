@@ -90,7 +90,11 @@ feature -- Properties
 			-- Display class name, class' cluster and class location in
 			-- window title bar.
 		do
-			Result := interface_names.l_classi_header (stone_signature, class_i.group.name, class_i.file_name)
+			Result := interface_names.l_classi_header (eiffel_system.name,
+														 eiffel_universe.target_name,
+														 class_i.group.name,
+														 stone_signature,
+														 class_i.file_name)
 		end
 
 	synchronized_stone: CLASSI_STONE is
@@ -127,11 +131,8 @@ feature -- Status report
 
 	same_as (other: STONE): BOOLEAN is
 			-- Do `Current' and `other' represent the same class?
-		local
-			convcur: CLASSI_STONE
 		do
-			convcur ?= other
-			Result := convcur /= Void and then class_i.is_equal (convcur.class_i)
+			Result := {convcur: CLASSI_STONE} other and then class_i.is_equal (convcur.class_i)
 				and then equal (class_i.config_class.overriden_by, convcur.class_i.config_class.overriden_by)
 		end
 

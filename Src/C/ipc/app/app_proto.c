@@ -68,13 +68,11 @@
 #include "rt_main.h" 	/* For debug_mode. */
 #include "eif_local.h"	/* For epop() */
 #include "eif_debug.h"	/* For rt addons */
+#include "eif_out.h"	/* For simple_out */
 
 #ifndef WORKBENCH
 This module should not be compiled in non-workbench mode
 #endif
-
-/* Unified (Windows/Unix) Stream declaration */
-extern STREAM *app_sp;
 
 rt_public int app_rqstcnt = 0;			/* Request count */
 rt_private char gc_stopped;
@@ -101,7 +99,6 @@ rt_private rt_uint_ptr dthread_id;					/* Thread id used to precise current thre
 
 rt_private void set_check_assert (int v) ;	/* Set current assertion checking off/on */
 rt_private void set_catcall_detection_mode (EIF_PSTREAM sp, int a_console, int a_dbg); /* Set catcall_detection mode */
-extern char *simple_out(EIF_TYPED_VALUE *);	/* Out routine for simple time (from run-time) */
 
 /* debugging macro */
 #ifdef EIF_THREADS
@@ -117,8 +114,6 @@ rt_private rt_uint_ptr dthread_id_saved;			/* Thread id used to backup previous 
 #define dthread_prepare();
 #define dthread_restore();
 #endif
-/* debugging function */
-extern void set_breakpoint_count(int num);	/* Sets the breakpoint interrupt number */
 
 /* Object/local modification routines */
 extern unsigned char modify_local(uint32 stack_depth, uint32 loc_type, uint32 loc_number, EIF_TYPED_VALUE *new_value); /* modify a local variable/ an argument */
@@ -133,9 +128,6 @@ rt_private unsigned char otop_recorded = 0;
 rt_private void dynamic_evaluation(EIF_PSTREAM s, int fid_or_offset, int stype_or_origin, int dtype, int is_precompiled, int is_basic_type, int is_static_call);
 rt_private void dbg_new_instance_of_type(EIF_PSTREAM s, EIF_TYPE_INDEX typeid);
 rt_private void dbg_dump_rt_extension_object (EIF_PSTREAM sp);
-extern EIF_TYPED_VALUE *dynamic_eval_dbg(int fid_or_offset, int stype_or_origin, int dtype, int is_precompiled, int is_basic_type, int is_static_call, EIF_TYPED_VALUE* previous_otop, int* exception_occured); /* dynamic evaluation of a feature (while debugging) */
-extern uint32 critical_stack_depth;	/* Call stack depth at which a warning is sent to the debugger to prevent stack overflows. */
-extern int already_warned; /* Have we already warned the user concerning a possible stack overflow? */
 
 /* Private Constants */
 #define NO_CURRMODIF	0
@@ -382,7 +374,7 @@ static int curr_modify = NO_CURRMODIF;
 		break;
 	case INTERRUPT_OK:				/* Stop execution and send call stack */
 		(void) rem_input(sp);		/* exit listening loop */
-		dbreak(PG_INTERRUPT);
+		dbreak(PG_INTERRUPT, 1);	/* We will wait to make sure that the application will stop. */
 		break;
 	case INTERRUPT_NO:				/* Resume execution with no further ado */
 		(void) rem_input(sp);		/* exit listening loop */
@@ -1683,7 +1675,7 @@ rt_private void opush_dmpitem(EIF_TYPED_VALUE *item)
 	switch (item->type & SK_HEAD)
 		{
 		case SK_REF:
-			if (item->it_ref != 0)
+			if (item->it_ref)
 				item->it_ref = eif_access(item->it_ref); /* unprotect this object */
 			break;
 		case SK_STRING:
@@ -1747,7 +1739,7 @@ rt_private void dbg_new_instance_of_type (EIF_PSTREAM sp, EIF_TYPE_INDEX typeid)
 			loc1 = RTLNSMART((EIF_TYPE_INDEX) tid);
 		}
 	} else {
-		loc1 = RTLN(RTUD(typeid));
+		loc1 = RTLN(typeid);
 	}
 	if (loc1 != NULL) {
 		tmp = (EIF_REFERENCE)RTCCL(loc1); /* clone */
@@ -1764,7 +1756,7 @@ rt_private void dynamic_evaluation (EIF_PSTREAM sp, int fid_or_offset, int stype
 
 	exec_recording_enabled = 0; /* Disable execution recording status */
  
-	c_opush(0); /*Is needed since the stack management seems to have problems with uninitialized c stack*/
+	c_opush(NULL); /*Is needed since the stack management seems to have problems with uninitialized c stack*/
 	c_opop(); 
 	ip = dynamic_eval_dbg(fid_or_offset,stype_or_origin, dtype, is_precompiled, is_basic_type, is_static_call, previous_otop, &exception_occured);
 

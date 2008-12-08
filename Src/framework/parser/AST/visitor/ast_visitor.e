@@ -374,6 +374,13 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		deferred
 		end
 
+	process_attribute_as (l_as: ATTRIBUTE_AS) is
+			-- Process `l_as'.
+		require
+			non_void_as: l_as /= Void
+		deferred
+		end
+
 	process_deferred_as (l_as: DEFERRED_AS) is
 			-- Process `l_as'.
 		require
@@ -650,6 +657,13 @@ feature {AST_EIFFEL} -- Expressions visitors
 		end
 
 	process_un_strip_as (l_as: UN_STRIP_AS) is
+			-- Process `l_as'.
+		require
+			non_void_as: l_as /= Void
+		deferred
+		end
+
+	process_converted_expr_as (l_as: CONVERTED_EXPR_AS) is
 			-- Process `l_as'.
 		require
 			non_void_as: l_as /= Void
@@ -1104,7 +1118,7 @@ feature {AST_EIFFEL} -- Clickable visitor
 		end
 
 indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

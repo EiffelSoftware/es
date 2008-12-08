@@ -210,11 +210,11 @@ feature -- Access
 	frozen code_symbol_table: !CODE_SYMBOL_TABLE
 			-- Symbol table used to evaluate the code template.
 		do
-			if internal_code_symbol_table = Void then
+			if {l_table: like code_symbol_table} internal_code_symbol_table then
+				Result := l_table
+			else
 				Result := create_code_symbol_table (code_template.definition)
 				internal_code_symbol_table := Result
-			else
-				Result ?= internal_code_symbol_table
 			end
 		ensure
 			result_consistent: Result = code_symbol_table
@@ -251,10 +251,10 @@ feature -- Dialog access
 			Result.append (l_title_extension)
 		end
 
-	buttons: !DS_SET [INTEGER]
+	buttons: DS_SET [INTEGER]
 			-- <Precursor>
 		once
-			Result ?= dialog_buttons.ok_cancel_buttons
+			Result := dialog_buttons.ok_cancel_buttons
 		end
 
 	default_button: INTEGER
@@ -290,12 +290,12 @@ feature {NONE} -- Helpers
 		require
 			is_interface_usable: is_interface_usable
 		do
-			if internal_template_renderer = Void then
+			if {l_renderer: like template_renderer} internal_template_renderer then
+				Result := l_renderer
+			else
 				Result := create_template_renderer
 				auto_recycle (Result)
 				internal_template_renderer := Result
-			else
-				Result ?= internal_template_renderer
 			end
 		ensure
 			result_consistent: Result = template_renderer
@@ -315,9 +315,8 @@ feature {NONE} -- Basic operations
 			l_renderer.render_template (code_template, code_symbol_table)
 			create code_result.make_from_string (l_renderer.code)
 			code_result_view.load_text (code_result)
-
 		ensure
-			code_result_view_set: code_result_view.text.as_string_32.is_equal (code_result)
+			code_result_view_set: code_result_view.wide_text.is_equal (code_result)
 		end
 
 feature {NONE} -- User interface elements
@@ -371,13 +370,16 @@ feature {NONE} -- Action handlers
 			l_declaration_fields := declaration_text_fields
 			if not l_declaration_fields.is_empty then
 				l_declarations := code_template.definition.declarations.items.new_cursor
-				from l_declarations.start until l_declarations.after or l_focus_set loop
+				from l_declarations.start until l_declarations.after loop
 					if l_declaration_fields.has (l_declarations.item.id) then
 						l_declaration_fields.item (l_declarations.item.id).set_focus
 						l_focus_set := True
+						l_declarations.go_after
+					else
+						l_declarations.forth
 					end
-					l_declarations.forth
 				end
+				check gobo_cursor_cleaned_up: l_declarations.off end
 			end
 			if not l_focus_set then
 					-- No applicable declaration fields, set to the view

@@ -165,10 +165,13 @@ Delivery/scripts/windows/install/images/new.bmp -text
 Delivery/scripts/windows/install/images/question.ico -text
 Delivery/scripts/windows/install/images/up.bmp -text
 Delivery/scripts/windows/install/images/warning.ico -text
+Delivery/scripts/windows/install/interface/DialogMaintenanceWelcome.wxs -text
+Delivery/scripts/windows/install/interface/DialogVerifyReadyMaintain.wxs -text
+Delivery/scripts/windows/install/interface/eiffelstudio/DialogMscRestartRequire.wxs -text
 Delivery/scripts/windows/install/licenses/eiffelenvision/enterprise.rtf -text
 Delivery/scripts/windows/install/licenses/eiffelenvision/free.rtf -text
 Delivery/scripts/windows/install/licenses/eiffelstudio/enterprise.rtf -text
-Delivery/scripts/windows/install/licenses/eiffelstudio/gpl.rtf -text
+Delivery/scripts/windows/install/licenses/eiffelstudio/gpl.rtf -text svneol=unset#unset
 Delivery/scripts/windows/install/licenses/eiffelstudio/university.rtf -text svneol=unset#unset
 Delivery/studio/bitmaps/png/10x10.png -text
 Delivery/studio/bitmaps/png/12x12.png -text
@@ -178,17 +181,14 @@ Delivery/studio/bitmaps/png/bm_About.png -text
 Delivery/studio/bitmaps/png/bm_wizard_blue.png -text
 Delivery/studio/bitmaps/png/bm_wizard_profiler_icon.png -text
 Delivery/studio/bitmaps/png/bm_wizard_testing_icon.png -text
-Delivery/studio/bitmaps/png/borland_logo.png -text
 Delivery/studio/bitmaps/png/cursors.png -text
-Delivery/studio/bitmaps/png/icon_matrix_12.png -text
-Delivery/studio/bitmaps/png/icon_matrix_16.png -text
-Delivery/studio/bitmaps/png/icon_matrix_32.png -text
-Delivery/studio/bitmaps/png/icon_matrix_8.png -text
 Delivery/studio/bitmaps/png/logo.png -text
 Delivery/studio/bitmaps/png/splash.png -text
 Delivery/studio/bitmaps/png/splash_shadow.png -text
 Delivery/studio/config/windows/bcb/appl.ico -text
 Delivery/studio/config/windows/msc/appl.ico -text
+Delivery/studio/eifinit/libraries.cfg -text
+Delivery/studio/eifinit/precompile.cfg -text
 Delivery/studio/help/defaults/eiffel_unit_test_tcf_template.txt -text
 Delivery/studio/lang/mo_files/de_DE.mo -text
 Delivery/studio/lang/mo_files/en_US.mo -text
@@ -205,6 +205,9 @@ Delivery/studio/spec/win64/bin/ssleay32.dll -text
 Delivery/studio/spec/windows/bin/libcurl.dll -text
 Delivery/studio/spec/windows/bin/libeay32.dll -text
 Delivery/studio/spec/windows/bin/ssleay32.dll -text
+Delivery/studio/templates/defaults/empty.e.tpl -text
+Delivery/studio/templates/defaults/full.e.tpl -text
+Delivery/studio/templates/defaults/test.e.tpl -text
 Delivery/studio/templates/design_by_contract/all_items_attached.code -text
 Delivery/studio/templates/design_by_contract/all_items_detached.code -text
 Delivery/studio/templates/design_by_contract/array_index_big_enough.code -text
@@ -242,6 +245,67 @@ Delivery/studio/templates/eiffel/ensure.code -text
 Delivery/studio/templates/eiffel/invariant.code -text
 Delivery/studio/templates/eiffel/loop.code -text
 Delivery/studio/templates/eiffel/require.code -text
+Delivery/studio/templates/licenses/README -text
+Delivery/studio/templates/licenses/default.lic -text
+Delivery/studio/templates/licenses/eiffelsoftware.lic -text
+Delivery/studio/templates/licenses/eweasel.lic -text
+Delivery/studio/templates/licenses/forum2.lic -text
+Delivery/studio/templates/licenses/gpl2.lic -text
+Delivery/studio/templates/licenses/mssdk.lic -text
+Delivery/studio/tools/testing/auto_test/image/class_bad_response.gif -text
+Delivery/studio/tools/testing/auto_test/image/class_bad_response.svg -text
+Delivery/studio/tools/testing/auto_test/image/class_fail.gif -text
+Delivery/studio/tools/testing/auto_test/image/class_fail.svg -text
+Delivery/studio/tools/testing/auto_test/image/class_invalid.gif -text
+Delivery/studio/tools/testing/auto_test/image/class_invalid.svg -text
+Delivery/studio/tools/testing/auto_test/image/class_pass.gif -text
+Delivery/studio/tools/testing/auto_test/image/class_pass.svg -text
+Delivery/studio/tools/testing/auto_test/image/class_untested.gif -text
+Delivery/studio/tools/testing/auto_test/image/class_untested.svg -text
+Delivery/studio/tools/testing/auto_test/image/diffDoc.gif -text
+Delivery/studio/tools/testing/auto_test/image/diffFolder.gif -text
+Delivery/studio/tools/testing/auto_test/image/feature_bad_response.gif -text
+Delivery/studio/tools/testing/auto_test/image/feature_bad_response.svg -text
+Delivery/studio/tools/testing/auto_test/image/feature_fail.gif -text
+Delivery/studio/tools/testing/auto_test/image/feature_fail.svg -text
+Delivery/studio/tools/testing/auto_test/image/feature_invalid.gif -text
+Delivery/studio/tools/testing/auto_test/image/feature_invalid.svg -text
+Delivery/studio/tools/testing/auto_test/image/feature_pass.gif -text
+Delivery/studio/tools/testing/auto_test/image/feature_pass.svg -text
+Delivery/studio/tools/testing/auto_test/image/feature_untested.gif -text
+Delivery/studio/tools/testing/auto_test/image/feature_untested.svg -text
+Delivery/studio/tools/testing/auto_test/image/folder.gif -text
+Delivery/studio/tools/testing/auto_test/image/folderopen.gif -text
+Delivery/studio/tools/testing/auto_test/image/ftv2blank.gif -text
+Delivery/studio/tools/testing/auto_test/image/ftv2doc.gif -text
+Delivery/studio/tools/testing/auto_test/image/ftv2folderopen.gif -text
+Delivery/studio/tools/testing/auto_test/image/ftv2lastnode.gif -text
+Delivery/studio/tools/testing/auto_test/image/ftv2link.gif -text
+Delivery/studio/tools/testing/auto_test/image/ftv2mlastnode.gif -text
+Delivery/studio/tools/testing/auto_test/image/ftv2mnode.gif -text
+Delivery/studio/tools/testing/auto_test/image/ftv2node.gif -text
+Delivery/studio/tools/testing/auto_test/image/ftv2plastnode.gif -text
+Delivery/studio/tools/testing/auto_test/image/ftv2pnode.gif -text
+Delivery/studio/tools/testing/auto_test/image/ftv2vertline.gif -text
+Delivery/studio/tools/testing/auto_test/image/o_logo.png -text
+Delivery/studio/tools/testing/auto_test/image/spacer.png -text
+Delivery/studio/tools/testing/auto_test/misc/html/explain.js -text
+Delivery/studio/tools/testing/auto_test/misc/html/ftiens4.js -text
+Delivery/studio/tools/testing/auto_test/misc/html/index.html -text
+Delivery/studio/tools/testing/auto_test/misc/html/menu.html -text
+Delivery/studio/tools/testing/auto_test/misc/html/stylesheet.css -text
+Delivery/studio/tools/testing/auto_test/misc/html/test_case_bad_response.html -text
+Delivery/studio/tools/testing/auto_test/misc/html/test_case_fail.html -text
+Delivery/studio/tools/testing/auto_test/misc/html/test_case_invalid.html -text
+Delivery/studio/tools/testing/auto_test/misc/html/test_case_pass.html -text
+Delivery/studio/tools/testing/auto_test/misc/html/test_case_set_bad_response.html -text
+Delivery/studio/tools/testing/auto_test/misc/html/test_case_set_fail.html -text
+Delivery/studio/tools/testing/auto_test/misc/html/test_case_set_invalid.html -text
+Delivery/studio/tools/testing/auto_test/misc/html/test_case_set_pass.html -text
+Delivery/studio/tools/testing/auto_test/misc/html/test_case_set_untested.html -text
+Delivery/studio/tools/testing/auto_test/misc/html/ua.js -text
+Delivery/studio/tools/testing/icons.ini -text
+Delivery/studio/tools/testing/icons.png -text
 Delivery/studio/wizards/new_projects/dotnet/pixmaps/Eiffel_tower.png -text
 Delivery/studio/wizards/new_projects/dotnet/pixmaps/eiffel_wizard.png -text
 Delivery/studio/wizards/new_projects/dotnet/pixmaps/eiffel_wizard_icon.png -text
@@ -312,6 +376,66 @@ Delivery/vision2_demo/bitmaps/png/properties.png -text
 Delivery/vision2_demo/bitmaps/png/size_down.png -text
 Delivery/vision2_demo/bitmaps/png/size_up.png -text
 Delivery/vision2_demo/bitmaps/png/testing.png -text
+Documentation/tools/web/trunk/bin/README.txt -text
+Documentation/tools/web/trunk/bin/data/favicon.ico -text
+Documentation/tools/web/trunk/bin/data/logo.gif -text
+Documentation/tools/web/trunk/bin/dev/create_sandbox -text
+Documentation/tools/web/trunk/bin/dev/process_backup -text
+Documentation/tools/web/trunk/bin/dev/restore_backup -text
+Documentation/tools/web/trunk/bin/dev/restore_main -text
+Documentation/tools/web/trunk/bin/dev/restore_main_fetched -text
+Documentation/tools/web/trunk/bin/dev/restore_test -text
+Documentation/tools/web/trunk/drupal/sites/all/modules/isedoc/data/mapping.txt -text
+Documentation/tools/web/trunk/drupal/sites/all/modules/isedoc/export/isedoc_export.info -text
+Documentation/tools/web/trunk/drupal/sites/all/modules/isedoc/export/isedoc_export.module -text
+Documentation/tools/web/trunk/drupal/sites/all/modules/isedoc/export/tpl/css/book-one.css -text
+Documentation/tools/web/trunk/drupal/sites/all/modules/isedoc/export/tpl/css/book.css -text
+Documentation/tools/web/trunk/drupal/sites/all/modules/isedoc/export/tpl/html-one.node.tpl -text
+Documentation/tools/web/trunk/drupal/sites/all/modules/isedoc/export/tpl/html-one.page.tpl -text
+Documentation/tools/web/trunk/drupal/sites/all/modules/isedoc/export/tpl/html.page.tpl -text
+Documentation/tools/web/trunk/drupal/sites/all/modules/isedoc/import/isedoc_import.admin.inc -text
+Documentation/tools/web/trunk/drupal/sites/all/modules/isedoc/import/isedoc_import.info -text
+Documentation/tools/web/trunk/drupal/sites/all/modules/isedoc/import/isedoc_import.module -text
+Documentation/tools/web/trunk/drupal/sites/all/modules/isedoc/isedoc.admin.inc -text
+Documentation/tools/web/trunk/drupal/sites/all/modules/isedoc/isedoc.info -text
+Documentation/tools/web/trunk/drupal/sites/all/modules/isedoc/isedoc.module -text
+Documentation/tools/web/trunk/drupal/sites/all/modules/isedoc/isedoc.queries.inc -text
+Documentation/tools/web/trunk/drupal/sites/all/modules/isedoc/isedoc.redirect_query.inc -text
+Documentation/tools/web/trunk/drupal/sites/all/modules/isedoc/isedoc.report.inc -text
+Documentation/tools/web/trunk/drupal/sites/all/modules/origo/mediawiki_filter.patch -text
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/eiffeldoc.css -text
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/eiffeldoc.info -text
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/favicon.ico -text
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/html-elements.css -text
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/icons.css -text
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/ie.css -text
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/images/background.png -text svneol=unset#image/png
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/images/blog.png -text svneol=unset#image/png
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/images/bullet.png -text svneol=unset#image/png
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/images/cog.png -text svneol=unset#image/png
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/images/dialog-information.png -text svneol=unset#image/png
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/images/dialog-warning.png -text svneol=unset#image/png
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/images/header-eiffeldoc.jpg -text svneol=unset#image/jpeg
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/images/links.png -text svneol=unset#image/png
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/images/menu-collapsed.png -text svneol=unset#image/png
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/images/menu-expanded.png -text svneol=unset#image/png
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/images/menu-leaf.png -text svneol=unset#image/png
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/images/page.png -text svneol=unset#image/png
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/images/tabs.png -text svneol=unset#image/png
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/images/user.png -text svneol=unset#image/png
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/layout-garland.css -text
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/logo.png -text svneol=unset#image/png
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/print.css -text
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/screenshot-drupal.org.png -text svneol=unset#image/png
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/screenshot.large.png -text svneol=unset#image/png
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/screenshot.png -text svneol=unset#image/png
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/zen-fixed.css -text
+Documentation/tools/web/trunk/drupal/sites/all/themes/eiffeldoc/zen.css -text
+Documentation/tools/web/trunk/misc/patches/cck.path -text
+Documentation/tools/web/trunk/misc/patches/drupal/includes/common.inc.patch -text
+Documentation/tools/web/trunk/misc/patches/htaccess -text
+Documentation/tools/web/trunk/misc/patches/trash.module -text
+Documentation/tools/xmldoc2wiki/README.txt -text
 Documentation/xmldoc/general/guided_tour/language/invitation-2.png -text
 Documentation/xmldoc/general/guided_tour/language/invitation-3.png -text
 Documentation/xmldoc/general/guided_tour/language/invitation-4.png -text
@@ -3038,6 +3162,7 @@ Src/C_library/openssl/util/tab_num.pl -text
 Src/C_library/zlib/contrib/blast/test.pk svneol=native#unset
 Src/C_library/zlib/contrib/puff/zeros.raw svneol=native#unset
 Src/Eiffel/Ace/ec.ico -text
+Src/Eiffel/Ace/ec.lic -text
 Src/Eiffel/doc/Microsoft.NET/multiple_inheritance/diamond_inheritance.png -text
 Src/Eiffel/doc/Microsoft.NET/multiple_inheritance/method1/diamond_inheritance_on_dotnet-method1.png -text
 Src/Eiffel/doc/Microsoft.NET/multiple_inheritance/method2/diamond_inheritance_on_dotnet-method2.png -text
@@ -3045,8 +3170,9 @@ Src/Eiffel/doc/benchmarks/compile_times_solaris-x86-64 -text
 Src/Eiffel/doc/debugger_files/image002.gif svneol=native#unset
 Src/Eiffel/doc/debugging/debugger_files/image001.png -text svneol=unset#application/octet-stream
 Src/Eiffel/doc/debugging/debugger_files/image002.gif -text
+Src/Eiffel/doc/runtime/typing/TYPE_A_encodings.dia -text
+Src/Eiffel/doc/runtime/typing/TYPE_A_encodings.png -text
 Src/Eiffel/eiffel/com_il_generation/Core/run-time/rt_exception_manager.cs -text
-Src/Eiffel/interface/graphical/tools/testing/wizard/es_new_unit_test_wizard_two.e -text svneol=native#unset
 Src/Eiffel/interface/shared/buffer/command_scanner.l -text
 Src/README.txt -text
 Src/build/build.ico -text
@@ -3357,7 +3483,6 @@ Src/library/diff/diff_index_link.e -text
 Src/library/diff/diff_line.e -text
 Src/library/diff/diff_line_add.e -text
 Src/library/diff/diff_line_del.e -text
-Src/library/docking/implementation/docking/sd_docker_mediator.e svneol=native#unset
 Src/library/editor/bitmaps/copy_selection.png -text
 Src/library/editor/bitmaps/cut_selection.png -text
 Src/library/editor/bitmaps/icon_close_color.png -text
@@ -3417,6 +3542,9 @@ Src/library/wel/extra/h2e2.ico svneol=native#unset
 Src/library/wizard/help/Clib/htmlhelp.lib -text
 Src/scripts/check_setup.eant -text
 Src/scripts/tools/_inc/_f_code_tpl_ -text
+Src/tools/button_clicker/button_clicker.ico -text
+Src/tools/button_clicker/button_clicker.rc -text
+Src/tools/bytecode_tool/README.TXT -text
 Src/tools/com_wizard/root/resources/eiffel_software.png -text
 Src/tools/com_wizard/root/resources/help.png -text
 Src/tools/com_wizard/root/resources/output.png -text
@@ -3435,6 +3563,8 @@ Src/tools/compliance_checker/resources/open.ico -text
 Src/tools/compliance_checker/resources/project.ico -text
 Src/tools/compliance_checker/resources/save.ico -text
 Src/tools/compliance_checker/resources/settings.ico -text
+Src/tools/copyright_tool/eiffel_copyright.ico -text
+Src/tools/copyright_tool/eiffel_copyright.rc -text
 Src/tools/copyright_tool/eiffel_icon.png -text
 Src/tools/doc_builder/Assemblies_10/AxShDocVw.dll -text
 Src/tools/doc_builder/Assemblies_10/SHDocVw.dll -text
@@ -3544,6 +3674,7 @@ Src/tools/doc_builder/resources/icons/sync_button.gif -text
 Src/tools/doc_builder/resources/syntax_definitions/java.syn_bin svneol=native#unset
 Src/tools/doc_builder/resources/syntax_definitions/xml.syn_bin svneol=native#unset
 Src/tools/doc_builder/resources/templates/header_mainarea.jpg -text
+Src/tools/eiffel_matrix_code_generator/frames/tool.e.frame -text
 Src/tools/estudio/config/estudio.ico -text
 Src/tools/estudio/config/estudio_e.ico -text
 Src/tools/estudio/config/estudio_ecf.ico -text
@@ -3598,10 +3729,6 @@ eweasel/doc/notes-5.0.001 -text
 eweasel/doc/output-5.0.001 -text
 eweasel/doc/proposed.doc -text
 eweasel/doc/summary.doc -text
-eweasel/results/classic/linux-ppc -text
-eweasel/results/classic/solaris-sparc -text
-eweasel/results/classic/windows-x86 -text
-eweasel/results/dotnet/windows-x86 -text
 eweasel/source/gui/build_project.bpr -text
 eweasel/source/gui/readme.txt -text
 eweasel/source/gui/system_interface.xml -text
@@ -3612,6 +3739,15 @@ eweasel/tests/attach019/Ace -text
 eweasel/tests/attach019/Ace2 -text
 eweasel/tests/attach020/Ace -text
 eweasel/tests/attach020/Ace2 -text
+eweasel/tests/attach021/Ace -text
+eweasel/tests/attach026/Ace -text
+eweasel/tests/attach027/Ace -text
+eweasel/tests/attach028/Ace -text
+eweasel/tests/attach029/Ace -text
+eweasel/tests/attach030/Ace -text
+eweasel/tests/attach031/Ace -text
+eweasel/tests/attach032/Ace -text
+eweasel/tests/attach034/Ace -text
 eweasel/tests/ccomp001/notes -text
 eweasel/tests/ccomp002/notes -text
 eweasel/tests/ccomp003/notes -text
@@ -3690,11 +3826,6 @@ eweasel/tests/dotnet090/a.dll -text
 eweasel/tests/dotnet091/a.dll -text
 eweasel/tests/dotnet102/a.dll -text
 eweasel/tests/dotnet108/Ace -text
-eweasel/tests/except016/Ace -text
-eweasel/tests/except017/Ace -text
-eweasel/tests/except017/output_dotnet -text
-eweasel/tests/except018/Ace -text
-eweasel/tests/exec001/notes -text
 eweasel/tests/exec002/notes -text
 eweasel/tests/exec003/notes -text
 eweasel/tests/exec004/notes -text
@@ -4272,7 +4403,6 @@ eweasel/tests/incr212/notes -text
 eweasel/tests/incr213/notes -text
 eweasel/tests/incr214/notes -text
 eweasel/tests/incr215/notes -text
-eweasel/tests/incr216/notes -text
 eweasel/tests/incr217/notes -text
 eweasel/tests/incr218/notes -text
 eweasel/tests/incr219/notes -text
@@ -4295,6 +4425,8 @@ eweasel/tests/incr247/notes -text
 eweasel/tests/incr248/notes -text
 eweasel/tests/incr276/Ace -text
 eweasel/tests/incr288/Ace -text
+eweasel/tests/incr294/Ace1 -text
+eweasel/tests/incr294/Ace2 -text
 eweasel/tests/lace003/notes -text
 eweasel/tests/lace007/notes -text
 eweasel/tests/lace011/notes -text
@@ -4327,6 +4459,7 @@ eweasel/tests/lib018/file.txt -text
 eweasel/tests/lib020/file.txt -text
 eweasel/tests/lib023/file.txt -text
 eweasel/tests/lib024/file.txt -text
+eweasel/tests/lib027/file.txt -text svneol=native#application/octet-stream
 eweasel/tests/melt001/notes -text
 eweasel/tests/melt002/notes -text
 eweasel/tests/melt003/notes -text
@@ -4399,6 +4532,7 @@ eweasel/tests/melt070/test.e-rev1 -text
 eweasel/tests/melt071/notes -text
 eweasel/tests/melt072/notes -text
 eweasel/tests/melt073/notes -text
+eweasel/tests/replication002/Ace -text
 eweasel/tests/store001/notes -text
 eweasel/tests/store002/bad_file -text
 eweasel/tests/store002/notes -text
@@ -4470,6 +4604,7 @@ eweasel/tests/syntax042/notes -text
 eweasel/tests/syntax043/notes -text
 eweasel/tests/syntax044/notes -text
 eweasel/tests/syntax046/test.e0 -text
+eweasel/tests/syntax052/Ace -text
 eweasel/tests/term001/notes -text
 eweasel/tests/term002/notes -text
 eweasel/tests/term003/notes -text
@@ -4594,6 +4729,7 @@ eweasel/tests/term129/notes -text
 eweasel/tests/term130/notes -text
 eweasel/tests/term134/notes -text
 eweasel/tests/term137/notes -text
+eweasel/tests/term163/Ace -text
 eweasel/tests/thread002/Ace -text
 eweasel/tests/valid001/notes -text
 eweasel/tests/valid002/notes -text
@@ -5079,6 +5215,7 @@ free_add_ons/gcc/windows/mingw/lib/libwsnmp32.a -text
 free_add_ons/gcc/windows/mingw/lib/libwsock32.a -text
 free_add_ons/gcc/windows/mingw/lib/libwst.a -text
 free_add_ons/gcc/windows/mingw/lib/libwtsapi32.a -text
+free_add_ons/gcc/windows/mingw/lib/odbc32.lib -text
 free_add_ons/gcc/windows/mingw/lib/txtmode.o -text
 free_add_ons/gcc/windows/mingw/libexec/gcc/mingw32/3.4.2/cc1.exe -text
 free_add_ons/gcc/windows/mingw/libexec/gcc/mingw32/3.4.2/cc1plus.exe -text

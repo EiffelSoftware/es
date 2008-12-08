@@ -397,9 +397,7 @@ feature -- Settings
 			-- Value of the dynamic type where the feature is written
 		do
 			if Context.workbench_mode then
-				buf.put_string ("RTUD(")
 				buf.put_static_type_id (context.class_type.static_type_id)
-				buf.put_character (')')
 			else
 				buf.put_type_id (context.class_type.type_id)
 			end
@@ -599,8 +597,8 @@ feature -- IL code generation
 
 feature -- Byte code generation
 
-	make_byte_code (ba: BYTE_ARRAY) is
-			-- Generate byte code
+	make_byte_code (ba: BYTE_ARRAY)
+			-- Generate byte code.
 		require else
 			not_external: not is_external
 			valid_class_type: Context.class_type /= Void
@@ -611,6 +609,10 @@ feature -- Byte code generation
 			bit_i: BITS_A
 			inh_assert: INHERITED_ASSERTION
 			feat: FEATURE_I
+			r_id: INTEGER
+			rout_info: ROUT_INFO
+			current_type: CLASS_TYPE
+			create_info: CREATE_FEAT
 		do
 			local_list := context.local_list
 			local_list.wipe_out
@@ -663,6 +665,44 @@ feature -- Byte code generation
 				ba.append ('%U')
 			end
 
+			if feat.is_attribute then
+					-- Access to attribute:
+					-- if <attribute> /= Void or else not <result type>.is_attached then
+					--    Result := <attribute>
+					-- else
+					--    <attribute body>
+					--    <attribute> := Result
+					-- end
+				ba.append (Bc_current)
+				r_id := feat.rout_id_set.first
+				current_type := context.class_type
+				if current_type.associated_class.is_precompiled then
+					rout_info := System.rout_info_table.item (r_id)
+					ba.append (Bc_pattribute)
+					ba.append_integer (rout_info.origin)
+					ba.append_integer (rout_info.offset)
+				else
+					ba.append (Bc_attribute)
+						-- Feature id
+					ba.append_integer (feat.feature_id)
+						-- Static type
+					ba.append_short_integer (current_type.static_type_id - 1)
+				end
+					-- Attribute meta-type
+				ba.append_uint32_integer (l_type.sk_value (context.context_class_type.type))
+				ba.append (bc_void)
+				ba.append (bc_eq)
+				ba.append (bc_jmp_f)
+				ba.mark_forward3
+				if not l_type.is_attached then
+					ba.append (bc_is_attached)
+					create create_info.make (feat.feature_id, r_id)
+					create_info.make_byte_code (ba)
+					ba.append (bc_jmp_f)
+					ba.mark_forward3
+				end
+			end
+
 				-- Record retry offset
 			ba.mark_retry
 
@@ -684,6 +724,48 @@ feature -- Byte code generation
 
 				-- Generate the hook corresponding to the final end.
 			generate_melted_end_debugger_hook (ba)
+
+			if feat.is_attribute then
+				ba.append (bc_result)
+				if current_type.associated_class.is_precompiled then
+					ba.append (bc_passign)
+					ba.append_integer (rout_info.origin)
+					ba.append_integer (rout_info.offset)
+				else
+					ba.append (bc_assign)
+						-- Feature id
+					ba.append_integer (feat.feature_id)
+						-- Static type
+					ba.append_short_integer (current_type.static_type_id - 1)
+				end
+					-- Attribute meta-type
+				ba.append_uint32_integer (l_type.sk_value (context.context_class_type.type))
+				ba.append (bc_jmp)
+				ba.mark_forward
+				if create_info /= Void then
+					ba.write_forward3
+				end
+				ba.write_forward3
+					-- Access to attribute; Result := <attribute access>
+				ba.append (Bc_current)
+				if rout_info /= Void then
+					ba.append (Bc_pattribute)
+					ba.append_integer (rout_info.origin)
+					ba.append_integer (rout_info.offset)
+				else
+					ba.append (Bc_attribute)
+						-- Feature id
+					ba.append_integer (feat.feature_id)
+						-- Static type
+					ba.append_short_integer (current_type.static_type_id - 1)
+				end
+					-- Attribute meta-type
+				ba.append_uint32_integer (l_type.sk_value (context.context_class_type.type))
+				ba.append (Bc_rassign)
+				ba.write_forward
+			end
+
+				-- End mark
 			ba.append (Bc_null)
 
 			from
@@ -693,8 +775,8 @@ feature -- Byte code generation
 				local_list.after
 			loop
 				l_type := local_list.item
-				Temp_byte_code_array.append_integer (l_type.sk_value (context.context_class_type.type))
 				l_adapted_type := context.real_type (l_type)
+				Temp_byte_code_array.append_integer (l_adapted_type.sk_value (context.context_class_type.type))
 				if l_adapted_type.is_true_expanded and then not l_adapted_type.is_bit then
 						-- Generate full type info.
 					l_type.make_full_type_byte_code (Temp_byte_code_array, context.context_class_type.type)
@@ -752,7 +834,7 @@ end
 		require
 			ba_not_void: ba /= Void
 		local
-			i: INTEGER
+			i, nb: INTEGER
 			l_argument_types: like arguments
 			l_type: TYPE_A
 			l_any_type: CL_TYPE_A
@@ -769,13 +851,15 @@ end
 				(l_name_id /= {PREDEFINED_NAMES}.equal_name_id or
 				l_name_id /= {PREDEFINED_NAMES}.standard_equal_name_id)
 			then
-				i := argument_count
-				if i > 0 then
+				nb := argument_count
+				if nb > 0 then
 					from
 						l_argument_types := arguments
+						i := l_argument_types.lower
+						nb := i + l_argument_types.upper
 						ba.append ({BYTE_CONST}.bc_start_catcall)
 					until
-						i <= 0
+						i = nb
 					loop
 						l_type := l_argument_types [i]
 							-- We instantiate `l_type' in current context to see if it is
@@ -799,12 +883,24 @@ end
 								ba.append_uint32_integer (1)
 							end
 						end
-						i := i - 1
+						i := i + 1
 					end
 					ba.append ({BYTE_CONST}.bc_end_catcall)
 				end
 			end
 		end
+
+	once_mark_none: CHARACTER = '%/0/'
+			-- Byte code mark for non-once feature
+
+	once_mark_thread_relative: CHARACTER = '%/1/'
+			-- Byte code mark for thread-relative once feature
+
+	once_mark_process_relative: CHARACTER = '%/2/'
+			-- Byte code mark for process-relative once feature
+
+	once_mark_attribute: CHARACTER = '%/4/'
+			-- Byte code mark for attribute
 
 	append_once_mark (ba: BYTE_ARRAY) is
 			-- Append byte code indicating a kind of a once routine
@@ -813,8 +909,13 @@ end
 		require
 			ba_not_void: ba /= Void
 		do
-				-- Append non-once mark by default
-			ba.append ('%U')
+			if context.current_feature.is_attribute then
+					-- Append attribute mark
+				ba.append (once_mark_attribute)
+			else
+					-- Append non-once mark by default
+				ba.append (once_mark_none)
+			end
 		end
 
 	setup_local_variables (is_old_expression_included: BOOLEAN)

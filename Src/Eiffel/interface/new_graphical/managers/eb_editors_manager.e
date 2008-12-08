@@ -10,6 +10,9 @@ class
 
 inherit
 	EB_RECYCLABLE
+		redefine
+			internal_detach_entities
+		end
 
 	SHARED_EIFFEL_PROJECT
 		export
@@ -27,6 +30,11 @@ inherit
 		end
 
 	EB_CONSTANTS
+		export
+			{NONE} all
+		end
+
+	EC_ENCODING_UTINITIES
 		export
 			{NONE} all
 		end
@@ -61,6 +69,10 @@ feature -- Initialization
 			development_window := a_dev_win
 			docking_manager := a_dev_win.docking_manager
 			register_action (docking_manager.tab_drop_actions, agent ((a_dev_win.commands).new_tab_cmd).execute_with_stone_content)
+
+			set_veto_pebble_function (agent on_veto_tab_drop_action)
+			docking_manager.tab_drop_actions.set_veto_pebble_function (veto_pebble_function_internal)
+
 			if veto_pebble_function_internal = Void then
 				docking_manager.tab_drop_actions.set_veto_pebble_function (agent default_veto_func)
 			end
@@ -391,11 +403,22 @@ feature {NONE} -- Action handlers
 			-- Editor is switched.
 		require
 			a_editor_attached: a_editor /= Void
-			not_a_editor_is_recycled: not a_editor.is_recycled
 		do
-			if development_window.editors_manager /= Void then
-					-- During initialization of Current, the editor manager will be Void for the development window
-				development_window.set_stone (a_editor.stone)
+			if not a_editor.is_recycled then
+				if development_window.editors_manager /= Void then
+						-- During initialization of Current, the editor manager will be Void for the development window
+					development_window.set_stone (a_editor.stone)
+				end
+			end
+		end
+
+	on_veto_tab_drop_action (a_stone: ANY; a_content: SD_CONTENT): BOOLEAN is
+			-- Veto function for tab area drop actions
+		do
+			-- `a_content' can be void or its type is editor type
+			Result := a_content = Void or else a_content.type = {SD_ENUMERATION}.editor
+			if Result then
+				Result := default_veto_func (a_stone, a_content)
 			end
 		end
 
@@ -477,9 +500,17 @@ feature -- Status report
 			-- Is `a_stone' suitable for a new editor?
 		do
 			if veto_pebble_function_internal /= Void then
-				Result := veto_pebble_function_internal.item ([a_stone])
+				if last_focused_editor /= Void then
+					Result := veto_pebble_function_internal.item ([a_stone, last_focused_editor.docking_content])
+				else
+					Result := veto_pebble_function_internal.item ([a_stone, void])
+				end
 			else
-				Result := default_veto_func (a_stone)
+				if last_focused_editor /= Void then
+					Result := default_veto_func (a_stone, last_focused_editor.docking_content)
+				else
+					Result := default_veto_func (a_stone, void)
+				end
 			end
 		end
 
@@ -620,7 +651,7 @@ feature -- Element change
 			create editors_internal.make (5)
 		end
 
-	set_veto_pebble_function (a_func: FUNCTION [ANY, TUPLE [ANY], BOOLEAN]) is
+	set_veto_pebble_function (a_func: FUNCTION [ANY, TUPLE [ANY, SD_CONTENT], BOOLEAN]) is
 			-- Set veto pebble_function for all editors.
 		require
 			a_func_attached: a_func /= Void
@@ -640,6 +671,8 @@ feature -- Element change
 				end
 				l_editors.forth
 			end
+		ensure
+			set: veto_pebble_function_internal = a_func
 		end
 
 	restore_editors (a_open_classes: HASH_TABLE [STRING, STRING]; a_open_clusters: HASH_TABLE [STRING, STRING]): BOOLEAN is
@@ -862,7 +895,7 @@ feature -- Memory management
 			l_editors: like editors
 		do
 			from
-				l_editors := editors
+				l_editors := editors_internal
 				l_editors.start
 			until
 				l_editors.after
@@ -872,7 +905,7 @@ feature -- Memory management
 				end
 				l_editors.forth
 			end
-			l_editors := Void
+			l_editors.wipe_out
 			if fake_editors /= Void then
 				from
 					l_editors := fake_editors
@@ -885,10 +918,39 @@ feature -- Memory management
 					end
 					l_editors.forth
 				end
-				fake_editors := Void
+				l_editors.wipe_out
 			end
+			editor_created_actions.wipe_out
+			editor_closed_actions.wipe_out
+			editor_switched_actions.wipe_out
+			docking_manager.tab_drop_actions.set_veto_pebble_function (Void)
+		end
+
+	internal_detach_entities is
+			-- <Precursor>
+		do
 			development_window := Void
 			docking_manager := Void
+			editors_internal := Void
+			fake_editors := Void
+			fake_editors := Void
+			last_created_editor := Void
+			editor_closed_actions := Void
+			development_window := Void
+			docking_manager := Void
+			edition_observer_list_internal := Void
+			history_observer_list_internal := Void
+			veto_pebble_function_internal := Void
+			lines_observer_list_internal := Void
+			editor_number_factory := Void
+			editors_internal := Void
+			editor_created_actions := Void
+			editor_switched_actions := Void
+			cursor_observer_list_internal := Void
+			selection_observer_list_internal := Void
+			on_show_imp_agent := Void
+			last_focused_editor := Void
+			Precursor
 		end
 
 feature {NONE} -- Access
@@ -1053,26 +1115,50 @@ feature {NONE} -- Agents
 		local
 			l_editor : like current_editor
 		do
-			development_window.set_dropping_on_editor (true)
-			l_editor := editor_with_stone (a_stone)
-			if l_editor /= Void then
-				l_editor.docking_content.set_focus
-				if l_editor.editor_drawing_area /= Void and then l_editor.editor_drawing_area.is_displayed and l_editor.editor_drawing_area.is_sensitive then
-					l_editor.editor_drawing_area.set_focus
+			if a_stone /= Void and then a_stone.is_valid then
+				development_window.set_dropping_on_editor (true)
+				l_editor := editor_with_stone (a_stone)
+				if l_editor = Void then
+					l_editor := a_editor
 				end
-			else
-				a_editor.docking_content.set_focus
-				a_editor.editor_drawing_area.set_focus
+				if l_editor /= Void then
+					-- Following line will change fake editor to real editor if `l_editor' is fake editor
+					l_editor.docking_content.set_focus
+
+					-- If `l_editor' is fake editor, `editor_drawing_area' is void
+					if
+						{draw: EV_DRAWING_AREA} a_editor.editor_drawing_area and then
+						(draw.is_displayed and draw.is_sensitive)
+					then
+						a_editor.editor_drawing_area.set_focus
+					end
+				end
+
+				update_content_description (a_stone, l_editor.docking_content)
+				development_window.set_stone (a_stone)
+				development_window.set_dropping_on_editor (false)
 			end
-			update_content_description (a_stone, a_editor.docking_content)
-			development_window.set_stone (a_stone)
-			development_window.set_dropping_on_editor (false)
 		end
 
 	on_close (a_editor: like current_editor) is
 			-- Closing an editor callback.
 		do
 			if a_editor.changed then
+				if a_editor /= current_editor then
+					-- If `a_editor' changed and not focused, we must focus it, then notify our users whether to save it.
+					-- We have to give the focus to the editor (see bug#14247) since when closing an editor
+					-- we do a lot of things (see {EB_SAVE_FILE_COMMAND}.execute for details).
+
+					-- In perfect case, we should only switch to the editor if something wrong happen, but
+					-- that need to change a lot of codes...
+					select_editor (a_editor, False)
+				end
+
+				-- Editor changed, we make sure save command is sensitive
+				-- Sometimes, `save_cmd' is disabled when saving class file
+				-- See bug#13499
+				development_window.save_cmd.enable_sensitive
+
 				development_window.save_and (agent close_editor_perform (a_editor))
 			else
 				close_editor_perform (a_editor)
@@ -1090,7 +1176,7 @@ feature {NONE} -- Implementation
 	editor_number_factory: EB_EDITOR_NUMBER_FACTORY
 			-- Produce editor number and internal names.
 
-	veto_pebble_function_internal: FUNCTION [ANY, TUPLE [ANY], BOOLEAN]
+	veto_pebble_function_internal: FUNCTION [ANY, TUPLE [ANY, SD_CONTENT], BOOLEAN]
 			-- Veto pebble function.
 
 	close_editor_perform (a_editor: like current_editor) is
@@ -1216,6 +1302,13 @@ feature {NONE} -- Implementation
 			create {EB_FAKE_SMART_EDITOR} last_created_editor.make (Result)
 			last_created_editor.set_docking_content (Result)
 
+				-- We must register drop actions for fake editors, see bug#14530
+				-- Note: the parameter `last_create_editor' for agent is fake editor
+			register_action (Result.drop_actions, agent on_drop (?, last_created_editor))
+			if veto_pebble_function_internal = Void then
+				Result.drop_actions.set_veto_pebble_function (agent default_veto_func)
+			end
+
 				-- When fake editor first time showing, we change it to a real one.
 			register_action (Result.focus_in_actions, agent on_fake_focus (last_created_editor))
 			register_action (Result.show_actions, agent on_show (last_created_editor))
@@ -1232,6 +1325,10 @@ feature {NONE} -- Implementation
 			not_void: a_content /= Void
 		do
 			a_content.set_user_widget (a_editor.widget)
+
+			-- We wipe out the `drop_aciton' which registered in `create_docking_content_fake_one'
+			a_content.drop_actions.wipe_out
+
 			register_action (a_content.drop_actions, agent on_drop (?, a_editor))
 			if veto_pebble_function_internal = Void then
 				a_content.drop_actions.set_veto_pebble_function (agent default_veto_func)
@@ -1278,6 +1375,9 @@ feature {NONE} -- Implementation
 			retried: BOOLEAN
 			tmp_name: FILE_NAME
 			tmp_file: RAW_FILE
+			l_encoding: ENCODING
+			l_stream: STRING
+			l_text: STRING_32
 		do
 			if not retried then
 				if a_editor.changed then
@@ -1291,7 +1391,10 @@ feature {NONE} -- Implementation
 							tmp_file.is_creatable
 						then
 							tmp_file.open_append
-							tmp_file.put_string (a_editor.text)
+							l_encoding := a_editor.encoding
+							l_text := a_editor.wide_text
+							l_stream := convert_to_stream (l_text, l_encoding)
+							tmp_file.put_string (l_stream)
 							tmp_file.close
 						end
 					end
@@ -1334,21 +1437,24 @@ feature {NONE} -- Implementation
 		end
 
 	synchronize_with_docking_manager is
-			-- Becaues sometimes the editors datas we saved will not synchronized with docking editors datas,
+			-- Becaues sometimes the editors datas we saved will not synchronized with docking editors data,
 			-- we want to make sure it's synchronized here.
 		local
 			l_contents: ARRAYED_LIST [SD_CONTENT]
 		do
 			from
-				l_contents := docking_manager.contents
+				l_contents := docking_manager.contents.twin
 				l_contents.start
 			until
 				l_contents.after
 			loop
 				if l_contents.item.type = {SD_ENUMERATION}.editor then
 					if not l_contents.item.is_visible then
-						-- This editor is not exists in saved docking layout, we should remove it.
+						-- This editor not exists in saved docking layout, we should remove it.
 						remove_editor_of_content (l_contents.item)
+
+						-- Remove it from docking manager too.
+						l_contents.item.close
 					end
 				end
 				l_contents.forth
@@ -1356,7 +1462,7 @@ feature {NONE} -- Implementation
 		end
 
 	remove_editor_of_content (a_content: SD_CONTENT) is
-			-- Editor which relate with `a_content'.
+			-- Remove editor related with `a_content'.
 		local
 			l_editors: like editors
 			l_editor: EB_SMART_EDITOR
@@ -1393,7 +1499,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	default_veto_func (a_stone: ANY): BOOLEAN is
+	default_veto_func (a_stone: ANY; a_content: SD_CONTENT): BOOLEAN is
 			-- Default veto function
 		local
 			l_cluster_stone: CLUSTER_STONE

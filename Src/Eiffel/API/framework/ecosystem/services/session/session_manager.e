@@ -23,12 +23,39 @@ inherit
 create
 	default_create
 
+feature -- Clean up
+
+	close_session (a_session: SESSION_I)
+			-- Closes a session object.
+			--
+			-- `a_session': The session object to close.
+		local
+			l_sessions: ?like internal_sessions
+		do
+			if is_interface_usable then
+				l_sessions := internal_sessions
+				if l_sessions /= Void and then l_sessions.has (a_session) then
+						-- Removes the session object from the list of managed objects.
+					l_sessions.start
+					l_sessions.search_forth (a_session)
+					check a_session_found: not l_sessions.after end
+					l_sessions.remove_at
+
+						-- Cleans up the session object.
+					if a_session.is_interface_usable and then {l_disposable: DISPOSABLE} a_session then
+						l_disposable.dispose
+					end
+				end
+			end
+		end
+
 feature {NONE} -- Clean up
 
 	safe_dispose (a_disposing: BOOLEAN)
 			-- <Precursor>
 		local
 			l_sessions: like internal_sessions
+			l_cursor: DS_ARRAYED_LIST_CURSOR [SESSION_I]
 		do
 			if a_disposing then
 					-- Store all unsaved session data
@@ -36,15 +63,13 @@ feature {NONE} -- Clean up
 				l_sessions := internal_sessions
 				if l_sessions /= Void then
 						-- Clean up sessions
-					l_sessions.do_all (agent (a_ia_session: SESSION_I)
-						local
-							l_disposable: DISPOSABLE
-						do
-							l_disposable ?= a_ia_session
-							if l_disposable /= Void then
-								l_disposable.dispose
-							end
-						end)
+					l_cursor := l_sessions.new_cursor
+					from l_cursor.start until l_cursor.after loop
+						if {l_disposable: DISPOSABLE} l_cursor.item then
+							l_disposable.dispose
+						end
+						l_cursor.forth
+					end
 				end
 			end
 
@@ -66,11 +91,11 @@ feature {NONE} -- Access
 		require
 			is_interface_usable: is_interface_usable
 		do
-			if internal_sessions = Void then
+			if {l_sessions: like sessions} internal_sessions then
+				Result := l_sessions
+			else
 				create Result.make_default
 				internal_sessions := Result
-			else
-				Result ?= internal_sessions
 			end
 		ensure
 			result_consistent: Result = sessions
@@ -103,7 +128,7 @@ feature {NONE} -- Query
 			create l_kinds
 
 			if {l_session: !CUSTOM_SESSION_I} a_session then
-				Result ?= l_session.file_name
+				Result := l_session.file_name
 			else
 					-- Determine session type		
 				l_kind := a_session.kind
@@ -160,7 +185,7 @@ feature {NONE} -- Query
 					-- Create full path
 				create l_path.make_from_string (eiffel_layout.user_session_path.string)
 				l_path.set_file_name (l_fn)
-				Result ?= l_path.out
+				Result := l_path.out.as_attached
 			end
 		ensure
 			not_result_is_empty: not Result.is_empty
@@ -174,9 +199,7 @@ feature {NONE} -- Helpers
 			if {l_service: !SERVICE_CONSUMER [LOGGER_S]} internal_logger_service then
 				Result := l_service
 			else
-				check
-					sited: site /= Void
-				end
+				check sited: site /= Void end
 				create Result.make_with_provider (site)
 				internal_logger_service := Result
 			end
@@ -287,16 +310,18 @@ feature -- Retrieval
 			l_session: SESSION_I
 		do
 			l_cursor := sessions.new_cursor
-			from l_cursor.start until l_cursor.after or Result /= Void loop
-				l_session := l_cursor.item
-				if l_session.is_interface_usable then
-					if a_per_project = l_session.is_per_project and not l_session.is_per_window and then equal (l_session.extension_name, a_extension) then
-						Result := l_session
+			from l_cursor.start until l_cursor.after loop
+				if Result = Void then
+						-- We need to use a conditional check because of a memory leak with Gobo data structures.
+						-- The cursor has to be run out to avoid the leak.
+					l_session := l_cursor.item
+					if l_session.is_interface_usable then
+						if a_per_project = l_session.is_per_project and not l_session.is_per_window and then equal (l_session.extension_name, a_extension) then
+							Result := l_session
+						end
 					end
 				end
-				if Result = Void then
-					l_cursor.forth
-				end
+				l_cursor.forth
 			end
 
 			if Result = Void then
@@ -312,7 +337,7 @@ feature -- Retrieval
 			result_is_interface_usable: Result /= Void implies Result.is_interface_usable
 		end
 
-	retrieve_per_window (a_window: EB_DEVELOPMENT_WINDOW; a_per_project: BOOLEAN): ?SESSION_I
+	retrieve_per_window (a_window: SHELL_WINDOW_I; a_per_project: BOOLEAN): ?SESSION_I
 			-- <Precursor>
 		do
 			Result := retrieve_per_window_extended (a_window, a_per_project, Void)
@@ -322,23 +347,23 @@ feature -- Retrieval
 			result_is_interface_usable: Result /= Void implies Result.is_interface_usable
 		end
 
-	retrieve_per_window_extended (a_window: EB_DEVELOPMENT_WINDOW; a_per_project: BOOLEAN; a_extension: ?STRING_8): ?SESSION_I
+	retrieve_per_window_extended (a_window: SHELL_WINDOW_I; a_per_project: BOOLEAN; a_extension: ?STRING_8): ?SESSION_I
 			-- <Precursor>
 		local
 			l_cursor: DS_ARRAYED_LIST_CURSOR [SESSION_I]
 			l_session: SESSION_I
 		do
 			l_cursor := sessions.new_cursor
-			from l_cursor.start until l_cursor.after or Result /= Void loop
-				l_session := l_cursor.item
-				if l_session.is_interface_usable then
-					if a_per_project = l_session.is_per_project and then l_session.is_per_window and then l_session.window_id = a_window.window_id and then equal (l_session.extension_name, a_extension) then
-						Result := l_session
+			from l_cursor.start until l_cursor.after loop
+				if Result = Void then
+					l_session := l_cursor.item
+					if l_session.is_interface_usable then
+						if a_per_project = l_session.is_per_project and then l_session.is_per_window and then l_session.window_id = a_window.window_id and then equal (l_session.extension_name, a_extension) then
+							Result := l_session
+						end
 					end
 				end
-				if Result = Void then
-					l_cursor.forth
-				end
+				l_cursor.forth
 			end
 
 			if Result = Void then
@@ -434,19 +459,22 @@ feature {NONE} -- Basic operation
 
 feature {NONE} -- Factory
 
-	create_new_session (a_window: ?EB_DEVELOPMENT_WINDOW; a_per_project: BOOLEAN; a_extension: ?STRING_8): ?SESSION_I
+	create_new_session (a_window: ?SHELL_WINDOW_I; a_per_project: BOOLEAN; a_extension: ?STRING_8): ?SESSION_I
 			-- Creates a new session object
 			--
 			-- `a_window': The window to bind the session object to; False to make a session for the entire IDE.
 			-- `a_per_project': True to retireve a session for the active project, False otherwise
 		require
 			is_interface_usable: is_interface_usable
-			not_a_window_is_recycled: a_window /= Void implies not a_window.is_recycled
+			a_window_is_interface_usable: a_window /= Void implies a_window.is_interface_usable
 			not_a_extension_is_empty: a_extension /= Void implies not a_extension.is_empty
 		local
 			l_inner_session: SESSION_I
 			l_shared: SHARED_EIFFEL_PROJECT
 			l_set_object: BOOLEAN
+			l_existing_load_agents: ACTION_SEQUENCE [TUPLE]
+			l_load_agents: ACTION_SEQUENCE [TUPLE]
+			l_load_agent: PROCEDURE [ANY, TUPLE]
 		do
 			l_set_object := True
 
@@ -476,7 +504,44 @@ feature {NONE} -- Factory
 					create l_shared
 					if not l_shared.eiffel_project.workbench.system_defined then
 							-- No project is loaded so we have to initialize the project session once it is loaded.
-						l_shared.eiffel_project.manager.load_agents.extend (agent set_session_object (Result))
+						l_load_agents := l_shared.eiffel_project.manager.load_agents
+						l_load_agent := agent (ia_session: SESSION_I)
+							do
+								if is_interface_usable and then ia_session.is_interface_usable then
+										-- For protection, make sure both objects are usable.
+									set_session_object (ia_session)
+								end
+							end (Result)
+							-- Hack to force the session to be the first load action, so we can be sure the session
+							-- is correctly initialized before anyone trys to use it in other load actions.
+						l_existing_load_agents := l_load_agents.twin
+						l_load_agents.wipe_out
+							-- Extend the session resurrect action.
+						l_load_agents.extend_kamikaze (l_load_agent)
+							-- Add all the other actions.
+						from l_existing_load_agents.start until l_existing_load_agents.after loop
+							l_load_agent := l_existing_load_agents.item
+							if l_existing_load_agents.has_kamikaze_action (l_load_agent) then
+								l_load_agents.extend_kamikaze (l_load_agent)
+							else
+								l_load_agents.extend (l_load_agent)
+							end
+							l_existing_load_agents.forth
+						end
+
+						if {l_safe_disposable: SAFE_AUTO_DISPOSABLE} Result then
+								-- We have to be sure to remove the load agent on dispose. When a new window is opened
+								-- with no project loaded, then the window is closed and then project is opened, the agent
+								-- will still be called. We cannot have this.
+							l_safe_disposable.perform_auto_dispose (agent (ia_load_agents: ACTION_SEQUENCE [TUPLE]; ia_agent: PROCEDURE [ANY, TUPLE])
+								do
+									ia_load_agents.prune (ia_agent)
+								end (l_load_agents,l_load_agent))
+						else
+								-- Sanity check. This should only happen if there is alternative implementation (possibly external)
+								-- for {SESSSION_I}.
+							check False end
+						end
 						l_set_object := False
 					end
 				end

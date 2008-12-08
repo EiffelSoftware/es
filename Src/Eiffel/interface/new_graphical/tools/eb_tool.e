@@ -23,6 +23,9 @@ inherit
 	EB_DOCKING_MANAGER_ATTACHABLE
 
 	EB_RECYCLABLE
+		redefine
+			internal_detach_entities
+		end
 
 	SHARED_CONFIGURE_RESOURCES
 		export
@@ -65,7 +68,6 @@ feature {NONE} -- Initialization
 		require
 			a_window_attached: a_window /= Void
 			not_a_window_is_recycled: not a_window.is_recycled
-			a_tool_attached: a_tool /= Void
 			not_a_tool_is_recycled: not a_tool.is_recycled
 		do
 			develop_window := a_window
@@ -187,7 +189,7 @@ feature -- Access
 
 feature {NONE} -- Access
 
-	tool_descriptor: ES_TOOL [like Current]
+	tool_descriptor: !ES_TOOL [like Current]
 			-- Descriptor used to created tool.
 
 feature -- Status report
@@ -248,6 +250,24 @@ feature -- Status setting
 				Result := has_focus_on_widgets_internal (widget)
 			end
 		end
+
+feature {NONE} -- Helpers
+
+    frozen stock_pixmaps: ES_PIXMAPS_16X16
+            -- Shared access to stock 16x16 EiffelStudio pixmaps
+        once
+            Result := (create {EB_SHARED_PIXMAPS}).icon_pixmaps
+        ensure
+            result_attached: Result /= Void
+        end
+
+    frozen stock_mini_pixmaps: ES_PIXMAPS_10X10
+            -- Shared access to stock 10x10 EiffelStudio pixmaps
+        once
+            Result := (create {EB_SHARED_PIXMAPS}).mini_pixmaps
+        ensure
+            result_attached: Result /= Void
+        end
 
 feature {ES_TOOL} -- Event handlers
 
@@ -324,35 +344,42 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Memory management
 
-	internal_recycle is
+	internal_recycle
 			-- Recycle tool.
 		do
 			if content /= Void then
 				content.destroy
-				content := Void
 			end
-			develop_window := Void
-			tool_descriptor := Void
 			if mini_toolbar /= Void then
 				mini_toolbar.destroy
-				mini_toolbar := Void
 			end
+		ensure then
+			content_destroyed: old content /= Void implies (old content).is_destroyed
+			mini_toolbar_destroyed: old mini_toolbar /= Void implies (old mini_toolbar).is_destroyed
+		end
+
+	internal_detach_entities
+			-- <Precusor>
+		do
+			content := Void
+			develop_window := Void
+			mini_toolbar := Void
+			Precursor
 		ensure then
 			content_detached: content = Void
 			develop_window_detached: develop_window = Void
-			tool_descriptor_detached: tool_descriptor = Void
 			mini_toolbar_detached: mini_toolbar = Void
 		end
 
 invariant
-	develop_window_attached: not is_recycled implies develop_window /= Void
+	develop_window_attached: is_interface_usable implies develop_window /= Void
 		-- Customizable tool needs to be converted.
 	--tool_descriptor_attached: not is_recycled implies tool_descriptor /= Void
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -363,19 +390,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

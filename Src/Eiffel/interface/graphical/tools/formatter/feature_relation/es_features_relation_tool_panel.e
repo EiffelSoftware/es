@@ -29,7 +29,7 @@ inherit
 create
 	make
 
-feature{EB_DEVELOPMENT_WINDOW_MAIN_BUILDER} -- Docking issue
+feature -- Docking issue
 
 	attach_to_docking_manager (a_docking_manager: SD_DOCKING_MANAGER) is
 			-- Attach to docking manager
@@ -242,7 +242,13 @@ feature -- Status setting
 					develop_window.tools.set_stone (new_fs)
 				end
 			else
-				if l_tool /= Void then
+				if l_tool = Void then
+					if found then
+							-- Reset the stone on the tool with the found new feature stone.
+						check is_stone_valid (new_fs) end
+						set_stone (new_fs)
+					end
+				else
 					if not found then
 						l_tool.set_stone (st)
 					else

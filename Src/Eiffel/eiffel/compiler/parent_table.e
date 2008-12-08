@@ -28,9 +28,6 @@ feature
 	generic_count : INTEGER;
 			-- Number of formal generic parameters
 
-	classname : STRING;
-			-- Name of class to which table belongs
-
 	is_expanded : BOOLEAN;
 			-- Is type expanded?
 
@@ -41,23 +38,20 @@ feature
 			crnt_pos := 1
 		end
 
-	init (tid, gcount : INTEGER; cname : STRING; is_exp : BOOLEAN) is
+	init (tid, gcount : INTEGER; is_exp : BOOLEAN) is
 			-- Initialization for id `tid' with `gcount' generics;
 			-- Classname is `cname', `is_exp' is expandedness status.
 		require
 			positive_id: tid >= 0;
 			meaningful_count: gcount >= 0
-			valid_classname: cname /= Void
 		do
 			type_id := tid;
 			generic_count := gcount
-			classname := cname
 			is_expanded := is_exp
 			crnt_pos := 1
 		ensure
 			type_id_set: type_id = tid
 			generic_count_set: generic_count = gcount
-			classname_set: classname.is_equal (cname)
 			expandedness_set: is_expanded = is_exp
 			cursor_reset: crnt_pos = 1
 		end;
@@ -79,22 +73,23 @@ feature
 			-- Generates the current parent table
 		require
 			valid_file: buffer /= Void
+			a_class_type_not_void: a_class_type /= Void
 		local
 			i, j, n : INTEGER;
 			l_type_id: INTEGER
 		do
+			l_type_id := type_id
+			buffer.put_new_line
+			buffer.put_three_character ('/', '*', ' ')
+			buffer.put_string (a_class_type.type.dump)
+			buffer.put_three_character (' ', '*', '/')
 			buffer.put_new_line
 			buffer.put_string ("static EIF_TYPE_INDEX ptf");
-
-			l_type_id := type_id
-			if l_type_id <= -256 then
-				-- expanded
-				l_type_id := -256 - l_type_id
-			end
-
 			buffer.put_integer (l_type_id);
-
 			buffer.put_string ("[] = {");
+					-- Prefix each description with a place holder that can be used to hold
+					-- an attachment mark.
+			buffer.put_two_character ('0', ',')
 
 			from
 				i := 1;
@@ -103,10 +98,20 @@ feature
 			until
 				i >= n
 			loop
+					-- Prefix each description with a place holder that can be used to hold
+					-- an attachment mark.
 				item (i).generate_cid (buffer, final_mode, False, a_class_type.type);
 
 				i := i + 1;
 				j := j + 1;
+
+				if i < n then
+						-- Add a separator between parents.
+					buffer.put_hex_natural_16 ({SHARED_GEN_CONF_LEVEL}.parent_type_separator)
+						-- Prefix each description with a place holder that can be used to hold
+						-- an attachment mark.
+					buffer.put_three_character (',', '0', ',')
+				end
 
 				if (j \\ 16) = 0 then
 					buffer.put_new_line
@@ -119,7 +124,7 @@ feature
 			buffer.put_integer (l_type_id);
 
 			buffer.put_string (" = {")
-			buffer.put_string_literal (classname)
+			buffer.put_integer (l_type_id)
 			buffer.put_string (", ptf")
 
 			buffer.put_integer (l_type_id);
@@ -143,19 +148,11 @@ feature
 			i, n: INTEGER;
 		do
 			-- Dynamic type associated to the table
-			if type_id <= -256 then
-				-- expanded
-				ba.append_short_integer (-256-type_id);
-			else
-				ba.append_short_integer (type_id);
-			end
+			ba.append_short_integer (type_id);
 			-- Number of formal generics
 			ba.append_short_integer (generic_count)
-			-- Classname
-			check
-				class_name_not_too_long: classname.count <= ba.max_string_count
-			end
-			ba.append_string (classname)
+			-- Static type
+			ba.append_short_integer (type_id)
 			-- Expandedness
 			if is_expanded then
 				ba.append ('%/001/')
@@ -163,19 +160,30 @@ feature
 				ba.append ('%U')
 			end
 
+				-- Prefix each description with a place holder that can be used to hold
+				-- an attachment mark.
+			ba.append_short_integer (0)
+
 			from
 				i := 1
 				n := crnt_pos;
 			until
 				i >= n
 			loop
-				item (i).make_gen_type_byte_code (ba, False, a_class_type.type);
+				item (i).make_type_byte_code (ba, False, a_class_type.type);
 				i := i + 1
+				if i < n then
+						-- Add a separator between parents.
+					ba.append_natural_16 ({SHARED_GEN_CONF_LEVEL}.parent_type_separator)
+						-- Prefix each description with a place holder that can be used to hold
+						-- an attachment mark.
+					ba.append_short_integer (0)
+				end
 			end;
 
-			-- End mark
-			ba.append_short_integer (-1);
-		end;
+				-- End mark
+			ba.append_natural_16 ({SHARED_GEN_CONF_LEVEL}.terminator_type)
+		end
 
 feature {NONE}  -- Implementation
 

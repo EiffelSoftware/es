@@ -19,11 +19,6 @@ inherit
 			{NONE}all
 		end
 
-	THREAD_CONTROL
-		export
-			{NONE}all
-		end
-
 	PROCESS_INFO_IMP
 		rename
 			command_line as environment_command_line,
@@ -56,8 +51,9 @@ feature {NONE} -- Initialization
 			args: LIST [STRING]
 		do
 			args := separated_words (cmd_line)
-			check not args.is_empty end
-			if args.count = 1 then
+			if args.is_empty then
+				make (" ", Void, a_working_directory)
+			elseif args.count = 1 then
 				make (args.first, Void, a_working_directory)
 			else
 				args.start
@@ -510,14 +506,15 @@ invariant
 	child_process_not_void: child_process /= Void
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	library:   "EiffelProcess: Manipulation of processes with IO redirection."
+	copyright: "Copyright (c) 1984-2008, Eiffel Software and others"
+	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			356 Storke Road, Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

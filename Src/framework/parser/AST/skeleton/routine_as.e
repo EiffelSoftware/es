@@ -166,7 +166,8 @@ feature -- Roundtrip/Token
 				Result := precondition.first_token (a_list)
 			elseif internal_locals /= Void then
 				Result := internal_locals.first_token (a_list)
-			else
+			end
+			if Result = Void or else Result.is_null then
 				Result := routine_body.first_token (a_list)
 				if Result = Void or else Result.is_null then
 					if postcondition /= Void then
@@ -228,6 +229,12 @@ feature -- Properties
 		do
 			Result := (rescue_clause /= Void) and then
 					  not rescue_clause.is_empty
+		end
+
+	is_attribute: BOOLEAN
+			-- Is it an attribute?
+		do
+			Result := routine_body.is_attribute
 		end
 
 	is_deferred: BOOLEAN is
@@ -360,7 +367,7 @@ invariant
 --	end_keyword_not_void: end_keyword /= Void
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

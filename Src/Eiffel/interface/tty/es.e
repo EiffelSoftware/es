@@ -51,11 +51,6 @@ inherit
 
 	SHARED_BATCH_NAMES
 
-	SAT_SHARED_INSTRUMENTATION
-		export
-			{NONE} all
-		end
-
 create
 	make
 
@@ -108,6 +103,8 @@ feature -- Initialization
 	initialize is
 			-- Initialize batch compiler
 		do
+				-- Initialize compiler encoding converter.
+			(create {SHARED_ENCODING_CONVERTER}).set_encoding_converter (create {EC_ENCODING_CONVERTER})
 		end
 
 	execute is
@@ -504,21 +501,54 @@ feature -- Output
 			if is_gc_stats_enabled then
 				create l_mem
 				l_mem_info := l_mem.memory_statistics ({MEM_CONST}.eiffel_memory)
-				print ("Total memory is " + l_mem_info.total.out + "%N")
-				print ("Used memory is " + (l_mem_info.used + l_mem_info.overhead).out + "%N")
-				print ("Free memory is " + l_mem_info.free.out + "%N")
+				io.put_new_line
+				io.put_string ("                   Total |      Used |  Overhead |      Free")
+				io.put_new_line
+				io.put_string ("Eiffel memory: ")
+				print_memory_value (l_mem_info.total64)
+				io.put_string (" | ")
+				print_memory_value (l_mem_info.used64)
+				io.put_string (" | ")
+				print_memory_value (l_mem_info.overhead64)
+				io.put_string (" | ")
+				print_memory_value (l_mem_info.free64)
+				io.put_new_line
 
+				l_mem_info := l_mem.memory_statistics ({MEM_CONST}.c_memory)
+				io.put_string ("C memory:      ")
+				print_memory_value (l_mem_info.total64)
+				io.put_string (" | ")
+				print_memory_value (l_mem_info.used64)
+				io.put_string (" | ")
+				print_memory_value (l_mem_info.overhead64)
+				io.put_string (" | ")
+				print_memory_value (l_mem_info.free64)
+				io.put_new_line
+
+				l_mem_info := l_mem.memory_statistics ({MEM_CONST}.total_memory)
+				io.put_string ("Total memory:  ")
+				print_memory_value (l_mem_info.total64)
+				io.put_string (" | ")
+				print_memory_value (l_mem_info.used64)
+				io.put_string (" | ")
+				print_memory_value (l_mem_info.overhead64)
+				io.put_string (" | ")
+				print_memory_value (l_mem_info.free64)
+				io.put_new_line
+
+				io.put_new_line
 				l_full_gc_info := l_mem.gc_statistics ({MEM_CONST}.full_collector)
-				print ("GC full cycle is " + l_full_gc_info.cycle_count.out + "%N")
-				print ("GC full cycle is " + l_full_gc_info.cpu_time_average.out + "%N")
+				io.put_string ("GC full cycle is " + l_full_gc_info.cycle_count.out + "%N")
+				io.put_string ("GC full cycle is " + l_full_gc_info.cpu_time_average.out + "%N")
+				io.put_new_line
 
 				l_part_gc_info := l_mem.gc_statistics ({MEM_CONST}.incremental_collector)
-				print ("GC incremental cycle is " + l_part_gc_info.cycle_count.out + "%N")
-				print ("GC incremental cycle is " + l_part_gc_info.cpu_time_average.out + "%N")
-				print ("CPU time " + l_part_gc_info.cpu_total_time.out + "%N")
-				print ("Kernel time " + l_part_gc_info.sys_total_time.out + "%N")
-				print ("Full Collection period " + l_mem.collection_period.out + "%N")
-				print ("GC percentage time " +
+				io.put_string ("GC incremental cycle is " + l_part_gc_info.cycle_count.out + "%N")
+				io.put_string ("GC incremental cycle is " + l_part_gc_info.cpu_time_average.out + "%N")
+				io.put_string ("CPU time " + l_part_gc_info.cpu_total_time.out + "%N")
+				io.put_string ("Kernel time " + l_part_gc_info.sys_total_time.out + "%N")
+				io.put_string ("Full Collection period " + l_mem.collection_period.out + "%N")
+				io.put_string ("GC percentage time " +
 					(100 * (((l_full_gc_info.cycle_count * l_full_gc_info.cpu_time_average) +
 					 (l_part_gc_info.cycle_count * l_part_gc_info.cpu_time_average)) /
 					 l_part_gc_info.cpu_total_time)).out + "%N%N")
@@ -573,6 +603,7 @@ feature -- Update
 			ewb_senders: EWB_SENDERS
 			ewb_callees: EWB_CALLEES
 			l_arg: STRING
+			auto_test_arguments: LINKED_LIST [STRING]
 		do
 			filter_name := ""
 			option := argument (current_option);
@@ -1177,19 +1208,18 @@ feature -- Update
 				else
 					option_error := True
 				end
-			elseif option.is_equal ("-decision_coverage") then
-					-- Option to enable decision coverage recording.
-				set_is_decision_coverage_enabled (True)
-			elseif option.is_equal ("-feature_coverage") then
-					-- Option to enable featur entry coverage recording.
-				set_is_feature_coverage_enabled (True)
-			elseif option.is_equal ("-instrument_config") then
-				if current_option + 1 <= argument_count then
+			elseif option.is_equal ("-auto_test") then
+					-- When this option is present, all the following arguments are parsed as AutoTest specific arguments.
+				create auto_test_arguments.make
+				from
 					current_option := current_option + 1
-					set_instrument_config_file_name (argument (current_option))
-				else
-					option_error := True
+				until
+					current_option > argument_count
+				loop
+					auto_test_arguments.extend (argument (current_option))
+					current_option := current_option + 1
 				end
+				create {EWB_AUTO_TEST} command.make_with_arguments (auto_test_arguments)
 			elseif is_eiffel_class_file_name (option) then
 					-- This option is only valid if no other config options are set
 				if config_file_name = Void and target_name = Void and old_ace_file = Void and old_project_file = Void then
@@ -1283,6 +1313,35 @@ feature {NONE} -- Implementation
 			l_extension := a_filename.twin
 			l_extension.keep_tail (2)
 			Result := l_extension.is_equal ("." + eiffel_extension)
+		end
+
+	print_memory_value (a_value: NATURAL_64) is
+			-- Display `a_value' on screen.
+		local
+			l_real_64: REAL_64
+			l_unit: STRING
+			l_formatter: FORMAT_DOUBLE
+		do
+			if a_value > (1024 ^ 3) then
+					-- Display in GB
+				l_real_64 := a_value / (1024 ^ 3)
+				l_unit := " GB"
+			elseif a_value > (1024 ^ 2) then
+					-- Display in MB
+				l_real_64 := a_value / (1024 ^ 2)
+				l_unit := " MB"
+			elseif a_value > 1024 then
+					-- Display in KB
+				l_real_64 := a_value / 1024
+				l_unit := " KB"
+			else
+				l_real_64 := a_value
+				l_unit := "   "
+			end
+
+			create l_formatter.make (6, 2)
+			io.put_string (l_formatter.formatted (l_real_64))
+			io.put_string (l_unit)
 		end
 
 indexing

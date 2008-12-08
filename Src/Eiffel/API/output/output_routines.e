@@ -24,6 +24,7 @@ feature -- Miscellaneous
 			root_cluster: CONF_GROUP
 			root_class: CLASS_I
 			cr_f: E_FEATURE
+			l_root: SYSTEM_ROOT
 		do
 			text.process_keyword_text ("System", Void)
 			text.add_new_line
@@ -51,13 +52,26 @@ feature -- Miscellaneous
 			text.process_indexing_tag_text ("compilation: ")
 			text.process_basic_text (Eiffel_ace.system.project_location.target_path)
 			text.add_new_line
+
+			text.add_indent
+			text.process_indexing_tag_text ("multithread: ")
+			if Eiffel_ace.system.has_multithreaded then
+				text.process_basic_text ("enabled")
+			else
+				text.process_basic_text ("disabled")
+			end
 			text.add_new_line
 
+			text.add_new_line
 			if Eiffel_system.workbench.is_already_compiled then
-				root_class := Eiffel_system.root_class
-				root_cluster := Eiffel_system.root_cluster
-				text.set_context_group (root_cluster)
-				if root_class /= Void then
+				if not eiffel_system.system.root_creators.is_empty then
+					l_root := eiffel_system.system.root_creators.first
+
+					root_class := l_root.root_class
+					root_cluster := l_root.cluster
+					text.set_context_group (root_cluster)
+
+
 					text.process_keyword_text ("Root class", Void)
 					text.add_new_line
 					text.add_indent
@@ -70,7 +84,7 @@ feature -- Miscellaneous
 						text.process_symbol_text (ti_R_parenthesis)
 					end
 
-					creation_name := Eiffel_system.system.root_creation_name
+					creation_name := l_root.procedure_name
 					if root_class.compiled_class /= Void and creation_name /= Void then
 						if root_class.compiled_class.has_feature_table then
 							cr_f := root_class.compiled_class.feature_with_name (creation_name)

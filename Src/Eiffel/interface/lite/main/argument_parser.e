@@ -14,7 +14,7 @@ inherit
 			make as make_parser
 		export
 			{NONE} all
-			{ANY} successful, execute, system_name
+			{ANY} is_successful, execute, system_name
 		redefine
 			switch_groups
 		end
@@ -27,10 +27,10 @@ feature {NONE} -- Initialization
 	make is
 			-- Initialize argument parser
 		do
-			make_parser (False, False, False)
-			set_loose_argument_validator (create {ARGUMENT_FILE_VALIDATOR})
-			set_use_separated_switch_values (True)
-			set_show_switch_arguments_inline (True)
+			make_parser (False, False)
+			set_non_switched_argument_validator (create {ARGUMENT_FILE_VALIDATOR})
+			set_is_using_separated_switch_values (True)
+			set_is_showing_argument_usage_inline (True)
 		end
 
 feature -- Access
@@ -38,7 +38,7 @@ feature -- Access
 	configuration_file: STRING is
 			-- Eiffel compiler configuration file
 		require
-			successful: successful
+			successful: is_successful
 		do
 			Result := values.first
 		ensure
@@ -48,7 +48,7 @@ feature -- Access
 
 	target: STRING is
 		require
-			successful: successful
+			successful: is_successful
 		local
 			l_opt: ARGUMENT_OPTION
 		do
@@ -63,7 +63,7 @@ feature -- Access
 	project_location: STRING is
 			-- Location to compile Eiffel project in
 		require
-			successful: successful
+			successful: is_successful
 		local
 			l_opt: ARGUMENT_OPTION
 		do
@@ -78,7 +78,7 @@ feature -- Access
 	optimized_options: OPTIMIZED_ARGUMENT_OPTION
 			-- Optimized argument options
 		require
-			successful: successful
+			successful: is_successful
 			optimize: optimize
 		do
 			Result ?= option_of_name (finalize_switch)
@@ -89,7 +89,7 @@ feature -- Access
 	project_alias: STRING
 			-- Project alias name (hidden switch value)
 		require
-			successful: successful
+			successful: is_successful
 		local
 			l_opt: ARGUMENT_OPTION
 		do
@@ -106,7 +106,7 @@ feature -- Status report
 	precompile: BOOLEAN is
 			-- Indiciates if compiler should precompile project
 		require
-			successful: successful
+			successful: is_successful
 		once
 			Result := has_option (precomp_switch)
 		end
@@ -114,7 +114,7 @@ feature -- Status report
 	optimize: BOOLEAN is
 			-- Indiciates if compiler should generate optimized code
 		require
-			successful: successful
+			successful: is_successful
 		once
 			Result := has_option (finalize_switch)
 		end
@@ -122,7 +122,7 @@ feature -- Status report
 	force_lookup: BOOLEAN is
 			-- Indiciates if compiler should re-examine directory structures for new/removed classes
 		require
-			successful: successful
+			successful: is_successful
 		once
 			Result := has_option (force_switch)
 		end
@@ -130,7 +130,7 @@ feature -- Status report
 	freeze_code: BOOLEAN is
 			-- Indiciates if compiler should freeze melted code
 		require
-			successful: successful
+			successful: is_successful
 		once
 			Result := has_option (freeze_switch)
 		end
@@ -139,7 +139,7 @@ feature -- Status report
 			-- Indiciates if compiler should trigger compiliation of the C code, after
 			-- a successful Eifel compilation
 		require
-			successful: successful
+			successful: is_successful
 		once
 			Result := has_option (c_compile_switch)
 		end
@@ -149,7 +149,7 @@ feature -- Status report
 			-- Key: Setting nane
 			-- Value: Value
 		require
-			successful: successful
+			successful: is_successful
 		local
 			l_options: LIST [ARGUMENT_OPTION]
 			l_option: ARGUMENT_PROPERTY_OPTION
@@ -176,7 +176,7 @@ feature -- Status report
 			-- Indiciates if compiler should delete the previous project compiled information
 			-- before compiling.
 		require
-			successful: successful
+			successful: is_successful
 		once
 			Result := has_option (clean_switch)
 		end
@@ -184,7 +184,7 @@ feature -- Status report
 	interactive_mode: BOOLEAN is
 			-- Indiciates if compiler should interacte with user
 		require
-			successful: successful
+			successful: is_successful
 		once
 			Result := has_option (interactive_switch)
 		end
@@ -192,47 +192,47 @@ feature -- Status report
 	verbose_output: BOOLEAN is
 			-- Indiciates if compiler should display verbose information on compiler output
 		require
-			successful: successful
+			successful: is_successful
 		once
 			Result := has_option (verbose_switch)
 		end
 
 feature {NONE} -- Usage
 
-	name: STRING is
+	name: !STRING is
 			-- Full name of application
 		once
 			Result := "Eiffel Compiler Lite Edition"
 		end
 
-	version: STRING is
+	version: !STRING is
 			-- Version number of application
 		once
-			Result := "6.0.0"
+			Result := "6.3.0"
 		end
 
-	loose_argument_name: STRING_8 is
+	non_switched_argument_name: !STRING_8 is
 			-- Name of lose argument, used in usage information
 		do
 			Result := "ecf"
 		end
 
-	loose_argument_description: STRING_8 is
+	non_switched_argument_description: !STRING_8 is
 			-- Description of loose argument, used in usage information
 		do
 			Result := "Eiffel compiler configuration file."
 		end
 
-	loose_argument_type: STRING_8 is
+	non_switched_argument_type: !STRING_8 is
 			-- Type of lose argument, used in usage information.
 		do
 			Result := "configuration file"
 		end
 
-	switches: ARRAYED_LIST [ARGUMENT_SWITCH] is
+	switches: ARRAYED_LIST [!ARGUMENT_SWITCH] is
 			-- Retrieve a list of available switch
 		local
-			l_optimize_flags: HASH_TABLE [STRING_8, CHARACTER]
+			l_optimize_flags: HASH_TABLE [!STRING_8, CHARACTER]
 		once
 			create l_optimize_flags.make (1)
 			l_optimize_flags.put ("Keep assertions", {OPTIMIZED_ARGUMENT_SWITCH}.keep_flag)
@@ -251,7 +251,7 @@ feature {NONE} -- Usage
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make_hidden (alias_switch, "Sets a project alias for error reporting.", True, False, "Name", "Project alias name", False))
 		end
 
-	switch_groups: ARRAYED_LIST [ARGUMENT_GROUP] is
+	switch_groups: ARRAYED_LIST [!ARGUMENT_GROUP] is
 			-- Valid switch grouping
 		do
 			create Result.make (4)
@@ -315,9 +315,9 @@ feature {NONE} -- Option names
 	alias_switch: STRING = "alias"
 
 ;indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -328,19 +328,19 @@ feature {NONE} -- Option names
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

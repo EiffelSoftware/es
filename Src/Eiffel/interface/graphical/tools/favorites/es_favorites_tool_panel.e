@@ -30,7 +30,6 @@ feature {NONE} -- Initialization
 		require
 			a_manager_exists: a_manager /= Void
 			a_favorites_manager_exists: a_favorites_manager /= Void
-			a_tool_attached: a_tool /= Void
 			not_a_tool_is_recycled: not a_tool.is_recycled
 		do
 			favorites_manager := a_favorites_manager
@@ -77,7 +76,7 @@ feature {NONE} -- Initialization
 			sd.update_size
 		end
 
-feature {EB_DEVELOPMENT_WINDOW_BUILDER} -- Initialization
+feature -- Initialization
 
 	attach_to_docking_manager (a_docking_manager: SD_DOCKING_MANAGER) is
 			-- Attach to docking manager
@@ -116,8 +115,10 @@ feature -- Memory management
 			-- Recycle `Current', but leave `Current' in an unstable state,
 			-- so that we know whether we're still referenced or not.
 		do
-			favorites_manager.recycle
-			favorites_manager := Void
+			if favorites_manager /= Void then
+				favorites_manager.recycle
+				favorites_manager := Void
+			end
 			Precursor {EB_TOOL}
 		end
 

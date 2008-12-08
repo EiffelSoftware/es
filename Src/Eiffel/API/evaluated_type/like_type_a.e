@@ -13,7 +13,7 @@ inherit
 		undefine
 			same_as
 		redefine
-			actual_type,
+			actual_type, annotation_flags,
 			deep_actual_type, context_free_type,
 			conformance_type,
 			convert_to,
@@ -31,6 +31,7 @@ inherit
 			is_basic,
 			is_expanded,
 			is_external,
+			is_initialization_required,
 			is_like,
 			is_loose,
 			is_none,
@@ -47,7 +48,7 @@ inherit
 			generics,
 			generated_id,
 			generate_cid, generate_cid_array, generate_cid_init,
-			make_gen_type_byte_code, generate_gen_type_il,
+			make_type_byte_code, generate_gen_type_il,
 			maximum_interval_value, minimum_interval_value, is_optimized_as_frozen,
 			is_generated_as_single_type, heaviest, instantiation_in, adapted_in,
 			internal_generic_derivation, internal_same_generic_derivation_as,
@@ -76,22 +77,7 @@ feature -- Properties
 		do
 				-- `conformance_type' has to be called because
 				-- `actual_type' may yield yet another anchored type.
-			Result := actual_type.conformance_type
-			if has_attached_mark then
-				if not Result.is_attached then
-					Result := Result.as_attached
-				end
-			elseif is_implicitly_attached then
-				if not Result.is_attached and then not Result.is_implicitly_attached then
-					Result := Result.as_implicitly_attached
-				end
-			elseif has_detachable_mark then
-				if Result.is_attached or else Result.is_implicitly_attached then
-					Result := Result.as_detachable
-				end
-			elseif not is_implicitly_attached and then Result.is_implicitly_attached then
-				Result := Result.as_implicitly_detachable
-			end
+			Result := actual_type.conformance_type.to_other_attachment (Current)
 		end
 
 	has_associated_class: BOOLEAN is
@@ -183,6 +169,16 @@ feature -- Properties
 			end
 		end
 
+	is_initialization_required: BOOLEAN
+			-- Is initialization required for this type in void-safe mode?
+		do
+			if Precursor then
+				Result := True
+			elseif not has_detachable_mark then
+				Result := conformance_type.is_initialization_required
+			end
+		end
+
 	good_generics: BOOLEAN is
 			-- <Original>
 		do
@@ -220,7 +216,9 @@ feature -- Access
 	generics: ARRAY [TYPE_A] is
 			-- <Precursor>
 		do
-			Result := actual_type.generics
+			if {a: like actual_type} actual_type then
+				Result := a.generics
+			end
 		end
 
 	description: ATTR_DESC is
@@ -238,31 +236,7 @@ feature -- Primitives
 	set_actual_type (a: TYPE_A) is
 			-- Assign `a' to `actual_type'.
 		do
-			if has_attached_mark then
-				if not a.is_attached then
-					actual_type := a.as_attached
-				else
-					actual_type := a
-				end
-			elseif is_implicitly_attached then
-				if not a.is_attached and then not a.is_implicitly_attached then
-					actual_type := a.as_implicitly_attached
-				else
-					actual_type := a
-				end
-			elseif has_detachable_mark then
-				if not a.is_expanded and then (a.is_attached or else a.is_implicitly_attached) then
-					actual_type := a.as_detachable
-				else
-					actual_type := a
-				end
-			else
-				if not is_implicitly_attached and then a.is_implicitly_attached then
-					actual_type := a.as_implicitly_detachable
-				else
-					actual_type := a
-				end
-			end
+			actual_type := a.to_other_immediate_attachment (Current)
 		end
 
 	instantiation_in (type: TYPE_A written_id: INTEGER): TYPE_A is
@@ -319,27 +293,27 @@ feature -- Primitives
 
 feature -- Modification
 
-	set_attached_mark is
+	set_attached_mark
 			-- Mark type declaration as having an explicit attached mark.
 		local
 			a: like actual_type
 		do
 			Precursor
 			a := actual_type
-			if a /= Void and then not a.is_attached then
-				actual_type := a.as_attached
+			if a /= Void then
+				actual_type := a.to_other_immediate_attachment (Current)
 			end
 		end
 
-	set_detachable_mark is
+	set_detachable_mark
 			-- Set class type declaration as having an explicit detachable mark.
 		local
 			a: like actual_type
 		do
 			Precursor
 			a := actual_type
-			if not is_expanded and then a /= Void and then (a.is_attached or else a.is_implicitly_attached) then
-				actual_type := a.as_detachable
+			if a /= Void then
+				actual_type := a.to_other_immediate_attachment (Current)
 			end
 		end
 
@@ -349,8 +323,8 @@ feature -- Modification
 		do
 			Precursor
 			a := actual_type
-			if a /= Void and then not a.is_attached and then not a.is_implicitly_attached then
-				actual_type := a.as_implicitly_attached
+			if a /= Void then
+				actual_type := a.to_other_immediate_attachment (Current)
 			end
 		end
 
@@ -360,8 +334,8 @@ feature -- Modification
 		do
 			Precursor
 			a := actual_type
-			if a /= Void and then not a.is_attached and then a.is_implicitly_attached then
-				actual_type := a.as_implicitly_detachable
+			if a /= Void then
+				actual_type := a.to_other_immediate_attachment (Current)
 			end
 		end
 
@@ -400,6 +374,26 @@ feature -- IL code generation
 
 feature -- Generic conformance
 
+	annotation_flags: NATURAL_16 is
+			-- Flags for annotations of Current.
+			-- Currently only `!' and `frozen' are supported
+		do
+				-- Unlike {TYPE_A}, we actually need to know if the formal is declared with
+				-- an attachment mark and if it is which one. When there are no attachment mark
+				-- at runtime, we will use the attachment mark of the actual generic parameter.
+			if not is_expanded then
+				if is_attached then
+					Result := {SHARED_GEN_CONF_LEVEL}.attached_type
+				elseif has_detachable_mark then
+					Result := {SHARED_GEN_CONF_LEVEL}.detachable_type
+				end
+			end
+-- To uncomment when variant/frozen proposal for generics is supported.
+--			if is_frozen then
+--				Result := Result | {SHARED_GEN_CONF_LEVEL}.frozen_type
+--			end
+		end
+
 	generated_id (final_mode: BOOLEAN; a_context_type: TYPE_A): NATURAL_16 is
 			-- Id of a `like xxx'.
 		do
@@ -408,6 +402,7 @@ feature -- Generic conformance
 
 	generate_cid (buffer: GENERATION_BUFFER; final_mode, use_info: BOOLEAN; a_context_type: TYPE_A) is
 		do
+			generate_cid_prefix (buffer, Void)
 			if use_info then
 				initialize_info (shared_create_info)
 				shared_create_info.generate_cid (buffer, final_mode)
@@ -418,6 +413,7 @@ feature -- Generic conformance
 
 	generate_cid_array (buffer: GENERATION_BUFFER; final_mode, use_info: BOOLEAN; idx_cnt: COUNTER; a_context_type: TYPE_A) is
 		do
+			generate_cid_prefix (buffer, idx_cnt)
 			if use_info then
 				initialize_info (shared_create_info)
 				shared_create_info.generate_cid_array (buffer, final_mode, idx_cnt)
@@ -428,6 +424,7 @@ feature -- Generic conformance
 
 	generate_cid_init (buffer: GENERATION_BUFFER; final_mode, use_info: BOOLEAN; idx_cnt: COUNTER; a_level: NATURAL) is
 		do
+			generate_cid_prefix (Void, idx_cnt)
 			if use_info then
 				initialize_info (shared_create_info)
 				shared_create_info.generate_cid_init (buffer, final_mode, idx_cnt, a_level)
@@ -436,13 +433,14 @@ feature -- Generic conformance
 			end
 		end
 
-	make_gen_type_byte_code (ba: BYTE_ARRAY; use_info: BOOLEAN; a_context_type: TYPE_A) is
+	make_type_byte_code (ba: BYTE_ARRAY; use_info: BOOLEAN; a_context_type: TYPE_A) is
 		do
+			make_type_prefix_byte_code (ba)
 			if use_info then
 				initialize_info (shared_create_info)
-				shared_create_info.make_gen_type_byte_code (ba)
+				shared_create_info.make_type_byte_code (ba)
 			else
-				actual_type.make_gen_type_byte_code (ba, use_info, a_context_type)
+				actual_type.make_type_byte_code (ba, use_info, a_context_type)
 			end
 		end
 
@@ -459,7 +457,7 @@ feature -- Generic conformance
 		end
 
 	initialize_info (an_info: like shared_create_info) is
-			-- Initialize `shared_create_info'.
+			-- Initialize `an_info' using current data.
 		do
 		end
 

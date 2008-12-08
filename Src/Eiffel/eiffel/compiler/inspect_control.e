@@ -199,8 +199,7 @@ feature {STATIC_ACCESS_AS} -- Visitor
 					-- and then not is_inherited
 					and then context.current_class.lace_class.options.is_warning_enabled (w_obsolete_feature)
 				then
-					create obs_warn
-					obs_warn.set_class (context.current_class)
+					create obs_warn.make_with_class (context.current_class)
 					obs_warn.set_feature (context.current_feature)
 					obs_warn.set_obsolete_class (class_c)
 					obs_warn.set_obsolete_feature (feature_i)
@@ -222,10 +221,18 @@ feature {ID_AS} -- Visitor
 			feature_i: FEATURE_I
 			constant_i: CONSTANT_I
 		do
-			feature_i := context.current_class.feature_table.item_id (l_as.name_id)
+			if is_inherited then
+					-- Locate feature in ancestor. It is guaranteed we can find it, as otherwise
+					-- it was not found in ancestor and the descendant class would therefore not be compiled.
+				feature_i := context.written_class.feature_table.item_id (l_as.name_id)
+				check feature_i_not_void: feature_i /= Void end
+				feature_i := context.current_class.feature_of_rout_id (feature_i.rout_id_set.first)
+			else
+				feature_i := context.current_class.feature_table.item_id (l_as.name_id)
+			end
 			constant_i ?= feature_i
 			if constant_i /= Void and then constant_i.value.valid_type (type) then
-					-- Record dependencies
+					-- Record dependencies.
 				context.supplier_ids.extend (create {DEPEND_UNIT}.make (context.current_class.class_id, constant_i))
 					-- Check if this is a unique constant
 				last_unique_constant ?= constant_i

@@ -164,11 +164,13 @@ feature -- Commands
 		ensure
 			assemblies_set: not is_error implies assemblies /= Void
 		rescue
-			l_retried := True
 			check
 				is_error: is_error
 			end
-			retry
+			if {lt_ex: CONF_EXCEPTION}exception_manager.last_exception.original then
+				l_retried := True
+				retry
+			end
 		end
 
 feature {NONE} -- Events
@@ -694,9 +696,13 @@ feature {NONE} -- error handling
 			-- Add `an_error' and raise an exception.
 		require
 			an_error_not_void: an_error /= Void
+		local
+			l_conf_exception: CONF_EXCEPTION
 		do
 			last_error := an_error
-			raise (an_error.out)
+			create l_conf_exception
+			l_conf_exception.set_message (an_error.out)
+			l_conf_exception.raise
 		end
 
 feature {CONSUMER_EXPORT} -- il emitter
@@ -726,7 +732,7 @@ feature {CONSUMER_EXPORT} -- il emitter
 	internal_il_emitter: CELL [IL_EMITTER] is
 			-- Unique instance of IL_EMITTER
 		once
-			create Result
+			create Result.put (Void)
 		ensure
 			result_not_void: Result /= Void
 		end
@@ -863,6 +869,7 @@ feature {NONE} -- Contract
 					Result := l_cursor.item.is_valid
 					l_cursor.forth
 				end
+				l_cursor.go_after
 			end
 		end
 
@@ -880,7 +887,7 @@ invariant
 	consume_assembly_observer_not_void: consume_assembly_observer /= Void
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

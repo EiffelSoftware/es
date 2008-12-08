@@ -79,8 +79,8 @@ doc:<file name="eif_thread.c" header="eif_thread.h" version="$Id$" summary="Thre
 
 rt_public void eif_thr_panic(char *);
 rt_public void eif_thr_init_root(void);
-rt_public void eif_thr_register(void);
-rt_public unsigned int eif_thr_is_initialized(void);
+rt_public void eif_thr_register(int is_external);
+rt_public int eif_thr_is_initialized(void);
 rt_public void eif_thr_create_with_args(EIF_OBJECT, EIF_PROCEDURE, EIF_INTEGER,
 										EIF_INTEGER, EIF_BOOLEAN);
 rt_public void eif_thr_exit(void);
@@ -216,13 +216,13 @@ rt_private struct stack_list rt_globals_list = {
 /* Debugger usage */
 #ifdef WORKBENCH
 /*
-doc:	<routine name="get_thread_index" export="shared">
+doc:	<routine name="get_thread_index" export="private">
 doc:		<summary>This is used to get the index of thread `th_id' in rt_globals_list.</summary>
 doc:		<thread_safety>Safe</thread_safety>
 doc:		<synchronization>To be done while already pocessing the `eif_gc_mutex' lock. (i.e: encapsulated in eif_synchronize_gc and eif_unsynchronize_gc</synchronization>
 doc:	</routine>
 */
-rt_shared int get_thread_index(rt_uint_ptr th_id)
+rt_private int get_thread_index(rt_uint_ptr th_id)
 {
 #ifdef EIF_THREADS
 	int count;
@@ -282,7 +282,7 @@ rt_shared rt_uint_ptr dbg_switch_to_thread (rt_uint_ptr th_id) {
 #define LAUNCH_MUTEX_UNLOCK \
 	EIF_LW_MUTEX_UNLOCK(eif_thread_launch_mutex, "Cannot unlock mutex for the thread launcher\n"); 
 
-rt_public void eif_thr_init_global_mutexes (void)
+rt_private void eif_thr_init_global_mutexes (void)
 {
 #ifdef ISE_GC
 	EIF_LW_MUTEX_CREATE(eif_gc_mutex, 0, "Couldn't create GC mutex");
@@ -319,7 +319,7 @@ rt_public void eif_thr_init_root(void)
 	EIF_TSD_CREATE(eif_global_key,"Couldn't create global key for root thread");
 	EIF_TSD_CREATE(rt_global_key,"Couldn't create private global key for root thread");
 	eif_thr_init_global_mutexes();
-	eif_thr_register();
+	eif_thr_register(0);
 #ifdef ISE_GC
 	create_scavenge_zones();
 #endif
@@ -387,7 +387,7 @@ rt_shared void eif_thread_cleanup (void)
 	EIF_TSD_DESTROY(rt_global_key, "Could not free key");
 }
 
-rt_public void eif_thr_register(void)
+rt_public void eif_thr_register(int is_external)
 {
 	/*
 	 * Allocates memory for the rt_globals structure, initializes it
@@ -400,36 +400,41 @@ rt_public void eif_thr_register(void)
 
 	rt_global_context_t *rt_globals = eif_new_context();
 
-	if (not_root_thread) {
+	{
 		EIF_GET_CONTEXT
-	
-		/* Allocate room for once manifest strings array. */
-		ALLOC_OMS (EIF_oms);
 
-		if (EIF_once_count == 0) {
-			EIF_once_values = (EIF_once_value_t *) 0;
+		if (not_root_thread) {
+		
+			/* Allocate room for once manifest strings array. */
+			ALLOC_OMS (EIF_oms);
+
+			if (EIF_once_count == 0) {
+				EIF_once_values = (EIF_once_value_t *) 0;
+			} else {
+				/*
+				 * Allocate room for once values for all threads but the initial 
+				 * because we do not have the number of onces yet
+				 * Also set value root thread id.
+				 */
+				EIF_once_values = (EIF_once_value_t *) eif_realloc (EIF_once_values, EIF_once_count * sizeof *EIF_once_values);
+					/* needs malloc; crashes otherwise on some pure C-ansi compiler (SGI)*/
+				if (EIF_once_values == (EIF_once_value_t *) 0) /* Out of memory */
+					enomem();
+				memset ((EIF_REFERENCE) EIF_once_values, 0, EIF_once_count * sizeof *EIF_once_values);
+			}
 		} else {
-			/*
-			 * Allocate room for once values for all threads but the initial 
-			 * because we do not have the number of onces yet
-			 * Also set value root thread id.
-			 */
-			EIF_once_values = (EIF_once_value_t *) eif_realloc (EIF_once_values, EIF_once_count * sizeof *EIF_once_values);
-				/* needs malloc; crashes otherwise on some pure C-ansi compiler (SGI)*/
-			if (EIF_once_values == (EIF_once_value_t *) 0) /* Out of memory */
-				enomem();
-			memset ((EIF_REFERENCE) EIF_once_values, 0, EIF_once_count * sizeof *EIF_once_values);
-		}
-	} else {
-		not_root_thread = 1;
-		eif_thr_id = (EIF_THR_TYPE *) eif_malloc (sizeof (EIF_THR_TYPE));
+			not_root_thread = 1;
+			eif_thr_id = (EIF_THR_TYPE *) eif_malloc (sizeof (EIF_THR_TYPE));
 #ifdef WORKBENCH
-		dnotify_create_thread((EIF_THR_TYPE) eif_thr_id);
+			dnotify_create_thread((EIF_THR_TYPE) eif_thr_id);
 #endif
+		}
+			/* Is current thread created by the EiffelThread library or by a third party library */
+		eif_globals->is_external_cx = is_external;
 	}
 }
 
-rt_public EIF_BOOLEAN eif_thr_is_root()
+rt_public EIF_BOOLEAN eif_thr_is_root(void)
 {
 	/*
 	 * Returns True is the calling thread is the Eiffel root thread,
@@ -442,38 +447,11 @@ rt_public EIF_BOOLEAN eif_thr_is_root()
 
 	return (eif_thr_context ? EIF_FALSE : EIF_TRUE);
 }
-
-rt_public unsigned int eif_thr_is_initialized()
+/* Returns a non-zero value if the calling thread is initialized for Eiffel, zero otherwise. */
+rt_public int eif_thr_is_initialized(void)
 {
-	/*
-	 * Returns a non null value if the calling thread is initialized for
-	 * Eiffel, null otherwise.
-	 */
-
-#if !defined(VXWORKS) && !defined(EIF_HAS_TLS)
-	eif_global_context_t *x;
-#endif
-
-#if defined(EIF_HAS_TLS) || defined(VXWORKS)
-	/* With thread-local-storage and on VXWORKS,
-	   eif_global_key holds a pointer to eif_globals. If the
-	   thread isn't initialized, eif_global_key == 0 */
-	return (eif_global_key != (EIF_TSD_TYPE) 0);
-#elif defined EIF_WINDOWS
-	/* On windows, GetLastError() yields NO_ERROR if such key was initialized */
-	EIF_TSD_GET0 ((eif_global_context_t *),eif_global_key,x);
-	return (GetLastError() == NO_ERROR);
-
-#elif defined EIF_POSIX_THREADS
-#ifdef EIF_NONPOSIX_TSD
-	return (EIF_TSD_GET0((void *),eif_global_key,x) == 0); /* FIXME.. not sure */
-#else /* EIF_NONPOSIX_TSD */
-	return (EIF_TSD_GET0(0,eif_global_key,x) != 0);
-#endif
-
-#elif defined SOLARIS_THREADS
-	return (EIF_TSD_GET0((void *),eif_global_key,x) == 0);
-#endif
+	EIF_GET_CONTEXT
+	return (eif_globals != NULL);
 }
 
 rt_private rt_global_context_t *eif_new_context (void)
@@ -601,6 +579,21 @@ rt_private void eif_free_context (rt_global_context_t *rt_globals)
 
 		/* Free allocated stacks in rt_globals. */
 	xstack_reset (&eif_trace);
+
+		/* Free allocated structure for trace printing. */
+	ex_string.used = 0;
+	ex_string.size = 0;
+	if (ex_string.area) {
+		eif_rt_xfree (ex_string.area);
+		ex_string.area = NULL;
+	}
+
+		/* Free allocated structure for invariant monitoring. */
+	if (inv_mark_tablep) {
+		eif_rt_xfree(inv_mark_tablep);
+		inv_mark_tablep = NULL;
+	}
+
 #ifdef WORKBENCH
 	opstack_reset (&op_stack);
 	dbstack_reset (&db_stack);
@@ -617,6 +610,10 @@ rt_private void eif_free_context (rt_global_context_t *rt_globals)
 
 		/* Free private per thread data */
 	eif_free (rt_globals);
+
+		/* Reset the per thread data. */
+	EIF_TSD_SET(rt_global_key, NULL, "Couldn't bind private context to TSD.");
+	EIF_TSD_SET(eif_global_key, NULL, "Couldn't bind private context to TSD.");
 }
 
 rt_public void eif_thr_create_with_args (EIF_OBJECT thr_root_obj, 
@@ -709,7 +706,7 @@ rt_private EIF_THR_ENTRY_TYPE eif_thr_entry (EIF_THR_ENTRY_ARG_TYPE arg)
 		 * safely later on */
 	LAUNCH_MUTEX_LOCK;
 	LAUNCH_MUTEX_UNLOCK;
-	eif_thr_register();
+	eif_thr_register(0);
 	{
 		RT_GET_CONTEXT
 		EIF_GET_CONTEXT
@@ -863,7 +860,6 @@ rt_public void eif_thr_exit(void)
 		SIGBLOCK;
 		eif_synchronize_gc (rt_globals);
 		eif_remove_gc_stacks (rt_globals);
-		eif_unsynchronize_gc (rt_globals);
 #endif
 
 #ifdef LMALLOC_CHECK
@@ -875,6 +871,12 @@ rt_public void eif_thr_exit(void)
 
 			/* Clean per thread data. */
 		eif_free_context (rt_globals);
+		rt_globals = NULL;
+
+#ifdef ISE_GC
+			/* We cannot use `eif_unsynchronize_gc' because `rt_globals' has been completely freed. */
+		EIF_LW_MUTEX_UNLOCK(eif_gc_mutex, "Cannot unlock GC mutex on thread exit");
+#endif
 
 #ifdef VXWORKS
 		/* The TSD is managed in a different way under VxWorks: each thread
@@ -1090,13 +1092,13 @@ rt_public void eif_synchronize_for_gc (void)
 	}
 }
 
-rt_public int eif_is_in_eiffel_code () 
+rt_public int eif_is_in_eiffel_code (void)
 {
 	RT_GET_CONTEXT
 	return ((gc_thread_status == EIF_THREAD_RUNNING) ? 1 : 0);
 }
 
-rt_public void eif_enter_eiffel_code()
+rt_public void eif_enter_eiffel_code(void)
 	/* Synchronize current thread as we enter some Eiffel code */
 {
 	RT_GET_CONTEXT
@@ -1111,7 +1113,7 @@ rt_public void eif_enter_eiffel_code()
 	}
 }
 
-rt_public void eif_exit_eiffel_code()
+rt_public void eif_exit_eiffel_code(void)
 	/* Synchronize current thread as we exit some Eiffel code */
 {
 	RT_GET_CONTEXT
@@ -1279,8 +1281,8 @@ rt_shared void eif_terminate_all_other_threads (void) {
 	int is_main_thread_blocked = 0;
 #ifndef HAS_THREAD_CANCELLATION
 	int error;
-	struct stack_list running_thread_list = {0, 0, { NULL }};
 #endif
+	struct stack_list running_thread_list = {0, 0, { NULL }};
 
 		/* Block all running threads. */
 	eif_synchronize_gc (rt_globals);
@@ -1322,13 +1324,18 @@ rt_shared void eif_terminate_all_other_threads (void) {
 				{
 						/* Worst case scenario, some threads are still running. */
 					if (thread_globals->eif_thr_context_cx) {
-
+						if (!thread_globals->eif_globals->is_external_cx) {
 #ifdef HAS_THREAD_CANCELLATION
-						EIF_THR_CANCEL(*thread_globals->eif_thr_id_cx);
+							EIF_THR_CANCEL(*thread_globals->eif_thr_id_cx);
 #else
-						load_stack_in_gc (&running_thread_list, thread_globals);
-						EIF_THR_KILL(*thread_globals->eif_thr_id_cx, error);
+							load_stack_in_gc (&running_thread_list, thread_globals);
+							EIF_THR_KILL(*thread_globals->eif_thr_id_cx, error);
 #endif
+						} else {
+								/* Thread has not been created by our runtime or the EiffelThread
+								 * library, we simply record it for removing its data from the runtime. */
+							load_stack_in_gc (&running_thread_list, thread_globals);
+						}
 					} else {
 							/* Main thread is blocked this is bad. */
 						is_main_thread_blocked = 1;
@@ -1336,12 +1343,12 @@ rt_shared void eif_terminate_all_other_threads (void) {
 				}
 			}
 		}
-#ifndef HAS_THREAD_CANCELLATION
-		nb = running_thread_list.count;
-		for (i = 0; i < nb; i++) {
-			eif_remove_gc_stacks ((rt_global_context_t *) running_thread_list.threads.data[i]);
+		if (running_thread_list.count > 0) {
+			nb = running_thread_list.count;
+			for (i = 0; i < nb; i++) {
+				eif_remove_gc_stacks ((rt_global_context_t *) running_thread_list.threads.data[i]);
+			}
 		}
-#endif
 	}
 
 	eif_unsynchronize_gc (rt_globals);
@@ -1433,64 +1440,6 @@ rt_shared pid_t eif_thread_fork(void) {
 }
 
 #endif
-
-rt_public void eif_thr_sleep(EIF_INTEGER_64 nanoseconds)
-{
-	/*
-	 * Suspend thread execution for interval specified by `nanoseconds'.
-	 * Use the most precise sleep function if possible.
-	 */
-
-#ifdef VXWORKS
-		/* No sleep routine by default. We fake a sleep. */
-	EIF_THR_YIELD;
-#else
-#ifdef HAS_NANOSLEEP
-	struct timespec req;
-	struct timespec rem;
-	req.tv_sec = nanoseconds / 1000000000;
-	req.tv_nsec = nanoseconds % 1000000000;
-	while ((nanosleep (&req, &rem) == -1) && (errno == EINTR)) {
-			/* Function is interrupted by a signal.   */
-			/* Let's call it again to complete pause. */
-		req = rem;
-	}
-#else
-#	ifdef HAS_USLEEP
-#		define EIF_THR_SLEEP_PRECISION 1000
-#		define EIF_THR_SLEEP_TYPE      unsigned long
-#		define EIF_THR_SLEEP_FUNCTION  usleep
-#	elif defined EIF_WINDOWS
-#		define EIF_THR_SLEEP_PRECISION 1000000
-#		define EIF_THR_SLEEP_TYPE      DWORD
-#		define EIF_THR_SLEEP_FUNCTION  Sleep
-#	else
-#		define EIF_THR_SLEEP_PRECISION 1000000000
-#		define EIF_THR_SLEEP_TYPE      unsigned int
-#		define EIF_THR_SLEEP_FUNCTION  sleep
-#	endif
-		/* Set total delay time */
-	EIF_INTEGER_64 total_time = nanoseconds / EIF_THR_SLEEP_PRECISION;
-		/* Set maximum timeout that can be handled by one API call */
-	EIF_THR_SLEEP_TYPE timeout = ~((~ (EIF_THR_SLEEP_TYPE) 0) << (sizeof timeout * 8 - 1));
-	if ((nanoseconds % EIF_THR_SLEEP_PRECISION) > 0) {
-			/* Increase delay to handle underflow */
-		total_time++;
-	}
-	while (total_time > 0) {
-			/* Sleep for maximum timeout not exceeding time left */
-		if (timeout > total_time) {
-			timeout = (EIF_THR_SLEEP_TYPE) total_time;
-		}
-		EIF_THR_SLEEP_FUNCTION (timeout);
-		total_time -= timeout;
-	}
-#  undef EIF_THR_SLEEP_PRECISION
-#  undef EIF_THR_SLEEP_TYPE
-#  undef EIF_THR_SLEEP_FUNCTION
-#endif
-#endif
-}
 
 rt_public void eif_thr_yield(void)
 {

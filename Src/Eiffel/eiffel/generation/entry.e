@@ -163,13 +163,13 @@ feature -- from ENTRY
 
 	needs_extended_info: BOOLEAN is
 			-- Is `type' a type which needs more data to be resolved at run-time?
-			--| Currently it is only generic types, formal generic type and like Current.
-		local
-			gtype : GEN_TYPE_A
+			--| Currently it is only generics, formals, anchors and types which are attached.
+			--| We exclude expanded types since they are by default attached and thus only have
+			--| one type at runtime.
 		do
-			gtype ?= type;
-			Result := (gtype /= Void) or type.is_formal or type.is_like_current
-		end;
+			Result := {l_gtype: GEN_TYPE_A} type or else not type.is_explicit or else
+				({l_attached_type: ATTACHABLE_TYPE_A} type and then not type.is_expanded and then l_attached_type.is_attached)
+		end
 
 	generate_cid (buffer: GENERATION_BUFFER; final_mode: BOOLEAN) is
 			-- Generate list of type id's of generic type
@@ -185,11 +185,18 @@ feature -- from ENTRY
 		require
 			is_generic : needs_extended_info
 		do
-			type.make_gen_type_byte_code (ba, False, system.class_type_of_id (type_id).type)
+			type.make_type_byte_code (ba, False, system.class_type_of_id (type_id).type)
 		end;
 
+feature -- Status report
+
+	is_initialization_required: BOOLEAN
+			-- Is initialization of an attribute required?
+		deferred
+		end
+
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

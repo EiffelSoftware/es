@@ -180,7 +180,7 @@ static  char    *names [] = {
 "BC_POP" ,
 "BC_REF_TO_PTR" ,
 "BC_RCREATE" ,
-"BC_GEN_PARAM_CREATE" ,
+"BC_NOTUSED_134" ,
 "BC_CAST_CHAR32" ,
 "BC_NULL_POINTER" ,
 "BC_BASIC_OPERATIONS" ,
@@ -205,7 +205,7 @@ static  char    *names [] = {
 "BC_CATCALL" ,
 "BC_START_CATCALL" ,
 "BC_END_CATCALL" ,
-"BC_NOTUSED_159" ,
+"BC_IS_ATTACHED" ,
 "BC_NOTUSED_160" ,
 "BC_NOTUSED_161" ,
 "BC_NOTUSED_162" ,
@@ -316,6 +316,7 @@ static  EIF_CHARACTER * rstr (void);
 int main (int argc, char **argv)
 {
 	long    i;
+	int done;
 
 	if (argc > 1)
 	{
@@ -372,14 +373,16 @@ int main (int argc, char **argv)
 		ctype_names [i] = rstr ();
 	}
 
-	while (1)
+	done = 1;
+	while (done)
 	{
 		read_byte_code ();
 
-		if (body_id == INVALID_ID)
-			break;
-
-		print_byte_code ();
+		if (body_id != INVALID_ID) {
+			print_byte_code ();
+		} else {
+			done = 0;
+		}
 	}
 
 	fclose (ifp);
@@ -391,7 +394,7 @@ int main (int argc, char **argv)
 }
 /*------------------------------------------------------------------*/
 
-static  void    read_byte_code ()
+static  void    read_byte_code (void)
 
 {
 	body_id = rbody_index ();
@@ -405,7 +408,7 @@ static  void    read_byte_code ()
 }
 /*------------------------------------------------------------------*/
 
-static  void    print_byte_code ()
+static  void    print_byte_code (void)
 
 {
 	uint32  rtype;  /* Type of routine */
@@ -422,8 +425,12 @@ static  void    print_byte_code ()
 	once_mark = get_uint8(&ip);  /* Once mark */
 	once_key = 0;
 
-	if (once_mark)
+	switch (once_mark)
+	{
+	case ONCE_MARK_THREAD_RELATIVE:
+	case ONCE_MARK_PROCESS_RELATIVE:
 		once_key = get_int32(&ip);     /* Once index. */
+	}
 
 	advance (1);
 
@@ -448,6 +455,9 @@ static  void    print_byte_code ()
 		break;
 	case ONCE_MARK_PROCESS_RELATIVE:
 		fprintf (ofp,"Once routine : process-relative (%u)\n", once_key);
+		break;
+	case ONCE_MARK_ATTRIBUTE:
+		fprintf (ofp,"Attribute\n");
 		break;
 	}
 
@@ -532,13 +542,11 @@ static  void    print_byte_code ()
 
 	NEWL;
 
-	/* If the routine id is zero it's a class invariant */
+	/* If the routine id is zero it's a class invariant 
+	 * but we get anyway the name and type */
 
-	if (rid)
-	{
-		fprintf (ofp,"Routine name : %s\n", get_string8(&ip, -1));
-		fprintf (ofp,"Written      : %d\n", (int) get_int16(&ip));
-	}
+	fprintf (ofp,"Routine name : %s\n", get_string8(&ip, -1));
+	fprintf (ofp,"Written      : %d\n", (int) get_int16(&ip));
 
 	/* Offset of rescue clause - if any */
 
@@ -578,7 +586,7 @@ static  void    advance (int where)
 }
 /*------------------------------------------------------------------*/
 
-static  void    print_instructions ()
+static  void    print_instructions (void)
 
 {
 	unsigned char   cval; /* !!! */
@@ -760,6 +768,11 @@ static  void    print_instructions ()
 				/* Object test */
 				/* local index */
 				fprintf (ofp,"%d ", (int) get_int16(&ip));
+				/* Static type of target */
+				get_creation_type();
+				break;
+			case  BC_IS_ATTACHED :
+				/* Test if a type is attached */
 				/* Static type of target */
 				get_creation_type();
 				break;
@@ -1416,11 +1429,6 @@ static void get_creation_type (void)
 			/* Org. offset */
 			fprintf (ofp,"ooff %d", get_int32(&ip));
 			break;
-		case BC_GEN_PARAM_CREATE:
-			fprintf (ofp, " (BC_GEN_PARAM_CREATE) ");
-			print_ctype (get_int16(&ip));
-			fprintf (ofp,"pos %d", get_int32(&ip));
-			break;
 	}
 }
 /*------------------------------------------------------------------*/
@@ -1435,7 +1443,7 @@ static  void    print_ctype (short type)
 }
 /*------------------------------------------------------------------*/
 
-static  void    print_cid ()
+static  void    print_cid (void)
 
 {
 	short t;
@@ -1449,7 +1457,7 @@ static  void    print_cid ()
 }
 /*------------------------------------------------------------------*/
 
-static BODY_INDEX rbody_index ()
+static BODY_INDEX rbody_index (void)
 {
 	BODY_INDEX result;
 
@@ -1464,7 +1472,7 @@ static BODY_INDEX rbody_index ()
 	return result;
 }
 
-static EIF_INTEGER_32 rlong ()
+static EIF_INTEGER_32 rlong (void)
 {
 	EIF_INTEGER_32 result;
 
@@ -1505,7 +1513,7 @@ static  unsigned char *rbuf (int size)
 }
 /*------------------------------------------------------------------*/
 
-static  EIF_CHARACTER * rstr ()
+static  EIF_CHARACTER * rstr (void)
 {
 	static char buf [1024];
 	EIF_CHARACTER * result;
@@ -1542,7 +1550,7 @@ static  EIF_CHARACTER * rstr ()
 }
 /*------------------------------------------------------------------*/
 
-static  void    panic ()
+static  void    panic (void)
 
 {
 	if (ifp != (FILE *) 0)

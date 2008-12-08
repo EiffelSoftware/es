@@ -114,8 +114,6 @@ feature -- Basic operations
 						l_is_aborted_stack.extend (False)
 						l_count := l_routines_snapshot.count
 						i := 0
-					variant
-						l_count - i
 					until
 						i = l_count
 						or l_is_aborted_stack.item
@@ -125,6 +123,8 @@ feature -- Basic operations
 							l_action.call (event_data)
 						end
 						i := i + 1
+					variant
+						l_count - i
 					end
 					l_is_aborted_stack.remove
 				when
@@ -169,7 +169,7 @@ feature -- Access
 			-- Useful for introspection and use in like statements.
 		obsolete "Not implemented. To be removed"
 		local
-			r: EVENT_DATA
+			r: ?EVENT_DATA
 		do
 			r := dummy_event_data_internal
 			if r = Void then
@@ -401,7 +401,7 @@ feature {NONE} -- Implementation
 	is_aborted_stack_internal: ?like is_aborted_stack
 		-- Internal storage for `is_aborted_stack'.
 
-	call_buffer: LINKED_QUEUE [EVENT_DATA]
+	call_buffer: LINKED_QUEUE [?EVENT_DATA]
 			-- Holds calls made while `is_paused'
 			-- to be executed on `resume'.
 		local
@@ -430,7 +430,7 @@ feature {NONE} -- Implementation
 	kamikazes: ARRAYED_LIST [like item]
 			-- Used by `prune_when_called'.
 		local
-			r: like kamikazes_internal
+			r: ?ARRAYED_LIST [like item]
 		do
 			r := kamikazes_internal
 			if r = Void then

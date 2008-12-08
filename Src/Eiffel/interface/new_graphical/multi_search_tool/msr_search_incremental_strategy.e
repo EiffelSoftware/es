@@ -21,12 +21,12 @@ create
 
 feature -- Initialization
 
-	make_with_start (a_keyword: STRING;
-					a_range: INTEGER;
-					a_class_name: STRING;
-					a_path: FILE_NAME;
-					a_source_text: STRING;
-					a_start: INTEGER) is
+	make_with_start (a_keyword: like keyword;
+					a_range: like surrounding_text_range;
+					a_class_name: like class_name;
+					a_path: like text_in_file_path;
+					a_source_text: STRING_32;
+					a_start: like start_position) is
 			-- Initialization
 		require
 			keyword_attached: a_keyword /= Void
@@ -78,35 +78,44 @@ feature -- Basic operations
 	launch is
 			-- Launch searching.
 		local
-			l_compile_string: STRING
+				-- Uncomment and use the following line to enable Unicode search when Gobo is ready.
+			-- l_compile_string, l_to_be_searched: UC_UTF8_STRING
+			l_compile_string, l_to_be_searched: STRING
+			l_keyword: STRING
 		do
 			create item_matched_internal.make (0)
 			build_class_name
 			pcre_regex.reset
 			pcre_regex.set_caseless (not case_sensitive_internal)
-			if is_regular_expression_used then
-				l_compile_string := keyword
-			else
-				l_compile_string := string_formatter.mute_escape_characters (keyword)
+				-- Uncomment and use the following line to enable Unicode search when Gobo is ready.
+			-- l_keyword := utf32_to_utf8 (keyword)
+			l_keyword := keyword.as_string_8
+			if not is_regular_expression_used then
+				l_keyword := string_formatter.mute_escape_characters (l_keyword)
 			end
 			if is_whole_word_matched then
-				l_compile_string := string_formatter.build_match_whole_word (l_compile_string)
+				l_keyword := string_formatter.build_match_whole_word (l_keyword)
 			end
+				-- Uncomment and use the following line to enable Unicode search when Gobo is ready.
+			-- create l_to_be_searched.make_from_utf8 (utf32_to_utf8 (text_to_be_searched))
+			-- create l_compile_string.make_from_utf8 (l_keyword)
+			l_compile_string := l_keyword
+			l_to_be_searched := text_to_be_searched
 			pcre_regex.compile (l_compile_string)
 			if pcre_regex.is_compiled then
-				pcre_regex.match_substring (text_to_be_searched, start_position, text_to_be_searched.count)
+				pcre_regex.match_substring (l_to_be_searched, start_position, l_to_be_searched.count)
 			end
 			if pcre_regex.has_matched then
 				item_matched_internal.wipe_out
 				add_new_item
 			elseif pcre_regex.is_compiled then
-				pcre_regex.match_substring (text_to_be_searched, 1, text_to_be_searched.count)
+				pcre_regex.match_substring (l_to_be_searched, 1, l_to_be_searched.count)
 				if pcre_regex.has_matched then
 					item_matched_internal.wipe_out
 					add_new_item
 				end
 			end
-			launched := true
+			launched := True
 			item_matched_internal.start
 		end
 

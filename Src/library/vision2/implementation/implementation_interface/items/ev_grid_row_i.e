@@ -1110,8 +1110,6 @@ feature {EV_GRID_I, EV_GRID_ROW_I} -- Implementation
 			if parent_row_i /= Void then
 				parent_row_i.update_for_subrow_removal (Current)
 			end
-
-			hash_code := 0
 			unparent
 			parent_row_i := Void
 			subrow_index := 0
@@ -1200,7 +1198,7 @@ feature {EV_GRID_ROW_I, EV_GRID_I} -- Implementation
 			no_parent_implies_depths_set_to_one: parent_row_i = Void implies depth_in_tree = 1 and indent_depth_in_tree = 1
 		end
 
-feature {EV_GRID_ITEM_I, EV_GRID_ROW_I, EV_GRID_I} -- Implementation
+feature {EV_GRID_ITEM_I, EV_GRID_ROW_I, EV_GRID_I, EV_GRID_DRAWER_I} -- Implementation
 
 	subrows: EV_GRID_ARRAYED_LIST [EV_GRID_ROW_I]
 		-- All subrows of `Current'.
@@ -1332,6 +1330,8 @@ feature {EV_GRID_I} -- Implementation
 			-- Sets` parent_i' to `Void'.
 		do
 			parent_i := Void
+				-- Reset hash_code to respect invariant.
+			hash_code := 0
 		ensure
 			parent_void: parent = Void
 		end

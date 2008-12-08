@@ -31,7 +31,10 @@ feature -- Keywords
 			-- "as" keyword
 
 	ti_Assign_keyword: STRING is "assign"
-			-- "as" keyword
+			-- "assign" keyword
+
+	ti_Attribute_keyword: STRING is "attribute"
+			-- "attribute" keyword
 
 	ti_Check_keyword: STRING is "check"
 			-- "check" keyword
@@ -128,6 +131,9 @@ feature -- Keywords
 
 	ti_not_keyword: STRING is "not"
 			-- "not" keyword
+
+	ti_note_keyword: STRING is "note"
+			-- "note" keyword
 
 	ti_Obsolete_keyword: STRING is "obsolete"
 			-- "obsolete" keyword
@@ -362,7 +368,7 @@ feature -- Standard classes
 			-- `BIT' class.
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

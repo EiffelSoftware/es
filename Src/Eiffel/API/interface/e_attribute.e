@@ -1,6 +1,6 @@
 indexing
 
-	description: 
+	description:
 		"Representation of an eiffel attribute."
 	legal: "See notice at end of class."
 	status: "See notice at end of class.";
@@ -10,20 +10,22 @@ indexing
 class E_ATTRIBUTE
 
 inherit
-
 	E_FEATURE
 		redefine
-			assigner_name, is_attribute, type
+			assigner_name, is_attribute, type,
+			is_attribute_with_body, locals, object_test_locals
 		end
 
 create
-
 	make
 
 feature -- Properties
 
 	is_attribute: BOOLEAN is True
-			-- Is current a function
+			-- Is current an attribute?
+
+	is_attribute_with_body: BOOLEAN
+			-- <Precursor>
 
 	type: TYPE_A
 			-- Return type
@@ -31,7 +33,58 @@ feature -- Properties
 	assigner_name: STRING
 			-- Name of the assigner procedure (if any)
 
+feature -- Access
+
+	locals: EIFFEL_LIST [TYPE_DEC_AS] is
+		local
+			routine_as: ROUTINE_AS
+		do
+			routine_as := associated_routine_as
+			if routine_as /= Void then
+				Result := routine_as.locals
+			end
+		end
+
+	object_test_locals: LIST [TUPLE [name: ID_AS; type: TYPE_AS]] is
+			-- Object test locals mentioned in the routine
+		local
+			routine_as: ROUTINE_AS
+		do
+			routine_as := associated_routine_as
+			if routine_as /= Void then
+				Result := routine_as.object_test_locals
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	associated_routine_as: ROUTINE_AS is
+			-- Associated routine as used to find out locals and object test locals
+		do
+			if body_index > 0 then
+				if {feat_as: FEATURE_AS} Body_server.item (body_index) then
+						--| feature_as can be Void for invariant routine
+					Result ?= feat_as.body.content
+				end
+			end
+			if Result /= Void then
+				if Result.is_built_in then
+					if {built_in_as: BUILT_IN_AS} Result.routine_body then
+						if {feature_as: FEATURE_AS} built_in_as.body then
+							Result ?= feature_as.body.content
+						end
+					end
+				end
+			end
+		end
+
 feature -- Setting
+
+	set_is_attribute_with_body (b: like is_attribute_with_body)
+			-- set `is_attribute_with_body' to `b'
+		do
+			is_attribute_with_body := b
+		end
 
 	set_type (t: like type; a: like assigner_name) is
 			-- Set `type' to `t' and `assigner_name' to `a'.

@@ -182,13 +182,13 @@ feature {NONE} -- Initialization Implementation
 				if a_class_item.is_empty then
 					create Result
 					update_class_item (a_class_item, Result)
-					Result.select_actions.extend (agent favorites_manager.go_to_class (a_class_item))
+					Result.select_actions.extend (agent favorites_manager.go_to_favorite (a_class_item))
 				else
 						-- Create open this item menu
 					create l_menu_item
 					l_menu_item.set_text (a_class_item.name)
 					l_menu_item.set_data (a_class_item)
-					l_menu_item.select_actions.extend (agent favorites_manager.go_to_class (a_class_item))
+					l_menu_item.select_actions.extend (agent favorites_manager.go_to_favorite (a_class_item))
 					update_class_item (a_class_item, l_menu_item)
 
 					create l_menu
@@ -208,7 +208,7 @@ feature {NONE} -- Initialization Implementation
 			elseif an_item.is_feature then
 				a_feat_item ?= an_item
 				create Result
-				Result.select_actions.extend (agent favorites_manager.go_to_feature (a_feat_item))
+				Result.select_actions.extend (agent favorites_manager.go_to_favorite (a_feat_item))
 				update_feature_item (a_feat_item, Result)
 			end
 			Result.set_text (an_item.name)
@@ -322,7 +322,9 @@ feature {NONE} -- Memory management
 			-- Recycle `Current', but leave `Current' in an unstable state,
 			-- so that we know whether we're still referenced or not.
 		do
-			favorites.remove_observer (Current)
+			if favorites /= Void then
+				favorites.remove_observer (Current)
+			end
 			favorites_manager := Void
 			destroy
 		end

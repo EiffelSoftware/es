@@ -17,7 +17,9 @@ inherit
 		rename
 			group as assembly
 		redefine
-			is_external_class
+			is_external_class,
+			set_changed,
+			reset_options
 		end
 
 	CONF_CLASS_ASSEMBLY
@@ -29,13 +31,34 @@ inherit
 			is_compiled
 		redefine
 			assembly,
-			class_type
+			class_type,
+			options
 		end
 
 create {CONF_COMP_FACTORY}
 	make_assembly_class
 
 feature -- Access
+
+	set_changed (b: BOOLEAN) is
+			-- Assign `b' to `changed'.
+		do
+			changed := b
+		end
+
+	options: CONF_OPTION is
+			-- <Precursor>
+		do
+			if options_internal /= Void then
+				Result := options_internal
+			else
+				Result := Precursor
+				if workbench.is_compiling then
+					options_internal := Result
+						-- We can cache the result as we know that it will be reset after compilation.
+				end
+			end
+		end
 
 	assembly: ASSEMBLY_I
 			-- Cluster is an assembly.
@@ -125,6 +148,20 @@ feature {EXTERNAL_CLASS_C} -- Mapping
 			basic_type_mapping_not_void: Result /= Void
 		end
 
+feature {COMPILER_EXPORTER} -- Setting
+
+	reset_options is
+			-- <Precursor>
+		do
+				-- Reset any previous cached options.
+			options_internal := Void
+		end
+
+feature {NONE} -- Implementation
+
+	options_internal: like options
+		-- Temporary store for internal options.
+
 feature {NONE} -- Implementation
 
 	consumed_type_deserializer: EIFFEL_DESERIALIZER is
@@ -137,7 +174,10 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Type anchor
 
-	class_type: EXTERNAL_CLASS_I;
+	class_type: EXTERNAL_CLASS_I is
+			-- <Precursor>
+		do
+		end
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

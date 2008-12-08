@@ -15,17 +15,6 @@ inherit
 			destroy
 		end
 
-	EB_SHARED_PIXMAPS
-		rename
-			implementation as implementation_shared_pixmaps
-		export
-			{NONE} all
-		undefine
-			default_create,
-			is_equal,
-			copy
-		end
-
 	EV_SHARED_APPLICATION
 		undefine
 			default_create,
@@ -88,28 +77,28 @@ feature {NONE} -- Initialization
 			close_button.set_tooltip (interface_names.f_close)
 			l_ev_label_1.set_text (interface_names.t_find)
 
-			next_button.set_pixmap (icon_pixmaps.general_arrow_down_icon)
-			next_button.set_pixel_buffer (icon_pixmaps.general_arrow_down_icon_buffer)
-			previous_button.set_pixmap (icon_pixmaps.general_arrow_up_icon)
-			previous_button.set_pixel_buffer (icon_pixmaps.general_arrow_up_icon_buffer)
-			advanced_button.set_pixmap (icon_pixmaps.tool_advanced_search_icon)
-			advanced_button.set_pixel_buffer (icon_pixmaps.tool_advanced_search_icon_buffer)
+			next_button.set_pixmap (stock_pixmaps.general_arrow_down_icon)
+			next_button.set_pixel_buffer (stock_pixmaps.general_arrow_down_icon_buffer)
+			previous_button.set_pixmap (stock_pixmaps.general_arrow_up_icon)
+			previous_button.set_pixel_buffer (stock_pixmaps.general_arrow_up_icon_buffer)
+			advanced_button.set_pixmap (stock_pixmaps.tool_advanced_search_icon)
+			advanced_button.set_pixel_buffer (stock_pixmaps.tool_advanced_search_icon_buffer)
 			create first_reached_pixmap
 			create bottom_reached_pixmap
-			first_reached_pixmap.set_minimum_size (icon_pixmaps.search_first_reached_icon.width,
-													icon_pixmaps.search_first_reached_icon.height)
-			bottom_reached_pixmap.set_minimum_size (icon_pixmaps.search_first_reached_icon.width,
-														icon_pixmaps.search_first_reached_icon.height)
+			first_reached_pixmap.set_minimum_size (stock_pixmaps.search_first_reached_icon.width,
+													stock_pixmaps.search_first_reached_icon.height)
+			bottom_reached_pixmap.set_minimum_size (stock_pixmaps.search_first_reached_icon.width,
+														stock_pixmaps.search_first_reached_icon.height)
 			first_reached_pixmap.set_tooltip (interface_names.t_first_match_reached)
 			bottom_reached_pixmap.set_tooltip (interface_names.t_bottom_reached)
 			message_box.extend (first_reached_pixmap)
 			message_box.extend (bottom_reached_pixmap)
 			first_reached_pixmap.hide
 			bottom_reached_pixmap.hide
-			first_reached_pixmap.expose_actions.extend (agent on_pixmap_expose (?, ?, ?, ?, first_reached_pixmap, icon_pixmaps.search_first_reached_icon))
-			bottom_reached_pixmap.expose_actions.extend (agent on_pixmap_expose (?, ?, ?, ?, bottom_reached_pixmap, icon_pixmaps.search_bottom_reached_icon))
-			close_button.set_pixmap (icon_pixmaps.general_close_icon)
-			close_button.set_pixel_buffer (icon_pixmaps.general_close_icon_buffer)
+			first_reached_pixmap.expose_actions.extend (agent on_pixmap_expose (?, ?, ?, ?, first_reached_pixmap, stock_pixmaps.search_first_reached_icon))
+			bottom_reached_pixmap.expose_actions.extend (agent on_pixmap_expose (?, ?, ?, ?, bottom_reached_pixmap, stock_pixmaps.search_bottom_reached_icon))
+			close_button.set_pixmap (stock_pixmaps.general_close_icon)
+			close_button.set_pixel_buffer (stock_pixmaps.general_close_icon_buffer)
 			keyword_field.change_actions.extend (agent trigger_sensibility)
 			match_case_button.select_actions.extend (agent check_button_changed (match_case_button))
 			regular_expression_button.select_actions.extend (agent check_button_changed (regular_expression_button))
@@ -278,6 +267,16 @@ feature -- Destroy
 			Precursor {QUICK_SEARCH_BAR_IMP}
 		end
 
+feature {NONE} -- Helpers
+
+    frozen stock_pixmaps: ES_PIXMAPS_16X16
+            -- Shared access to stock 16x16 EiffelStudio pixmaps
+        once
+            Result := (create {EB_SHARED_PIXMAPS}).icon_pixmaps
+        ensure
+            result_attached: Result /= Void
+        end
+
 feature {NONE} -- Implementation
 
 	first_reached_pixmap, bottom_reached_pixmap: EV_DRAWING_AREA
@@ -351,12 +350,12 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	update_combo_box (word: STRING) is
+	update_combo_box (word: STRING_32) is
 			-- add word to combo box list
 		local
-			l: LIST [STRING]
+			l: LIST [STRING_32]
 		do
-			l := keyword_field.strings_8
+			l := keyword_field.strings
 			if l /= Void then
 				l.compare_objects
 			end
@@ -388,17 +387,17 @@ feature {NONE} -- Implementation
 						l_linear_representation.after or Result
 					loop
 						if l_linear_representation.item.has_focus then
-							Result := true
+							Result := True
 						else
 							Result := has_focus_on_widgets_internal (l_linear_representation.item)
 						end
 						l_linear_representation.forth
 					end
 				elseif l_container.has_focus then
-					Result := true
+					Result := True
 				end
 			elseif a_widget.has_focus then
-				Result := true
+				Result := True
 			end
 		end
 

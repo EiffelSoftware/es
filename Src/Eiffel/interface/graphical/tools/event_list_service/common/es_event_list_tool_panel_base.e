@@ -18,24 +18,27 @@ inherit
 		redefine
 			on_before_initialize,
 			on_after_initialized,
-			internal_recycle
+			internal_recycle,
+			internal_detach_entities
+		end
+
+	EVENT_LIST_OBSERVER
+		redefine
+			on_event_item_added,
+			on_event_item_removed,
+			on_event_item_changed
 		end
 
 feature {NONE} -- Initialization
 
 	on_before_initialize
 			-- Use to perform additional creation initializations, before the UI has been created.
-		local
-			l_service: EVENT_LIST_S
 		do
 			Precursor {ES_DOCKABLE_TOOL_PANEL}
 
 				-- Retrieve event list service
 			if event_list.is_service_available then
-				l_service := event_list.service
-				l_service.item_added_event.subscribe (agent on_event_added)
-				l_service.item_changed_event.subscribe (agent on_event_changed)
-				l_service.item_removed_event.subscribe (agent on_event_removed)
+				event_list.service.connect_events (Current)
 			end
 		end
 
@@ -66,6 +69,34 @@ feature {NONE} -- Initialization
 			end (?, ?, grid_events))
 			grid_events.disable_vertical_scrolling_per_item
 
+				-- Register action to display context menus.
+			register_action (grid_events.pointer_button_press_actions, agent (ia_widget: ES_GRID; ia_x, ia_y, ia_button, ia_x_tilt, ia_y_tilt, ia_pressure, ia_screen_x, ia_screen_y: INTEGER_32)
+				do
+					if ia_button = 3 then
+							-- Process the right click
+
+							-- Extend a kamikaze action on the release to show the menu. This is to rememdy the way context menus are displayed on Linux, which cannot
+							-- use press actions because of focus issues. Using release gives us the wrong menu for the orginally clicked item.
+						register_kamikaze_action (ia_widget.pointer_button_release_actions, agent (
+								iia_widget: ES_GRID; iia_x, iia_y: INTEGER;
+									-- Ingore all other arguments.
+								iia_u1, iia_u2, iia_u3, iia_u4, iia_u5, iia_u6, iia_u7, iia_u8: INTEGER_32)
+							local
+								l_item: EV_GRID_ITEM
+							do
+								if iia_widget.is_header_displayed then
+									l_item := iia_widget.item_at_virtual_position (iia_x, iia_y - iia_widget.header.height)
+								else
+									l_item := iia_widget.item_at_virtual_position (iia_x, iia_y)
+								end
+								if l_item /= Void then
+									show_context_menu (l_item, iia_x, iia_y)
+								end
+							end (ia_widget, ia_x, ia_y, ?, ?, ?, ?, ?, ?, ?, ?))
+
+					end
+				end (grid_events, ?, ?, ?, ?, ?, ?, ?, ?))
+
 			Precursor {ES_DOCKABLE_TOOL_PANEL}
 			if not surpress_synchronization then
 				synchronize_event_list_items
@@ -77,31 +108,20 @@ feature {NONE} -- Clean up
 
 	internal_recycle
 			-- Recycle tool.
-		local
-			l_agent: PROCEDURE [ANY, TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I]]
-			l_service: EVENT_LIST_S
 		do
-			if is_initialized then
-				if event_list.is_service_available then
-					l_service := event_list.service
-
-					l_agent := agent on_event_added
-					if l_service.item_added_event.is_subscribed (l_agent) then
-						l_service.item_added_event.unsubscribe (l_agent)
-					end
-					l_agent := agent on_event_removed
-					if l_service.item_removed_event.is_subscribed (l_agent) then
-						l_service.item_removed_event.unsubscribe (l_agent)
-					end
-					l_agent := agent on_event_changed
-					if l_service.item_changed_event.is_subscribed (l_agent) then
-						l_service.item_changed_event.unsubscribe (l_agent)
-					end
+			if event_list.is_service_available then
+				if event_list.service.is_connected (Current) then
+					event_list.service.disconnect_events (Current)
 				end
 			end
+			Precursor
+		end
 
+	internal_detach_entities
+			-- <Precursor>
+		do
 			internal_grid_wrapper := Void
-			Precursor {ES_DOCKABLE_TOOL_PANEL}
+			Precursor
 		ensure then
 			internal_grid_wrapper_deatched: internal_grid_wrapper = Void
 		end
@@ -208,11 +228,28 @@ feature {NONE} -- Basic operations
 			--
 			-- `a_row': The row the user requested an action to be performed on.
 		require
+			is_interface_usable: is_interface_usable
 			a_row_attached: a_row /= Void
 			a_row_has_parent: a_row.parent /= Void
 			a_row_is_in_grid_events: a_row.index <= grid_events.row_count and then
 				grid_events.row (a_row.index) = a_row
 		deferred
+		end
+
+	show_context_menu (a_item: EV_GRID_ITEM; a_x: INTEGER; a_y: INTEGER)
+			-- Called to show a context menu at the relative X/Y coordinates to `grid_events'
+			--
+			-- `a_item': The grid item to display a context menu for.
+			-- `a_x': The relative X position on `grid_events'.
+			-- `a_t': The relative Y position on `grid_events'.
+		require
+			is_interface_usable: is_interface_usable
+			a_item_attached: a_item /= Void
+			a_item_parented: a_item.row /= Void
+			a_item_parented_to_grid_events: a_item.row.parent = grid_events
+			a_x_positive: a_x > 0
+			a_y_positive: a_y > 0
+		do
 		end
 
 	selected_text: STRING_8
@@ -262,7 +299,37 @@ feature {NONE} -- Basic operations
 			not_surpress_synchronization: not surpress_synchronization
 		do
 			if event_list.is_service_available then
-				event_list.service.all_items.do_all (agent on_event_added (event_list.service, ?))
+				event_list.service.all_items.do_all (agent on_event_item_added (event_list.service, ?))
+			end
+		end
+
+feature {NONE} -- Removal
+
+	remove_all_selected_event_list_rows
+			-- Removes all the selected event list rows.
+		require
+			is_interface_usable: is_interface_usable
+			is_multiple_row_selection_enabled: grid_events.is_multiple_row_selection_enabled
+		local
+			l_selected: ARRAYED_LIST [EV_GRID_ROW]
+		do
+			l_selected := grid_events.selected_rows
+			if l_selected /= Void and then not l_selected.is_empty then
+				l_selected.do_all (agent remove_event_list_row)
+			end
+		end
+
+	remove_event_list_row (a_row: EV_GRID_ROW)
+			-- Removes a single event list row.
+			--
+			-- `a_row': The event list row to remove
+		require
+			is_interface_usable: is_interface_usable
+			a_row_attached: a_row /= Void
+			a_row_parented_to_grid_events: a_row.parent = grid_events
+		do
+			if event_list.is_service_available and then {l_item: EVENT_LIST_ITEM_I} a_row.data then
+				event_list.service.prune_event_item (l_item)
 			end
 		end
 
@@ -727,8 +794,8 @@ feature {NONE} -- UI manipulation
 			--
 			-- `a_enable': True to indicate there is content available, False otherwise
 		require
-			item_count_positive: a_enable implies item_count > 0
-			item_count_is_zero: not a_enable implies item_count = 0
+			item_count_positive: a_enable implies grid_events.row_count > 0
+			item_count_is_zero: not a_enable implies grid_events.row_count = 0
 		do
 		end
 
@@ -847,15 +914,8 @@ feature {NONE} -- Query
 
 feature {NONE} -- Events
 
-	on_event_added (a_service: EVENT_LIST_S; a_event_item: EVENT_LIST_ITEM_I)
-			-- Called when a event item is added to the event service.
-			--
-			-- `a_service': Event service where event was added.
-			-- `a_event_item': The event item added to the service.
-		require
-			a_service_attached: a_service /= Void
-			a_event_attached: a_event_item /= Void
-			a_service_contains_a_event: a_event_item.is_persistent implies a_service.all_items.has (a_event_item)
+	on_event_item_added (a_service: EVENT_LIST_S; a_event_item: EVENT_LIST_ITEM_I)
+			-- <Precursor>
 		local
 			l_add: BOOLEAN
 			l_event_item: EVENT_LIST_ITEM_I
@@ -866,6 +926,7 @@ feature {NONE} -- Events
 			if is_initialized and then is_appliable_event (a_event_item) then
 				l_grid := grid_events
 				l_count := l_grid.row_count
+				l_grid.header.item.remove_pixmap
 
 				l_add := maximum_item_count = 0 or else item_count < maximum_item_count
 				if not l_add and then destory_old_items_automatically and then l_count > 0 then
@@ -874,7 +935,7 @@ feature {NONE} -- Events
 					check
 						l_event_attached: l_event_item /= Void
 					end
-					on_event_removed (a_service, l_event_item)
+					on_event_item_removed (a_service, l_event_item)
 				end
 
 				check
@@ -909,16 +970,8 @@ feature {NONE} -- Events
 			item_count_small_enought: destory_old_items_automatically implies item_count <= maximum_item_count
 		end
 
-	on_event_removed (a_service: EVENT_LIST_S; a_event_item: EVENT_LIST_ITEM_I) is
-			-- Called after a event item has been removed from the service `a_service'
-			--
-			-- `a_service': Event service where the event was removed.
-			-- `a_event_item': The event item removed from the service.
-		require
-			a_service_attached: a_service /= Void
-			a_event_attached: a_event_item /= Void
-			a_event_item_is_persistent: a_event_item.is_persistent
-			not_a_service_contains_a_event: not a_service.all_items.has (a_event_item)
+	on_event_item_removed (a_service: EVENT_LIST_S; a_event_item: EVENT_LIST_ITEM_I) is
+			-- <Precursor>
 		local
 			l_grid: like grid_events
 			l_row: EV_GRID_ROW
@@ -935,8 +988,6 @@ feature {NONE} -- Events
 						item_count_big_enough: item_count >= 1
 					end
 
-					item_count := item_count - 1
-
 					l_selected := l_row.is_selected
 
 					l_grid := grid_events
@@ -951,6 +1002,8 @@ feature {NONE} -- Events
 						l_row_item_count := l_row_item_count - 1
 					end
 					l_grid.remove_row (l_index)
+
+					item_count := item_count - 1
 
 					if item_count > 0 and then l_selected then
 							-- The row was selected so we need to change the selection
@@ -993,16 +1046,8 @@ feature {NONE} -- Events
 			item_count_increased: is_initialized and then is_appliable_event (a_event_item) implies item_count = old item_count - 1
 		end
 
-	on_event_changed (a_service: EVENT_LIST_S; a_event_item: EVENT_LIST_ITEM_I)
-			-- Called after a event item has been changed.
-			--
-			-- `a_service': Event service where the event was changed.
-			-- `a_event_item': The event item that was changed.
-		require
-			a_service_attached: a_service /= Void
-			a_event_attached: a_event_item /= Void
-			a_event_item_is_persistent: a_event_item.is_persistent
-			a_service_contains_a_event: a_service.all_items.has (a_event_item)
+	on_event_item_changed (a_service: EVENT_LIST_S; a_event_item: EVENT_LIST_ITEM_I)
+			-- <Precursor>
 		local
 			l_row: EV_GRID_ROW
 		do
@@ -1032,7 +1077,7 @@ feature {NONE} -- Factory
 	create_widget: ES_GRID is
 			-- Create a new container widget upon request
 		do
-			create Result
+			create {ES_EDITOR_TOKEN_GRID}Result
 			Result.enable_single_row_selection
 			Result.enable_column_separators
 			Result.enable_row_separators
@@ -1040,8 +1085,6 @@ feature {NONE} -- Factory
 			Result.enable_default_tree_navigation_behavior (True, True, True, True)
 			Result.enable_row_height_fixed
 			Result.disable_vertical_scrolling_per_item
-			Result.set_focused_selection_color (colors.grid_focus_selection_color)
-			Result.set_non_focused_selection_color (colors.grid_unfocus_selection_color)
 			Result.pointer_double_press_item_actions.extend (agent on_grid_events_item_pointer_double_press)
 		end
 

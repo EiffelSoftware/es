@@ -156,7 +156,7 @@ feature -- Byte code special generation
 				ba.append (bc_basic_operations)
 				ba.append (bc_three_way_comparison)
 
-			when twin_type then
+			when twin_type, as_attached_type then
 					-- Nothing to do, top of the stack has correct value
 			end
 		end
@@ -212,7 +212,7 @@ feature -- C special code generation
 				target.print_register
 			when as_integer_32_type, to_integer_32_type then
 				buffer.put_string ("(EIF_INTEGER_32) ")
-				if target.c_type.is_pointer then
+				if basic_type.is_pointer then
 						-- Special code generation for conversion from POINTER to INTEGER without
 						-- raising a warning at the C compilation level on platforms where the pointer
 						-- size is different from the size of an INTEGER_32.
@@ -294,7 +294,8 @@ feature -- C special code generation
 			when memory_move, memory_copy, memory_set, memory_alloc, memory_free, memory_calloc then
 				check pointer_type: type_of (basic_type) = pointer_type end
 				generate_memory_routine (buffer, function_type, target, parameters)
-			when twin_type then
+			when twin_type, as_attached_type then
+					-- There is nothing to do, just print the previous value.
 				target.print_register
 			end
 		end
@@ -374,6 +375,7 @@ feature {NONE} -- C and Byte code corresponding Eiffel function calls
 			Result.put (is_space_type, {PREDEFINED_NAMES}.is_space_name_id)
 			Result.put (three_way_comparison_type, {PREDEFINED_NAMES}.three_way_comparison_name_id)
 			Result.put (twin_type, {PREDEFINED_NAMES}.twin_name_id)
+			Result.put (as_attached_type, {PREDEFINED_NAMES}.as_attached_name_id)
 			Result.put (ceiling_real_type, {PREDEFINED_NAMES}.ceiling_real_32_name_id)
 			Result.put (ceiling_real_type, {PREDEFINED_NAMES}.ceiling_real_64_name_id)
 			Result.put (floor_real_type, {PREDEFINED_NAMES}.floor_real_32_name_id)
@@ -441,6 +443,7 @@ feature {NONE} -- C and Byte code corresponding Eiffel function calls
 			Result.put (to_real_32_type, {PREDEFINED_NAMES}.to_real_name_id)
 			Result.put (three_way_comparison_type, {PREDEFINED_NAMES}.three_way_comparison_name_id)
 			Result.put (twin_type, {PREDEFINED_NAMES}.twin_name_id)
+			Result.put (as_attached_type, {PREDEFINED_NAMES}.as_attached_name_id)
 			Result.put (ceiling_real_type, {PREDEFINED_NAMES}.ceiling_real_32_name_id)
 			Result.put (ceiling_real_type, {PREDEFINED_NAMES}.ceiling_real_64_name_id)
 			Result.put (floor_real_type, {PREDEFINED_NAMES}.floor_real_32_name_id)
@@ -506,7 +509,8 @@ feature {NONE} -- Fast access to feature name
 	to_character_32_type: INTEGER is 53
 	ceiling_real_type: INTEGER is 54
 	floor_real_type: INTEGER is 55
-	max_type_id: INTEGER is 55
+	as_attached_type: INTEGER is 56
+	max_type_id: INTEGER is 56
 
 feature {NONE} -- Byte code generation
 
@@ -714,9 +718,9 @@ feature {NONE} -- C code generation
 				target.print_register
 				buffer.put_character(')')
 			else
-				buffer.put_string ("(EIF_INTEGER_32) (0x7FFFFFFF & (EIF_INTEGER_32) (")
+				buffer.put_string ("(EIF_INTEGER_32) (0x7FFFFFFF & (EIF_INTEGER_32) ((rt_int_ptr) (")
 				target.print_register
-				buffer.put_string ("))")
+				buffer.put_three_character (')', ')', ')')
 			end
 		end
 

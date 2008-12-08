@@ -18,7 +18,13 @@ feature -- Generic conformance access
 	Like_feature_type: NATURAL_16 is 0xFFFA
 	Tuple_type: NATURAL_16 is 0xFFF9
 	Formal_type: NATURAL_16 is 0xFFF8
-	Max_dtype: NATURAL_16 is 0xFFF7
+	parent_type_separator: NATURAL_16 is 0xFFF7
+
+	attached_type: NATURAL_16 is 0xFF11
+	detachable_type: NATURAL_16 is 0xFF12
+	frozen_type: NATURAL_16 is 0xFF14
+
+	Max_dtype: NATURAL_16 is 0xFF00
 
 feature -- TUPLE code
 

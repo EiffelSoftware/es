@@ -49,6 +49,7 @@ feature {NONE} -- Initialization
 			Precursor {ES_OBJECTS_GRID_LINE}
 			display := False
 			display_onces := False
+			display_constants := False
 			set_object_spec_slices (debugger_manager.min_slice, debugger_manager.max_slice)
 		end
 
@@ -76,6 +77,13 @@ feature -- Recycling
 				end
 				onces_row := Void
 			end
+			if constants_row /= Void then
+				constants_row.set_data (Void)
+				if constants_row.parent /= Void then
+					constants_row.clear
+				end
+				constants_row := Void
+			end
 			row_items_filled := False
 			row_attributes_filled := False
 			row_onces_filled := False
@@ -100,15 +108,20 @@ feature {ES_OBJECTS_GRID, ES_OBJECTS_GRID_LINE, ES_OBJECTS_GRID_MANAGER} -- Grid
 		do
 			row_items_filled := False
 			row_attributes_filled := False
+
 			row_onces_filled := False
 			onces_row := Void
+
+			row_constants_filled := False
+			constants_row := Void
+
 			internal_items_stone_data := Void
 			Precursor {ES_OBJECTS_GRID_LINE}
 		end
 
 feature {NONE} -- Helpers
 
-	is_valid_object_address (addr: STRING): BOOLEAN is
+	is_valid_object_address (addr: DBG_ADDRESS): BOOLEAN is
 		require
 			application_is_executing: debugger_manager.application_is_executing
 		do
@@ -123,7 +136,7 @@ feature -- Properties
 		deferred
 		end
 
-	object_address: STRING is
+	object_address: DBG_ADDRESS is
 		deferred
 		end
 
@@ -174,11 +187,15 @@ feature -- Query
 		end
 
 	has_once_routine: BOOLEAN is
-		local
-			list: LIST [ANY]
+			-- Current value has once feature?
 		do
-			list := sorted_once_routines
-			Result := list /= Void and then not list.is_empty
+			Result := {list: like sorted_once_routines} sorted_once_routines and then not list.is_empty
+		end
+
+	has_constant: BOOLEAN
+			-- Current value has constant feature?
+		do
+			Result := {list: like sorted_constant_features} sorted_constant_features and then not list.is_empty
 		end
 
 	reset_special_attributes_values is
@@ -186,10 +203,17 @@ feature -- Query
 		end
 
 	sorted_attributes_values: DS_LIST [ABSTRACT_DEBUG_VALUE] is
+			-- Sorted list of attribute values
 		deferred
 		end
 
 	sorted_once_routines: LIST [E_FEATURE] is
+			-- Sorted list of once features
+		deferred
+		end
+
+	sorted_constant_features: LIST [E_CONSTANT] is
+			-- Sorted list of constants features	
 		deferred
 		end
 
@@ -209,6 +233,9 @@ feature -- Status
 
 	display_onces: BOOLEAN
 			-- Should once functions be displayed or not?
+
+	display_constants: BOOLEAN
+			-- Should constant functions be displayed or not?			
 
 feature -- Pick and Drop
 
@@ -244,16 +271,16 @@ feature {NONE} -- Pick and Drop implementation
 			t: like internal_item_stone_data_i_th
 		do
 			create internal_items_stone_data.make (row.count + 1) -- FIXME: upper value ?
-			if object_address /= Void then
+			if {oadd: like object_address} object_address and then not oadd.is_void then
 					--| For now we don't support this for external type
 				ostn := object_name
 				if ostn = Void then
-					ostn := object_address
+					ostn := object_address.output
 				end
 				create ost.make (object_address, ostn, object_dynamic_class)
 				ost.set_associated_ev_item (row)
 				create t
-				t.stone := ost
+				t.pebble := ost
 				t.accept_cursor := ost.stone_cursor
 				t.deny_cursor := ost.X_stone_cursor
 				--When compiler is fixed use: t := [ost, ost.stone_cursor, ost.X_stone_cursor]
@@ -264,7 +291,7 @@ feature {NONE} -- Pick and Drop implementation
 				if ocl /= Void then
 					create {CLASSC_STONE} clst.make (ocl)
 					create t
-					t.stone := clst
+					t.pebble := clst
 					t.accept_cursor := clst.stone_cursor
 					t.deny_cursor := clst.X_stone_cursor
 					--When compiler is fixed use: t := [clst, clst.stone_cursor, clst.X_stone_cursor]
@@ -282,7 +309,7 @@ feature {NONE} -- Pick and Drop implementation
 			item_stone_properties_computed: items_stone_properties_computed
 		end
 
-	internal_item_stone_data_i_th (i: INTEGER): TUPLE [stone: STONE; accept_cursor: EV_POINTER_STYLE; deny_cursor: EV_POINTER_STYLE] is
+	internal_item_stone_data_i_th (i: INTEGER): TUPLE [pebble: STONE; accept_cursor: EV_POINTER_STYLE; deny_cursor: EV_POINTER_STYLE] is
 			-- Internal data related to `i_th' cell of current row.
 		do
 			if internal_items_stone_data /= Void then
@@ -307,11 +334,17 @@ feature {ES_OBJECTS_TOOL_PANEL, ES_OBJECTS_GRID_LINE} -- Status change
 			display := b
 		end
 
-	set_display_onces (b: BOOLEAN) is
-			-- Should onces be displayed in the future?
-		do
-			display_onces := b
-		end
+--	set_display_onces (b: BOOLEAN) is
+--			-- Should onces be displayed in the future?
+--		do
+--			display_onces := b
+--		end
+
+--	set_display_constants (b: BOOLEAN) is
+--			-- Should constants be displayed in the future?
+--		do
+--			display_constants := b
+--		end
 
 feature -- Properties change
 
@@ -336,11 +369,17 @@ feature -- Properties change
 				row_attributes_filled := False
 				reset_special_attributes_values
 				if row /= Void and display_attributes then
+						-- We remove the dummy item.
+					if onces_row /= Void then
+						grid_remove_and_clear_subrows_from_until (row, onces_row)
+					else
+						grid_remove_and_clear_subrows_from (row)
+					end
 					fill_attributes (row)
+					if old_r <= g.row_count then
+						g.set_first_visible_row (old_r)
+					end
 				end
-			end
-			if old_r <= g.row_count then
-				g.set_first_visible_row (old_r)
 			end
 		end
 
@@ -419,7 +458,7 @@ feature -- Graphical computation
 			grid_cell_set_text (glab, v)
 		end
 
-	set_address (v: STRING) is
+	set_address (v: DBG_ADDRESS) is
 		require
 			is_attached_to_row: is_attached_to_row
 		local
@@ -430,7 +469,11 @@ feature -- Graphical computation
 				glab := new_cell_address
 				set_cell (Col_address_index, glab)
 			end
-			grid_cell_set_text (glab, v)
+			if v /= Void then
+				grid_cell_set_text (glab, v.output)
+			else
+				grid_cell_set_text (glab, Void)
+			end
 		end
 
 	set_value (v: STRING_GENERAL) is
@@ -608,13 +651,22 @@ feature {NONE} -- Implementation
 feature {NONE} -- Filling
 
 	onces_row: EV_GRID_ROW
+			-- Row to hold the "once" features data
+
+	constants_row: EV_GRID_ROW
+			-- Row to hold the "constant" features data
 
 	row_items_filled: BOOLEAN
 			-- are the items (attributes and onces row) already filled ?
+
 	row_attributes_filled: BOOLEAN
 			-- Attributes values already filled ?
+
 	row_onces_filled: BOOLEAN
 			-- Onces values already filled ?
+
+	row_constants_filled: BOOLEAN
+			-- Constant values already filled ?
 
 	on_row_expand (a_row: EV_GRID_ROW) is
 			-- Action performed when row is expanding
@@ -623,11 +675,18 @@ feature {NONE} -- Filling
 				display := True
 				if not row_items_filled then
 					fill_items (row)
+				elseif not row_attributes_filled then
+					fill_attributes (row)
 				end
 			elseif a_row = onces_row then
 				display_onces := True
 				if not row_onces_filled then
 					fill_onces (onces_row)
+				end
+			elseif a_row = constants_row then
+				display_constants := True
+				if not row_constants_filled then
+					fill_constants (constants_row)
 				end
 			end
 		end
@@ -639,19 +698,19 @@ feature {NONE} -- Filling
 				display := False
 			elseif a_row = onces_row then
 				display_onces := False
+			elseif a_row = constants_row then
+				display_constants := False
 			end
 		end
 
 	on_slice_double_click is
 			-- Action triggered by double clicking on the slice limit row
 		local
-			os: OBJECT_STONE
 			cmd: ES_OBJECTS_GRID_SLICES_CMD
 		do
 			cmd := parent_grid.slices_cmd
 			if cmd /= Void then
-				os ?= item_stone (col_value_index)
-				if os /= Void then
+				if {os: OBJECT_STONE} item_stone (col_value_index) then
 					cmd.drop_object_stone (os)
 				end
 			end
@@ -670,10 +729,12 @@ feature {NONE} -- Filling
 			grid_remove_and_clear_subrows_from (a_row)
 			grid := a_row.parent
 
+				--| Attributes
 			if display_attributes then
 				fill_attributes (a_row)
 			end
 
+				--| Onces
 			if has_once_routine then
 				glab := folder_label_item (Interface_names.l_Once_routines)
 				grid_cell_set_pixmap (glab, pixmaps.icon_pixmaps.feature_once_icon)
@@ -688,6 +749,22 @@ feature {NONE} -- Filling
 				onces_row.collapse_actions.extend (agent on_row_collapse (onces_row))
 				onces_row.ensure_expandable
 			end
+				--| Constants			
+			if has_constant then
+				glab := folder_label_item (Interface_names.l_Constant_features)
+				grid_cell_set_pixmap (glab, pixmaps.icon_pixmaps.feature_once_icon)
+
+				i := a_row.index + a_row.subrow_count_recursive + 1
+				grid.insert_new_row_parented (i, a_row)
+				constants_row := grid.row (i)
+				constants_row.set_item (1, glab)
+
+					--| Add expand actions.
+				constants_row.expand_actions.extend (agent on_row_expand (constants_row))
+				constants_row.collapse_actions.extend (agent on_row_collapse (constants_row))
+				constants_row.ensure_expandable
+			end
+
 			if a_row.is_expandable and then not a_row.is_expanded then
 				a_row.expand
 			end
@@ -721,12 +798,6 @@ feature {NONE} -- Filling
 			dcl: like object_dynamic_class
 		do
 			row_attributes_filled := True
-				-- We remove the dummy item.
-			if onces_row /= Void then
-				grid_remove_and_clear_subrows_from_until (a_row, onces_row)
-			else
-				grid_remove_and_clear_subrows_from (a_row)
-			end
 			vlist := sorted_attributes_values
 			if vlist /= Void and then not vlist.is_empty then
 					--| better being sure it won't happen |--
@@ -849,6 +920,70 @@ feature {NONE} -- Filling
 			end
 		end
 
+	fill_constants (a_row: EV_GRID_ROW) is
+			-- Fill constants_row with the constant related to Current
+		require
+			a_row = constants_row
+			constants_not_filled_yet: not row_constants_filled
+			application_is_executing: debugger_manager.application_is_executing
+		local
+			flist: LIST [E_CONSTANT]
+			c: E_CONSTANT
+			csts: ARRAYED_LIST [ABSTRACT_DEBUG_VALUE]
+			cdv: ABSTRACT_DEBUG_VALUE
+			r: INTEGER
+			grid: EV_GRID
+			deval: DBG_EVALUATOR
+		do
+			row_constants_filled := True
+
+			-- We remove the dummy item.
+			grid_remove_and_clear_subrows_from (a_row)
+			flist := sorted_constant_features
+			deval := debugger_manager.dbg_evaluator
+			check
+				flist /= Void and then not flist.is_empty
+			end
+
+			if not flist.is_empty then
+				create csts.make (flist.count)
+				from
+					flist.start
+				until
+					flist.after
+				loop
+					c := flist.item
+					if {ci: CONSTANT_I} c.associated_feature_i then
+						cdv := deval.value_from_constant_i (ci)
+						if cdv /= Void then
+							cdv.set_name (flist.item.name)
+							csts.extend (cdv)
+						end
+					end
+					flist.forth
+				end
+				if not csts.is_empty then
+					from
+						grid := a_row.parent
+						r := a_row.subrow_count + 1
+						a_row.insert_subrows (csts.count, r)
+						csts.start
+						r := a_row.index + r
+					until
+						csts.after
+					loop
+						attach_debug_value_from_line_to_grid_row (grid.row (r), csts.item, Current, Void)
+						csts.forth
+						r := r + 1
+					end
+				end
+			end
+			if a_row.is_expandable and then not a_row.is_expanded then
+				a_row.expand
+			end
+		end
+
+
 	attach_debug_value_from_line_to_grid_row (a_row: EV_GRID_ROW; dv: ABSTRACT_DEBUG_VALUE; a_line: ES_OBJECTS_GRID_OBJECT_LINE; a_title: STRING_GENERAL) is
 			-- attach `dv' to row `a_row'
 		require
@@ -925,10 +1060,14 @@ feature {NONE} -- Agent filling
 			list_cursor /= Void
 		local
 			lrow: EV_GRID_ROW
-			vitem: DEBUG_BASIC_VALUE [INTEGER]
+			n: STRING
+			v_item: ABSTRACT_DEBUG_VALUE
+			v_class_id,
+			v_feature_id: DEBUG_BASIC_VALUE [INTEGER]
+			v_is_precompiled: DEBUG_BASIC_VALUE [BOOLEAN]
+			cl_id, fe_id: INTEGER
+			v_nb: INTEGER
 			grid: EV_GRID
-			ag_ct_id: INTEGER
-			ag_fe_id: INTEGER
 			ag_fe: E_FEATURE
 			r: INTEGER
 			glab: EV_GRID_LABEL_ITEM
@@ -936,43 +1075,62 @@ feature {NONE} -- Agent filling
 		do
 			grid := a_row.parent
 			from
+				v_nb := 0
 				list_cursor.start
 			until
-				list_cursor.after or (ag_ct_id > 0 and ag_fe_id > 0)
+				list_cursor.after or (v_nb >= 3)
 			loop
-				vitem ?= list_cursor.item
-				if
-					vitem /= Void
-					and then vitem.name /= Void
-				then
-					if ag_ct_id = 0 and then vitem.name.is_equal ("class_id") then
-						ag_ct_id := vitem.value + 1
-					elseif ag_fe_id = 0 and then vitem.name.is_equal ("feature_id") then
-						ag_fe_id := vitem.value
+				v_item := list_cursor.item
+				if v_item /= Void then
+					n := v_item.name
+					if n /= Void and then n.count > 3 then
+						if {vi: DEBUG_BASIC_VALUE [INTEGER]} v_item then
+							if vi.name /= Void then
+								if v_class_id = Void and n.item (1) = 'c' and then n.is_equal ("class_id") then
+									v_nb := v_nb + 1
+									v_class_id := vi
+								elseif v_feature_id = Void and n.item (1) = 'f' and then n.is_equal ("feature_id") then
+									v_nb := v_nb + 1
+									v_feature_id := vi
+								end
+							end
+						elseif {vb: DEBUG_BASIC_VALUE [BOOLEAN]} list_cursor.item then
+							if v_is_precompiled = void and n.item (1) = 'i' and then n.is_equal ("is_precompiled") then
+								v_nb := v_nb + 1
+								v_is_precompiled := vb
+							end
+						end
 					end
 				end
 				list_cursor.forth
 			end
+			if v_nb >= 3 then
+				cl_id := v_class_id.value
+				fe_id := v_feature_id.value
+				if cl_id > 0 and fe_id > 0 then
+					if v_is_precompiled.value then
+						ag_fe := agent_feature_for_origin_and_offset (cl_id, fe_id)
+					else
+						ag_fe := agent_feature_for_class_and_type_id (cl_id + 1, fe_id) --|cl_id: runtime value + 1: to get the eiffel compiler id
+					end
+					if ag_fe /= Void then
+						ag_fe := real_feature (ag_fe)
+						r := 1
+						a_row.insert_subrow (r)
+						lrow := a_row.subrow (r)
 
-			if ag_ct_id > 0 and ag_fe_id > 0 then
-				ag_fe := agent_feature_for_class_and_type_id (ag_ct_id, ag_fe_id)
-			end
-			if ag_fe /= Void then
-				ag_fe := real_feature (ag_fe)
-				r := 1
-				a_row.insert_subrow (r)
-				lrow := a_row.subrow (r)
+						create glab.make_with_text ("Agent")
+						glab.set_pixmap (pixmaps.mini_pixmaps.general_search_icon)
+						lrow.set_item (Col_name_index, glab)
 
-				create glab.make_with_text ("Agent")
-				glab.set_pixmap (pixmaps.mini_pixmaps.general_search_icon)
-				lrow.set_item (Col_name_index, glab)
-
-				create gf
-				gf.set_pixmap (pixmap_from_e_feature (ag_fe))
-				gf.set_overriden_fonts (label_font_table, label_font_height)
-				Grid_feature_style.set_e_feature (ag_fe)
-				gf.set_text_with_tokens (Grid_feature_style.text)
-				lrow.set_item (Col_value_index, gf)
+						create gf
+						gf.set_pixmap (pixmap_from_e_feature (ag_fe))
+						gf.set_overriden_fonts (label_font_table, label_font_height)
+						Grid_feature_style.set_e_feature (ag_fe)
+						gf.set_text_with_tokens (Grid_feature_style.text)
+						lrow.set_item (Col_value_index, gf)
+					end
+				end
 			end
 		end
 
@@ -1002,9 +1160,9 @@ feature {NONE} -- Implementation
 		end
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -1015,19 +1173,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

@@ -69,7 +69,7 @@ feature -- Access
 	e_feature: E_FEATURE
 			-- Feature associated with Current
 
-	overload_name: STRING
+	overload_name: STRING_32
 			-- Overload name
 
 	class_c: CLASS_C
@@ -181,7 +181,8 @@ feature -- Setting
 				create overload_name.make_from_string (a_name)
 			end
 		ensure
-			overload_name_is_set: (a_name = Void implies overload_name = Void) and (a_name /= Void implies overload_name.is_equal (a_name))
+			overload_name_is_set: (a_name = Void implies overload_name = Void) and
+								(a_name /= Void implies overload_name.is_equal (a_name))
 		end
 
 	set_e_feature (a_feature: like e_feature) is
@@ -372,10 +373,10 @@ feature -- Setting
 
 feature{NONE} -- Implementation
 
-	invariant_name: STRING is
+	invariant_name: STRING_32 is
 			-- Name of current item
 		once
-			Result := "invariant"
+			create Result.make_from_string ("invariant")
 		ensure then
 			good_result: Result /= Void and then Result.is_equal ("invariant")
 		end
@@ -427,7 +428,7 @@ feature{NONE} -- Implementation
 		local
 			l_comments: EIFFEL_COMMENTS
 			l_tokens: LINKED_LIST [EDITOR_TOKEN]
-			l_comment: STRING
+			l_comment: STRING_32
 			l_feature_text_formatter: DOTNET_FEAT_TEXT_FORMATTER_DECORATOR
 			l_classi: CLASS_I
 			l_consumed_type: CONSUMED_TYPE
@@ -472,8 +473,8 @@ feature{NONE} -- Implementation
 						l_line.after
 					loop
 						if l_line.index = 1 and then l_line.item.is_text then
-							if l_line.item.image.substring (1, 2).is_equal (once "--") then
-								l_line.item.image.keep_tail (l_line.item.image.count - 2)
+							if l_line.item.wide_image.substring (1, 2).is_equal (once "--") then
+								l_line.item.wide_image.keep_tail (l_line.item.wide_image.count - 2)
 							end
 						end
 						l_line.item.update_width

@@ -10,8 +10,9 @@ class CREATE_FEAT
 inherit
 	CREATE_INFO
 		redefine
-			created_in, generate_cid, make_gen_type_byte_code,
-			generate_cid_array, generate_cid_init, is_explicit
+			created_in, generate_cid, make_type_byte_code,
+			generate_cid_array, generate_cid_init, is_explicit,
+			generate
 		end
 
 	SHARED_TABLE
@@ -73,17 +74,37 @@ feature -- Access
 
 feature -- C code generation
 
+	generate is
+			-- Generate creation type
+		local
+			buffer: GENERATION_BUFFER
+		do
+			buffer := context.buffer
+			buffer.put_string ("RTLNSMART(eif_non_attached_type(")
+			generate_type_id (buffer, context.final_mode, 0)
+			buffer.put_two_character (')', ')')
+		end
+
 	analyze is
 			-- We need Dftype(Current).
 		local
 			entry: POLY_TABLE [ENTRY]
+			l_type: TYPE_A
 		do
 			if context.final_mode then
 				entry := Eiffel_table.poly_table (routine_id)
-				if not entry.has_one_type or else is_generic then
+				if not entry.has_one_type then
 						-- We are in polymorphic case
 					context.mark_current_used
 					context.add_dftype_current
+				else
+					l_type := entry.first.type.deep_actual_type
+					if {l_gen_type: GEN_TYPE_A} l_type then
+						context.mark_current_used
+						context.add_dftype_current
+					elseif {l_formal: FORMAL_A} l_type then
+						context.add_dftype_current
+					end
 				end
 			else
 				context.mark_current_used
@@ -96,7 +117,7 @@ feature -- C code generation
 			table: POLY_TABLE [ENTRY]
 			table_name: STRING
 			rout_info: ROUT_INFO
-			gen_type: GEN_TYPE_A
+			l_type: TYPE_A
 		do
 			if final_mode then
 				table := Eiffel_table.poly_table (routine_id)
@@ -110,11 +131,17 @@ feature -- C code generation
 					buffer.put_integer (0)
 				elseif table.has_one_type then
 						-- There is a table, but with only one type
-					gen_type ?= table.first.type
+					l_type := table.first.type.deep_actual_type
 
-					if gen_type /= Void then
+					if l_type.has_generics then
 						buffer.put_string ("typres")
 						buffer.put_natural_32 (a_level)
+					elseif {l_formal: FORMAL_A} l_type then
+						buffer.put_string ("eif_gen_param_id(")
+						context.generate_current_dftype
+						buffer.put_two_character (',', ' ')
+						buffer.put_integer (l_formal.position)
+						buffer.put_character (')')
 					else
 						buffer.put_type_id (table.first.feature_type_id)
 					end
@@ -122,9 +149,7 @@ feature -- C code generation
 						-- Attribute is polymorphic
 					table_name := Encoder.type_table_name (routine_id)
 
-					buffer.put_string ("RTFCID2(")
-					buffer.put_integer (context.context_class_type.type.generated_id (context.final_mode, Void))
-					buffer.put_character (',')
+					buffer.put_string ("eif_final_id(")
 					buffer.put_string (table_name)
 					buffer.put_character (',')
 					buffer.put_string (table_name)
@@ -233,21 +258,9 @@ feature -- Genericity
 		do
 			if context.final_mode then
 				table := Eiffel_table.poly_table (routine_id)
-				Result := table.has_one_type
+				Result := table.has_one_type and then table.first.type.deep_actual_type.is_explicit
 			else
 				Result := False
-			end
-		end
-
-	generate_gen_type_conversion (a_level: NATURAL) is
-
-		local
-			gen_type : GEN_TYPE_A
-		do
-			gen_type ?= type_to_create
-
-			if gen_type /= Void then
-				context.generate_gen_type_conversion (gen_type, a_level)
 			end
 		end
 
@@ -257,7 +270,7 @@ feature -- Genericity
 			table: POLY_TABLE [ENTRY]
 			table_name: STRING
 			rout_info: ROUT_INFO
-			gen_type: GEN_TYPE_A
+			l_type: TYPE_A
 		do
 			if context.final_mode then
 				table := Eiffel_table.poly_table (routine_id)
@@ -272,10 +285,10 @@ feature -- Genericity
 					buffer.put_character (',')
 				elseif table.has_one_type then
 						-- There is a table, but with only one type
-					gen_type ?= table.first.type
+					l_type := table.first.type.deep_actual_type
 
-					if gen_type /= Void then
-						gen_type.generate_cid (buffer, final_mode, True, context.context_class_type.type)
+					if l_type.has_generics or l_type.is_formal then
+						l_type.generate_cid (buffer, final_mode, False, context.context_class_type.type)
 					else
 						buffer.put_type_id (table.first.feature_type_id)
 						buffer.put_character (',')
@@ -284,9 +297,7 @@ feature -- Genericity
 						-- Attribute is polymorphic
 					table_name := Encoder.type_table_name (routine_id)
 
-					buffer.put_string ("RTFCID2(")
-					buffer.put_integer (context.context_class_type.type.generated_id (context.final_mode, Void))
-					buffer.put_character (',')
+					buffer.put_string ("eif_final_id(")
 					buffer.put_string (table_name)
 					buffer.put_character (',')
 					buffer.put_string (table_name)
@@ -336,7 +347,7 @@ feature -- Genericity
 		local
 			dummy : INTEGER
 			table: POLY_TABLE [ENTRY]
-			gen_type: GEN_TYPE_A
+			l_type: TYPE_A
 		do
 			if context.final_mode then
 				table := Eiffel_table.poly_table (routine_id)
@@ -353,11 +364,11 @@ feature -- Genericity
 					dummy := idx_cnt.next
 				elseif table.has_one_type then
 						-- There is a table, but with only one type
-					gen_type ?= table.first.type
+					l_type := table.first.type.deep_actual_type
 
-					if gen_type /= Void then
-						gen_type.generate_cid_array (buffer,
-												final_mode, True, idx_cnt, context.context_class_type.type)
+					if l_type.has_generics or l_type.is_formal then
+						l_type.generate_cid_array (buffer,
+												final_mode, False, idx_cnt, context.context_class_type.type)
 					else
 						buffer.put_type_id (table.first.feature_type_id)
 						buffer.put_character (',')
@@ -380,7 +391,7 @@ feature -- Genericity
 			table: POLY_TABLE [ENTRY]
 			table_name: STRING
 			rout_info: ROUT_INFO
-			gen_type: GEN_TYPE_A
+			l_type: TYPE_A
 		do
 			if context.final_mode then
 				table := Eiffel_table.poly_table (routine_id)
@@ -392,11 +403,10 @@ feature -- Genericity
 					dummy := idx_cnt.next
 					dummy := idx_cnt.next
 				elseif table.has_one_type then
-						-- There is a table, but with only one type
-					gen_type ?= table.first.type
+					l_type := table.first.type.deep_actual_type
 
-					if gen_type /= Void then
-						gen_type.generate_cid_init (buffer, final_mode, True, idx_cnt, a_level)
+					if l_type.has_generics or l_type.is_formal then
+						l_type.generate_cid_init (buffer, final_mode, False, idx_cnt, a_level)
 					else
 						dummy := idx_cnt.next
 					end
@@ -408,9 +418,7 @@ feature -- Genericity
 					buffer.put_natural_32 (a_level)
 					buffer.put_character ('[')
 					buffer.put_integer (idx_cnt.value)
-					buffer.put_string ("] = RTFCID2(")
-					buffer.put_integer (context.context_class_type.type.generated_id (context.final_mode, Void))
-					buffer.put_character (',')
+					buffer.put_string ("] = eif_final_id(")
 					buffer.put_string (table_name)
 					buffer.put_character (',')
 					buffer.put_string (table_name)
@@ -439,7 +447,7 @@ feature -- Genericity
 					Compilation_modes.is_precompiling or
 					context.current_type.associated_class.is_precompiled
 				then
-					buffer.put_string ("] = RTID(RTWPCT(")
+					buffer.put_string ("] = RTWPCT(")
 					buffer.put_static_type_id (context.class_type.static_type_id)
 					buffer.put_string (gc_comma)
 					rout_info := System.rout_info_table.item (routine_id)
@@ -447,7 +455,7 @@ feature -- Genericity
 					buffer.put_string (gc_comma)
 					buffer.put_integer (rout_info.offset)
 				else
-					buffer.put_string ("] = RTID(RTWCT(")
+					buffer.put_string ("] = RTWCT(")
 					buffer.put_static_type_id (context.class_type.static_type_id)
 					buffer.put_string (gc_comma)
 					buffer.put_integer (feature_id)
@@ -455,12 +463,12 @@ feature -- Genericity
 
 				buffer.put_string (gc_comma)
 				context.Current_register.print_register
-				buffer.put_string ("));")
+				buffer.put_two_character (')', ';')
 				dummy := idx_cnt.next
 			end
 		end
 
-	make_gen_type_byte_code (ba : BYTE_ARRAY) is
+	make_type_byte_code (ba : BYTE_ARRAY) is
 
 		local
 			rout_info: ROUT_INFO
@@ -478,7 +486,7 @@ feature -- Genericity
 			end
 		end
 
-	type_to_create : CL_TYPE_A is
+	type_to_create: CL_TYPE_A is
 
 		local
 			table : POLY_TABLE [ENTRY]
@@ -486,7 +494,7 @@ feature -- Genericity
 			if context.final_mode then
 				table := Eiffel_table.poly_table (routine_id)
 				if table.has_one_type then
-					Result ?= table.first.type
+					Result ?= table.first.type.deep_actual_type
 				end
 			end
 		end

@@ -27,6 +27,9 @@ inherit
 		end
 
 	EV_GTK_DEPENDENT_APPLICATION_IMP
+		rename
+			sleep as nano_sleep
+		end
 
 	EV_GTK_EVENT_STRINGS
 
@@ -40,6 +43,7 @@ feature {NONE} -- Initialization
 		local
 			locale_str: STRING
 			l_image: POINTER
+			l_supports_composite_symbol: POINTER
 		do
 			base_make (an_interface)
 
@@ -97,11 +101,30 @@ feature {NONE} -- Initialization
 				if not is_display_remote then
 					{EV_GTK_EXTERNALS}.object_unref (l_image)
 				end
+
+					-- Check whether display supports transparency
+				l_supports_composite_symbol := gdk_display_supports_composite_symbol
+				if l_supports_composite_symbol /= default_pointer then
+					is_display_alpha_capable := gdk_display_supports_composite_call (l_supports_composite_symbol, {EV_GTK_EXTERNALS}.gdk_display_get_default)
+				end
 			else
 				-- We are unable to launch the gtk toolkit, probably due to a DISPLAY issue.
 				print ("EiffelVision application could not launch, check DISPLAY environment variable%N")
 				die (0)
 			end
+		end
+
+	gdk_display_supports_composite_symbol: POINTER
+			-- Symbol for `gdk_display_supports_composite'
+		once
+			Result := symbol_from_symbol_name ("gdk_display_supports_composite")
+		end
+
+	gdk_display_supports_composite_call (a_function: POINTER; a_display: POINTER): BOOLEAN
+		external
+			"C inline use <gtk/gtk.h>"
+		alias
+			"return (FUNCTION_CAST(gboolean, (GdkDisplay*)) $a_function)((GdkDisplay*) $a_display);"
 		end
 
 feature {NONE} -- Event loop
@@ -119,6 +142,9 @@ feature {NONE} -- Event loop
 		end
 
 feature {EV_ANY_I} -- Implementation
+
+	is_display_alpha_capable: BOOLEAN
+			-- Is application display capable of displaying transparent windows?
 
 	is_display_remote: BOOLEAN
 			-- Is application display remote?
@@ -431,18 +457,18 @@ feature {EV_ANY_I} -- Implementation
 						debug ("GDK_EVENT")
 							print ("GDK_CONFIGURE%N")
 						end
-						l_top_level_window_imp ?= eif_object_from_gtk_object (event_widget)
-						if l_top_level_window_imp /= Void then
+						l_gtk_window_imp ?= eif_object_from_gtk_object (event_widget)
+						if l_gtk_window_imp /= Void then
 							l_call_event := False
 								-- Make sure internal gtk structures are updated before firing resize event(s)
 							{EV_GTK_EXTERNALS}.gtk_main_do_event (gdk_event)
-							l_top_level_window_imp.on_size_allocate (
+							l_gtk_window_imp.on_size_allocate (
 								{EV_GTK_EXTERNALS}.gdk_event_configure_struct_x (gdk_event),
 								{EV_GTK_EXTERNALS}.gdk_event_configure_struct_y (gdk_event),
 								{EV_GTK_EXTERNALS}.gdk_event_configure_struct_width (gdk_event),
 								{EV_GTK_EXTERNALS}.gdk_event_configure_struct_height (gdk_event)
 							)
-							l_top_level_window_imp := Void
+							l_gtk_window_imp := Void
 						end
 					when GDK_MAP then
 						debug ("GDK_EVENT")
@@ -457,7 +483,7 @@ feature {EV_ANY_I} -- Implementation
 						debug ("GDK_EVENT")
 							print ("GDK_UNMAP%N")
 						end
-						l_gtk_widget_imp ?= eif_object_from_gtk_object (l_grab_widget)
+						l_gtk_widget_imp ?= eif_object_from_gtk_object (event_widget)
 						if l_gtk_widget_imp /= Void then
 							if currently_shown_control = l_gtk_widget_imp.interface then
 								set_currently_shown_control (Void)
@@ -991,7 +1017,7 @@ feature -- Basic operation
 	sleep (msec: INTEGER) is
 			-- Wait for `msec' milliseconds and return.
 		do
-			usleep (msec * 1000)
+			nano_sleep ({INTEGER_64} 1000000 * msec)
 		end
 
 	destroy is
@@ -1363,11 +1389,6 @@ feature {NONE} -- External implementation
 			-- `a_mode' = 0 means no log messages, 1 = messages, 2 = messages with exceptions.
 		external
 			"C (EIF_INTEGER) | %"ev_c_util.h%""
-		end
-
-	usleep (micro_seconds: INTEGER) is
-		external
-			"C | <unistd.h>"
 		end
 
 	gtk_init is

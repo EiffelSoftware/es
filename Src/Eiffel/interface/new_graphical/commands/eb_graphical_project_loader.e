@@ -136,6 +136,7 @@ feature -- Settings
 			create l_dialog
 			l_dialog.set_process (l_prc_launcher)
 			l_dialog.set_title (interface_names.t_precompile_progress)
+			l_prc_launcher.redirect_input_to_stream
 			l_prc_launcher.redirect_output_to_agent (agent l_dialog.append_in_gui_thread)
 			l_prc_launcher.redirect_error_to_same_as_output
 			l_prc_launcher.set_on_exit_handler (agent l_dialog.hide_in_gui_thread)
@@ -377,7 +378,12 @@ feature {NONE} -- Error reporting
 				-- errors or conversion.
 			output_manager.display_system_info
 
-			window_manager.last_focused_development_window.synchronize
+			if window_manager.development_windows_count = 1 then
+				-- We only do this for frist window (not `last_focused_development_window') since
+				-- if we have multi window, `synchronize' will put the stone which belong to the frist window to the last window.
+				window_manager.development_windows.first.synchronize
+			end
+
 		end
 
 	report_precompilation_error is
@@ -599,14 +605,18 @@ feature {NONE} -- Actions
 		local
 			l_show: BOOLEAN
 		do
-			l_show := delete_status_prompt = Void
-			if l_show then
-				delete_status_prompt := create_delete_status_prompt
-				delete_status_prompt.dialog.set_minimum_width (600)
-			end
-			delete_status_prompt.set_text ((create {ISE_DIRECTORY_UTILITIES}).path_ellipsis (deleted_files.first, path_ellipsis_width))
-			if l_show then
-				delete_status_prompt.show (parent_window)
+			if not is_deletion_cancelled then
+					-- Check a cancellation request hasn't been made, because if so then
+					-- there is no need to report status any longer.
+				l_show := delete_status_prompt = Void
+				if l_show then
+					delete_status_prompt := create_delete_status_prompt
+					delete_status_prompt.dialog.set_minimum_width (600)
+				end
+				delete_status_prompt.set_text ((create {ISE_DIRECTORY_UTILITIES}).path_ellipsis (deleted_files.first, path_ellipsis_width))
+				if l_show then
+					delete_status_prompt.show (parent_window)
+				end
 			end
 			ev_application.process_events
 		end

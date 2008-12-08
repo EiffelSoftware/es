@@ -78,12 +78,10 @@ feature -- Status Report
 
 	is_explicit: BOOLEAN is
 			-- Is type fixed at compile time without anchors or formals?
-		local
-			table: POLY_TABLE [ENTRY]
 		do
 			if system.in_final_mode then
-				table := Eiffel_table.poly_table (routine_id)
-				Result := table.has_one_type
+				initialize_info (shared_create_info)
+				Result := shared_create_info.is_explicit
 			else
 				Result := False
 			end

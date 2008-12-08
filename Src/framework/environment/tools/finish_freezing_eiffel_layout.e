@@ -24,7 +24,7 @@ feature -- Directories
 			is_valid_environment: is_valid_environment
 			windows: {PLATFORM}.is_windows
 		once
-			Result ?= config_path.twin
+			Result := config_path.twin
 			Result.extend_from_array (<<eiffel_platform, eiffel_c_compiler>>)
 		ensure
 			not_result_is_empty: not Result.is_empty
@@ -45,9 +45,9 @@ feature -- Files
 			Result.add_extension ("eif")
 
 			if is_user_files_supported then
-				l_user := user_priority_file_name (Result)
-				if l_user /= Void and (create {RAW_FILE}.make (l_user)).exists then
-					Result ?= l_user
+				l_user := user_priority_file_name (Result, True)
+				if l_user /= Void then
+					Result := l_user
 				end
 			end
 		ensure

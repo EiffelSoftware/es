@@ -12,6 +12,8 @@ class
 inherit
 	ANY
 
+	DEBUGGER_EXPORTER
+
 	EB_CONSTANTS
 		export
 			{NONE} all
@@ -56,7 +58,7 @@ feature {NONE} -- Initialization
 			set_expression_mode
 		end
 
-	make_with_expression_text (t: STRING) is
+	make_with_expression_text (t: STRING_32) is
 			-- Initialize `Current' and set the expression string to `t'.
 		require
 			valid_string: t /= Void and not t.is_empty
@@ -79,7 +81,7 @@ feature {NONE} -- Initialization
 			disable_all
 		end
 
-	make_with_object (oa: STRING) is
+	make_with_object (oa: DBG_ADDRESS) is
 			-- Initialize `Current' and force the creation of an object-related expression.
 			-- `oa' is the address of the object.
 		require
@@ -89,12 +91,12 @@ feature {NONE} -- Initialization
 			stick_with_current_object := True
 			make
 			on_object_radio.enable_select
-			address_field.set_text (oa)
+			address_field.set_text (oa.as_string)
 			set_expression_mode
 			disable_all_but_object_radios
 		end
 
-	make_as_named_object (oa: STRING; on: STRING_32) is
+	make_as_named_object (oa: DBG_ADDRESS; on: STRING_32) is
 			-- Initialize `Current' and force the creation of an object-related expression.
 			-- `oa' is the address of the object.
 			-- `on' is a name for this object
@@ -106,13 +108,13 @@ feature {NONE} -- Initialization
 			stick_with_current_object := True
 			make
 			as_object_radio.enable_select
-			address_field.set_text (oa)
+			address_field.set_text (oa.as_string)
 			object_name_field.set_text (on)
 			set_object_name_mode
 			disable_all_but_object_radios
 		end
 
-	make_with_expression_on_object	(oa: STRING; a_exp: STRING) is
+	make_with_expression_on_object	(oa: DBG_ADDRESS; a_exp: STRING) is
 		require
 			application_stopped: Debugger_manager.safe_application_is_stopped
 			valid_address: oa /= Void and then Debugger_manager.application.is_valid_object_address (oa)
@@ -122,7 +124,7 @@ feature {NONE} -- Initialization
 			expression_field.set_text (a_exp)
 		end
 
-	make_with_named_object (oa: STRING; on: STRING_32; ac: CLASS_C) is
+	make_with_named_object (oa: DBG_ADDRESS; on: STRING_32; ac: CLASS_C) is
 			-- Initialize `Current' and force the creation of an object-related expression.
 			-- `oa' is the address of the object.
 			-- `on' is a name for this object.
@@ -136,7 +138,7 @@ feature {NONE} -- Initialization
 			on_object_context_class := ac
 			make
 			on_object_radio.enable_select
-			address_field.set_text (oa)
+			address_field.set_text (oa.as_string)
 			object_name_field.set_text (on)
 			set_expression_mode
 			disable_all_but_object_radios
@@ -155,18 +157,25 @@ feature {NONE} -- Initialization
 			-- Initialize `Current' based on `expr'.
 		require
 			valid_expression: expr /= Void
+		local
+			ctx: DBG_EXPRESSION_CONTEXT
+			addr: DBG_ADDRESS
 		do
-			if expr.on_class then
-				make_with_class (expr.context_class)
-			elseif expr.as_object then
-				make_as_named_object (expr.context_address, expr.name)
-			elseif expr.on_object then
-				make_with_object (expr.context_address)
+			ctx := expr.context
+			if ctx.on_class then
+				make_with_class (expr.context.associated_class)
+			elseif ctx.on_object then
+				addr := expr.context.associated_address
+				if expr.is_context_object then
+					make_as_named_object (addr, expr.name)
+				else
+					make_with_object (addr)
+				end
 			else
 				make_for_context
 			end
-			if expr.expression /= Void then
-				expression_field.set_text (expr.expression)
+			if expr.text /= Void then
+				expression_field.set_text (expr.text)
 			end
 			if expr.name /= Void then
 				object_name_field.set_text (expr.name)
@@ -212,8 +221,8 @@ feature {NONE} -- Graphical initialization and changes
 			context_radio.select_actions.extend (agent event_context_radio_selected)
 
 				--| Create and set up the text fields.
-			create class_field.make
-			create expression_field.make
+			create class_field
+			create expression_field
 			create address_field
 			create object_name_field
 
@@ -555,6 +564,7 @@ feature {NONE} -- Event handling
 			t: STRING
 			oe: STRING_32
 			do_not_close_dialog: BOOLEAN
+			add: DBG_ADDRESS
 		do
 			if modified_expression = Void then
 				if class_radio.is_selected then
@@ -567,9 +577,11 @@ feature {NONE} -- Event handling
 							--| First find the class given in `class_field'.
 						cl_i := Eiffel_universe.classes_with_name (t)
 						if cl_i.is_empty then
-							ci := Eiffel_universe.class_named (t, eiffel_system.root_cluster)
-							if ci /= Void then
-								cl := ci.compiled_class
+							if not eiffel_system.system.root_creators.is_empty then
+								ci := Eiffel_universe.class_named (t, eiffel_system.system.root_creators.first.cluster)
+								if ci /= Void then
+									cl := ci.compiled_class
+								end
 							end
 						elseif not cl_i.is_empty then
 							from
@@ -612,52 +624,53 @@ feature {NONE} -- Event handling
 						t := t.substring (3, t.count)
 					end
 					t.prepend ("0x")
+					create add.make_from_string (t)
 
 					if
 						Debugger_manager.safe_application_is_stopped
-						and then Debugger_manager.application.is_valid_object_address (t)
+						and then Debugger_manager.application.is_valid_object_address (add)
 					then
-						o := debugger_manager.object_manager.debugged_object (t, 0, 0)
+						o := debugger_manager.object_manager.debugged_object (add, 0, 0)
 						if as_object_radio.is_selected or else expression_field.text.is_empty then
-							create new_expression.make_as_object (o.dtype , o.object_address)
+							create new_expression.make_as_object (o.dynamic_class , o.object_address)
 							new_expression.set_name (object_name_field.text)
 						else
-							create new_expression.make_with_object (o, expression_field.text)
+							create new_expression.make_with_object (o.dynamic_class, o.object_address, expression_field.text)
 						end
 						if new_expression.syntax_error_occurred then
 							set_focus (expression_field)
 							prompts.show_error_prompt (Warning_messages.w_Syntax_error_in_expression (expression_field.text.as_string_8), dialog, Void)
 						else
 							check debugger_manager.application_status /= Void end
-							Debugger_manager.application_status.keep_object (t)
+							Debugger_manager.application_status.keep_object (add)
 						end
 					else
 						set_focus (address_field)
 						prompts.show_error_prompt (Warning_messages.w_Invalid_address (t), dialog, Void)
 					end
 				else
-					create new_expression.make_for_context (expression_field.text)
+					create new_expression.make_with_context (expression_field.text)
 					if new_expression.syntax_error_occurred then
 						set_focus (expression_field)
 						prompts.show_error_prompt (Warning_messages.w_Syntax_error_in_expression (expression_field.text), dialog, Void)
 					end
 				end
 			else
-				if as_object_radio.is_selected and modified_expression.on_object then
+				if as_object_radio.is_selected and modified_expression.context.on_object then
 						--| only the name may change
 					modified_expression.set_name (object_name_field.text)
-					modified_expression.enable_as_object
+					modified_expression.is_context_object := True
 				else
-					if on_object_radio.is_selected and modified_expression.as_object then
+					if on_object_radio.is_selected and modified_expression.is_context_object then
 							--| In case, we decide to evaluate on the object
 							--| instead of pointing the object
-						modified_expression.disable_as_object
+						modified_expression.is_context_object := False
 					end
-					oe := modified_expression.expression
-					modified_expression.set_expression (expression_field.text)
+					oe := modified_expression.text
+					modified_expression.set_text (expression_field.text)
 					if modified_expression.syntax_error_occurred then
 							-- Restore the previous expression, since the new one is broken.
-						modified_expression.set_expression (oe)
+						modified_expression.set_text (oe)
 						set_focus (expression_field)
 						prompts.show_error_prompt (Warning_messages.w_Syntax_error_in_expression (expression_field.text), dialog, Void)
 						do_not_close_dialog := True

@@ -36,7 +36,7 @@ feature {NONE} -- Initialization
 	make_with_style (s: INTEGER) is
 			-- Initialize default values.
 		require
-			valid_style: s = editor_style or s = default_style or s = context_style
+			valid_style: s = editor_style or s = default_style
 		local
 			l_shortcut: MANAGED_SHORTCUT
 		do
@@ -54,14 +54,16 @@ feature -- Basic operations
 
 	execute is
 			-- Create a development window.
+		local
+			l_window: EB_DEVELOPMENT_WINDOW
 		do
 			inspect style
 			when default_style then
 				window_manager.create_window
+				l_window := window_manager.last_created_window
+				window_manager.load_window_session_data (l_window)
 			when editor_style then
 				window_manager.create_editor_window
-			when context_style then
-				window_manager.create_context_window
 			end
 		end
 
@@ -98,7 +100,6 @@ feature -- Access
 
 	default_style: INTEGER is 0
 	editor_style: INTEGER is 1
-	context_style: INTEGER is 2
 			-- The different styles that can be used to initialize `Current'.
 
 feature {NONE} -- Implementation
@@ -111,8 +112,6 @@ feature {NONE} -- Implementation
 				Result := Interface_names.m_New_window
 			when editor_style then
 				Result := Interface_names.m_New_editor
-			when context_style then
-				Result := Interface_names.m_New_context_tool
 			end
 		end
 
@@ -124,8 +123,6 @@ feature {NONE} -- Implementation
 				Result := pixmaps.icon_pixmaps.new_window_icon
 			when editor_style then
 				Result := pixmaps.icon_pixmaps.new_editor_icon
-			when context_style then
-				Result := Pixmaps.icon_new_context_tool
 			end
 		end
 
@@ -137,8 +134,6 @@ feature {NONE} -- Implementation
 				Result := pixmaps.icon_pixmaps.new_window_icon_buffer
 			when editor_style then
 				Result := pixmaps.icon_pixmaps.new_editor_icon_buffer
-			when context_style then
-				-- No pixel buffer for this case.
 			end
 		end
 
@@ -168,8 +163,6 @@ feature {NONE} -- Implementation
 				Result := Interface_names.b_New_window
 			when editor_style then
 				Result := Interface_names.b_New_editor
-			when context_style then
-				Result := Interface_names.b_New_context
 			end
 		end
 
@@ -194,8 +187,6 @@ feature {NONE} -- Implementation
 				Result := Interface_names.f_New_window
 			when editor_style then
 				Result := Interface_names.e_New_editor
-			when context_style then
-				Result := Interface_names.e_New_context_tool
 			end
 		end
 
@@ -208,8 +199,6 @@ feature {NONE} -- Implementation
 				Result := "New_window"
 			when editor_style then
 				Result := "New_editor"
-			when context_style then
-				Result := "New_context_window"
 			end
 		end
 

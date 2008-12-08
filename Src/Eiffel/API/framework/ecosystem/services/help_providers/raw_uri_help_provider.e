@@ -14,7 +14,8 @@ inherit
 			help_title
 		end
 
-	EXECUTION_ENVIRONMENT
+--inherit {NONE}
+	EB_SHARED_PREFERENCES
 		export
 			{NONE} all
 		end
@@ -36,64 +37,69 @@ feature -- Access
 		end
 
 	document_protocol: !STRING_32
-			-- Document protocol used by a URI to navigate to the help accessible from the provider.
+			-- <Precursor>
 		once
-			create Result.make_empty
-			Result.append ("URI")
+			create Result.make_from_string ("URI")
 		end
 
 	document_description: !STRING_32
-			-- Document short description
+			-- <Precursor>
 		once
-			create Result.make_empty
-			Result.append ("URI")
+			create Result.make_from_string ("URI")
 		end
 
 feature -- Querry
 
 	is_interface_usable: BOOLEAN = True
+			-- <Precursor>
 
 feature -- Basic operations
 
 	show_help (a_context_id: !STRING_GENERAL; a_section: ?HELP_CONTEXT_SECTION_I)
-			-- Attempts to show help for a specific context using the current help provider.
-			--
-			-- `a_context_id': The primary help provider's linkable context content id, used to locate a help document.
-			-- `a_section': An optional section to locate sub context in the to-be-shown help document.
+			-- <Precursor>
+		local
+			l_id: !STRING
 		do
-			if {lt_id: STRING_8}a_context_id.as_string_8.twin then
-				format_uris (lt_id)
-				launch_uri (lt_id)
+			l_id := a_context_id.as_string_8.as_attached
+			if l_id ~ a_context_id then
+				l_id := l_id.twin
 			end
+			format_uris (l_id)
+			launch_uri (l_id)
 		end
 
 feature {NONE} -- Basic operations
 
-	launch_uri (a_uri: !STRING_8)
+	launch_uri (a_uri: !STRING)
 			-- Launches uri in the default web browser.
 			--
 			-- `a_uri': The URI to launch in a web-browser.
 		require
 			not_a_url_is_empty: not a_uri.is_empty
 		local
-			l_cmd: STRING_8
+			l_url: !URI_LAUNCHER
+			l_error: ES_ERROR_PROMPT
+			l_default_browser: STRING_GENERAL
+			l_launched: BOOLEAN
 		do
-			if {PLATFORM}.is_windows then
-					-- Use start command to open a URI
-				l_cmd := "cmd /C start " + a_uri
+			create l_url
+			l_default_browser := preferences.misc_data.internet_browser_preference.string_value
+			if l_default_browser /= Void and then not l_default_browser.is_empty then
+				l_launched := l_url.launch_with_default_app (a_uri, l_default_browser)
 			else
-					-- Simple python script to open a URI, for now.
-				l_cmd := "python -c %"import webbrowser; webbrowser.open ('" + a_uri + "')%""
+				l_launched := l_url.launch (a_uri)
+					-- This check is here because it lets us know if the preference wasn't initialized.
+				check False end
 			end
-			if {l_process: !PROCESS} (create {PROCESS_FACTORY}).process_launcher (l_cmd, Void, Void) then
-				l_process.set_hidden (True)
-				l_process.launch
+			if not l_launched then
+				create l_error.make_standard ((create {ERROR_MESSAGES}).e_help_unable_to_launch)
+				l_error.show_on_active_window
 			end
 		end
 
 feature {NONE} -- Variable expansion
 
-	context_variables: !HASH_TABLE [STRING_8, STRING_8] is
+	context_variables: !HASH_TABLE [STRING, STRING]
 			-- A table of context variables, indexed by a variable name
 		do
 			Result := environment_variables
@@ -111,7 +117,7 @@ feature {NONE} -- Variable expansion
 			l_uri: !STRING
 			l_new_uri: !STRING
 			l_vars: like uri_variables
-			l_var: TUPLE [var: !STRING_8; start_i, end_i: INTEGER]
+			l_var: TUPLE [var: !STRING; start_i, end_i: INTEGER]
 			l_start_i, l_end_i: INTEGER
 			l_scanner_regex: like variable_scanner_regex
 			l_extractor_regex: like variable_extractor_regex
@@ -169,7 +175,7 @@ feature {NONE} -- Variable expansion
 			end
 		end
 
-	uri_variables (a_uri: !STRING_8; a_scanner: !RX_PCRE_MATCHER; a_var_extractor: !RX_PCRE_MATCHER): ?ARRAYED_LIST [TUPLE [var: !STRING_8; start_i, end_i: INTEGER]] is
+	uri_variables (a_uri: !STRING; a_scanner: !RX_PCRE_MATCHER; a_var_extractor: !RX_PCRE_MATCHER): ?ARRAYED_LIST [TUPLE [var: !STRING; start_i, end_i: INTEGER]]
 			-- Extracts variables from a URI and returns a list of variables with the start and end location
 			-- in characters.
 			--
@@ -180,18 +186,23 @@ feature {NONE} -- Variable expansion
 			not_a_uri_is_empty: not a_uri.is_empty
 			a_scanner_is_compiled: a_scanner.is_compiled
 			a_var_extractor_is_compiled: a_var_extractor.is_compiled
+		local
+			l_token_var: STRING
+			l_var: STRING
 		do
 			a_scanner.match (a_uri)
 			if a_scanner.has_matched then
 				create Result.make (5)
 				from a_scanner.first_match until not a_scanner.has_matched loop
-					if {l_token_var: !STRING_8} a_scanner.captured_substring (1) then
+					l_token_var := a_scanner.captured_substring (1)
+					if l_token_var /= Void then
 							-- Token variable located
 						if not l_token_var.is_empty then
 							a_var_extractor.match (l_token_var)
 							if a_var_extractor.has_matched then
 									-- Variable name extracted
-								if {l_var: !STRING_8} a_var_extractor.captured_substring (1) then
+								l_var := a_var_extractor.captured_substring (1)
+								if l_var /= Void then
 									Result.extend ([l_var, a_scanner.captured_start_position (1), a_scanner.captured_end_position (1)])
 								end
 							end
@@ -202,7 +213,7 @@ feature {NONE} -- Variable expansion
 			end
 		ensure
 			result_contains_attached_items: Result /= Void implies not Result.has (Void)
-			result_contains_valid_items: Result /= Void implies Result.for_all (agent (a_ia_item: TUPLE [var: !STRING_8; start_i, end_i: INTEGER]): BOOLEAN
+			result_contains_valid_items: Result /= Void implies Result.for_all (agent (a_ia_item: TUPLE [var: !STRING; start_i, end_i: INTEGER]): BOOLEAN
 				do
 					Result := not a_ia_item.var.is_empty and a_ia_item.start_i > 0 and a_ia_item.start_i < a_ia_item.end_i
 				end)
@@ -226,15 +237,13 @@ feature {NONE} -- Variable expansion
 			result_is_compiled: Result.is_compiled
 		end
 
-	environment_variables: !HASH_TABLE [STRING_8, STRING_8]
+	environment_variables: !HASH_TABLE [STRING, STRING]
 			-- All environment variables
 		once
-			if {lt_table: HASH_TABLE [STRING_8, STRING_8]}starting_environment_variables then
-				Result := lt_table
-			end
+			Result := (create {EXECUTION_ENVIRONMENT}).starting_environment_variables.as_attached
 		end
 
-	es_built_in_variables: !HASH_TABLE [STRING_8, STRING_8] is
+	es_built_in_variables: !HASH_TABLE [STRING, STRING]
 			-- ES built-in variables.
 		once
 			create Result.make (2)
@@ -243,7 +252,7 @@ feature {NONE} -- Variable expansion
 		end
 
 indexing
-	copyright: "Copyright (c) 1984-2007, Eiffel Software"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -268,7 +277,7 @@ indexing
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

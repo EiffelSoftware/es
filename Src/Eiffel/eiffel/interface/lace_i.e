@@ -1069,7 +1069,7 @@ feature {NONE} -- Implementation
 						Error_handler.insert_error (vd86)
 					else
 						system.set_il_generation (l_b)
-						il_parsing_cell.set_item (l_b)
+						il_parsing_cell.put (l_b)
 					end
 				else
 					create vd15
@@ -1166,20 +1166,6 @@ feature {NONE} -- Implementation
 			else
 					-- By default we set the value to True for backwards compatibility.
 				system.set_has_old_feature_replication (True)
-			end
-
-			l_s := l_settings.item (s_old_verbatim_strings)
-			if l_s /= Void then
-				if l_s.is_boolean then
-					system.set_has_old_verbatim_strings (l_s.to_boolean)
-				else
-					create vd15
-					vd15.set_option_name (s_old_verbatim_strings)
-					vd15.set_option_value (l_s)
-					Error_handler.insert_error (vd15)
-				end
-			else
-				system.set_has_old_verbatim_strings (False)
 			end
 
 			l_s := l_settings.item (s_platform)

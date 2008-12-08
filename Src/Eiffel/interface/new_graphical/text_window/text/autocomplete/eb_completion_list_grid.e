@@ -10,7 +10,7 @@ class
 	EB_COMPLETION_LIST_GRID
 
 inherit
-	EV_GRID
+	ES_EDITOR_TOKEN_GRID
 		redefine
 			initialize
 		end

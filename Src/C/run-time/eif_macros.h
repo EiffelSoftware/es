@@ -171,7 +171,6 @@ RT_LNK void eif_exit_eiffel_code(void);
  *  initializes it with the routine pointer 'y', the true routine pointer 'z',
  *  argument tuple 'a', open map 'o' and closed map 'c'
  *  RTLB(x) allocated a new bit object of size 'x'
- *  RTUD keep dynamic type  for refreezing
  *  RTLX(x) allocates an expanded object (with possible in invocation
  *		of the creation routine) of type `x'
  *  RTXB(x,y) copies bit `x' to `y'
@@ -205,14 +204,6 @@ RT_LNK void eif_exit_eiffel_code(void);
 		if (cp) cp(x); \
 	}
 #endif
-#ifdef WORKBENCH
-RT_LNK EIF_TYPE_INDEX fcount;
-#define RTUD(x)				((x)>=fcount?(x):egc_fdtypes[x])  /* Updated dynamic type */
-#else
-#define RTUD(x)				(x) /* For convenience */
-#endif
-
-
 
 /* Macro used for object cloning:
  *  RTCL(x) clones 'x' and return a pointer to the cloned object
@@ -275,6 +266,10 @@ RT_LNK EIF_TYPE_INDEX fcount;
 #define RTOE(x,y,z,v)		{ if (RTRA((x),(y))) { RTXA ((y), z); v = EIF_TRUE; } else { v = EIF_FALSE; } }
 
 
+/* Macros used for variable initialization:
+ * RTAT(x)  true if type 'x' is attached
+ */
+#define RTAT(x) (eif_is_attached_type(x))
 
 /* Macros used for local variable management:
  *  RTLI(x) makes room on the stack for 'x' addresses
@@ -486,11 +481,20 @@ RT_LNK EIF_TYPE_INDEX fcount;
 				/* Record exception for future use. */       \
 			RTOFN(code_index,_failed) = eif_protect(RTLA);                  \
 			RTO_END_EXCEPT                                       \
-		}                                                            \
-		if (RTOFN(code_index,_failed)) {                             \
-			if (eif_access(RTOFN(code_index,_failed)))							\
-				oraise (eif_access(RTOFN(code_index,_failed)));                  \
-		}                                                            \
+				/* Propagate the exception if any. */				\
+			if (RTOFN(code_index,_failed)) {                             \
+				if (eif_access(RTOFN(code_index,_failed))) {							\
+					ereturn ();										\
+				}															\
+			}                                                            \
+		} else {                                                            \
+				/* Raise the saved exception if any. */					\
+			if (RTOFN(code_index,_failed)) {                             \
+				if (eif_access(RTOFN(code_index,_failed))) {							\
+					oraise (eif_access(RTOFN(code_index,_failed)));                  \
+				}															\
+			}                                                            \
+		}																\
 	}
 
 #define RTOSC(code_index, value)                                             \
@@ -623,10 +627,19 @@ RT_LNK EIF_TYPE_INDEX fcount;
 		MTOE(OResult, RTOC(0));									\
 		MTOEV(OResult, RTLA);                                       \
 		RTO_END_EXCEPT                                               \
-	}																	\
-	if (MTOF(OResult)) {                                                 \
-		if (*MTOF(OResult))												\
-			oraise (*MTOF(OResult));                                      \
+			/* Propagate the exception if any. */						\
+		if (MTOF(OResult)) {                                                 \
+			if (*MTOF(OResult))	{											\
+				ereturn ();                                      \
+			}														\
+		}															\
+	} else {																	\
+			/* Raise the saved exception if any.*/								\
+		if (MTOF(OResult)) {                                                 \
+			if (*MTOF(OResult))	{											\
+				oraise (*MTOF(OResult));                                      \
+			}																	\
+		}																		\
 	}
 
 #ifdef EIF_THREADS
@@ -731,9 +744,15 @@ RT_LNK EIF_TYPE_INDEX fcount;
 				RTOPLE (completed, failed, thread_id);                   \
 					/* Unlock mutex. */                              \
 				RTOPLU (mutex);                                          \
+					/* Propagate the exception if any. */							\
+				if (failed) {                                              \
+					ereturn ();                                             \
+				}															\
 			}                                                                \
-		}                                                                        \
-		RTOPRE(failed)
+		} else {                                                                        \
+				/* Raise the saved exception if any. */								\
+			RTOPRE(failed);														\
+		}
 
 #else /* !defined(EIF_HAS_MEMORY_BARRIER) */
 
@@ -750,9 +769,18 @@ RT_LNK EIF_TYPE_INDEX fcount;
 #	define RTOFE(completed, failed, mutex, thread_id)                                \
 					/* Use thread-safe epilogue. */                  \
 				RTOPLE (completed, failed, thread_id);                     \
-			}                                                                \
-					/* Unlock mutex. */                              \
-			RTOPLU (mutex);                                                  \
+						/* Unlock mutex. */                              \
+				RTOPLU (mutex);                                                  \
+						/* Propagate the exception if any.*/							\
+				if (failed) {                                                        \
+					ereturn ();                                             \
+				}															\
+			} else {                                                               \
+						/* Unlock mutex. */                              \
+				RTOPLU (mutex);                                                  \
+						/* Raise the saved exception if any.*/					\
+				RTOPRE(failed);											\
+			}															\
 		}                                                                        \
 		else {                                                                   \
 				/* Mutex cannot be locked.      */                       \
@@ -760,7 +788,6 @@ RT_LNK EIF_TYPE_INDEX fcount;
 				/* Let it to complete.          */                       \
 			RTOPW (mutex, thread_id);                                        \
 		}                                                                        \
-		RTOPRE(failed)
 
 #endif /* EIF_HAS_MEMORY_BARRIER */
 
@@ -951,6 +978,8 @@ RT_LNK EIF_TYPE_INDEX fcount;
  *  RTES issues the setjmp call for remote control transfer via longjmp
  *  RTEJ sets the exception handling mechanism (must appear only once)
  *  RTEA(x,y,z) signal entry in routine 'x', origin 'y', object ID 'z'
+ *  RTEAA(x,y,z,i,j,b) signal entry in routine 'x', origin 'y', object ID 'z', locnum 'i', argnum 'j', body id 'b'
+ *  RTEAINV(x,y,z,i,b) signal entry in _invariant routine 'x', origin 'y', object ID 'z', locnum 'i',  body id 'b'
  *  RTEV signals entry in routine (simply gets an execution vector)
  *  RTET(t,x) raises an exception tagged 't' whose code is 'x'
  *  RTEC(x) raises an exception whose code is 'x'
@@ -1024,6 +1053,8 @@ RT_LNK EIF_TYPE_INDEX fcount;
 	if (!setjmp(exenv)) {
 
 #endif
+
+#define RTEAINV(x,y,z,i,b) RTEAA(x,y,z,i,0,b); exvect->ex_is_invariant = 1; /* argnum = 0 for _invariant */
 
 #define RTER		in_assertion = saved_assertion; \
 					exvect = exret(exvect); goto start
@@ -1248,28 +1279,6 @@ RT_LNK EIF_TYPE_INDEX fcount;
 #define RTIV2(x,y)		if (is_nested && ((y) & CK_INVARIANT)) chkinv(MTC x,0)
 #define RTVI2(x,y)		if (is_nested && ((y) & CK_INVARIANT)) chkinv(MTC x,1)
 #define RTCI2(x)			chkcinv(MTC x)
-
-
-/* Generic conformance
- *  RTCID(tp,x,y,z) converts a type array into a single id
- *  RTFCID(ct,x,y,z) fetches the creation type of a generic feature in final mode
-*/
-
-#define RTCID(tp,x,y,z)	\
-		((x) ? eif_compound_id((tp), Dftype(x),(y),(z)) : \
-		 eif_compound_id ((tp), 0, (y), (z)))
-#define RTCID2(tp,x,y,z)	\
-		eif_compound_id((tp), (x),(y),(z))
-#define RTFCID(ct,x,y,z,u)	eif_final_id((x),(y), Dftype(z),(u))
-#define RTFCID2(ct,x,y,z,u)	eif_final_id((x),(y),(z),(u))
-#define RTGPTID(st,x,y)		eif_gen_param_id ((st), Dftype(x),(y))
-#ifdef WORKBENCH
-#define RTID(x)	eif_id_for_typarr(x)
-#else
-#define RTID(x) (x)
-#endif
-
-
 
 #ifndef EIF_THREADS
 	RT_LNK int16 caller_assertion_level;	/*Saves information about the assertionlevel of the caller*/

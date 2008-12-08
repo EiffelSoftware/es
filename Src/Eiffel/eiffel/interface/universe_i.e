@@ -153,6 +153,144 @@ feature -- Properties
 			end
 		end
 
+	all_possible_client_classes (a_class: CLASS_I): !DS_HASH_SET [!CLASS_I]
+			-- Retrieves all classes that could potential be a client to the class `a_class'.
+		require
+			a_class_attached: a_class /= Void
+		local
+			l_clusters: ARRAYED_LIST [CONF_CLUSTER]
+			l_cluster_classes: ARRAYED_LIST [CONF_CLASS]
+			l_apt_targets: ARRAYED_LIST [CONF_TARGET]
+			l_target_system: CONF_SYSTEM
+			l_class_target: CONF_TARGET
+			l_targets: ARRAYED_LIST [CONF_TARGET]
+			l_target: CONF_TARGET
+			l_libraries: ARRAYED_LIST [CONF_LIBRARY]
+			l_sub_libraries: ARRAYED_LIST [CONF_LIBRARY]
+			l_apt_library_targets: HASH_TABLE [?CONF_TARGET, UUID]
+			l_library: CONF_LIBRARY
+			l_uuid: UUID
+			l_cursor: CURSOR
+		do
+			check is_eiffel_class: ({?EIFFEL_CLASS_I}) #? a_class /= Void end
+
+				-- Step #1
+				-- Retrieve class target and applicable extended targets for the supplied class.
+			l_class_target := a_class.target
+			l_target_system := l_class_target.system
+
+				-- Retireve a list of targets			
+			l_targets := l_target_system.targets.linear_representation
+				-- Remove current class target as we know all classes in the target are reachable
+			l_targets.start
+			l_targets.search (l_class_target)
+			check l_class_target_found: not l_targets.after end
+			l_targets.remove
+
+				-- Create a list of applicable targets for post-processing.
+			create l_apt_targets.make (1)
+			l_apt_targets.extend (l_class_target)
+
+				-- Build list of applicable targets
+			from l_targets.start until l_targets.is_empty or else l_targets.after loop
+				l_target := l_targets.item
+				if l_target.extends /= Void then
+					if l_apt_targets.has (l_target.extends) then
+							-- Remove applicable target and reiterate
+						l_targets.remove
+						l_targets.start
+
+						l_apt_targets.extend (l_target)
+					end
+				end
+			end
+				-- Done with target list
+			l_targets := Void
+			l_target := Void
+
+				-- Step #2
+				-- Retrieve the applicable targets for a class within a library. Applicable targets are direct
+				-- references of the library.
+			l_class_target := l_target_system.library_target
+			if l_class_target /= Void and then l_class_target /= target then
+				create l_apt_library_targets.make (13)
+
+					-- The class is from a library, we need to navigate down to find first level libraries.
+				l_libraries := target.libraries.linear_representation
+				from l_libraries.start until l_libraries.after loop
+					l_library := l_libraries.item
+					l_target := l_library.library_target
+					l_uuid := l_target.system.uuid
+					if not l_apt_library_targets.has (l_uuid) then
+						if l_target = l_class_target then
+								-- The project references the library directly.
+							l_apt_library_targets.put (target, l_uuid)
+						end
+
+							-- Check other libraries
+						l_sub_libraries := l_target.libraries.linear_representation
+
+							-- Iterate sub libraries to look for a matching target
+						from l_sub_libraries.start until l_sub_libraries.after loop
+							if l_sub_libraries.item.library_target = l_class_target then
+								l_apt_library_targets.put (l_target, l_uuid)
+							end
+							l_sub_libraries.forth
+						end
+						if not l_apt_library_targets.has (l_uuid) then
+								-- No target match, but add an entry so the library is not checked again.
+							l_apt_library_targets.put (Void, l_uuid)
+
+								-- There was no applicable library so add all the libraries to the list of checked
+								-- libraries.
+							l_cursor := l_libraries.cursor
+							l_libraries.append (l_sub_libraries)
+							l_libraries.go_to (l_cursor)
+						end
+					end
+					l_libraries.forth
+				end
+				l_libraries := Void
+				l_sub_libraries := Void
+				l_library := Void
+				l_target := Void
+
+				from l_apt_library_targets.start until l_apt_library_targets.after loop
+					l_target := l_apt_library_targets.item_for_iteration
+					from until l_target = Void loop
+						if l_target /= Void then
+								-- Add target and parent targets.
+							if not l_apt_targets.has (l_target) then
+								l_apt_targets.extend (l_apt_library_targets.item_for_iteration)
+							end
+							l_target := l_target.extends
+						end
+					end
+					l_apt_library_targets.forth
+				end
+			end
+
+				-- Analyze all targets and retrieve clusters, and then add the result classes.
+			create Result.make (100)
+			from l_apt_targets.start until l_apt_targets.after loop
+				l_target := l_apt_targets.item
+				l_clusters := l_target.clusters.linear_representation
+				from l_clusters.start until l_clusters.after loop
+					l_cluster_classes := l_clusters.item.classes.linear_representation
+					from l_cluster_classes.start until l_cluster_classes.after loop
+						if {l_class_i: CLASS_I} l_cluster_classes.item_for_iteration and then l_class_i.target = l_target then
+							if not Result.has (l_class_i) then
+								Result.force (l_class_i)
+							end
+						end
+						l_cluster_classes.forth
+					end
+					l_clusters.forth
+				end
+				l_apt_targets.forth
+			end
+		end
+
 feature -- Access
 
 	classes_with_name (a_class_name: STRING): LIST [CLASS_I] is
@@ -323,6 +461,7 @@ feature -- Access
 		do
 			create l_vis.make
 			l_vis.set_directory (a_directory)
+			l_vis.set_recursive (True)
 			target.process (l_vis)
 			Result := l_vis.found_clusters
 		ensure
@@ -369,6 +508,51 @@ feature -- Access
 					Result ?= l_assembly.dotnet_classes.found_item
 				end
 			end
+		end
+
+	library_of_uuid (a_uuid: !UUID; a_recursive: BOOLEAN): !LIST [!CONF_LIBRARY] is
+			-- Return list of libraries identified by UUID
+			--
+			-- Note: Since it is possible that multiple libraries share the same UUID, a list of
+			--       {CONF_LIBRARY} is returned.
+			--
+			-- `a_uuid': UUID of requested library.
+			-- `a_recursive': If True `library_of_uuid' will also look in sub libraries.
+			-- `Result': list of libraries having `a_uuid' as its UUID, empty if no library in universe with
+			--           given uuid was found.
+		require
+			target_not_void: target /= Void
+		local
+			l_visitor: CONF_FIND_UUID_VISITOR
+		do
+			create l_visitor.make
+			l_visitor.set_uuid (a_uuid)
+			l_visitor.set_recursive (a_recursive)
+			target.process (l_visitor)
+			Result := l_visitor.found_libraries
+		ensure
+			results_match_uuid: Result.for_all (
+				agent (a_lib: !CONF_LIBRARY; a_id: !UUID): BOOLEAN
+					do
+						Result := a_lib.library_target.system.uuid.is_equal (a_id)
+					end (?, a_uuid))
+			results_match_recursion: not a_recursive implies Result.for_all (
+				agent (a_lib: !CONF_LIBRARY): BOOLEAN
+					local
+						l_target: CONF_TARGET
+					do
+						Result := a_lib.target = target
+						if not Result then
+							from
+								l_target := target
+							until
+								l_target = Void or Result
+							loop
+								Result := l_target = a_lib.target
+								l_target := l_target.extends
+							end
+						end
+					end)
 		end
 
 feature -- Update

@@ -27,6 +27,8 @@ feature {NONE} -- Initialization
 		local
 			l_hbox: EV_HORIZONTAL_BOX
 			l_grid_support: EB_EDITOR_TOKEN_GRID_SUPPORT
+			l_auto_show_check: !EV_CHECK_BUTTON
+			l_preference: BOOLEAN_PREFERENCE
 		do
 			a_widget.set_border_width (2)
 
@@ -45,21 +47,28 @@ feature {NONE} -- Initialization
 			a_widget.extend (contract_grid)
 
 			create l_hbox
+
+				-- `auto_show_check'
+			l_preference := preferences.editor_data.auto_show_feature_contract_tooltips_preference
+			if l_preference /= Void then
+				create l_auto_show_check.make_with_text (locale_formatter.translation (l_do_not_auto_show))
+				l_auto_show_check.set_tooltip (locale_formatter.translation (f_do_not_auto_show))
+				l_auto_show_check.set_foreground_color (preferences.editor_data.normal_text_color)
+
+				create auto_show_check.make (l_auto_show_check, l_preference)
+				l_hbox.extend (auto_show_check)
+				l_hbox.disable_item_expand (auto_show_check)
+				auto_recycle (l_auto_show_check)
+			end
+
+				-- Padding between the check box and edit
 			l_hbox.extend (create {EV_CELL})
 
-			create edit_contract_label.make_with_text ("Edit Contracts...")
+			create edit_contract_label.make_with_text (locale_formatter.translation (l_edit_contracts))
+			edit_contract_label.set_tooltip (locale_formatter.translation (f_edit_contracts))
 			edit_contract_label.align_text_right
 			register_action (edit_contract_label.select_actions, agent on_edit_contracts)
 			l_hbox.extend (edit_contract_label)
-
-				-- Edit contracts button
-			create edit_contracts_button.make_with_text ("Edit Contracts...")
-			edit_contracts_button.set_tooltip ("Edit the contracts for this feature.")
-			register_action (edit_contracts_button.select_actions, agent on_edit_contracts)
---			l_hbox.extend (edit_contracts_button)
---			l_hbox.disable_item_expand (edit_contracts_button)
-
-			edit_contracts_button.hide
 
 			a_widget.extend (l_hbox)
 			a_widget.disable_item_expand (l_hbox)
@@ -289,15 +298,22 @@ feature {NONE} -- Basic operation
 
 				l_grid.set_minimum_size (l_width + 20, l_height + 6)
 				l_grid.column (1).set_width (l_width + 2)
+
+
+				if l_feature.is_procedure or else l_feature.is_function then
+					edit_contract_label.enable_sensitive
+				else
+					edit_contract_label.disable_sensitive
+				end
 			end
 
 			l_grid.unlock_update
 
 				-- Set contract button's edit state.
 			if context_class.group.is_readonly then
-				edit_contract_label.set_text ("View Contracts...")
+				edit_contract_label.set_text (locale_formatter.translation (l_view_contracts))
 			else
-				edit_contract_label.set_text ("Edit Contracts...")
+				edit_contract_label.set_text (locale_formatter.translation (l_edit_contracts))
 			end
 		end
 
@@ -357,6 +373,9 @@ feature -- User interface elements
 	edit_contract_label: !EVS_LINK_LABEL
 			-- Label used to edit contracts
 
+	auto_show_check: !ES_CHECK_BUTTON_PREFERENCED_WIDGET
+			-- Option to automatially show the view widget.
+
 feature {NONE} -- Action handlers
 
 	on_edit_contracts
@@ -406,10 +425,18 @@ feature {NONE} -- Regular expressions
 			result_is_compiled: Result.is_compiled
 		end
 
+feature {NONE} -- Internationalization
+
+	l_do_not_auto_show: !STRING = "Pop-up automatically"
+	f_do_not_auto_show: !STRING = "Uncheck to prevent the contract viewer from being displayed automatically. Use CTRL to force the show of this information in the future."
+	l_edit_contracts: !STRING = "Edit Contracts..."
+	l_view_contracts: !STRING = "View Contracts..."
+	f_edit_contracts: !STRING = "Places the current feature in the contract editor for edition"
+
 ;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -420,19 +447,19 @@ feature {NONE} -- Regular expressions
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

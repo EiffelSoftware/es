@@ -17,7 +17,7 @@ class
 inherit
 	FILE_NOTIFIER_S
 
-	EVENT_OBSERVER_CONNECTION [!FILE_NOTIFIER_EVENT_OBSERVER]
+	EVENT_OBSERVER_CONNECTION [FILE_NOTIFIER_EVENT_OBSERVER]
 		redefine
 			safe_dispose
 		end
@@ -89,7 +89,7 @@ feature -- Query
 
 feature {NONE} -- Query
 
-	events (a_observer: !FILE_NOTIFIER_EVENT_OBSERVER): DS_ARRAYED_LIST [TUPLE [event: EVENT_TYPE [TUPLE]; action: PROCEDURE [ANY, TUPLE]]]
+	events (a_observer: !FILE_NOTIFIER_EVENT_OBSERVER): !DS_ARRAYED_LIST [!TUPLE [event: !EVENT_TYPE [TUPLE]; action: !PROCEDURE [ANY, TUPLE]]]
 			-- List of events and associated action.
 			--
 			-- `a_observer': Event observer interface to bind agent actions to.
@@ -129,7 +129,7 @@ feature -- Basic operation
 --				file_records.item (file_name_key (a_file_name)).monitor_count = old file_records.item (file_name_key (a_file_name)).monitor_count + 1
 		end
 
-	check_modifications_with_callback (a_file_name: !STRING_32; a_callback: PROCEDURE [ANY, TUPLE [modification_type: NATURAL_8]])
+	check_modifications_with_callback (a_file_name: !STRING_32; a_callback: !PROCEDURE [ANY, TUPLE [modification_type: NATURAL_8]])
 			-- <Precursor>
 		local
 			l_key: like file_name_key
@@ -185,7 +185,7 @@ feature -- Basic operation
 			a_file_name_record_monitor_count_decreased: file_records.has (file_name_key (a_file_name)) implies file_records.item (file_name_key (a_file_name)).monitor_count = old file_records.item (file_name_key (a_file_name)).monitor_count - 1
 		end
 
-	uncheck_modifications_with_callback (a_file_name: !STRING_32; a_callback: PROCEDURE [ANY, TUPLE [modification_type: NATURAL_8]])
+	uncheck_modifications_with_callback (a_file_name: !STRING_32; a_callback: !PROCEDURE [ANY, TUPLE [modification_type: NATURAL_8]])
 			-- <Precursor>
 		local
 			l_key: like file_name_key
@@ -255,7 +255,7 @@ feature {NONE} -- Formatting
 			not_a_file_name_is_empty: not a_file_name.is_empty
 		do
 			if {PLATFORM}.is_windows then
-				Result ?= a_file_name.as_lower
+				Result := a_file_name.as_lower.as_attached
 			else
 				Result := a_file_name
 			end

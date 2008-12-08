@@ -17,8 +17,8 @@ inherit
 		redefine
 			reverse_code, expanded_assign_code, assign_code,
 			enlarged, is_creatable, is_attribute, read_only,
-			assigns_to, pre_inlined_code,
-			need_target
+			assigns_to, pre_inlined_code, size,
+			need_target, set_is_attachment
 		end
 
 feature -- Visitor
@@ -27,6 +27,21 @@ feature -- Visitor
 			-- Process current element.
 		do
 			v.process_attribute_b (Current)
+		end
+
+feature -- Status report
+
+	is_attachment: BOOLEAN
+			-- Is attribute used as target of an attachment?
+
+feature -- Status setting
+
+	set_is_attachment
+			-- Flag that a feature is used as a target of an attachment operation.
+		do
+			is_attachment := True
+		ensure then
+			is_attachment
 		end
 
 feature
@@ -89,19 +104,69 @@ feature
 			end
 		end
 
-	enlarged: ATTRIBUTE_B is
+	wrapper: FEATURE_B
+			-- A wrapper to be called for an attribute that may need to be initialized
+			-- (Void if none)
+		local
+			is_initialization_required: BOOLEAN
+			p: like parent
+		do
+				-- No need to wrap a target of an attachment as well as access to an attribute of a basic type that is always initialized
+			if not is_attachment and then not type.is_basic then
+				if context.workbench_mode then
+						-- Attribute may be redeclared to become of an attached type and to have a body.
+					is_initialization_required := True
+				else
+						-- Check if attribute is of an attached type in some descendant
+						-- that declares an explicit body for it.
+					is_initialization_required := Eiffel_table.poly_table (routine_id).is_initialization_required (context_type, context.context_class_type)
+				end
+			end
+			if is_initialization_required then
+					-- Call a wrapper that performs the required initialization.
+				create {FEATURE_B} Result.make (context_type.associated_class.feature_of_rout_id (routine_id), type, Void)
+				p := parent
+				if p /= Void then
+					Result.set_parent (p)
+					if p.message = Current then
+						p.set_message (Result)
+					else
+						check
+							p.target = Current
+						end
+						p.set_target (Result)
+					end
+				end
+			end
+		end
+
+	enlarged: CALL_ACCESS_B is
 			-- Enlarges the tree to get more attributes and returns the
 			-- new enlarged tree node.
 		local
+			f: FEATURE_B
+			feature_bl: FEATURE_BL
 			attr_bl: ATTRIBUTE_BL
 		do
-			if context.final_mode then
-				create attr_bl
+			f := wrapper
+			if f /= Void then
+					-- Call a wrapper that performs the required initialization.
+				if context.final_mode then
+					create feature_bl.make
+				else
+					create {FEATURE_BW} feature_bl.make
+				end
+				feature_bl.fill_from (f)
+				Result := feature_bl
 			else
-				create {ATTRIBUTE_BW} attr_bl
+				if context.final_mode then
+					create attr_bl
+				else
+					create {ATTRIBUTE_BW} attr_bl
+				end
+				attr_bl.fill_from (Current)
+				Result := attr_bl
 			end
-			attr_bl.fill_from (Current)
-			Result := attr_bl
 		end
 
 feature -- Byte code generation
@@ -154,6 +219,15 @@ feature -- Array optimization
 
 feature -- Inlining
 
+	size: INTEGER
+		do
+			if False then
+				(create {REFACTORING_HELPER}).to_implement ("Check if attribute has to be initialized.")
+					-- Inlining will not be done if the attribute has to be initialized
+				Result := 101	-- equal to maximum size of inlining + 1 (Found in FREE_OPTION_SD)
+			end
+		end
+
 	pre_inlined_code: ATTRIBUTE_B is
 		local
 			inlined_attr_b: INLINED_ATTR_B
@@ -170,7 +244,7 @@ feature -- Inlining
 		end
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

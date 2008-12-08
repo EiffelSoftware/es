@@ -24,12 +24,12 @@ inherit
 			on_handle_key
 		end
 
-	ES_SHARED_DIALOG_BUTTONS
-
 	ES_HELP_REQUEST_BINDER
 		export
 			{NONE} all
 		end
+
+	ES_SHARED_DIALOG_BUTTONS
 
 convert
 	dialog: {EV_DIALOG}
@@ -84,7 +84,16 @@ feature {NONE} -- Initialization
 
 			Precursor {ES_WINDOW_FOUNDATIONS}
 
-       		bind_help_shortcut (dialog)
+			if buttons.has (default_cancel_button) then
+				dialog.set_default_cancel_button (dialog_window_buttons.item (default_cancel_button))
+			end
+			if buttons.has (default_button) then
+				dialog.set_default_push_button (dialog_window_buttons.item (default_button))
+			end
+
+			if help_providers.is_service_available and then {l_context: !HELP_CONTEXT_I} Current then
+				bind_help_shortcut (dialog)
+			end
 
 			if is_size_and_position_remembered then
 	       		if session_manager.is_service_available then
@@ -268,6 +277,7 @@ feature {NONE} -- Access
 		local
 			l_window: EV_WINDOW
 			l_windows: BILINEAR [EB_WINDOW]
+			l_wm: ?EB_WINDOW_MANAGER
 		do
 			Result := internal_development_window
 			if Result = Void then
@@ -287,7 +297,10 @@ feature {NONE} -- Access
 						l_windows.forth
 					end
 				else
-					Result := (create {EB_SHARED_WINDOW_MANAGER}).window_manager.last_focused_development_window
+					l_wm := (create {EB_SHARED_WINDOW_MANAGER}).window_manager
+					if l_wm /= Void then
+						Result := l_wm.last_focused_development_window
+					end
 				end
 			end
 		ensure
@@ -944,7 +957,6 @@ feature {NONE} -- Factory
 			is_initializing: is_initializing
 		local
 			l_container: EV_HORIZONTAL_BOX
-			l_tool_bar: SD_TOOL_BAR
 			l_buttons: like dialog_window_buttons
 			l_button: EV_BUTTON
 			l_ids: DS_SET_CURSOR [INTEGER]
@@ -955,11 +967,9 @@ feature {NONE} -- Factory
 			if help_providers.is_service_available then
 					-- Add a help button, if help is available
 				if {l_help_context: !HELP_CONTEXT_I} Current and then l_help_context.is_help_available then
-					create l_tool_bar.make
-					l_tool_bar.extend (create_help_button)
-					l_tool_bar.compute_minimum_size
-					l_container.extend (l_tool_bar)
-					l_container.disable_item_expand (l_tool_bar)
+					l_button := create_help_button
+					l_container.extend (l_button)
+					l_container.disable_item_expand (l_button)
 				end
 			end
 
@@ -1031,7 +1041,7 @@ feature {NONE} -- Factory
 			result_attached: Result /= Void
 		end
 
-	create_help_button: SD_TOOL_BAR_BUTTON
+	create_help_button: EV_BUTTON
 			-- Creates a help widget for use in the dialog button ribbon for recieving help
 		require
 			is_interface_usable: is_interface_usable
@@ -1040,8 +1050,7 @@ feature {NONE} -- Factory
 		local
 			l_enable_help: BOOLEAN
 		do
-			create Result.make
-			Result.set_pixel_buffer (stock_pixmaps.command_system_info_icon_buffer)
+			create Result.make_with_text (interface_names.b_help)
 			Result.set_pixmap (stock_pixmaps.command_system_info_icon)
 
 			l_enable_help := True

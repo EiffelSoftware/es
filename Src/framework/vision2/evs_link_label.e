@@ -12,11 +12,8 @@ class
 
 inherit
 	EV_LABEL
-		export
-			{ANY} all
 		redefine
-			initialize,
-			set_text
+			initialize
 		end
 
 create
@@ -26,13 +23,10 @@ create
 feature {NONE} -- Initialization
 
 	initialize
-			-- Mark `Current' as initialized.
-			-- This must be called during the creation procedure
-			-- to satisfy the `is_initialized' invariant.
-			-- Descendants may redefine initialize to perform
-			-- additional setup tasks.
+			-- <Precursor>
 		do
-			Precursor {EV_LABEL}
+			Precursor
+
 			create select_actions
 			pointer_button_press_actions.extend (agent on_pointer_press)
 			set_foreground_color ((create {EV_STOCK_COLORS}).blue)
@@ -41,75 +35,17 @@ feature {NONE} -- Initialization
 			enable_tabable_from
 		end
 
-feature {NONE} -- Access
-
-	default_font: EV_FONT is
-			-- Font used to display labels.
-		do
-			Result := font.twin
-			Result.set_weight ({EV_FONT_CONSTANTS}.weight_regular)
-		end
-
-	highlight_font: EV_FONT
-			-- Highlight font
-		do
-			Result := font.twin
-			Result.set_weight ({EV_FONT_CONSTANTS}.weight_bold)
-		end
-
 feature -- Actions
 
 	select_actions: EV_LITE_ACTION_SEQUENCE [TUPLE]
 			-- Actions called when selected
 
-feature -- Element change
-
-	set_text (a_text: STRING_GENERAL)
-			-- Assign `a_text' to text.
-			-- (from EV_TEXTABLE)
-		do
-			set_minimum_size (maximum_label_width (a_text), maximum_label_height (a_text))
-			Precursor {EV_LABEL} (a_text)
-		end
-
-feature {NONE} -- Query
-
-	maximum_label_width (a_text: STRING_GENERAL): INTEGER is
-			-- Maximum width of a label when set with text `a_text'
-		require
-			a_text_not_void: a_text /= Void
-		local
-			l_size: TUPLE [width, height, left_offset, right_offset: INTEGER]
-			l_width: INTEGER
-			l_other: INTEGER
-		do
-			l_size := default_font.string_size (a_text)
-			l_width := l_size.width + l_size.left_offset + l_size.right_offset
-			l_size := highlight_font.string_size (a_text)
-			l_other := l_size.width + l_size.left_offset + l_size.right_offset + 2
-			Result := l_width.max (l_other)
-		end
-
-	maximum_label_height (a_text: STRING_GENERAL): INTEGER is
-			-- Maximum width of a label when set with text `a_text'
-		require
-			a_text_not_void: a_text /= Void
-		local
-			l_size: TUPLE [width, height, left_offset, right_offset: INTEGER]
-			l_height: INTEGER
-			l_other: INTEGER
-		do
-			l_size := default_font.string_size (a_text)
-			l_height := l_size.height
-			l_size := highlight_font.string_size (a_text)
-			l_other := l_size.height
-			Result := l_height.max (l_other)
-		end
-
 feature {NONE} -- Action handlers
 
 	on_pointer_press (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
-			-- Called when a pointer action has been performed
+			-- Called when a pointer action has been performed.
+		require
+			not_is_destroyed: not is_destroyed
 		do
 			if a_button = 1 then
 				select_actions.call ([])

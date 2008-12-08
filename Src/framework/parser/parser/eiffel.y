@@ -73,8 +73,8 @@ create
 %token <KEYWORD_AS> TE_PREFIX
 
 %token <KEYWORD_AS> TE_IS
-%token <KEYWORD_AS> TE_AGENT TE_ALIAS TE_ALL TE_AND TE_AS
-%token <KEYWORD_AS> TE_ASSIGN TE_BIT TE_CHECK TE_CLASS TE_CONVERT
+%token <KEYWORD_AS> TE_AGENT TE_ALIAS TE_ALL TE_AND TE_AS TE_ASSIGN
+%token <KEYWORD_AS> TE_ATTRIBUTE TE_BIT TE_CHECK TE_CLASS TE_CONVERT
 %token <KEYWORD_AS> TE_CREATE TE_DEBUG TE_DO TE_ELSE TE_ELSEIF
 %token <KEYWORD_AS> TE_ENSURE TE_EXPANDED TE_EXPORT TE_EXTERNAL TE_FEATURE
 %token <KEYWORD_AS> TE_FROM TE_IF TE_IMPLIES TE_INDEXING TE_INHERIT
@@ -137,7 +137,7 @@ create
 %type <FEATURE_SET_AS>		Feature_set
 %type <FORMAL_AS>			Formal_parameter
 %type <FORMAL_DEC_AS>		Formal_generic
-%type <ID_AS>				Class_or_tuple_identifier Class_identifier Identifier_as_lower Free_operator Feature_name_for_call
+%type <ID_AS>				Class_or_tuple_identifier Class_identifier Tuple_identifier Identifier_as_lower Free_operator Feature_name_for_call
 %type <IF_AS>				Conditional
 %type <INDEX_AS>			Index_clause Index_clause_impl Note_entry Note_entry_impl
 %type <INSPECT_AS>			Multi_branch
@@ -341,7 +341,6 @@ Indexing: -- Empty
 				if $$ /= Void then
 					$$.set_indexing_keyword ($1)
 				end				
-				set_has_old_verbatim_strings_warning (initial_has_old_verbatim_strings_warning)
 			}
 	|	TE_INDEXING
 			--- { $$ := Void }
@@ -357,7 +356,6 @@ Indexing: -- Empty
 				if $$ /= Void then
 					$$.set_indexing_keyword ($1)
 				end				
-				set_has_old_verbatim_strings_warning (initial_has_old_verbatim_strings_warning)
 			}
 	|	TE_NOTE
 			{
@@ -390,7 +388,6 @@ Dotnet_indexing: -- Empty
 						$$.set_end_keyword ($5)
 					end
 				end				
-				set_has_old_verbatim_strings_warning (initial_has_old_verbatim_strings_warning)
 			}
 	;
 
@@ -1361,26 +1358,19 @@ Routine_body: Internal
 			{ $$ := $1 }
 	;
 
-External: TE_EXTERNAL
+External: TE_EXTERNAL External_language External_name
 			{
-					-- To avoid warnings for manifest string used to represent external data.
-				initial_has_old_verbatim_strings_warning := has_old_verbatim_strings_warning
-				set_has_old_verbatim_strings_warning (false)
-			}
-		External_language External_name
-			{
-				if $3 /= Void and then $3.is_built_in then
-					if $4 /= Void then 
-						$$ := ast_factory.new_built_in_as ($3, $4.second, $1, $4.first)
+				if $2 /= Void and then $2.is_built_in then
+					if $3 /= Void then 
+						$$ := ast_factory.new_built_in_as ($2, $3.second, $1, $3.first)
 					else
-						$$ := ast_factory.new_built_in_as ($3, Void, $1, Void)
+						$$ := ast_factory.new_built_in_as ($2, Void, $1, Void)
 					end
-				elseif $4 /= Void then
-					$$ := ast_factory.new_external_as ($3, $4.second, $1, $4.first)
+				elseif $3 /= Void then
+					$$ := ast_factory.new_external_as ($2, $3.second, $1, $3.first)
 				else
-					$$ := ast_factory.new_external_as ($3, Void, $1, Void)
+					$$ := ast_factory.new_external_as ($2, Void, $1, Void)
 				end
-				set_has_old_verbatim_strings_warning (initial_has_old_verbatim_strings_warning)
 			}
 	;
 
@@ -1401,6 +1391,8 @@ Internal: TE_DO Compound
 			{ $$ := ast_factory.new_do_as ($2, $1) }
 	|	TE_ONCE Compound
 			{ $$ := ast_factory.new_once_as ($2, $1) }
+	|	TE_ATTRIBUTE Compound
+			{ $$ := ast_factory.new_attribute_as ($2, $1) }
 	;
 
 Local_declarations: -- Empty
@@ -1726,9 +1718,9 @@ Type_list_impl: Type
 			}
 	;
 
-Tuple_type: TE_TUPLE
+Tuple_type: Tuple_identifier
 			{ $$ := ast_factory.new_class_type_as ($1, Void) }
-	|	TE_TUPLE Add_counter Add_counter2 TE_LSQURE TE_RSQURE
+	|	Tuple_identifier Add_counter Add_counter2 TE_LSQURE TE_RSQURE
 			{
 			  	last_type_list := ast_factory.new_eiffel_list_type (0)
 				if last_type_list /= Void then
@@ -1739,7 +1731,7 @@ Tuple_type: TE_TUPLE
 				remove_counter
 				remove_counter2
 			}
-	|	TE_TUPLE Add_counter Add_counter2 TE_LSQURE Actual_parameter_list
+	|	Tuple_identifier Add_counter Add_counter2 TE_LSQURE Actual_parameter_list
 			{
 				if $5 /= Void then
 					$5.set_positions ($4, last_rsqure.item)
@@ -1749,7 +1741,7 @@ Tuple_type: TE_TUPLE
 				remove_counter
 				remove_counter2
 			}
-	|	TE_TUPLE Add_counter Add_counter2 TE_LSQURE Named_parameter_list
+	|	Tuple_identifier Add_counter Add_counter2 TE_LSQURE Named_parameter_list
 			{
 				$$ := ast_factory.new_named_tuple_type_as (
 					$1, ast_factory.new_formal_argu_dec_list_as ($5, $4, last_rsqure.item))
@@ -1920,7 +1912,8 @@ Formal_parameter: TE_REFERENCE Class_identifier
 			}
 	;
 
-Formal_generic: Formal_parameter
+Formal_generic:
+		Formal_parameter
 			{
 				if $1 /= Void then
 						-- Needs to be done here, in case current formal is used in
@@ -1935,7 +1928,7 @@ Formal_generic: Formal_parameter
 					if $3.creation_constrain /= Void then
 						$$ := ast_factory.new_formal_dec_as ($1, $3.type, $3.creation_constrain.feature_list, $3.constrain_symbol, $3.creation_constrain.create_keyword, $3.creation_constrain.end_keyword)
 					else
-						$$ := ast_factory.new_formal_dec_as ($1, $3.type, Void, $3.constrain_symbol, Void, Void)				
+						$$ := ast_factory.new_formal_dec_as ($1, $3.type, Void, $3.constrain_symbol, Void, Void)
 					end					
 				else
 					$$ := ast_factory.new_formal_dec_as ($1, Void, Void, Void, Void, Void)
@@ -2176,12 +2169,34 @@ Choice: Integer_constant
 
 	;
 
-Loop: TE_FROM Compound Invariant Variant TE_UNTIL Expression TE_LOOP Compound TE_END
+Loop:
+	TE_FROM Compound Invariant TE_UNTIL Expression TE_LOOP Compound TE_END
 			{
+				if $3 /= Void then
+					$$ := ast_factory.new_loop_as ($2, $3.second, Void, $5, $7, $8, $1, $3.first, $4, $6)
+				else
+					$$ := ast_factory.new_loop_as ($2, Void, Void, $5, $7, $8, $1, Void, $4, $6)
+				end
+			}
+	| TE_FROM Compound Invariant Variant TE_UNTIL Expression TE_LOOP Compound TE_END
+			{
+				if has_syntax_warning then
+					report_one_warning (
+						create {SYNTAX_WARNING}.make (token_line ($4), token_column ($4), filename,
+						once "Loop variant should appear just before the end keyword of the loop."))
+				end
 				if $3 /= Void then
 					$$ := ast_factory.new_loop_as ($2, $3.second, $4, $6, $8, $9, $1, $3.first, $5, $7)
 				else
 					$$ := ast_factory.new_loop_as ($2, Void, $4, $6, $8, $9, $1, Void, $5, $7)
+				end
+			}
+	| TE_FROM Compound Invariant TE_UNTIL Expression TE_LOOP Compound Variant TE_END
+			{
+				if $3 /= Void then
+					$$ := ast_factory.new_loop_as ($2, $3.second, $8, $5, $7, $9, $1, $3.first, $4, $6)
+				else
+					$$ := ast_factory.new_loop_as ($2, Void, $8, $5, $7, $9, $1, Void, $4, $6)
 				end
 			}
 	;
@@ -2205,9 +2220,9 @@ Class_invariant: -- Empty
 			}
 	;
 
-Variant: -- Empty
-			-- { $$ := Void }
-	|	TE_VARIANT Identifier_as_lower TE_COLON Expression
+
+Variant:
+		TE_VARIANT Identifier_as_lower TE_COLON Expression
 			{ $$ := ast_factory.new_variant_as ($2, $4, $1, $3) }
 	|	TE_VARIANT Expression
 			{ $$ := ast_factory.new_variant_as (Void, $2, $1, Void) }
@@ -2820,11 +2835,8 @@ Expression_list: Expression
 			}
 	;
 
-Class_or_tuple_identifier: TE_TUPLE
+Class_or_tuple_identifier: Tuple_identifier
 			{
-				if $1 /= Void then
-					$1.to_upper
-				end
 				$$ := $1
 			}
 	|	Class_identifier
@@ -2845,6 +2857,21 @@ Class_identifier: TE_ID
 					-- Keyword used as identifier
 				process_id_as_with_existing_stub ($1, last_keyword_as_id_index, False)
 				$$ := last_id_as_value
+			}
+	|	TE_ATTRIBUTE
+			{
+					-- Keyword used as identifier
+				process_id_as_with_existing_stub ($1, last_keyword_as_id_index, False)
+				$$ := last_id_as_value
+			}
+	;
+
+Tuple_identifier: TE_TUPLE
+			{
+				if $1 /= Void then
+					$1.to_upper
+				end
+				$$ := $1
 			}
 	;
 
@@ -3058,7 +3085,7 @@ Default_manifest_string: Non_empty_string
 			}
 	|	TE_EMPTY_VERBATIM_STRING
 			{
-				$$ := ast_factory.new_verbatim_string_as ("", verbatim_marker.substring (2, verbatim_marker.count), not has_old_verbatim_strings and then verbatim_marker.item (1) = ']', line, column, string_position, position + text_count - string_position, token_buffer2)
+				$$ := ast_factory.new_verbatim_string_as ("", verbatim_marker.substring (2, verbatim_marker.count), verbatim_marker.item (1) = ']', line, column, string_position, position + text_count - string_position, token_buffer2)
 			}
 	;
 
@@ -3082,7 +3109,7 @@ Non_empty_string: TE_STRING
 			}
 	|	TE_VERBATIM_STRING
 			{
-				$$ := ast_factory.new_verbatim_string_as (cloned_string (token_buffer), verbatim_marker.substring (2, verbatim_marker.count), not has_old_verbatim_strings and then verbatim_marker.item (1) = ']', line, column, string_position, position + text_count - string_position, token_buffer2)
+				$$ := ast_factory.new_verbatim_string_as (cloned_string (token_buffer), verbatim_marker.substring (2, verbatim_marker.count), verbatim_marker.item (1) = ']', line, column, string_position, position + text_count - string_position, token_buffer2)
 			}
 	|	TE_STR_LT
 			{
@@ -3274,8 +3301,6 @@ Manifest_tuple: TE_LSQURE TE_RSQURE
 
 Add_indexing_counter:
 			{
-				initial_has_old_verbatim_strings_warning := has_old_verbatim_strings_warning
-				set_has_old_verbatim_strings_warning (false)
 				add_counter
 			}
 	;

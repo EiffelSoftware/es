@@ -16,13 +16,18 @@ inherit
 
 	ES_DEBUGGER_DOCKABLE_STONABLE_TOOL_PANEL [EV_VERTICAL_BOX]
 		redefine
-			make,
 			close,
 			on_before_initialize,
+			on_show,
 			create_mini_tool_bar_items,
 			build_docking_content,
 			internal_recycle,
 			show
+		end
+
+	ES_HELP_CONTEXT
+		export
+			{NONE} all
 		end
 
 create
@@ -30,19 +35,15 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_manager: like develop_window; a_tool: like tool_descriptor) is
-		do
-			watch_id := a_tool.edition
-			auto_expression_enabled := False
-			Precursor (a_manager, a_tool)
-		end
-
 	on_before_initialize is
 			-- <Precursor>
 		do
-			Precursor
+			watch_id := tool_descriptor.edition
+			auto_expression_enabled := False
 			auto_expressions_deltas := [-2, +1]
 			create watched_items.make (10)
+
+			Precursor
 		end
 
 	build_tool_interface (a_widget: EV_VERTICAL_BOX) is
@@ -87,6 +88,7 @@ feature {NONE} -- Initialization
 
 			watches_grid := esgrid
 			initialize_watches_grid_layout (preferences.debug_tool_data.is_watches_grids_layout_managed_preference)
+			initialize_shortcuts
 
 				--| Attach the slices_cmd to the objects grid
 			watches_grid.set_slices_cmd (slices_cmd)
@@ -199,6 +201,14 @@ feature {NONE} -- Initialization
 			develop_window.menus.context_menu_factory.watch_tool_menu (a_menu, a_target_list, a_source, a_pebble, Current, watches_grid)
 		end
 
+feature -- Access: Help
+
+	help_context_id: !STRING_GENERAL
+			-- <Precursor>
+		once
+			Result := "E70D5827-A00D-47EE-9E7A-B7B4BFB34CCF"
+		end
+
 feature {NONE} -- Factory
 
     create_widget: EV_VERTICAL_BOX
@@ -268,11 +278,11 @@ feature -- Properties setting
 
 feature {ES_OBJECTS_GRID_SLICES_CMD} -- Query
 
-	objects_grid_object_line (addr: STRING): ES_OBJECTS_GRID_OBJECT_LINE is
+	objects_grid_object_line (addr: DBG_ADDRESS): ES_OBJECTS_GRID_OBJECT_LINE is
 		local
 			r: INTEGER
 			lrow: EV_GRID_ROW
-			ladd: STRING
+			ladd: DBG_ADDRESS
 		do
 			from
 				r := 1
@@ -335,7 +345,7 @@ feature -- Change status
 	prepare_for_debug is
 			-- Remove obsolete expressions from `Current'.
 		local
-			l_expr: DBG_EXPRESSION
+			evl: DBG_EXPRESSION_EVALUATION
 			witem: like watched_item_from
 			witems: like watched_items
 		do
@@ -354,14 +364,14 @@ feature -- Change status
 						witem.safe_unattach
 						witems.remove
 					else
-						l_expr := witem.expression
+						evl := witem.expression_evaluation
 						if
-							l_expr = Void
-							or else not l_expr.is_still_valid
+							evl = Void
+							or else not evl.expression.is_reusable
 						then
 							witems.remove
 						else
-							l_expr.set_unevaluated
+							evl.reset --| i.e: set unevaluated
 							add_watched_item_to_grid (witem, watches_grid)
 							witems.forth
 						end
@@ -417,7 +427,7 @@ feature {NONE} -- Memory management
 						witems.remove
 					else
 						check witem.expression /= Void	end
-						if not witem.expression.is_still_valid then
+						if not witem.expression.is_reusable then
 							witems.remove
 						else
 							witems.forth
@@ -470,7 +480,7 @@ feature {NONE} -- add new expression from the grid
 			expr: DBG_EXPRESSION
 		do
 			if valid_expression_text (s) then
-				create expr.make_for_context (s)
+				create expr.make_with_context (s)
 				add_expression (expr, False)
 			end
 		end
@@ -480,14 +490,14 @@ feature {NONE} -- add new expression from the grid
 			expr: DBG_EXPRESSION
 		do
 			if valid_expression_text (s) then
-				create expr.make_for_context (s)
+				create expr.make_with_context (s)
 				add_expression (expr, True)
 			end
 		end
 
 	valid_expression_text (s: STRING_32): BOOLEAN is
 		do
-			Result := s /= Void and then not s.has ('%R') and not s.has ('%N')
+			Result := s /= Void and then (not s.is_empty and not s.has ('%R') and not s.has ('%N'))
 		end
 
 feature {EB_CONTEXT_MENU_FACTORY} -- Context menu
@@ -525,7 +535,7 @@ feature {EB_CONTEXT_MENU_FACTORY} -- Context menu
 				else
 					ost ?= s
 					if ost /= Void then
-						oname := ost.name + ": " + ost.object_address
+						oname := ost.name + ": " + ost.object_address.output
 						if ev_application.ctrl_pressed then
 							add_object (ost, oname)
 						else
@@ -581,6 +591,14 @@ feature {EB_CONTEXT_MENU_FACTORY} -- Context menu
 
 feature {NONE} -- Event handling
 
+	on_show
+			-- <Precursor>
+			--| Be sure the "..." cell is available	
+		do
+			Precursor
+			ensure_last_row_is_new_expression_row
+		end
+
 	open_watch_menu (tbi: SD_TOOL_BAR_ITEM) is
 		require
 			is_initialized: is_initialized
@@ -589,6 +607,7 @@ feature {NONE} -- Event handling
 			m: EV_MENU
 			mi: EV_MENU_ITEM
 			mci: EV_CHECK_MENU_ITEM
+			l_has_items: BOOLEAN
 		do
 			w := mini_toolbar
 
@@ -601,10 +620,22 @@ feature {NONE} -- Event handling
 			end
 
 				--| Watch wipeout
-			if watched_items.count > 0 then
+			l_has_items := watched_items.count > 0
+			if l_has_items then
 				create mi.make_with_text_and_action (interface_names.f_clear_watch_tool_expressions, agent clear_watch_tool)
 				m.extend (mi)
+				create mi.make_with_text_and_action (interface_names.f_copy_watch_tool_selected_expressions_to_clipboard, agent copy_expressions_to_clipboard)
+				m.extend (mi)
+				m.extend (create {EV_MENU_SEPARATOR})
 			end
+			create mi.make_with_text_and_action (interface_names.f_export_watch_tool_expressions_to_file, agent export_expressions_to_file)
+			m.extend (mi)
+			if not l_has_items then
+				mi.disable_sensitive
+			end
+			create mi.make_with_text_and_action (interface_names.f_import_watch_tool_expressions_from_file, agent import_expressions_from_file)
+			m.extend (mi)
+			m.extend (create {EV_MENU_SEPARATOR})
 
 				--| Watch management
 			create mi.make_with_text_and_action (interface_names.f_create_new_watch, agent open_new_created_watch_tool)
@@ -640,14 +671,14 @@ feature {NONE} -- Event handling
 		local
 			dlg: EB_EXPRESSION_DEFINITION_DIALOG
 			ce: EB_EDITOR
-			l_text: STRING
+			l_text: STRING_32
 			debwin: EB_DEVELOPMENT_WINDOW
 		do
 			debwin := debugger_manager.debugging_window
 			if debwin /= Void then
 				ce := debwin.ui.current_editor
 				if ce /= Void and then ce.has_selection then
-					l_text := ce.string_selection
+					l_text := ce.wide_string_selection
 					if l_text.has ('%N') then
 						l_text := Void
 					end
@@ -741,11 +772,24 @@ feature {NONE} -- Event handling
 			end
 		end
 
+	open_viewer_on_expression is
+			-- Open viewer on selected expression
+		do
+			if
+				object_viewer_cmd /= Void and then
+				{g: like watches_grid} watches_grid and then g.selected_rows.count > 0
+			then
+				if {ost: OBJECT_STONE} g.grid_pebble_from_row_and_column (g.selected_rows.first, Void) then
+					object_viewer_cmd.set_stone (ost)
+				end
+			end
+		end
+
 	toggle_state_of_selected is
 			-- Toggle state of the selected expressions from the list.
 		local
 			rows: LIST [EV_GRID_ROW]
-			l_expr: DBG_EXPRESSION
+			evl: DBG_EXPRESSION_EVALUATION
 			sel_index: INTEGER
 			l_item: like watched_item_from
 		do
@@ -761,13 +805,13 @@ feature {NONE} -- Event handling
 				if rows.item.parent /= Void and then rows.item.parent_row = Void then
 					l_item := watched_item_from (rows.item)
 					if l_item = Void then
-						check False end
+						-- Void if this is the new expression row
 					else
-						l_expr := l_item.expression
-						if l_expr /= Void and then l_expr.evaluation_disabled then
-							l_expr.enable_evaluation
+						evl := l_item.expression_evaluation
+						if evl /= Void and then evl.disabled then
+							evl.set_disabled (False)
 						else
-							l_expr.disable_evaluation
+							evl.set_disabled (True)
 						end
 						refresh_watched_item (l_item)
 					end
@@ -780,53 +824,6 @@ feature {NONE} -- Event handling
 				else
 					on_row_deselected (Void)
 				end
-			end
-		end
-
-	move_processing: BOOLEAN
-
-	move_selected (offset: INTEGER) is
-		local
-			sel_rows: LIST [EV_GRID_ROW]
-			sel: EV_GRID_ROW
-			sel_index: INTEGER
-			new_index, to_index: INTEGER
-			line: ES_OBJECTS_GRID_EXPRESSION_LINE
-			witems: like watched_items
-			g: ES_OBJECTS_GRID
-		do
-			if not move_processing then
-				g := watches_grid
-				move_processing := True --| To avoid concurrent move
-				sel_rows := grid_selected_top_rows (g)
-				if not sel_rows.is_empty then
-					sel := sel_rows.first
-					if sel.parent_row = Void then
-						sel_index := sel.index
-						line ?= sel.data
-						if line /= Void then
-							witems := watched_items
-							witems.start
-							witems.search (line)
-							if not witems.exhausted then
-								check witems.item = line end
-								new_index := witems.index + offset
-								if new_index < 1 then
-									new_index := 1
-								elseif new_index > witems.count then
-									new_index := witems.count
-								end
-								witems.swap (new_index)
-							end
-						end
-						to_index := g.grid_move_top_row_node_by (g, sel_index, offset)
-						check to_index > 0 end
-						g.remove_selection
-						sel.enable_select
-					end
-				end
-				move_processing := False
-				ensure_last_row_is_new_expression_row
 			end
 		end
 
@@ -905,18 +902,19 @@ feature {NONE} -- Event handling
 			if lst.count > 0 then
 				delete_expression_cmd.enable_sensitive
 				toggle_state_of_expression_cmd.enable_sensitive
-			else
-				delete_expression_cmd.disable_sensitive
-				toggle_state_of_expression_cmd.disable_sensitive
-			end
-			if watches_grid.selected_rows.count = 1 then
-				edit_expression_cmd.enable_sensitive
 				move_up_cmd.enable_sensitive
 				move_down_cmd.enable_sensitive
 			else
-				edit_expression_cmd.disable_sensitive
+				delete_expression_cmd.disable_sensitive
+				toggle_state_of_expression_cmd.disable_sensitive
 				move_up_cmd.disable_sensitive
 				move_down_cmd.disable_sensitive
+			end
+
+			if lst.count = 1 then
+				edit_expression_cmd.enable_sensitive
+			else
+				edit_expression_cmd.disable_sensitive
 			end
 		end
 
@@ -935,56 +933,43 @@ feature {NONE} -- Event handling
 	key_pressed (k: EV_KEY) is
 			-- A key was pressed in `ev_list'.
 		local
-			ost: OBJECT_STONE
+			ev_app: EV_APPLICATION
 		do
 			if k /= Void then
+				ev_app := ev_application
+
 				inspect k.code
 				when {EV_KEY_CONSTANTS}.key_delete then
 					remove_selected
-				when {EV_KEY_CONSTANTS}.key_f2 then
-					edit_expression
-				when {EV_KEY_CONSTANTS}.key_c , {EV_KEY_CONSTANTS}.key_insert then
+				when {EV_KEY_CONSTANTS}.key_c then
 					if
-						ev_application.ctrl_pressed
-						and not ev_application.alt_pressed
-						and not ev_application.shift_pressed
+						ev_app.ctrl_pressed
+						and not ev_app.alt_pressed
+						and not ev_app.shift_pressed
 					then
 						update_clipboard_string_with_selection (watches_grid)
 					end
 				when {EV_KEY_CONSTANTS}.key_v then
 					if
-						ev_application.ctrl_pressed
-						and not ev_application.alt_pressed
-						and not ev_application.shift_pressed
+						ev_app.ctrl_pressed
+						and not ev_app.alt_pressed
+						and not ev_app.shift_pressed
 					then
 						set_expression_from_clipboard (watches_grid)
 					end
-				when {EV_KEY_CONSTANTS}.key_e then
-					if
-						ev_application.ctrl_pressed
-						and not ev_application.alt_pressed
-						and not ev_application.shift_pressed
-					then
-						if watches_grid.selected_rows.count > 0 then
-							ost ?= watches_grid.grid_pebble_from_row_and_column (watches_grid.selected_rows.first, Void)
-							object_viewer_cmd.set_stone (ost)
+				when {EV_KEY_CONSTANTS}.key_insert then
+					if not ev_app.alt_pressed then
+						if
+							not ev_app.ctrl_pressed
+							and ev_app.shift_pressed
+						then
+							set_expression_from_clipboard (watches_grid)
+						elseif
+							ev_app.ctrl_pressed
+							and not ev_app.shift_pressed
+						then
+							update_clipboard_string_with_selection (watches_grid)
 						end
-					end
-				when {EV_KEY_CONSTANTS}.key_numpad_subtract then
-					if
-						ev_application.ctrl_pressed
-						and not ev_application.alt_pressed
-						and not ev_application.shift_pressed
-					then
-						move_selected (-1)
-					end
-				when {EV_KEY_CONSTANTS}.key_numpad_add then
-					if
-						ev_application.ctrl_pressed
-						and not ev_application.alt_pressed
-						and not ev_application.shift_pressed
-					then
-						move_selected (+1)
 					end
 				when {EV_KEY_CONSTANTS}.key_right then
 					expand_selected_rows (watches_grid)
@@ -992,9 +977,9 @@ feature {NONE} -- Event handling
 					collapse_selected_rows (watches_grid)
 				when {EV_KEY_CONSTANTS}.key_enter then
 					if
-						not ev_application.ctrl_pressed
-						and not ev_application.alt_pressed
-						and not ev_application.shift_pressed
+						not ev_app.ctrl_pressed
+						and not ev_app.alt_pressed
+						and not ev_app.shift_pressed
 					then
 						enter_key_pressed (watches_grid)
 					end
@@ -1031,6 +1016,22 @@ feature {NONE} -- Event handling
 					end
 				end
 			end
+		end
+
+	key_home_pressed is
+		local
+			g: like watches_grid
+		do
+			g := watches_grid
+			g.set_virtual_position (g.virtual_x_position, 0)
+		end
+
+	key_end_pressed is
+		local
+			g: like watches_grid
+		do
+			g := watches_grid
+			g.set_virtual_position (g.virtual_x_position, g.maximum_virtual_y_position)
 		end
 
 	enter_key_pressed (a_grid: ES_OBJECTS_GRID) is
@@ -1086,22 +1087,29 @@ feature {NONE} -- Event handling
 	add_expression (expr: DBG_EXPRESSION; is_auto: BOOLEAN) is
 		local
 			expr_item: like watched_item_from
+			evl: DBG_EXPRESSION_EVALUATION
 		do
+			create evl.make (expr)
 			if is_auto then
 				if debugger_manager.safe_application_is_stopped then
-					if not expr.is_evaluated then
-						expr.evaluate_as_auto_expression
+					if not evl.evaluated then
+						evl.side_effect_forbidden := True
+						evl.evaluate
+					else
+						--| Should not occurred since `evl' has just been created
 					end
 				end
-				if not show_only_auto_expression_successfully_evaluated or else not expr.error_occurred then
-					expr_item := new_watched_item_from_expression (expr, watches_grid)
+				if not show_only_auto_expression_successfully_evaluated or else not evl.error_occurred then
+					expr_item := new_watched_item_from_expression_evaluation (evl, watches_grid)
 					expr_item.set_auto_expression (True)
 				end
 			else
-				expr_item := new_watched_item_from_expression (expr, watches_grid)
+				expr_item := new_watched_item_from_expression_evaluation (evl, watches_grid)
 			end
+
 			if expr_item /= Void then
-				if not expr.is_evaluated and debugger_manager.safe_application_is_stopped then
+				check evaluation_attached: evl /= Void end
+				if not evl.evaluated and debugger_manager.safe_application_is_stopped then
 					expr_item.request_evaluation (True)
 				end
 
@@ -1109,7 +1117,7 @@ feature {NONE} -- Event handling
 				if expr_item.row /= Void then
 					if
 						not expr_item.compute_grid_display_done
-						and then (expr /= Void and then (expr.evaluation_disabled or not expr.is_evaluated))
+						and then (evl.disabled or not evl.evaluated)
 					then
 						expr_item.compute_grid_display
 					end
@@ -1120,6 +1128,108 @@ feature {NONE} -- Event handling
 					expr_item.row.enable_select
 				end
 			end
+		end
+
+feature {NONE} -- Element change: expression moving
+
+	move_processing: BOOLEAN
+			-- Are we moving expressions up/down?
+
+	integer_sorter: DS_QUICK_SORTER [INTEGER]
+		once
+			create Result.make (create {KL_COMPARABLE_COMPARATOR [INTEGER]}.make)
+		end
+
+	indexes_from_list_of_rows (a_rows: LIST [EV_GRID_ROW]): DS_ARRAYED_LIST [INTEGER]
+			-- Array build from
+		do
+			from
+				create Result.make (a_rows.count)
+				a_rows.start
+			until
+				a_rows.after
+			loop
+				if {r: EV_GRID_ROW} a_rows.item and then r.parent_row = Void then
+					Result.put_last (r.index)
+				end
+				a_rows.forth
+			end
+			Result.sort (integer_sorter)
+		ensure
+			Result_attached: Result /= Void
+		end
+
+	move_selected (offset: INTEGER) is
+			-- Move selected top rows by `offset'
+		local
+			sel_rows: LIST [EV_GRID_ROW]
+			g: ES_OBJECTS_GRID
+			sel_indexes: like indexes_from_list_of_rows
+			i: INTEGER
+		do
+			if not move_processing then
+				g := watches_grid
+				sel_rows := grid_selected_top_rows (g)
+				if not sel_rows.is_empty then
+					sel_indexes := indexes_from_list_of_rows (sel_rows)
+					move_processing := True --| To avoid concurrent move					
+					if offset < 0 then
+						from
+							sel_indexes.start
+						until
+							sel_indexes.after
+						loop
+							i := internal_moved_selected_row (g, sel_indexes.item_for_iteration, offset)
+							sel_indexes.forth
+						end
+					else
+						from
+							sel_indexes.finish
+						until
+							sel_indexes.before
+						loop
+							i := internal_moved_selected_row (g, sel_indexes.item_for_iteration, offset)
+							sel_indexes.back
+						end
+					end
+					move_processing := False
+				end
+				ensure_last_row_is_new_expression_row
+			end
+		end
+
+	internal_moved_selected_row (g: ES_OBJECTS_GRID; a_index: INTEGER; offset: INTEGER): INTEGER
+		require
+			move_processing: move_processing
+		local
+			sel: EV_GRID_ROW
+			sel_index: INTEGER
+			new_index, to_index: INTEGER
+			witems: like watched_items
+		do
+			sel_index := a_index
+			sel := g.row (a_index)
+			check sel_is_top_row: sel.parent_row = Void end
+			if {line: ES_OBJECTS_GRID_EXPRESSION_LINE} sel.data then
+				witems := watched_items
+				if witems /= Void then
+					witems.start
+					witems.search (line)
+					if not witems.exhausted then
+						check witems.item = line end
+						new_index := witems.index + offset
+						if new_index < 1 then
+							new_index := 1
+						elseif new_index > witems.count then
+							new_index := witems.count
+						end
+						witems.swap (new_index)
+					end
+				end
+			end
+			to_index := g.grid_move_top_row_node_by (g, sel_index, offset)
+			check to_index > 0 end
+			Result := to_index
 		end
 
 feature {NONE} -- Event handling on notebook item
@@ -1234,9 +1344,203 @@ feature -- Grid management
 			ensure_last_row_is_new_expression_row
 		end
 
+feature -- Expressions storage management
+
+	default_watches_storage_folder: STRING
+		local
+			retried: BOOLEAN
+		do
+			if not retried then
+				Result := internal_default_watches_storage_folder
+				if Result = Void then
+					if {d: STRING} system.eiffel_project.project_location.location then
+						Result := d
+					end
+					internal_default_watches_storage_folder := Result
+				end
+			end
+		rescue
+			retried := True
+			retry
+		end
+
+	internal_default_watches_storage_folder: like default_watches_storage_folder
+			-- Cached value of `default_watches_storage_folder'
+
+	default_watches_storage_filename: STRING
+		local
+			retried: BOOLEAN
+		do
+			if not retried then
+				if {d: STRING} system.eiffel_project.project_location.location then
+					Result := system.eiffel_project.project_location.target + "-watch#" + watch_id.out + ".txt"
+				end
+			end
+		rescue
+			retried := True
+			retry
+		end
+
+	expressions_to_text (only_selection: BOOLEAN): STRING_32 is
+			-- Copy expressions to clipboard
+		local
+			line: like watched_item_from
+			exp: DBG_EXPRESSION
+		do
+			create Result.make_empty
+			if {lst: like watched_items} watched_items then
+				from
+					lst.start
+				until
+					lst.after
+				loop
+					line := lst.item
+					if line /= Void then
+						if
+							not only_selection or else
+							({r: EV_GRID_ROW} line.row and then r.is_selected)
+						then
+							exp := line.expression
+							if exp /= Void and then exp.is_reusable then
+								Result.append_string (exp.text)
+								Result.extend ('%N')
+							end
+						end
+					end
+					lst.forth
+				end
+			end
+		ensure
+			Result_attached: Result /= Void
+		end
+
+	load_expressions_from_text (s: STRING_32) is
+			-- Load expressions from `s'
+		local
+			expr_list: LIST [STRING_32]
+		do
+			if s /= Void and then not s.is_empty then
+				expr_list := s.split ('%N')
+				from
+					expr_list.start
+				until
+					expr_list.after
+				loop
+					if {e: STRING_32} expr_list.item_for_iteration then
+						if valid_expression_text (e) then
+							add_new_expression_for_context (e)
+						end
+					end
+					expr_list.forth
+				end
+			end
+		end
+
+	copy_expressions_to_clipboard is
+			-- Copy expressions to clipboard
+		do
+			ev_application.clipboard.set_text (expressions_to_text (True))
+		end
+
+	set_expression_from_clipboard (grid: ES_OBJECTS_GRID) is
+			-- Sets an expression from text held in clipboard
+		local
+			text_data: STRING_32
+			row: EV_GRID_ROW
+			rows: ARRAYED_LIST [EV_GRID_ROW]
+		do
+			text_data := ev_application.clipboard.text
+			if text_data /= Void and then not text_data.is_empty then
+				rows := grid_selected_top_rows (grid)
+				if not rows.is_empty then
+					row := rows.first
+					if
+						grid.col_name_index <= row.count
+					then
+						if {empty_expression_cell: ES_OBJECTS_GRID_EMPTY_EXPRESSION_CELL} row.item (grid.col_name_index) then
+							if text_data.occurrences ('%N') > 0 then
+								load_expressions_from_text (text_data)
+							else
+								empty_expression_cell.activate_with_string (text_data)
+							end
+						end
+					end
+				end
+			end
+		end
+
+	export_expressions_to_file is
+			-- Export all expressions to file
+		local
+			s: STRING_32
+			f_dlg: EV_FILE_SAVE_DIALOG
+			fn: STRING_32
+			f: PLAIN_TEXT_FILE
+		do
+			s := expressions_to_text (False)
+			if s /= Void and then not s.is_empty then
+				create f_dlg.make_with_title (interface_names.t_select_a_file)
+				if {d: STRING} default_watches_storage_folder then
+					f_dlg.set_start_directory (d)
+					if {n: STRING} default_watches_storage_filename then
+						f_dlg.set_file_name (n)
+					end
+				end
+				f_dlg.show_modal_to_window (parent_window)
+				fn := f_dlg.file_name
+				if fn /= Void and then not fn.is_empty then
+					internal_default_watches_storage_folder := f_dlg.file_path
+					create f.make (fn)
+					if not f.exists or else f.is_writable then
+						f.open_write
+						f.put_string (s)
+						f.close
+					end
+				end
+			end
+		end
+
+	import_expressions_from_file is
+			-- Import expressions from file
+		local
+			s: STRING_32
+			f_dlg: EV_FILE_OPEN_DIALOG
+			fn: STRING_32
+			f: PLAIN_TEXT_FILE
+		do
+			create f_dlg.make_with_title (interface_names.t_select_a_file)
+			if {d: STRING} default_watches_storage_folder then
+				f_dlg.set_start_directory (d)
+				if {n: STRING} default_watches_storage_filename then
+					f_dlg.set_file_name (n)
+				end
+			end
+
+			f_dlg.disable_multiple_selection
+			f_dlg.show_modal_to_window (parent_window)
+			fn := f_dlg.file_name
+			if fn /= Void and then not fn.is_empty then
+				internal_default_watches_storage_folder := f_dlg.file_path
+				create f.make (fn)
+				if f.exists and then f.is_readable then
+					f.open_read
+					from
+						create s.make (f.count)
+					until
+						f.end_of_file or f.exhausted
+					loop
+						f.read_stream (512)
+						s.append (f.last_string)
+					end
+					f.close
+					load_expressions_from_text (s)
+				end
+			end
+		end
+
 feature {NONE} -- grid Layout Implementation
 
-	keep_object_reference_fixed (addr: STRING) is
+	keep_object_reference_fixed (addr: DBG_ADDRESS) is
 		do
 			if debugger_manager.application_is_executing then
 				debugger_manager.application_status.keep_object (addr)
@@ -1262,6 +1566,100 @@ feature {NONE} -- grid Layout Implementation
 
 	process_record_layout_on_next_recording_request: BOOLEAN
 
+feature {NONE} -- Shortcuts
+
+	initialize_shortcuts
+			-- Initialize shortcuts
+		require
+			watches_grid_attached: watches_grid /= Void
+		local
+			g: like watches_grid
+			p: SHORTCUT_PREFERENCE
+			ag: PROCEDURE [ANY, TUPLE]
+		do
+			g := watches_grid
+
+			--| FIXME: for now, let's use shortcut functionality from ES_GRID/ES_TREE_NAVIGATOR
+			--| ... key, ctrl, alt, shift
+
+				--| move up
+			ag := agent move_selected (-1)
+			p := preferences.debug_tool_data.move_up_watch_expression_shortcut_preference
+			if p /= Void then
+				create move_row_up_shortcut.make_with_key_combination (p.key, p.is_ctrl, p.is_alt, p.is_shift)
+				p.change_actions.extend (agent update_shortcut_with_pref (g, move_row_up_shortcut, ag, ?))
+			else
+				move_row_up_shortcut := new_shortcut ({EV_KEY_CONSTANTS}.key_up, False, True, True)
+			end
+			g.register_shortcut (move_row_up_shortcut, agent move_selected (-1))
+
+
+				--| move down
+			ag := agent move_selected (+1)
+			p := preferences.debug_tool_data.move_down_watch_expression_shortcut_preference
+			if p /= Void then
+				create move_row_down_shortcut.make_with_key_combination (p.key, p.is_ctrl, p.is_alt, p.is_shift)
+				p.change_actions.extend (agent update_shortcut_with_pref (g, move_row_down_shortcut, ag, ?))
+			else
+				move_row_down_shortcut := new_shortcut ({EV_KEY_CONSTANTS}.key_down, False, True, True)
+			end
+			g.register_shortcut (move_row_down_shortcut, agent move_selected (+1))
+
+				--| Other shortcuts (non pref)
+			edit_selected_shortcut 		:= new_shortcut ({EV_KEY_CONSTANTS}.key_f2, False, False, False)
+			open_viewer_shortcut 		:= new_shortcut ({EV_KEY_CONSTANTS}.key_e, True, False, False)
+			goto_home_shortcut 			:= new_shortcut ({EV_KEY_CONSTANTS}.key_home, True, False, True)
+			goto_end_shortcut 			:= new_shortcut ({EV_KEY_CONSTANTS}.key_end, True, False, False)
+
+			g.register_shortcut (edit_selected_shortcut, agent edit_expression)
+			g.register_shortcut (open_viewer_shortcut, agent open_viewer_on_expression)
+			g.register_shortcut (goto_home_shortcut, agent key_home_pressed)
+			g.register_shortcut (goto_end_shortcut,  agent key_end_pressed)
+		end
+
+	new_shortcut (a_key: INTEGER; a_ctrl, a_alt, a_shift: BOOLEAN): ES_KEY_SHORTCUT
+			-- Create new shortcut from arguments
+		do
+			create Result.make_with_key_combination (create {EV_KEY}.make_with_code (a_key), a_ctrl, a_alt, a_shift)
+		end
+
+	update_shortcut_with_pref (g: like watches_grid; sh: like new_shortcut; ag: PROCEDURE [ANY, TUPLE]; ap: SHORTCUT_PREFERENCE)
+			-- Update shortcut `sh' on grid `g' with agent `ag' with pref `ap'
+		require
+			g_attached: g /= Void
+			ag_attached: ag /= Void
+			sh_shortcut_attached: sh /= Void
+			pref_attached: ap /= Void
+		do
+			if g.is_shortcut_registered (sh) then
+				g.deregister_shortcut (sh)
+			end
+			sh.set_key (ap.key)
+			if ap.is_ctrl then
+				sh.enable_control_required
+			else
+				sh.disable_control_required
+			end
+			if ap.is_alt then
+				sh.enable_alt_required
+			else
+				sh.disable_alt_required
+			end
+			if ap.is_shift then
+				sh.enable_shift_required
+			else
+				sh.disable_shift_required
+			end
+			g.register_shortcut (sh, ag)
+		end
+
+	move_row_up_shortcut,
+	move_row_down_shortcut,
+	edit_selected_shortcut,
+	open_viewer_shortcut,
+	goto_home_shortcut,
+	goto_end_shortcut: ES_KEY_SHORTCUT
+
 feature -- Access
 
 	refresh_watched_item (a_item: like watched_item_from) is
@@ -1270,22 +1668,8 @@ feature -- Access
 			a_item_not_void: a_item /= Void
 			a_item_has_expression: a_item.expression /= Void
 			a_item_attached: a_item.row /= Void
-		local
-			l_row: EV_GRID_ROW
-			l_expr: DBG_EXPRESSION
 		do
-			l_row := a_item.row
-			l_expr := a_item.expression
-			if l_expr.evaluation_disabled then
-				--| nothing special
-			else
-				if debugger_manager.safe_application_is_stopped then
-					l_expr.evaluate
-				else
-					l_expr.set_unevaluated
-				end
-			end
-			a_item.refresh
+			a_item.refresh_expression
 		end
 
 	add_dump_value (dv: DUMP_VALUE) is
@@ -1294,7 +1678,7 @@ feature -- Access
 			expr: DBG_EXPRESSION
 		do
 			if dv.dynamic_class = Void then
-				create expr.make_for_context ("Void")
+				create expr.make_with_context ("Void")
 			else
 				create expr.make_as_object (dv.dynamic_class, dv.address)
 			end
@@ -1307,7 +1691,7 @@ feature -- Access
 			expr: DBG_EXPRESSION
 		do
 			if dv.dynamic_class = Void then
-				create expr.make_for_context ("Void")
+				create expr.make_with_context ("Void")
 			else
 				create expr.make_as_object (dv.dynamic_class, dv.address)
 			end
@@ -1340,7 +1724,7 @@ feature {NONE} -- Update
 			-- dbg_was_stopped is ignore if Application/Debugger is not running
 		local
 			eval: BOOLEAN
-			l_expr: DBG_EXPRESSION
+			evl: DBG_EXPRESSION_EVALUATION
 			l_item: like watched_item_from
 			witems: like watched_items
 		do
@@ -1365,14 +1749,14 @@ feature {NONE} -- Update
 			loop
 				l_item := witems.item
 				l_item.request_evaluation (False)
-				l_expr := l_item.expression
-				if l_expr.evaluation_disabled then
+				evl := l_item.expression_evaluation
+				if evl.disabled then
 					-- Nothing special
 				else
 					if eval then
 						l_item.request_evaluation (True)
 					else
-						l_expr.set_unevaluated
+						evl.evaluated := False -- | i.e: set unevaluated
 					end
 				end
 				if l_item.row = Void then
@@ -1425,13 +1809,15 @@ feature {NONE} -- Implementation
 
 	Cst_nota_col: INTEGER is 5
 
-	new_watched_item_from_expression (expr: DBG_EXPRESSION; a_grid: ES_OBJECTS_GRID): like watched_item_from is
+	new_watched_item_from_expression_evaluation (evl: DBG_EXPRESSION_EVALUATION; a_grid: ES_OBJECTS_GRID): like watched_item_from is
 		require
-			expr /= Void
-			a_grid /= Void
+			evaluation_attached: evl /= Void
+			grid_attached: a_grid /= Void
 		do
-			create Result.make_with_expression (expr, a_grid)
+			create Result.make_with_expression_evaluation (evl, a_grid)
 			add_watched_item_to_grid (Result, a_grid)
+		ensure
+			Result_evaluation_is_evl: Result.expression_evaluation = evl
 		end
 
 	add_watched_item_to_grid (witem: like watched_item_from; a_grid: ES_OBJECTS_GRID) is
@@ -1475,6 +1861,7 @@ feature {NONE} -- Implementation
 		end
 
 	watched_item_for_expression (expr: DBG_EXPRESSION): like watched_item_from is
+			-- watched item related to `expr'
 		require
 			valid_expr: expr /= Void
 		local
@@ -1495,6 +1882,7 @@ feature {NONE} -- Implementation
 		end
 
 	refresh_expression (expr: DBG_EXPRESSION) is
+			-- Refresh watched item related to `expr'
 		require
 			valid_expr: expr /= Void
 		local
@@ -1526,8 +1914,8 @@ feature {NONE} -- Implementation
 					if row.parent_row = Void then
 						l_item := watched_item_from (row)
 						if l_item /= Void then
-							expr ?= l_item.expression
-							if expr.on_context then
+							expr := l_item.expression
+							if expr.context.on_context then
 								refresh_watched_item (l_item)
 							end
 						end
@@ -1549,9 +1937,9 @@ invariant
 	not_void_delete_expression_cmd: mini_toolbar /= Void implies delete_expression_cmd /= Void
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -1562,19 +1950,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

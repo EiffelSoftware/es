@@ -26,11 +26,12 @@ convert
 
 feature {NONE} -- Initialization
 
-	make (a_widget: !G)
+	make (a_widget: G)
 			-- Initializes a bordered widget with a existing widget.
 			--
 			-- `a_widget': The widget to surround with a border
 		require
+			a_widget_attached: a_widget /= Void
 			not_a_widget_is_destroyed: not a_widget.is_destroyed
 			not_a_widget_is_parented: not a_widget.has_parent
 		do
@@ -71,12 +72,12 @@ feature {NONE} -- Access
 			is_interface_usable: is_interface_usable
 			is_initializing_or_initialized: is_initializing or is_initialized
 		do
-			Result ?= colors.stock_colors.color_3d_shadow
+			Result := colors.stock_colors.color_3d_shadow.as_attached
 		end
 
 feature -- User interface elements
 
-	widget: !G
+	widget: G
 			-- Actual widget
 
 feature {NONE} -- Factory
@@ -87,7 +88,10 @@ feature {NONE} -- Factory
 			create Result
 		end
 
-;indexing
+invariant
+	widget_not_void: widget /= Void
+
+indexing
 	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

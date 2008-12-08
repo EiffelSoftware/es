@@ -10,7 +10,7 @@ class CL_TYPE_A
 inherit
 	NAMED_TYPE_A
 		redefine
-			is_expanded, is_reference, is_separate, instantiation_in, valid_generic,
+			is_expanded, is_reference, is_separate, valid_generic,
 			duplicate, meta_type, same_as, good_generics, error_generics,
 			has_expanded, internal_is_valid_for_class, convert_to, description,
 			is_full_named_type, is_external, is_enum, is_conformant_to,
@@ -241,7 +241,7 @@ feature -- Access
 			end
 		end
 
-	generic_derivation: CL_TYPE_A is
+	generic_derivation: like Current is
 			-- Precise generic derivation of current type.
 			-- That is to say given a type, it gives the associated TYPE_A
 			-- which can be used to search its associated CLASS_TYPE.
@@ -645,11 +645,10 @@ feature {COMPILER_EXPORTER} -- Conformance
 				if other_class_type.is_expanded then
 						-- It should be the exact same base class for expanded.
 					if is_expanded and then class_id = other_class_type.class_id then
-						if is_typed_pointer then
+						Result := other_class_type.valid_generic (Current)
+						if Result and then is_typed_pointer then
 								-- TYPED_POINTER should be exactly the same type.
-							Result := same_as (other)
-						else
-							Result := other_class_type.valid_generic (Current)
+							Result := valid_generic (other_class_type)
 						end
 					end
 				else
@@ -741,7 +740,7 @@ feature {COMPILER_EXPORTER} -- Conformance
 			loop
 				parent_actual_type := parent_type (l_conforming_parents.i_th (i))
 				if l_is_attached and then not parent_actual_type.is_attached then
-					parent_actual_type := parent_actual_type.as_attached
+					parent_actual_type := parent_actual_type.as_attached_type
 				elseif l_is_implicitly_attached and then not parent_actual_type.is_implicitly_attached then
 					parent_actual_type := parent_actual_type.as_implicitly_attached
 				end
@@ -761,20 +760,6 @@ feature {COMPILER_EXPORTER} -- Conformance
 		end
 
 feature {COMPILER_EXPORTER} -- Instantitation of a feature type
-
-	instantiation_in (type: TYPE_A; written_id: INTEGER): TYPE_A is
-			-- Instantiation of Current in the context of `class_type'
-			-- assuming that Current is written in `written_id'
-		local
-			class_type: CL_TYPE_A
-		do
-			class_type ?= type
-			if class_type /= Void then
-				Result := class_type.instantiation_of (Current, written_id)
-			else
-				Result := Current
-			end
-		end
 
 	adapted_in (class_type: CLASS_TYPE): CL_TYPE_A is
 			-- Redefined for covariant redefinition of result type.
@@ -866,7 +851,6 @@ feature {COMPILER_EXPORTER} -- Instantiation of a type in the context of a desce
 		local
 			parents: FIXED_LIST [CL_TYPE_A]
 			parent: CL_TYPE_A
-			parent_class: CLASS_C
 			i, count: INTEGER
 			parent_class_type: CL_TYPE_A
 		do
@@ -877,15 +861,11 @@ feature {COMPILER_EXPORTER} -- Instantiation of a type in the context of a desce
 			until
 				i > count or else Result /= Void
 			loop
-				parent := parents.i_th (i)
-				parent_class := parent.associated_class
-				if parent_class = c then
+				parent := parents [i]
+				if parent.associated_class = c then
 						-- Class `c' is found
 					Result ?= parent_type (parent)
-				elseif parent_class.conform_to (c) then
-						-- Iterate in the inheritance graph and
-						-- conformance tables help to take the good
-						-- way in the parents
+				else
 					parent_class_type ?= parent_type (parent)
 					Result := parent_class_type.find_class_type (c)
 				end
@@ -909,7 +889,7 @@ feature {COMPILER_EXPORTER} -- Instantiation of a type in the context of a desce
 	create_info: CREATE_TYPE is
 			-- Byte code information for entity type creation
 		do
-			create Result.make (Current)
+			create Result.make (as_attachment_mark_free)
 		end
 
 feature -- Debugging

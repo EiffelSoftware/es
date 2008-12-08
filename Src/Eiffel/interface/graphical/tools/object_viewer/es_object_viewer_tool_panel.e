@@ -13,10 +13,14 @@ inherit
 	ES_DOCKABLE_TOOL_PANEL [EV_VERTICAL_BOX]
 		redefine
 			create_mini_tool_bar_items,
-			internal_recycle,
 			on_before_initialize,
 			build_docking_content,
 			show, close
+		end
+
+	ES_HELP_CONTEXT
+		export
+			{NONE} all
 		end
 
 	EB_OBJECT_VIEWERS_I
@@ -45,7 +49,6 @@ feature {NONE} -- Initialization
 			cmd_attached: cmd /= Void
 			a_manager_attached: a_manager /= Void
 			not_a_manager_is_recycled: not a_manager.is_recycled
-			a_tool_attached: a_tool /= Void
 			not_a_tool_is_recycled: not a_tool.is_recycled
 		do
 			command := cmd
@@ -100,6 +103,14 @@ feature {NONE} -- Initialization
 			check content_not_void : content /= Void end
 			content.drop_actions.extend (agent set_stone)
 			content.drop_actions.set_veto_pebble_function (agent is_stone_valid)
+		end
+
+feature -- Access: Help
+
+	help_context_id: !STRING_GENERAL
+			-- <Precursor>
+		once
+			Result := "62002CE3-37F9-22DE-39F0-0930468A67BE"
 		end
 
 feature {NONE} -- Factory
@@ -317,13 +328,6 @@ feature -- Memory management
 	is_destroyed: BOOLEAN is
 		do
 			Result := widget = Void or else widget.is_destroyed
-		end
-
-	internal_recycle is
-			-- Recycle `Current', but leave `Current' in an unstable state,
-			-- so that we know whether we're still referenced or not.
-		do
-			Precursor
 		end
 
 indexing
