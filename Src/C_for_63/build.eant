@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<project name="build_runtime" default="help">
+
+	<description>
+		description: "Eiffel Runtime compilation"
+	</description>
+
+	<target name="help">
+		<echo message="usage:"/>
+		<echo message=" geant compile"/>
+		<echo message=" geant compile_runtime"/>
+		<echo message=" geant compile_runtime_dll"/>
+		<echo message=" geant clean"/>
+		<echo message=" geant clobber"/>
+		<echo>
+Note: compile = compile_runtime
+when switching from non dll to dll, don't forget to clean
+		</echo>
+	</target>
+
+	<target name="compile">
+		<geant target="compile_runtime" />
+	</target>
+	<target name="recompile">
+		<geant target="clean" />
+		<geant target="compile_runtime" />
+	</target>
+	<target name="compile_runtime_silent">
+		<set name="_SILENT" value="true" />
+		<geant target="compile_runtime" />
+		<unset name="_SILENT" />
+	</target>
+	<target name="compile_runtime_dll_silent">
+		<set name="_SILENT" value="true" />
+		<geant target="compile_runtime_dll" />
+		<unset name="_SILENT" />
+	</target>
+
+	<target name="compile_runtime">
+		<geant target="_compile_runtime" arguments=" " />
+	</target>
+	<target name="compile_runtime_dll">
+		<geant target="_compile_runtime" arguments="dll" />
+	</target>
+	
+	<target name="clean">
+		<echo message="- Clean Runtime" />
+		<exec executable=".\configure.bat clean" accept_errors="true" exit_code_variable="return_code" 
+			if="${is_windows}"
+			/>
+		<exec executable="make clean" accept_errors="true" exit_code_variable="return_code" 
+			unless="${is_windows}"
+			/>
+	</target>
+
+	<target name="clobber" >
+		<echo message="- Clobber Runtime" />
+		<exec executable=".\configure.bat clean" accept_errors="true" exit_code_variable="return_code" 
+			if="${is_windows}"
+			/>
+		<exec executable="make clobber" accept_errors="true" exit_code_variable="return_code" 
+			unless="${is_windows}"
+			/>
+	</target>
+
+	<!-- Implementation -->
+	<target name="_compile_runtime">
+		<argument name="_rt_type_" /><!-- ' ' or 'dll' -->
+
+		<echo message="- Runtime ${_rt_type_}: compiling ..." />
+		<!-- Windows -->
+		<set name="runtime_c_compiler" value="m" if="-${ISE_C_COMPILER}-=--" />
+		<set name="runtime_c_compiler" value="m" if="${ISE_C_COMPILER}=msc" />
+		<set name="runtime_c_compiler" value="b" if="${ISE_C_COMPILER}=bcb" />
+		<set name="runtime_c_compiler" value="g" if="${ISE_C_COMPILER}=mingw" />
+
+		<!-- Windows -->
+		<set name="_cmd" value="configure.bat win32 ${runtime_c_compiler} ${_rt_type_}" if="${ISE_PLATFORM}=windows" />
+		<set name="_cmd" value="configure.bat win64 ${runtime_c_compiler} ${_rt_type_}" if="${ISE_PLATFORM}=win64" />
+
+		<!-- Unices -->
+		<set name="_cmd" value="echo 'y\n' | ./quick_configure " unless="${is_windows}" /><!-- or "echo 'n\nn\nn\n' |..." to recompile -->
+
+		<!-- silent ? -->
+		<set name="l_silent" value=" > NUL:" if="$is_windows" />
+		<set name="l_silent" value=" > /dev/null" unless="$is_windows" />
+		<set name="_cmd" value="${_cmd} ${l_silent}" if="${_SILENT}=true" />
+		<unset name="l_silent" />
+
+		<!-- execution ? -->
+		<exec executable="${_cmd} " accept_errors="true" exit_code_variable="return_code" />
+
+		<!-- cleaning -->
+		<unset name="_cmd" />
+		<unset name="runtime_c_compiler" />
+
+		<!-- result -->
+		<echo message="- Runtime ${_rt_type_}: compiled." if="$return_code=0" />
+		<echo message="- Runtime ${_rt_type_}: compilation failed (code:$return_code)" unless="$return_code=0" />
+	</target>
+	
+</project>
