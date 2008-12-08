@@ -1039,6 +1039,7 @@ rt_private EIF_REFERENCE eif_unsafe_portable_retrieve(int (*char_read_function)(
 		case RECOVERABLE_STORE_5_3:
 		case INDEPENDENT_STORE_5_5:
 		case INDEPENDENT_STORE_6_0:
+		case INDEPENDENT_STORE_6_3:
 			rt_init_retrieve(retrieve_read_with_compression, char_read_function, RETRIEVE_BUFFER_SIZE);
 			rt_kind = RECOVERABLE_STORE;
 			rt_kind_version = rt_type;
@@ -1118,6 +1119,7 @@ rt_private EIF_REFERENCE eif_unsafe_portable_retrieve(int (*char_read_function)(
 		case RECOVERABLE_STORE_5_3:
 		case INDEPENDENT_STORE_5_5:
 		case INDEPENDENT_STORE_6_0:
+		case INDEPENDENT_STORE_6_3:
 			independent_retrieve_reset ();
 			break;
 	}
@@ -3017,6 +3019,12 @@ rt_shared char *name_of_attribute_type (EIF_TYPE_INDEX **type)
 
 	REQUIRE ("Not a formal parameter", dftype != FORMAL_TYPE);
 
+		/* Skip all the annotations. */
+	while (RT_HAS_ANNOTATION_TYPE(dftype)) {
+		*type += 1;
+		dftype = **type;
+	}
+
 	if (dftype == TUPLE_TYPE) {
 		*type += TUPLE_OFFSET;
 		dftype = **type;
@@ -3044,6 +3052,12 @@ rt_private char *name_of_old_attribute_type (EIF_TYPE_INDEX **type)
 	char *result;
 
 	REQUIRE ("Not a formal parameter", dftype != FORMAL_TYPE);
+
+		/* Skip all the annotations. */
+	while (RT_HAS_ANNOTATION_TYPE(dftype)) {
+		*type += 1;
+		dftype = **type;
+	}
 
 	if (dftype <= MAX_DTYPE) {
 		if (type_conversions->type_index[dftype] == TYPE_UNDEFINED) {
@@ -3151,7 +3165,7 @@ rt_shared void print_generic_names (struct cecil_info *info, int type)
 		if (info->dynamic_types[i] == type) {
 			found = 1;
 			printf ("[");
-			*patterns = info->patterns + i * info->nb_param;
+			patterns = info->patterns + i * info->nb_param;
 			for (j = 0; j < info->nb_param; ++j) {
 				printf ("%s%s", j > 0 ? ", " : "", generic_name (patterns[j], 0));
 			}
@@ -3285,6 +3299,12 @@ rt_private int attribute_type_matched (EIF_TYPE_INDEX **gtype, EIF_TYPE_INDEX **
 	if (rt_kind_version < INDEPENDENT_STORE_5_5) {
 		result = old_attribute_type_matched (gtype, atype);
 	} else {
+			/* Ignore annotation flags since we do not support them in 6.2 */
+		while (RT_HAS_ANNOTATION_TYPE(aftype)) {
+			*atype +=1;
+			aftype = **atype;
+		}
+
 		if (dftype == TUPLE_TYPE) {
 			if (aftype == TUPLE_TYPE) {
 				(*gtype) += TUPLE_OFFSET;

@@ -1454,7 +1454,7 @@ rt_shared EIF_TYPE_INDEX *eif_gen_cid (EIF_TYPE_INDEX dftype)
 rt_shared EIF_TYPE_INDEX eif_gen_id_from_cid (EIF_TYPE_INDEX *a_cidarr, EIF_TYPE_INDEX *dtype_map)
 {
 	EIF_TYPE_INDEX   dftype;
-	EIF_TYPE_INDEX   count, i, dtype;
+	EIF_TYPE_INDEX   count, i, j, dtype;
 
 	REQUIRE ("Valid cid array", a_cidarr);
 
@@ -1463,45 +1463,61 @@ rt_shared EIF_TYPE_INDEX eif_gen_id_from_cid (EIF_TYPE_INDEX *a_cidarr, EIF_TYPE
 
 	if (dtype_map) {
 			/* We need to map old dtypes to new dtypes */
-		for (i = 1; i <= count; i++) {
+		for (i = 1, j = 1; i <= count; i++, j++) {
 			dtype = a_cidarr [i];
+
+				/* Read annotation if any. */
+			while (RT_HAS_ANNOTATION_TYPE(dtype)) {
+				i++;
+				dtype = a_cidarr [i];
+			}
 
 			if (dtype <= MAX_DTYPE) {
 				dtype = dtype_map [dtype];
 				dtype = RTUD_INV(dtype);
-				a_cidarr [i] = dtype;
+				a_cidarr [j] = dtype;
 			} else if (dtype == TUPLE_TYPE) {
 					/* We simply skip number of generic
 					 * parameters of the tuple as they are not really used
 					 * and only update TUPLE dynamic type */
 				i = i + TUPLE_OFFSET;
-				a_cidarr [i]  = RTUD_INV(dtype_map [a_cidarr [i]]);
+				j = j + TUPLE_OFFSET;
+				a_cidarr [j]  = RTUD_INV(dtype_map [a_cidarr [i]]);
 			} else if (dtype == FORMAL_TYPE) {
 					/* We skip formal position as if we were not doing it
 					 * it would be updated using `dtype_map'/`RTUD_INV' at the
 					 * next iteration and would not make sense anymore. */
 				i++;
+				j++;
 			}
 		}
 	} else {
 			/* We only need to undo the effect of RTUD */
-		for (i = 1; i <= count; i++) {
+		for (i = 1, j = 1; i <= count; i++,j++) {
 			dtype = a_cidarr [i];
+
+				/* Read annotation if any. */
+			while (RT_HAS_ANNOTATION_TYPE(dtype)) {
+				i++;
+				dtype = a_cidarr [i];
+			}
 
 			if (dtype <= MAX_DTYPE) {
 				dtype = RTUD_INV(dtype);
-				a_cidarr [i] = dtype;
+				a_cidarr [j] = dtype;
 			} else if (dtype == TUPLE_TYPE) {
 					/* We simply skip number of generic
 					 * parameters of the tuple as they are not really used
 					 * and only update TUPLE dynamic type */
 				i = i + TUPLE_OFFSET;
-				a_cidarr [i]  = RTUD_INV(a_cidarr [i]);
+				j = j + TUPLE_OFFSET;
+				a_cidarr [j]  = RTUD_INV(a_cidarr [i]);
 			} else if (dtype == FORMAL_TYPE) {
 					/* We skip formal position as if we were not doing it
 					 * it would be updated using RTUD_INV at the next iteration
 					 * and it would not make sense anymore. */
 				i++;
+				j++;
 			}
 		}
 	}
