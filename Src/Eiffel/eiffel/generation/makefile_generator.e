@@ -54,7 +54,7 @@ feature -- Attributes
 	Packet_number: INTEGER is 33
 			-- Maximum number of files in a single linking phase in Workbench mode.
 
-	Final_packet_number: INTEGER is 100
+	Final_packet_number: INTEGER is 50
 			-- Maximum number of files in a single linking phase in Final mode.
 
 	System_packet_number: INTEGER is 20
@@ -239,7 +239,9 @@ feature -- Generate Dynamic Library
 			-- Generate "E1/egc_dynlib.o"
 			make_file.put_string ("%N")
 			make_file.put_string (packet_name (system_object_prefix, 1))
-			make_file.put_string ("/egc_dynlib.o: Makefile")
+			make_file.put_string ("/egc_dynlib.o: Makefile ")
+			make_file.put_string (packet_name (system_object_prefix, 1))
+			make_file.put_string ("/Makefile")
 			make_file.put_string ("%N%T$(CP) %"$(EIFTEMPLATES)/")
 			make_file.put_string (egc_dynlib_file)
 			make_file.put_string ("%" ")
@@ -255,6 +257,8 @@ feature -- Generate Dynamic Library
 			make_file.put_string ("%N")
 			make_file.put_string (packet_name (system_object_prefix, 1))
 			make_file.put_string ("/edynlib.o: Makefile ")
+			make_file.put_string (packet_name (system_object_prefix, 1))
+			make_file.put_string ("/Makefile ")
 			make_file.put_string (packet_name (system_object_prefix, 1))
 			make_file.put_string ("/edynlib.c ")
 			make_file.put_string ("%N%Tcd ")
@@ -305,7 +309,7 @@ feature -- Actual generation
 				-- Generate main /bin/sh preamble
 			generate_preamble
 				-- Customize main Makefile macros
-			generate_customization
+			generate_customization (False)
 				-- How to produce a .o from a .c file
 			generate_compilation_rule
 
@@ -341,7 +345,7 @@ feature -- Actual generation
 			cecil_rt_basket.wipe_out
 		end
 
-	generate_il is
+	generate_il (has_il_cpp: BOOLEAN) is
 			-- Generate make files
 		local
 			basket: LINKED_LIST [STRING]
@@ -358,7 +362,7 @@ feature -- Actual generation
 				-- Generate main /bin/sh preamble
 			generate_preamble
 				-- Customize main Makefile macros
-			generate_customization
+			generate_customization (has_il_cpp)
 				-- How to produce a .o from a .c file
 			generate_compilation_rule
 
@@ -417,7 +421,7 @@ feature -- Sub makefile generation
 						-- Generate main /bin/sh preamble
 					generate_sub_preamble (packet_name (sub_dir, i))
 						-- Customize main Makefile macros
-					generate_customization
+					generate_customization (False)
 						-- How to produce a .o from a .c file
 					generate_compilation_rule
 						-- Generate object list.
@@ -534,7 +538,7 @@ feature -- Generation, Header
 				%$spitshell >Makefile <<!GROK!THIS!%N")
 		end
 
-	generate_customization is
+	generate_customization (has_il_cpp: BOOLEAN) is
 			-- Customize generic Makefile
 		do
 			generate_include_path
@@ -671,10 +675,15 @@ feature -- Generation, Header
 				make_file.put_string ("IL_SYSTEM = lib")
 				make_file.put_string (system_name)
 				make_file.put_string ("$shared_suffix%N")
-				make_file.put_string ("IL_OBJECT = lib")
+				make_file.put_string ("IL_OBJECTS = lib")
 				make_file.put_string (system_name)
-				make_file.put_string (".$obj_file_ext%N")
-				make_file.put_string ("IL_RESOURCE = ")
+				make_file.put_string (".$obj_file_ext")
+				if has_il_cpp then
+					make_file.put_string (" lib")
+					make_file.put_string (system_name)
+					make_file.put_string ("_cpp.$obj_file_ext")
+				end
+				make_file.put_string ("%NIL_RESOURCE = ")
 				make_file.put_string (system_name)
 				make_file.put_new_line
 			end
@@ -883,7 +892,7 @@ feature -- Generation (Linking rules)
 			make_file.put_string ("all: $(IL_SYSTEM)")
 			make_file.put_new_line
 
-			make_file.put_string ("OBJECTS= $(IL_OBJECT)")
+			make_file.put_string ("OBJECTS= $(IL_OBJECTS)")
 			make_file.put_new_line
 			make_file.put_new_line
 
@@ -1190,7 +1199,15 @@ feature -- Generation (Linking rules)
 				make_file.put_character (system_object_prefix)
 				make_file.put_string ("obj")
 				make_file.put_integer (i)
-				make_file.put_string (".o: Makefile%N%Tcd ")
+				make_file.put_string (".o: Makefile ")
+				make_file.put_string (packet_name (system_object_prefix, 1))
+				make_file.put_string ("/estructure.h")
+				if system.in_final_mode then
+					make_file.put_character (' ')
+					make_file.put_string (packet_name (system_object_prefix, 1))
+					make_file.put_string ("/eoffsets.h")
+				end
+				make_file.put_string ("%N%Tcd ")
 				make_file.put_string (packet_name (system_object_prefix, i))
 				make_file.put_string (" ; $(START_TEST) $(SHELL) Makefile.SH ; $(MAKE) ")
 				make_file.put_character (system_object_prefix)

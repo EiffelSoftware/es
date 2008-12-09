@@ -10,6 +10,9 @@ class
 
 inherit
 	SD_INTERFACE_NAMES
+		undefine
+			editor_area
+		end
 
 	DOCKING_NAMES
 	

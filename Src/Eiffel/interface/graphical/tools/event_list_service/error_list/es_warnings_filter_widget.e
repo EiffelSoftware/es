@@ -12,10 +12,6 @@ class
 
 inherit
 	EV_VERTICAL_BOX
-		export
-			{NONE} all
-			{ANY} is_displayed
-		end
 
 	EB_CONSTANTS
 		export
@@ -111,6 +107,7 @@ feature {NONE} -- Initialization
 			l_row: EV_GRID_ROW
 			l_check_item: EV_GRID_CHECKABLE_LABEL_ITEM
 			i: INTEGER
+			l_check_assert: BOOLEAN
 		do
 			l_types := warning_types
 			l_grid := grid_warnings
@@ -126,7 +123,11 @@ feature {NONE} -- Initialization
 					l_warning ?= l_internal.new_instance_of (l_id)
 				end
 				if l_warning /= Void then
+						-- In order to evaluate `code' we need to disable assertion monitoring.
+						-- This is clearly a hack and this code should be done differently.
+					l_check_assert := {ISE_RUNTIME}.check_assert (False)
 					l_name := l_warning.code
+					l_check_assert := {ISE_RUNTIME}.check_assert (l_check_assert)
 				else
 					l_name := l_internal.type_name_of_type (l_id)
 				end
@@ -195,7 +196,6 @@ feature {NONE} -- Access
 			l_result.put_last ([{CAT_CALL_WARNING}, True])
 			l_result.put_last ([{OBS_CLASS_WARN}, True])
 			l_result.put_last ([{OBS_FEAT_WARN}, True])
-			l_result.put_last ([{ONCE_IN_GENERIC_WARNING}, True])
 			l_result.put_last ([{SYNTAX_WARNING}, True])
 			l_result.put_last ([{UNUSED_LOCAL_WARNING}, True])
 			l_result.put_last ([{VTCM}, True])
@@ -261,6 +261,7 @@ feature -- Status report
 				end
 				l_cursor.forth
 			end
+			l_cursor.go_after
 
 			Result := not l_matched
 		end
@@ -377,9 +378,9 @@ invariant
 	filter_changed_actions_attached: filter_changed_actions /= Void
 
 ;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -390,19 +391,19 @@ invariant
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

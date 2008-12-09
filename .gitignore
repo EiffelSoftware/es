@@ -216,12 +216,6 @@ Src/Eiffel/Ace/EIFGENs
 Src/Eiffel/Ace/Metrics
 Src/Eiffel/Ace/exception_trace.log
 Src/Eiffel/Ace/metrics
-Src/Eiffel/doc/GC/_private
-Src/Eiffel/doc/GC/_vti_cnf
-Src/Eiffel/doc/GC/_vti_pvt
-Src/Eiffel/doc/GC/multithreading/_private
-Src/Eiffel/doc/GC/multithreading/_vti_cnf
-Src/Eiffel/doc/GC/multithreading/_vti_pvt
 Src/Eiffel/doc/Microsoft.NET/_private
 Src/Eiffel/doc/Microsoft.NET/_vti_cnf
 Src/Eiffel/doc/Microsoft.NET/_vti_pvt
@@ -288,6 +282,12 @@ Src/Eiffel/doc/debugging/_vti_pvt
 Src/Eiffel/doc/debugging/debugger_files/_private
 Src/Eiffel/doc/debugging/debugger_files/_vti_cnf
 Src/Eiffel/doc/debugging/debugger_files/_vti_pvt
+Src/Eiffel/doc/runtime/GC/_private
+Src/Eiffel/doc/runtime/GC/_vti_cnf
+Src/Eiffel/doc/runtime/GC/_vti_pvt
+Src/Eiffel/doc/runtime/GC/multithreading/_private
+Src/Eiffel/doc/runtime/GC/multithreading/_vti_cnf
+Src/Eiffel/doc/runtime/GC/multithreading/_vti_pvt
 Src/Eiffel/doc/weasel_results/_private
 Src/Eiffel/doc/weasel_results/_vti_cnf
 Src/Eiffel/doc/weasel_results/_vti_pvt
@@ -354,6 +354,7 @@ Src/library/i18n/root_class.e
 Src/library/i18n/sample.ecf
 Src/library/i18n/sample.rc
 Src/library/net/spec
+Src/library/net_ipv6/spec
 Src/library/store/spec
 Src/library/vision2/spec/bcb
 Src/library/vision2/spec/linux-x86-64
@@ -371,6 +372,7 @@ Src/tools/com_wizard/root/*.wb
 Src/tools/com_wizard/root/EIFGENs
 Src/tools/compile_all/*.exe
 Src/tools/compile_all/*.rc
+Src/tools/compile_all/baseline/*.log
 Src/tools/doc_builder/*.wb
 Src/tools/doc_builder/resources/xml/*.wb
 Src/tools/doc_builder/resources/xml/EIFGENs

@@ -11,7 +11,7 @@ class
 inherit
 	CREATE_INFO
 		redefine
-			created_in, generate_cid, make_gen_type_byte_code,
+			created_in, generate_cid, make_type_byte_code,
 			generate_cid_array, generate_cid_init
 		end
 
@@ -140,18 +140,6 @@ feature -- Byte code generation
 
 feature -- Generic conformance
 
-	generate_gen_type_conversion (a_level: NATURAL) is
-
-		local
-			gen_type : GEN_TYPE_A
-		do
-			gen_type ?= type_to_create
-
-			if gen_type /= Void then
-				context.generate_gen_type_conversion (gen_type, a_level)
-			end
-		end
-
 	generate_cid (buffer: GENERATION_BUFFER; final_mode : BOOLEAN) is
 		do
 				-- If we are here, it means that it is known that the type cannot have
@@ -161,7 +149,7 @@ feature -- Generic conformance
 			buffer.put_character (',')
 		end
 
-	make_gen_type_byte_code (ba : BYTE_ARRAY) is
+	make_type_byte_code (ba : BYTE_ARRAY) is
 
 		do
 			ba.append_natural_16 ({SHARED_GEN_CONF_LEVEL}.like_arg_type)
@@ -189,9 +177,9 @@ feature -- Generic conformance
 			buffer.put_natural_32 (a_level)
 			buffer.put_character ('[')
 			buffer.put_integer (idx_cnt.value)
-			buffer.put_string ("] = RTID(")
+			buffer.put_four_character (']', ' ', '=', ' ')
 			generate_type_id (buffer, final_mode, a_level + 1)
-			buffer.put_two_character (')', ';')
+			buffer.put_character (';')
 			generate_end (buffer)
 			dummy := idx_cnt.next
 		end

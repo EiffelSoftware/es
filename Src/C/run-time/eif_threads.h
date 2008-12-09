@@ -43,7 +43,6 @@
 
 #define eif_thr_yield()
 #define eif_thr_join_all()
-#define eif_thr_sleep(nanoseconds)
 #define eif_thr_wait(term)
 #define eif_thr_join(term)
 
@@ -80,6 +79,11 @@
 #define eif_thr_cond_wait(a_cond_ptr,a_mutex_ptr)
 #define eif_thr_cond_wait_with_timeout(a_cond_ptr,a_mutex_ptr,a_timeout) 0
 #define eif_thr_cond_destroy(a_mutex_ptr)
+
+#if !defined(EIF_WINDOWS) && !defined(VXWORKS)
+/* Forking, only support on Unix platform on which `fork' is supported. */
+#define eif_thread_fork	fork
+#endif
 
 #else
 
@@ -333,12 +337,11 @@ RT_LNK pid_t eif_thread_fork(void);
 
 /* Exported functions */
 RT_LNK void eif_thr_init_root(void);
-RT_LNK void eif_thr_register(void);
-RT_LNK unsigned int eif_thr_is_initialized(void);
+RT_LNK void eif_thr_register(int is_external);
+RT_LNK int eif_thr_is_initialized(void);
 RT_LNK EIF_BOOLEAN eif_thr_is_root(void);
 RT_LNK void eif_thr_create(EIF_OBJECT, EIF_POINTER);
 RT_LNK void eif_thr_exit(void);
-RT_LNK void eif_thr_sleep(EIF_INTEGER_64);
 RT_LNK void eif_thr_yield(void);
 RT_LNK void eif_thr_join_all(void);
 RT_LNK void eif_thr_join(EIF_POINTER);

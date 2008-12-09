@@ -9,7 +9,20 @@ class
 	VJRV1
 
 inherit
+	COMPILER_WARNING
+		undefine
+			has_associated_file,
+			is_defined,
+			trace,
+			trace_primary_context,
+			process
+		redefine
+			subcode
+		end
+
 	VJRV
+		undefine
+			error_string
 		redefine
 			subcode
 		end

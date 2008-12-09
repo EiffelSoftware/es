@@ -1,6 +1,10 @@
 indexing
 	description: "[
 		A base interface for all services.
+		
+		All services will be "sited" with the service provider ({SERVICE_PROVIDER_I}) the service was
+		registered on, or some other provider if the provider is not also a container
+		({SERVICE_CONTAINER_I}).
 	]"
 	legal: "See notice at end of class."
 	status: "See notice at end of class.";
@@ -11,10 +15,10 @@ deferred class
 	SERVICE_I
 
 inherit
-	SITE [SERVICE_PROVIDER]
+	SITE [SERVICE_PROVIDER_I]
 
 indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

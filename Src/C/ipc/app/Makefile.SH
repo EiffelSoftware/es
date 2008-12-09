@@ -43,6 +43,7 @@ JMTCFLAGS = \$(CFLAGS) $optimize $warning_level $mtccflags $large
 JLDFLAGS = \$(LDFLAGS) $ldflags
 LD = $ld
 LINT = lint
+LINTFLAGS = $lintflags \$(CFLAGS)
 MAKE = make
 MKDEP = $mkdep \$(DPFLAGS) --
 MV = $mv
@@ -53,6 +54,7 @@ SED = $sed
 # Automatically generated parameters -- do not edit
 
 USRINC = $usrinc
+SOURCES =  \$(LSRC)
 
 ########################################################################
 # New suffixes and associated building rules -- edit with care

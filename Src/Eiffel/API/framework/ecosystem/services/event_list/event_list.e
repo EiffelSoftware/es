@@ -14,7 +14,7 @@ class
 inherit
 	EVENT_LIST_S
 
-	EVENT_OBSERVER_CONNECTION [!EVENT_LIST_OBSERVER]
+	EVENT_OBSERVER_CONNECTION [EVENT_LIST_OBSERVER]
 
 create
 	make
@@ -115,11 +115,13 @@ feature -- Removal
 
 							-- Fire events
 						on_item_removed (l_event_item)
+						l_index_cursor.go_after
 					else
 						l_index_cursor.forth
 					end
 				end
 			end
+			check gobo_cursor_cleanup: l_index_cursor.after end
 		end
 
 	prune_event_items (a_context_cookie: UUID)
@@ -182,10 +184,12 @@ feature -- Basic operations
 						l_items.search_forth (a_event_item)
 						l_items.remove_at
 					end
+					l_cursor.go_after
 				else
 					l_cursor.forth
 				end
 			end
+			check gobo_cursor_cleanup: l_cursor.after end
 
 			check
 				item_found: l_stop
@@ -205,16 +209,16 @@ feature -- Basic operations
 
 feature -- Events
 
-	item_added_event: EVENT_TYPE [TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I]]
+	item_added_event: !EVENT_TYPE [TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I]]
 			-- <Precursor>
 
-	item_removed_event: EVENT_TYPE [TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I]]
+	item_removed_event: !EVENT_TYPE [TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I]]
 			-- <Precursor>
 
-	item_changed_event: EVENT_TYPE [TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I]]
+	item_changed_event: !EVENT_TYPE [TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I]]
 			-- <Precursor>
 
-	item_adopted_event: EVENT_TYPE [TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I; new_cookie: UUID; old_cookie: UUID]]
+	item_adopted_event: !EVENT_TYPE [TUPLE [service: EVENT_LIST_S; event_item: EVENT_LIST_ITEM_I; new_cookie: UUID; old_cookie: UUID]]
 			-- <Precursor>
 
 feature {NONE} -- Events

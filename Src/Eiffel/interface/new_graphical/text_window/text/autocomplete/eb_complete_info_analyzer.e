@@ -11,6 +11,9 @@ deferred class
 
 inherit
 	EB_CLASS_INFO_ANALYZER
+		redefine
+			locals_from_local_entities_finder
+		end
 
 	EB_SHARED_PREFERENCES
 
@@ -28,7 +31,7 @@ feature -- Access
 
 feature -- Completion access
 
-	insertion: CELL [STRING]
+	insertion: CELL [STRING_32]
 			-- strings to be partially completed : the first one is the dot or tilda if there is one
 			-- the second one is the feature name to be completed
 
@@ -59,13 +62,14 @@ feature -- Basic operations
 			completion_possibilities := Void
 		end
 
-	build_completion_list (a_cursor_token: EDITOR_TOKEN) is
+	build_completion_list (a_current_token: EDITOR_TOKEN; a_pos_in_cursor: INTEGER) is
 			-- create the list of completion possibilities for the position
 			-- associated with `cursor'
 		require
-			cursor_token_not_void: a_cursor_token /= Void
+			a_current_token_not_void: a_current_token /= Void
 		local
 			token				: EDITOR_TOKEN
+			line                : EDITOR_LINE
 			feat_table			: E_FEATURE_TABLE
 			feat_i_table		: FEATURE_TABLE
 			feat				: E_FEATURE
@@ -81,8 +85,7 @@ feature -- Basic operations
 			l_constraints		: TYPE_SET_A
 		do
 			if is_ok_for_completion then
-				create insertion
-				insertion.put ("")
+				create insertion.put ("")
 				is_create := False
 				is_static := False
 				last_type := Void
@@ -98,20 +101,21 @@ feature -- Basic operations
 				token_writer.set_context_group (group)
 				if current_class_i /= Void and then current_class_c /= Void then
 					l_current_class_c := current_class_c
-					token := cursor_token
+					token := current_token
+					line := current_line
 					if token /= Void then
-						l_class_list := class_c_to_complete_from (token, current_line, l_current_class_c, False, False)
+						l_class_list := class_c_to_complete_from (token, line, a_pos_in_cursor, l_current_class_c, False, False)
 
 						if exploring_current_class then
-							set_up_local_analyzer (current_line, token, l_current_class_c)
-							add_names_to_completion_list (Local_analyzer, l_current_class_c)
+							if token /= Void and then line /= Void then
+								add_names_to_completion_list (token, line)
+							end
 
 								-- Add precursors
 							l_class_as := l_current_class_c.ast
 							if l_class_as /= Void and current_feature_as /= Void  then
 								add_precursor_possibilities (l_class_as, current_feature_as.feat_as)
 							end
-							local_analyzer.reset
 						end
 					end
 					if l_class_list /= Void then
@@ -359,8 +363,7 @@ feature -- Class names completion
 			cnt, i				: INTEGER
 			l_class_i			: CLASS_I
 		do
-			create insertion
-			insertion.put ("")
+			create insertion.put ("")
 			is_create := False
 			class_completion_possibilities := Void
 			token_writer.set_context_group (group)
@@ -368,12 +371,12 @@ feature -- Class names completion
 			if workbench.is_already_compiled and then (not workbench.is_compiling) then
 				token := a_token.previous
 				if
-					(token.image.is_equal (Opening_brace) or token.image.is_equal (colon)) and then can_attempt_auto_complete_from_token (token)
+					(token_equal (token, Opening_brace) or token_equal (token, colon)) and then can_attempt_auto_complete_from_token (token, 1)
 				then
 					show_all := True
 				else
 					if token /= Void and then token.is_text then
-						insertion.put (token.image)
+						insertion.put (token.wide_image)
 					end
 				end
 			end
@@ -449,7 +452,7 @@ feature {NONE} -- Implementation
 		deferred
 		end
 
-	class_c_to_complete_from (a_token: EDITOR_TOKEN; a_line: EDITOR_LINE a_compiled_class: CLASS_C; recurse, two_back: BOOLEAN): LIST[CLASS_C] is
+	class_c_to_complete_from (a_token: EDITOR_TOKEN; a_line: EDITOR_LINE; a_pos_in_text: INTEGER; a_compiled_class: CLASS_C; recurse, two_back: BOOLEAN): LIST[CLASS_C] is
 			-- Class type to complete on from `token'
 		local
 			prev_token: EDITOR_TOKEN
@@ -462,7 +465,7 @@ feature {NONE} -- Implementation
 			token := a_token
 			if token /= Void then
 					-- Restore faked cursor position so we can complete before '.'
-				if token.image.is_equal (".") then
+				if token_equal (token, ".") then
 					save_cursor_position
 					go_to_left_position
 					token := cursor_token
@@ -471,25 +474,25 @@ feature {NONE} -- Implementation
 			end
 
 			exploring_current_class := False
-			if can_attempt_auto_complete_from_token (token) then
+			if can_attempt_auto_complete_from_token (token, a_pos_in_text) then
 				if token.is_text then
 						-- The cursor is in a text token so we complete based upon the previous token.					
 					prev_token := token.previous
 					if prev_token /= Void then
 						if token_image_is_in_array (token, Feature_call_separators) then
 								-- Token is dot or tilda					
-							is_create := create_before_position (current_line, prev_token)
+							is_create := create_before_position (a_line, prev_token)
 							if is_create then
 									-- Fetch create token, used later
-								l_create_token := locate_create_before_position (current_line, prev_token)
+								l_create_token := locate_create_before_position (a_line, prev_token)
 							end
-							is_static := static_call_before_position (current_line, prev_token)
-							is_parenthesized := parenthesized_before_position (current_line, prev_token)
+							is_static := static_call_before_position (a_line, prev_token)
+							is_parenthesized := parenthesized_before_position (a_line, prev_token)
 						elseif token_image_is_in_array (prev_token, Feature_call_separators) then
-							Result := class_c_to_complete_from (prev_token, current_line, a_compiled_class, True, two_back)
+							Result := class_c_to_complete_from (prev_token, a_line, 1, a_compiled_class, True, two_back)
 						elseif prev_token.is_text and not two_back then
 							gone_back_two := True
-							Result := class_c_to_complete_from (prev_token, current_line, a_compiled_class, True, True)
+							Result := class_c_to_complete_from (prev_token, a_line, 1, a_compiled_class, True, True)
 						else
 							exploring_current_class := True
 						end
@@ -499,7 +502,7 @@ feature {NONE} -- Implementation
 						-- It must be a space, or tab or end of line something like that so take the previous
 						-- token to determine context
 					if token.previous /= Void then
-						Result := class_c_to_complete_from (token.previous, current_line, a_compiled_class, True, True)
+						Result := class_c_to_complete_from (token.previous, a_line, 1, a_compiled_class, True, True)
 					else
 							-- Context unknown, assume current class
 						exploring_current_class := True
@@ -519,9 +522,9 @@ feature {NONE} -- Implementation
 					Result := create_class_list_and_insert (a_compiled_class)
 				elseif prev_token /= Void and not is_create and not is_static and not is_parenthesized then
 					if current_feature_as = Void then
-						current_feature_as := feature_containing (prev_token, current_line)
+						current_feature_as := feature_containing (prev_token, a_line)
 					end
-					type := type_from (prev_token, current_line)
+					type := type_from (prev_token, a_line)
 					if type /= Void then
 						Result := create_class_list_and_insert_associated_classes_from_type (type)
 					end
@@ -533,16 +536,16 @@ feature {NONE} -- Implementation
 					else
 							-- Looks like it was a creation instruction since `found_class' was not set.
 						if current_feature_as = Void then
-							current_feature_as := feature_containing (prev_token, current_line)
+							current_feature_as := feature_containing (prev_token, a_line)
 						end
 						if prev_token /= Void then
 							if is_parenthesized then
 								if l_create_token /= Void then
-									type := type_from (l_create_token, current_line)
+									type := type_from (l_create_token, a_line)
 									is_create := False
 								end
 							else
-								type := type_from (prev_token, current_line)
+								type := type_from (prev_token, a_line)
 							end
 
 							if type /= Void then
@@ -605,35 +608,180 @@ feature {NONE} -- Implementation
 			at_least_one_element_in_result: Result.count > 0
 		end
 
-	add_names_to_completion_list (a_analyser: EB_LOCAL_ENTITIES_FINDER; a_current: CLASS_C) is
+	add_names_to_completion_list (a_start_token: !like current_token; a_start_line: !like current_line)
 			-- Adds locals and arguments to completion list and adds 'Current' based on `a_current'
-		require
-			a_analyser_not_void: a_analyser /= Void
 		local
 			l_basic: EB_NAME_FOR_COMPLETION
-			l_names: DYNAMIC_LIST [STRING]
+			l_typed_basic: EB_NAME_WITH_TYPE_FOR_COMPLETION
+			l_name: !STRING_32
+			l_type: ?TYPE_A
+			l_feature: FEATURE_I
+			l_analyzer: !ES_EDITOR_CLASS_ANALYZER
+			l_result: ?ES_EDITOR_ANALYZER_STATE_INFO
+			l_locals: !HASH_TABLE [?TYPE_A, !STRING_32]
 		do
-			create l_basic.make_token (create {EDITOR_TOKEN_KEYWORD}.make ("Current"))
+				-- Add Current, because it's always available.
+			create l_basic.make_token (create {EDITOR_TOKEN_KEYWORD}.make ({EIFFEL_KEYWORD_CONSTANTS}.current_keyword))
 			insert_in_completion_possibilities (l_basic)
-			if a_analyser.has_return_type then
-				create l_basic.make_token (create {EDITOR_TOKEN_KEYWORD}.make ("Result"))
-				insert_in_completion_possibilities (l_basic)
-			end
+
+				-- Add reserved word Void
 			if preferences.editor_data.show_any_features then
-				create l_basic.make_token (create {EDITOR_TOKEN_KEYWORD}.make ("Void"))
+				create l_basic.make_token (create {EDITOR_TOKEN_KEYWORD}.make ({EIFFEL_KEYWORD_CONSTANTS}.void_keyword))
 				insert_in_completion_possibilities (l_basic)
 			end
 
-			l_names := a_analyser.found_names
-			if l_names /= Void and then not l_names.is_empty then
+				-- Add local declarations
+			l_feature := current_feature_i
+			if l_feature /= Void and then {l_class: CLASS_C} current_class_c then
+				create l_analyzer.make_with_feature (l_class, l_feature)
+				l_result := l_analyzer.scan (a_start_token, a_start_line)
+				if l_result /= Void and then l_result.has_current_frame then
+					if not l_result.current_frame.is_empty then
+						l_locals := l_result.current_frame.all_locals
+						from l_locals.start until l_locals.after loop
+							l_name := l_locals.key_for_iteration.as_attached
+							l_type := l_locals.item_for_iteration
+							if l_type /= Void and then l_type.is_valid_for_class (l_class) then
+									-- The type is valid for the given class
+								create l_typed_basic.make (l_name, l_type, l_feature)
+								insert_in_completion_possibilities (l_typed_basic)
+							else
+									-- The local type is not valid, so use the raw text.
+								create l_basic.make (l_name)
+								insert_in_completion_possibilities (l_basic)
+							end
+							l_locals.forth
+						end
+					end
+				else
+					add_names_to_completion_list_from_local_entities_finder (l_feature, l_class)
+				end
+			end
+		end
+
+	add_names_to_completion_list_from_local_entities_finder (a_feature: FEATURE_I; a_class: CLASS_C)
+			-- Adds locals and arguments to completion list and adds 'Current' based on `a_current'		
+		require
+			a_feature_attached: a_feature /= Void
+			a_class_attached: a_class /= Void
+		local
+			l_basic: EB_NAME_FOR_COMPLETION
+			l_typed_basic: EB_NAME_WITH_TYPE_FOR_COMPLETION
+			l_name: !STRING_32
+			l_type: ?TYPE_A
+		do
+			if {l_locals: !HASH_TABLE [?TYPE_A, !STRING_32]} locals_from_local_entities_finder then
 				from
-					l_names.start
+					l_locals.start
 				until
-					l_names.after
+					l_locals.after
 				loop
-					create l_basic.make (l_names.item)
-					insert_in_completion_possibilities (l_basic)
-					l_names.forth
+					l_name := l_locals.key_for_iteration.as_attached
+					l_type := l_locals.item_for_iteration
+					if l_type /= Void and then l_type.is_valid_for_class (a_class) then
+							-- The type is valid for the given class
+						create l_typed_basic.make (l_name, l_type, a_feature)
+						insert_in_completion_possibilities (l_typed_basic)
+					else
+							-- The local type is not valid, so use the raw text.
+						create l_basic.make (l_name)
+						insert_in_completion_possibilities (l_basic)
+					end
+					l_locals.forth
+				end
+			end
+		end
+
+	locals_from_local_entities_finder: HASH_TABLE [?TYPE_A, !STRING_32]
+			-- <Precursor>
+			--| The finder is using AST
+			--| FIXME jfiat [2008/11/28] : this is to fix bug#15080
+		local
+			l_name: !STRING_32
+			l_type: ?TYPE_A
+			l_names_heap: NAMES_HEAP
+			l_feature: FEATURE_I
+			l_feature_as: FEATURE_AS
+			l_locals: EIFFEL_LIST [TYPE_DEC_AS]
+			l_arguments: EIFFEL_LIST [TYPE_DEC_AS]
+			l_obj_test_locals: LIST [TUPLE [name: ID_AS; type: TYPE_AS]]
+			l_type_dec_as_lists: ARRAY [EIFFEL_LIST [TYPE_DEC_AS]]
+			i: INTEGER
+		do
+			l_feature := current_feature_i
+			if l_feature /= Void and then {l_class: CLASS_C} current_class_c then
+				if current_feature_as /= Void then
+					l_feature_as := current_feature_as.feat_as
+					if l_feature_as /= Void then
+						if {l_body: BODY_AS} l_feature_as.body then
+							l_names_heap := names_heap
+							l_arguments := l_body.arguments
+							if {r_as: ROUTINE_AS} l_body.content then
+								l_locals := r_as.locals
+								l_obj_test_locals := r_as.object_test_locals
+							end
+							l_type_dec_as_lists := <<l_locals, l_arguments>>
+
+							create Result.make (5)
+							if l_body.type /= Void then
+								create l_name.make_from_string ("Result")
+								l_type := type_a_generator.evaluate_type_if_possible (l_body.type, l_class)
+								Result.force (l_type, l_name)
+							end
+
+								--| locals and arguments
+							from
+								i := l_type_dec_as_lists.lower
+							until
+								i > l_type_dec_as_lists.upper
+							loop
+								if {ast_locs: EIFFEL_LIST [TYPE_DEC_AS]} l_type_dec_as_lists[i] then
+									from
+										ast_locs.start
+									until
+										ast_locs.after
+									loop
+										if {tda: TYPE_DEC_AS} ast_locs.item then
+											if
+												{id_list: IDENTIFIER_LIST} tda.id_list and then
+												not id_list.is_empty
+											then
+												from
+													id_list.start
+												until
+													id_list.after
+												loop
+													if {s: STRING} l_names_heap.item (id_list.item) then
+														l_name := s.as_string_32.as_attached
+														l_type := type_a_generator.evaluate_type_if_possible (tda.type, l_class)
+														Result.force (l_type, l_name)
+													end
+													id_list.forth
+												end
+											end
+										end
+										ast_locs.forth
+									end
+								end
+								i := i + 1
+							end
+								--| Object test locals
+							if l_obj_test_locals /= Void then
+								from
+									l_obj_test_locals.start
+								until
+									l_obj_test_locals.after
+								loop
+									if {s2: STRING} l_names_heap.item (l_obj_test_locals.item.name.name_id) then
+										l_name := s2.as_string_32.as_attached
+										l_type := type_a_generator.evaluate_type_if_possible (l_obj_test_locals.item.type, l_class)
+										Result.force (l_type, l_name)
+									end
+									l_obj_test_locals.forth
+								end
+							end
+						end
+					end
 				end
 			end
 		end
@@ -1199,11 +1347,11 @@ feature {NONE} -- Implementation
 			--
 		local
 			prev_token: EDITOR_TOKEN
-			l_char: CHARACTER
+			l_char: CHARACTER_32
 		do
 			insertion_remainder := 0
 			insertion.put ("")
-			if can_attempt_auto_complete_from_token (token) then
+			if can_attempt_auto_complete_from_token (token, 1) then
 				if token.is_text or token.is_blank then
 						-- The cursor is in a text token so we complete based upon the previous token unless the cursor
 						-- is somewhere inside this token..
@@ -1212,21 +1360,23 @@ feature {NONE} -- Implementation
 					if prev_token /= Void and current_pos_in_token = 1 then
 						if prev_token.is_text and then token_image_is_in_array (prev_token, Feature_call_separators) then
 								-- Previous token is a separator so take there is no insertion term
-							l_char := token.image.item (1)
-							if l_char.is_alpha then
+							l_char := token.wide_image.item (1)
+							if char_32_is_alpha (l_char) then
 									-- Happens when completing 'a.b.|c'
-								insertion_remainder := token.image.count
+									-- Using 0 means the word in front is not replaced.
+									-- Use `token.wide_image.count' to replace the word.
+								insertion_remainder := 0
 							else
 									-- Happens when completing 'a.b.|)'
 							end
 						elseif token_image_is_in_array (token, Feature_call_separators) then
 							if prev_token.is_text then
 									-- Token is a separator so take the entire previous token as insertion, if it is an Eiffel identifier							
-								l_char := prev_token.image.item (prev_token.image.count)
-								if l_char.is_alpha or l_char.is_digit or l_char = '_' then
+								l_char := prev_token.wide_image.item (prev_token.wide_image.count)
+								if char_32_is_alpha (l_char) or char_32_is_digit (l_char) or l_char = '_' then
 										-- Previous token is an Eiffel identifier
 										-- Happens when completing 'a.b|.c'
-									insertion.put (prev_token.image)
+									insertion.put (prev_token.wide_image)
 								else
 										-- Happens when completing '|.b.c' or '(|.b.c)'
 								end
@@ -1235,11 +1385,11 @@ feature {NONE} -- Implementation
 							if token.is_blank and not prev_token.is_blank then
 									-- Previous token is a partially completed term.
 									-- Happens when completing 'a.b.c| '
-								if not prev_token.image.is_empty then
-									l_char := prev_token.image.item (prev_token.image.count)
-									if l_char.is_alpha or l_char.is_digit or l_char = '_' then
+								if not prev_token.wide_image.is_empty then
+									l_char := prev_token.wide_image.item (prev_token.wide_image.count)
+									if char_32_is_alpha (l_char) or char_32_is_digit (l_char) or l_char = '_' then
 											-- Previous token is an Eiffel identifier
-										insertion.put (prev_token.image)
+										insertion.put (prev_token.wide_image)
 									end
 								end
 --							elseif prev_token.is_blank then
@@ -1247,23 +1397,23 @@ feature {NONE} -- Implementation
 --									-- Happens when completing ' |a.b.c'
 --									-- Note: This code is commented out because completion should add the select item before
 --									--       'a' and not overwrite 'a'
---								insertion_remainder := token.image.count
+--								insertion_remainder := token.wide_image.count
 							elseif token.is_text and prev_token.is_text then
 									-- Happens when you completer '(a.b.c|)'
 									-- Also happens for '(|a.b.c)' but we do not want to replace the open parenthesis or 'a' (see previous rule)
-								if not prev_token.image.is_empty then
-									l_char := prev_token.image.item (prev_token.image.count)
-									if l_char.is_alpha or l_char.is_digit or l_char = '_' then
+								if not prev_token.wide_image.is_empty then
+									l_char := prev_token.wide_image.item (prev_token.wide_image.count)
+									if char_32_is_alpha (l_char) or char_32_is_digit (l_char) or l_char = '_' then
 											-- Previous token is an Eiffel identifier
-										insertion.put (prev_token.image)
+										insertion.put (prev_token.wide_image)
 									end
 								end
 									-- Uncomment to have 'a' be replaced when completing '(|a.b.c)'
---								if not token.image.is_empty then
---									l_char := token.image.item (token.image.count)
+--								if not token.wide_image.is_empty then
+--									l_char := token.wide_image.item (token.wide_image.count)
 --									if l_char.is_alpha then
 --											-- Token is an Eiffel identifier
---										insertion_remainder := token.image.count		
+--										insertion_remainder := token.wide_image.count		
 --									end
 --								end
 							end
@@ -1272,7 +1422,7 @@ feature {NONE} -- Implementation
 							-- Cursor is current in a token at `cursor.pos_in_token'
 						if not token.is_blank then
 								-- Happens when completing 'a.bb|bbbb.c'						
-							insertion.put (token.image.substring (1, current_pos_in_token - 1))
+							insertion.put (token.wide_image.substring (1, current_pos_in_token - 1))
 							insertion_remainder := token.length - (current_pos_in_token - 1)
 						else
 							-- Happens when completing 'if | then'
@@ -1286,11 +1436,11 @@ feature {NONE} -- Implementation
 						-- The token is not text so the insertion must be taken from the previous token IF that is text
 					prev_token := token.previous
 					if prev_token /= Void and then prev_token.is_text and then not token_image_is_in_array (prev_token, feature_call_separators) then
-						l_char := prev_token.image.item (prev_token.image.count)
-						if l_char.is_alpha or l_char.is_digit or l_char = '_' then
+						l_char := prev_token.wide_image.item (prev_token.wide_image.count)
+						if char_32_is_alpha (l_char) or char_32_is_digit (l_char) or l_char = '_' then
 								-- Previous token is an Eiffel identifier
 								-- Happens when completing 'p|'
-							insertion.put (prev_token.image)
+							insertion.put (prev_token.wide_image)
 							insertion_remainder := 0
 						else
 								-- Happens when completing ')|.b.c'
@@ -1406,13 +1556,10 @@ feature {NONE} -- Implementation
 			end
 		end
 
-invariant
-	invariant_clause: True -- Your invariant here
-
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -1423,19 +1570,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

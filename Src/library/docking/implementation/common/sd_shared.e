@@ -66,7 +66,7 @@ feature -- Access
 	tool_bar_docker_mediator_cell: CELL [SD_TOOL_BAR_DOCKER_MEDIATOR] is
 			-- Tool bar docker mediator when user dragging a SD_TOOL_BAR_ZONE.
 		once
-			create Result
+			create Result.put (Void)
 		ensure
 			not_void: Result /= Void
 		end
@@ -124,6 +124,24 @@ feature -- Access
 			Result := zone_navigation_accelerator_key_cell.item
 		end
 
+feature -- Right click menu items
+
+	set_notebook_tab_area_menu_items_agent (a_agent: like notebook_tab_area_menu_items_agent) is
+			-- Set `notebook_tab_area_menu_items_agent' with `a_gent'
+		do
+			notebook_tab_area_menu_items_agent_cell.put (a_agent)
+		ensure
+			set: notebook_tab_area_menu_items_agent = a_agent
+		end
+
+	notebook_tab_area_menu_items_agent: FUNCTION [ANY, TUPLE [SD_CONTENT], ARRAYED_LIST [EV_MENU_ITEM]] is
+			-- Menu items shown at notebook tab area.
+			-- Client programmers can customize the menu items here.
+			-- Same as `notebook_tab_area_menu_items' but has higer priority than `notebook_tab_area_menu_items'
+		do
+			Result := notebook_tab_area_menu_items_agent_cell.item
+		end
+
 	notebook_tab_area_menu_items: ARRAYED_LIST [EV_MENU_ITEM] is
 			-- Menu items shown at notebook tab area.
 			-- Client programmers can customize the menu items here.
@@ -131,6 +149,23 @@ feature -- Access
 			Result := widget_factory.notebook_tab_area_menu_items
 		ensure
 			not_void: Result /= Void
+		end
+
+	set_title_bar_area_menu_items_agent (a_agent: like title_bar_area_menu_items_agent) is
+			-- Set `title_bar_area_menu_items_agent_cell' with `a_agent'
+		do
+			title_bar_area_menu_items_agent_cell.put (a_agent)
+		ensure
+			set: title_bar_area_menu_items_agent = a_agent
+		end
+
+	title_bar_area_menu_items_agent: FUNCTION [ANY, TUPLE [SD_CONTENT], ARRAYED_LIST [EV_MENU_ITEM]] is
+			-- Menu items shown at {SD_CONTENT}'s title bar.
+			-- Client programmers can customize the menu items here.	
+			-- Same as `title_bar_area_menu_items' but has higer priority than `title_bar_area_menu_items
+			-- Note: parameter SD_CONTENT maybe void if not found
+		do
+			Result := title_bar_area_menu_items_agent_cell.item
 		end
 
 	title_bar_area_menu_items: ARRAYED_LIST [EV_MENU_ITEM] is
@@ -529,7 +564,7 @@ feature -- Constants
 	Auto_hide_tab_stub_show_delay: INTEGER is 1000
 			-- Auto hide tab stub delay time in milliseconds.
 
-	Editor_place_holder_content_name: STRING_GENERAL is
+	Editor_place_holder_content_name: STRING_32 is
 			-- Content name for `place_holder_content' in SD_DOCKING_MANAGER_ZONES.
 		once
 			Result := "docking manager editor place holder"
@@ -538,7 +573,7 @@ feature -- Constants
 		end
 
 feature {SD_DOCKING_MANAGER, SD_TOOL_BAR_DRAGGING_AGENTS, SD_TOOL_BAR_DOCKER_MEDIATOR, SD_SIZES,
-		SD_TOOL_BAR, SD_TOOL_BAR_ZONE, SD_TITLE_BAR, SD_NOTEBOOK, SD_AUTO_HIDE_PANEL} -- Implementation
+		SD_TOOL_BAR, SD_TOOL_BAR_ZONE, SD_TITLE_BAR, SD_NOTEBOOK, SD_AUTO_HIDE_PANEL, SD_WIDGET_FACTORY} -- Implementation
 
 	set_tool_bar_docker_mediator (a_mediator: SD_TOOL_BAR_DOCKER_MEDIATOR) is
 			-- Set tool bar docker mediator singleton.
@@ -569,7 +604,7 @@ feature {SD_DOCKING_MANAGER, SD_TOOL_BAR_DRAGGING_AGENTS, SD_TOOL_BAR_DOCKER_MED
 	is_set_show_all_feedback_indicator_called: CELL [BOOLEAN] is
 			-- If `set_show_all_feedback_indicator' has been called?
 		once
-			create Result
+			create Result.put (False)
 		ensure
 			not_void: Result /= Void
 		end
@@ -577,7 +612,7 @@ feature {SD_DOCKING_MANAGER, SD_TOOL_BAR_DRAGGING_AGENTS, SD_TOOL_BAR_DOCKER_MED
 	is_set_show_tab_stub_text_called: CELL [BOOLEAN] is
 			-- If `set_show_tab_stub_text' has been called?
 		once
-			create Result
+			create Result.put (False)
 		ensure
 			not_void: Result /= Void
 		end
@@ -607,7 +642,7 @@ feature {NONE} -- Implementation
 	internal_icons_cell: CELL [SD_ICONS_SINGLETON]
 			-- Singleton cell for icons.
 		once
-			create Result
+			create Result.put (Void)
 		ensure
 			not_void: Result /= Void
 		end
@@ -615,7 +650,7 @@ feature {NONE} -- Implementation
 	internal_interface_names_cell: CELL [SD_INTERFACE_NAMES]
 			-- Singleton cell for interface names.
 		once
-			create Result
+			create Result.put (Void)
 		ensure
 			not_void: Result /= Void
 		end
@@ -623,7 +658,7 @@ feature {NONE} -- Implementation
 	Show_all_feedback_indicator_cell: CELL [BOOLEAN] is
 			-- Singleton cell for show_all_feedback_indicator.
 		once
-			create Result
+			create Result.put (False)
 		ensure
 			not_void: Result /= Void
 		end
@@ -631,7 +666,7 @@ feature {NONE} -- Implementation
 	Auto_hide_tab_slide_timer_interval_cell: CELL [INTEGER] is
 			-- Singleton cell for `Auto_hide_tab_slide_timer_interval'.
 		once
-			create Result
+			create Result.put (0)
 		ensure
 			not_void: Result /= Void
 		end
@@ -639,7 +674,7 @@ feature {NONE} -- Implementation
 	hot_zone_factory_cell: CELL [SD_HOT_ZONE_ABSTRACT_FACTORY] is
 			-- Hot zone factory cell.
 		once
-			create Result
+			create Result.put (Void)
 		ensure
 			not_void: Result /= Void
 		end
@@ -647,7 +682,7 @@ feature {NONE} -- Implementation
 	allow_window_to_back_cell: CELL [BOOLEAN] is
 			-- Cell hold `allow_window_to_back'.
 		once
-			create Result
+			create Result.put (False)
 		ensure
 			not_void: Result /= Void
 		end
@@ -655,7 +690,7 @@ feature {NONE} -- Implementation
 	show_tab_stub_text_cell: CELL [BOOLEAN] is
 			-- Cell hold `show_tab_stub_text'.
 		once
-			create Result
+			create Result.put (False)
 		ensure
 			not_void: Result /= Void
 		end
@@ -663,7 +698,7 @@ feature {NONE} -- Implementation
 	default_screen_x_cell: CELL [INTEGER] is
 			-- Singleton cell for `default_screen_x'
 		once
-			create Result
+			create Result.put (0)
 		ensure
 			not_void: Result /= Void
 		end
@@ -671,7 +706,7 @@ feature {NONE} -- Implementation
 	default_screen_y_cell: CELL [INTEGER] is
 			-- Singleton cell for `default_screen_y'
 		once
-			create Result
+			create Result.put (0)
 		ensure
 			not_void: Result /= Void
 		end
@@ -700,9 +735,21 @@ feature {NONE} -- Implementation
 			create Result.put (False)
 		end
 
+	title_bar_area_menu_items_agent_cell: CELL [FUNCTION [ANY, TUPLE [SD_CONTENT], ARRAYED_LIST [EV_MENU_ITEM]]] is
+			-- Singleton cell for `title_bar_area_menu_items_agent'
+		once
+			create Result.put (Void)
+		end
+
+	notebook_tab_area_menu_items_agent_cell: CELL [FUNCTION [ANY, TUPLE [SD_CONTENT], ARRAYED_LIST [EV_MENU_ITEM]]] is
+			-- Singleton cell for `notebook_tab_area_menu_items_agent'
+		once
+			create Result.put (Void)
+		end
+
 indexing
 	library:	"SmartDocking: Library of reusable components for Eiffel."
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			 Eiffel Software

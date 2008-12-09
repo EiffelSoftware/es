@@ -19,7 +19,7 @@ inherit
 			set_attached_mark, set_detachable_mark, set_is_implicitly_attached,
 			unset_is_implicitly_attached, description, c_type, is_explicit,
 			generated_id, generate_cid, generate_cid_array, generate_cid_init,
-			make_gen_type_byte_code, generate_gen_type_il, internal_is_valid_for_class,
+			make_type_byte_code, generate_gen_type_il, internal_is_valid_for_class,
 			maximum_interval_value, minimum_interval_value, is_optimized_as_frozen,
 			is_generated_as_single_type, heaviest, instantiation_in, adapted_in,
 			hash_code, internal_generic_derivation, internal_same_generic_derivation_as,
@@ -272,7 +272,7 @@ feature -- Generic conformance
 		end
 
 	generate_cid (buffer: GENERATION_BUFFER; final_mode, use_info: BOOLEAN; a_context_type: TYPE_A) is
-			-- Generate mode dependent sequence of type id's 
+			-- Generate mode dependent sequence of type id's
 			-- separated by commas. `use_info' is true iff
 			-- we generate code for a creation instruction.
 		do
@@ -301,12 +301,12 @@ feature -- Generic conformance
 			end
 		end
 
-	make_gen_type_byte_code (ba: BYTE_ARRAY; use_info: BOOLEAN; a_context_type: TYPE_A) is
+	make_type_byte_code (ba: BYTE_ARRAY; use_info: BOOLEAN; a_context_type: TYPE_A) is
 		do
 			if use_info then
-				create_info.make_gen_type_byte_code (ba)
+				create_info.make_type_byte_code (ba)
 			else
-				conformance_type.make_gen_type_byte_code (ba, use_info, a_context_type)
+				conformance_type.make_type_byte_code (ba, use_info, a_context_type)
 			end
 		end
 
@@ -345,31 +345,7 @@ feature {COMPILER_EXPORTER} -- Modification
 	set_actual_type (a: TYPE_A) is
 			-- Assign `a' to `conformance_type'.
 		do
-			if has_attached_mark then
-				if not a.is_attached then
-					conformance_type := a.as_attached
-				else
-					conformance_type := a
-				end
-			elseif is_implicitly_attached then
-				if not a.is_attached and then not a.is_implicitly_attached then
-					conformance_type := a.as_implicitly_attached
-				else
-					conformance_type := a
-				end
-			elseif has_detachable_mark then
-				if not a.is_expanded and then (a.is_attached or else a.is_implicitly_attached) then
-					conformance_type := a.as_detachable
-				else
-					conformance_type := a
-				end
-			else
-				if not is_implicitly_attached and then a.is_implicitly_attached then
-					conformance_type := a.as_implicitly_detachable
-				else
-					conformance_type := a
-				end
-			end
+			conformance_type := a.to_other_immediate_attachment (Current)
 			actual_type := Current
 		end
 
@@ -377,18 +353,14 @@ feature {COMPILER_EXPORTER} -- Modification
 			-- Mark type declaration as having an explicit attached mark.
 		do
 			Precursor
-			if not conformance_type.is_attached then
-				conformance_type := conformance_type.as_attached
-			end
+			conformance_type := conformance_type.to_other_immediate_attachment (Current)
 		end
 
 	set_detachable_mark is
 			-- Set class type declaration as having an explicit detachable mark.
 		do
 			Precursor
-			if not is_expanded and then (conformance_type.is_attached or else conformance_type.is_implicitly_attached) then
-				conformance_type := conformance_type.as_detachable
-			end
+			conformance_type := conformance_type.to_other_immediate_attachment (Current)
 		end
 
 	set_is_implicitly_attached
@@ -397,8 +369,8 @@ feature {COMPILER_EXPORTER} -- Modification
 		do
 			Precursor
 			a := conformance_type
-			if a /= Void and then not a.is_attached and then not a.is_implicitly_attached then
-				conformance_type := a.as_implicitly_attached
+			if a /= Void then
+				conformance_type := a.to_other_immediate_attachment (Current)
 			end
 		end
 
@@ -408,8 +380,8 @@ feature {COMPILER_EXPORTER} -- Modification
 		do
 			Precursor
 			a := conformance_type
-			if a /= Void and then not a.is_attached and then a.is_implicitly_attached then
-				conformance_type := a.as_implicitly_detachable
+			if a /= Void then
+				conformance_type := a.to_other_immediate_attachment (Current)
 			end
 		end
 
@@ -447,22 +419,7 @@ feature {COMPILER_EXPORTER} -- Primitives
 				-- i16 := (0x00FF).to_integer_16 & i8
 				-- or
 				-- i16 := (0x00FF & i8).to_integer_16
-			Result := type.intrinsic_type
-			if has_attached_mark then
-				if not Result.is_attached then
-					Result := Result.as_attached
-				end
-			elseif is_implicitly_attached then
-				if not Result.is_attached and then not Result.is_implicitly_attached then
-					Result := Result.as_implicitly_attached
-				end
-			elseif has_detachable_mark then
-				if not Result.is_expanded and then (Result.is_attached or else Result.is_implicitly_attached) then
-					Result := Result.as_detachable
-				end
-			elseif not is_implicitly_attached and then Result.is_implicitly_attached then
-				Result := Result.as_implicitly_detachable
-			end
+			Result := type.intrinsic_type.to_other_attachment (Current)
 		end
 
 	adapted_in, skeleton_adapted_in (a_class_type: CLASS_TYPE): CL_TYPE_A is
@@ -487,21 +444,7 @@ feature {COMPILER_EXPORTER} -- Primitives
 				l_like.set_actual_type (class_type.conformance_type)
 				Result := l_like
 			end
-			if has_attached_mark then
-				if not Result.is_attached then
-					Result := Result.as_attached
-				end
-			elseif is_implicitly_attached then
-				if not Result.is_attached and then not Result.is_implicitly_attached then
-					Result := Result.as_implicitly_attached
-				end
-			elseif has_detachable_mark then
-				if not Result.is_expanded and then (Result.is_attached or else Result.is_implicitly_attached) then
-					Result := Result.as_detachable
-				end
-			elseif not is_implicitly_attached and then Result.is_implicitly_attached then
-				Result := Result.as_implicitly_detachable
-			end
+			Result := Result.to_other_attachment (Current)
 		end
 
 	evaluated_type_in_descendant (a_ancestor, a_descendant: CLASS_C; a_feature: FEATURE_I): LIKE_CURRENT is
@@ -509,11 +452,7 @@ feature {COMPILER_EXPORTER} -- Primitives
 			if a_ancestor /= a_descendant then
 				create Result
 				Result.set_actual_type (a_descendant.actual_type)
-				if has_attached_mark then
-					Result.set_attached_mark
-				elseif has_detachable_mark then
-					Result.set_detachable_mark
-				end
+				Result := Result.to_other_attachment (Current)
 			else
 				Result := Current
 			end

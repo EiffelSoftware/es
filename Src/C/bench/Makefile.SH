@@ -44,6 +44,7 @@ JMTCFLAGS = \$(CFLAGS) $optimize $warning_level $mtccflags $large
 JLKFLAGS = \$(LDFLAGS) $ccldflags
 LIBS = $libs
 LINT = lint
+LINTFLAGS = $lintflags \$(CFLAGS)
 MAKE = make
 MKDEP = $mkdep \$(DPFLAGS) --
 MV = $mv
@@ -55,8 +56,8 @@ SED = $sed
 # Automatically generated parameters -- do not edit
 
 USRINC = $usrinc
-SOURCES =  \$(LSRC) \$(PSTORE) \$(LSRC) \$(PSTORE) bytedump.c meltdump.c
 OBJECTS =  \$(FOBJ) \$(WOBJ) \$(MT_FOBJ) \$(MT_WOBJ) bytedump.o meltdump.o
+SOURCES =  \$(LSRC) \$(PSTORE) bytedump.c meltdump.c
 
 ########################################################################
 # New suffixes and associated building rules -- edit with care
@@ -82,34 +83,30 @@ all:: .FORCE_DEPEND
 # Start of Jmakefile
 
 # Files used to build the daemon
-LSRC = byte.c date.c minilzo.c
+LSRC = byte.c minilzo.c
 PSTORE = pstore.c pretrieve.c
 
 # Derived object file names
 FOBJ = \
 	byte.o \
-	date.o \
 	minilzo.o \
 	pstore.o \
 	pretrieve.o 
 
 MT_FOBJ = \
 	MTbyte.o \
-	MTdate.o \
 	MTminilzo.o \
 	MTpstore.o \
 	MTpretrieve.o 
 
 WOBJ = \
 	byte.o \
-	date.o \
 	minilzo.o \
 	wpstore.o \
 	wpretrieve.o 
 
 MT_WOBJ = \
 	MTbyte.o \
-	MTdate.o \
 	MTminilzo.o \
 	MTwpstore.o \
 	MTwpretrieve.o 
@@ -122,9 +119,6 @@ wpretrieve.o: pretrieve.c
 
 
 MTbyte.o: byte.c
-	       $(CC) -c $(JMTCFLAGS) $? -o $@
-
-MTdate.o: date.c
 	       $(CC) -c $(JMTCFLAGS) $? -o $@
 
 MTminilzo.o: minilzo.c

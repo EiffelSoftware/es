@@ -25,7 +25,7 @@ inherit
 
 feature {NONE} -- Initalization
 
-	make (a_key: like product_reg_path; a_use_32bit: like use_32bit; a_code: like code; a_desc: like description) is
+	make (a_key: like product_reg_path; a_use_32bit: like use_32bit; a_code: like code; a_desc: like description; a_version: like version; a_deprecated: like is_deprecated) is
 			-- Initialize a config from a relative HKLM\SOFTWARE registry key `a_key'.
 		require
 			a_key_attached: a_key /= Void
@@ -34,13 +34,17 @@ feature {NONE} -- Initalization
 			not_a_code_is_empty: not a_code.is_empty
 			a_desc_attached: a_desc /= Void
 			not_a_desc_is_empty: not a_desc.is_empty
+			a_version_attached: a_version /= Void
+			not_a_version_is_empty: not a_version.is_empty
 		do
-			make_c_config (a_use_32bit, a_code, a_desc)
+			make_c_config (a_use_32bit, a_code, a_desc, a_version)
 			product_reg_path := a_key
+			is_deprecated := a_deprecated
 		ensure
 			product_reg_path_set: product_reg_path = a_key
 			use_32bit_set: use_32bit = a_use_32bit
 			code_set: code = a_code
+			is_deprecated_set: is_deprecated = a_deprecated
 		end
 
 	on_initialize is
@@ -114,6 +118,12 @@ feature -- Access
 			end
 		end
 
+	compiler_file_name: STRING
+			-- The compiler's file name
+		once
+			Result := "cl.exe"
+		end
+
 feature {NONE} -- Access
 
 	batch_file_name: STRING is
@@ -177,6 +187,9 @@ feature -- Status report
 			initialize
 			Result := internal_reg_key /= default_pointer
 		end
+
+	is_deprecated: BOOLEAN
+			-- Indicates if the product is deprecated.
 
 feature {NONE} -- Basic operations
 

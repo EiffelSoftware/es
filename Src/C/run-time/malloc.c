@@ -175,7 +175,7 @@ doc:	</description>
 
 /*
 doc:	<attribute name="rt_m_data" return_type="struct emallinfo" export="shared">
-doc:		<summary>This structure records some general information about the memory, the number of chunck, etc... These informations are available via the meminfo() routine. Only used by current and garcol.c</summary>
+doc:		<summary>This structure records some general information about the memory, the number of chunck, etc... These informations are available via the eif_rt_meminfo() routine. Only used by current and garcol.c</summary>
 doc:		<access>Read/Write</access>
 doc:		<thread_safety>Safe</thread_safety>
 doc:		<synchronization>Through `eif_free_list_mutex' or GC synchronization.</synchronization>
@@ -726,10 +726,6 @@ rt_public EIF_REFERENCE emalloc_size(EIF_TYPE_INDEX ftype, EIF_TYPE_INDEX type, 
 	 * the Generational Scavenge Zone (GSZ) or in the free-list.
 	 * All the objects smaller than `eif_gs_limit' are allocated 
 	 * in the the GSZ, otherwise they are allocated in the free-list.
-	 * We put the memory objects in the GSZ (i.e those, which inherits from class
-	 * MEMORY, otherwise they are allocated in the free-list.
-	 * All the non-special objects smaller than `eif_gs_limit' are allocated 
-	 * in the the GSZ, otherwise they are allocated in the free-list.
 	 */
 
 	if ((gen_scavenge == GS_ON) && (nbytes <= (unsigned int) eif_gs_limit)) {
@@ -1001,7 +997,7 @@ rt_public EIF_REFERENCE special_malloc (uint16 flags, EIF_TYPE_INDEX dftype, EIF
 	if (flags & EO_COMP) {
 			/* It is a composite object, that is to say a special of expanded,
 			 * we need to initialize every entry properly. */
-		result = sp_init (result, eif_gen_param_id(INVALID_DTYPE, dftype, 1), 0, nb - 1);
+		result = sp_init (result, eif_gen_param_id(dftype, 1), 0, nb - 1);
 	}
 	return result;
 }
@@ -1331,12 +1327,13 @@ rt_public EIF_REFERENCE sprealloc(EIF_REFERENCE ptr, unsigned int nbitems)
 		zone->ov_dftype = HEADER(ptr)->ov_dftype;
 		zone->ov_dtype = HEADER(ptr)->ov_dtype;
 
-			/* Update flags of new object */
-		if ((zone->ov_flags & EO_NEW) && (zone->ov_flags & (EO_REF | EO_COMP))) 
-				/* New object has been created outside the
-				 * scavenge zone, we need to remember it
-				 * if it contains references to other objects. */
+			/* Update flags of new object if it contains references and the object is not
+			 * in the scavenge zone anymore. */
+		if ((zone->ov_flags & (EO_NEW | EO_OLD)) && (zone->ov_flags & (EO_REF | EO_COMP))) {
+				/* New object has been created outside the scavenge zone. Although it might
+				 * contains no references to young objects, we need to remember it just in case. */
 			erembq (object);	/* Usual remembrance process. */
+		}
 
 		CHECK ("Not forwarded", !(HEADER (ptr)->ov_size & B_FWD));
 
@@ -1382,7 +1379,7 @@ rt_public EIF_REFERENCE sprealloc(EIF_REFERENCE ptr, unsigned int nbitems)
 	if (need_expanded_initialization) {
 	   		/* Case of a special object of expanded structures. */
 			/* Initialize remaining items. */
-		object = sp_init(object, eif_gen_param_id (INVALID_DTYPE, Dftype(object), 1), count, nbitems - 1);
+		object = sp_init(object, eif_gen_param_id (Dftype(object), 1), count, nbitems - 1);
 	}
 
 #ifdef ISE_GC
@@ -1483,7 +1480,7 @@ rt_public EIF_REFERENCE bmalloc(uint16 size)
 	}
   
 	eraise(MTC "object allocation", EN_MEM);	/* Signals no more memory */
-	return (0); /* NOTREACHED */
+	return NULL; /* NOTREACHED */
 }
 
 /*
@@ -2013,7 +2010,7 @@ doc:		<synchronization>Call to `allocate_from_core' is safe.</synchronization>
 doc:	</routine>
 */
 
-rt_shared EIF_REFERENCE get_to_from_core ()
+rt_shared EIF_REFERENCE get_to_from_core (void)
 {
 	EIF_REFERENCE Result;
 
@@ -2181,7 +2178,6 @@ rt_private union overhead *add_core(size_t nbytes, int type)
 		 */
 	if (eif_max_mem > 0) {
 		if (rt_m_data.ml_total + asked > eif_max_mem) {
-			print_err_msg (stderr, "Cannot allocate memory: too much in comparison with maximum allowed!\n");
 			return (union overhead *) 0;
 		}
 	}
@@ -2717,7 +2713,6 @@ rt_shared EIF_REFERENCE xrealloc(register EIF_REFERENCE ptr, size_t nbytes, int 
 	 */
 	
 	r = zone->ov_size & B_SIZE;			/* Size of block */
-	CHECK("valid size", (nbytes % ALIGNMAX) <= ALIGNMAX);
 	i = (rt_uint_ptr) (nbytes % ALIGNMAX);
 	if (i != 0)
 		nbytes += ALIGNMAX - i;		/* Pad nbytes */
@@ -2930,7 +2925,7 @@ rt_shared EIF_REFERENCE xrealloc(register EIF_REFERENCE ptr, size_t nbytes, int 
 
 #ifdef ISE_GC
 /*
-doc:	<routine name="meminfo" return_type="struct emallinfo *" export="public">
+doc:	<routine name="eif_rt_meminfo" return_type="struct emallinfo *" export="public">
 doc:		<summary>Return the pointer to the static data held in rt_m_data. The user must not corrupt these data. It will be harmless to malloc, however, but may fool the garbage collector. Type selects the kind of information wanted.</summary>
 doc:		<param name="type" type="int">Type of memory (M_C or M_EIFFEL or M_ALL) to get info from.</param>
 doc:		<return>Pointer to an internal structure used by `malloc.c'.</return>
@@ -2939,7 +2934,7 @@ doc:		<synchronization>Safe if caller holds `eif_free_list_mutex' or is under GC
 doc:	</routine>
 */
 
-rt_public struct emallinfo *meminfo(int type)
+rt_public struct emallinfo *eif_rt_meminfo(int type)
 {
 	switch(type) {
 	case M_C:
@@ -3559,6 +3554,7 @@ rt_private int trigger_smart_gc_cycle (void)
 		}
 		TRIGGER_GC_UNLOCK;
 		EIF_EXIT_C;
+		RTGC;
 		return result;
 	} else {
 		return result;
@@ -3603,6 +3599,7 @@ rt_private int trigger_gc_cycle (void)
 		}
 		TRIGGER_GC_UNLOCK;
 		EIF_EXIT_C;
+		RTGC;
 		return result;
 	} else {
 		return 0;
@@ -3988,7 +3985,7 @@ rt_private EIF_REFERENCE eif_set(EIF_REFERENCE object, uint16 flags, EIF_TYPE_IN
 #endif
 
 #ifdef EIF_EXPENSIVE_ASSERTIONS
-	CHECK ("Cannot be in object ID stack", !has_object (&object_id_stack, object));
+	CHECK ("Cannot be in object ID stack", !st_has (&object_id_stack, object));
 #endif
 
 	return object;
@@ -4039,7 +4036,7 @@ rt_private EIF_REFERENCE eif_spset(EIF_REFERENCE object, EIF_BOOLEAN in_scavenge
 #endif
 
 #ifdef EIF_EXPENSIVE_ASSERTIONS
-	CHECK ("Cannot be in object ID stack", !has_object (&object_id_stack, object));
+	CHECK ("Cannot be in object ID stack", !st_has (&object_id_stack, object));
 #endif
 
 	return object;
@@ -4067,7 +4064,7 @@ rt_private EIF_REFERENCE add_to_moved_set (EIF_REFERENCE object)
 	REQUIRE("object has EO_NEW", HEADER(object)->ov_flags & EO_NEW);
 
 	GC_THREAD_PROTECT(EIF_GC_SET_MUTEX_LOCK);
-		/* Check that we can actuall add something to the stack. */
+		/* Check that we can actually add something to the stack. */
 	if ((moved_set.st_top == NULL) || (moved_set.st_end != moved_set.st_top)) {
 		if (-1 == epush(&moved_set, object)) {		/* Cannot record object */
 			GC_THREAD_PROTECT(EIF_GC_SET_MUTEX_UNLOCK);

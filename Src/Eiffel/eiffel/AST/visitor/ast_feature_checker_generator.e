@@ -119,15 +119,17 @@ feature -- Initialization
 
 feature -- Type checking
 
-	type_check_only (a_feature: FEATURE_I; a_is_safe_to_check_inherited, a_code_inherited: BOOLEAN) is
+	type_check_only (a_feature: FEATURE_I; a_is_safe_to_check_inherited, a_code_inherited, a_replicated_in_current_class: BOOLEAN) is
 			-- Type check `a_feature'.
 		require
 			a_feature_not_void: a_feature /= Void
 			valid_inherited_check: a_code_inherited implies a_is_safe_to_check_inherited
 		do
 			fixme (once "Make sure to use `a_code_inherited' to properly initialize our type checker.")
+			set_is_replicated (a_replicated_in_current_class)
 			type_a_checker.init_for_checking (a_feature, context.current_class, context.supplier_ids, error_handler)
 			a_feature.record_suppliers (context.supplier_ids)
+			context.initialize_variables
 			current_feature := a_feature
 			reset
 			is_byte_node_enabled := False
@@ -138,9 +140,9 @@ feature -- Type checking
 			if a_code_inherited then
 				inherited_type_a_checker.init_for_checking (a_feature, context.written_class, Void, Void)
 				if not a_feature.is_deferred and not a_feature.is_il_external then
-					is_inherited := True
+					set_is_inherited (True)
 					a_feature.body.process (Current)
-					is_inherited := False
+					set_is_inherited (False)
 				end
 			else
 				a_feature.body.process (Current)
@@ -149,30 +151,42 @@ feature -- Type checking
 			if a_is_safe_to_check_inherited then
 				process_inherited_assertions (a_feature, False)
 			end
+			check_vevi
 		end
 
-	type_check_and_code (a_feature: FEATURE_I; a_is_safe_to_check_inherited: BOOLEAN) is
+	type_check_and_code (a_feature: FEATURE_I; a_is_safe_to_check_inherited, a_replicated_in_current_class: BOOLEAN) is
 			-- Type check `a_feature'.
 		require
 			a_feature_not_void: a_feature /= Void
 		local
 			rout_as: ROUTINE_AS
 		do
+			set_is_replicated (a_replicated_in_current_class)
 			type_a_checker.init_for_checking (a_feature, context.current_class, context.supplier_ids, error_handler)
 			a_feature.record_suppliers (context.supplier_ids)
+			context.initialize_variables
 			current_feature := a_feature
 			reset
 			if a_is_safe_to_check_inherited then
 				is_byte_node_enabled := False
 				break_point_slot_count := 0
-
 				process_inherited_assertions (a_feature, True)
 				is_byte_node_enabled := True
+				if a_replicated_in_current_class then
+						-- We need to correct set the inherited TYPE_A checker to be the current
+						-- class so that like features are correctly handled.
+					inherited_type_a_checker.init_for_checking (a_feature, context.written_class, Void, Void)
+				end
 				a_feature.body.process (Current)
 				is_byte_node_enabled := False
 				process_inherited_assertions (a_feature, False)
 			else
 				is_byte_node_enabled := True
+				if a_replicated_in_current_class then
+						-- We need to correct set the inherited TYPE_A checker to be the current
+						-- class so that like features are correctly handled.
+					inherited_type_a_checker.init_for_checking (a_feature, context.written_class, Void, Void)
+				end
 				a_feature.body.process (Current)
 			end
 
@@ -189,6 +203,7 @@ feature -- Type checking
 					end
 				end
 			end
+			check_vevi
 		end
 
 	invariant_type_check (a_feature: FEATURE_I; a_clause: INVARIANT_AS; a_generate_code: BOOLEAN) is
@@ -200,8 +215,10 @@ feature -- Type checking
 			l_list: BYTE_LIST [BYTE_NODE]
 			l_invariant: INVARIANT_B
 		do
+			set_is_replicated (False)
 			type_a_checker.init_for_checking (a_feature, context.current_class, context.supplier_ids, error_handler)
 			is_byte_node_enabled := a_generate_code
+			context.initialize_variables
 			current_feature := a_feature
 			reset
 			a_clause.process (Current)
@@ -222,6 +239,7 @@ feature -- Type checking
 			a_feature_not_void: a_feature /= Void
 			a_cas_not_void: a_cas /= Void
 		do
+			set_is_replicated (False)
 			type_a_checker.init_for_checking (a_feature, context.current_class, context.supplier_ids, error_handler)
 			is_byte_node_enabled := True
 			current_feature := a_feature
@@ -323,7 +341,7 @@ feature {AST_FEATURE_CHECKER_GENERATOR} -- Internal type checking
 				current_feature := a_feature
 				reset
 				is_byte_node_enabled := a_is_byte_node_enabled
-				is_inherited := a_is_inherited
+				set_is_inherited (a_is_inherited)
 				l_written_class := context.written_class
 				a_feature.check_types (context.current_feature_table)
 				if error_level = l_error_level then
@@ -342,6 +360,28 @@ feature {AST_FEATURE_CHECKER_GENERATOR} -- Internal type checking
 							end
 						end
 					end
+				end
+			end
+		end
+
+feature {NONE} -- Internal type checking
+
+	check_vevi
+			-- Check VEVI for attributes.
+		local
+			c: CLASS_C
+			creators: HASH_TABLE [EXPORT_I, STRING_8]
+		do
+			c := context.current_class
+				-- Optimization: skip deferred classes and those without attributes.
+			if not c.is_deferred and then c.lace_class.is_void_safe and then not c.skeleton.is_empty then
+				creators := c.creators
+					-- Check if the current feature is a creation procedure.
+				if
+					creators /= Void and then creators.has (current_feature.feature_name) or else
+					c.creation_feature /= Void and then c.creation_feature.feature_id = current_feature.feature_id
+				then
+					(create {AST_CREATION_PROCEDURE_CHECKER}.make (current_feature, context)).do_nothing
 				end
 			end
 		end
@@ -392,6 +432,19 @@ feature {AST_FEATURE_CHECKER_GENERATOR}
 	is_inherited: BOOLEAN
 			-- Is code being processed inherited?
 
+	is_replicated: BOOLEAN
+			-- Is code being processed to be replicated in the current class?
+
+	set_is_inherited (a_inherited: BOOLEAN)
+		do
+			is_inherited := a_inherited
+		end
+
+	set_is_replicated (a_replicated: BOOLEAN)
+		do
+			is_replicated := a_replicated
+		end
+
 feature {NONE} -- Implementation: State
 
 	is_byte_node_enabled: BOOLEAN
@@ -420,7 +473,7 @@ feature {NONE} -- Implementation: State
 	check_for_vaol: BOOLEAN
 			-- Is current checking for VAOL error?
 
-	depend_unit_level: INTEGER_8
+	depend_unit_level: NATURAL_16
 			-- Current level used to create new instances of DEPEND_UNIT.
 
 	context: AST_CONTEXT
@@ -483,8 +536,10 @@ feature {NONE} -- Implementation: State
 	old_expressions: LINKED_LIST [UN_OLD_B]
 			-- List of old expressions found during feature type checking
 
-	is_type_compatible: BOOLEAN
-			-- Is `last_type' compatible with type passed to `process_type_compatibility'?
+	is_type_compatible: TUPLE [is_compatible: BOOLEAN; conversion_info: CONVERSION_INFO]
+			-- Result of computation of `process_type_compatibility'. If `last_type' is
+			-- compatible then `is_compatible' is set, if there is a conversion, then
+			-- `conversion_info' is set?
 
 	last_assigner_command: FEATURE_I
 			-- Last assigner command associated with a feature
@@ -590,9 +645,9 @@ feature -- Settings
 			last_original_feature_name_id := 0
 			last_feature_name_id := 0
 			last_calls_target_type := Void
-			is_type_compatible := False
+			is_type_compatible := [False, Void]
 			last_assigner_command := Void
-			is_inherited := False
+			set_is_inherited (False)
 			inline_agent_byte_codes := Void
 		end
 
@@ -775,10 +830,10 @@ feature -- Roundtrip
 				l_feature.instantiation_in (context.current_class_type.conformance_type.as_implicitly_detachable)
 			else
 				if is_byte_node_enabled then
-
 						-- This is the first place, where inline agents are looked at as features.
 						-- They are ignored by degree 2. So a new FEATURE_I has to be created
-					create l_feature_names.make (0)
+					create l_feature_names.make (1)
+					l_feature_names.extend (create {FEAT_NAME_ID_AS}.initialize (create {ID_AS}.initialize ("inline_agent")))
 					create l_feature_as.initialize (l_feature_names, l_as.body, Void, 0, 0)
 
 					create l_feature_generator
@@ -1143,6 +1198,7 @@ feature -- Implementation
 					create l_vkcn3
 					context.init_error (l_vkcn3)
 					l_vkcn3.set_location (l_feature_name)
+					l_vkcn3.set_called_feature (a_name.name)
 					error_handler.insert_error (l_vkcn3)
 				else
 						-- Protect if constrained type is NONE.
@@ -1376,12 +1432,15 @@ feature -- Implementation
 												l_formal_arg_type.instantiation_in (l_last_type.as_implicitly_detachable, l_last_id).actual_type
 										end
 										l_parameters.i_th (i).process (Current)
-										if last_type /= Void then
+										if last_type /= Void and l_arg_types /= Void then
 											l_arg_types.put (last_type, i)
 											if l_needs_byte_node then
 												l_expr ?= last_byte_node
 												l_arg_nodes.extend (l_expr)
 											end
+										else
+												-- An error occurred, we reset `l_arg_types'
+											l_arg_types := Void
 										end
 										i := i + 1
 									end
@@ -1410,7 +1469,7 @@ feature -- Implementation
 												-- type of the routine, not the anchor.
 											if
 												not l_arg_type.conform_to (l_like_arg_type) and then
-												not l_arg_type.convert_to (l_context_current_class, l_like_arg_type)
+												not l_arg_type.convert_to (l_context_current_class, l_like_arg_type.deep_actual_type)
 											then
 												insert_vuar2_error (l_feature, l_parameters, l_last_id, i, l_arg_type,
 													l_like_arg_type)
@@ -1435,11 +1494,15 @@ feature -- Implementation
 										if l_open_type /= Void or else not l_arg_type.conform_to (l_formal_arg_type) then
 											if
 												l_open_type = Void and
-												l_arg_type.convert_to (l_context_current_class, l_formal_arg_type)
+												l_arg_type.convert_to (l_context_current_class, l_formal_arg_type.deep_actual_type)
 											then
 												l_conv_info := context.last_conversion_info
 												if l_conv_info.has_depend_unit then
 													context.supplier_ids.extend (l_conv_info.depend_unit)
+													if not is_inherited then
+														l_parameters.put_i_th (l_parameters.i_th (i).converted_expression (
+															create {PARENT_CONVERSION_INFO}.make (l_conv_info)), i)
+													end
 												end
 													-- Generate conversion byte node only if we are not checking
 													-- a custom attribute. Indeed in that case, we do not want those
@@ -1449,6 +1512,7 @@ feature -- Implementation
 													l_expr ?= l_arg_nodes.i_th (i)
 													l_arg_nodes.put_i_th (l_conv_info.byte_node (l_expr), i)
 												end
+													-- Create a conversion node to keep the data used for conversion
 											elseif
 												l_arg_type.is_expanded and then l_formal_arg_type.is_external and then
 												l_arg_type.is_conformant_to (l_formal_arg_type)
@@ -1530,7 +1594,7 @@ feature -- Implementation
 									l_result_type := l_pure_result_type.actual_argument_type (l_feature.arguments)
 								end
 							end
-							l_result_type := l_result_type.instantiation_in (l_last_type.as_implicitly_detachable, l_last_id).actual_type
+							l_result_type := l_result_type.instantiation_in (l_last_type.as_implicitly_detachable, l_last_id)
 							if l_arg_types /= Void and then l_pure_result_type.is_like_argument and then is_byte_node_enabled then
 									-- Ensure the expandedness status of the result type matches
 									-- the expandedness status of the argument it is anchored to (if any).
@@ -1572,8 +1636,7 @@ feature -- Implementation
 									-- Warning not disabled
 								and then l_context_current_class.is_warning_enabled (w_obsolete_feature)
 							then
-								create l_obs_warn
-								l_obs_warn.set_class (l_context_current_class)
+								create l_obs_warn.make_with_class (l_context_current_class)
 								if current_feature /= Void then
 									l_obs_warn.set_feature (current_feature)
 								end
@@ -1595,31 +1658,26 @@ feature -- Implementation
 							end
 
 								-- Supplier dependances update
-							if not l_feature.is_inline_agent then
-								if l_is_target_of_creation_instruction then
-									create l_depend_unit.make_with_level (l_last_id, l_feature,
-										{DEPEND_UNIT}.is_in_creation_flag | depend_unit_level)
-								else
-									if is_precursor then
-										create l_depend_unit.make_with_level (a_precursor_type.associated_class.class_id, l_feature,
-											depend_unit_level)
-										context.supplier_ids.extend (l_depend_unit)
-									end
-
-									if not is_qualified and then l_feature.access_in /= l_feature.written_in and then system.current_class.class_id = l_feature.access_in
-										and then not system.has_old_feature_replication
-									then
-											-- We are unqualified-calling an inherited feature that is replicated in the current class.
-											-- Therefore the calling feature must also be replicated in the current class.
-										if current_feature.access_in /= system.current_class.class_id then
-											-- Invalid call to replicated feature, for now raise an error.
-											Error_handler.insert_warning (create {REPLICATED_FEATURE_CALL_WARNING}.make (System.current_class, current_feature, l_feature))
-										end
-									end
-									create l_depend_unit.make_with_level (l_last_id, l_feature, depend_unit_level)
+							if l_is_target_of_creation_instruction then
+								create l_depend_unit.make_with_level (l_last_id, l_feature,
+									{DEPEND_UNIT}.is_in_creation_flag | depend_unit_level)
+							else
+								if is_precursor then
+									create l_depend_unit.make_with_level (a_precursor_type.associated_class.class_id, l_feature,
+										depend_unit_level)
+									context.supplier_ids.extend (l_depend_unit)
 								end
-								context.supplier_ids.extend (l_depend_unit)
+								if not is_qualified and then l_feature.is_replicated_directly and then not l_feature.from_non_conforming_parent then
+										-- We are unqualified-calling an inherited conforming feature that is replicated in the current class.
+										-- Therefore the calling feature must also be replicated in the current class.
+									if not current_feature.is_replicated_directly and then current_feature.written_class /= System.current_class then
+											-- Invalid call to replicated feature, raise VMCS.
+										Error_handler.insert_warning (create {REPLICATED_FEATURE_CALL_WARNING}.make (System.current_class, current_feature, l_feature))
+									end
+								end
+								create l_depend_unit.make_with_level (l_last_id, l_feature, depend_unit_level)
 							end
+							context.supplier_ids.extend (l_depend_unit)
 
 							if l_is_assigner_call then
 								process_assigner_command (l_last_id, l_feature)
@@ -1673,7 +1731,17 @@ feature -- Implementation
 								end
 							end
 
-							last_type := l_result_type
+								-- We need to take the deep_actual_type because we cannot carry
+								-- the anchors from the result type which do not make sense in
+								-- the current context.
+							if is_qualified_call then
+								last_type := l_result_type.deep_actual_type
+							else
+								last_type := l_result_type
+								if l_access /= Void and then (l_is_in_assignment or else l_is_target_of_creation_instruction) then
+									l_access.set_is_attachment
+								end
+							end
 							last_calls_target_type := l_last_constrained
 							last_access_writable := l_feature.is_attribute
 							last_feature_name_id := l_feature.feature_name_id
@@ -1681,20 +1749,6 @@ feature -- Implementation
 								last_feature_name_correct: last_feature_name = l_feature.feature_name
 							end
 							last_routine_id_set := l_feature.rout_id_set
-							if last_access_writable and then l_result_type.is_attached and then not l_result_type.is_expanded then
-									-- Take care only for non-self-initializing attributes.
-								if l_is_in_assignment or else l_is_target_of_creation_instruction then
-										-- Mark that the attribute is initialized.
-									record_initialized_attribute (l_feature.feature_id)
-								elseif not is_checking_postcondition and then not context.variables.is_attribute_set (l_feature.feature_id) then
-										-- Attribute is not properly initialized.
-									error_handler.insert_error (create {VEVI}.make_attribute (l_feature, l_last_id, context, l_feature_name))
-									if not is_checking_precondition then
-											-- Mark that the attribute is initialized to avoid repeated errors.
-										context.variables.set_attribute (l_feature.feature_id)
-									end
-								end
-							end
 						else
 								-- `l_feature' was not valid for current, report
 								-- corresponding error.
@@ -1771,7 +1825,7 @@ feature -- Implementation
 				if not l_tuple_type.is_attached then
 						-- Type of tuple is always attached
 					if context.current_class.lace_class.is_void_safe then
-						l_tuple_type := l_tuple_type.as_attached
+						l_tuple_type := l_tuple_type.as_attached_type
 					elseif not l_tuple_type.is_implicitly_attached then
 						l_tuple_type := l_tuple_type.as_implicitly_attached
 					end
@@ -1782,7 +1836,7 @@ feature -- Implementation
 
 				if is_byte_node_enabled then
 					l_list ?= last_byte_node
-					create {TUPLE_CONST_B} last_byte_node.make (l_list, l_tuple_type)
+					create {TUPLE_CONST_B} last_byte_node.make (l_list, l_tuple_type, l_tuple_type.create_info)
 				end
 			else
 				reset_types
@@ -1883,7 +1937,11 @@ feature -- Implementation
 						loop
 							l_element_type := l_last_types.item (i)
 							if not l_element_type.conform_to (l_type_a) then
-								if l_element_type.convert_to (l_current_class, l_type_a) then
+								if l_element_type.convert_to (l_current_class, l_type_a.deep_actual_type) then
+									if not is_inherited and then l_context.last_conversion_info.has_depend_unit then
+										l_as.expressions.put_i_th (l_as.expressions.i_th (i).converted_expression (
+											create {PARENT_CONVERSION_INFO}.make (l_context.last_conversion_info)), i)
+									end
 									if is_byte_node_enabled and not is_checking_cas then
 										l_list.put_i_th (l_context.last_conversion_info.byte_node (
 											l_list.i_th (i)), i)
@@ -1917,7 +1975,7 @@ feature -- Implementation
 						if not l_array_type.is_attached then
 								-- Type of a manifest array is always attached
 							if l_current_class_void_safe then
-								l_array_type := l_array_type.as_attached
+								l_array_type := l_array_type.as_attached_type
 							elseif not l_array_type.is_implicitly_attached then
 								l_array_type := l_array_type.as_implicitly_attached
 							end
@@ -1945,12 +2003,12 @@ feature -- Implementation
 									-- If not found it will be ANY.
 								if
 									l_element_type.conform_to (l_type_a) or
-									l_element_type.convert_to (l_current_class, l_type_a)
+									l_element_type.convert_to (l_current_class, l_type_a.deep_actual_type)
 								then
 										-- Nothing to be done
 								elseif
 									l_type_a.conform_to (l_element_type) or
-									l_type_a.convert_to (l_current_class, l_element_type)
+									l_type_a.convert_to (l_current_class, l_element_type.deep_actual_type)
 								then
 										-- Found a lowest type.
 									l_type_a := l_element_type
@@ -1991,29 +2049,10 @@ feature -- Implementation
 							end
 						end
 						if l_has_error then
-								-- We could not find a common type, so let's iterate again to ensure that
-								-- elements conform or convert to ANY.
-							from
-								i := 1
-								l_has_error := False
-								create {CL_TYPE_A} l_type_a.make (system.any_id)
-							until
-								i > nb
-							loop
-								l_element_type := l_last_types.item (i)
-								if not l_element_type.conform_to (l_type_a) then
-									if l_element_type.convert_to (l_current_class, l_type_a) then
-										if is_byte_node_enabled and not is_checking_cas then
-											l_list.put_i_th (l_context.last_conversion_info.byte_node (
-												l_list.i_th (i)), i)
-										end
-									else
-										l_has_error := True
-										i := nb + 1	-- Exit the loop
-									end
-								end
-								i := i + 1
-							end
+								-- We could not find a common type, so we now assume it is ANY since
+								-- we always conform to ANY.
+							l_has_error := False
+							create {CL_TYPE_A} l_type_a.make (system.any_id)
 						end
 						if not l_has_error then
 							create l_generics.make (1, 1)
@@ -2021,7 +2060,7 @@ feature -- Implementation
 							create l_array_type.make (system.array_id, l_generics)
 							if l_current_class_void_safe then
 									-- Type of a manifest array is always attached
-								l_array_type := l_array_type.as_attached
+								l_array_type := l_array_type.as_attached_type
 							else
 								l_array_type := l_array_type.as_implicitly_attached
 							end
@@ -2034,7 +2073,7 @@ feature -- Implementation
 						create l_array_type.make (system.array_id, l_generics)
 						if l_current_class_void_safe then
 								-- Type of a manifest array is always attached
-							l_array_type := l_array_type.as_attached
+							l_array_type := l_array_type.as_attached_type
 						else
 							l_array_type := l_array_type.as_implicitly_attached
 						end
@@ -2083,7 +2122,7 @@ feature -- Implementation
 			if t /= Void and then not t.is_attached then
 					-- Constants are always of an attached type
 				if context.current_class.lace_class.is_void_safe then
-					t := t.as_attached
+					t := t.as_attached_type
 				elseif not t.is_implicitly_attached then
 					t := t.as_implicitly_attached
 				end
@@ -2146,6 +2185,7 @@ feature -- Implementation
 			l_vrle3: VRLE3
 			l_has_error: BOOLEAN
 			l_veen2a: VEEN2A
+			l_result: RESULT_B
 		do
 				-- Error if in procedure or invariant
 			l_has_error := is_checking_invariant
@@ -2171,42 +2211,42 @@ feature -- Implementation
 				else
 						-- Update the type stack
 					last_access_writable := True
-					if l_feat_type.is_attached then
-						if not l_feat_type.is_expanded then
-								-- Take care only for non-self-initializing locals.
-							if is_in_assignment or else is_target_of_creation_instruction then
-									-- Mark that Result is initialized.
-								record_initialized_result
-								last_reinitialized_local := result_name_id
-							elseif not is_checking_postcondition and then
-								not context.is_result_attached and then
-								context.current_class.lace_class.is_void_safe
-							then
-									-- Result is not properly initialized.
-								error_handler.insert_error (create {VEVI}.make_result (context, l_as))
-									-- Mark that Result is initialized to avoid repeated errors.
-								context.add_result_instruction_scope
-							end
+					if is_byte_node_enabled then
+						create l_result
+						last_byte_node := l_result
+					end
+					if is_in_assignment or else is_target_of_creation_instruction then
+						if l_feat_type.is_attached then
+								-- Mark that Result is initialized.
+							record_initialized_result
 						end
-					elseif is_in_assignment or else is_target_of_creation_instruction then
 							-- "Result" might change its attachment status.
 							-- It is recorded for future checks because
 							-- it might be still safe to use it in the expression
 							-- before actual reattachment takes place.
 						last_reinitialized_local := result_name_id
 					elseif context.is_result_attached then
-							-- "Result" is of a detachable type, but it's safe
-							-- to use it as an attached one.
-						if context.current_class.lace_class.is_void_safe then
-							l_feat_type := l_feat_type.as_attached
-						else
-							l_feat_type := l_feat_type.as_implicitly_attached
+						if not l_feat_type.is_attached then
+								-- "Result" is of a detachable type, but it's safe
+								-- to use it as an attached one.
+							if context.current_class.lace_class.is_void_safe then
+								l_feat_type := l_feat_type.as_attached_type
+							else
+								l_feat_type := l_feat_type.as_implicitly_attached
+							end
 						end
+					elseif
+						l_feat_type.is_initialization_required and then
+						not context.initialization_keeper.is_result_set and then
+						context.current_class.lace_class.is_void_safe
+					then
+							-- Result is not properly initialized.
+						error_handler.insert_error (create {VEVI}.make_result (context, l_as))
+							-- Mark that Result is initialized to avoid repeated errors.
+						context.add_result_instruction_scope
+						context.set_result
 					end
 					last_type := l_feat_type
-					if is_byte_node_enabled then
-						create {RESULT_B} last_byte_node
-					end
 				end
 			end
 		end
@@ -2231,6 +2271,7 @@ feature -- Implementation
 			l_type_set: TYPE_SET_A
 			l_vtmc4: VTMC4
 			l_error_level: NATURAL_32
+			l_is_not_call: BOOLEAN
 		do
 			l_type_a := last_type.actual_type
 			if l_type_a.is_formal then
@@ -2243,18 +2284,35 @@ feature -- Implementation
 			end
 
 			l_error_level := error_level
+			l_last_type := last_type
 
 			if  not l_type_a_is_multi_constrained then
 				if not l_type_a.is_none and not l_type_a.is_void then
-					if is_inherited and not l_as.is_tuple_access then
-							-- Reuse the feature when it is really one, otherwise when it is a tuple
-							-- access the call to `process_call' will do the right thing for inherited code.
-						l_feature := l_type_a.associated_class.feature_of_rout_id (l_as.routine_ids.first)
+					if is_inherited then
+						if not l_as.is_tuple_access then
+								-- Reuse the feature when it is really one, otherwise when it is a tuple
+								-- access the call to `process_call' will do the right thing for
+								-- inherited code.
+							l_feature := l_type_a.associated_class.feature_of_rout_id (l_as.routine_ids.first)
+						else
+							if {l_tuple_type: TUPLE_TYPE_A} l_last_type.actual_type then
+								l_is_not_call := True
+								is_last_access_tuple_access := True
+								is_assigner_call := False
+								last_type := l_tuple_type.generics.item (l_as.label_position)
+							else
+								check
+									False
+								end
+							end
+						end
 					end
 				end
 					-- Type check the call
-				process_call (last_type, Void, l_as.feature_name, l_feature, l_as.parameters,
-					False, False, True, False)
+				if not l_is_not_call then
+					process_call (l_last_type, Void, l_as.feature_name, l_feature, l_as.parameters,
+						False, False, True, False)
+				end
 			else
 					-- Multi constraint case
 				if is_inherited then
@@ -2278,7 +2336,6 @@ feature -- Implementation
 							-- As we inherited this feature there's the possiblity that now,
 					from
 						l_result.start
-						l_last_type :=last_type
 					until
 						l_result.after or l_vtmc4 /= Void
 					loop
@@ -2311,10 +2368,10 @@ feature -- Implementation
 						end
 					end
 						-- We inherited this feature. Adapt it's type.
-					last_type := l_feature_type
+					l_last_type := l_feature_type
 				else
 						-- Type check the call
-					process_call (last_type, Void, l_as.feature_name, l_feature, l_as.parameters,
+					process_call (l_last_type, Void, l_as.feature_name, l_feature, l_as.parameters,
 						False, False, True, False)
 				end
 			end
@@ -2337,6 +2394,13 @@ feature -- Implementation
 							is_tuple_access: is_last_access_tuple_access
 						end
 						l_as.enable_tuple_access
+						if {l_labeled_tuple: NAMED_TUPLE_TYPE_A} l_last_type.actual_type then
+							l_as.set_label_position (l_labeled_tuple.label_position (l_as.feature_name.name))
+						else
+							check
+								False
+							end
+						end
 					end
 				end
 			else
@@ -2448,7 +2512,7 @@ feature -- Implementation
 					context.is_argument_attached (l_as.feature_name.name_id)
 				then
 					if l_context_current_class.lace_class.is_void_safe then
-						l_type := l_type.as_attached
+						l_type := l_type.as_attached_type
 					elseif not l_type.is_implicitly_attached then
 						l_type := l_type.as_implicitly_attached
 					end
@@ -2482,36 +2546,37 @@ feature -- Implementation
 						l_veen2b.set_identifier (l_as.feature_name.name)
 						l_veen2b.set_location (l_as.feature_name)
 						error_handler.insert_error (l_veen2b)
-					elseif l_type.is_attached then
-						if not l_type.is_expanded  then
-								-- Take care only for non-self-initializing locals.
-							if is_in_assignment or else is_target_of_creation_instruction then
-									-- Mark that the local is initialized.
-								record_initialized_local (l_local_info.position)
-								last_reinitialized_local := l_as.feature_name.name_id
-							elseif not context.is_local_attached (l_as.feature_name.name_id) and then
-								context.current_class.lace_class.is_void_safe
-							then
-									-- Local is not properly initialized.
-								error_handler.insert_error (create {VEVI}.make_local (l_as.feature_name.name, context, l_as.feature_name))
-									-- Mark that the local is initialized to avoid repeated errors.
-								context.add_local_instruction_scope (l_as.feature_name.name_id)
-							end
-						end
 					elseif is_in_assignment or else is_target_of_creation_instruction then
+							-- Mark that the local is initialized.
+						if l_type.is_attached then
+							record_initialized_local (l_local_info.position)
+						end
 							-- The local might change its attachment status.
 							-- It is recorded for future checks because
 							-- it might be still safe to use the local in the expression
 							-- before actual reattachment takes place.
 						last_reinitialized_local := l_as.feature_name.name_id
 					elseif context.is_local_attached (l_as.feature_name.name_id) then
-							-- Local is of a detachable type, but it's safe
-							-- to use it as an attached one.
-						if context.current_class.lace_class.is_void_safe then
-							l_type := l_type.as_attached
-						else
-							l_type := l_type.as_implicitly_attached
+						if not l_type.is_attached then
+								-- Local is of a detachable type, but it's safe
+								-- to use it as an attached one.
+							if context.current_class.lace_class.is_void_safe then
+								l_type := l_type.as_attached_type
+							else
+								l_type := l_type.as_implicitly_attached
+							end
 						end
+					elseif
+						l_type.is_initialization_required and then
+						not context.initialization_keeper.is_local_set (l_local_info.position)
+					then
+							-- Local is not properly initialized.
+						if context.current_class.lace_class.is_void_safe then
+							error_handler.insert_error (create {VEVI}.make_local (l_as.feature_name.name, context, l_as.feature_name))
+						end
+							-- Mark that the local is initialized.
+						context.add_local_instruction_scope (l_as.feature_name.name_id)
+						context.set_local (l_as.feature_name.name_id)
 					end
 					if not is_inherited then
 							-- set some type attributes of the node
@@ -2592,7 +2657,9 @@ feature -- Implementation
 			l_feature := current_feature
 				-- Look for an argument
 			if is_inherited then
-				l_arg_pos := l_as.argument_position
+				if l_as.is_argument then
+					l_arg_pos := l_as.argument_position
+				end
 			else
 				l_arg_pos := l_feature.argument_position (l_as.feature_name.name_id)
 			end
@@ -2625,7 +2692,7 @@ feature -- Implementation
 						context.is_argument_attached (l_as.feature_name.name_id)
 					then
 						if context.current_class.lace_class.is_void_safe then
-							last_type := last_type.as_attached
+							last_type := last_type.as_attached_type
 						elseif not last_type.is_implicitly_attached then
 							last_type := last_type.as_implicitly_attached
 						end
@@ -2699,9 +2766,11 @@ feature -- Implementation
 			l_precursor_id: ID_AS
 			l_instatiation_type: LIKE_CURRENT
 			l_has_error: BOOLEAN
+			l_current_class: CLASS_C
+			l_rout_id_set: ROUT_ID_SET
 		do
 			if not is_inherited then
-				if current_feature.is_invariant or else current_feature.is_inline_agent  then
+				if current_feature.is_invariant or else current_feature.is_inline_agent then
 					create l_vupr1
 					context.init_error (l_vupr1)
 					error_handler.insert_error (l_vupr1)
@@ -2709,8 +2778,26 @@ feature -- Implementation
 				else
 					l_feat_ast := context.current_class.feature_with_name (current_feature.feature_name).ast
 
+					if current_feature.written_in /= context.current_class.class_id then
+						-- We are trying to evaluate a precursor in a inherited replicated feature so the context should be its written class.
+						l_current_class := current_feature.written_class
+					else
+						l_current_class := context.current_class
+					end
+
+					if not current_feature.is_selected then
+							-- We are trying to evaluate a precursor where the routine id is different from its parent precursor routine
+							-- Retrieve rout id set from from parent routine, merging if necessary with current routine id set.
+
+							--| FIXME IEK: We need to retrieve the routine id of the selected routine.
+						l_rout_id_set := current_feature.rout_id_set
+					else
+						l_rout_id_set := current_feature.rout_id_set
+					end
+
 						-- Check that feature has a unique name (vupr1)
 						-- Check that we're in the body of a routine (l_vupr1).
+
 					if
 						l_feat_ast.feature_names.count > 1 or
 						is_checking_precondition or is_checking_postcondition or is_checking_invariant
@@ -2722,7 +2809,7 @@ feature -- Implementation
 					else
 							-- Create table of routine ids of all parents which have
 							-- an effective precursor of the current feature.
-						l_pre_table := precursor_table (l_as)
+						l_pre_table := precursor_table (l_as, l_current_class, l_rout_id_set)
 
 							-- Check that current feature is a redefinition.
 						if l_pre_table.count = 0 then
@@ -2809,9 +2896,16 @@ feature -- Implementation
 			l_nested: NESTED_B
 			l_is_qualified_call: BOOLEAN
 			l_error_level: NATURAL_32
+			l_is_assigner_call: BOOLEAN
 		do
-				-- Type check the target
+				-- Type check the target, but we reset the
+				-- assigner flag syntax, because it is only pertinent
+				-- to the message, not the target.
+			l_is_assigner_call := is_assigner_call
+			is_assigner_call := False
 			l_as.target.process (Current)
+			is_assigner_call := l_is_assigner_call
+
 			l_target_type := last_type
 			if l_target_type /= Void then
 				if is_byte_node_enabled then
@@ -2903,9 +2997,9 @@ feature -- Implementation
 			l_feat_type: TYPE_A
 			creators: HASH_TABLE [EXPORT_I, STRING_8]
 			is_creation_procedure: BOOLEAN
-			feature_id: INTEGER
-			attr: FEATURE_I
-			skeleton: GENERIC_SKELETON
+--			feature_id: INTEGER
+--			attr: FEATURE_I
+--			skeleton: GENERIC_SKELETON
 		do
 			l_needs_byte_node := is_byte_node_enabled
 			l_error_level := error_level
@@ -2953,42 +3047,55 @@ feature -- Implementation
 
 				l_feat_type := current_feature.type
 				if
-					l_feat_type.is_attached and then
-					not l_feat_type.is_expanded and then
-					not context.is_result_attached and then
-					context.current_class.lace_class.is_void_safe and then
-					not current_feature.is_deferred
+					l_feat_type.is_initialization_required and then
+					not l_as.is_external and then
+					not context.initialization_keeper.is_result_set and then
+					not current_feature.is_deferred and then
+					context.current_class.lace_class.is_void_safe
 				then
 						-- Result is not properly initialized.
 					error_handler.insert_error (create {VEVI}.make_result (context, l_as.end_keyword))
 				end
-				if is_creation_procedure then
-						-- Verify that attributes are properly initialized.
-					from
-						skeleton := context.current_class.skeleton
-						skeleton.start
-					until
-						skeleton.after
-					loop
-						feature_id := skeleton.item_for_iteration.feature_id
-						attr := context.current_class.feature_of_feature_id (feature_id)
-						l_feat_type := attr.type
-						if l_feat_type.is_attached and then not l_feat_type.is_expanded and then not context.variables.is_attribute_initialized (feature_id) then
-								-- Attribute is not properly initialized.
-							error_handler.insert_error (create {VEVI}.make_attribute (attr, context.current_class.class_id, context, l_as.end_keyword))
-						end
-						skeleton.forth
-					end
-				end
+--				if is_creation_procedure then
+--						-- Verify that attributes are properly initialized.
+--					from
+--						skeleton := context.current_class.skeleton
+--						skeleton.start
+--					until
+--						skeleton.after
+--					loop
+--						feature_id := skeleton.item_for_iteration.feature_id
+--						attr := context.current_class.feature_of_feature_id (feature_id)
+--						l_feat_type := attr.type
+--						if
+--							l_feat_type.is_attached and then not l_feat_type.is_expanded and then
+--							{a: ATTRIBUTE_I} attr and then not a.has_body and then
+--							not context.variables.is_attribute_initialized (feature_id)
+--						then
+--								-- Attribute is not properly initialized.
+--							error_handler.insert_error (create {VEVI}.make_attribute (attr, context.current_class.class_id, context, l_as.end_keyword))
+--						end
+--						skeleton.forth
+--					end
+--				end
 					-- Check postconditions
 				if l_as.postcondition /= Void then
 						-- Set access id level analysis to `is_checking_postcondition': locals
 						-- are not taken into account
 					set_is_checking_postcondition (True)
+					if l_feat_type.is_initialization_required and then not context.initialization_keeper.is_result_set then
+						context.set_result
+					end
+					if l_feat_type.is_attached then
+						context.add_result_instruction_scope
+					end
 					l_as.postcondition.process (Current)
 					if l_needs_byte_node and then error_level = l_error_level then
 						l_assertion_byte_code ?= last_byte_node
 						l_byte_code.set_postcondition (l_assertion_byte_code)
+					end
+					if l_feat_type.is_attached then
+						context.remove_result_scope
 					end
 						-- Reset the level
 					set_is_checking_postcondition (False)
@@ -3092,7 +3199,7 @@ feature -- Implementation
 				loop
 					l_as.item.process (Current)
 					if m /= Void then
-						m.add_scopes (l_as.item, context)
+						m.add_scopes (l_as.item)
 					end
 					l_list.extend (last_byte_node)
 					l_as.forth
@@ -3105,7 +3212,7 @@ feature -- Implementation
 				loop
 					l_as.item.process (Current)
 					if m /= Void then
-						m.add_scopes (l_as.item, context)
+						m.add_scopes (l_as.item)
 					end
 					l_as.forth
 				end
@@ -3278,13 +3385,54 @@ feature -- Implementation
 			if not last_type.is_attached then
 					-- Type of strip expression is always attached.
 				if context.current_class.lace_class.is_void_safe then
-					last_type := last_type.as_attached
+					last_type := last_type.as_attached_type
 				elseif not last_type.is_implicitly_attached then
 					last_type := last_type.as_implicitly_attached
 				end
 			end
 			if l_needs_byte_node then
 				last_byte_node := l_strip
+			end
+		end
+
+	process_converted_expr_as (l_as: CONVERTED_EXPR_AS) is
+		local
+			l_feat: FEATURE_I
+			l_feat_name: ID_AS
+			l_location: LOCATION_AS
+		do
+			l_as.expr.process (Current)
+				-- It only make sense to process the conversion data only when
+				-- rechecking the code in a descendant class.
+			if is_inherited and then {l_info: PARENT_CONVERSION_INFO} l_as.data then
+					-- If we have some data about the above with a conversion, we need
+					-- to extract it so that we can recheck that the converted code still
+					-- make sense in a descendant.
+				if l_info.is_from_conversion then
+						-- For a from conversion, we just need to adapt the creation type to the
+						-- descendant class (case of formal generics that might need to be instantiated).
+					last_type := l_info.creation_type.evaluated_type_in_descendant (context.written_class,
+						context.current_class, context.current_feature)
+				else
+						-- For a to conversion, we need to take the descendant version of the routine
+						-- orginally taken and check that its return type still make sense.
+					l_feat := last_type.associated_class.feature_of_rout_id (l_info.routine_id)
+
+					if l_feat /= Void then
+						create l_feat_name.initialize_from_id (l_feat.feature_name_id)
+						l_location := l_as.expr.end_location
+						l_feat_name.set_position (l_location.line, l_location.column,
+							l_location.position + l_location.location_count, 0)
+						process_call (last_type, Void, l_feat_name, l_feat, Void, False, False, True, False)
+					else
+							-- We should not get there, but just in case we generate an internal
+							-- error message.
+						last_type := Void
+						error_handler.insert_error (create {INTERNAL_ERROR}.make (
+							"In {AST_FEATURE_CHECKER_GENERATOR}.process_converted_as could%N%
+							%not find routine of a given routine ID in an inherited conversion"))
+					end
+				end
 			end
 		end
 
@@ -3304,6 +3452,7 @@ feature -- Implementation
 	process_expr_call_as (l_as: EXPR_CALL_AS) is
 		local
 			l_vkcn3: VKCN3
+			l_list: LEAF_AS_LIST
 		do
 			reset_for_unqualified_call_checking
 			l_as.call.process (Current)
@@ -3311,6 +3460,10 @@ feature -- Implementation
 				create l_vkcn3
 				context.init_error (l_vkcn3)
 				l_vkcn3.set_location (l_as.call.end_location)
+				l_list := match_list_of_class (context.current_class.class_id)
+				if l_list /= Void and then l_as.call.is_text_available (l_list) then
+					l_vkcn3.set_called_feature (l_as.call.text (l_list))
+				end
 				error_handler.insert_error (l_vkcn3)
 				reset_types
 			end
@@ -3548,7 +3701,7 @@ feature -- Implementation
 				if not l_type_type.is_attached then
 						-- The type is always attached
 					if context.current_class.lace_class.is_void_safe then
-						l_type_type := l_type_type.as_attached
+						l_type_type := l_type_type.as_attached_type
 					elseif not l_type_type.is_implicitly_attached then
 						l_type_type := l_type_type.as_implicitly_attached
 					end
@@ -3568,6 +3721,7 @@ feature -- Implementation
 			l_table: FEATURE_TABLE
 			l_unsupported: NOT_SUPPORTED
 			l_target_type: TYPE_A
+			l_return_type: TYPE_A
 			l_target_node: BYTE_NODE
 			l_needs_byte_node: BOOLEAN
 			l_feature_name: ID_AS
@@ -3676,10 +3830,21 @@ feature -- Implementation
 								end
 							end
 							l_access ?= last_byte_node
+							check
+								has_feature: not l_is_named_tuple implies l_feature /= Void
+							end
 							if l_is_named_tuple or else l_feature.is_attribute or else l_feature.is_constant then
 								is_byte_node_enabled := False
 
-								compute_routine (l_table, l_feature, True, False, l_class.class_id, l_target_type, last_type,
+									-- Special processing for return type for named TUPLEs since they do not have an associated
+									-- feature.
+								if l_is_named_tuple then
+									l_return_type := last_type
+								else
+									l_return_type := l_feature.type
+								end
+
+								compute_routine (l_table, l_feature, True, False, l_class.class_id, l_target_type, l_return_type,
 										l_as, l_access, l_target_node)
 
 								if l_needs_byte_node then
@@ -3694,7 +3859,7 @@ feature -- Implementation
 								end
 							else
 								compute_routine (l_table, l_feature, not l_feature.type.is_void,l_feature.has_arguments,
-											l_class.class_id, l_target_type, last_type, l_as, l_access, l_target_node)
+											l_class.class_id, l_target_type, l_feature.type, l_as, l_access, l_target_node)
 							end
 							System.instantiator.dispatch (last_type, context.current_class)
 						end
@@ -4041,7 +4206,7 @@ feature -- Implementation
 						-- Then type check the right operand
 					if scope_matcher /= Void then
 						s := context.scope
-						scope_matcher.add_scopes (l_as.left, context)
+						scope_matcher.add_scopes (l_as.left)
 					end
 					l_as.right.process (Current)
 					if last_type /= Void then
@@ -4079,9 +4244,9 @@ feature -- Implementation
 
 							else
 								l_error := last_infix_error
-								if l_left_type.convert_to (context.current_class, l_right_type) then
+								if l_left_type.convert_to (context.current_class, l_right_type.deep_actual_type) then
 									l_target_conv_info := context.last_conversion_info
-									if  is_infix_valid (l_right_type, l_right_type, l_as.infix_function_name) then
+									if is_infix_valid (l_right_type, l_right_type, l_as.infix_function_name) then
 										l_right_constrained := last_calls_target_type
 										l_left_constrained := l_right_constrained
 										l_as.set_left_type_converted (True)
@@ -4106,6 +4271,10 @@ feature -- Implementation
 								l_left_id := l_right_constrained.associated_class.class_id
 								if l_target_conv_info.has_depend_unit then
 									context.supplier_ids.extend (l_target_conv_info.depend_unit)
+									if not is_inherited then
+										l_as.set_left (l_as.left.converted_expression (
+											create {PARENT_CONVERSION_INFO}.make (l_target_conv_info)))
+									end
 								end
 								l_target_type := l_target_conv_info.target_type
 								if l_needs_byte_node then
@@ -4125,6 +4294,10 @@ feature -- Implementation
 							if last_infix_argument_conversion_info /= Void then
 								if last_infix_argument_conversion_info.has_depend_unit then
 									context.supplier_ids.extend (last_infix_argument_conversion_info.depend_unit)
+									if not is_inherited then
+										l_as.set_right (l_as.right.converted_expression (
+											create {PARENT_CONVERSION_INFO}.make (last_infix_argument_conversion_info)))
+									end
 								end
 								if l_needs_byte_node then
 									l_right_expr ?= last_infix_argument_conversion_info.byte_node (l_right_expr)
@@ -4186,7 +4359,7 @@ feature -- Implementation
 
 	process_bin_and_then_as (l_as: BIN_AND_THEN_AS) is
 		do
-			process_binary_as (l_as, create {AST_SCOPE_CONJUNCTIVE_EXPRESSION})
+			process_binary_as (l_as, create {AST_SCOPE_CONJUNCTIVE_EXPRESSION}.make (context))
 		end
 
 	process_bin_free_as (l_as: BIN_FREE_AS) is
@@ -4202,7 +4375,7 @@ feature -- Implementation
 		do
 			l_old_expr := old_expressions
 			old_expressions := Void
-			process_binary_as (l_as, create {AST_SCOPE_IMPLICATIVE_EXPRESSION})
+			process_binary_as (l_as, create {AST_SCOPE_IMPLICATIVE_EXPRESSION}.make (context))
 			if last_type /= Void then
 				if is_byte_node_enabled then
 						-- Special optimization, if the left-hand side is False, then
@@ -4236,7 +4409,7 @@ feature -- Implementation
 
 	process_bin_or_else_as (l_as: BIN_OR_ELSE_AS) is
 		do
-			process_binary_as (l_as, create {AST_SCOPE_DISJUNCTIVE_EXPRESSION})
+			process_binary_as (l_as, create {AST_SCOPE_DISJUNCTIVE_EXPRESSION}.make (context))
 		end
 
 	process_bin_xor_as (l_as: BIN_XOR_AS) is
@@ -4341,25 +4514,37 @@ feature -- Implementation
 					not (l_left_type.conform_to (l_right_type.actual_type) or else
 					l_right_type.conform_to (l_left_type.actual_type))
 				then
-					if l_right_type.convert_to (context.current_class, l_left_type.actual_type) then
+					if l_right_type.convert_to (context.current_class, l_left_type.deep_actual_type) then
 						l_conv_info := context.last_conversion_info
 						if l_conv_info.has_depend_unit then
 							context.supplier_ids.extend (l_conv_info.depend_unit)
+							if not is_inherited then
+								l_as.set_right (l_as.right.converted_expression (
+									create {PARENT_CONVERSION_INFO}.make (l_conv_info)))
+							end
 						end
 						if l_needs_byte_node then
 							l_right_expr := l_conv_info.byte_node (l_right_expr)
 						end
 					else
-						if l_left_type.convert_to (context.current_class, l_right_type.actual_type) then
+						if l_left_type.convert_to (context.current_class, l_right_type.deep_actual_type) then
 							l_conv_info := context.last_conversion_info
 							if l_conv_info.has_depend_unit then
 								context.supplier_ids.extend (l_conv_info.depend_unit)
+								if not is_inherited then
+									l_as.set_left (l_as.left.converted_expression (
+										create {PARENT_CONVERSION_INFO}.make (l_conv_info)))
+								end
 							end
 							if l_needs_byte_node then
 								l_left_expr := l_conv_info.byte_node (l_left_expr)
 							end
 						elseif not is_inherited then
-							if context.current_class.is_warning_enabled (w_vweq) then
+							if
+								context.current_class.is_warning_enabled (w_vweq) and then
+								(l_left_type.is_none implies l_right_type.is_expanded) and then
+								(l_right_type.is_none implies l_left_type.is_expanded)
+							then
 								create l_vweq
 								context.init_error (l_vweq)
 								l_vweq.set_left_type (l_left_type)
@@ -4403,96 +4588,8 @@ feature -- Implementation
 		end
 
 	process_bin_tilde_as (l_as: BIN_TILDE_AS) is
-		local
-			l_left_type, l_right_type: TYPE_A
-			l_left_expr, l_right_expr: EXPR_B
-			l_conv_info: CONVERSION_INFO
-			l_binary: BINARY_B
-			l_vweq: VWEQ
-			l_needs_byte_node: BOOLEAN
-			l_is_byte_node_simplified: BOOLEAN
-			l_not_tilde_as: BIN_NOT_TILDE_AS
 		do
-			l_needs_byte_node := is_byte_node_enabled
-
-				-- First type check the left member
-			l_as.left.process (Current)
-			l_left_type := last_type
-			if l_left_type /= Void and l_needs_byte_node then
-				l_left_expr ?= last_byte_node
-			end
-
-				-- Then type check the right member
-			l_as.right.process (Current)
-			l_right_type := last_type
-			if l_right_type /= Void and l_needs_byte_node then
-				l_right_expr ?= last_byte_node
-			end
-
-			if l_left_type /= Void and then l_right_type /= Void then
-					-- Check if `l_left_type' conforms to `l_right_type' or if
-					-- `l_right_type' conforms to `l_left_type'.
-				if not is_inherited then
-					l_as.set_class_id (class_id_of (l_left_type))
-				end
-				if
-					not (l_left_type.conform_to (l_right_type.actual_type) or else
-					l_right_type.conform_to (l_left_type.actual_type))
-				then
-					if l_right_type.convert_to (context.current_class, l_left_type.actual_type) then
-						l_conv_info := context.last_conversion_info
-						if l_conv_info.has_depend_unit then
-							context.supplier_ids.extend (l_conv_info.depend_unit)
-						end
-						if l_needs_byte_node then
-							l_right_expr := l_conv_info.byte_node (l_right_expr)
-						end
-					else
-						if l_left_type.convert_to (context.current_class, l_right_type.actual_type) then
-							l_conv_info := context.last_conversion_info
-							if l_conv_info.has_depend_unit then
-								context.supplier_ids.extend (l_conv_info.depend_unit)
-							end
-							if l_needs_byte_node then
-								l_left_expr := l_conv_info.byte_node (l_left_expr)
-							end
-						elseif not is_inherited then
-							if context.current_class.is_warning_enabled (w_vweq) then
-								create l_vweq
-								context.init_error (l_vweq)
-								l_vweq.set_left_type (l_left_type)
-								l_vweq.set_right_type (l_right_type)
-								l_vweq.set_location (l_as.operator_location)
-								error_handler.insert_warning (l_vweq)
-							end
-							if l_left_type.is_basic and l_right_type.is_basic then
-									-- Non-compatible basic type always implies a False/true comparison.
-								l_is_byte_node_simplified := True
-							end
-						end
-					end
-				end
-
-				if l_needs_byte_node then
-					if l_is_byte_node_simplified then
-						l_not_tilde_as ?= l_as
-						if l_not_tilde_as /= Void then
-							create {BOOL_CONST_B} last_byte_node.make (True)
-						else
-							create {BOOL_CONST_B} last_byte_node.make (False)
-						end
-					else
-						l_binary := byte_anchor.binary_node (l_as)
-						l_binary.set_left (l_left_expr)
-						l_binary.set_right (l_right_expr)
-						last_byte_node := l_binary
-					end
-				end
-			end
-				-- Regardless of a failure in either expressions, we can still assume the return
-				-- type to be a BOOLEAN, that way we can detect all the other errors in the englobing
-				-- expressions if any.
-			last_type := boolean_type
+			process_bin_eq_as (l_as)
 		end
 
 	process_bin_not_tilde_as (l_as: BIN_NOT_TILDE_AS) is
@@ -4658,7 +4755,6 @@ feature -- Implementation
 			local_info: LOCAL_INFO
 			local_b: OBJECT_TEST_LOCAL_B
 			expr: EXPR_B
-			not_implemented: NOT_SUPPORTED
 		do
 			l_needs_byte_node := is_byte_node_enabled
 
@@ -4683,31 +4779,12 @@ feature -- Implementation
 					-- The object-test local is a name of a local of another object test
 				error_handler.insert_error (create {VUOT3}.make (context, l_as.name))
 			end
-			if is_checking_precondition then
-				debug ("to_implement")
-					to_implement ("Support code generation for object test in precondition when assertions are not monitored")
-				end
-				create not_implemented
-				context.init_error (not_implemented)
-				not_implemented.set_location (l_as.lcurly_symbol)
-				not_implemented.set_message ("Object test in precondition is not supported.")
-				error_handler.insert_error (not_implemented)
-			elseif is_checking_check then
-				debug ("to_implement")
-					to_implement ("Support code generation for object test in check instruction when assertions are not monitored")
-				end
-				create not_implemented
-				context.init_error (not_implemented)
-				not_implemented.set_location (l_as.lcurly_symbol)
-				not_implemented.set_message ("Object test in check instruction is not supported.")
-				error_handler.insert_error (not_implemented)
-			end
 			check_type (l_as.type)
 			local_type := last_type
 			if local_type /= Void then
 				if not local_type.is_attached then
 					if context.current_class.lace_class.is_void_safe then
-						local_type := local_type.as_attached
+						local_type := local_type.as_attached_type
 					elseif not local_type.is_implicitly_attached then
 						local_type := local_type.as_implicitly_attached
 					end
@@ -4904,7 +4981,7 @@ feature -- Implementation
 				if l_source_type /= Void then
 						-- Type checking
 					process_type_compatibility (l_target_type)
-					if not is_type_compatible then
+					if not is_type_compatible.is_compatible then
 						if l_source_type.is_bit then
 							create l_vncb
 							context.init_error (l_vncb)
@@ -4921,6 +4998,15 @@ feature -- Implementation
 							l_vjar.set_target_name (l_as.target.access_name)
 							l_vjar.set_location (l_as.start_location)
 							error_handler.insert_error (l_vjar)
+						end
+					else
+						if
+							not is_inherited and then
+							is_type_compatible.conversion_info /= Void and then
+							is_type_compatible.conversion_info.has_depend_unit
+						then
+							l_as.set_source (l_as.source.converted_expression (
+								create {PARENT_CONVERSION_INFO}.make (is_type_compatible.conversion_info)))
 						end
 					end
 
@@ -4949,6 +5035,12 @@ feature -- Implementation
 								context.remove_local_scope (l_reinitialized_local)
 							end
 						end
+							-- The variable is initialized.
+						if l_reinitialized_local = result_name_id then
+							context.set_result
+						else
+							context.set_local (l_reinitialized_local)
+						end
 					end
 				end
 				commit_initialized_variable (l_initialized_variable)
@@ -4975,7 +5067,7 @@ feature -- Implementation
 			argument: PARAMETER_B
 			assigner_arguments: BYTE_LIST [PARAMETER_B]
 			l_instr: INSTR_CALL_B
-			l_tuple_access: TUPLE_ACCESS_B
+			l_tuple_access_b: TUPLE_ACCESS_B
 			l_is_tuple_access: BOOLEAN
 			l_multi_constraint_static: TYPE_A
 		do
@@ -4997,7 +5089,7 @@ feature -- Implementation
 				if last_type /= Void then
 					process_type_compatibility (target_type)
 					source_type := last_type
-					if not is_type_compatible then
+					if not is_type_compatible.is_compatible then
 						create vbac1
 						context.init_error (vbac1)
 						vbac1.set_source_type (source_type)
@@ -5011,115 +5103,130 @@ feature -- Implementation
 						context.init_error (vbac2)
 						vbac2.set_location (l_as.start_location)
 						error_handler.insert_error (vbac2)
-					elseif is_byte_node_enabled then
-							-- Preserve source byte node
-						source_byte_node ?= last_byte_node
-
-							-- Discriminate over expression kind:
-							-- it should be either a qualified call,
-							-- a binary or an unary
-						outer_nested_b ?= target_byte_node
-						binary_b ?= target_byte_node
-						unary_b ?= target_byte_node
-						external_b ?= target_byte_node
-						if external_b /= Void then
-							--| Do nothing (for external static calls)
-						elseif outer_nested_b /= Void then
-							call_b := outer_nested_b
-								-- Find end of call chain
-							from
-								inner_nested_b ?= outer_nested_b.message
-							until
-								inner_nested_b = Void
-							loop
-								outer_nested_b := inner_nested_b
-								inner_nested_b ?= outer_nested_b.message
-							end
-								-- Evaluate assigner command arguments
-							access_b ?= outer_nested_b.message
-							check
-								access_b_not_void: access_b /= Void
-							end
-								-- Get the multi_constrait_static if one exists
-							l_multi_constraint_static := access_b.multi_constraint_static
-							arguments := access_b.parameters
-						elseif binary_b /= Void then
-								-- Create call chain
-							outer_nested_b := binary_b.nested_b
-							call_b := outer_nested_b
-								-- Evaluate assigner command arguments
-							create arguments.make (1)
-							create argument
-							argument.set_expression (binary_b.right)
-							argument.set_attachment_type (binary_b.attachment)
-							if not system.il_generation then
-								-- It is pretty important that we use `actual_type.is_formal' and not
-								-- just `is_formal' because otherwise if you have `like x' and `x: G'
-								-- then we would fail to detect that.
-								argument.set_is_formal (system.seed_of_routine_id (target_assigner.rout_id_set.first).arguments.i_th (1).actual_type.is_formal)
-							end
-							arguments.extend (argument)
-						else
-							check
-								unary_b_not_void: unary_b /= Void
-							end
-								-- Create call chain
-							outer_nested_b := unary_b.nested_b
-							call_b := outer_nested_b
-								-- There are no arguments in unary expression
+					else
+						if
+							not is_inherited and then
+							is_type_compatible.conversion_info /= Void and then
+							is_type_compatible.conversion_info.has_depend_unit
+						then
+							l_as.set_source (l_as.source.converted_expression (
+								create {PARENT_CONVERSION_INFO}.make (is_type_compatible.conversion_info)))
 						end
 
-						if l_is_tuple_access then
-								-- When assigning to a tuple, we simply transform the tuple
-								-- access by giving a source.
-							l_tuple_access ?= access_b
-							check l_tuple_access_not_void: l_tuple_access /= Void end
-							l_tuple_access.set_line_number (l_as.start_location.line)
-							l_tuple_access.set_source (source_byte_node)
-							last_byte_node := target_byte_node
-						else
-								-- Evaluate assigner command arguments:
-								--   first is a source of an assigner command
-								--   next are those from target call
-							if arguments = Void then
-								create assigner_arguments.make (1)
-							else
-								create assigner_arguments.make (arguments.count + 1)
-							end
-							create argument
-							argument.set_expression (source_byte_node)
-							argument.set_attachment_type (target_type)
-							if not system.il_generation then
-								-- It is pretty important that we use `actual_type.is_formal' and not
-								-- just `is_formal' because otherwise if you have `like x' and `x: G'
-								-- then we would fail to detect that.
-								argument.set_is_formal (system.seed_of_routine_id (target_assigner.rout_id_set.first).arguments.i_th (1).actual_type.is_formal)
-							end
-							assigner_arguments.extend (argument)
-							if arguments /= Void then
-								assigner_arguments.append (arguments)
-							end
-								-- Evaluate assigner command byte node
-							access_b := target_assigner.access (void_type, True)
-							access_b.set_parameters (assigner_arguments)
+						if is_byte_node_enabled then
+								-- Preserve source byte node
+							source_byte_node ?= last_byte_node
 
-							if l_multi_constraint_static /= Void then
-									-- We are in the multi constraint case, set the multi constraint static
-								access_b.set_multi_constraint_static (l_multi_constraint_static)
+								-- Discriminate over expression kind:
+								-- it should be either a qualified call,
+								-- a binary or an unary
+							outer_nested_b ?= target_byte_node
+							binary_b ?= target_byte_node
+							unary_b ?= target_byte_node
+							external_b ?= target_byte_node
+							if external_b /= Void then
+								--| Do nothing (for external static calls)
+							elseif outer_nested_b /= Void then
+								call_b := outer_nested_b
+									-- Find end of call chain
+								from
+									inner_nested_b ?= outer_nested_b.message
+								until
+									inner_nested_b = Void
+								loop
+									outer_nested_b := inner_nested_b
+									inner_nested_b ?= outer_nested_b.message
+								end
+									-- Evaluate assigner command arguments
+								access_b ?= outer_nested_b.message
+								check
+									access_b_not_void: access_b /= Void
+								end
+									-- Get the multi_constrait_static if one exists
+								l_multi_constraint_static := access_b.multi_constraint_static
+								arguments := access_b.parameters
+							elseif binary_b /= Void then
+									-- Create call chain
+								outer_nested_b := binary_b.nested_b
+								call_b := outer_nested_b
+									-- Evaluate assigner command arguments
+								create arguments.make (1)
+								create argument
+								argument.set_expression (binary_b.right)
+								argument.set_attachment_type (binary_b.attachment)
+								if not system.il_generation then
+									-- It is pretty important that we use `actual_type.is_formal' and not
+									-- just `is_formal' because otherwise if you have `like x' and `x: G'
+									-- then we would fail to detect that.
+									argument.set_is_formal (system.seed_of_routine_id (target_assigner.rout_id_set.first).arguments.i_th (1).actual_type.is_formal)
+								end
+								arguments.extend (argument)
+							else
+								check
+									unary_b_not_void: unary_b /= Void
+								end
+									-- Create call chain
+								outer_nested_b := unary_b.nested_b
+								call_b := outer_nested_b
+									-- There are no arguments in unary expression
 							end
 
-							if external_b = Void then
-									-- Replace end of call chain with an assigner command
-								access_b.set_parent (outer_nested_b)
-								outer_nested_b.set_message (access_b)
+							if l_is_tuple_access then
+									-- When assigning to a tuple, we simply transform the tuple
+									-- access by giving a source.
+								l_tuple_access_b ?= access_b
+								check l_tuple_access_not_void: l_tuple_access_b /= Void end
+								l_tuple_access_b.set_line_number (l_as.start_location.line)
+								create argument
+								argument.set_expression (source_byte_node)
+								argument.set_attachment_type (l_tuple_access_b.tuple_element_type)
+								argument.set_is_for_tuple_access (True)
+								l_tuple_access_b.set_source (argument)
+								last_byte_node := target_byte_node
 							else
-									-- Set external static assigner
-								check call_b_unattached: call_b = Void end
-								call_b := access_b
+									-- Evaluate assigner command arguments:
+									--   first is a source of an assigner command
+									--   next are those from target call
+								if arguments = Void then
+									create assigner_arguments.make (1)
+								else
+									create assigner_arguments.make (arguments.count + 1)
+								end
+								create argument
+								argument.set_expression (source_byte_node)
+								argument.set_attachment_type (target_type)
+								if not system.il_generation then
+									-- It is pretty important that we use `actual_type.is_formal' and not
+									-- just `is_formal' because otherwise if you have `like x' and `x: G'
+									-- then we would fail to detect that.
+									argument.set_is_formal (system.seed_of_routine_id (target_assigner.rout_id_set.first).arguments.i_th (1).actual_type.is_formal)
+								end
+								assigner_arguments.extend (argument)
+								if arguments /= Void then
+									assigner_arguments.append (arguments)
+								end
+									-- Evaluate assigner command byte node
+								access_b := target_assigner.access (void_type, True)
+								access_b.set_parameters (assigner_arguments)
+
+								if l_multi_constraint_static /= Void then
+										-- We are in the multi constraint case, set the multi constraint static
+									access_b.set_multi_constraint_static (l_multi_constraint_static)
+								end
+
+								if external_b = Void then
+										-- Replace end of call chain with an assigner command
+									access_b.set_parent (outer_nested_b)
+									outer_nested_b.set_message (access_b)
+								else
+										-- Set external static assigner
+									check call_b_unattached: call_b = Void end
+									call_b := access_b
+								end
+								create l_instr.make (call_b, l_as.start_location.line)
+								l_instr.set_line_pragma (l_as.line_pragma)
+								last_byte_node := l_instr
 							end
-							create l_instr.make (call_b, l_as.start_location.line)
-							l_instr.set_line_pragma (l_as.line_pragma)
-							last_byte_node := l_instr
 						end
 					end
 				end
@@ -5133,10 +5240,10 @@ feature -- Implementation
 			l_reverse: REVERSE_B
 			l_ve03: VE03
 			l_source_type, l_target_type: TYPE_A
-			l_conv_info: CONVERSION_INFO
 			l_formal: FORMAL_A
 			l_vjrv1: VJRV1
 			l_vjrv2: VJRV2
+			l_vjrv3: VJRV3
 			l_attribute: ATTRIBUTE_B
 			l_create_info: CREATE_INFO
 			l_reinitialized_local: like last_reinitialized_local
@@ -5193,6 +5300,15 @@ feature -- Implementation
 							l_vjrv1.set_location (l_as.target.end_location)
 							error_handler.insert_warning (l_vjrv1)
 						end
+					elseif l_target_type.is_attached then
+							-- Allowing assignment attempts on attached entities does not make sense
+							-- since we cannot guarantee that the entity will not be Void after.
+						create l_vjrv3
+						context.init_error (l_vjrv3)
+						l_vjrv3.set_target_name (l_as.target.access_name)
+						l_vjrv3.set_target_type (l_target_type)
+						l_vjrv3.set_location (l_as.target.end_location)
+						error_handler.insert_error (l_vjrv3)
 					elseif l_target_type.actual_type.is_formal then
 						l_formal ?= l_target_type.actual_type
 						check
@@ -5208,22 +5324,6 @@ feature -- Implementation
 							l_vjrv2.set_target_type (l_target_type)
 							l_vjrv2.set_location (l_as.target.end_location)
 							error_handler.insert_warning (l_vjrv2)
-						end
-					else
-							-- Target is a reference, but source is not.
-						if l_source_type.is_expanded then
-								-- Special case `ref ?= exp' where we convert
-								-- `exp' to its associated reference before
-								-- doing the assignment.
-							if l_source_type.convert_to (context.current_class, l_target_type) then
-								l_conv_info := context.last_conversion_info
-								if l_conv_info.has_depend_unit then
-									context.supplier_ids.extend (l_conv_info.depend_unit)
-								end
-								if is_byte_node_enabled then
-									l_source_expr := l_conv_info.byte_node (l_source_expr)
-								end
-							end
 						end
 					end
 
@@ -5260,10 +5360,13 @@ feature -- Implementation
 		local
 			l_check: CHECK_B
 			l_list: BYTE_LIST [BYTE_NODE]
+			s: INTEGER
 		do
 			if l_as.check_list /= Void then
 				set_is_checking_check (True)
-				process_eiffel_list_with_matcher (l_as.check_list, create {AST_SCOPE_ASSERTION}, Void)
+				s := context.scope
+				process_eiffel_list_with_matcher (l_as.check_list, create {AST_SCOPE_ASSERTION}.make (context), Void)
+				context.remove_object_test_scopes (s)
 				set_is_checking_check (False)
 
 				if is_byte_node_enabled then
@@ -5319,6 +5422,7 @@ feature -- Implementation
 			l_original_default_create_name_id: INTEGER
 			l_context_current_class: CLASS_C
 			l_error_level: NATURAL_32
+			l_is_qualified_call: BOOLEAN
 		do
 			l_error_level := error_level
 			l_needs_byte_node := is_byte_node_enabled
@@ -5492,6 +5596,10 @@ feature -- Implementation
 					end
 
 					if l_call /= Void then
+							-- A creation call has to be considered as a qualified call.
+							-- This fixes eweasel test#term161.
+						l_is_qualified_call := is_qualified_call
+						is_qualified_call := True
 						if is_inherited then
 							if l_is_multi_constraint_case then
 									-- We need to iterate through the type set to find the routine of ID
@@ -5543,6 +5651,7 @@ feature -- Implementation
 							last_calls_target_type := l_creation_type
 							process_call (last_type, Void, l_call.feature_name, l_feature, l_call.parameters, False, False, False, False)
 						end
+						is_qualified_call := l_is_qualified_call
 
 						if error_level = l_error_level then
 							if not is_inherited then
@@ -5661,15 +5770,78 @@ feature -- Implementation
 			end
 		end
 
-	process_creation_as (l_as: CREATION_AS) is
+	generate_creation (
+			l_access: ACCESS_B;
+			l_call_access: CALL_ACCESS_B;
+			l_creation_type: TYPE_A;
+			l_explicit_type: TYPE_A;
+			l: LOCATION_AS)
+		require
+			l_access_attached: l_access /= Void
+			l_creation_type_attached: l_creation_type /= Void
 		local
-			l_access: ACCESS_B
-			l_call_access: CALL_ACCESS_B
+			t: TYPE_A
 			l_creation_expr: CREATION_EXPR_B
 			l_assign: ASSIGN_B
 			l_attribute: ATTRIBUTE_B
-			l_target_type, l_explicit_type, l_creation_type: TYPE_A
 			l_create_info: CREATE_INFO
+		do
+			t := l_creation_type
+				-- Compute creation information
+			if t.is_expanded then
+					-- Even if there is an anchor, once a type is expanded it
+					-- cannot change.
+				if t.is_like then
+					t := t.conformance_type
+				end
+				create {CREATE_TYPE} l_create_info.make (t)
+			elseif l_access.is_attribute and then l_explicit_type = Void then
+					-- When we create an attribute without a type specification,
+					-- then we need to create an instance matching the possible redeclared
+					-- type of the attribute in descendant classes.
+				l_attribute ?= l_access
+				create {CREATE_FEAT} l_create_info.make (l_attribute.attribute_id,
+					l_attribute.routine_id)
+			else
+				l_create_info := t.create_info
+			end
+
+			if system.il_generation and {l_info: CREATE_FEAT} l_create_info then
+					-- We need to record into current class that there is a creation
+					-- using a feature, i.e. an anchor. This fixes eweasel test#dotnet100.
+				context.current_class.extend_type_set (l_info.routine_id)
+			end
+
+			create l_creation_expr
+			l_creation_expr.set_info (l_create_info)
+				-- When this is not `default_create'.
+			if l_call_access /= Void then
+				l_creation_expr.set_call (l_call_access)
+				l_creation_expr.set_multi_constraint_static (l_call_access.multi_constraint_static)
+			end
+
+			check t /= Void end
+			l_creation_expr.set_type (t)
+			l_creation_expr.set_creation_instruction (True)
+			l_creation_expr.set_line_number (l.line)
+
+			create l_assign
+			l_assign.set_target (l_access)
+			l_assign.set_source (l_creation_expr)
+			l_assign.set_line_number (l.line)
+			check
+				l_assign.is_creation_instruction
+			end
+
+			last_byte_node := l_assign
+		end
+
+	process_creation_as (l_as: CREATION_AS) is
+		local
+			l_access: ACCESS_B
+			l_assign: ASSIGN_B
+			l_call_access: CALL_ACCESS_B
+			l_target_type, l_explicit_type, l_creation_type: TYPE_A
 			l_vgcc3: VGCC3
 			l_vgcc31: VGCC31
 			l_vgcc7: VGCC7
@@ -5691,6 +5863,9 @@ feature -- Implementation
 			last_access_writable := False
 			last_reinitialized_local := 0
 			l_as.target.process (Current)
+			if l_needs_byte_node then
+				l_access ?= last_byte_node
+			end
 				-- Record initialized variable to commit it after the call is processed.
 			l_initialized_variable := last_initialized_variable
 			l_reinitialized_local := last_reinitialized_local
@@ -5702,10 +5877,6 @@ feature -- Implementation
 			l_current_class_void_safe := context.current_class.lace_class.is_void_safe
 			l_target_type := last_type
 			if l_target_type /= Void then
-				if l_needs_byte_node then
-					l_access ?= last_byte_node
-				end
-
 				if not last_access_writable then
 					create l_vgcc7
 					context.init_error (l_vgcc7)
@@ -5721,7 +5892,7 @@ feature -- Implementation
 						if l_explicit_type /= Void and then not l_explicit_type.is_attached then
 								-- Creation type is always attached
 							if l_current_class_void_safe then
-								l_explicit_type := l_explicit_type.as_attached
+								l_explicit_type := l_explicit_type.as_attached_type
 							elseif not l_explicit_type.is_implicitly_attached then
 								l_explicit_type := l_explicit_type.as_implicitly_attached
 							end
@@ -5768,7 +5939,7 @@ feature -- Implementation
 								l_creation_type := l_target_type
 								if not l_creation_type.is_attached and then l_current_class_void_safe then
 										-- Creation type is always attached.
-									l_creation_type := l_creation_type.as_attached
+									l_creation_type := l_creation_type.as_attached_type
 									last_type := l_creation_type
 								end
 							end
@@ -5779,51 +5950,11 @@ feature -- Implementation
 
 							if l_needs_byte_node then
 								l_call_access ?= last_byte_node
-
-									-- Compute creation information
-								if l_creation_type.is_expanded then
-										-- Even if there is an anchor, once a type is expanded it
-										-- cannot change.
-									create {CREATE_TYPE} l_create_info.make (l_creation_type)
-								elseif l_access.is_attribute and l_explicit_type = Void then
-										-- When we create an attribute without a type specification,
-										-- then we need to create an instance matching the possible redeclared
-										-- type of the attribute in descendant classes.
-									l_attribute ?= l_access
-									create {CREATE_FEAT} l_create_info.make (l_attribute.attribute_id,
-										l_attribute.routine_id)
-								else
-									l_create_info := l_creation_type.create_info
-								end
-
-								if system.il_generation and {l_info: CREATE_FEAT} l_create_info then
-										-- We need to record into current class that there is a creation
-										-- using a feature, i.e. an anchor. This fixes eweasel test#dotnet100.
-									context.current_class.extend_type_set (l_info.routine_id)
-								end
-
-								create l_creation_expr
-								l_creation_expr.set_call (l_call_access)
-								l_creation_expr.set_info (l_create_info)
-								if l_call_access /= Void then
-									l_creation_expr.set_multi_constraint_static (l_call_access.multi_constraint_static)
-								end
-
-								check l_creation_type /= Void end
-								l_creation_expr.set_type (l_creation_type)
-								l_creation_expr.set_creation_instruction (True)
-								l_creation_expr.set_line_number (l_as.target.start_location.line)
-
-								create l_assign
-								l_assign.set_target (l_access)
-								l_assign.set_source (l_creation_expr)
-								l_assign.set_line_number (l_as.target.start_location.line)
+								generate_creation (l_access, l_call_access, l_creation_type, l_explicit_type,
+									l_as.target.start_location)
+									-- Set line information for instruction.
+								l_assign ?= last_byte_node
 								l_assign.set_line_pragma (l_as.line_pragma)
-								check
-									l_assign.is_creation_instruction
-								end
-
-								last_byte_node := l_assign
 							end
 						end
 					end
@@ -5833,8 +5964,10 @@ feature -- Implementation
 						-- Local variable is now attached.
 					if l_reinitialized_local = result_name_id then
 						context.add_result_instruction_scope
+						context.set_result
 					else
 						context.add_local_instruction_scope (l_reinitialized_local)
+						context.set_local (l_reinitialized_local)
 					end
 				end
 			end
@@ -5869,7 +6002,7 @@ feature -- Implementation
 					if not l_creation_type.is_attached then
 							-- Type of a creation expression is always attached.
 						if context.current_class.lace_class.is_void_safe then
-							l_creation_type := l_creation_type.as_attached
+							l_creation_type := l_creation_type.as_attached_type
 						elseif not l_creation_type.is_implicitly_attached then
 							l_creation_type := l_creation_type.as_implicitly_attached
 						end
@@ -5911,9 +6044,9 @@ feature -- Implementation
 			l_node_keys: ARRAYED_LIST [STRING]
 		do
 			if l_as.compound /= Void then
-				context.scope_keeper.enter_realm
+				context.enter_realm
 				process_compound (l_as.compound)
-				context.scope_keeper.leave_optional_realm
+				context.leave_optional_realm
 				if is_byte_node_enabled then
 					l_list ?= last_byte_node
 					create l_debug
@@ -5980,10 +6113,10 @@ feature -- Implementation
 			end
 
 				-- Type check on compound
-			context.scope_keeper.enter_realm
-			create {AST_SCOPE_CONJUNCTIVE_CONDITION} scope_matcher
+			context.enter_realm
+			create {AST_SCOPE_CONJUNCTIVE_CONDITION} scope_matcher.make (context)
 			s := context.scope
-			scope_matcher.add_scopes (l_as.condition, context)
+			scope_matcher.add_scopes (l_as.condition)
 			if l_as.compound /= Void then
 				process_compound (l_as.compound)
 				if l_needs_byte_node then
@@ -5992,12 +6125,12 @@ feature -- Implementation
 				end
 			end
 			context.set_scope (s)
-			context.scope_keeper.save_sibling
+			context.save_sibling
 
-			create {AST_SCOPE_DISJUNCTIVE_CONDITION} scope_matcher
+			create {AST_SCOPE_DISJUNCTIVE_CONDITION} scope_matcher.make (context)
 			s := context.scope
-			scope_matcher.add_scopes (l_as.condition, context)
-			context.scope_keeper.update_realm
+			scope_matcher.add_scopes (l_as.condition)
+			context.update_realm
 
 				-- Type check on alternaltives compounds
 			if l_as.elsif_list /= Void then
@@ -6017,10 +6150,10 @@ feature -- Implementation
 			end
 				-- Even though Else part might be empty,
 				-- we record its void safety information.
-			context.scope_keeper.save_sibling
+			context.save_sibling
 
 			context.set_scope (s)
-			context.scope_keeper.leave_realm
+			context.leave_realm
 
 			if l_needs_byte_node then
 				l_if.set_line_number (l_as.condition.start_location.line)
@@ -6081,7 +6214,7 @@ feature -- Implementation
 					create l_controler.make (l_constraint_type)
 					inspect_controlers.put_front (l_controler)
 
-					context.scope_keeper.enter_realm
+					context.enter_realm
 					if l_as.case_list /= Void then
 						l_as.case_list.process (Current)
 						if l_needs_byte_node then
@@ -6093,13 +6226,13 @@ feature -- Implementation
 
 					if l_as.else_part /= Void then
 						process_compound (l_as.else_part)
-						context.scope_keeper.save_sibling
+						context.save_sibling
 						if l_needs_byte_node then
 							l_list ?= last_byte_node
 							l_inspect.set_else_part (l_list)
 						end
 					end
-					context.scope_keeper.leave_realm
+					context.leave_realm
 					if l_needs_byte_node then
 						l_inspect.set_line_number (l_as.switch.start_location.line)
 						l_inspect.set_end_location (l_as.end_keyword)
@@ -6116,6 +6249,7 @@ feature -- Implementation
 			l_vkcn1: VKCN1
 			l_call: CALL_B
 			l_call_b: INSTR_CALL_B
+			l_list: LEAF_AS_LIST
 		do
 			break_point_slot_count := break_point_slot_count + 1
 
@@ -6126,6 +6260,10 @@ feature -- Implementation
 					create l_vkcn1
 					context.init_error (l_vkcn1)
 					l_vkcn1.set_location (l_as.call.end_location)
+					l_list := match_list_of_class (context.current_class.class_id)
+					if l_list /= Void and l_as.call.is_text_available (l_list) then
+						l_vkcn1.set_called_feature (l_as.call.text (l_list))
+					end
 					error_handler.insert_error (l_vkcn1)
 				elseif is_byte_node_enabled then
 					l_call ?= last_byte_node
@@ -6200,13 +6338,13 @@ feature -- Implementation
 
 				if l_as.compound /= Void then
 						-- Type check the loop compound
-					context.scope_keeper.enter_realm
+					context.enter_realm
 						-- After the loop we have to merge current and loop body
 						-- scope information, so the current one is saved here.
-					context.scope_keeper.save_sibling
-					create {AST_SCOPE_DISJUNCTIVE_CONDITION} scope_matcher
+					context.save_sibling
+					create {AST_SCOPE_DISJUNCTIVE_CONDITION} scope_matcher.make (context)
 					s := context.scope
-					scope_matcher.add_scopes (l_as.stop, context)
+					scope_matcher.add_scopes (l_as.stop)
 					process_compound (l_as.compound)
 					if l_needs_byte_node then
 						l_list ?= last_byte_node
@@ -6214,11 +6352,11 @@ feature -- Implementation
 					end
 					context.set_scope (s)
 						-- Take into account loop body scope information.
-					context.scope_keeper.save_sibling
-					context.scope_keeper.leave_realm
+					context.save_sibling
+					context.leave_realm
 						-- Take exit condition into account.
-					create {AST_SCOPE_CONJUNCTIVE_CONDITION} scope_matcher
-					scope_matcher.add_scopes (l_as.stop, context)
+					create {AST_SCOPE_CONJUNCTIVE_CONDITION} scope_matcher.make (context)
+					scope_matcher.add_scopes (l_as.stop)
 				end
 
 				if l_needs_byte_node then
@@ -6281,6 +6419,29 @@ feature -- Implementation
 			end
 		end
 
+	process_attribute_as (l_as: ATTRIBUTE_AS) is
+		local
+			l_list: BYTE_LIST [BYTE_NODE]
+			l_std_byte_code: STD_BYTE_CODE
+			l_needs_byte_node: BOOLEAN
+		do
+			l_needs_byte_node := is_byte_node_enabled
+			l_as.set_first_breakpoint_slot_index (break_point_slot_count + 1)
+
+			if l_as.compound /= Void then
+				process_compound (l_as.compound)
+				if l_needs_byte_node then
+					l_list ?= last_byte_node
+				end
+			end
+			if l_needs_byte_node then
+				create l_std_byte_code
+				l_std_byte_code.set_compound (l_list)
+				last_byte_node := l_std_byte_code
+			end
+			break_point_slot_count := break_point_slot_count + 1
+		end
+
 	process_do_as (l_as: DO_AS) is
 		local
 			l_list: BYTE_LIST [BYTE_NODE]
@@ -6319,15 +6480,6 @@ feature -- Implementation
 				if l_needs_byte_node then
 					l_list ?= last_byte_node
 				end
-			end
-			if
-				not is_inherited and then
-				context.current_class.is_generic and then context.current_class.is_warning_enabled (w_once_in_generic)
-			then
-					-- Generate a warning only in class declaring the once, not in classes in which the once is being
-					-- rechecked.
-				error_handler.insert_warning (
-					create {ONCE_IN_GENERIC_WARNING}.make (context.current_class, current_feature))
 			end
 			if l_needs_byte_node then
 				create l_once_byte_code
@@ -6492,9 +6644,9 @@ feature -- Implementation
 			end
 
 				-- Type check on compound
-			create {AST_SCOPE_CONJUNCTIVE_CONDITION} scope_matcher
+			create {AST_SCOPE_CONJUNCTIVE_CONDITION} scope_matcher.make (context)
 			s := context.scope
-			scope_matcher.add_scopes (l_as.expr, context)
+			scope_matcher.add_scopes (l_as.expr)
 			if l_as.compound /= Void then
 				process_compound (l_as.compound)
 				if not l_has_error and l_needs_byte_node then
@@ -6503,12 +6655,12 @@ feature -- Implementation
 				end
 			end
 			context.set_scope (s)
-			context.scope_keeper.save_sibling
+			context.save_sibling
 
 				-- Add scopes for the parts that follow this one.
-			create {AST_SCOPE_DISJUNCTIVE_CONDITION} scope_matcher
-			scope_matcher.add_scopes (l_as.expr, context)
-			context.scope_keeper.update_realm
+			create {AST_SCOPE_DISJUNCTIVE_CONDITION} scope_matcher.make (context)
+			scope_matcher.add_scopes (l_as.expr)
+			context.update_realm
 
 			if not l_has_error and l_needs_byte_node then
 				l_elsif.set_line_number (l_as.expr.start_location.line)
@@ -6599,7 +6751,7 @@ feature -- Implementation
 				end
 				last_byte_node := l_case
 			end
-			context.scope_keeper.save_sibling
+			context.save_sibling
 		end
 
 	process_ensure_as (l_as: ENSURE_AS) is
@@ -6655,6 +6807,7 @@ feature -- Implementation
 			a: EIFFEL_LIST [TAGGED_AS]
 			b: ASSERTION_BYTE_CODE
 			i: INTEGER
+			s: INTEGER
 		do
 			a := l_as.assertions
 			if a /= Void then
@@ -6662,7 +6815,9 @@ feature -- Implementation
 					create b.make (a.count)
 					i := context.next_object_test_local_position
 				end
-				process_eiffel_list_with_matcher (a, create {AST_SCOPE_ASSERTION}, b)
+				s := context.scope
+				process_eiffel_list_with_matcher (a, create {AST_SCOPE_ASSERTION}.make (context), b)
+				context.remove_object_test_scopes (s)
 				if b /= Void then
 					if b.is_empty then
 						b := Void
@@ -6859,18 +7014,30 @@ feature {NONE} -- Implementation
 			i: INTEGER
 			l_old_written_class: CLASS_C
 			l_written_class: CLASS_C
+			t: TYPE_A
 		do
 			assert_id_set := a_feature.assert_id_set
 			if assert_id_set /= Void then
 				context.clear_local_context
-				is_inherited := True
+				set_is_inherited (True)
 				inherited_type_a_checker.init_for_checking (a_feature, context.written_class, Void, Void)
+				if not process_preconditions then
+						-- Mark that result is initialized and attached if required.
+					t := a_feature.type
+					if t.is_initialization_required and then not context.initialization_keeper.is_result_set then
+						context.set_result
+					end
+					if t.is_attached then
+						context.add_result_instruction_scope
+					end
+				end
 				from
 					i := assert_id_set.count
 				until
 					i <= 0
 				loop
 					assertion_info := assert_id_set.item (i)
+					check assertion_info_attached: assertion_info /= Void end
 					if assertion_info.has_assertion then
 						body_index := assertion_info.body_index
 						precursor_feature := body_server.item (body_index)
@@ -6878,6 +7045,7 @@ feature {NONE} -- Implementation
 							precursor_feature_not_void: precursor_feature /= Void
 						end
 						routine_body ?= precursor_feature.body.content
+						check routine_body_attached: routine_body /= Void end
 						l_old_written_class := context.written_class
 						l_written_class := system.class_of_id (assertion_info.written_in)
 						context.set_written_class (l_written_class)
@@ -6900,7 +7068,10 @@ feature {NONE} -- Implementation
 					end
 					i := i - 1
 				end
-				is_inherited := False
+				if t /= Void and then t.is_attached then
+					context.remove_result_scope
+				end
+				set_is_inherited (False)
 			end
 		end
 
@@ -7137,7 +7308,7 @@ feature {NONE} -- Implementation
 							current_target_type := l_feat.type.actual_type
 							l_value.process (Current)
 							l_has_error := last_type = Void or else (not last_type.conform_to (l_feat.type.actual_type) and
-								not last_type.convert_to (context.current_class, l_feat.type.actual_type))
+								not last_type.convert_to (context.current_class, l_feat.type.deep_actual_type))
 							if l_has_error then
 								create vjar
 								context.init_error (vjar)
@@ -7315,7 +7486,7 @@ feature {NONE} -- Implementation
 							l_class.class_id).actual_type
 
 						if not a_right_type.conform_to (l_arg_type) then
-							if a_right_type.convert_to (context.current_class, l_arg_type) then
+							if a_right_type.convert_to (context.current_class, l_arg_type.deep_actual_type) then
 								last_infix_argument_conversion_info := context.last_conversion_info
 								last_infix_arg_type := l_arg_type
 							else
@@ -7381,6 +7552,7 @@ feature {NONE} -- Implementation
 			-- make the result available in `is_type_compatible'.
 			-- Adjust `last_byte_node' to reflect conversion if required.
 		require
+			is_type_compatible_set: is_type_compatible /= Void
 			last_type_not_void: last_type /= Void
 			last_byte_node_not_void: is_byte_node_enabled implies last_byte_node /= Void
 		local
@@ -7388,7 +7560,8 @@ feature {NONE} -- Implementation
 			l_source_expr: EXPR_B
 			l_conv_info: CONVERSION_INFO
 		do
-			is_type_compatible := True
+			is_type_compatible.is_compatible := True
+			is_type_compatible.conversion_info := Void
 			l_source_type := last_type
 				--| If `l_source_type' is of type NONE_A and if `l_target_type' does
 				--| not conform to NONE, we generate in all the cases a VJAR error,
@@ -7397,8 +7570,9 @@ feature {NONE} -- Implementation
 				--|    a VNCE error.
 				--| 2- if target was a BIT type, we should generate a VNCB error.
 			if not l_source_type.conform_to (l_target_type) then
-				if l_source_type.convert_to (context.current_class, l_target_type) then
+				if l_source_type.convert_to (context.current_class, l_target_type.deep_actual_type) then
 					l_conv_info := context.last_conversion_info
+					is_type_compatible.conversion_info := l_conv_info
 					if l_conv_info.has_depend_unit then
 						context.supplier_ids.extend (l_conv_info.depend_unit)
 					end
@@ -7421,7 +7595,7 @@ feature {NONE} -- Implementation
 				else
 						-- Type does not convert neither, so we raise an error
 						-- about non-conforming types.
-					is_type_compatible := False
+						is_type_compatible.is_compatible := False
 				end
 			end
 		ensure
@@ -7601,7 +7775,7 @@ feature {NONE} -- Implementation: overloading
 						if
 							l_open_type /= Void or else
 							not (l_arg_type.conform_to (l_formal_arg_type) or
-							l_arg_type.convert_to (context.current_class, l_formal_arg_type))
+							l_arg_type.convert_to (context.current_class, l_formal_arg_type.deep_actual_type))
 						then
 								-- Error, we cannot continue. Let's check the next feature.
 							l_done := True
@@ -7810,8 +7984,8 @@ feature {NONE} -- Implementation: overloading
 					Result := target2
 				else
 						-- Conformance failed, so let's check conversion.
-					convert1 := source_type.convert_to (context.current_class, target1)
-					convert2 := source_type.convert_to (context.current_class, target2)
+					convert1 := source_type.convert_to (context.current_class, target1.deep_actual_type)
+					convert2 := source_type.convert_to (context.current_class, target2.deep_actual_type)
 					if convert1 and not convert2 then
 						Result := target1
 					elseif convert2 and not convert1 then
@@ -7867,11 +8041,11 @@ feature {NONE} -- Agents
 			valid_feature: is_byte_node_enabled or a_has_args implies a_feature /= Void;
 			no_byte_code_for_attribute: is_byte_node_enabled implies not a_feature.is_attribute
 		local
-			l_arg_type:TYPE_A
+			l_type: TYPE_A
 			l_generics: ARRAY [TYPE_A]
 			l_feat_args: FEAT_ARG
 			l_oargtypes, l_cargtypes: ARRAY [TYPE_A]
-			l_tuple: TUPLE_TYPE_A
+			l_tuple_type: TUPLE_TYPE_A
 			l_arg_count, l_open_count, l_closed_count, l_idx, l_cidx, l_oidx: INTEGER
 			l_operand: OPERAND_AS
 			l_is_open, l_target_closed: BOOLEAN
@@ -7884,20 +8058,30 @@ feature {NONE} -- Agents
 			l_expr: EXPR_B
 			l_array_of_opens: ARRAY_CONST_B
 			l_operand_node: OPERAND_B
-			l_actual_target_type: TYPE_A
 			l_current_class_void_safe: BOOLEAN
+			l_is_qualified_call: BOOLEAN
 		do
-			l_actual_target_type := a_target_type.actual_type
+				-- When the agent is a qualified call, we need to remove the anchors because otherwise
+				-- we cannot create the proper agent type, see eweasel test#exec271.
+			l_is_qualified_call := an_agent.target /= Void and then
+				(not an_agent.target.is_open or else an_agent.target.class_type /= Void)
 
 			if a_is_query then
-				if a_feat_type.is_boolean then
+					-- Evaluate type of Result in current context
+				l_type := a_feat_type.instantiation_in (a_target_type.as_implicitly_detachable, cid)
+				if l_is_qualified_call then
+					l_type := l_type.deep_actual_type
+				elseif l_type.has_like_argument then
+					l_type := l_type.deep_actual_type
+				end
+				if l_type.actual_type.is_boolean then
 						-- generics are: base_type, open_types
 					create l_generics.make (1, 2)
 					create l_result_type.make (System.predicate_class_id, l_generics)
 				else
 						-- generics are: base_type, open_types, result_type
 					create l_generics.make (1, 3)
-					l_generics.put (a_feat_type.deep_actual_type, 3)
+					l_generics.put (l_type, 3)
 					create l_result_type.make (System.function_class_id, l_generics)
 				end
 			else
@@ -7989,7 +8173,7 @@ feature {NONE} -- Agents
 				until
 					l_feat_args.after
 				loop
-					l_arg_type := Void
+					l_type := Void
 
 						-- Let's find out if this is really an open operand.
 					if an_agent.operands /= Void then
@@ -7998,7 +8182,7 @@ feature {NONE} -- Agents
 							l_is_open := True
 							if l_operand.class_type /= Void then
 								l_operand.process (Current)
-								l_arg_type := last_type
+								l_type := last_type
 							end
 						else
 							l_is_open := False
@@ -8009,25 +8193,31 @@ feature {NONE} -- Agents
 
 						-- Get type of operand.
 					if l_is_open then
-						if l_arg_type = Void then
-							l_arg_type := l_feat_args.item.actual_type
+						if l_type = Void then
+							l_type := l_feat_args.item
 						end
 					else
-						l_arg_type := l_feat_args.item.actual_type
+						l_type := l_feat_args.item
 					end
 
 						-- Evaluate type of operand in current context
-					l_arg_type := l_arg_type.instantiation_in (l_actual_target_type.as_implicitly_detachable, cid).deep_actual_type
+					l_type := l_type.instantiation_in (
+						a_target_type.as_implicitly_detachable, cid)
+					if l_is_qualified_call then
+						l_type := l_type.deep_actual_type
+					elseif l_type.has_like_argument then
+						l_type := l_type.deep_actual_type
+					end
 
 						-- If it is open insert it in `l_oargtypes' and insert
 						-- position in `l_last_open_positions'.
 					if l_is_open then
-						l_oargtypes.put (l_arg_type, l_oidx)
+						l_oargtypes.put (l_type, l_oidx)
 						l_last_open_positions.extend (l_idx)
 						l_oidx := l_oidx + 1
 					else
 						-- Add type to `l_argtypes'.
-						l_cargtypes.put (l_arg_type, l_cidx)
+						l_cargtypes.put (l_type, l_cidx)
 						l_cidx := l_cidx + 1
 					end
 
@@ -8041,22 +8231,22 @@ feature {NONE} -- Agents
 			end
 
 				-- Create open argument type tuple
-			create l_tuple.make (System.tuple_id, l_oargtypes)
+			create l_tuple_type.make (System.tuple_id, l_oargtypes)
 			l_current_class_void_safe := context.current_class.lace_class.is_void_safe
-			if l_oargtypes.count > 0 and then not l_tuple.is_attached then
+			if l_oargtypes.count > 0 and then not l_tuple_type.is_attached then
 					-- Type of an argument tuple is always attached.
 				if l_current_class_void_safe then
-					l_tuple := l_tuple.as_attached
-				elseif not l_tuple.is_implicitly_attached then
-					l_tuple := l_tuple.as_implicitly_attached
+					l_tuple_type := l_tuple_type.as_attached_type
+				elseif not l_tuple_type.is_implicitly_attached then
+					l_tuple_type := l_tuple_type.as_implicitly_attached
 				end
 			end
 				-- Insert it as second generic parameter of ROUTINE.
-			l_generics.put (l_tuple, 2)
+			l_generics.put (l_tuple_type, 2)
 
 				-- Type of an agent is always attached.
 			if l_current_class_void_safe then
-				l_result_type := l_result_type.as_attached
+				l_result_type := l_result_type.as_attached_type
 			else
 				l_result_type := l_result_type.as_implicitly_attached
 			end
@@ -8101,8 +8291,12 @@ feature {NONE} -- Agents
 
 					-- Create TUPLE_CONST_B instance which holds all closed arguments.
 				l_expressions.start
-				create l_tuple_node.make (l_expressions,
-					(create {TUPLE_TYPE_A}.make (System.tuple_id, l_cargtypes)))
+				create l_tuple_type.make (System.tuple_id, l_cargtypes)
+				create l_tuple_node.make (l_expressions, l_tuple_type, l_tuple_type.create_info)
+
+					-- We need to instantiate the closed TUPLE type of the agent otherwise it
+					-- causes eweasel test#agent007 to fail.
+				system.instantiator.dispatch (l_tuple_node.type, context.current_class)
 
 					-- Setup l_last_open_positions
 
@@ -8162,10 +8356,10 @@ feature {NONE} -- Agents
 	compute_named_tuple_fake_inline_agent (a_rc: ROUTINE_CREATION_AS; a_named_tuple: NAMED_TUPLE_TYPE_A; a_label_pos: INTEGER;
 										a_target: BYTE_NODE; a_target_type: TYPE_A; a_agent_type: TYPE_A)
 		local
-			l_tuple_access: TUPLE_ACCESS_B
+			l_tuple_access_b: TUPLE_ACCESS_B
 		do
-			create l_tuple_access.make (a_named_tuple, a_label_pos)
-			compute_fake_inline_agent (a_rc, l_tuple_access, l_tuple_access.type, a_target, a_target_type, a_agent_type, Void)
+			create l_tuple_access_b.make (a_named_tuple, a_label_pos)
+			compute_fake_inline_agent (a_rc, l_tuple_access_b, l_tuple_access_b.type, a_target, a_target_type, a_agent_type, Void)
 		end
 
 	compute_fake_inline_agent (
@@ -8201,6 +8395,7 @@ feature {NONE} -- Agents
 			l_tuple_type: TUPLE_TYPE_A
 			l_target_closed: BOOLEAN
 			l_rout_creation: ROUTINE_CREATION_B
+			l_depend_unit: DEPEND_UNIT
 		do
 
 			l_target_closed := not (a_rc.target /= Void and then a_rc.target.is_open)
@@ -8272,7 +8467,11 @@ feature {NONE} -- Agents
 				create l_tuple_type.make (system.tuple_id, <<context.current_class_type>> )
 			end
 
-			create l_tuple_node.make (l_closed_args, l_tuple_type)
+				-- We need to instantiate the closed TUPLE type of the agent otherwise it
+				-- causes eweasel test#agent007 to fail.
+			system.instantiator.dispatch (l_tuple_type, context.current_class)
+
+			create l_tuple_node.make (l_closed_args, l_tuple_type, l_tuple_type.create_info)
 
 				-- We need to use the conformence type since it could be a like_current type which would
 				-- be a problem with inherited assertions. See eweasel test execX10
@@ -8304,6 +8503,12 @@ feature {NONE} -- Agents
 					False,
 					False)
 			end
+
+				-- We need to record a dependance between the fake inline agent and the
+				-- enclosing routine being analyzed.
+			create l_depend_unit.make_with_level (l_cur_class.class_id, l_func, depend_unit_level)
+			context.supplier_ids.extend (l_depend_unit)
+
 			last_byte_node := l_rout_creation
 		end
 
@@ -8425,13 +8630,13 @@ feature {NONE} -- Agents
 		end
 
 	init_inline_agent_dep (a_feat: FEATURE_I; a_new_feat_dep: FEATURE_DEPENDANCE) is
+			-- When an inline agent X of an enclosing feature f is a client of
+			-- feature g, we make the enclosing feature f a client of g.
 		local
 			l_cur_class: EIFFEL_CLASS_C
 
 		do
 			l_cur_class ?= context.current_class
-				-- When an inline agent X of an enclosing feature f is a client of
-				-- feature g, we make the enclosing feature f a client of g.
 			from
 				a_new_feat_dep.start
 			until
@@ -8451,14 +8656,13 @@ feature {AST_FEATURE_CHECKER_GENERATOR}
 
 feature {NONE} -- Precursor handling
 
-	precursor_table (l_as: PRECURSOR_AS): LINKED_LIST [PAIR[CL_TYPE_A, INTEGER]] is
+	precursor_table (l_as: PRECURSOR_AS; a_current_class: CLASS_C; a_rout_id_set: ROUT_ID_SET): LINKED_LIST [PAIR[CL_TYPE_A, INTEGER]] is
 				-- Table of parent types which have an effective
 				-- precursor of current feature. Indexed by
 				-- routine ids.
 		require
 			l_as_not_void: l_as /= Void
 		local
-			rout_id_set: ROUT_ID_SET
 			rout_id: INTEGER
 			parents: FIXED_LIST [CL_TYPE_A]
 			a_parent: CLASS_C
@@ -8472,12 +8676,11 @@ feature {NONE} -- Precursor handling
 			check_written_in: LINKED_LIST [PAIR [INTEGER, INTEGER]]
 			r_class_i: CLASS_I
 		do
-			rout_id_set := current_feature.rout_id_set
-			rc := rout_id_set.count
+			rc := a_rout_id_set.count
 
 			if l_as.parent_base_class /= Void then
 				-- Take class renaming into account
-				r_class_i := Universe.class_named (l_as.parent_base_class.class_name.name, context.current_class.group)
+				r_class_i := Universe.class_named (l_as.parent_base_class.class_name.name, a_current_class.group)
 
 				if r_class_i /= Void then
 					spec_p_name := r_class_i.name
@@ -8490,7 +8693,7 @@ feature {NONE} -- Precursor handling
 			end
 
 			from
-				parents := context.current_class.parents
+				parents := a_current_class.parents
 				create Result.make
 				create check_written_in.make
 				check_written_in.compare_objects
@@ -8516,7 +8719,7 @@ feature {NONE} -- Precursor handling
 					until
 						i > rc
 					loop
-						rout_id   := rout_id_set.item (i)
+						rout_id   := a_rout_id_set.item (i)
 						a_feature := a_parent.feature_of_rout_id (rout_id)
 
 						if a_feature /= Void and then not a_feature.is_deferred  then
@@ -8611,6 +8814,14 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	match_list_of_class (a_class_id: INTEGER): LEAF_AS_LIST
+			-- Match list object for class id `a_class_id'
+		require
+			id_not_null: a_class_id /= 0
+		do
+			Result := match_list_server.item (a_class_id)
+		end
+
 feature {NONE} -- Implementation: Add type informations
 
 	last_routine_id_set: ROUT_ID_SET
@@ -8628,7 +8839,7 @@ feature {NONE} -- Implementation: type validation
 			l_error_level: NATURAL
 		do
 			l_error_level := error_level
-			if is_inherited then
+			if is_inherited or else is_replicated then
 					-- Convert TYPE_AS into TYPE_A.
 				l_type := type_a_generator.evaluate_type (a_type, context.written_class)
 					-- Perform simple check that TYPE_A is valid, `l_type' should not be
@@ -8713,6 +8924,10 @@ feature {NONE} -- Implementation: type validation
 				if l_formal_type /= Void then
 					Result := a_last_type.actual_type.generics.item (l_formal_type.position)
 				end
+			end
+			if l_formal_type /= Void and then {l_attachable_type: ATTACHABLE_TYPE_A} a_type then
+					-- Preserve attachment status of the original type.
+				Result := Result.to_other_attachment (l_attachable_type)
 			end
 		ensure
 			adapated_type_not_void: Result /= Void
@@ -8998,7 +9213,7 @@ feature {NONE} -- Implementation: catcall check
 					if
 						not l_actual_argument.conform_to (l_descendant_argument) and
 						not (
-							l_actual_argument.convert_to (context.current_class, a_feature.arguments.i_th (l_argument_index)) and then
+							l_actual_argument.convert_to (context.current_class, a_feature.arguments.i_th (l_argument_index).deep_actual_type) and then
 							a_feature.arguments.i_th (l_argument_index).conform_to (l_descendant_argument)
 						)
 					then

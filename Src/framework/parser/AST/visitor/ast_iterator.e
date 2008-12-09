@@ -291,7 +291,8 @@ feature {NONE} -- Implementation
 
 	process_tagged_as (l_as: TAGGED_AS) is
 		do
-			l_as.expr.process (Current)
+			safe_process (l_as.expr)
+				-- It is valid to have tags without expressions.
 		end
 
 	process_variant_as (l_as: VARIANT_AS) is
@@ -302,6 +303,11 @@ feature {NONE} -- Implementation
 	process_un_strip_as (l_as: UN_STRIP_AS) is
 		do
 				-- Nothing to be done
+		end
+
+	process_converted_expr_as (l_as: CONVERTED_EXPR_AS) is
+		do
+			l_as.expr.process (Current)
 		end
 
 	process_paran_as (l_as: PARAN_AS) is
@@ -597,10 +603,10 @@ feature {NONE} -- Implementation
 	process_loop_as (l_as: LOOP_AS) is
 		do
 			safe_process (l_as.from_part)
-			safe_process (l_as.variant_part)
 			safe_process (l_as.invariant_part)
 			l_as.stop.process (Current)
 			safe_process (l_as.compound)
+			safe_process (l_as.variant_part)
 		end
 
 	process_retry_as (l_as: RETRY_AS) is
@@ -616,6 +622,11 @@ feature {NONE} -- Implementation
 	process_deferred_as (l_as: DEFERRED_AS) is
 		do
 				-- Nothing to be done
+		end
+
+	process_attribute_as (l_as: ATTRIBUTE_AS) is
+		do
+			safe_process (l_as.compound)
 		end
 
 	process_do_as (l_as: DO_AS) is
@@ -686,12 +697,12 @@ feature {NONE} -- Implementation
 	process_class_type_as (l_as: CLASS_TYPE_AS) is
 		do
 			l_as.class_name.process (Current)
-			safe_process (l_as.generics)
 		end
 
 	process_generic_class_type_as (l_as: GENERIC_CLASS_TYPE_AS) is
 		do
-			process_class_type_as (l_as)
+			l_as.class_name.process (Current)
+			l_as.internal_generics.process (Current)
 		end
 
 	process_named_tuple_type_as (l_as: NAMED_TUPLE_TYPE_AS) is
@@ -899,7 +910,7 @@ feature {NONE} -- Implementation
 		end
 
 indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

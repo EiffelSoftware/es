@@ -113,7 +113,14 @@ feature -- Generic conformance
 
 	generate_gen_type_conversion (a_level: NATURAL) is
 			-- Generate the conversion of a type array into an id.
-		deferred
+		local
+			gen_type : GEN_TYPE_A
+		do
+			gen_type ?= type_to_create
+
+			if gen_type /= Void then
+				context.generate_gen_type_conversion (gen_type, a_level)
+			end
 		end
 
 	generate_cid (buffer: GENERATION_BUFFER; final_mode: BOOLEAN) is
@@ -126,7 +133,7 @@ feature -- Generic conformance
 			-- Do nothing
 		end
 
-	make_gen_type_byte_code (ba: BYTE_ARRAY) is
+	make_type_byte_code (ba: BYTE_ARRAY) is
 			-- Additional info for creation of generic
 			-- types with anchored parameters.
 		require
@@ -136,7 +143,7 @@ feature -- Generic conformance
 
 	generate_cid_array (buffer: GENERATION_BUFFER;
 						final_mode: BOOLEAN; idx_cnt: COUNTER) is
-			-- Generate mode dependent sequence of type id's 
+			-- Generate mode dependent sequence of type id's
 			-- separated by commas. 'idx_cnt' holds the
 			-- index in the array for this entry.
 		require

@@ -99,8 +99,11 @@ feature -- Initialization
 			is_first_show := True
 
 			if not full_list.is_empty then
+
+					-- We call `ensure_item_selection' instead of `select_closest_match' to avoid
+					-- needless completion list rebuilding.
 				if choice_list.row_count > 0 then
-					select_closest_match
+					ensure_item_selection
 				end
 					-- If there is only one possibility, we insert it without displaying the window
 				determine_show_needed
@@ -263,6 +266,8 @@ feature {NONE} -- Events handling
 
 	on_key_down (ev_key: EV_KEY) is
 			-- process user input in `choice_list'	
+		local
+			l_char_string: STRING
 		do
 			if ev_key /= Void then
 				inspect
@@ -289,7 +294,12 @@ feature {NONE} -- Events handling
 					end
 				else
 					if code_completable.is_completing then
-						if code_completable.completion_activator_characters.has (ev_key.out.item (1)) then
+						l_char_string := ev_key.out
+						if
+							not ev_application.shift_pressed and then
+							l_char_string.count = 1 and then
+							code_completable.completion_activator_characters.has (l_char_string.item (1))
+						then
 								-- Continue completing
 							continue_completion := True
 							close_and_complete
@@ -770,6 +780,9 @@ feature {NONE} -- Implementation
 				l_count := l_count + 1
 			end
 
+				-- Shrink list in case not all items were applicable.
+			l_list.set_row_count_to (row_index - 1)
+
 				-- Enable/Disable tree view.
 			if not l_tree_view then
 				if l_list.is_tree_enabled then
@@ -942,17 +955,12 @@ feature {NONE} -- Implementation
 				complete
 			end
 			exit
-			code_completable.block_focus_in_actions
-			if code_completable.is_focus_back_needed then
-				code_completable.set_focus
-			end
-			code_completable.resume_focus_in_actions
 		end
 
 	complete is
 			-- Complete current name
 		local
-			l_name: STRING
+			l_name: STRING_GENERAL
 			l_name_item: like name_type
 			l_list: like choice_list
 			l_rows: ARRAYED_LIST [EV_GRID_ROW]
@@ -991,6 +999,11 @@ feature {NONE} -- Implementation
 				code_completable.resume_focus_out_actions
 			end
 			exit_complete_mode
+			code_completable.block_focus_in_actions
+			if code_completable.is_focus_back_needed then
+				code_completable.set_focus
+			end
+			code_completable.resume_focus_in_actions
 		end
 
 	exit_complete_mode is
@@ -1312,7 +1325,12 @@ feature {NONE} -- String matching
 
 			if l_list.row_count > 0 then
 				l_list.remove_selection
-				l_list.row (current_index).enable_select
+					-- It is possible that there are some rows have been filtered (i.e. oboselete features)
+					-- The row count of the list is actually greater than the number of rows we created.
+				l_name ?= l_list.row (current_index).data
+				if l_name /= Void then
+					l_list.row (current_index).enable_select
+				end
 				if is_displayed then
 					l_rows := l_list.selected_rows
 					if not l_rows.is_empty then

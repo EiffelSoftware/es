@@ -171,7 +171,7 @@ feature -- Access
 			-- Used for MSIL code generation only.
 
 	written_feature_id: INTEGER
-			-- Feature ID of Current in associated CLASS_C of ID `written_in'
+			-- Feature ID of Current in associated CLASS_C of ID `access_in'
 			-- that gives a body.
 			-- Used for MSIL code generation only.
 
@@ -185,6 +185,27 @@ feature -- Access
 			-- Does feature have a replicated AST?
 		do
 			Result := feature_flags & has_replicated_ast_mask = has_replicated_ast_mask
+		end
+
+	frozen is_selected: BOOLEAN is
+			-- Is feature from a selected branch?
+		do
+			Result := feature_flags & is_selected_mask = is_selected_mask
+		end
+
+	frozen is_replicated_directly: BOOLEAN is
+			-- Is feature directly replicated in class it is created in?
+			-- This flag is needed to distinguish between newly replicated features
+			-- and inherited replicated features as currently the is no way of
+			-- 'selecting' the feature_i object and keeping the 'access_in' value.
+		do
+			Result := feature_flags & is_replicated_directly_mask = is_replicated_directly_mask
+		end
+
+	frozen from_non_conforming_parent: BOOLEAN is
+			-- Is feature inherited from a non-conforming parent?
+		do
+			Result := feature_flags & from_non_conforming_parent_mask = from_non_conforming_parent_mask
 		end
 
 	frozen is_frozen: BOOLEAN is
@@ -388,9 +409,9 @@ feature -- Comparison
 			l_name := feature_name
 			l_other_name := other.feature_name
 			if l_name = Void then
-				Result := other.feature_name /= Void
+				Result := l_other_name /= Void
 			else
-				Result := l_other_name /= Void and l_name < l_other_name
+				Result := l_other_name /= Void and then l_name < l_other_name
 			end
 		end
 
@@ -506,7 +527,7 @@ feature -- Status
 		require
 			good_argument: a_class /= Void
 		do
-			Result := a_class.class_id = written_in or else (has_replicated_ast and then a_class.class_id = access_in)
+			Result := a_class.class_id = written_in or else is_replicated_directly
 		end
 
 	to_generate_in (a_class: CLASS_C): BOOLEAN is
@@ -514,7 +535,7 @@ feature -- Status
 		require
 			good_argument: a_class /= Void
 		do
-			Result := a_class.class_id = written_in or else (has_replicated_ast and then a_class.class_id = access_in)
+			Result := a_class.class_id = written_in or else is_replicated_directly
 		end
 
 	frozen to_implement_in (a_class: CLASS_C): BOOLEAN is
@@ -523,7 +544,7 @@ feature -- Status
 		require
 			a_class_not_void: a_class /= Void
 		do
-			Result := a_class.class_id = written_in
+			Result := a_class.class_id = written_in or else is_replicated_directly
 		end
 
 feature -- Setting
@@ -590,7 +611,7 @@ feature -- Setting
 		end
 
 	set_written_in (a_class_id: like written_in) is
-			-- Assign `a_class_id' to `written_in'.
+			-- Assign `a_class_id' to `access_in'.
 		require
 			a_class_id_not_void: a_class_id > 0
 		do
@@ -652,12 +673,36 @@ feature -- Setting
 			is_origin_set: is_origin = b
 		end
 
+	frozen set_is_selected (b: BOOLEAN) is
+			-- Assign `b' to `is_selected'.
+		do
+			feature_flags := feature_flags.set_bit_with_mask (b, is_selected_mask)
+		ensure
+			is_selected_set: is_selected = b
+		end
+
 	frozen set_has_replicated_ast (b: BOOLEAN) is
 			-- Assign `b' to `has_replicated_ast'.
 		do
 			feature_flags := feature_flags.set_bit_with_mask (b, has_replicated_ast_mask)
 		ensure
-			is_origin_set: has_replicated_ast = b
+			has_replicated_ast_set: has_replicated_ast = b
+		end
+
+	frozen set_is_replicated_directly (b: BOOLEAN) is
+			-- Assign `b' to `is_replicated_directly'.
+		do
+			feature_flags := feature_flags.set_bit_with_mask (b, is_replicated_directly_mask)
+		ensure
+			is_replicated_directly_set: is_replicated_directly = b
+		end
+
+	frozen set_from_non_conforming_parent (b: BOOLEAN) is
+			-- Assign `b' to `from_non_conforming_parent'.
+		do
+			feature_flags := feature_flags.set_bit_with_mask (b, from_non_conforming_parent_mask)
+		ensure
+			from_non_conforming_parent_set: from_non_conforming_parent = b
 		end
 
 	frozen set_is_empty (b : BOOLEAN) is
@@ -839,6 +884,7 @@ feature -- Incrementality
 			good_argument: other /= Void
 		do
 			Result := written_in = other.written_in
+				and then body_index = other.body_index
 				and then rout_id_set.same_as (other.rout_id_set)
 				and then is_origin = other.is_origin
 				and then is_frozen = other.is_frozen
@@ -1276,15 +1322,24 @@ feature -- Conveniences
 	set_type (t: like type; a: like assigner_name_id) is
 			-- Assign `t' to `type' and `a' to `assigner_name_id'.
 		require
+			t_not_void: t /= Void
 			valid_a: a /= 0 implies names_heap.valid_index (a)
 		do
 			-- Do nothing
+		ensure
+			type_set: type ~ t
 		end
 
 	arguments: FEAT_ARG is
 			-- Argument types
 		do
 			-- No arguments
+		end
+
+	set_arguments (args: like arguments)
+			-- Assign `args' to arguments.
+		do
+
 		end
 
 	set_assert_id_set (set: like assert_id_set) is
@@ -1342,8 +1397,24 @@ feature -- Export checking
 		require
 			good_argument: client /= Void
 			has_export_status: export_status /= Void
+		local
+			l_ncp_classes: FIXED_LIST [CLASS_C]
 		do
 			Result := export_status.valid_for (client)
+			if not Result then
+					-- We need to check that `Current' is non-conformally inherited by `client'.
+				l_ncp_classes := client.non_conforming_parents_classes
+				if l_ncp_classes /= Void then
+					from
+						l_ncp_classes.start
+					until
+						Result or else l_ncp_classes.after
+					loop
+						Result := export_status.valid_for (l_ncp_classes.item)
+						l_ncp_classes.forth
+					end
+				end
+			end
 		end
 
 	record_suppliers (feat_depend: FEATURE_DEPENDANCE) is
@@ -1419,6 +1490,8 @@ feature -- Check
 
 	body: FEATURE_AS is
 			-- Body of feature
+		require
+			not_is_inline_agent: not is_inline_agent
 		local
 			class_ast: CLASS_AS
 			bid: INTEGER
@@ -1431,7 +1504,11 @@ feature -- Check
 					-- Means a degree 4 error has occurred so the
 					-- best we can do is to search through the
 					-- class ast and find the feature as
-				class_ast := Tmp_ast_server.item (written_in)
+				if has_replicated_ast then
+					class_ast := Tmp_ast_server.item (access_in)
+				else
+					class_ast := Tmp_ast_server.item (written_in)
+				end
 				if class_ast /= Void then
 					Result := class_ast.feature_with_name (feature_name_id)
 				end
@@ -1466,7 +1543,7 @@ feature -- IL code generation
 			byte_code: BYTE_CODE
 		do
 			if not is_attribute and then not is_external then
-				byte_code := Byte_server.item (body_index)
+				byte_code := Byte_server.disk_item (body_index)
 				byte_context.set_byte_code (byte_code)
 				byte_context.set_current_feature (Current)
 				byte_code.generate_il
@@ -1604,7 +1681,7 @@ feature -- Polymorphism
  		do
  			create Result
  			Result.set_body_index (body_index)
- 			Result.set_type_a (type.actual_type)
+			Result.set_type_a (type)
 
  			if has_replicated_ast then
  					-- If AST has been replicated, then we must use `access_in'
@@ -1627,7 +1704,7 @@ feature -- Polymorphism
  			is_attribute: is_attribute
  		do
  			create Result
- 			Result.set_type_a (type.actual_type)
+			Result.set_type_a (type)
  			Result.set_feature_id (feature_id)
  		end
 
@@ -1787,6 +1864,7 @@ feature -- Signature checking
 			vffd6: VFFD6
 			vffd7: VFFD7
 			l_class: CLASS_C
+			l_error_level: NATURAL_32
 		do
 			l_class := feat_table.associated_class
 			context.initialize (l_class, l_class.actual_type, feat_table)
@@ -1842,9 +1920,17 @@ feature -- Signature checking
 					Error_handler.insert_error (vffd5)
 				end
 
+				if l_class.class_id = written_in then
+					type_a_checker.check_type_validity (solved_type, Void)
+					solved_type.check_for_obsolete_class (l_class, Current)
+				end
 				if arguments /= Void then
 						-- Check types of arguments
+					l_error_level := error_handler.error_level
 					arguments.check_types (feat_table, Current)
+					if l_class.class_id = written_in and then l_error_level = error_handler.error_level then
+						arguments.check_type_validity (l_class, Current, type_a_checker, True)
+					end
 				end
 			end
 		end
@@ -1872,11 +1958,10 @@ feature -- Signature checking
 					Current, a_context_class.feature_table, Void, error_handler)
 				if not l_type.is_void then
 					type_a_checker.check_type_validity (l_type, Void)
-					l_type.check_for_obsolete_class (a_context_class, Current)
 				end
 				if arguments /= Void then
 						-- Check types of arguments
-					arguments.check_type_validity (a_context_class, Current, type_a_checker)
+					arguments.check_type_validity (a_context_class, Current, type_a_checker, False)
 				end
 			end
 		end
@@ -2030,7 +2115,7 @@ end
 				until
 					i > arg_count
 				loop
-					old_type ?= old_arguments.i_th (i)
+					old_type := old_arguments.i_th (i)
 					old_type := old_type.actual_argument_type (special_arguments).actual_type
 					new_type := arguments.i_th (i).actual_type
 debug ("ACTIVITY")
@@ -2093,7 +2178,7 @@ end
 				-- Check the result type conformance
 				-- `old_type' is the instantiated inherited type in the
 				-- context of the class where the join takes place:
-				-- i.e the class relative to `written_in'.
+				-- i.e the class relative to `access_in'.
 			old_type ?= old_feature.type
 				-- `new_type' is the actual type of the join already
 				-- instantiated
@@ -2332,7 +2417,7 @@ end
 			query_arguments: like arguments
 			vfac: VFAC
 		do
-			if system.current_class.class_id = written_in then
+			if feature_table.feat_tbl_id = written_in then
 					-- Lookup feature in `feature_table' as feature table in the current class is not set yet.
 				assigner := feature_table.item_id (assigner_name_id)
 			else
@@ -2482,6 +2567,8 @@ feature -- Replication
 
 	selected: FEATURE_I is
 			-- Selected feature (used for duplicating inherited features by resetting replication and selection status
+		require
+			do_not_use_yet: False
 		deferred
 		ensure
 			Result_exists: Result /= Void
@@ -2536,6 +2623,8 @@ feature -- Replication
 	transfer_from (other: FEATURE_I) is
 			-- Transfer of datas from `other' into `Current'.
 		require
+			do_not_call: False
+				-- Feature not ready yet.
 			other_exists: other /= Void
 		do
 				-- `export_status' needs to be set via `set_export_status'
@@ -2605,16 +2694,9 @@ feature -- Dead code removal
 	used: BOOLEAN is
 			-- Is feature used ?
 		do
-			if is_inline_agent then
-				Result := enclosing_feature.used
-			else
-					-- In final mode dead code removal process is on.
-					-- In workbench mode all features are considered
-					-- used.
-				Result := 	byte_context.workbench_mode
-							or else
-							System.is_used (Current)
-			end
+				-- In final mode dead code removal process is on.
+				-- In workbench mode all features are considered used.
+			Result := byte_context.workbench_mode or else System.is_used (Current)
 		end
 
 feature -- Byte code access
@@ -2810,10 +2892,21 @@ feature -- Debugging
 			Result := execution_table.real_body_id (body_index, class_type)
 		end
 
+	real_pattern_id (class_type: CLASS_TYPE): INTEGER is
+			-- Real pattern id at compilation time for `class_type'.
+			-- This id might be obsolete after supermelting this feature.
+			--| In latter case, new real body id is kept
+			--| in DEBUGGABLE objects.
+		require
+			valid_body_id: valid_body_id
+		do
+			Result := execution_table.real_pattern_id (body_index, class_type)
+		end
+
 	valid_body_id: BOOLEAN is
 			-- Use of this routine as precondition for real_body_id.
 		do
-			Result := ((not is_attribute)
+			Result := ((not is_attribute or else {a: ATTRIBUTE_I} Current and then a.has_body)
 						and then (not is_constant)
 						and then (not is_deferred)
 						and then (not is_unique)
@@ -2889,6 +2982,10 @@ feature {FEATURE_I} -- Implementation
 	is_export_status_none_mask: NATURAL_32 is 0x40000
 	has_function_origin_mask: NATURAL_32 is 0x80000 -- Used in ATTRIBUTE_I
 	has_replicated_ast_mask: NATURAL_32 is 0x100000
+	has_body_mask: NATURAL_32 is 0x200000 -- Used in ATTRIBUTE_I
+	is_replicated_directly_mask: NATURAL_32 is 0x400000
+	from_non_conforming_parent_mask: NATURAL_32 is 0x800000
+	is_selected_mask: NATURAL_32 is 0x1000000
 			-- Mask used for each feature property.
 
 	internal_export_status: like export_status
@@ -2939,7 +3036,7 @@ feature {NONE} -- Debug output
 
 invariant
 	valid_enclosing_feature: is_inline_agent implies enclosing_body_id > 0
-	valid_inline_agent_nr: is_inline_agent implies inline_agent_nr > 0
+	valid_inline_agent_nr: is_inline_agent implies inline_agent_nr > 0 or is_fake_inline_agent
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

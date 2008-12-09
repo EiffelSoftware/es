@@ -12,7 +12,7 @@ inherit
 	CONF_CONDITIONED
 
 	CONF_VISITABLE
-	
+
 	CONF_NOTABLE
 
 	CONF_ACCESS
@@ -85,6 +85,11 @@ feature -- Status
 		once
 		end
 
+	is_test_cluster: BOOLEAN is
+			-- Is this a test cluster?
+		once
+		end
+
 	is_override: BOOLEAN is
 			-- Is this an override?
 		once
@@ -97,6 +102,11 @@ feature -- Status
 				Result := target.system.application_target.system /= target.system
 			end
 		end
+
+	is_internal: BOOLEAN
+			-- Is group used internally by the compiler?
+			--
+			-- Note: if `Current' is internal it is not stored in configuration and not visible to user.
 
 feature -- Status update
 
@@ -114,6 +124,12 @@ feature -- Status update
 			last_error := Void
 		ensure
 			not_is_error: not is_error
+		end
+
+	set_internal (a_is_internal: like is_internal)
+			-- Set `is_internal' to `a_is_internal'.
+		do
+			is_internal := a_is_internal
 		end
 
 feature -- Access, stored in configuration file

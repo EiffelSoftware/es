@@ -491,6 +491,11 @@ feature -- Externals
 			"C signature (GdkDrawable*, gint, gint, gint, gint): GdkImage* use <gtk/gtk.h>"
 		end
 
+	frozen gdk_drawable_get_visible_region (a_drawable: POINTER): POINTER is
+		external
+			"C signature (GdkDrawable*): GdkRegion use <gtk/gtk.h>"
+		end
+
 	frozen gtk_window_get_focus (a_window: POINTER): POINTER is
 		external
 			"C signature (GtkWindow*): GtkWidget* use <gtk/gtk.h>"
@@ -1475,7 +1480,7 @@ feature -- Externals
 		external
 			"C inline use <gtk/gtk.h>"
 		alias
-			"gtk_file_chooser_dialog_new ((gchar*) $a_title, (GtkWindow*) $a_parent, (GtkFileChooserAction) $a_action, NULL)"
+			"gtk_file_chooser_dialog_new ((gchar*) $a_title, (GtkWindow*) $a_parent, (GtkFileChooserAction) $a_action, NULL, NULL)"
 		end
 
 	frozen gtk_file_chooser (a_dialog: POINTER): POINTER is
@@ -1963,13 +1968,6 @@ feature -- Externals
 			"C inline use <gtk/gtk.h>"
 		alias
 			"gtk_tree_view_column_add_attribute ((GtkTreeViewColumn*) $a_tree_view_column, (GtkCellRenderer*) $a_cell_renderer, (gchar*) $a_attribute, (gint) $a_column)"
-		end
-
-	frozen gtk_tree_view_column_new_with_attributes (a_title, a_cell_renderer: POINTER; a_column: INTEGER): POINTER is
-		external
-			"C inline use <gtk/gtk.h>"
-		alias
-			"gtk_tree_view_column_new_with_attributes ((gchar*) $a_title, (GtkCellRenderer*) $a_cell_renderer, %"text%", (int) $a_column)"
 		end
 
 	frozen gtk_cell_renderer_text_new: POINTER is

@@ -259,11 +259,6 @@ feature {NONE} -- Implementation
 			end
 			properties.add_property (l_bool_prop)
 
-			l_bool_prop := new_boolean_property (conf_interface_names.target_old_verbatim_strings_name, current_target.setting_old_verbatim_strings)
-			l_bool_prop.set_description (conf_interface_names.target_old_verbatim_strings_description)
-			add_boolean_setting_actions (l_bool_prop, s_old_verbatim_strings, False)
-			properties.add_property (l_bool_prop)
-
 			create l_pf_choices.make (platform_names.count + 1)
 			l_pf_choices.extend ("")
 			from
@@ -632,9 +627,6 @@ feature {NONE} -- Wrappers
 				Result := l_val
 			end
 		end
-
-invariant
-	window: window /= Void
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

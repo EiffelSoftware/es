@@ -281,12 +281,21 @@ feature -- Code generation
 		require
 			valid_type : gtype /= Void
 		local
-			use_init : BOOLEAN
+			use_init, l_can_save_result: BOOLEAN
 			idx_cnt : COUNTER
 			l_buffer: like buffer
+			l_gen_type: GEN_TYPE_A
 		do
 			l_buffer := buffer
-			use_init := not gtype.is_explicit
+			if gtype.is_explicit then
+				l_gen_type := gtype.deep_actual_type
+				use_init := False
+				l_can_save_result := not l_gen_type.has_formal_generic
+			else
+				l_gen_type := gtype
+				use_init := True
+				l_can_save_result := False
+			end
 
 				-- Optimize: Use static array only when `typarr' is
 				-- not modified by generated code in multithreaded mode only.
@@ -306,9 +315,9 @@ feature -- Code generation
 			if use_init then
 				create idx_cnt
 				idx_cnt.set_value (1)
-				gtype.generate_cid_array (l_buffer, final_mode, True, idx_cnt, context_class_type.type)
+				l_gen_type.generate_cid_array (l_buffer, final_mode, True, idx_cnt, context_class_type.type)
 			else
-				gtype.generate_cid (l_buffer, final_mode, True, context_class_type.type)
+				l_gen_type.generate_cid (l_buffer, final_mode, True, context_class_type.type)
 			end
 			l_buffer.put_hex_natural_16 ({SHARED_GEN_CONF_LEVEL}.terminator_type)
 			l_buffer.put_string ("};")
@@ -316,7 +325,7 @@ feature -- Code generation
 			l_buffer.put_string ("EIF_TYPE_INDEX typres")
 			l_buffer.put_natural_32 (a_level)
 			l_buffer.put_character (';')
-			if not use_init then
+			if l_can_save_result then
 				l_buffer.put_new_line
 				l_buffer.put_string ("static EIF_TYPE_INDEX typcache")
 				l_buffer.put_natural_32 (a_level)
@@ -326,23 +335,23 @@ feature -- Code generation
 			if use_init then
 				-- Reset counter
 				idx_cnt.set_value (1)
-				gtype.generate_cid_init (l_buffer, final_mode, True, idx_cnt, a_level)
+				l_gen_type.generate_cid_init (l_buffer, final_mode, True, idx_cnt, a_level)
 			end
 
 			l_buffer.put_new_line
 			l_buffer.put_new_line
 			l_buffer.put_string ("typres")
 			l_buffer.put_natural_32 (a_level)
-			if not use_init then
-				l_buffer.put_string (" = RTCID2(&typcache")
+			if l_can_save_result then
+				l_buffer.put_string (" = eif_compound_id(&typcache")
 				l_buffer.put_natural_32 (a_level)
 				l_buffer.put_two_character (',', ' ')
 			else
-				l_buffer.put_string (" = RTCID2(NULL, ")
+				l_buffer.put_string (" = eif_compound_id(NULL, ")
 			end
 			generate_current_dftype
 			l_buffer.put_string (", ")
-			l_buffer.put_integer (gtype.generated_id (final_mode, context_class_type.type))
+			l_buffer.put_integer (l_gen_type.generated_id (final_mode, context_class_type.type))
 			l_buffer.put_string (", typarr")
 			l_buffer.put_natural_32 (a_level)
 			l_buffer.put_two_character (')', ';')
@@ -1702,6 +1711,37 @@ feature -- Access
 			object_test_local_offset := saved_context.object_test_local_offset
 		end
 
+	generate_dtype_declaration (is_once: BOOLEAN)
+			-- Declare the 'dtype' variable which holds the pre-computed
+			-- dynamic type of current. To avoid unnecssary computations,
+			-- this is not done in case of a once, before we know we have
+			-- to really enter the body of the routine.
+		local
+			buf: like buffer
+		do
+			buf := buffer
+			if dftype_current > 1 then
+					-- There has to be more than one usage of the dynamic type
+					-- of current in order to have this variable generated.
+				buf.put_new_line
+				if is_once then
+					buf.put_string ("RTCFDD;")
+				else
+					buf.put_string ("RTCFDT;")
+				end
+			end
+			if dt_current > 1 then
+					-- There has to be more than one usage of the full dynamic type
+					-- of current in order to have this variable generated.
+				buf.put_new_line
+				if is_once then
+					buf.put_string ("RTCDD;")
+				else
+					buf.put_string ("RTCDT;")
+				end
+			end
+		end
+
 	generate_current_dtype is
 			-- Generate the dynamic type of `Current'
 		do
@@ -1935,14 +1975,22 @@ feature -- Access
 			buf: like buffer
 			l_info: CREATE_INFO
 			l_optimized: BOOLEAN
+			l_if_required: BOOLEAN
 		do
 			if a_type.c_type.is_pointer and not a_type.is_none then
 				buf := buffer
-				buf.put_new_line
-				buf.put_four_character ('i', 'f', ' ', '(')
-				a_register.print_register
-				buf.put_three_character (')', ' ', '{')
-				buf.indent
+					-- If the type is not attached, we have an optimization to not compute the dynamic
+					-- type of the expected type. However when the expected type is a formal, or an anchor
+					-- then we cannot do this optimization as the type of the formal or the anchor depends on
+					-- the actual object's type.
+				if not a_type.is_attached and then not a_type.is_formal and then not {l_anchor: LIKE_TYPE_A} a_type then
+					l_if_required := True
+					buf.put_new_line
+					buf.put_four_character ('i', 'f', ' ', '(')
+					a_register.print_register
+					buf.put_three_character (')', ' ', '{')
+					buf.indent
+				end
 
 					-- Special handling of routines taking `like Current' in non-generic classes as long
 					-- as `a_like_current_optimization_ok' is enabled.
@@ -1968,17 +2016,47 @@ feature -- Access
 				buf.put_integer (a_pos)
 				buf.put_two_character (',', ' ')
 				if l_optimized then
-					byte_code.feature_origin (buf)
+					if {l_type_1: ATTACHABLE_TYPE_A} a_type then
+						if l_type_1.has_attached_mark then
+							buf.put_string ("eif_attached_type(")
+							byte_code.feature_origin (buf)
+							buf.put_character (')')
+						elseif l_type_1.has_detachable_mark then
+							buf.put_string ("eif_non_attached_type(")
+							byte_code.feature_origin (buf)
+							buf.put_character (')')
+						else
+							byte_code.feature_origin (buf)
+						end
+					else
+						byte_code.feature_origin (buf)
+					end
 					buf.put_two_character (')', ';')
 				else
-					l_info.generate_type_id (buf, final_mode, 0)
+					if {l_type_2: ATTACHABLE_TYPE_A} a_type then
+						if l_type_2.has_attached_mark then
+							buf.put_string ("eif_attached_type(")
+							l_info.generate_type_id (buf, final_mode, 0)
+							buf.put_character (')')
+						elseif l_type_2.has_detachable_mark then
+							buf.put_string ("eif_non_attached_type(")
+							l_info.generate_type_id (buf, final_mode, 0)
+							buf.put_character (')')
+						else
+							l_info.generate_type_id (buf, final_mode, 0)
+						end
+					else
+						l_info.generate_type_id (buf, final_mode, 0)
+					end
 					buf.put_two_character (')', ';')
 					l_info.generate_end (buf)
 				end
 
-				buf.exdent
-				buf.put_new_line
-				buf.put_character ('}')
+				if l_if_required then
+					buf.exdent
+					buf.put_new_line
+					buf.put_character ('}')
+				end
 			end
 		end
 
@@ -2006,6 +2084,24 @@ feature -- Access
 				else
 					a_type.create_info.make_byte_code (ba)
 				end
+
+					-- We sometime need to convert a type to either it associated attached/non-attached
+					-- version. First boolean is to figure out if there is an action to be taken, the
+					-- second which action.
+				if {l_type_1: ATTACHABLE_TYPE_A} a_type then
+					if l_type_1.has_attached_mark then
+						ba.append_boolean (True)
+						ba.append_boolean (True)
+					elseif l_type_1.has_detachable_mark then
+						ba.append_boolean (True)
+						ba.append_boolean (False)
+					else
+						ba.append_boolean (False)
+					end
+				else
+					ba.append_boolean (False)
+				end
+
 				ba.append_type_id (class_type.static_type_id)
 				l_name := current_feature.feature_name
 				ba.append_integer (l_name.count)
@@ -2095,7 +2191,7 @@ feature -- Access
 				until
 					i > l.upper
 				loop
-					add_local (real_type (l [i]))
+					add_local (l [i])
 					i := i + 1
 				end
 			end
@@ -2333,6 +2429,110 @@ feature {BYTE_CONTEXT} -- Object test code generation
 
 	object_test_local_offset: HASH_TABLE [INTEGER, INTEGER]
 			-- Offset of inherited object test locals indexed by code_id
+
+feature -- External features
+
+	is_result_checked: BOOLEAN
+			-- Is result checked to ensure it is valid?
+		do
+			inspect external_result_attachment_status
+			when is_attached_reference, is_attached_sometimes then
+				Result := True
+			else
+			end
+		end
+
+	analyze_external_result
+			-- Analyze result of an external feature.
+		do
+			inspect external_result_attachment_status
+			when is_attached_reference then
+				mark_result_used
+			when is_attached_sometimes then
+				mark_result_used
+				result_info.analyze
+			else
+			end
+		end
+
+	generate_external_result_check
+			-- Generate check for result of an external feature.
+		local
+			b: GENERATION_BUFFER
+			i: CREATE_INFO
+		do
+			inspect external_result_attachment_status
+			when is_attached_reference then
+				b := buffer
+				b.put_new_line
+				b.put_string ("if (!Result) {RTEC(EN_FAIL);}")
+			when is_attached_sometimes then
+				b := buffer
+				b.put_new_line
+				b.put_string ("if (!Result) {")
+				b.indent
+				i := result_info
+				i.generate_start (b)
+				i.generate_gen_type_conversion (0)
+				b.put_new_line
+				b.put_string ("if (RTAT(")
+				i.generate_type_id (b, final_mode, 0)
+				b.put_string (")) {RTEC(EN_FAIL);}")
+				i.generate_end (b)
+				b.generate_block_close
+			else
+			end
+		end
+
+feature {NONE} -- External_features
+
+	result_info: CREATE_INFO
+		local
+			f: FEATURE_I
+			t: TYPE_A
+		do
+			f := current_feature
+			t := f.type.instantiated_in (current_type)
+			if t.is_formal then
+				Result := t.create_info
+			else
+				create {CREATE_FEAT} Result.make (f.feature_id, f.rout_id_set.first)
+			end
+		end
+
+	external_result_attachment_status: NATURAL_32
+			-- Attachment status of a function that is external or `is_attached_never' otherwise
+		do
+			if current_feature.is_external and then byte_code /= Void and then byte_code.is_external then
+				Result := attachment_status (current_feature.type.instantiated_in (current_type))
+			else
+				Result := is_attached_never
+			end
+		end
+
+	is_attached_expanded: NATURAL_32 = 1
+	is_attached_reference: NATURAL_32 = 2
+	is_attached_sometimes: NATURAL_32 = 3
+	is_attached_never: NATURAL_32 = 4
+
+	attachment_status (t: TYPE_A): NATURAL_32
+			-- Type `t' attachment status
+		do
+			if t.is_expanded then
+					-- Type is expanded.
+				Result := is_attached_expanded
+			elseif t.is_attached then
+					-- Type is explicitly attached.
+				Result := is_attached_reference
+			elseif
+				t.is_formal or else
+				t.is_like and then not t.is_like_current and then not t.is_like_argument
+			then
+				Result := is_attached_sometimes
+			else
+				Result := is_attached_never
+			end
+		end
 
 feature -- Clearing
 

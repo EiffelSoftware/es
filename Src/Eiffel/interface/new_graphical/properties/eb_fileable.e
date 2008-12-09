@@ -52,8 +52,13 @@ feature -- Access
 		deferred
 		end
 
-	text: STRING is
+	text: STRING_32 is
 			-- Text representing Current
+		deferred
+		end
+
+	encoding: ENCODING
+			-- Encoding in which text is saved.
 		deferred
 		end
 
@@ -115,6 +120,11 @@ feature -- Status Settings
 			stone := Void
 		ensure
 			stone = Void
+		end
+
+	on_before_text_saved is
+			-- Notify the editor that the text is about to be saved.
+		do
 		end
 
 	on_text_saved is

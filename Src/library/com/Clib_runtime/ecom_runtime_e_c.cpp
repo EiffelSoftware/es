@@ -2221,7 +2221,6 @@ void* ecom_runtime_ec::ccom_ec_array_record (EIF_REFERENCE a_ref, int dimension,
   EIF_REFERENCE_FUNCTION f_item = 0;
   EIF_INTEGER_FUNCTION f_capacity = 0;
   EIF_INTEGER_FUNCTION f_sizeof = 0;
-  EIF_INTEGER_FUNCTION f_s = 0;
 
   void* c_array = 0;
   void* elem = 0;
@@ -2239,7 +2238,7 @@ void* ecom_runtime_ec::ccom_ec_array_record (EIF_REFERENCE a_ref, int dimension,
     f_item = eif_reference_function ("item", tid);
   }
   f_capacity = eif_integer_function ("count", tid);
-  elem_tid = eif_gen_param_id (-1, tid, 1);
+  elem_tid = eif_gen_param_id (tid, 1);
   f_sizeof = eif_integer_function ("structure_size", tid);
   // Allocate memory
 

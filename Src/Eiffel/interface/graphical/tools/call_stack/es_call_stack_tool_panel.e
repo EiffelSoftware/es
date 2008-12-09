@@ -19,6 +19,11 @@ inherit
 			on_show
 		end
 
+	ES_HELP_CONTEXT
+		export
+			{NONE} all
+		end
+
 	APPLICATION_STATUS_CONSTANTS
 		export
 			{NONE} all
@@ -57,6 +62,7 @@ feature {NONE} -- Initialization
 			development_window: EB_DEVELOPMENT_WINDOW
 			box2: EV_VERTICAL_BOX
 			t_label: EV_LABEL
+			g: like stack_grid
 		do
 
 				--| UI look
@@ -129,7 +135,6 @@ feature {NONE} -- Initialization
 
 			box2.extend (box_replay_controls)
 			box2.disable_item_expand (box_replay_controls)
-			activate_execution_replay_mode (False, 0)
 
 			a_widget.extend (box2)
 			a_widget.disable_item_expand (box2)
@@ -143,49 +148,63 @@ feature {NONE} -- Initialization
 			exception.disable_edit
 
 				--| Stack grid
-			create stack_grid
-			stack_grid.enable_single_row_selection
-			stack_grid.enable_partial_dynamic_content
-			stack_grid.set_dynamic_content_function (agent compute_stack_grid_item)
-			stack_grid.enable_border
-			stack_grid.enable_resize_column (Feature_column_index)
-			stack_grid.enable_resize_column (Position_column_index)
+			create g
+			stack_grid := g
+			g.enable_single_row_selection
+			g.enable_partial_dynamic_content
+			g.set_dynamic_content_function (agent compute_stack_grid_item)
+			g.enable_border
+			g.enable_resize_column (Feature_column_index)
+			g.enable_resize_column (Position_column_index)
 
 ----| FIXME Jfiat: Use session to store/restore column widths
-			stack_grid.set_column_count_to (4)
-			stack_grid.column (Feature_column_index).set_title (Interface_names.t_Feature)
-			stack_grid.column (Feature_column_index).set_width (120)
-			stack_grid.column (Position_column_index).set_title (" @") --Interface_names.t_Position)
-			stack_grid.column (Position_column_index).set_width (20)
-			stack_grid.column (Dtype_column_index).set_title (Interface_names.t_Dynamic_type)
-			stack_grid.column (Dtype_column_index).set_width (100)
-			stack_grid.column (Stype_column_index).set_title (Interface_names.t_Static_type)
-			stack_grid.column (Stype_column_index).set_width (100)
+			g.set_column_count_to (4)
+			g.column (Feature_column_index).set_title (Interface_names.t_Feature)
+			g.column (Feature_column_index).set_width (120)
+			g.column (Position_column_index).set_title (" @") --Interface_names.t_Position)
+			g.column (Position_column_index).set_width (20)
+			g.column (Dtype_column_index).set_title (Interface_names.t_Dynamic_type)
+			g.column (Dtype_column_index).set_width (100)
+			g.column (Stype_column_index).set_title (Interface_names.t_Static_type)
+			g.column (Stype_column_index).set_width (100)
 
 				--| Action/event on call stack grid
-			stack_grid.drop_actions.extend (agent on_element_drop)
-			stack_grid.key_press_actions.extend (agent key_pressed)
-			stack_grid.set_item_pebble_function (agent on_grid_item_pebble_function)
-			stack_grid.set_item_accept_cursor_function (agent on_grid_item_accept_cursor_function)
+			g.drop_actions.extend (agent on_element_drop)
+			g.key_press_actions.extend (agent key_pressed)
+			g.set_item_pebble_function (agent on_grid_item_pebble_function)
+			g.set_item_accept_cursor_function (agent on_grid_item_accept_cursor_function)
 				--| Action/event on call stack grid (replay mode)
-			stack_grid.row_expand_actions.extend (agent on_row_expanded)
-			stack_grid.row_select_actions.extend (agent on_row_selected)
-			stack_grid.row_deselect_actions.extend (agent on_row_deselected)
+			g.row_expand_actions.extend (agent on_row_expanded)
+			g.row_select_actions.extend (agent on_row_selected)
+			g.row_deselect_actions.extend (agent on_row_deselected)
 
 				--| Context menu handler
 			development_window ?= develop_window
-			stack_grid.set_configurable_target_menu_mode
-			stack_grid.set_configurable_target_menu_handler (agent (development_window.menus.context_menu_factory).call_stack_menu)
+			g.set_configurable_target_menu_mode
+			g.set_configurable_target_menu_handler (agent (development_window.menus.context_menu_factory).call_stack_menu)
 
 				--| Call stack level selection mode
 			update_call_stack_level_selection_mode (preferences.debug_tool_data.select_call_stack_level_on_double_click_preference)
 			preferences.debug_tool_data.select_call_stack_level_on_double_click_preference.change_actions.extend (agent update_call_stack_level_selection_mode)
 
+				-- Set scrolling preferences.
+			g.set_mouse_wheel_scroll_size (preferences.editor_data.mouse_wheel_scroll_size)
+			g.set_mouse_wheel_scroll_full_page (preferences.editor_data.mouse_wheel_scroll_full_page)
+			g.set_scrolling_common_line_count (preferences.editor_data.scrolling_common_line_count)
+			preferences.editor_data.mouse_wheel_scroll_size_preference.typed_change_actions.extend (
+				agent g.set_mouse_wheel_scroll_size)
+			preferences.editor_data.mouse_wheel_scroll_full_page_preference.typed_change_actions.extend (
+				agent g.set_mouse_wheel_scroll_full_page)
+			preferences.editor_data.scrolling_common_line_count_preference.typed_change_actions.extend (
+				agent g.set_scrolling_common_line_count)
+
 				--| Specific Grid's behavior
-			stack_grid.build_delayed_cleaning
+			g.build_delayed_cleaning
 
 				--| Attach to Current dialog
-			a_widget.extend (stack_grid)
+			a_widget.extend (g)
+
+			load_preferences
 		end
 
 	update_call_stack_level_selection_mode (dbl_click_bpref: BOOLEAN_PREFERENCE) is
@@ -245,7 +264,39 @@ feature {NONE} -- Initialization
 			-- Use to perform additional creation initializations, after the UI has been created.
 		do
 			Precursor {ES_DEBUGGER_DOCKABLE_STONABLE_TOOL_PANEL}
+			activate_execution_replay_mode (False, 0)
 			request_update
+		end
+
+	load_preferences is
+			-- Load preferences
+		require
+			grid_attached: stack_grid /= Void
+		local
+			colp: COLOR_PREFERENCE
+		do
+			colp := preferences.debug_tool_data.grid_background_color_preference
+			stack_grid.set_background_color (colp.value)
+			register_action (colp.typed_change_actions, agent (c: EV_COLOR)
+					do
+						stack_grid.set_background_color (c)
+					end
+				)
+			colp := preferences.debug_tool_data.grid_foreground_color_preference
+			stack_grid.set_foreground_color (colp.value)
+			register_action (colp.typed_change_actions, agent (c: EV_COLOR)
+					do
+						stack_grid.set_foreground_color (c)
+					end
+				)
+		end
+
+feature -- Access: Help
+
+	help_context_id: !STRING_GENERAL
+			-- <Precursor>
+		once
+			Result := "8C3CD0FE-78AA-7EC6-F36A-2233A4E26755"
 		end
 
 feature {NONE} -- Factory
@@ -418,6 +469,8 @@ feature {ES_CALL_STACK_TOOL} -- UI access
 
 	activate_execution_replay_mode (b: BOOLEAN; levlim: INTEGER) is
 			-- Enable or disable execution replay
+		require
+			is_initialized: is_initialized
 		do
 			execution_replay_activated := b
 			execution_replay_level_limit := levlim
@@ -853,7 +906,9 @@ feature {NONE} -- Catcall warning access
 					ct := Void
 
 					l_fdtype := rtcc.expected
-					if l_fdtype <= l_max_type_id then
+					if l_fdtype - 1 = {SHARED_GEN_CONF_LEVEL}.none_type then --| -1: to convert to runtime type id
+						argtypename := "Void"
+					elseif l_fdtype <= l_max_type_id then
 							--| Try with compiler data						
 						ct := System.class_type_of_id (l_fdtype)
 						if ct /= Void and then ct.associated_class /= Void then
@@ -883,7 +938,10 @@ feature {NONE} -- Catcall warning access
 					Result.append_string (" but got ")
 					l_fdtype := rtcc.actual
 						--| Try with compiler data
-					if l_fdtype <= l_max_type_id then
+					if l_fdtype - 1 = {SHARED_GEN_CONF_LEVEL}.none_type then --| -1: to convert to runtime type id
+						argtypename := "Void"
+
+					elseif l_fdtype <= l_max_type_id then
 						ct := System.class_type_of_id (l_fdtype)
 						if ct /= Void and then ct.associated_class /= Void and then not ct.is_generic then
 							argtypename := ct.associated_class.name_in_upper
@@ -930,13 +988,13 @@ feature {NONE} -- Implementation: threads
 		require
 			application_is_executing: debugger_manager.application_is_executing
 		local
-			ctid: INTEGER
+			ctid: POINTER
 			s: APPLICATION_STATUS
 		do
 			s := Debugger_manager.application_status
 			if s.all_thread_ids_count > 1 then
 				ctid := s.current_thread_id
-				thread_id.set_text ("0x" + ctid.to_hex_string)
+				thread_id.set_text (ctid.out)
 				thread_id.set_data (ctid)
 				display_box_thread (True)
 			else
@@ -949,8 +1007,8 @@ feature {NONE} -- Implementation: threads
 		local
 			m: EV_MENU
 			mi: EV_MENU_ITEM
-			tid: INTEGER
-			arr: LIST [INTEGER]
+			tid: POINTER
+			arr: LIST [POINTER]
 			l_item_text, s: STRING
 			l_status: APPLICATION_STATUS
 		do
@@ -976,7 +1034,7 @@ feature {NONE} -- Implementation: threads
 							arr.after
 						loop
 							tid := arr.item
-							l_item_text := "0x" + tid.to_hex_string
+							l_item_text := tid.out
 							s := l_status.thread_name (tid)
 							if s /= Void then
 								l_item_text.append_string (" - " + s)
@@ -1229,7 +1287,6 @@ feature {NONE} -- Stack grid implementation
 				l_tooltipable_grid_row.set_item (1, glab)
 			end
 			stack_grid.request_columns_auto_resizing
-			stack_grid.redraw
 		end
 
 	compute_stack_grid_item (c, r: INTEGER): EV_GRID_ITEM is
@@ -1322,7 +1379,7 @@ feature {NONE} -- Stack grid implementation
 				l_tooltip.append (l_feature_name)
 
 					--| Object address
-				l_obj_address_info := cse.object_address
+				l_obj_address_info := cse.object_address.output
 
 				if {e_cse: EIFFEL_CALL_STACK_ELEMENT} cse then
 						--| Origin class
@@ -2021,32 +2078,32 @@ feature {NONE} -- Implementation, cosmetic
 
 
 ;indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
-
+			
 			Eiffel Software's Eiffel Development Environment is free
 			software; you can redistribute it and/or modify it under
 			the terms of the GNU General Public License as published
 			by the Free Software Foundation, version 2 of the License
 			(available at the URL listed under "license" above).
-
+			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
-
+			See the GNU General Public License for more details.
+			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

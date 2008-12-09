@@ -14,12 +14,25 @@ inherit
 			process_bin_eq_as,
 			process_bin_ne_as,
 			process_object_test_as,
+			process_converted_expr_as,
 			process_paran_as,
 			process_un_not_as
 		end
 
 	SHARED_STATELESS_VISITOR
 		export {NONE} all
+		end
+
+feature {NONE} -- Initialization
+
+	make (c: like context) is
+			-- Initialize Current
+		require
+			c_attached: c /= Void
+		do
+			context := c
+		ensure
+			context_set: context = c
 		end
 
 feature {AST_EIFFEL} -- Visitor pattern
@@ -43,6 +56,11 @@ feature {AST_EIFFEL} -- Visitor pattern
 			if is_negated = is_negation_expected then
 				add_object_test_scope (l_as.name.name_id)
 			end
+		end
+
+	process_converted_expr_as (l_as: CONVERTED_EXPR_AS)
+		do
+			l_as.expr.process (Current)
 		end
 
 	process_paran_as (l_as: PARAN_AS)
@@ -114,12 +132,10 @@ feature {NONE} -- Check for void test
 
 feature -- Context manipulation
 
-	add_scopes (a: AST_EIFFEL; c: AST_CONTEXT)
+	add_scopes (a: AST_EIFFEL)
 		require
 			a_attached: a /= Void
-			c_attached: c /= Void
 		do
-			context := c
 			is_negated := False
 			a.process (Current)
 		end

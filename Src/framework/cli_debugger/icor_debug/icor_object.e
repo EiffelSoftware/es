@@ -38,9 +38,7 @@ feature {ICOR_EXPORTER} -- Initialisation
 			-- Make Current by pointer.
 		do
 			Precursor (an_item)
-			debug ("debugger_icor_data")
-				init_icor
-			end
+			init_icor
 		end
 
 	init_icor is
@@ -198,9 +196,9 @@ feature {ICOR_EXPORTER} -- Access
 		end
 
 	out: STRING is
-			--
+			-- Output value
 		do
-			Result := generating_type + "[0x"+item.out+"]"
+			Result := generating_type + "[" + item.out + "]"
 		end
 
 feature -- Access status

@@ -39,6 +39,8 @@ feature
 			parent := p;
 		end;
 
+feature -- C code generation
+
 	propagate (r: REGISTRABLE) is
 			-- Do nothing
 		do
@@ -50,10 +52,10 @@ feature
 			Result := r.is_result;
 		end;
 
-	generate is
+	generate
 			-- Do nothing
 		do
-		end;
+		end
 
 	free_register is
 			-- Do nothing
@@ -77,7 +79,7 @@ feature
 		end;
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

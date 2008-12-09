@@ -10,10 +10,12 @@ class
 
 inherit
 	CREATE_TYPE
+		export
+			{FORMAL_A} make
 		redefine
 			generate, generate_type_id, generate_gen_type_conversion,
-			generate_cid, type_to_create, make_byte_code,
-			analyze, generate_il, type, is_explicit
+			generate_cid, generate_cid_init, generate_cid_array, type_to_create, make_byte_code,
+			analyze, generate_il, type, is_explicit, make_type_byte_code
 		end
 
 create
@@ -28,31 +30,19 @@ feature -- C code generation
 
 	analyze is
 		do
-				-- Current is always used to generate the correct generic parameter.
-			context.mark_current_used
+			associated_create_feat.analyze
 		end
 
 	generate is
 			-- Generate creation type
-		local
-			buffer: GENERATION_BUFFER
 		do
-			buffer := context.buffer
-			buffer.put_string ("RTLNSMART(")
-			generate_type_id (buffer, context.final_mode, 0)
-			buffer.put_character (')')
+			associated_create_feat.generate
 		end
 
 	generate_type_id (buffer: GENERATION_BUFFER; final_mode : BOOLEAN; a_level: NATURAL) is
 			-- Generate formal creation type id
 		do
-			buffer.put_string ("RTGPTID(")
-			buffer.put_integer (context.context_class_type.type.generated_id (final_mode, Void))
-			buffer.put_character (',')
-			context.current_register.print_register
-			buffer.put_character (',')
-			buffer.put_integer (type.position)
-			buffer.put_character (')')
+			associated_create_feat.generate_type_id (buffer, final_mode, a_level)
 		end
 
 feature -- IL code generation
@@ -84,9 +74,14 @@ feature -- Byte code generation
 	make_byte_code (ba: BYTE_ARRAY) is
 			-- Generate byte code for a formal creation type.
 		do
-			ba.append (Bc_gen_param_create)
-			ba.append_short_integer (context.context_class_type.type.generated_id (False, Void))
-			ba.append_integer (type.position)
+			associated_create_feat.make_byte_code (ba)
+		end
+
+
+	make_type_byte_code (ba: BYTE_ARRAY)
+			-- <Precursor>
+		do
+			associated_create_feat.make_type_byte_code (ba)
 		end
 
 feature -- Generic conformance
@@ -98,20 +93,47 @@ feature -- Generic conformance
 		end
 
 	generate_gen_type_conversion (a_level: NATURAL) is
+			-- <Precursor>
 		do
 		end
 
 	generate_cid (buffer: GENERATION_BUFFER; final_mode : BOOLEAN) is
+			-- <Precursor>
 		do
-				-- If we are here, it means that it is known that the type cannot have
-				-- sublevel, thus the value of `0'. This is usually the case when describing
-				-- an attribute type in eskelet.c
-			generate_type_id (buffer, final_mode, 0)
-			buffer.put_character (',')
+			associated_create_feat.generate_cid (buffer, final_mode)
+		end
+
+	generate_cid_init (buffer: GENERATION_BUFFER; final_mode: BOOLEAN; idx_cnt: COUNTER; a_level: NATURAL_32) is
+			-- <Precursor>
+		do
+			associated_create_feat.generate_cid_init (buffer, final_mode, idx_cnt, a_level)
+		end
+
+	generate_cid_array (buffer: GENERATION_BUFFER; final_mode: BOOLEAN; idx_cnt: COUNTER) is
+			-- <Precursor>
+		do
+			associated_create_feat.generate_cid_array (buffer, final_mode, idx_cnt)
 		end
 
 	type_to_create : CL_TYPE_A is
+			-- <Precursor>
 		do
+		end
+
+feature {NONE} -- Helper
+
+	associated_create_feat: CREATE_FEAT is
+			-- Associated creation feature for formal.
+		local
+			l_feat: TYPE_FEATURE_I
+		do
+			check
+				context_class_is_generic: context.class_type.is_generic
+			end
+			l_feat := context.class_type.associated_class.formal_at_position (type.position)
+			create Result.make (l_feat.feature_id, l_feat.rout_id_set.first)
+		ensure
+			assocated_create_feat_not_void: Result /= Void
 		end
 
 indexing
@@ -146,4 +168,4 @@ indexing
 			 Customer support http://support.eiffel.com
 		]"
 
-end -- class CREATE_FORMAL_TYPE
+end

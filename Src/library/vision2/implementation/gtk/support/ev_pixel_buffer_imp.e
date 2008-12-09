@@ -21,9 +21,32 @@ feature {NONE} -- Initialization
 
 	make_with_size (a_width, a_height: INTEGER) is
 			-- Create with size.
+		local
+			l_x, l_y, l_width, l_height: NATURAL_32
 		do
 			if {EV_GTK_EXTERNALS}.gtk_maj_ver >= 2 then
+				l_width := a_width.as_natural_32
+				l_height := a_height.as_natural_32
 				set_gdkpixbuf ({EV_GTK_EXTERNALS}.gdk_pixbuf_new ({EV_GTK_EXTERNALS}.gdk_colorspace_rgb_enum, True, 8, a_width, a_height))
+					-- Creating managed pointer used for inspecting RGBA data.
+				create reusable_managed_pointer.share_from_pointer (default_pointer, 0)
+				from
+						-- Reset existing data to zero.
+						--| FIXME IEK Optimize
+					l_y := 0
+				until
+					l_y = l_height
+				loop
+					from
+						l_x := 0
+					until
+						l_x = l_width
+					loop
+						set_pixel (l_x, l_y, 0)
+						l_x := l_x + 1
+					end
+					l_y := l_y + 1
+				end
 			else
 				create internal_pixmap.make_with_size (a_width, a_height)
 			end
@@ -50,8 +73,10 @@ feature {NONE} -- Initialization
 	initialize is
 			-- Initialize `Current'.
 		do
-				-- Creating managed pointer used for inspecting RGBA data.
-			create reusable_managed_pointer.share_from_pointer (default_pointer, 0)
+			if reusable_managed_pointer = Void then
+					-- Creating managed pointer used for inspecting RGBA data.
+				create reusable_managed_pointer.share_from_pointer (default_pointer, 0)
+			end
 			set_is_initialized (True)
 		end
 
@@ -208,7 +233,7 @@ feature -- Command
 			byte_pos := (a_y * l_row_stride + (a_x * l_n_channels * l_bytes_per_sample)).as_integer_32
 
 			l_managed_pointer := reusable_managed_pointer
-			l_managed_pointer.set_from_pointer ({EV_GTK_EXTERNALS}.gdk_pixbuf_get_pixels (gdk_pixbuf), byte_pos)
+			l_managed_pointer.set_from_pointer ({EV_GTK_EXTERNALS}.gdk_pixbuf_get_pixels (gdk_pixbuf), byte_pos + (l_bytes_per_sample * l_n_channels).to_integer_32)
 				-- Data is stored at a byte level of R G B A which is big endian, so we need to set big endian.
 
 			l_managed_pointer.put_natural_32_be (rgba, byte_pos)
@@ -269,9 +294,57 @@ feature -- Command
 			-- Draw `a_pixel_buffer' at `a_x', `a_y'.
 		local
 			l_pixel_buffer_imp: EV_PIXEL_BUFFER_IMP
+			l_dest_width, l_dest_height: INTEGER
+			l_x, l_y: INTEGER
 		do
 			l_pixel_buffer_imp ?= a_pixel_buffer.implementation
-			{EV_GTK_EXTERNALS}.gdk_pixbuf_copy_area (l_pixel_buffer_imp.gdk_pixbuf, 0, 0, a_pixel_buffer.width, a_pixel_buffer.height, gdk_pixbuf, a_x, a_y)
+			-- We must make sure dest rectangle not larger than source rectangle
+			-- http://library.gnome.org/devel/gdk-pixbuf/stable/gdk-pixbuf-scaling.html#gdk-pixbuf-composite
+			-- They say:
+			-- When the destination rectangle contains parts not in the source image, the data at the edges
+			-- of the source image is replicated to infinity.
+			-- We modify `l_dest_width' and `l_dest_height' to avoid it, so it will consistent with Windows implementation
+			l_x := a_x
+			l_y := a_y
+			l_dest_width := l_pixel_buffer_imp.width
+			l_dest_height := l_pixel_buffer_imp.height
+			if l_x < 0 then
+				l_x := 0
+				l_dest_width := l_dest_width + a_x
+				if l_dest_width < 0 then
+					l_dest_width := 0
+				end
+			end
+			if l_y < 0 then
+				l_dest_height := l_dest_height + a_y
+				l_y := 0
+				if l_dest_height < 0 then
+					l_dest_height := 0
+				end
+			end
+
+			-- We also have to make sure, dest rectangle not larger than source image, otherwise the API will not draw the image and this is
+			-- not consitent with Windows implementation
+			if l_x + l_dest_width > width then
+				l_dest_width := width - l_x
+				if l_x > width then
+					l_x := width
+				end
+				if l_dest_width < 0 then
+					l_dest_width := 0
+				end
+			end
+			if l_y + l_dest_height > height then
+				l_dest_height := height - l_y
+				if l_y > height then
+					l_y := height
+				end
+				if l_dest_height < 0 then
+					l_dest_height := 0
+				end
+			end
+
+			{EV_GTK_EXTERNALS}.gdk_pixbuf_composite (l_pixel_buffer_imp.gdk_pixbuf, gdk_pixbuf, l_x, l_y, l_dest_width, l_dest_height, a_x, a_y, 1, 1, {EV_GTK_DEPENDENT_EXTERNALS}.gdk_interp_hyper, 255)
 		end
 
 feature -- Query
@@ -300,7 +373,7 @@ feature -- Query
 			--Memory acess point to image data.
 			-- This feature is NOT platform independent.
 		do
-			Result :={EV_GTK_EXTERNALS}.gdk_pixbuf_get_pixels (gdk_pixbuf)
+			Result := {EV_GTK_EXTERNALS}.gdk_pixbuf_get_pixels (gdk_pixbuf)
 		end
 
 feature {EV_STOCK_PIXMAPS_IMP} -- Implementation

@@ -43,6 +43,7 @@ inherit
 			set_stone,
 			reset,
 			stone,
+			on_before_text_saved,
 			on_text_saved,
 			perform_check_before_save,
 			check_passed,
@@ -64,6 +65,7 @@ inherit
 		redefine
 			reset,
 			stone,
+			on_before_text_saved,
 			on_text_saved,
 			perform_check_before_save,
 			check_passed,
@@ -126,6 +128,9 @@ inherit
 			{NONE} all
 		end
 
+		-- ESS Interfaces
+	SHELL_WINDOW_I
+
 create {EB_DEVELOPMENT_WINDOW_DIRECTOR}
 	make
 
@@ -146,6 +151,8 @@ feature {NONE} -- Initialization
 			auto_recycle (shell_tools)
 			create ui.make (Current)
 			auto_recycle (ui)
+			create docking_layout_manager.make (Current)
+			auto_recycle (docking_layout_manager)
 
 			window_id := next_window_id
 		end
@@ -174,10 +181,23 @@ feature {NONE} -- Clean up
 			-- Recycle all.
 		local
 			l_session_manager: SERVICE_CONSUMER [SESSION_MANAGER_S]
+			l_sessions: DS_ARRAYED_LIST_CURSOR [SESSION_I]
+			l_session: SESSION_I
 		do
-				-- Persist session data
 			create l_session_manager
 			if l_session_manager.is_service_available then
+					-- Store and clear all session data related to the window.
+				l_sessions := l_session_manager.service.active_sessions.new_cursor
+				from l_sessions.start until l_sessions.after loop
+					l_session := l_sessions.item
+					if l_session.is_interface_usable and then l_session.is_per_window and then l_session.window_id = window_id then
+							-- Closes and stores session data.
+						l_session_manager.service.close_session (l_session)
+					end
+					l_sessions.forth
+				end
+
+					-- Store all other session data, that's not tied to the window, incase this is the last window.
 				l_session_manager.service.store_all
 			end
 
@@ -206,6 +226,7 @@ feature {NONE} -- Clean up
 			end
 				managed_class_formatters.wipe_out
 				managed_feature_formatters.wipe_out
+				managed_dependency_formatters.wipe_out
 				managed_main_formatters.wipe_out
 --				commands.toolbarable_commands.wipe_out
 			Precursor {EB_TOOL_MANAGER}
@@ -228,6 +249,9 @@ feature {NONE} -- Clean up
 			agents := Void
 			ui := Void
 			shell_tools := Void
+			address_manager := Void
+			internal_session_data := Void
+			internal_project_session_data := Void
 
 			Precursor {EB_TOOL_MANAGER}
 		ensure then
@@ -245,6 +269,8 @@ feature {NONE} -- Clean up
 			agents_detached: agents = Void
 			ui_detached: ui = Void
 			shell_tools_detached: shell_tools = Void
+			internal_session_detached: internal_session_data = Void
+			internal_project_session_detached: internal_project_session_data = Void
 		end
 
 feature -- Access
@@ -295,6 +321,48 @@ feature -- Access
 			result_attached: (create {SERVICE_CONSUMER [SESSION_MANAGER_S]}).is_service_available implies Result /= Void
 			result_is_interface_usable: Result.is_interface_usable
 			result_consistent: Result = session_data
+		end
+
+	project_session_data: SESSION_I
+			-- Access to window session data for the current project/window
+			-- We must check if system defined here
+			-- Otherwise {SESSION_MANAGER}.session_file_path don't know the *project* UUID for project session file name
+		require
+			system_defined: (create {SHARED_WORKBENCH}).workbench.system_defined
+		local
+			l_consumer: SERVICE_CONSUMER [SESSION_MANAGER_S]
+		do
+			Result := internal_project_session_data
+			if Result = Void then
+				create l_consumer
+				if l_consumer.is_service_available then
+					Result := l_consumer.service.retrieve_per_window (Current, True)
+					internal_project_session_data := Result
+				end
+			end
+		ensure
+			result_attached: (create {SERVICE_CONSUMER [SESSION_MANAGER_S]}).is_service_available implies Result /= Void
+			result_is_interface_usable: Result.is_interface_usable
+			result_consistent: Result = project_session_data
+		end
+
+	frozen layout_manager: !ES_DEVELOPMENT_WINDOW_LAYOUT_MANAGER
+			-- Handles all docking layout management
+		require
+			is_interface_usable: is_interface_usable
+		local
+			l_result: ?like internal_layout_manager
+		do
+			l_result := internal_layout_manager
+			if l_result = Void then
+				create Result.make (Current)
+				auto_recycle (Result)
+				internal_layout_manager := Result
+			else
+				Result := l_result
+			end
+		ensure
+			result_consistent: Result = layout_manager
 		end
 
 	frozen window_id: NATURAL_32
@@ -410,11 +478,19 @@ feature -- Window Properties
 			Result := editors_manager = Void or else editors_manager.current_editor = Void or else editors_manager.current_editor.is_empty
 		end
 
-	text: STRING is
+	text: STRING_32 is
 			-- Text representing Current
 		do
 			if editors_manager.current_editor /= Void then
-				Result := editors_manager.current_editor.text
+				Result := editors_manager.current_editor.wide_text
+			end
+		end
+
+	encoding: ENCODING is
+			-- Encoding in which text is saved.
+		do
+			if editors_manager.current_editor /= Void then
+				Result := editors_manager.current_editor.encoding
 			end
 		end
 
@@ -446,6 +522,7 @@ feature -- Window Properties
 					end
 					l_tools.forth
 				end
+				l_tools.go_after
 
 				l_comb ?= ev_application.focused_widget
 				l_is_comb := l_comb /= Void
@@ -469,22 +546,27 @@ feature -- Update
 		local
 			st: STONE
 			l_text_area: EB_SMART_EDITOR
+			l_system: SYSTEM_I
+			l_root: SYSTEM_ROOT
 		do
 			during_synchronization := True
-
+			if eiffel_project.system_defined then
+				l_system := eiffel_system.system
+			end
 			if
 				stone = Void and then
-				eiffel_project.system_defined and then
+				l_system /= Void and then
 				eiffel_project.initialized and then
 				eiffel_system.workbench.is_already_compiled and then
 				eiffel_system.workbench.last_reached_degree <= 5 and then
-				eiffel_system.root_cluster /= Void and then
-				eiffel_system.root_class /= Void
+				not l_system.root_creators.is_empty
 			then
-				if eiffel_system.root_class.is_compiled then
-					stone := create {CLASSC_STONE}.make (eiffel_system.system.root_class.compiled_class)
+					-- Note: this code must be updated to support multiple root features
+				l_root := l_system.root_creators.first
+				if l_root.root_class.is_compiled then
+					stone := create {CLASSC_STONE}.make (l_root.root_class.compiled_class)
 				else
-					stone := create {CLASSI_STONE}.make (eiffel_system.system.root_class)
+					stone := create {CLASSI_STONE}.make (l_root.root_class)
 				end
 				if
 					eiffel_system.universe.target.clusters.count = 1
@@ -955,6 +1037,26 @@ feature -- Resource Update
 			Eiffel_project.Workbench.change_class (a_class.original_class)
 		end
 
+
+	on_before_text_saved is
+			-- Notify the editor that the text is about to be saved.
+		local
+			l_editor: EB_SMART_EDITOR
+			l_class_i: CLASS_I
+			l_modifier: ES_CLASS_LICENSER
+		do
+			Precursor
+			l_editor := editors_manager.current_editor
+			if l_editor /= Void and then l_editor.is_interface_usable and then {l_class: CLASSI_STONE} l_editor.stone then
+					-- We have the class stone
+				l_class_i := l_class.class_i
+				if l_class_i /= Void then
+					create l_modifier
+					l_modifier.relicense (l_class_i)
+				end
+			end
+		end
+
 	on_text_saved is
 			-- Notify the editor that the text has been saved
 		local
@@ -1031,10 +1133,10 @@ feature -- Window management
 			preferences.preferences.save_preferences
 		end
 
-	save_layout_to_session (a_session: ES_SESSION) is
+	save_layout_to_session: EB_DEVELOPMENT_WINDOW_SESSION_DATA is
 			-- Save session data of `Current' to session object `a_session'.
+			-- This is project data session, not for all projects.
 		local
-			a_window_data: EB_DEVELOPMENT_WINDOW_SESSION_DATA
 			a_class_stone: CLASSI_STONE
 			a_cluster_stone: CLUSTER_STONE
 			l_class_id, l_feature_id: STRING
@@ -1042,35 +1144,37 @@ feature -- Window management
 			l_class_stone: CLASSI_STONE
 		do
 			save_window_state
-			create a_window_data.make_from_window_data (preferences.development_window_data)
+			save_size
+			save_position
+			create Result.make_from_window_data (preferences.development_window_data)
 
 			a_class_stone ?= stone
 			a_cluster_stone ?= stone
 			if a_class_stone /= Void then
-				a_window_data.save_current_target (id_of_class (a_class_stone.class_i.config_class), False)
+				Result.save_current_target (id_of_class (a_class_stone.class_i.config_class), False)
 			elseif a_cluster_stone /= Void then
-				a_window_data.save_current_target (id_of_group (a_cluster_stone.group), True)
+				Result.save_current_target (id_of_group (a_cluster_stone.group), True)
 			else
-				a_window_data.save_current_target (Void, False)
+				Result.save_current_target (Void, False)
 			end
 			if a_class_stone /= Void or else a_cluster_stone /= Void then
 				if editors_manager.current_editor /= Void then
 					if not editors_manager.current_editor.text_displayed.is_empty then
-						a_window_data.save_editor_position (
+						Result.save_editor_position (
 							editors_manager.current_editor.text_displayed.current_line_number)
 					else
-						a_window_data.save_editor_position (1)
+						Result.save_editor_position (1)
 					end
 				else
-					a_window_data.save_editor_position (1)
+					Result.save_editor_position (1)
 				end
 			else
-				a_window_data.save_editor_position (1)
+				Result.save_editor_position (1)
 			end
 
-			save_editors_to_session_data (a_window_data)
+			save_editors_to_session_data (Result)
 
-			save_editors_docking_layout
+			layout_manager.store_editors_layout
 
 			if tools.features_relation_tool /= Void then
 				l_feature_stone ?= tools.features_relation_tool.stone
@@ -1087,13 +1191,12 @@ feature -- Window management
 					l_class_id := id_of_class (l_class_stone.class_i.config_class)
 				end
 			end
-			a_window_data.save_context_data (l_class_id, l_feature_id, 1)
-
- 				-- Add the session data of `Current' to the session object.
-			a_session.window_session_data.extend (a_window_data)
+			Result.save_context_data (l_class_id, l_feature_id, 1)
+		ensure
+			not_void: Result /= Void
 		end
 
-	save_editors_to_session_data (a_window_data: EB_DEVELOPMENT_WINDOW_SESSION_DATA) is
+	save_editors_to_session_data (a_data: EB_DEVELOPMENT_WINDOW_SESSION_DATA) is
 			-- Save editor number, open classes and open clusters.
 		local
 			l_open_classes: HASH_TABLE [STRING, STRING]
@@ -1103,181 +1206,15 @@ feature -- Window management
 			l_open_classes.merge (editors_manager.open_fake_classes)
 			l_open_clusters := editors_manager.open_clusters
 			l_open_clusters.merge (editors_manager.open_fake_clusters)
-			a_window_data.save_open_classes (l_open_classes)
-			a_window_data.save_open_clusters (l_open_clusters)
-			a_window_data.save_formatting_marks (editors_manager.show_formatting_marks)
+
+			a_data.save_open_classes (l_open_classes)
+			a_data.save_open_clusters (l_open_clusters)
+
+			a_data.save_formatting_marks (editors_manager.show_formatting_marks)
 		end
 
-	save_tools_docking_layout is
-			-- Save all tools docking layout.
-		local
-			l_eb_debugger_manager: EB_DEBUGGER_MANAGER
-		do
-			l_eb_debugger_manager ?= debugger_manager
-			-- If directly exiting Eiffel Studio from EB_DEBUGGER_MANAGER, then we don't save the tools layout,
-			-- because current widgets layout is debug mode layout (not normal mode layout),
-			-- and the debug mode widgets layout is saved by EB_DEBUGGER_MANAGER already.
-			if l_eb_debugger_manager /= Void and then not l_eb_debugger_manager.is_exiting_eiffel_studio then
-				docking_manager.save_tools_config (eiffel_layout.user_docking_standard_file_name)
-			end
-		end
-
-	save_editors_docking_layout is
-			-- Save all editors docking layout.
-		do
-			docking_manager.save_editors_config (project_docking_standard_file_name)
-		end
-
-	internal_construct_standard_layout_by_code is
-			-- After docking manager have all widgets, set all tools to standard default layout.
-		local
-			l_tool: EB_TOOL
-			l_last_tool: EB_TOOL
-			l_tool_bar_content, l_tool_bar_content_2: SD_TOOL_BAR_CONTENT
-			l_no_locked_window: BOOLEAN
-			l_features_tool: ES_FEATURES_TOOL
-		do
-			l_no_locked_window := ((create {EV_ENVIRONMENT}).application.locked_window = Void)
-			if l_no_locked_window then
-				window.lock_update
-			end
-			close_all_tools
-
-			-- Right bottom tools
-			l_tool := tools.c_output_tool
-			l_tool.content.set_top ({SD_ENUMERATION}.bottom)
-
-			l_tool := shell_tools.tool ({ES_ERROR_LIST_TOOL}).panel
-			l_tool.content.set_tab_with (tools.c_output_tool.content, True)
-			l_last_tool := l_tool
-
-			l_tool := tools.output_tool
-			l_tool.content.set_tab_with (l_last_tool.content, True)
-
-			l_tool := tools.features_relation_tool
-			l_tool.content.set_tab_with (tools.output_tool.content, True)
-
-			l_tool := tools.class_tool
-			l_tool.content.set_tab_with (tools.features_relation_tool.content, True)
-
-			l_tool.content.set_split_proportion (0.6)
-
-			-- Right tools
-			l_features_tool ?= shell_tools.tool ({ES_FEATURES_TOOL})
-
-			l_tool := tools.favorites_tool
-			l_tool.content.set_top ({SD_ENUMERATION}.right)
-			l_tool := l_features_tool.panel
-			l_tool.content.set_tab_with (tools.favorites_tool.content, True)
-			l_tool := tools.cluster_tool
-			l_tool.content.set_tab_with (l_features_tool.panel.content, True)
-			l_tool.content.set_split_proportion (0.73)
-
-			-- Auto hide tools
-			l_tool := tools.diagram_tool
-			if l_tool.content.state_value /= {SD_ENUMERATION}.auto_hide then
-				l_tool.content.set_auto_hide ({SD_ENUMERATION}.bottom)
-			else
-				-- First we pin it, then pin it again. So we can make sure the tab stub order and tab stub direction.
-				-- Docking library will add a feature to set auto hide tab stub order directly in the future. -- Larry 2007/7/13
-				l_tool.content.set_auto_hide ({SD_ENUMERATION}.bottom)
-				l_tool.content.set_auto_hide ({SD_ENUMERATION}.bottom)
-			end
-
-			l_tool := tools.dependency_tool
-			if l_tool.content.state_value /= {SD_ENUMERATION}.auto_hide then
-				l_tool.content.set_auto_hide ({SD_ENUMERATION}.bottom)
-			else
-				-- First we pin it, then pin it again. So we can make sure the tab stub order and tab stub direction.
-				l_tool.content.set_auto_hide ({SD_ENUMERATION}.bottom)
-				l_tool.content.set_auto_hide ({SD_ENUMERATION}.bottom)
-			end
-
-			l_tool := tools.metric_tool
-			l_tool.content.set_tab_with (tools.dependency_tool.content, False)
-
-			shell_tools.tool ({ES_INFORMATION_TOOL}).panel.content.set_tab_with (l_tool.content, False)
-
-			-- Tool bars
-			l_tool_bar_content := docking_manager.tool_bar_manager.content_by_title (interface_names.to_standard_toolbar)
-			l_tool_bar_content_2 := l_tool_bar_content
-			check not_void: l_tool_bar_content /= Void end
-			l_tool_bar_content.set_top ({SD_ENUMERATION}.top)
-
-			l_tool_bar_content := docking_manager.tool_bar_manager.content_by_title (interface_names.to_address_toolbar)
-			check not_void: l_tool_bar_content /= Void end
-			l_tool_bar_content.set_top ({SD_ENUMERATION}.top)
-
-			l_tool_bar_content := docking_manager.tool_bar_manager.content_by_title (interface_names.to_project_toolbar)
-			check not_void: l_tool_bar_content /= Void end
-			l_tool_bar_content.set_top_with (l_tool_bar_content_2)
-
-			l_tool_bar_content := docking_manager.tool_bar_manager.content_by_title (interface_names.to_refactory_toolbar)
-			check not_void: l_tool_bar_content /= Void end
-			l_tool_bar_content.set_top ({SD_ENUMERATION}.top)
-			-- We first call `set_top' because we want set a default location for the tool bar.
-			l_tool_bar_content.hide
-
-			if l_no_locked_window then
-				window.unlock_update
-			end
-		end
-
-	restore_tools_docking_layout is
-			-- Restore docking layout information.
-		local
-			l_raw_file: RAW_FILE
-			l_result: BOOLEAN
-		do
-			create l_raw_file.make (eiffel_layout.user_docking_standard_file_name)
-			if l_raw_file.exists then
-				l_result := docking_manager.open_tools_config (eiffel_layout.user_docking_standard_file_name)
-			end
-
-			if not l_result then
-				restore_standard_tools_docking_layout
-			end
-			menus.update_menu_lock_items
-			menus.update_show_tool_bar_items
-		end
-
-	restore_editors_docking_layout is
-			-- Restore docking layout information.
-		local
-			l_raw_file: RAW_FILE
-		do
-			create l_raw_file.make (project_docking_standard_file_name)
-			if l_raw_file.exists then
-				docking_manager.open_editors_config (project_docking_standard_file_name)
-			end
-		end
-
-	restore_standard_tools_docking_layout is
-			-- Restore statndard layout.
-		local
-			l_file: RAW_FILE
-			l_result: BOOLEAN
-			retried: BOOLEAN
-		do
-			if not retried then
-				create l_file.make (eiffel_layout.user_docking_standard_file_name)
-				if l_file.exists then
-					l_result := docking_manager.open_tools_config (eiffel_layout.user_docking_standard_file_name)
-					check l_result end
-				else
-					internal_construct_standard_layout_by_code
-				end
-			else
-				internal_construct_standard_layout_by_code
-			end
-			menus.update_menu_lock_items
-			menus.update_show_tool_bar_items
-		rescue
-			if not retried then
-				retried := True
-				retry
-			end
-		end
+	docking_layout_manager: EB_DOCKING_LAYOUT_MANAGER
+			-- Docking layout manager
 
 	close_all_tools is
 			-- Close all tools.
@@ -1378,39 +1315,13 @@ feature {EB_EDITORS_MANAGER, EB_STONE_CHECKER} -- Tabbed editor
 			is_dropping_on_editor := a_dropping
 		end
 
-feature {ES_FEATURES_TOOL_PANEL, ES_FEATURES_GRID, DOTNET_CLASS_AS, EB_STONE_CHECKER, EB_DEVELOPMENT_WINDOW_PART} -- Feature Clauses
-
-	set_feature_clauses (a_features: ARRAYED_LIST [DOTNET_FEATURE_CLAUSE_AS [CONSUMED_ENTITY]]; a_type: STRING) is
-			-- Set 'features' to 'a_features' and store in hash table with key 'a_type' denoting name of consumed
-			-- type pertinent to 'a_features'.
-		require
-			a_features_not_void: a_features /= Void
-		do
-			if feature_clauses = Void then
-				create feature_clauses.make (5)
-			end
-			feature_clauses.put (a_features, a_type)
-		end
+feature {ES_FEATURES_TOOL_PANEL, ES_FEATURES_GRID, EB_STONE_CHECKER, EB_DEVELOPMENT_WINDOW_PART} -- Feature Clauses
 
 	set_feature_locating (a_locating: BOOLEAN) is
 			-- Set `feature_locating' with `a_locating'.
 		do
 			feature_locating := a_locating
 		end
-
-	get_feature_clauses (a_type: STRING): ARRAYED_LIST [DOTNET_FEATURE_CLAUSE_AS [CONSUMED_ENTITY]] is
-			-- Get list of feature clauses relevant to .NET type with name 'a_type'.
-		require
-			a_type_not_void: a_type /= Void
-			has_type_clauses: feature_clauses.has (a_type)
-		do
-			Result := feature_clauses.item (a_type)
-		ensure
-			result_not_void: Result /= Void
-		end
-
-	feature_clauses: HASH_TABLE [ARRAYED_LIST [DOTNET_FEATURE_CLAUSE_AS [CONSUMED_ENTITY]], STRING]
-			-- List of features clauses for Current window hashed by the .NET name of the consumed_type.
 
 	feature_locating: BOOLEAN
 			-- Is feature tool locating a feature?
@@ -1424,7 +1335,6 @@ feature {EB_WINDOW_MANAGER, EB_DEVELOPMENT_WINDOW_MAIN_BUILDER} -- Window manage
 			if not is_destroying then
 				is_destroying := True
 
-
 					-- If a launched application is still running, kill it.
 				if
 					Eb_debugger_manager.application_is_executing
@@ -1434,7 +1344,8 @@ feature {EB_WINDOW_MANAGER, EB_DEVELOPMENT_WINDOW_MAIN_BUILDER} -- Window manage
 				end
 
 					-- Save width & height.
-				save_window_state
+				save_window_data
+
 				hide
 
 					-- Commit saves
@@ -1458,33 +1369,61 @@ feature {EB_WINDOW_MANAGER, EB_DEVELOPMENT_WINDOW_MAIN_BUILDER} -- Window manage
 					editors_manager.recycle
 				end
 
-
-
 				managed_class_formatters := Void
 				managed_feature_formatters := Void
+				managed_dependency_formatters := Void
 				managed_main_formatters := Void
 --				editors_manager := Void
 --				stone := Void
 			end
 		end
 
-	save_size (a_x: INTEGER; a_y: INTEGER; a_width: INTEGER; a_height: INTEGER) is
+	save_size is
 			-- Save window size.
 		do
-			if not window.is_maximized and not window.is_minimized then
-					-- We cannot use `a_width' and `a_height' because it corresponds to
-					-- the client width and height, not the window.
-				development_window_data.save_size (window.width, window.height)
+			if not window.is_minimized then
+				if window.is_maximized then
+					development_window_data.save_maximized_size (window.width, window.height)
+				else
+					development_window_data.save_size (window.width, window.height)
+				end
 			end
 		end
 
-	save_position (a_x: INTEGER; a_y: INTEGER; a_width: INTEGER; a_height: INTEGER) is
+	save_position is
 			-- Save window position.
 		do
-			if not window.is_maximized and not window.is_minimized then
-					-- We cannot use `a_x' and `a_y' because it corresponds to the position
-					-- of the client area.
-				development_window_data.save_position (window.screen_x, window.screen_y)
+			if not window.is_minimized then
+				if window.is_maximized then
+					development_window_data.save_maximized_position (window.screen_x, window.screen_y)
+				else
+					development_window_data.save_position (window.screen_x, window.screen_y)
+				end
+			end
+		end
+
+	save_window_data is
+			-- Save Window size, position and states
+		local
+			l_develop_window_data: EB_DEVELOPMENT_WINDOW_SESSION_DATA
+		do
+				-- Update position.
+			save_window_state
+			save_position
+			save_size
+				-- Create session data from above saved data.
+			create l_develop_window_data.make_from_window_data (development_window_data)
+			layout_manager.store_standard_tools_layout
+			session_data.set_value (l_develop_window_data, development_window_data.development_window_data_id)
+
+			if (create {SHARED_WORKBENCH}).workbench.system_defined then
+				-- Editor data save to per-project session data.
+				create l_develop_window_data.make_from_window_data (development_window_data)
+				save_editors_to_session_data (l_develop_window_data)
+				layout_manager.store_editors_layout
+
+				-- Must use project *window* session data here.
+				project_session_data.set_value (l_develop_window_data, development_window_data.development_window_project_data_id)
 			end
 		end
 
@@ -1522,22 +1461,6 @@ feature {EB_STONE_FIRST_CHECKER, EB_DEVELOPMENT_WINDOW_MAIN_BUILDER} -- Implemen
 
 	is_destroying: BOOLEAN
 			-- Is `current' being currently destroyed?
-
-	on_cursor_moved is
-			-- The cursor has moved, reflect the change in the status bar.
-			-- And reflect location editing in the text in features tool and address bar.
-		do
-			refresh_cursor_position
-			if context_refreshing_timer = Void then
-				create context_refreshing_timer.make_with_interval (100)
-				context_refreshing_timer.actions.extend (agent refresh_context_info)
-			end
-			if feature_locating then
-				context_refreshing_timer.set_interval (0)
-			else
-				context_refreshing_timer.set_interval (100)
-			end
-		end
 
 	all_editor_closed is
 			-- All editor closed.
@@ -1671,50 +1594,44 @@ feature {EB_STONE_CHECKER, EB_STONE_FIRST_CHECKER, EB_DEVELOPMENT_WINDOW_PART} -
 			l_names: EIFFEL_LIST [FEATURE_NAME]
 			offset: TUPLE [start_offset: INTEGER; end_offset: INTEGER]
 		do
-			if not feat_as.is_il_external then
-				if not managed_main_formatters.first.selected then
-					if feat_as.ast /= Void then
-						editors_manager.current_editor.find_feature_named (feat_as.name)
-					end
-				else
-					if displayed_class.is_compiled then
-							-- We need to adapt E_FEATURE to the current displayed class
-							-- since we could manipulate the E_FEATURE of a descendant class
-							-- whose name is different from its definition in the displayed_class.
-							-- Fixes bug#11330.
-						l_feature := feat_as.ancestor_version (displayed_class.compiled_class)
-						if l_feature = Void then
-								-- It should not happen, but maybe the system is in a very unstable state.
-							l_feature := feat_as
-						end
-					else
+			if not managed_main_formatters.first.selected then
+					-- We are either in clickable mode or looking at a .NET class.
+				editors_manager.current_editor.find_feature_named (feat_as.name)
+			else
+				if displayed_class.is_compiled then
+						-- We need to adapt E_FEATURE to the current displayed class
+						-- since we could manipulate the E_FEATURE of a descendant class
+						-- whose name is different from its definition in the displayed_class.
+						-- Fixes bug#11330.
+					l_feature := feat_as.ancestor_version (displayed_class.compiled_class)
+					if l_feature = Void then
+							-- It should not happen, but maybe the system is in a very unstable state.
 						l_feature := feat_as
 					end
-					l_feat_as := l_feature.ast
-					if l_feat_as /= Void then
-						from
-							l_names := l_feat_as.feature_names
-							l_names.start
-						until
-							l_names.after or else
-							l_feature.name.is_case_insensitive_equal (l_names.item.internal_name.name)
-						loop
-							l_names.forth
-						end
-						if not l_names.after then
-							begin_index := l_names.item.start_position
-						else
-								-- Something wrong happened, the feature does not exist anymore.
-								-- We simply take the position of the first one.
-							begin_index := l_names.start_position
-						end
-						offset := relative_location_offset ([begin_index, 0], displayed_class)
-						editors_manager.current_editor.scroll_to_when_ready (begin_index - offset.start_offset)
-					end
+				else
+					l_feature := feat_as
 				end
-			else
-					-- Nothing for .NET features for now.
-				fixme ("It should be implemented.")
+				l_feat_as := l_feature.ast
+				if l_feat_as /= Void then
+					from
+						l_names := l_feat_as.feature_names
+						l_names.start
+					until
+						l_names.after or else
+						l_feature.name.is_case_insensitive_equal (l_names.item.internal_name.name)
+					loop
+						l_names.forth
+					end
+					if not l_names.after then
+						begin_index := l_names.item.start_position
+					else
+							-- Something wrong happened, the feature does not exist anymore.
+							-- We simply take the position of the first one.
+						begin_index := l_names.start_position
+					end
+					offset := relative_location_offset ([begin_index, 0], displayed_class)
+					editors_manager.current_editor.scroll_to_when_ready (begin_index - offset.start_offset)
+				end
 			end
 		end
 
@@ -1906,6 +1823,17 @@ feature {NONE} -- Recycle
 					managed_feature_formatters.item.recycle
 				end
 				managed_feature_formatters.forth
+			end
+
+			from
+				managed_dependency_formatters.start
+			until
+				managed_dependency_formatters.after
+			loop
+				if managed_dependency_formatters.item /= Void then
+					managed_dependency_formatters.item.recycle
+				end
+				managed_dependency_formatters.forth
 			end
 
 			from
@@ -2280,14 +2208,6 @@ feature {EB_DEVELOPMENT_WINDOW_BUILDER, EB_ADDRESS_MANAGER} -- Builder issues
 			set: managed_dependency_formatters = a_formatters
 		end
 
-	set_help_engine (a_engine: like help_engine) is
-			-- Set `help_engine'
-		do
-			help_engine := a_engine
-		ensure
-			set: help_engine = a_engine
-		end
-
 	set_container (a_container: like container) is
 			-- Set `container'
 		do
@@ -2462,7 +2382,8 @@ feature {EB_DEVELOPMENT_WINDOW_MAIN_BUILDER} -- Execution
 			end
 		end
 
-feature {EB_DEVELOPMENT_WINDOW_BUILDER, EB_DEVELOPMENT_WINDOW_DIRECTOR} -- Access
+feature {EB_DEVELOPMENT_WINDOW_BUILDER, EB_DEVELOPMENT_WINDOW_DIRECTOR, EB_DEBUGGER_MANAGER, EB_WINDOW_MANAGER,
+		EB_NEW_DEVELOPMENT_WINDOW_COMMAND} -- Access
 
 	development_window_data: EB_DEVELOPMENT_WINDOW_DATA is
 			-- Meta data describing `Current'.
@@ -2508,15 +2429,6 @@ feature {EB_DEVELOPMENT_WINDOW_PART}
 			set: context_refreshing_timer = a_timer
 		end
 
-feature -- Files (project)
-
-	project_docking_standard_file_name: !FILE_NAME
-			-- Docking config file name.
-		do
-			create Result.make_from_string (project_location.target_path)
-			Result.set_file_name (eiffel_layout.docking_standard_file)
-		end
-
 feature {NONE} -- Window management
 
 	frozen next_window_id: like window_id
@@ -2535,9 +2447,17 @@ feature {NONE} -- Window management
 
 feature {NONE} -- Internal implementation cache
 
-	internal_session_data: like session_data
-			-- Cached version of `session_data'
-			-- Note: Do not use directly
+	internal_session_data: ?like session_data
+			-- Cached version of `session_data'.
+			-- Note: Do not use directly!
+
+	internal_project_session_data: ?like project_session_data
+			-- Cached version of `project_session_data'.
+			-- Note: Do not use directly!
+
+	internal_layout_manager: ?like layout_manager
+			-- Cached version of `layout_manager'.
+			-- Note: Do not use directly!
 
 invariant
 	commands_attached: not is_recycled implies commands /= Void
@@ -2549,9 +2469,9 @@ invariant
 	window_id_positive: window_id > 0
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -2562,19 +2482,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
-
+			See the GNU General Public License for more details.
+			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

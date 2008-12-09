@@ -165,7 +165,7 @@ feature {NONE} -- Implementation functions
 					str.prepend ("* ")
 					develop_window.set_title (str)
 				else
-					develop_window.set_title (a_stone.header)
+					develop_window.set_title (a_stone.header.as_string_32)
 				end
 			else
 				develop_window.set_title (develop_window.Interface_names.t_empty_development_window)
@@ -314,7 +314,7 @@ feature {NONE} -- Implementation functions
 		local
 			l_selection: TUPLE [pos_start, pos_end: INTEGER]
 		do
-			if class_text_exists then
+			if class_text_exists or else dotnet_class then
 				if feature_stone /= Void and not develop_window.feature_stone_already_processed then  -- and not same_class then
 					conv_ferrst ?= feature_stone
 					if conv_ferrst /= Void then
@@ -471,22 +471,24 @@ feature {NONE} -- Implementation functions
 			if not class_text_exists then
 					--| Disable the textual formatter.
 				managed_main_formatters.first.disable_sensitive
-				if not text_loaded then
-					from
-						managed_main_formatters.start
-					until
-						managed_main_formatters.after
-					loop
-							--| Ted: Text might be changed
-						managed_main_formatters.item.set_stone (new_class_stone)
-						managed_main_formatters.forth
-					end
-					if not dotnet_class then
-						managed_main_formatters.i_th (2).execute
-					end
-				else
-					if not dotnet_class then
-						managed_main_formatters.i_th (2).enable_select
+				if not same_class then
+					if not text_loaded then
+						from
+							managed_main_formatters.start
+						until
+							managed_main_formatters.after
+						loop
+								--| Ted: Text might be changed
+							managed_main_formatters.item.set_stone (new_class_stone)
+							managed_main_formatters.forth
+						end
+						if not dotnet_class then
+							managed_main_formatters.i_th (2).execute
+						end
+					else
+						if not dotnet_class then
+							managed_main_formatters.i_th (2).enable_select
+						end
 					end
 				end
 			else
@@ -956,6 +958,8 @@ feature {NONE} -- Implementation functions
 					l_content.set_pixmap (l_factory.pixmap_from_class_i (l_class_stone.class_i))
 					l_content.set_short_title (l_class_stone.class_name)
 					l_content.set_long_title (l_class_stone.class_name)
+					-- We should synchronize title with editor saving state, see bug#14443
+					a_editor.set_title_saved_with (not a_editor.changed, l_class_stone.class_name)
 				elseif l_cluster_stone /= Void then
 					l_group := l_cluster_stone.group
 					l_content.set_pixmap (l_factory.pixmap_from_group (l_group))

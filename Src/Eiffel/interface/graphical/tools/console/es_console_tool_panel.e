@@ -18,14 +18,15 @@ inherit
 			Ev_application
 		redefine
 			make_with_tool,
-			clear, internal_recycle, scroll_to_end,set_focus,
+			clear,
+			internal_recycle,
+			internal_detach_entities,
+			scroll_to_end,set_focus,
 			quick_refresh_editor,quick_refresh_margin, is_general,
 			build_docking_content,
 			attach_to_docking_manager,
 			show
 		end
-
-	EB_SHARED_PIXMAPS
 
 	EB_EXTERNAL_OUTPUT_CONSTANTS
 
@@ -133,8 +134,8 @@ feature{NONE} -- Initialization
 			output_toolbar.extend (save_output_btn)
 
 			save_output_btn.set_tooltip (f_save_output_button)
-			save_output_btn.set_pixmap (pixmaps.icon_pixmaps.general_save_icon)
-			save_output_btn.set_pixel_buffer (pixmaps.icon_pixmaps.general_save_icon_buffer)
+			save_output_btn.set_pixmap (stock_pixmaps.general_save_icon)
+			save_output_btn.set_pixel_buffer (stock_pixmaps.general_save_icon_buffer)
 			save_output_btn.select_actions.extend (agent on_save_output_to_file)
 
 			clear_output_toolbar.extend (clear_output_btn)
@@ -198,13 +199,13 @@ feature{NONE} -- Initialization
 			l_ev_vertical_box_1.set_padding (4)
 			l_ev_vertical_box_1.set_border_width (4)
 
-			del_cmd_btn.set_pixmap (pixmaps.icon_pixmaps.general_delete_icon)
-			del_cmd_btn.set_pixel_buffer (pixmaps.icon_pixmaps.general_delete_icon_buffer)
+			del_cmd_btn.set_pixmap (stock_pixmaps.general_delete_icon)
+			del_cmd_btn.set_pixel_buffer (stock_pixmaps.general_delete_icon_buffer)
 			del_cmd_btn.set_tooltip (f_delete_command)
 			del_cmd_btn.select_actions.extend (agent on_delete_command)
 
-			clear_output_btn.set_pixmap (icon_pixmaps.general_reset_icon)
-			clear_output_btn.set_pixel_buffer (icon_pixmaps.general_reset_icon_buffer)
+			clear_output_btn.set_pixmap (stock_pixmaps.general_reset_icon)
+			clear_output_btn.set_pixel_buffer (stock_pixmaps.general_reset_icon_buffer)
 			clear_output_btn.set_tooltip (f_clear_output)
 			clear_output_btn.select_actions.extend (agent on_clear_output_window)
 
@@ -213,8 +214,8 @@ feature{NONE} -- Initialization
 			output_text.set_font (preferences.editor_data.font)
 			output_text.disable_edit
 
-			terminate_btn.set_pixmap (pixmaps.icon_pixmaps.debug_stop_icon)
-			terminate_btn.set_pixel_buffer (pixmaps.icon_pixmaps.debug_stop_icon_buffer)
+			terminate_btn.set_pixmap (stock_pixmaps.debug_stop_icon)
+			terminate_btn.set_pixel_buffer (stock_pixmaps.debug_stop_icon_buffer)
 			output_text.drop_actions.extend (agent drop_class)
 			output_text.drop_actions.extend (agent drop_feature)
 			output_text.drop_actions.extend (agent drop_cluster)
@@ -225,8 +226,8 @@ feature{NONE} -- Initialization
 
 			edit_cmd_detail_btn.set_text ("")
 			edit_cmd_detail_btn.set_tooltip (f_edit_cmd_detail_button)
-			edit_cmd_detail_btn.set_pixmap (pixmaps.icon_pixmaps.general_save_icon)
-			edit_cmd_detail_btn.set_pixel_buffer (pixmaps.icon_pixmaps.general_save_icon_buffer)
+			edit_cmd_detail_btn.set_pixmap (stock_pixmaps.general_save_icon)
+			edit_cmd_detail_btn.set_pixel_buffer (stock_pixmaps.general_save_icon_buffer)
 
 			state_label.set_minimum_height (State_bar_height)
 			state_label.align_text_right
@@ -235,8 +236,8 @@ feature{NONE} -- Initialization
 			state_label.drop_actions.extend (agent drop_cluster)
 			state_label.drop_actions.extend (agent drop_breakable)
 
-			run_btn.set_pixmap (pixmaps.icon_pixmaps.debug_run_icon)
-			run_btn.set_pixel_buffer (pixmaps.icon_pixmaps.debug_run_icon_buffer)
+			run_btn.set_pixmap (stock_pixmaps.debug_run_icon)
+			run_btn.set_pixel_buffer (stock_pixmaps.debug_run_icon_buffer)
 			run_btn.set_tooltip (f_start_command_button)
 			run_btn.select_actions.extend (agent on_run_process)
 
@@ -252,8 +253,8 @@ feature{NONE} -- Initialization
 			cmd_lst.drop_actions.extend (agent drop_cluster)
 			cmd_lst.drop_actions.extend (agent drop_breakable)
 
-			edit_cmd_detail_btn.set_pixmap (pixmaps.icon_pixmaps.general_add_icon)
-			edit_cmd_detail_btn.set_pixel_buffer (pixmaps.icon_pixmaps.general_add_icon_buffer)
+			edit_cmd_detail_btn.set_pixmap (stock_pixmaps.general_add_icon)
+			edit_cmd_detail_btn.set_pixel_buffer (stock_pixmaps.general_add_icon_buffer)
 			edit_cmd_detail_btn.select_actions.extend (agent on_edit_command_detail)
 
 			input_field.key_press_actions.extend (agent on_key_pressed_in_input_field (?))
@@ -263,8 +264,8 @@ feature{NONE} -- Initialization
 			input_field.drop_actions.extend (agent drop_cluster)
 			input_field.drop_actions.extend (agent drop_breakable)
 
-			send_input_btn.set_pixmap (icon_pixmaps.general_send_enter_icon)
-			send_input_btn.set_pixel_buffer (icon_pixmaps.general_send_enter_icon_buffer)
+			send_input_btn.set_pixmap (stock_pixmaps.general_send_enter_icon)
+			send_input_btn.set_pixel_buffer (stock_pixmaps.general_send_enter_icon_buffer)
 			send_input_btn.set_tooltip (f_send_input_button)
 			send_input_btn.select_actions.extend (agent on_send_input_btn_pressed)
 
@@ -504,19 +505,19 @@ feature{NONE} -- Actions
 				eb := corresponding_external_command
 				if eb /= Void then
 					edit_cmd_detail_btn.set_tooltip (f_edit_cmd_detail_button)
-					edit_cmd_detail_btn.set_pixmap (pixmaps.icon_pixmaps.view_editor_icon)
-					edit_cmd_detail_btn.set_pixel_buffer (pixmaps.icon_pixmaps.view_editor_icon_buffer)
+					edit_cmd_detail_btn.set_pixmap (stock_pixmaps.view_editor_icon)
+					edit_cmd_detail_btn.set_pixel_buffer (stock_pixmaps.view_editor_icon_buffer)
 				else
 					edit_cmd_detail_btn.set_tooltip (f_new_cmd_detail_button)
-					edit_cmd_detail_btn.set_pixmap (icon_pixmaps.general_add_icon)
-					edit_cmd_detail_btn.set_pixel_buffer (icon_pixmaps.general_add_icon_buffer)
+					edit_cmd_detail_btn.set_pixmap (stock_pixmaps.general_add_icon)
+					edit_cmd_detail_btn.set_pixel_buffer (stock_pixmaps.general_add_icon_buffer)
 				end
 			else
 				run_btn.disable_sensitive
 				del_cmd_btn.disable_sensitive
 				edit_cmd_detail_btn.set_tooltip (f_new_cmd_detail_button)
-				edit_cmd_detail_btn.set_pixmap (icon_pixmaps.general_add_icon)
-				edit_cmd_detail_btn.set_pixel_buffer (icon_pixmaps.general_add_icon_buffer)
+				edit_cmd_detail_btn.set_pixmap (stock_pixmaps.general_add_icon)
+				edit_cmd_detail_btn.set_pixel_buffer (stock_pixmaps.general_add_icon_buffer)
 			end
 		end
 
@@ -608,7 +609,7 @@ feature{NONE} -- Actions
 			l_text := input_field.text.twin
 			l_text.append ("%N")
 			if source_encoding /= Void then
-				l_string := utf16_to_console_encoding (source_encoding, l_text)
+				l_string := utf32_to_console_encoding (source_encoding, l_text)
 			end
 			if l_string = Void then
 					-- Conversion fails.
@@ -818,25 +819,24 @@ feature {NONE} -- Recycle
 	internal_recycle is
 			-- To be called before destroying this objects
 		do
-			recycle_widgets
-			external_output_manager.prune (Current)
-			toolbar.destroy
-			toolbar := Void
-			widget.destroy
-			widget := Void
-			text_area := Void
-			develop_window := Void
-			Precursor {ES_OUTPUT_TOOL_PANEL}
-		end
-
-	recycle_widgets is
-			-- Recycle widgets.
-		do
 			cmd_lst.destroy
 			state_label.destroy
 			main_frame.destroy
 			input_field.destroy
+			edit_external_commands_cmd_btn.recycle
+			external_output_manager.prune (Current)
+			toolbar.destroy
+			widget.destroy
+			Precursor {ES_OUTPUT_TOOL_PANEL}
+		end
 
+	internal_detach_entities is
+			-- <Precursor>
+		do
+			widget := Void
+			text_area := Void
+			develop_window := Void
+			toolbar := Void
 			terminate_btn := Void
 			run_btn := Void
 			state_label := Void
@@ -849,8 +849,8 @@ feature {NONE} -- Recycle
 			save_output_btn := Void
 			clear_output_btn := Void
 			del_cmd_btn := Void
-			edit_external_commands_cmd_btn.recycle
 			edit_external_commands_cmd_btn := Void
+			Precursor {ES_OUTPUT_TOOL_PANEL}
 		end
 
 feature {NONE} -- Implementation

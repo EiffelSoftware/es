@@ -15,7 +15,7 @@ inherit
 		export
 			{ICOR_OBJECTS_MANAGER} clean_on_dispose
 		redefine
-			init_icor, clean_on_dispose
+			clean_on_dispose
 		end
 
 	OPERATING_ENVIRONMENT
@@ -27,14 +27,6 @@ create {ICOR_OBJECTS_MANAGER, ICOR_DEBUG_ENUM_WITH_NEXT}
 	make_by_pointer
 
 feature {ICOR_EXPORTER} -- Access
-
-	init_icor is
-			--
-		do
-			Precursor
-			name := get_name
-			token := get_token
-		end
 
 	interface_md_import: like internal_md_import is
 			-- IMetaDataImport Interface current ICorDebugModule.
@@ -60,45 +52,45 @@ feature {ICOR_OBJECTS_MANAGER} -- Dispose
 
 feature {ICOR_EXPORTER} -- Meta Data queries
 
-	md_member_token_by_names (a_type_name: STRING; a_feat_name: STRING): INTEGER is
+	md_member_token_by_names (a_type_name: STRING; a_feat_name: STRING): NATURAL_32 is
 		local
-			l_type_token: INTEGER
+			l_type_token: NATURAL_32
 		do
 			l_type_token := interface_md_import.find_type_def_by_name (a_type_name, 0)
 			Result := md_member_token (l_type_token, a_feat_name)
 		end
 
-	md_class_token_by_type_name (a_type_name: STRING): INTEGER is
+	md_class_token_by_type_name (a_type_name: STRING): NATURAL_32 is
 			-- class token for full type name `a_type_name' using the Meta Data
 		do
 			Result := interface_md_import.find_type_def_by_name (a_type_name, 0)
 		end
 
-	md_member_token (a_class_token: INTEGER; a_feat_name: STRING): INTEGER is
+	md_member_token (a_class_token: NATURAL_32; a_feat_name: STRING): NATURAL_32 is
 			-- member token for type identified by `a_class_token' and `a_feat_name'
 		do
 			Result := interface_md_import.find_member (a_class_token, a_feat_name)
 		end
 
-	md_field_token (a_class_token: INTEGER; a_field_name: STRING): INTEGER is
+	md_field_token (a_class_token: NATURAL_32; a_field_name: STRING): NATURAL_32 is
 			-- field token for type identified by `a_class_token' and `a_field_name'
 		do
 			Result := interface_md_import.find_field (a_class_token, a_field_name)
 		end
 
-	md_feature_token (a_class_token: INTEGER; a_name: STRING): INTEGER is
+	md_feature_token (a_class_token: NATURAL_32; a_name: STRING): NATURAL_32 is
 			-- Function or Method token
 		do
 			Result := interface_md_import.find_method (a_class_token, a_name)
 		end
 
-	md_type_name (a_class_token: INTEGER): STRING is
+	md_type_name (a_class_token: NATURAL_32): STRING is
 			-- Type (Class) name for `a_class_token'.
 		do
 			Result := interface_md_import.get_typedef_props (a_class_token)
 		end
 
-	md_member_name (a_feat_token: INTEGER): STRING is
+	md_member_name (a_feat_token: NATURAL_32): STRING is
 			-- (Feature) name for `a_feat_token'.
 		local
 			t: TUPLE [name:STRING; f:INTEGER]
@@ -112,16 +104,26 @@ feature {ICOR_EXPORTER} -- Meta Data queries
 feature {ICOR_EXPORTER} -- Access
 
 	name: STRING
-
-	token: INTEGER
+			-- Module's name
+		do
+			Result := private_name
+			if Result = Void then
+				Result := get_name
+				private_name := Result
+			else
+				last_call_success := 0
+			end
+		end
 
 	module_name: STRING is
 			-- Only the module name
 			-- remove the path
+		require
+			name_attached: name /= Void
 		local
 			l_pos: INTEGER
 		do
-			Result := get_name
+			Result := name
 			l_pos := Result.last_index_of (Directory_separator, Result.count)
 			if l_pos > 0 then
 				Result := Result.substring (l_pos + 1, Result.count)
@@ -139,7 +141,7 @@ feature {ICOR_EXPORTER} -- Access
 			create en.make_from_string (n)
 			en.append (".dll")
 
-			mn := get_name
+			mn := name
 			from
 				Result := mn.count >= n.count + 4 -- i.e: (n + ".dll").count				
 				i := mn.count - 4
@@ -152,6 +154,11 @@ feature {ICOR_EXPORTER} -- Access
 				j := j - 1
 			end
 		end
+
+feature {NONE} -- Access
+
+	private_name: like name
+			-- Module's name
 
 feature {ICOR_DEBUG_MODULE} -- Restricted Access	
 
@@ -186,7 +193,7 @@ feature {ICOR_EXPORTER} -- Access
 			success: last_call_success = 0
 		end
 
-	get_base_address: INTEGER is
+	get_base_address: NATURAL_64 is
 		do
 			last_call_success := cpp_get_base_address (item, $Result)
 		ensure
@@ -201,25 +208,6 @@ feature {ICOR_EXPORTER} -- Access
 			last_call_success := cpp_get_assembly (item, $p)
 			if p /= default_pointer then
 				create Result.make_by_pointer (p)
-			end
-		ensure
-			success: last_call_success = 0
-		end
-
-	get_name: STRING is
-			-- GetName returns the name of the Module
-		local
-			p_cchname: INTEGER
-			mp_name: MANAGED_POINTER
-		do
-			last_call_success := 0
-			Result := name
-			if Result = Void then
-				create mp_name.make (256 * 2)
-
-				last_call_success := cpp_get_name (item, 256, $p_cchname, mp_name.item)
-				Result := (create {UNI_STRING}.make_by_pointer (mp_name.item)).string
-				name := Result
 			end
 		ensure
 			success: last_call_success = 0
@@ -251,7 +239,7 @@ feature {ICOR_EXPORTER} -- Access
 			success: last_call_success = 0
 		end
 
-	get_function_from_token (a_token: INTEGER): ICOR_DEBUG_FUNCTION is
+	get_function_from_token (a_token: NATURAL_32): ICOR_DEBUG_FUNCTION is
 		local
 			p: POINTER
 		do
@@ -268,7 +256,7 @@ feature {ICOR_EXPORTER} -- Access
 --			success: last_call_success = 0
 		end
 
-	get_class_from_token (a_token: INTEGER): ICOR_DEBUG_CLASS is
+	get_class_from_token (a_token: NATURAL_32): ICOR_DEBUG_CLASS is
 		local
 			p: POINTER
 		do
@@ -297,7 +285,7 @@ feature {ICOR_EXPORTER} -- Access
 			success: last_call_success = 0
 		end
 
-	get_token: INTEGER is
+	get_token: NATURAL_32 is
 		do
 			last_call_success := cpp_get_token (item, $Result)
 		ensure
@@ -307,10 +295,10 @@ feature {ICOR_EXPORTER} -- Access
 	is_dynamic: BOOLEAN is
 			-- Is dynamic ?
 		local
-			l_result: INTEGER
+			r: INTEGER
 		do
-			last_call_success := cpp_is_dynamic (item, $l_result)
-			Result := l_result /= 0 --| TRUE = 1 , FALSE = 0
+			last_call_success := cpp_is_dynamic (item, $r)
+			Result := r /= 0 --| TRUE = 1 , FALSE = 0
 		ensure
 			success: last_call_success = 0
 		end
@@ -327,7 +315,7 @@ feature {ICOR_EXPORTER} -- Access
 --			success: last_call_success = 0
 --		end
 
-	get_size: INTEGER is
+	get_size: NATURAL_32 is
 		do
 			last_call_success := cpp_get_size (item, $Result)
 		ensure
@@ -338,17 +326,34 @@ feature {ICOR_EXPORTER} -- Access
 			-- If this is a module that exists only in the debuggee's memory,
 	 		-- then `is_in_memory' will be set to TRUE
 		local
-			l_result: INTEGER
+			r: INTEGER
 		do
-			last_call_success := cpp_is_in_memory (item, $l_result)
-			Result := l_result /= 0 --| TRUE = 1 , FALSE = 0
+			last_call_success := cpp_is_in_memory (item, $r)
+			Result := r /= 0 --| TRUE = 1 , FALSE = 0
+		ensure
+			success: last_call_success = 0
+		end
+
+feature {NONE} -- Access
+
+	get_name: STRING is
+			-- GetName returns the name of the Module
+		local
+			p_cchname: NATURAL_32
+			mp_name: MANAGED_POINTER
+		do
+			last_call_success := 0
+			create mp_name.make (256 * 2)
+
+			last_call_success := cpp_get_name (item, 256, $p_cchname, mp_name.item)
+			Result := (create {UNI_STRING}.make_by_pointer (mp_name.item)).string
 		ensure
 			success: last_call_success = 0
 		end
 
 feature {ICOR_EXPORTER} -- Implementation
 
-	frozen cpp_get_process (obj: POINTER; a_p: POINTER): INTEGER is
+	frozen cpp_get_process (obj: POINTER; a_p: TYPED_POINTER [POINTER]): INTEGER is
 		external
 			"[
 				C++ ICorDebugModule signature(ICorDebugProcess**): EIF_INTEGER 
@@ -358,7 +363,7 @@ feature {ICOR_EXPORTER} -- Implementation
 			"GetProcess"
 		end
 
-	frozen cpp_get_base_address (obj: POINTER; a_p: POINTER): INTEGER is
+	frozen cpp_get_base_address (obj: POINTER; a_p: TYPED_POINTER [NATURAL_64]): INTEGER is
 		external
 			"[
 				C++ ICorDebugModule signature(CORDB_ADDRESS*): EIF_INTEGER 
@@ -368,7 +373,7 @@ feature {ICOR_EXPORTER} -- Implementation
 			"GetBaseAddress"
 		end
 
-	frozen cpp_get_assembly (obj: POINTER; a_p: POINTER): INTEGER is
+	frozen cpp_get_assembly (obj: POINTER; a_p: TYPED_POINTER [POINTER]): INTEGER is
 		external
 			"[
 				C++ ICorDebugModule signature(ICorDebugAssembly**): EIF_INTEGER 
@@ -378,7 +383,7 @@ feature {ICOR_EXPORTER} -- Implementation
 			"GetAssembly"
 		end
 
-	frozen cpp_get_name (obj: POINTER; a_cchname: INTEGER; a_pcchname: POINTER; a_szname: POINTER): INTEGER is
+	frozen cpp_get_name (obj: POINTER; a_cchname: NATURAL_32; a_pcchname: TYPED_POINTER [NATURAL_32]; a_szname: POINTER): INTEGER is
 		external
 			"[
 				C++ ICorDebugModule signature(ULONG32, ULONG32 *, WCHAR*): EIF_INTEGER 
@@ -408,7 +413,7 @@ feature {ICOR_EXPORTER} -- Implementation
 			"EnableClassLoadCallbacks"
 		end
 
-	frozen cpp_get_function_from_token (obj: POINTER; a_token: INTEGER; a_p_function: POINTER): INTEGER is
+	frozen cpp_get_function_from_token (obj: POINTER; a_token: NATURAL_32; a_p_function: TYPED_POINTER [POINTER]): INTEGER is
 		external
 			"[
 				C++ ICorDebugModule signature(mdMethodDef, ICorDebugFunction**): EIF_INTEGER 
@@ -418,7 +423,7 @@ feature {ICOR_EXPORTER} -- Implementation
 			"GetFunctionFromToken"
 		end
 
-	frozen cpp_get_class_from_token (obj: POINTER; a_token: INTEGER; a_p: POINTER): INTEGER is
+	frozen cpp_get_class_from_token (obj: POINTER; a_token: NATURAL_32; a_p: TYPED_POINTER [POINTER]): INTEGER is
 		external
 			"[
 				C++ ICorDebugModule signature(mdTypeDef, ICorDebugClass**): EIF_INTEGER 
@@ -428,7 +433,7 @@ feature {ICOR_EXPORTER} -- Implementation
 			"GetClassFromToken"
 		end
 
-	frozen cpp_create_breakpoint (obj: POINTER; a_p: POINTER): INTEGER is
+	frozen cpp_create_breakpoint (obj: POINTER; a_p: TYPED_POINTER [POINTER]): INTEGER is
 		external
 			"[
 				C++ ICorDebugModule signature(ICorDebugModuleBreakpoint**): EIF_INTEGER 
@@ -438,7 +443,7 @@ feature {ICOR_EXPORTER} -- Implementation
 			"CreateBreakpoint"
 		end
 
-	frozen cpp_get_meta_data_interface (obj: POINTER; a_refiid: POINTER; a_result_p: POINTER): INTEGER is
+	frozen cpp_get_meta_data_interface (obj: POINTER; a_refiid: POINTER; a_result_p: TYPED_POINTER [POINTER]): INTEGER is
 			--	 * Return a meta data interface pointer that can be used to examine the
 			--	 * meta data for this module.
 		external
@@ -450,7 +455,7 @@ feature {ICOR_EXPORTER} -- Implementation
 			"GetMetaDataInterface"
 		end
 
-	frozen cpp_get_token (obj: POINTER; a_p: POINTER): INTEGER is
+	frozen cpp_get_token (obj: POINTER; a_p: TYPED_POINTER [NATURAL_32]): INTEGER is
 		external
 			"[
 				C++ ICorDebugModule signature(mdModule*): EIF_INTEGER 
@@ -460,7 +465,7 @@ feature {ICOR_EXPORTER} -- Implementation
 			"GetToken"
 		end
 
-	frozen cpp_is_dynamic (obj: POINTER; a_result: POINTER): INTEGER is
+	frozen cpp_is_dynamic (obj: POINTER; a_result: TYPED_POINTER [INTEGER]): INTEGER is
 		external
 			"[
 				C++ ICorDebugModule signature(BOOL*): EIF_INTEGER 
@@ -470,7 +475,7 @@ feature {ICOR_EXPORTER} -- Implementation
 			"IsDynamic"
 		end
 
-	frozen cpp_get_global_variable_value (obj: POINTER; a_index: INTEGER; a_p: POINTER): INTEGER is
+	frozen cpp_get_global_variable_value (obj: POINTER; a_index: NATURAL_32; a_p: TYPED_POINTER [POINTER]): INTEGER is
 		external
 			"[
 				C++ ICorDebugModule signature(mdFieldDef, ICorDebugValue**): EIF_INTEGER 
@@ -480,7 +485,7 @@ feature {ICOR_EXPORTER} -- Implementation
 			"GetGlobalVariableValue"
 		end
 
-	frozen cpp_get_size (obj: POINTER; a_result: POINTER): INTEGER is
+	frozen cpp_get_size (obj: POINTER; a_result: TYPED_POINTER [NATURAL_32]): INTEGER is
 		external
 			"[
 				C++ ICorDebugModule signature(ULONG32*): EIF_INTEGER 
@@ -490,7 +495,7 @@ feature {ICOR_EXPORTER} -- Implementation
 			"GetSize"
 		end
 
-	frozen cpp_is_in_memory (obj: POINTER; a_result: POINTER): INTEGER is
+	frozen cpp_is_in_memory (obj: POINTER; a_result: TYPED_POINTER [INTEGER]): INTEGER is
 		external
 			"[
 				C++ ICorDebugModule signature(BOOL*): EIF_INTEGER 
@@ -502,7 +507,7 @@ feature {ICOR_EXPORTER} -- Implementation
 
 feature {NONE} -- IID ...
 
-	cpp_get_MetaDataImport_interface (a_obj: POINTER; a_ptr: POINTER): INTEGER is
+	cpp_get_MetaDataImport_interface (a_obj: POINTER; a_ptr: TYPED_POINTER [POINTER]): INTEGER is
 			--	 * Return a MetaDataImport interface pointer that can be used to examine the
 			--	 * meta data for this module.
 		external

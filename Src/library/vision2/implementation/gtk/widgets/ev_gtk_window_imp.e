@@ -108,7 +108,7 @@ feature {NONE} -- Implementation
 	width: INTEGER
 			-- Width of `Current'.
 		do
-			if configure_event_pending then
+			if configure_event_pending or not is_displayed then
 				{EV_GTK_EXTERNALS}.gtk_window_get_default_size (c_object, $Result, default_pointer)
 				Result := Result.max (minimum_width)
 			else
@@ -119,7 +119,7 @@ feature {NONE} -- Implementation
 	height: INTEGER
 			-- Height of `Current'.
 		do
-			if configure_event_pending then
+			if configure_event_pending or not is_displayed then
 				{EV_GTK_EXTERNALS}.gtk_window_get_default_size (c_object, default_pointer, $Result)
 				Result := Result.max (minimum_height)
 			else
@@ -182,6 +182,8 @@ feature {NONE} -- Implementation
 
 	hide is
 			-- Hide `Current'.
+		local
+			l_x_pos, l_y_pos, l_width, l_height: INTEGER_32
 		do
 			if is_show_requested then
 				if
@@ -192,11 +194,22 @@ feature {NONE} -- Implementation
 				then
 					internal_blocking_window.decrease_modal_window_count
 				end
+
+				l_x_pos := x_position
+				l_y_pos := y_position
+				l_width := width
+				l_height := height
+
 				is_modal := False
 				set_blocking_window (Void)
+					-- Set the default size so that the
 				{EV_GTK_EXTERNALS}.gtk_widget_hide (c_object)
 					-- Force an immediate hide so that the event loop is not relied upon to unmap `Current'.
 				{EV_GTK_EXTERNALS}.gdk_window_hide ({EV_GTK_EXTERNALS}.gtk_widget_struct_window (c_object))
+
+					-- Reset the size and position to emulate Win32 behavior.
+				{EV_GTK_EXTERNALS}.gtk_window_set_default_size (c_object, l_width, l_height)
+				{EV_GTK_EXTERNALS}.gtk_window_move (c_object, l_x_pos, l_y_pos)
 			end
 		end
 
@@ -284,6 +297,7 @@ feature {EV_INTERMEDIARY_ROUTINES, EV_APPLICATION_IMP}
 			l_accel_called: BOOLEAN
 			l_window_imp: EV_WINDOW_IMP
 			a_focus_widget: EV_WIDGET_IMP
+			l_standard_dialog: EV_STANDARD_DIALOG_IMP
 			l_tab_controlable: EV_TAB_CONTROLABLE_I
 			l_disable_default_processing: BOOLEAN
 			l_char: CHARACTER_32
@@ -295,8 +309,22 @@ feature {EV_INTERMEDIARY_ROUTINES, EV_APPLICATION_IMP}
 			l_app_imp := app_implementation
 				-- Perform translation on key values from gdk.
 			keyval := {EV_GTK_EXTERNALS}.gdk_event_key_struct_keyval (a_key_event)
-			if keyval > 0 and then valid_gtk_code (keyval) then
-				create a_key.make_with_code (key_code_from_gtk (keyval))
+			if keyval > 0 then
+				if not valid_gtk_code (keyval) then
+						-- We perform mapping for F11 and F12 keys on Solaris with Type 4 keyboards.
+					if keyval = 0x1005FF10 then
+							-- If Sun_F36 has been pressed then map it to F11 key
+						keyval := {EV_GTK_KEY_CONVERSION}.key_f11_keysym
+					elseif keyval = 0x1005FF11 then
+							-- If Sun_F37 has been pressed then map it to F12 key
+						keyval := {EV_GTK_KEY_CONVERSION}.key_f12_keysym
+					else
+						keyval := 0
+					end
+				end
+				if keyval > 0 then
+					create a_key.make_with_code (key_code_from_gtk (keyval))
+				end
 			end
 			if {EV_GTK_EXTERNALS}.gdk_event_key_struct_type (a_key_event) = {EV_GTK_EXTERNALS}.gdk_key_press_enum then
 				a_key_press := True
@@ -310,7 +338,7 @@ feature {EV_INTERMEDIARY_ROUTINES, EV_APPLICATION_IMP}
 						if l_accel /= Void then
 							l_accel_imp ?= l_accel.implementation
 								-- We retrieve an accelerator implementation object to generate an accelerator id for hash table lookup.
-							l_accel := l_window_imp.accel_list.item (l_accel_imp.generate_accel_id (a_key, l_app_imp.ctrl_pressed, l_app_imp.alt_pressed, l_app_imp.shift_pressed))
+							l_accel := l_window_imp.accel_list.item (l_accel_imp.hash_code_function (a_key.code, l_app_imp.ctrl_pressed, l_app_imp.alt_pressed, l_app_imp.shift_pressed))
 							if l_accel /= Void then
 								l_accel_called := True
 								l_app_imp.do_once_on_idle (agent (l_accel.actions).call (Void))
@@ -357,6 +385,9 @@ feature {EV_INTERMEDIARY_ROUTINES, EV_APPLICATION_IMP}
 			if a_focus_widget = Void then
 					-- If the focus widget is not available then set it to the current window.
 				a_focus_widget ?= l_any
+				if a_focus_widget = Void then
+					l_standard_dialog ?= l_any
+				end
 			end
 			if a_focus_widget /= Void and then a_focus_widget.is_sensitive and then a_focus_widget.has_focus then
 				if a_key /= Void then
@@ -388,7 +419,7 @@ feature {EV_INTERMEDIARY_ROUTINES, EV_APPLICATION_IMP}
 					end
 					if not l_disable_default_processing then
 							-- If `a_focus_widget' is disabling default processing then
-							-- we don't call top level window events. 
+							-- we don't call top level window events.
 						on_key_event (a_key, a_key_string, a_key_press)
 					end
 					if a_focus_widget /= l_any then
@@ -397,6 +428,10 @@ feature {EV_INTERMEDIARY_ROUTINES, EV_APPLICATION_IMP}
 					end
 				end
 			else
+				if l_standard_dialog /= Void and then a_key_press then
+						-- Standard dialogs are not widgets and have to be handled separately.
+					l_standard_dialog.on_key_event (a_key, a_key_string, a_key_press)
+				end
 					-- Execute the gdk event as normal.
 				{EV_GTK_EXTERNALS}.gtk_main_do_event (a_key_event)
 			end
@@ -408,6 +443,12 @@ feature {EV_INTERMEDIARY_ROUTINES, EV_APPLICATION_IMP}
 		end
 
 feature {EV_ANY_I} -- Implementation
+
+	on_size_allocate (a_x, a_y, a_width, a_height: INTEGER_32)
+			-- GdkEventConfigure event occurred.
+		do
+			configure_event_pending := False
+		end
 
 	forbid_resize is
 			-- Forbid the resize of the window.

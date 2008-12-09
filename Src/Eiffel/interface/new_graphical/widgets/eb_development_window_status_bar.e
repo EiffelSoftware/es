@@ -87,6 +87,9 @@ feature {NONE} -- Initialization
 			mg.load_agents.extend (load_agent)
 			mg.compile_start_agents.extend (compile_start_agent)
 			mg.compile_stop_agents.extend (compile_stop_agent)
+
+			compiling_icon_index := 1
+			running_icon_index := 1
 		end
 
 	build_interface is
@@ -378,7 +381,7 @@ feature {NONE} -- Implementation: event handling
 			else
 				debugger_icon.set_background_color (debugger_cell.background_color)
 				debugger_icon.clear
-				debugger_icon.draw_pixmap (0, 0, pixmaps.icon_running.item (1))
+				debugger_icon.draw_pixmap (0, 0, pixmaps.icon_pixmaps.run_animation_anim.item (1))
 			end
 		end
 
@@ -540,38 +543,42 @@ feature {NONE} -- Implementation
 			project_label.set_text (s)
 		end
 
-	update_running_icon is
+	update_running_icon
 			-- Change the "running" icon to the next pixmap.
 		local
-			p: EV_PIXMAP
+			l_anim: !ARRAY [!EV_PIXMAP]
 		do
 				--| We do not check every time that the `use_animated_icons'
 				--| preference is still set.
 				--| 2 reasons: efficiency, consistency (in the other direction
 				--| the preference is only effective at the next run).
-			running_icon_index := (running_icon_index + 1)
-			if running_icon_index > 5 then
-				running_icon_index := 1
-			end
-			p := Pixmaps.Icon_running.item (running_icon_index)
+			l_anim := pixmaps.icon_pixmaps.run_animation_anim
 			debugger_icon.set_background_color (debugger_cell.background_color)
 			debugger_icon.clear
-			debugger_icon.draw_pixmap (0, 0, p)
+			debugger_icon.draw_pixmap (0, 0, l_anim.item (running_icon_index))
+
+			running_icon_index := running_icon_index + 1
+			if running_icon_index > l_anim.count then
+				running_icon_index := 1
+			end
 		end
 
-	update_compiling_icon is
+	update_compiling_icon
 			-- Change the "compiling" icon to the next pixmap.
 		local
-			p: EV_PIXMAP
+			l_anim: !ARRAY [!EV_PIXMAP]
 		do
-			compiling_icon_index := (compiling_icon_index + 1)
-			if compiling_icon_index > 10 then
-				compiling_icon_index := 1
-			end
-			p := pixmaps.icon_compiling.item (compiling_icon_index)
+			l_anim := pixmaps.icon_pixmaps.compile_animation_anim
 			compilation_icon.set_background_color (debugger_cell.background_color)
 			compilation_icon.clear
-			compilation_icon.draw_pixmap (0, 0, p)
+			compilation_icon.draw_pixmap (0, 0, l_anim.item (compiling_icon_index.min (l_anim.count)))
+
+			compiling_icon_index := compiling_icon_index + 1
+				-- We use + 2 to ensure there is a small delay before a cycle.
+				-- This is only done on the compilation icon
+			if compiling_icon_index > l_anim.count + 2 then
+				compiling_icon_index := 1
+			end
 		end
 
 	use_animated_icons: BOOLEAN is
@@ -591,6 +598,10 @@ feature {NONE} -- Implementation
 
 	compiling_timer: EV_TIMEOUT;
 			-- Timer that updates the "compiling" icon.
+
+invariant
+	compiling_icon_index_positive: compiling_icon_index > 0
+	running_icon_index_positive: running_icon_index > 0
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

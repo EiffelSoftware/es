@@ -686,7 +686,7 @@ feature {NONE} -- Implementation
 		rescue
 			l_domain_generator := domain_generator_internal
 			if l_domain_generator.error_handler.has_error then
-				display_status_message (l_domain_generator.error_handler.error_list.last.out)
+				display_status_message (l_domain_generator.error_handler.error_list.last.text)
 			end
 		end
 
@@ -697,9 +697,13 @@ feature {NONE} -- Implementation
 		do
 			l_domain_generator := domain_generator_internal
 			if l_domain_generator.error_handler.has_error then
-				display_status_message (l_domain_generator.error_handler.error_list.last.out)
+				display_status_message (l_domain_generator.error_handler.error_list.last.text)
 			else
-				display_status_message (tag_name)
+				if {lt_ex: UNICODE_MESSAGE_EXCEPTION}exception_manager.last_exception.original then
+					display_status_message (lt_ex.unicode_message)
+				else
+					display_status_message (tag_name)
+				end
 			end
 		end
 
@@ -725,6 +729,9 @@ feature {NONE} -- Recycle
 			show_percent_btn.recycle
 			uninstall_agents (metric_tool)
 			uninstall_metric_history_agent
+			metric_selector.recycle
+			domain_selector.recycle
+			metric_definer.recycle
 		end
 
 feature{NONE} -- Actions

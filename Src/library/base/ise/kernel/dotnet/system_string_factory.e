@@ -8,7 +8,7 @@ class
 
 feature -- Conversion
 
-	from_string_to_system_string (a_str: STRING_GENERAL): SYSTEM_STRING is
+	from_string_to_system_string (a_str: READABLE_STRING_GENERAL): SYSTEM_STRING is
 			-- Convert `a_str' to an instance of SYSTEM_STRING.
 		require
 			is_dotnet: {PLATFORM}.is_dotnet
@@ -62,6 +62,38 @@ feature -- Conversion
 					a_result.put_code (a_str.chars (i).natural_32_code, i + 1)
 					i := i + 1
 				end
+			end
+		end
+
+	read_system_string_into_area_8 (a_str: SYSTEM_STRING; a_area: SPECIAL [CHARACTER_8]) is
+			-- Fill `a_result' with `a_str' content.
+		require
+			is_dotnet: {PLATFORM}.is_dotnet
+			a_str_not_void: a_str /= Void
+			a_area_not_void: a_area /= Void
+			a_area_valid: a_area.count >= a_str.length
+		do
+			a_str.copy_to (0, a_area.native_array, 0, a_str.length)
+		end
+
+	read_system_string_into_area_32 (a_str: SYSTEM_STRING; a_area: SPECIAL [CHARACTER_32]) is
+			-- Fill `a_area' with `a_str' content.
+		require
+			is_dotnet: {PLATFORM}.is_dotnet
+			a_str_not_void: a_str /= Void
+			a_area_not_void: a_area /= Void
+			a_area_valid: a_area.count >= a_str.length
+		local
+			i, nb: INTEGER
+		do
+			from
+				i := 0
+				nb := a_str.length
+			until
+				i = nb
+			loop
+				a_area.put (a_str.chars (i), i)
+				i := i + 1
 			end
 		end
 

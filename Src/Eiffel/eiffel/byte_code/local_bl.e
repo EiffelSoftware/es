@@ -1,7 +1,7 @@
 indexing
+	description: "Enlarged access to a local."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
--- Enlarged access to a local
 
 class LOCAL_BL
 
@@ -13,6 +13,21 @@ inherit
 			analyze, generate, propagate,
 			used, parent, set_parent
 		end;
+
+create {LOCAL_B}
+	make
+
+feature {NONE} -- Creation
+
+	make (l: LOCAL_B)
+			-- Make node from local `l'.
+		require
+			l_attached: l /= Void
+		do
+			multi_constraint_static := l.multi_constraint_static
+			position := l.position
+			type := l.type
+		end
 
 feature
 
@@ -46,27 +61,19 @@ feature
 			end;
 		end;
 
-	fill_from (l: LOCAL_B) is
-			-- Fill in node from local `l'
-		do
-			multi_constraint_static := l.multi_constraint_static
-			position := l.position;
-			type := l.type;
-		end;
-
 	analyze is
 			-- Mark local as used
 		do
-			context.mark_local_used (position);
+			context.mark_local_used (position)
 			if c_type.is_pointer then
-				context.set_local_index (register_name, Current);
-			end;
-		end;
+				context.set_local_index (register_name, Current)
+			end
+		end
 
-	generate is
-			-- Do nothing
+	generate
+			-- Do nothing.
 		do
-		end;
+		end
 
 	free_register is
 			-- Do nothing
@@ -74,7 +81,7 @@ feature
 		end
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

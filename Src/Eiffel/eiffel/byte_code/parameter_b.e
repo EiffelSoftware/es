@@ -54,6 +54,9 @@ feature -- Access
 			-- Is type of the corresponding argument
 			-- of the routine seed formal?
 
+	is_for_tuple_access: BOOLEAN
+			-- Is current used for setting a tuple element?
+
 	parent: ACCESS_B
 			-- Feature which is called with this parameter
 
@@ -82,6 +85,14 @@ feature -- Modification
 			-- Set parent of this parameter to `p'.
 		do
 			parent := p
+		end
+
+	set_is_for_tuple_access (v: BOOLEAN)
+			-- Set `is_for_tuple_access' with `v'.
+		do
+			is_for_tuple_access := v
+		ensure
+			is_for_tuple_access_set: is_for_tuple_access = v
 		end
 
 feature -- Status report
@@ -143,7 +154,7 @@ feature -- Status report
 	target_type_name: STRING is
 			-- Name of the target C type
 		do
-			if is_compaund then
+			if is_compound then
 				Result := "EIF_TYPED_VALUE"
 			else
 				Result := real_type (attachment_type).c_type.c_string
@@ -193,14 +204,14 @@ feature -- Inlining
 
 feature {NONE} -- Status report
 
-	is_compaund: BOOLEAN is
+	is_compound: BOOLEAN is
 			-- Shall a structure be used to pass the argument value?
 		do
-			Result := context.workbench_mode
+			Result := context.workbench_mode and not is_for_tuple_access
 		end
 
 indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

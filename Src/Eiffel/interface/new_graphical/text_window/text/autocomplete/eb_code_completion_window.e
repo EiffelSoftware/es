@@ -33,7 +33,8 @@ inherit
 			on_key_released,
 			set_expanded_row_icon,
 			show,
-			is_applicable_item
+			is_applicable_item,
+			exit
 		end
 
 	EB_CONSTANTS
@@ -61,6 +62,14 @@ inherit
 	EB_CONTEXT_MENU_HANDLER
 		undefine
 			default_create, copy
+		end
+
+	PLATFORM
+		export
+			{NONE} all
+		undefine
+			default_create,
+			copy
 		end
 
 create
@@ -635,6 +644,7 @@ feature {NONE} -- Recyclable
 			preferences.editor_data.show_completion_obsolete_items_preference.change_actions.prune (show_completion_obsolete_items_agent)
 			preferences.development_window_data.remember_completion_list_size_preference.change_actions.prune_all (remember_window_size_agent)
 			unregister_accelerator_preference_change_actions
+			choice_list.recycle
 		end
 
 	unregister_accelerator_preference_change_actions is
@@ -675,6 +685,7 @@ feature {NONE} -- Implementation
 			-- Process displayable character key press event.
 		local
 			c: CHARACTER
+			l_closed: BOOLEAN
 		do
 			if character_string.count = 1 then
 				c := character_string.item (1).to_character_8
@@ -687,9 +698,21 @@ feature {NONE} -- Implementation
 				elseif not code_completable.unwanted_characters.item (c.code) then
 					if not code_completable.completion_activator_characters.has (c) then
 						close_and_complete
+						l_closed := True
+					elseif code_completable.has_selection then
+						code_completable.go_to_end_of_line
 					end
 					if not code_completable.has_selection then
+							-- |FIXME: Work around on Unix to get the same behavior as Windows. Vision2 GTK issue.
+						if not l_closed and then is_unix then
+							focus_out_actions.block
+							choice_list.focus_out_actions.block
+						end
 						code_completable.handle_character (c)
+							-- |FIXME: Work around on Unix to get the same behavior as Windows. Vision2 GTK issue.
+						if not l_closed and then is_unix then
+							ev_application.do_once_on_idle (agent verify_display)
+						end
 					end
 					if not code_completable.completion_activator_characters.has (c) then
 						exit
@@ -773,11 +796,29 @@ feature {NONE} -- Implementation
 				end
 			end
 			exit
-			code_completable.block_focus_in_actions
+		end
+
+	exit is
+			-- Cancel autocomplete
+		do
+			Precursor
 			if code_completable.is_focus_back_needed then
-				code_completable.set_focus
+				code_completable.post_focus_back
 			end
-			code_completable.resume_focus_in_actions
+		end
+
+	verify_display is
+			-- Verify display and focus on current window.
+			-- Resume focus out actions.
+			-- |FIXME: This is a work around on Unix.
+		do
+			if not choice_list.has_focus then
+				show
+				ev_application.do_once_on_idle (agent verify_display)
+			else
+				focus_out_actions.resume
+				choice_list.focus_out_actions.resume
+			end
 		end
 
 	complete_feature is
@@ -785,7 +826,7 @@ feature {NONE} -- Implementation
 		local
 			local_feature: EB_FEATURE_FOR_COMPLETION
 			l_name_item: like name_type
-			local_name: STRING
+			local_name: STRING_GENERAL
 			l_row: EV_GRID_ROW
 		do
 			if not choice_list.selected_rows.is_empty then
@@ -807,13 +848,13 @@ feature {NONE} -- Implementation
 					if l_name_item.has_dot then
 						local_name := l_name_item.full_insert_name
 					else
-						local_name := " " + l_name_item.full_insert_name
+						local_name := (" ").as_string_32 + l_name_item.full_insert_name
 					end
 				else
 					if l_name_item.has_dot then
 						local_name := l_name_item.insert_name
 					else
-						local_name := " " + l_name_item.insert_name
+						local_name := (" ").as_string_32 + l_name_item.insert_name
 					end
 				end
 				code_completable.complete_feature_from_window (local_name, True, character_to_append, remainder, continue_completion)
@@ -831,7 +872,7 @@ feature {NONE} -- Implementation
 		local
 			l_row: EV_GRID_ROW
 			l_name_item: NAME_FOR_COMPLETION
-			local_name: STRING
+			local_name: STRING_GENERAL
 		do
 			if not choice_list.selected_rows.is_empty then
 				l_row := choice_list.selected_rows.first
@@ -877,9 +918,9 @@ feature {NONE} -- Implementation
 			-- Did the last inserted completed feature name contain arguments?
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -890,19 +931,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

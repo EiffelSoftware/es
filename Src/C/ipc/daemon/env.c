@@ -39,6 +39,9 @@
 */
 
 #include "eif_config.h"
+
+#ifdef EIF_WINDOWS
+
 #include "eif_file.h"
 #include "rt_assert.h"
 
@@ -79,7 +82,7 @@ char *win_eif_getenv (char *k, char *app)
 		CHECK ("Valid length", key_len <= INT32_MAX);
 		CharLowerBuff (lower_k, (DWORD) key_len);
 	
-		strcpy (key, "Software\\ISE\\Eiffel62\\");
+		strcpy (key, "Software\\ISE\\Eiffel63\\");
 		if (app == NULL)
 			strncat (key, strrchr(modulename, '\\')+1, appl_len);
 		else
@@ -123,3 +126,5 @@ char *win_eif_getenv (char *k, char *app)
 		return (char *) buf;
 	}
 }
+
+#endif

@@ -86,6 +86,7 @@ feature -- Byte code generation
 	make_special_byte_code (ba: BYTE_ARRAY; basic_type: BASIC_A) is
 			-- Make byte code for special calls.
 		do
+			special_routines.make_byte_code (ba, basic_type)
 		end
 
 	real_feature_id (a_context_type: CL_TYPE_A): INTEGER is
@@ -253,9 +254,7 @@ feature -- Byte code generation
 				if precursor_type /= Void then
 						-- Use dynamic type of parent instead
 						-- of dynamic type of Current.
-					buf.put_string ("RTUD(")
 					buf.put_static_type_id (cl_type_i.static_type_id (context.context_class_type.type))
-					buf.put_character (')')
 				else
 					context.generate_current_dtype
 				end
@@ -312,6 +311,12 @@ feature -- Byte code generation
 			end
 		end
 
+	special_routines: SPECIAL_FEATURES is
+			-- Array containing special routines.
+		once
+			create Result
+		end
+
 	generate_special_feature (reg: REGISTRABLE; basic_type: BASIC_A) is
 			-- Generate code for special routines (is_equal, copy ...).
 			-- (Only for feature calls)
@@ -319,6 +324,7 @@ feature -- Byte code generation
 			reg_not_void: reg /= Void
 			basic_type_not_void: basic_type /= Void
 		do
+			special_routines.generate (buffer, basic_type, reg, parameters)
 		end
 
 	is_feature_special (compilation_type: BOOLEAN; target_type: BASIC_A): BOOLEAN is
@@ -500,7 +506,7 @@ feature {NONE} -- Implementation
 		end
 
 indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

@@ -205,22 +205,29 @@ feature -- Redefine
 		local
 			l_brush: WEL_BRUSH
 		do
-			if a_state /= {SD_TOOL_BAR_ITEM_STATE}.normal and theme_data = default_pointer then
-				if a_state = {SD_TOOL_BAR_ITEM_STATE}.pressed then
-					draw_flat_button_edge_pressed (a_dc, a_rect)
-				elseif a_state = {SD_TOOL_BAR_ITEM_STATE}.checked then
-					a_dc.draw_frame_control (a_rect, Wel_drawing_constants.dfcs_button3state, Wel_drawing_constants.dfcs_checked)
-					draw_flat_button_edge_hot_pressed (a_dc, a_rect)
-				elseif a_state = {SD_TOOL_BAR_ITEM_STATE}.hot_checked then
-					draw_flat_button_edge_pressed (a_dc, a_rect)
-				else
-					draw_flat_button_edge_hot (a_dc, a_rect)
+			-- If "theme_data = default_pointer" it means we are in classic theme
+			if theme_data = default_pointer then
+				if a_state /= {SD_TOOL_BAR_ITEM_STATE}.normal then
+					if a_state = {SD_TOOL_BAR_ITEM_STATE}.pressed then
+						draw_flat_button_edge_pressed (a_dc, a_rect)
+					elseif a_state = {SD_TOOL_BAR_ITEM_STATE}.checked then
+						a_dc.draw_frame_control (a_rect, Wel_drawing_constants.dfcs_button3state, Wel_drawing_constants.dfcs_checked)
+						draw_flat_button_edge_hot_pressed (a_dc, a_rect)
+					elseif a_state = {SD_TOOL_BAR_ITEM_STATE}.hot_checked then
+						draw_flat_button_edge_pressed (a_dc, a_rect)
+					else
+						draw_flat_button_edge_hot (a_dc, a_rect)
+					end
+				elseif a_part_constant = {WEL_THEME_PART_CONSTANTS}.tp_separator or a_part_constant = {WEL_THEME_PART_CONSTANTS}.tp_separatorvert then
+					draw_classic_separator (a_dc, a_rect, a_part_constant)
 				end
 			end
+
 			create l_brush.make_solid (a_dc.background_color)
 			if theme_data /= default_pointer then
 				theme_drawer.draw_theme_background (theme_data, a_dc, a_part_constant, a_state, a_rect, Void, l_brush)
 			end
+			l_brush.delete
 		end
 
 	on_wm_theme_changed is
@@ -315,13 +322,13 @@ feature {NONE} -- Implementation
 			if l_button /= Void and then l_button.pixel_buffer /= Void and l_button.tool_bar /= Void then
 				if not a_arguments.item.is_sensitive then
 					arguments := a_arguments
-					dc_to_draw := a_dc_to_draw
+
 					pixmap_coordinate := l_button.pixmap_position
-					desaturation_pixel_buffer (l_button.pixel_buffer)
+					desaturation_pixel_buffer (l_button.pixel_buffer, a_dc_to_draw)
 
 					if l_dropdown_button /= Void then
 						pixmap_coordinate.set_x (l_dropdown_button.dropdown_left)
-						desaturation_pixel_buffer (l_dropdown_button.dropdown_pixel_buffer)
+						desaturation_pixel_buffer (l_dropdown_button.dropdown_pixel_buffer, a_dc_to_draw)
 					end
 				else
 					create l_graphics.make_from_dc (a_dc_to_draw)
@@ -356,6 +363,10 @@ feature {NONE} -- Implementation
 			l_orignal_pixmap, l_grey_pixmap: EV_PIXMAP
 
 			l_imp: EV_PIXMAP_IMP
+			l_is_src_bitmap_32bits: BOOLEAN
+			l_blend_function: WEL_BLEND_FUNCTION
+			l_result: BOOLEAN
+			l_source_bitmap_dc: WEL_MEMORY_DC
 		do
 			l_button ?= a_arguments.item
 			if l_button /= Void and then l_button.pixmap /= Void and l_button.tool_bar /= Void then
@@ -367,9 +378,9 @@ feature {NONE} -- Implementation
 					check l_imp /= Void end
 
 					arguments := a_arguments
-					dc_to_draw := a_dc_to_draw
+
 					pixmap_coordinate := l_button.pixmap_position
-					desaturation (l_grey_pixmap, 1)
+					desaturation (l_grey_pixmap, 1, a_dc_to_draw)
 
 					l_pixmap_state ?= l_grey_pixmap.implementation
 				else
@@ -385,7 +396,26 @@ feature {NONE} -- Implementation
 				l_coordinate := l_button.pixmap_position
 
 				if a_arguments.item.is_sensitive then
-					theme_drawer.draw_bitmap_on_dc (a_dc_to_draw, l_wel_bitmap, l_mask_bitmap, l_coordinate.x, l_coordinate.y, True)
+					l_is_src_bitmap_32bits := (l_wel_bitmap.log_bitmap.bits_pixel = 32)
+					if l_is_src_bitmap_32bits and then (l_wel_bitmap.is_made_by_dib or l_wel_bitmap.ppv_bits /= default_pointer) then
+						create l_source_bitmap_dc.make_by_dc (a_dc_to_draw)
+						l_source_bitmap_dc.select_bitmap (l_wel_bitmap)
+
+						create l_blend_function.make
+						l_result := a_dc_to_draw.alpha_blend (l_coordinate.x, l_coordinate.y, l_wel_bitmap.width, l_wel_bitmap.height, l_source_bitmap_dc, 0, 0, l_wel_bitmap.width, l_wel_bitmap.height, l_blend_function)
+						check
+							successed: l_result = True
+						end
+						check
+							not_shared: not l_blend_function.shared
+						end
+						l_blend_function.dispose
+
+						l_source_bitmap_dc.unselect_bitmap
+						l_source_bitmap_dc.delete
+					else
+						theme_drawer.draw_bitmap_on_dc (a_dc_to_draw, l_wel_bitmap, l_mask_bitmap, l_coordinate.x, l_coordinate.y, True)
+					end
 				end
 
 				l_wel_bitmap.decrement_reference
@@ -396,9 +426,6 @@ feature {NONE} -- Implementation
 		end
 
 	arguments: SD_TOOL_BAR_DRAWER_ARGUMENTS
-			-- Temp arguments during draw desartuated tool bar icons.
-
-	dc_to_draw: WEL_DC
 			-- Temp arguments during draw desartuated tool bar icons.
 
 	pixmap_coordinate: EV_COORDINATE
@@ -477,8 +504,12 @@ feature {NONE} -- Implementation
 				or Result = {WEL_THEME_PART_CONSTANTS}.tp_separator
 		end
 
-	desaturation (a_pixmap: EV_PIXMAP; a_k: REAL) is
+	desaturation (a_pixmap: EV_PIXMAP; a_k: REAL; a_dc_to_draw: WEL_DC) is
 			-- Desatuation `a_pixmap' with `a_k' when Gdi+ is not available.
+		require
+			valid: 0 <= a_k  and a_k <= 1
+			not_void: a_pixmap /= Void
+			not_void: a_dc_to_draw /= Void and then a_dc_to_draw.exists
 		local
 			l_intensity: REAL
 			l_wel_dc: WEL_MEMORY_DC
@@ -516,11 +547,14 @@ feature {NONE} -- Implementation
 			end
 			l_wel_dc.delete
 
-			dc_to_draw.draw_bitmap (l_bitmap_imp.get_bitmap, pixmap_coordinate.x, pixmap_coordinate.y, a_pixmap.width, a_pixmap.height)
+			a_dc_to_draw.draw_bitmap (l_bitmap_imp.get_bitmap, pixmap_coordinate.x, pixmap_coordinate.y, a_pixmap.width, a_pixmap.height)
 		end
 
-	desaturation_pixel_buffer (a_pixel_buffer: EV_PIXEL_BUFFER) is
+	desaturation_pixel_buffer (a_pixel_buffer: EV_PIXEL_BUFFER; a_dc_to_draw: WEL_DC) is
 			-- Disaturation `a_pixel_buffer' when Gdi+ is available.
+		require
+			not_void: a_pixel_buffer /= Void
+			not_void: a_dc_to_draw /= Void and then a_dc_to_draw.exists
 		local
 			l_image: WEL_GDIP_BITMAP
 			l_imp: EV_PIXEL_BUFFER_IMP
@@ -529,7 +563,7 @@ feature {NONE} -- Implementation
 			check not_void: l_imp /= Void end
 			l_image := l_imp.gdip_bitmap
 
-			grayscale_icon_drawer.draw_grayscale_bitmap (l_image, dc_to_draw, pixmap_coordinate.x, pixmap_coordinate.y)
+			grayscale_icon_drawer.draw_grayscale_bitmap (l_image, a_dc_to_draw, pixmap_coordinate.x, pixmap_coordinate.y)
 		end
 
 	grayscale_icon_drawer: WEL_GDIP_GRAYSCALE_IMAGE_DRAWER
@@ -538,6 +572,40 @@ feature {NONE} -- Implementation
 			create Result
 		ensure
 			not_void: Result /= Void
+		end
+
+	draw_classic_separator (a_dc: WEL_DC; a_rect: WEL_RECT; a_part_constant: INTEGER) is
+			-- Draw separator for classic theme
+		require
+			not_void: a_dc /= Void
+			not_void: a_rect /= Void
+			valid: a_part_constant = {WEL_THEME_PART_CONSTANTS}.tp_separator or a_part_constant = {WEL_THEME_PART_CONSTANTS}.tp_separatorvert
+		local
+			l_drawer: SD_CLASSIC_THEME_DRAWER
+			l_color: WEL_COLOR_REF
+			l_middle: INTEGER
+			l_border: INTEGER
+		do
+			create l_drawer
+			l_border := 3
+
+			if a_part_constant = {WEL_THEME_PART_CONSTANTS}.tp_separator then
+				l_middle := a_rect.width // 2
+
+				l_color := l_drawer.rshadow
+				l_drawer.draw_line (a_dc, a_rect.left + l_middle - 1, a_rect.top + l_border, a_rect.left + l_middle - 1, a_rect.bottom - l_border, l_color)
+
+				l_color := l_drawer.rhighlight
+				l_drawer.draw_line (a_dc, a_rect.left + l_middle, a_rect.top + l_border, a_rect.left + l_middle, a_rect.bottom - l_border, l_color)
+			elseif a_part_constant = {WEL_THEME_PART_CONSTANTS}.tp_separatorvert then
+				l_middle := a_rect.height // 2
+
+				l_color := l_drawer.rshadow
+				l_drawer.draw_line (a_dc, a_rect.left + l_border, a_rect.top + l_middle - 1, a_rect.right - l_border, a_rect.top + l_middle - 1, l_color)
+
+				l_color := l_drawer.rhighlight
+				l_drawer.draw_line (a_dc, a_rect.left + l_border, a_rect.top + l_middle, a_rect.right - l_border, a_rect.top + l_middle, l_color)
+			end
 		end
 
 	draw_flat_button_edge_hot (a_dc: WEL_DC; a_rect: WEL_RECT) is

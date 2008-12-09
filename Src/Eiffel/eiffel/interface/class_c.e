@@ -764,7 +764,7 @@ feature -- Skeleton processing
 							-- Recompile generic derivations that depend on `class_type' as
 							-- `clients' does not include them.
 						from
-							class_types := system.class_types
+							class_types := system.class_types.area
 							i := class_types.lower
 							n := class_types.upper
 						until
@@ -1395,6 +1395,9 @@ feature -- Parent checking
 						vtcg4.set_parent_type (parent_actual_type)
 						fixme ("Shouldn't we be able to provide a location?")
 						error_handler.insert_error (vtcg4)
+					else
+							-- We need to check named tuple labels. This fixes eweasel test#tuple012.
+						parent_actual_type.check_labels (Current, Void)
 					end
 				end
 
@@ -1477,8 +1480,6 @@ feature -- Supplier checking
 
 	check_that_root_class_is_not_deferred is
 		-- Check non-genericity of root class
-		require
-			is_root_class: Current = System.root_class.compiled_class
 		local
 			l_vsrt3: VSRT3
 		do
@@ -1490,28 +1491,30 @@ feature -- Supplier checking
 			end
 		end
 
-	check_root_class_creators is
+	check_root_class_creators (a_creator: STRING; a_type: CL_TYPE_A) is
 			-- Check creation procedures of root class
+			--
+			-- Note: if `a_creator' is empty and default_create is a valid creation procedure in `Current',
+			--       `a_creator' will get the propriate default creation name appended.
 		require
-			is_root: Current = System.root_type.associated_class
+			a_creator_not_void: a_creator /= Void
+			a_type_not_void: a_type /= Void
 		local
 			l_creation_proc: FEATURE_I
-			l_system_creation: STRING
 			l_error: BOOLEAN
 			l_vsrp2: VSRP2
 			l_arg_type: TYPE_A
 			l_vd27: VD27
 			l_feat_tbl: like feature_table
 		do
-			l_system_creation := System.root_creation_name
-			if creators /= Void and l_system_creation/= Void then
+			if creators /= Void and not a_creator.is_empty then
 				l_feat_tbl := feature_table
 				from
 					creators.start
 				until
 					creators.after
 				loop
-					if l_system_creation.is_equal (creators.key_for_iteration) then
+					if a_creator.is_equal (creators.key_for_iteration) then
 							-- `creators.key_for_iteration' contains the creation_name
 						l_creation_proc := l_feat_tbl.item (creators.key_for_iteration)
 
@@ -1521,8 +1524,8 @@ feature -- Supplier checking
 							l_error := False
 						when 1 then
 							l_arg_type ?= l_creation_proc.arguments.first
-							l_arg_type := l_arg_type.instantiation_in (system.root_type, class_id).actual_type
-							l_error := not l_arg_type.is_safe_equivalent (Array_of_string)
+							l_arg_type := l_arg_type.instantiation_in (a_type, class_id).actual_type
+							l_error := not array_of_string.conform_to (l_arg_type)
 						else
 							l_error := True
 						end
@@ -1530,11 +1533,11 @@ feature -- Supplier checking
 						if l_error then
 							create l_vsrp2
 							l_vsrp2.set_class (Current)
-							l_vsrp2.set_root_type (system.root_type)
+							l_vsrp2.set_root_type (a_type)
 								-- Need duplication otherwise we would change the original FEATURE_I
 								-- object while displaying the error.
 							l_creation_proc := l_creation_proc.duplicate
-							l_creation_proc.instantiation_in (system.root_type)
+							l_creation_proc.instantiation_in (a_type)
 							l_vsrp2.set_creation_feature (l_creation_proc)
 							Error_handler.insert_error (l_vsrp2)
 						end
@@ -1543,24 +1546,24 @@ feature -- Supplier checking
 				end
 			end
 
-			if l_system_creation /= Void and then creators = Void then
+			if not a_creator.is_empty and creators = Void then
 					-- Check default create
 				l_creation_proc := default_create_feature
-				if not l_creation_proc.feature_name.is_equal (l_system_creation) then
+				if not l_creation_proc.feature_name.is_equal (a_creator) then
 					create l_vd27
-					l_vd27.set_creation_routine (l_system_creation)
+					l_vd27.set_creation_routine (a_creator)
 					l_vd27.set_root_class (Current)
 					Error_handler.insert_error (l_vd27)
 				end
-			elseif l_system_creation /= Void and then not creators.has (l_system_creation) then
+			elseif not a_creator.is_empty and not creators.has (a_creator) then
 				create l_vd27
-				l_vd27.set_creation_routine (l_system_creation)
+				l_vd27.set_creation_routine (a_creator)
 				l_vd27.set_root_class (Current)
 				Error_handler.insert_error (l_vd27)
-			elseif l_system_creation = Void then
+			elseif a_creator.is_empty then
 				if allows_default_creation then
-						-- Set creation_name in System
-					System.set_creation_name (default_create_feature.feature_name)
+						-- Redefine creation procedure
+					a_creator.append (default_create_feature.feature_name)
 				else
 					create l_vd27
 					l_vd27.set_creation_routine ("")
@@ -1579,11 +1582,16 @@ feature -- Supplier checking
 			string_type: CL_TYPE_A
 		once
 			create string_type.make (System.string_8_id)
+			string_type.set_attached_mark
 			create array_generics.make (1, 1)
 			array_generics.put (string_type, 1)
 			create Result.make (System.array_id, array_generics)
+			Result.set_attached_mark
 		ensure
 			array_of_string_not_void: Result /= Void
+			result_is_attached: Result.is_attached
+			result_has_generic: Result.generics.count = 1
+			result_g_is_attached: Result.generics.item (1).is_attached
 		end
 
 feature -- Order relation for inheritance and topological sort
@@ -1603,8 +1611,21 @@ feature -- Order relation for inheritance and topological sort
 						-- Check conformance table
 		end
 
+	inherits_from (other: CLASS_C): BOOLEAN is
+			-- Is `other' a conforming/non-conforming ancestor of `Current'?
+			-- Returns True if `other' is `Current'.
+		require
+			good_argument: other /= Void
+		do
+			Result := conform_to (other)
+			if not Result then
+					-- Loop through all ancestors to check non-conforming parents.
+				Result := inherits_from_internal (other)
+			end
+		end
+
 	conform_to (other: CLASS_C): BOOLEAN is
-			-- Is `other' an ancestor of Current ?
+			-- Is `other' a conforming ancestor of Current ?
 		require
 			good_argument: other /= Void
 		local
@@ -2306,8 +2327,7 @@ end
 					r_attached: r /= Void
 				end
 				a ?= r
---				if False then
---					-- TODO: see GEN_TYPE_A.enumerate_interfaces
+					-- TODO: see GEN_TYPE_A.enumerate_interfaces
 				if a = Void and then system.is_precompiled then
 						-- Register all types where expanded parameters are replaced with reference ones.
 					t := r.generics
@@ -2437,6 +2457,7 @@ feature -- Meta-type
 			conformance: class_type.associated_class.conform_to (Current) or else True --| FIXME IEK: Create inherits_from routine in CLASS_C for non-conforming inheritance.
 		local
 			actual_class_type, written_actual_type: CL_TYPE_A
+			associated_class: CLASS_C
 		do
 			if class_type.type.class_id = class_id then
 					-- Use supplied `class_type' to preserve expandedness status, generic parameters, etc.
@@ -2445,12 +2466,13 @@ feature -- Meta-type
 					-- No instantiation for non-generic class
 				Result := types.first
 			else
+				associated_class := class_type.associated_class
 					-- FIXME: Manu 2007/09/13: This way of finding the class type in descendant
 					-- is clearly not the best way as it is slow since we are creating a new TYPE_A
 					-- instance just to find its associated type id. The better way would be to
 					-- iterate through the generics of Current and find a CLASS_TYPE instances.
 					-- See eweasel test#valid045 to see the slowness.
-				actual_class_type := class_type.associated_class.actual_type
+				actual_class_type := associated_class.actual_type
 					-- General instantiation of the actual class type where
 					-- the feature is written in the context of the actual
 					-- type of the base class of `class_type'.
@@ -2502,6 +2524,17 @@ feature -- Validity class
 				then
 					error_handler.insert_error (
 						create {SPECIAL_ERROR}.make ("Class ANY must have a function `twin' with no arguments", Current))
+				end
+				l_feature := feature_table.item_id (names_heap.copy_name_id)
+				if
+					l_feature = Void or else
+					l_feature.argument_count /= 1 or else
+					not l_feature.arguments.i_th (1).is_like_current or else
+					not l_feature.arguments.i_th (1).actual_argument_type (l_feature.arguments).is_reference or else
+					not l_feature.type.is_void
+				then
+					error_handler.insert_error (
+						create {SPECIAL_ERROR}.make ("Class ANY must have a procedure `copy' with 1 argument of the type `like Current' or of a reference type", Current))
 				end
 			end
 		end
@@ -2788,6 +2821,42 @@ feature -- Properties
 	direct_descendants_internal: like direct_descendants
 			-- One per object storage for direct descendants.
 
+	descendents_with_changed_replicated_features (a_changed_class: CLASS_C): LINKED_LIST [CLASS_C]
+			-- Descendents of `Current' that have replicated features.
+		require
+			a_changed_class_not_void: a_changed_class /= Void
+		local
+			l_direct_descendents: like direct_descendants_internal
+			l_result: LINKED_LIST [CLASS_C]
+		do
+			l_direct_descendents := direct_descendants_internal
+
+			if l_direct_descendents /= Void then
+				from
+					l_direct_descendents.start
+				until
+					l_direct_descendents.after
+				loop
+					l_result := l_direct_descendents.item.descendents_with_changed_replicated_features (a_changed_class)
+					if l_result /= Void then
+						if Result = Void then
+							Result := l_result
+						else
+							Result.append (l_result)
+						end
+					end
+					l_direct_descendents.forth
+				end
+			end
+			if replicated_features_list /= Void then
+					--| FIXME Use `a_current_class' to optimize whether replicated features are from there originally.
+				if Result = Void then
+					create Result.make
+				end
+				Result.extend (Current)
+			end
+		end
+
 	clients: ARRAYED_LIST [CLASS_C]
 			-- Clients of the class
 
@@ -2803,7 +2872,7 @@ feature -- Properties
 			-- Indexed by `rout_id' of formal generic parameter.
 			-- Updated during `pass2' of INHERIT_TABLE.
 
-	anchored_features: like generic_features
+	anchored_features: HASH_TABLE [TYPE_FEATURE_I, INTEGER]
 			-- Collect all features that are used for creating or doing an assignment
 			-- attempt in current or in an inherited class.
 			-- Indexed by `rout_id' of feature on which anchor is done.
@@ -2891,8 +2960,13 @@ feature -- Properties
 			-- Class text
 		require
 			valid_file_name: file_name /= Void
+		local
+			l_text: STRING_32
 		do
-			Result := lace_class.text
+			l_text := lace_class.text
+			if l_text /= Void then
+				Result := l_text.as_string_8
+			end
 		end
 
 	constraint_classes (a_formal_dec: FORMAL_DEC_AS) : ARRAY [CLASS_C] is
@@ -3190,17 +3264,17 @@ feature -- Access
 			end
 		end
 
-	feature_with_name (n: STRING): E_FEATURE is
+	frozen feature_with_name (n: STRING): E_FEATURE is
 			-- Feature whose internal name is `n'
 		require
 			valid_n: n /= Void
 			has_feature_table: has_feature_table
 		local
-			f: FEATURE_I
+			l_id: INTEGER
 		do
-			f := feature_table.item (n)
-			if f /= Void then
-				Result := f.api_feature (class_id)
+			l_id := names_heap.id_of (n)
+			if l_id > 0 then
+				Result := feature_with_name_id (l_id)
 			end
 		end
 
@@ -3423,6 +3497,37 @@ feature -- Access
 				feat := f_table.item_for_iteration
 				if feat.is_once then
 					Result.put_front (feat.api_feature (cid))
+				end
+				f_table.forth
+			end
+			Result.sort
+		ensure
+			non_void_result: Result /= Void
+			result_sorted: Result.sorted
+		end
+
+	constant_features: SORTED_TWO_WAY_LIST [E_CONSTANT] is
+			-- List of constant features.
+		local
+			f_table: FEATURE_TABLE
+			feat: FEATURE_I
+			cid: INTEGER
+		do
+			cid := class_id
+			create Result.make
+			f_table := feature_table
+			from
+				f_table.start
+			until
+				f_table.after
+			loop
+				feat := f_table.item_for_iteration
+				if feat.is_constant then
+					if {e_cst: E_CONSTANT} feat.api_feature (cid) then
+						Result.put_front (e_cst)
+					else
+						check invalid_constant_feature: False end
+					end
 				end
 				f_table.forth
 			end
@@ -3784,7 +3889,7 @@ feature -- Genericity
 							-- in current class.
 						l_parent_formal := l_generic_features.item_for_iteration
 						l_formal := l_parent_formal.duplicate
-						l_formal.set_type (l_formal.type.instantiated_in (l_parents.item))
+						l_formal.set_type (l_formal.type.instantiated_in (l_parents.item), 0)
 						l_formal.set_is_origin (False)
 						if l_old /= Void and then l_old.has (l_formal.rout_id_set.first) then
 							l_formal.set_feature_id (
@@ -3801,6 +3906,9 @@ feature -- Genericity
 								-- generic parameter.
 							l_formal.set_written_in (class_id)
 						end
+
+							-- We recompute the proper pattern.
+						l_formal.process_pattern
 
 						extend_generic_features (l_formal)
 						l_generic_features.forth
@@ -3844,7 +3952,7 @@ feature -- Genericity
 
 						create l_formal
 						l_formal.set_feature_name ("_" + name + "_Formal#" + i.out)
-						l_formal.set_type (l_formal_type)
+						l_formal.set_type (l_formal_type, 0)
 						l_formal.set_written_in (class_id)
 						l_formal.set_origin_class_id (class_id)
 
@@ -3856,11 +3964,13 @@ feature -- Genericity
 							create l_rout_id_set.make
 							l_rout_id_set.put (l_formal.new_rout_id)
 							l_formal.set_feature_id (feature_id_counter.next)
+							system.rout_info_table.put (l_rout_id_set.first, Current)
 						end
 						l_formal.set_rout_id_set (l_rout_id_set)
 						l_formal.set_is_origin (True)
 						l_formal.set_position (i)
 						l_formal.set_origin_feature_id (l_formal.feature_id)
+						l_formal.process_pattern
 						l_generic_features.put (l_formal, l_rout_id_set.first)
 					end
 					i := i + 1
@@ -3990,7 +4100,7 @@ feature -- Anchored types
 					l_feat := l_select.item_for_iteration
 
 					create l_anchor
-					l_anchor.set_type (l_feat.type.actual_type)
+					l_anchor.set_type (l_feat.type.actual_type, 0)
 					l_anchor.set_written_in (class_id)
 
 					create l_rout_id_set.make
@@ -4243,6 +4353,19 @@ feature {DEGREE_4, DEGREE_3} -- Used by degree 4 and 3 to compute new assertions
 			assert_prop_list_set: assert_prop_list = l
 		end
 
+feature {DEGREE_4, ORIGIN_TABLE, AST_FEATURE_REPLICATION_GENERATOR} -- Used by degree 4 for replication propagation
+
+	replicated_features_list: LINKED_LIST [INTEGER]
+			-- List of routine ids that are replicated in `Current'.
+
+	set_replicated_features_list (l: like replicated_features_list)
+			-- Set `replicated_featurs_list' to `l'
+		do
+			replicated_features_list := l
+		ensure
+			replicated_features_list_set: replicated_features_list = l
+		end
+
 feature {DEGREE_3} -- Degree 3
 
 	add_to_degree_3 is
@@ -4372,6 +4495,29 @@ feature -- output
 			Result.append (l_name)
 		end
 
+feature {CLASS_C} -- Implementation
+
+	inherits_from_internal (other: CLASS_C): BOOLEAN is
+			-- Is `other' a conforming/non-conforming ancestor of `Current'?
+		require
+			good_argument: other /= Void
+		local
+			l_parent_classes: like parents_classes
+			i, l_count: INTEGER
+		do
+			Result := other = Current
+			l_parent_classes := parents_classes
+			from
+				i := 1
+				l_count := l_parent_classes.count
+			until
+				Result or else i > l_count
+			loop
+				Result := l_parent_classes [i].inherits_from_internal (other)
+				i := i + 1
+			end
+		end
+
 feature {NONE} -- Implementation
 
 	internal_feature_table_file_id: INTEGER
@@ -4467,5 +4613,10 @@ indexing
 		]"
 
 end -- class CLASS_C
+
+
+
+
+
 
 

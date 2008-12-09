@@ -33,6 +33,8 @@ inherit
 
 	EVS_UTILITY
 
+	EB_RECYCLABLE
+
 create
 	make_with_grid
 
@@ -41,7 +43,7 @@ feature {NONE} -- Initialization
 	make_with_grid (a_grid: like grid) is
 			-- Initialize `grid' with `a_grid'.
 		do
-			Precursor {EVS_GRID_PND_SUPPORT}(a_grid)
+			Precursor {EVS_GRID_PND_SUPPORT} (a_grid)
 			a_grid.set_configurable_target_menu_mode
 			a_grid.set_configurable_target_menu_handler (agent context_menu_handler)
 		end
@@ -69,8 +71,8 @@ feature -- Access
 			l_token: EB_GRID_EDITOR_TOKEN_ITEM
 		do
 			create l_token
-			l_border_height := l_token.top_border + l_token.bottom_border + l_token.border_line_width * 2
-			l_pixmap_height := (create {EB_SHARED_PIXMAPS}).icon_pixmaps.pixel_height
+			l_border_height := l_token.top_border + l_token.bottom_border + l_token.border_line_width * 2 - 1
+			l_pixmap_height := (create {EB_SHARED_PIXMAPS}).icon_pixmaps.icon_height
 
 			if a_preferenced_font_used then
 				Result := (create {SHARED_EDITOR_FONT}).line_height
@@ -320,8 +322,21 @@ feature{NONE} -- Implementation
 			end
 		end
 
-invariant
-	grid_attached: grid /= Void
+feature {NONE} -- Memory Management
+
+	internal_recycle
+			-- <precursor>
+		do
+			if on_color_or_font_change_agent_internal /= Void then
+				desynchronize_color_or_font_change_with_editor
+			end
+			if on_scroll_behavior_change_agent_internal /= Void then
+				desynchronize_scroll_behavior_with_editor
+			end
+			if on_pointer_right_click_agent_internal /= Void then
+				disable_ctrl_right_click_to_open_new_window
+			end
+		end
 
 indexing
         copyright:	"Copyright (c) 1984-2006, Eiffel Software"

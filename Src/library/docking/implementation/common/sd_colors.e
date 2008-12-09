@@ -153,69 +153,71 @@ feature -- Implementation
 			loop
 				l_tool_bar ?= l_tool_bars.item (l_i)
 				check  not_void: l_tool_bar /= Void end
-				l_tool_bar.set_background_color (internal_shared.default_background_color)
+				if not l_tool_bar.is_destroyed then
+					l_tool_bar.set_background_color (internal_shared.default_background_color)
+				end
 				l_i := l_i + 1
 			end
 		end
-		
+
 	non_focused_color_cell: CELL [EV_COLOR] is
 			-- Singelton cell for `non_focus_color'
 		once
-			create Result
+			create Result.put (Void)
 		end
 
 	non_focused_title_color_cell: CELL [EV_COLOR] is
 			-- Singleton cell for `non_focused_title_color'
 		once
-			create Result
+			create Result.put (Void)
 		end
 
 	non_focused_title_text_color_cell: CELL [EV_COLOR] is
 			-- Singleton cell for `non_focused_title_text_color'
 		once
-			create Result
+			create Result.put (Void)
 		end
 
 	non_focused_color_lightness_cell: CELL [EV_COLOR] is
 			-- Singleton cell for `non_focused_color_lightness'
 		once
-			create Result
+			create Result.put (Void)
 		end
 
 	focused_color_cell: CELL [EV_COLOR] is
 			-- Singleton cell for `focused_color_cell'
 		once
-			create Result
+			create Result.put (Void)
 		end
 
 	focused_title_text_color_cell: CELL [EV_COLOR] is
 			-- Singleton cell for `focused_title_text_color'
 		once
-			create Result
+			create Result.put (Void)
 		end
 
 	active_border_color_cell: CELL [EV_COLOR] is
 			-- Singleton cell for `active_border_color'
 		once
-			create Result
+			create Result.put (Void)
 		end
 
 	tab_text_color_cell: CELL [EV_COLOR] is
 			-- Singleton cell for `tab_text_color'
 		once
-			create Result
+			create Result.put (Void)
 		end
 
 	tool_tip_color_cell:CELL [EV_COLOR] is
 			-- Singleton cell for `tool_tip_color'
 		once
-			create Result
+			create Result.put (Void)
 		end
 
 	default_background_color_cell: CELL [EV_COLOR] is
 			-- Singletone cell for `default_background_color'
 		once
-			create Result
+			create Result.put (Void)
 		end
 
 	internal_shared: SD_SHARED
@@ -226,7 +228,7 @@ invariant
 
 indexing
 	library:	"SmartDocking: Library of reusable components for Eiffel."
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			 Eiffel Software

@@ -38,6 +38,14 @@ inherit
 			out
 		end
 
+--inherit {NONE}
+	ES_SHARED_LOCALE_FORMATTER
+		export
+			{NONE} all
+		redefine
+			out
+		end
+
 feature {NONE} -- Initialization
 
 	build_tool (a_tool: G)
@@ -46,7 +54,7 @@ feature {NONE} -- Initialization
 			-- `a_tool': Tool to initialize.
 		require
 			a_tool_attached: a_tool /= Void
-			not_a_tool_is_recycled: not a_tool.is_recycled
+			a_tool_is_interface_usable: a_tool.is_interface_usable
 		do
 		end
 
@@ -59,7 +67,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Clean up
 
-	internal_recycle is
+	internal_recycle
 			-- To be called when the button has became useless.
 		do
 			if internal_panel /= Void then
@@ -69,7 +77,7 @@ feature {NONE} -- Clean up
 					internal_panel.content.close
 				end
 				internal_panel.recycle
-				internal_panel := Void
+				internal_panel := internal_panel.default
 			end
 			edition_changed.dispose
 			edition_changed := Void
@@ -84,11 +92,35 @@ feature {NONE} -- Clean up
 
 feature -- Access
 
+	name: !STRING
+			-- The tool's associated name, used for modularizing development of a tool.
+			-- Note: the name is edition independent!
+		require
+			is_interface_usable: is_interface_usable
+		do
+			if {l_result: STRING} internal_name then
+				Result := l_result
+			else
+				Result := tool_utilities.tool_associated_name (Current)
+				internal_name := Result
+			end
+		ensure
+			not_result_is_empty: not Result.is_empty
+			result_consistent: Result = name
+		end
+
+	profile_kind: !UUID
+			-- Applicable profile kind.
+			-- See {ES_TOOL_PROFILE_KINDS} for applicable built-in types.
+		once
+			Result := (create {ES_TOOL_PROFILE_KINDS}).generic
+		end
+
 	icon: EV_PIXEL_BUFFER
 			-- Tool icon
 			-- Note: Do not call `tool.icon' as it will create the tool unnecessarly!
 		require
-			not_is_recycled: not is_recycled
+			is_interface_usable: is_interface_usable
 		deferred
 		ensure
 			result_attached: Result /= Void
@@ -99,7 +131,7 @@ feature -- Access
 			-- Tool icon pixmap
 			-- Note: Do not call `tool.icon' as it will create the tool unnecessarly!
 		require
-			not_is_recycled: not is_recycled
+			is_interface_usable: is_interface_usable
 		deferred
 		ensure
 			result_attached: Result /= Void
@@ -110,28 +142,27 @@ feature -- Access
 			-- Tool title.
 			-- Note: Do not call `tool.title' as it will create the tool unnecessarly!
 		require
-			not_is_recycled: not is_recycled
+			is_interface_usable: is_interface_usable
 		deferred
 		ensure
 			result_attached: Result /= Void
 			not_result_is_empty: not Result.is_empty
 		end
 
-	edition_title: STRING_32
+	edition_title: !STRING_32
 			-- Tool title with an edition number.
 			-- Note: Do not call `tool.title' as it will create the tool unnecessarly!
 		require
-			not_is_recycled: not is_recycled
+			is_interface_usable: is_interface_usable
 		do
 			if is_supporting_multiple_instances and then edition > 1 then
 				create Result.make (title.count + 3)
 				Result.append (title)
 				Result.append (" #" + edition.out)
 			else
-				Result := title
+				Result := title.as_attached
 			end
 		ensure
-			result_attached: Result /= Void
 			not_result_is_empty: not Result.is_empty
 		end
 
@@ -140,28 +171,33 @@ feature -- Access
 			-- Note: When `is_supporting_multiple_instances' returns true this will
 			--       be set to an index greater than 1.
 
-	shortcut_preference_name: STRING_32
+	shortcut_preference_name: ?STRING
 			-- An optional shortcut preference name, for automatic preference binding.
 			-- Note: The preference should be registered in the default.xml file
 			--       as well as in the {EB_MISC_SHORTCUT_DATA} class.
 		require
-			not_is_recycled: not is_recycled
-		deferred
+			is_interface_usable: is_interface_usable
+		do
+			create Result.make (20)
+			Result.append (once "show_")
+			Result.append (name)
+			Result.append (once "_tool")
 		ensure
 			not_result_is_empty: Result /= Void implies not Result.is_empty
+			result_consistent: Result /= Void implies Result.is_equal (shortcut_preference_name)
 		end
 
-	frozen type_id: STRING_32 is
+	frozen type_id: !STRING_32
 			-- A type identifier, used to store layout information and reinstantiate the type from
 			-- a stored layout.
 		do
-			Result := internal_type_id
-			if Result = Void then
+			if {l_id: STRING_32} internal_type_id then
+				Result := l_id
+			else
 				Result := tool_utilities.tool_id (Current)
 				internal_type_id := Result
 			end
 		ensure then
-			result_attached: Result /= Void
 			not_result_is_empty: not Result.is_empty
 			result_consistent: Result = Result
 		end
@@ -176,9 +212,11 @@ feature -- Access
 			--          creating the tool UI.
 		require
 			not_is_recycled: not is_recycled
+		local
+			l_result: like internal_panel
 		do
-			Result := internal_panel
-			if Result = Void then
+			l_result := internal_panel
+			if l_result = Void then
 				Result := create_tool
 				internal_panel := Result
 
@@ -186,11 +224,27 @@ feature -- Access
 				build_tool (Result)
 
 				on_tool_instantiated
+			else
+				Result := l_result
 			end
 		ensure
 			result_attached: Result /= Void
 			result_consistent: Result = panel
 			is_tool_instantiated: is_tool_instantiated
+		end
+
+feature {NONE} -- Access
+
+	frozen tool: !like Current
+			-- Provides a reference to the actual tool.
+			-- Note, this is for ESF helper functionality that may be optionally inherited in the actual
+			--       tool. See {ES_TOOL_PIXMAPS_PROVIDER} for an example.
+		require
+			is_interface_usable: is_interface_usable
+		do
+			Result := Current
+		ensure
+			result_is_interface_usable: Result.is_interface_usable
 		end
 
 feature {ES_SHELL_TOOLS} -- Element change
@@ -200,7 +254,7 @@ feature {ES_SHELL_TOOLS} -- Element change
 			--
 			-- `a_edition': The tool edition index
 		require
-			not_is_recycled: not is_recycled
+			is_interface_usable: is_interface_usable
 			is_supporting_multiple_instances: a_edition > 1 implies is_supporting_multiple_instances
 			a_edition_positive: a_edition > 0
 		local
@@ -237,7 +291,7 @@ feature -- Status report
 			-- Indicates if the tool can spawn multiple instances in the
 			-- same development window
 		require
-			not_is_recycled: not is_recycled
+			is_interface_usable: is_interface_usable
 		do
 			Result := False
 		end
@@ -247,7 +301,7 @@ feature {ES_SHELL_TOOLS} -- Status report
 	is_recycled_on_closing: BOOLEAN
 			-- Indicates if the tool should be recycled on closing
 		require
-			not_is_recycled: not is_recycled
+			is_interface_usable: is_interface_usable
 		do
 				-- Keeps a single tool available always.
 			Result := is_supporting_multiple_instances and not is_hide_requested and then window.shell_tools.editions_of_tool ({like Current}, False) > 1
@@ -392,24 +446,28 @@ feature {NONE} -- Factory
 	create_tool: G
 			-- Creates the tool for first use on the development `window'
 		require
-			not_is_recycled: not is_recycled
+			is_interface_usable: is_interface_usable
 			window_attached: window /= Void
-			not_window_is_recycled: not window.is_recycled
+			window_is_interface_usable: window.is_interface_usable
 			not_is_tool_instantiated: not is_tool_instantiated
 		deferred
 		ensure
 			result_attached: Result /= Void
-			not_result_is_recycled: not Result.is_recycled
+			result_is_interface_usable: Result.is_interface_usable
 		end
 
-feature {NONE} -- Internal implementation cache
+feature {NONE} -- Implementation: Internal cache
 
-	internal_panel: like panel
-			-- Cached version of `panel'
+	internal_panel: ?like panel
+			-- Cached version of `panel'.
 			-- Note: Do not use directly!
 
-	internal_type_id: like type_id
-			-- Cached version of `type_id'
+	internal_type_id: ?like type_id
+			-- Cached version of `type_id'.
+			-- Note: Do not use directly!
+
+	internal_name: ?like name
+			-- Cached version of `name'.
 			-- Note: Do not use directly!
 
 invariant
@@ -417,9 +475,9 @@ invariant
 	edition_small_enough: not is_supporting_multiple_instances implies edition <= 1
 
 ;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -430,19 +488,19 @@ invariant
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

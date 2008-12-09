@@ -18,7 +18,7 @@ feature -- Query (Pixmap)
 		require
 			a_group_not_void: a_group /= Void
 		do
-			Result := pixmaps.pixmap_from_group (a_group)
+			Result := pixmaps.configuration_pixmaps.pixmap_from_group (a_group)
 		ensure
 			result_not_void: Result /= Void
 		end
@@ -29,7 +29,7 @@ feature -- Query (Pixmap)
 			a_path_not_void: a_path /= Void
 			path_implies_not_library: not a_path.is_empty implies not a_group.is_library
 		do
-			Result := pixmaps.pixmap_from_group_path (a_group, a_path)
+			Result := pixmaps.configuration_pixmaps.pixmap_from_group_path (a_group, a_path)
 		ensure
 			result_not_void: Result /= Void
 		end
@@ -306,6 +306,7 @@ feature -- Query (Pixel buffer)
 			l_pixcode: NATURAL_8
 			l_overrides: ARRAYED_LIST [CONF_CLASS]
 			l_overrides_valid: BOOLEAN
+			l_pixmap: EV_PIXMAP
 		do
 			l_conf_class := a_class.config_class
 
@@ -361,7 +362,8 @@ feature -- Query (Pixel buffer)
 			end
 
 			check correct_pixcode: class_icon_map.has (l_pixcode) end
-			Result := class_icon_map.item (l_pixcode)
+			l_pixmap := class_icon_map.item (l_pixcode)
+			Result := l_pixmap
 		ensure
 			result_not_void: Result /= Void
 		end

@@ -87,6 +87,18 @@ feature -- Query
 	tools_list_menu: EV_MENU
 			-- Menu containing list of supported tools
 
+	zoom_font_menu: EV_MENU
+			-- Menu containing items to manipulate editor zoom factor
+
+	editor_area_manipulation_menu: EV_MENU
+			-- Menu containing items to manipulate editor area
+
+	tools_layout_menu: EV_MENU
+			-- Menu containing items for tools docking layout
+
+	docking_lock_menu: EV_MENU
+			-- Menu containing items for lock docking mechanism
+
 	context_menu_factory: EB_CONTEXT_MENU_FACTORY is
 			-- Context menu factory
 		do
@@ -151,6 +163,19 @@ feature -- Query
 					l_menu.forth
 				end
 			end
+		end
+
+	docking_menu_items_cell: CELL [ARRAYED_LIST [EV_MENU_ITEM]]
+			-- Docking library menu items for current development window
+			-- We can't make a global list for all development windows,
+			-- otherwise there will be recycling problem if other development window closed
+		do
+			if docking_menu_items_cell_cache = Void then
+				create docking_menu_items_cell_cache.put (Void)
+			end
+			Result := docking_menu_items_cell_cache
+		ensure
+			not_void: Result /= Void
 		end
 
 feature -- Item querys
@@ -257,6 +282,38 @@ feature{EB_DEVELOPMENT_WINDOW_MENU_BUILDER} -- Settings
 			set: view_menu = a_menu
 		end
 
+	set_zoom_font_menu (a_menu: like zoom_font_menu) is
+			-- Set `zoom_font_menu'
+		do
+			zoom_font_menu := a_menu
+		ensure
+			set: zoom_font_menu = a_menu
+		end
+
+	set_editor_area_manipulation_menu (a_menu: like editor_area_manipulation_menu) is
+			-- Set `editor_area_manipulation_menu'
+		do
+			editor_area_manipulation_menu := a_menu
+		ensure
+			set: editor_area_manipulation_menu = a_menu
+		end
+
+	set_tools_layout_menu (a_menu: like tools_layout_menu) is
+			-- Set `tools_layout_menu'
+		do
+			tools_layout_menu := a_menu
+		ensure
+			set: tools_layout_menu = a_menu
+		end
+
+	set_docking_lock_menu (a_menu: like docking_lock_menu) is
+			-- Set `docking_lock_menu'
+		do
+			docking_lock_menu := a_menu
+		ensure
+			set: docking_lock_menu = a_menu
+		end
+
 	set_window_menu (a_menu: like window_menu) is
 			-- Set `a_menu'
 		do
@@ -345,7 +402,7 @@ feature -- Command
 			end
 		end
 
-feature {NONE} -- Context menu factory
+feature {NONE} -- Implementation
 
 	build_context_menu_factory is
 			-- Build context menu factory.
@@ -357,6 +414,11 @@ feature {NONE} -- Context menu factory
 		end
 
 	context_menu_factory_internal: EB_CONTEXT_MENU_FACTORY
+			-- Context menu factory
+
+	docking_menu_items_cell_cache: like docking_menu_items_cell
+			-- Cache for docking_menu_items_cell
+			-- Note: used by `docking_menu_items_cell' only!
 
 feature -- Recycle
 
@@ -385,6 +447,22 @@ feature -- Recycle
 				view_menu.destroy
 			end
 
+			if zoom_font_menu /= Void then
+				zoom_font_menu.destroy
+			end
+
+			if editor_area_manipulation_menu /= Void then
+				editor_area_manipulation_menu.destroy
+			end
+
+			if tools_layout_menu /= Void then
+				tools_layout_menu.destroy
+			end
+
+			if docking_lock_menu /= Void then
+				docking_lock_menu.destroy
+			end
+
 			tools_menu := Void
 			window_menu := Void
 			format_menu := Void
@@ -394,11 +472,20 @@ feature -- Recycle
 			debugging_tools_menu := Void
 			favorites_menu := Void
 			view_menu := Void
+			zoom_font_menu := Void
+			editor_area_manipulation_menu := Void
+			tools_layout_menu := Void
+			docking_lock_menu := Void
+
+			if docking_menu_items_cell.item /= Void then
+				docking_menu_items_cell.item.wipe_out
+			end
+
 			Precursor {EB_DEVELOPMENT_WINDOW_PART}
 		end
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

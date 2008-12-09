@@ -14,6 +14,9 @@ inherit
 	CONF_ACCESS
 
 	CONF_CONSTANTS
+		export
+			{NONE} all
+		end
 
 	CONF_VALIDITY
 
@@ -323,11 +326,12 @@ feature -- Access queries
 			-- Actions to be executed before compilation.
 		do
 			if internal_pre_compile_action /= Void then
-				Result := internal_pre_compile_action
-			elseif extends /= Void then
-				Result := extends.pre_compile_action
+				Result := internal_pre_compile_action.twin
 			else
 				create Result.make (0)
+			end
+			if extends /= Void then
+				Result.append (extends.pre_compile_action)
 			end
 		ensure
 			Result_not_void: Result /= Void
@@ -337,11 +341,12 @@ feature -- Access queries
 			-- Actions to be executed after compilation.
 		do
 			if internal_post_compile_action /= Void then
-				Result := internal_post_compile_action
-			elseif extends /= Void then
-				Result := extends.post_compile_action
+				Result := internal_post_compile_action.twin
 			else
 				create Result.make (0)
+			end
+			if extends /= Void then
+				Result.append (extends.post_compile_action)
 			end
 		ensure
 			Result_not_void: Result /= Void
@@ -650,12 +655,6 @@ feature -- Access queries for settings
 			-- Value for the multithreaded setting.
 		do
 			Result := setting_boolean (s_multithreaded)
-		end
-
-	setting_old_verbatim_strings: BOOLEAN is
-			-- Value for the old_verbatim_strings setting.
-		do
-			Result := setting_boolean (s_old_verbatim_strings)
 		end
 
 	setting_platform: STRING is

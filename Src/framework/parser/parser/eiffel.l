@@ -263,12 +263,17 @@ U		([0-9]|[0-9][0-9]|[0-9][0-9][0-9])
 				last_token := TE_ASSIGN
 			}
 [aA][tT][tT][rR][iI][bB][uU][tT][eE] {
-				last_token := TE_ID
-				process_id_as
-				if has_syntax_warning then
-					report_one_warning (
-						create {SYNTAX_WARNING}.make (line, column, filename,
-							once "Use of `attribute', possibly a new keyword in future definition of `Eiffel'."))
+				if is_attribute_keyword then
+					last_keyword_as_value := ast_factory.new_keyword_as (TE_ATTRIBUTE, Current)
+					last_token := TE_ATTRIBUTE
+				else
+					process_id_as
+					last_token := TE_ID
+					if has_syntax_warning then
+						report_one_warning (
+							create {SYNTAX_WARNING}.make (line, column, filename,
+								once "Keyword `attribute' is used as identifier."))
+					end
 				end
 			}
 [bB][iI][tT]	{			
@@ -981,15 +986,7 @@ U		([0-9]|[0-9][0-9]|[0-9][0-9][0-9])
 						token_buffer.clear_all
 					end
 					if verbatim_marker.item (1) = ']' then
-						if not has_old_verbatim_strings then
-							align_left (token_buffer)
-						end
-						if has_old_verbatim_strings_warning then
-							report_one_warning (
-								create {SYNTAX_WARNING}.make (line, column, filename,
-									once "Default verbatim string handling is changed to follow standard semantics %
-									%with alignment instead of previous non-standard one without alignment."))
-						end
+						align_left (token_buffer)
 					end
 					if token_buffer.is_empty then
 							-- Empty string.

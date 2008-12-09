@@ -62,9 +62,7 @@ feature -- C code generation
 				if final_mode then
 					buffer.put_type_id (cl_type_i.type_id (context.context_class_type.type))
 				else
-					buffer.put_string ("RTUD(")
 					buffer.put_static_type_id (cl_type_i.static_type_id (context.context_class_type.type))
-					buffer.put_character (')')
 				end
 			end
 		end
@@ -166,18 +164,6 @@ feature -- Generic conformance
 			Result := type.is_explicit
 		end
 
-	generate_gen_type_conversion (a_level: NATURAL) is
-
-		local
-			gen_type : GEN_TYPE_A
-		do
-			gen_type ?= context.creation_type (type)
-
-			if gen_type /= Void then
-				context.generate_gen_type_conversion (gen_type, a_level)
-			end
-		end
-
 	generate_cid (buffer: GENERATION_BUFFER; final_mode : BOOLEAN) is
 			-- Generate creation type.
 		do
@@ -192,6 +178,9 @@ feature -- Generic conformance
 		do
 			Result ?= context.creation_type (type)
 		end
+
+invariant
+	type_not_void: type /= Void
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

@@ -80,20 +80,6 @@ doc:<file name="retrieve.c" header="eif_retrieve.h" version="$Id$" summary="Retr
 #include <winsock.h>
 #endif
 
-/* Sections of code enclosed with #ifdef RECOVERABLE_SCAFFOLDING should be
- * able to be removed, once we are satisfied that the original independent
- * store and retrieve are no longer necessary.
- */
-#define RECOVERABLE_SCAFFOLDING
-#ifdef RECOVERABLE_SCAFFOLDING
-#ifdef DARREN		/* for doing in-editor compilation for errors */
-# define RECOVERABLE_DEBUG
-# undef RTYD
-# define RTYD ;
-# undef RTXSC
-# define RTXSC ;
-#endif
-#endif
 #ifdef RECOVERABLE_DEBUG
 #define EIF_OBJECT_TYPE(obj)    eif_typename (Dftype (obj))
 #ifdef PRINT_OBJECT
@@ -316,9 +302,6 @@ rt_public EIF_REFERENCE irt_nmake(long int objectCount);			/* Retrieve n objects
 rt_public EIF_REFERENCE grt_nmake(long int objectCount);			/* Retrieve n objects general form*/
 rt_private void iread_header_new(EIF_CONTEXT_NOARG);
 rt_private void rread_header(EIF_CONTEXT_NOARG);
-#ifdef RECOVERABLE_SCAFFOLDING
-rt_private void iread_header(EIF_CONTEXT_NOARG);		/* Read independent header */
-#endif
 rt_private void rt_clean(void);			/* Clean data structure */
 rt_private void rt_update1(register EIF_REFERENCE old, register EIF_OBJECT new_obj);			/* Reference correspondance update */
 rt_private void rt_update2(EIF_REFERENCE old_obj, EIF_REFERENCE new_obj, EIF_REFERENCE parent);			/* Fields updating */
@@ -955,27 +938,6 @@ rt_public EIF_REFERENCE stream_eretrieve(EIF_POINTER *buffer, EIF_INTEGER size, 
 	return new_object;
 }
 
-#ifdef RECOVERABLE_SCAFFOLDING
-#ifndef EIF_THREADS
-/*
-doc:	<attribute name="eif_use_old_independent_retrieve" return_type="EIF_BOOLEAN" export="private">
-doc:		<summary>Do we want to use old independent format or new one that can fix some mismatch? Default new one.</summary>
-doc:		<access>Read/Write</access>
-doc:		<thread_safety>Safe</thread_safety>
-doc:		<synchronization>Private per thread data</synchronization>
-doc:		<eiffel_classes>STORABLE</eiffel_classes>
-doc:		<fixme>Is this obsolete now?</fixme>
-doc:	</attribute>
-*/
-rt_private EIF_BOOLEAN eif_use_old_independent_retrieve = EIF_FALSE;
-#endif
-
-rt_public void eif_set_old_independent_retrieve (EIF_BOOLEAN state)
-{
-	RT_GET_CONTEXT
-	eif_use_old_independent_retrieve = state;
-}
-
 rt_public void eif_set_discard_pointer_values (EIF_BOOLEAN state)
 	/* Do we need to store pointers or not? */
 {
@@ -983,7 +945,6 @@ rt_public void eif_set_discard_pointer_values (EIF_BOOLEAN state)
 	eif_discard_pointer_values = state;
 }
 
-#endif
 
 rt_private EIF_REFERENCE eif_unsafe_portable_retrieve(int (*char_read_function)(char *, int))
 {
@@ -1039,6 +1000,7 @@ rt_private EIF_REFERENCE eif_unsafe_portable_retrieve(int (*char_read_function)(
 		case RECOVERABLE_STORE_5_3:
 		case INDEPENDENT_STORE_5_5:
 		case INDEPENDENT_STORE_6_0:
+		case INDEPENDENT_STORE_6_3:
 			rt_init_retrieve(retrieve_read_with_compression, char_read_function, RETRIEVE_BUFFER_SIZE);
 			rt_kind = RECOVERABLE_STORE;
 			rt_kind_version = rt_type;
@@ -1053,15 +1015,6 @@ rt_private EIF_REFERENCE eif_unsafe_portable_retrieve(int (*char_read_function)(
 #endif
 
 	if (rt_kind == INDEPENDENT_STORE) {
-#ifdef RECOVERABLE_SCAFFOLDING
-	  if (eif_use_old_independent_retrieve) {
-#ifdef RECOVERABLE_DEBUG
-		printf ("Old independent retrieval algorithm\n");
-#endif
-		iread_header(MTC_NOARG);			/* Make correspondance table */
-		retrieved = irt_make();
-	  } else {
-#endif
 #ifdef RECOVERABLE_DEBUG
 		printf ("New independent retrieval algorithm\n");
 #endif
@@ -1071,9 +1024,6 @@ rt_private EIF_REFERENCE eif_unsafe_portable_retrieve(int (*char_read_function)(
 		iread_header_new(MTC_NOARG);			/* Make correspondance table */
 		retrieved = rrt_make();
 		retrieved_i = eif_protect (retrieved);
-#ifdef RECOVERABLE_SCAFFOLDING
-	  }
-#endif
 	} else if (rt_kind == RECOVERABLE_STORE) {
 #ifdef RECOVERABLE_DEBUG
 		printf ("New recoverable retrieval algorithm\n");
@@ -1118,6 +1068,7 @@ rt_private EIF_REFERENCE eif_unsafe_portable_retrieve(int (*char_read_function)(
 		case RECOVERABLE_STORE_5_3:
 		case INDEPENDENT_STORE_5_5:
 		case INDEPENDENT_STORE_6_0:
+		case INDEPENDENT_STORE_6_3:
 			independent_retrieve_reset ();
 			break;
 	}
@@ -1423,7 +1374,7 @@ rt_private void rt_create_table (int32 count)
 	rt_table = create_hash_table (count, sizeof (struct rt_struct));
 }
 
-rt_shared uint32 special_generic_type (EIF_TYPE_INDEX dtype)
+rt_private uint32 special_generic_type (EIF_TYPE_INDEX dtype)
 {
 	EIF_TYPE_INDEX *dynamic_types;
 	int32 *patterns;
@@ -2735,252 +2686,6 @@ printf ("Allocating sorted_attributes (scount: %d) %lx\n", scount, sorted_attrib
 }
 
 
-#ifdef RECOVERABLE_SCAFFOLDING
-rt_private void iread_header(EIF_CONTEXT_NOARG)
-{
-	/* Read header and make the dynamic type correspondance table */
-	RT_GET_CONTEXT
-	EIF_GET_CONTEXT
-	int nb_lines, i, k, old_count;
-	EIF_TYPE_INDEX dtype, new_dtype;
-	int read_dtype;
-	uint32 nb_gen, bsize = 1024;
-	char vis_name[512];
-	char * temp_buf;
-	uint32 num_attrib;
-	long read_attrib;
-	char att_name[512];
-	int * volatile attrib_order = NULL;
-	jmp_buf exenv;
-	RTYD;
-
-	errno = 0;
-
-	excatch(&exenv);	/* Record pseudo execution vector */
-	if (setjmp(exenv)) {
-		rt_clean();				/* Clean data structure */
-		RTXSC;					/* Restore stack contexts */
-		ereturn(MTC_NOARG);				/* Propagate exception */
-	}
-
-	r_buffer = (char*) eif_rt_xmalloc (bsize * sizeof (char), C_T, GC_OFF);
-	if (r_buffer == (char *) 0)
-		xraise (EN_MEM);
-
-	/* Read the old maximum dyn type */
-	if (idr_read_line(r_buffer, bsize) == 0)
-		eise_io("Independent retrieve: unable to read number of different Eiffel types.");
-	if (sscanf(r_buffer,"%d\n", &old_count) != 1)
-		eise_io("Independent retrieve: unable to read number of different Eiffel types.");
-
-			/* We need to make sure that `dtypes' and `spec_elm_size' arrays are large enough
-			 * to store all types in retrieving system. */
-	if (old_count < eif_par_table2_size) {
-			/* We use `eif_par_table2_size' as it will give us a correct size in
-			 * both workbench/melted/finalized mode of the number of dynamic types
-			 * FIXME: Manu 06/24/2004: Maybe we ought to have a query that would
-			 * represent this value without being specific to generic conformance. */
-		old_count = eif_par_table2_size + 1;
-	}
-
-		/* create a correspondance table */
-	dtypes = (EIF_TYPE_INDEX *) eif_rt_xmalloc(old_count * sizeof(EIF_TYPE_INDEX), C_T, GC_OFF);
-	if (!dtypes) {
-		xraise (EN_MEM);
-	}
-	spec_elm_size = (uint32 *) eif_rt_xmalloc (old_count * sizeof (uint32), C_T, GC_OFF);
-	if (spec_elm_size == (uint32 *)0)
-		xraise (EN_MEM);
-	if (idr_read_line(r_buffer, bsize) == 0)
-		eise_io("Independent retrieve: unable to read OVERHEAD size.");
-	if (sscanf(r_buffer,"%d\n", &old_overhead) != 1)
-		eise_io("Independent retrieve: unable to read OVERHEAD size.");
-
-	/* Read the number of lines */
-	if (idr_read_line(r_buffer, bsize) == 0)
-		eise_io("Independent retrieve: unable to read number of header lines.");
-	if (sscanf(r_buffer,"%d\n", &nb_lines) != 1)
-		eise_io("Independent retrieve: unable to read number of header lines.");
-
-	for(i=0; i<nb_lines; i++) {
-		if (idr_read_line(r_buffer, bsize) == 0)
-			eise_io("Independent retrieve: unable to read current header line.");
-
-		temp_buf = r_buffer;
-
-		if (3 != sscanf(r_buffer, "%d %s %d",&read_dtype,vis_name,&nb_gen)) {
-			eise_io("Independent retrieve: unable to read type description.");
-		}
-		CHECK("Valid dtype", (read_dtype >= 0) && (read_dtype <= MAX_DTYPE));
-		dtype = (EIF_TYPE_INDEX) read_dtype;
-
-		for (k = 1 ; k <= 3 ; k++)
-			temp_buf = next_item (temp_buf);
-
-		if (nb_gen > 0) {
-			struct cecil_info *info;
-			int32 *t;
-			int matched;
-			uint32 j, index;
-			long *gtype, sgtype[MAX_GENERICS];
-			int32 *itype, sitype[MAX_GENERICS];
-	
-			if (nb_gen > MAX_GENERICS) {
-					/* Not enough space we need to allocate dynamically */
-				gtype = (long *) cmalloc (nb_gen * sizeof(long));
-				itype = (int32 *) cmalloc (nb_gen * sizeof(int32));
-				if (!gtype || !itype) {
-					xraise(EN_MEM);
-				}
-			} else {
-				gtype = sgtype;
-				itype = sitype;
-			}
-
-			info = cecil_info (NULL, vis_name);
-			if (info == NULL) {
-				eraise(vis_name, EN_RETR);	/* Cannot find class */
-			}
-
-			if (info->nb_param != nb_gen) {
-				eraise(vis_name, EN_RETR);	/* No good generic count */
-			}
-
-			for (j=0; j<nb_gen; j++) {		/* Read meta-types */
-				if (sscanf(temp_buf," %ld", &gtype[j]) != 1)
-					eise_io("Independent retrieve: unable to read generic information.");
-				temp_buf = next_item (temp_buf);
-					
-			}
-
-			for (t = info->patterns; /* empty */; /* empty */) {
-
-				if (*t == SK_INVALID)		/* Cannot find good meta-type */
-					eraise(vis_name, EN_RETR);
-
-				matched = 1;					/* Assume a perfect match */
-				for (j=0; j<nb_gen; j++) {
-					int32 gt;
-
-					gt = (int32) gtype[j];
-					itype[j] = *t++;
-					if (itype[j] != gt)	/* Matching done on the fly */
-						matched = 0;			/* The types do not match */
-				}
-				if (matched) {					/* We found the type */
-					t -= nb_gen;
-					break;						/* End of loop processing */
-				}
-			}
-			index = (int) ((t - info->patterns) / nb_gen);
-			new_dtype = info->dynamic_types[index];
-			if (nb_gen > MAX_GENERICS) {
-				eif_rt_xfree ((char *) gtype);
-				eif_rt_xfree ((char *) itype);
-			}
-		} else {
-			struct cecil_info *info;
-
-				/* Non generic class */
-			info = cecil_info (NULL, vis_name);
-			if (info == NULL) {
-				eraise(vis_name, EN_RETR);	/* Cannot find class */
-			}
-			new_dtype = info->dynamic_type;
-		}
-
-								/* retrieve the number of attributes
-								 * int the object 
-								 */
-		if (sscanf(temp_buf," %d", &num_attrib) != 1)
-				/* error no value in buffer */
-			eise_io("Independent retrieve: unable to read number of attributes.");
-
-
-								/* Check the number of attributes
-								 * match then verify the attributes
-								 * types and names. Then store the
-								 * position of the attribute in the
-								 * object.
-								 */
-		if ((long) num_attrib == System(new_dtype).cn_nbattr) {
-			int i, chk_attrib = num_attrib;
-
-			if (num_attrib != 0) {			/* Only eif_malloc memory and process if 
-								 * the object has attributes.
-								 */
-				attrib_order = (int *) eif_rt_xmalloc (num_attrib * sizeof (int), C_T, GC_OFF);
-				if (attrib_order == (int *)0)
-					xraise (EN_MEM);
-				for (; num_attrib > 0;) {
-					if (idr_read_line(r_buffer, bsize) == 0) {
-						eif_rt_xfree ((char *) attrib_order);
-						eise_io("Independent retrieve: unable to read attribute description.");
-					}
-					if (sscanf(r_buffer," %lu %s", &read_attrib, att_name) != 2) {
-						eif_rt_xfree ((char *) attrib_order);
-						eise_io("Independent retrieve: unable to read attribute description.");
-					}
-
-								/* check attribute types */
-					if ((*(System(new_dtype).cn_types + --num_attrib) & SK_HEAD) 
-							== (uint32) read_attrib) {
-
-									/* check attribute names */
-						
-
-						if (strcmp (att_name, *(System (new_dtype).cn_names + num_attrib))) {
-							i = 0;
-	
-							while (strcmp(att_name, *(System (new_dtype).cn_names + i++))) {
-								if (i >= chk_attrib){
-									eif_rt_xfree ((char *) attrib_order);
-									(void) strcat (vis_name + strlen (vis_name), ".");
-									(void) strcat (vis_name + strlen (vis_name), att_name);
-									eraise(vis_name, EN_RETR); 
-										/* non matching attributes */
-								}
-							
-							}
-									/* check that the attribues of the
-									 * same name is of the same type
-									 */
-
-							if ((*(System(new_dtype).cn_types + --i) & SK_HEAD) 
-									== (uint32) read_attrib) {
-								*(attrib_order + num_attrib) = i;
-							} else {
-								eif_rt_xfree ((char *) attrib_order);
-								(void) strcat (vis_name + strlen (vis_name), ".");
-								(void) strcat (vis_name + strlen (vis_name), att_name);
-								eraise(vis_name, EN_RETR);
-									/* non matching attributes */
-							}
-						} else {
-							*(attrib_order + num_attrib) = num_attrib;
-						}
-					} else {
-						eif_rt_xfree ((char *) attrib_order);
-						(void) strcat (vis_name + strlen (vis_name), ".");
-						(void) strcat (vis_name + strlen (vis_name), att_name);
-						eraise(vis_name, EN_RETR);	/* non matching attributes */
-					}
-				}
-			}
-		} else {
-			eraise(vis_name, EN_RETR);		/* wrong number of attributes */
-		}
-		dtypes[dtype] = new_dtype;			/* store new type on old type */
-		dattrib [new_dtype] = attrib_order;		/* store position of attribute in obj*/
-		attrib_order = (int *) 0;			/* make sure its null for next loop */
-	}
-	eif_rt_xfree (r_buffer);
-	r_buffer = (char*) 0;
-	expop(&eif_stack);
-}
-#endif
-
-
 #ifdef RECOVERABLE_DEBUG
 
 static char *type2name (long type)
@@ -2992,7 +2697,7 @@ static char *type2name (long type)
 		case SK_CHAR:    name = "CHARACTER";      break;
 		case SK_UINT8:   name = "NATURAL_8";      break;
 		case SK_UINT16:  name = "NATURAL_16";     break;
-		case SK_UINT:    name = "NATURAL_32";     break;
+		case SK_UINT32:  name = "NATURAL_32";     break;
 		case SK_UINT64:  name = "NATURAL_64";     break;
 		case SK_INT8:    name = "INTEGER_8";      break;
 		case SK_INT16:   name = "INTEGER_16";     break;
@@ -3012,10 +2717,18 @@ static char *type2name (long type)
 rt_shared char *name_of_attribute_type (EIF_TYPE_INDEX **type)
 {
 	static char buffer [512 + 9];
-	char *result;
 	EIF_TYPE_INDEX dftype = **type;
 
 	REQUIRE ("Not a formal parameter", dftype != FORMAL_TYPE);
+
+	buffer[0] = (char) 0;
+
+		/* Skip all the annotations. */
+	while (RT_HAS_ANNOTATION_TYPE(dftype)) {
+		*type += 1;
+		dftype = **type;
+		sprintf (buffer, "%x ", dftype);
+	}
 
 	if (dftype == TUPLE_TYPE) {
 		*type += TUPLE_OFFSET;
@@ -3023,43 +2736,56 @@ rt_shared char *name_of_attribute_type (EIF_TYPE_INDEX **type)
 	}
 
 	if (dftype <= MAX_DTYPE) {
-		dftype = RTUD(dftype);
-		if (EIF_IS_EXPANDED_TYPE(System (dftype).flags)) {
-			result = System (dftype).cn_generator;
+		if (EIF_IS_EXPANDED_TYPE(System (dftype))) {
+			sprintf (buffer, "%s", System (dftype).cn_generator);
 		} else {
 			sprintf (buffer, "expanded %s", System (dftype).cn_generator);
-			result = buffer;
 		}
-	} else if (dftype <= FORMAL_TYPE) {
-		sprintf (buffer, "%c", 'F' + FORMAL_TYPE - dftype);
-		result = buffer;
+	} else if (dftype == FORMAL_TYPE) {
+		*type += 1;
+		dftype = **type;
+		sprintf (buffer, "G#%d", dftype);
+	} else {
+		CHECK ("Not an anchor", (dftype != LIKE_CURRENT_TYPE) && (dftype != LIKE_PFEATURE_TYPE) &&
+			(dftype != LIKE_FEATURE_TYPE) && (dftype != LIKE_ARG_TYPE));
 	}
-	return result;
+	return buffer;
 }
 
 rt_private char *name_of_old_attribute_type (EIF_TYPE_INDEX **type)
 {
 	EIF_TYPE_INDEX dftype = **type;
 	static char buffer [512 + 9];
-	char *result;
 
 	REQUIRE ("Not a formal parameter", dftype != FORMAL_TYPE);
+
+	buffer[0] = (char) 0;
+
+		/* Skip all the annotations. */
+	while (RT_HAS_ANNOTATION_TYPE(dftype)) {
+		*type += 1;
+		dftype = **type;
+		sprintf (buffer, "%x ", dftype);
+	}
 
 	if (dftype <= MAX_DTYPE) {
 		if (type_conversions->type_index[dftype] == TYPE_UNDEFINED) {
 			sprintf (buffer, "NOT_YET_KNOWN (%d)", dftype);
-			result = buffer;
+		} else {
+			sprintf (buffer, "%s", type_description (dftype)->name);
 		}
-		else
-			result = type_description (dftype)->name;
 	} else if (dftype == TUPLE_TYPE) {
 		(*type) += TUPLE_OFFSET;
-		result = "TUPLE";
-	} else if (dftype <= FORMAL_TYPE) {
-		sprintf (buffer, "%c", 'F' + FORMAL_TYPE - dftype);
-		result = buffer;
+		sprintf (buffer, "TUPLE");
+	} else if (dftype == FORMAL_TYPE) {
+		*type += 1;
+		dftype = **type;
+		sprintf (buffer, "G#%d", dftype);
+	} else {
+		CHECK ("Not an anchor", (dftype != LIKE_CURRENT_TYPE) && (dftype != LIKE_PFEATURE_TYPE) &&
+			(dftype != LIKE_FEATURE_TYPE) && (dftype != LIKE_ARG_TYPE));
 	}
-	return result;
+	return buffer;
 }
 
 rt_private void print_old_attribute_type (EIF_TYPE_INDEX *atypes)
@@ -3105,13 +2831,13 @@ rt_shared char *generic_name (int32 gtype, int old_types)
 				result = buffer;
 			}
 			else
-				result = type_description (gtype & SK_DTYPE)->name;
+				result = type_description ((EIF_TYPE_INDEX) (gtype & SK_DTYPE))->name;
 			break;
 		case SK_BOOL:    result = "BOOLEAN";        break;
 		case SK_CHAR:    result = "CHARACTER";      break;
 		case SK_UINT8:   result = "NATURAL_8";      break;
 		case SK_UINT16:  result = "NATURAL_16";     break;
-		case SK_UINT:    result = "NATURAL_32";     break;
+		case SK_UINT32:  result = "NATURAL_32";     break;
 		case SK_UINT64:  result = "NATURAL_64";     break;
 		case SK_INT8:    result = "INTEGER_8";      break;
 		case SK_INT16:   result = "INTEGER_16";     break;
@@ -3151,7 +2877,7 @@ rt_shared void print_generic_names (struct cecil_info *info, int type)
 		if (info->dynamic_types[i] == type) {
 			found = 1;
 			printf ("[");
-			*patterns = info->patterns + i * info->nb_param;
+			patterns = info->patterns + i * info->nb_param;
 			for (j = 0; j < info->nb_param; ++j) {
 				printf ("%s%s", j > 0 ? ", " : "", generic_name (patterns[j], 0));
 			}
@@ -3241,20 +2967,18 @@ rt_private int old_attribute_type_matched (EIF_TYPE_INDEX **gtype, EIF_TYPE_INDE
 				result = 0;
 			}
 		} else if (aftype < 0) {
-				/* Former encoding has a special encoding for basic types, new one doesn't need it.
-				 * However we need to apply `RTUD_INV' on `egc_xxx_dtype' to have a valid
-				 * typearr identifier. */
+				/* Former encoding has a special encoding for basic types, new one doesn't need it. */
 			switch (aftype) {
-				case OLD_CHARACTER_TYPE: result = (dftype == RTID(egc_char_dtype)); break;
-				case OLD_BOOLEAN_TYPE: result = (dftype == RTID(egc_bool_dtype)); break;
-				case OLD_INTEGER_8_TYPE: result = (dftype == RTID(egc_int8_dtype)); break;
-				case OLD_INTEGER_16_TYPE: result = (dftype == RTID(egc_int16_dtype)); break;
-				case OLD_INTEGER_32_TYPE: result = (dftype == RTID(egc_int32_dtype)); break;
-				case OLD_INTEGER_64_TYPE: result = (dftype == RTID(egc_int64_dtype)); break;
-				case OLD_REAL_32_TYPE: result = (dftype == RTID(egc_real32_dtype)); break;
-				case OLD_REAL_64_TYPE: result = (dftype == RTID(egc_real64_dtype)); break;
-				case OLD_POINTER_TYPE: result = (dftype == RTID(egc_point_dtype)); break;
-				case OLD_WIDE_CHAR_TYPE: result = (dftype == RTID(egc_wchar_dtype)); break;
+				case OLD_CHARACTER_TYPE: result = (dftype == egc_char_dtype); break;
+				case OLD_BOOLEAN_TYPE: result = (dftype == egc_bool_dtype); break;
+				case OLD_INTEGER_8_TYPE: result = (dftype == egc_int8_dtype); break;
+				case OLD_INTEGER_16_TYPE: result = (dftype == egc_int16_dtype); break;
+				case OLD_INTEGER_32_TYPE: result = (dftype == egc_int32_dtype); break;
+				case OLD_INTEGER_64_TYPE: result = (dftype == egc_int64_dtype); break;
+				case OLD_REAL_32_TYPE: result = (dftype == egc_real32_dtype); break;
+				case OLD_REAL_64_TYPE: result = (dftype == egc_real64_dtype); break;
+				case OLD_POINTER_TYPE: result = (dftype == egc_point_dtype); break;
+				case OLD_WIDE_CHAR_TYPE: result = (dftype == egc_wchar_dtype); break;
 				default:
 					result = 0;
 			}
@@ -3262,7 +2986,7 @@ rt_private int old_attribute_type_matched (EIF_TYPE_INDEX **gtype, EIF_TYPE_INDE
 			if (dftype <= MAX_DTYPE) {
 					/* This is a normal type, nothing special to be done. */
 				if (type_defined (aftype)) {
-					result = (RTUD(dftype) == type_description (aftype)->new_type);
+					result = (dftype == type_description (aftype)->new_type);
 				} else {
 					result = 0;
 				}
@@ -3285,35 +3009,43 @@ rt_private int attribute_type_matched (EIF_TYPE_INDEX **gtype, EIF_TYPE_INDEX **
 	if (rt_kind_version < INDEPENDENT_STORE_5_5) {
 		result = old_attribute_type_matched (gtype, atype);
 	} else {
-		if (dftype == TUPLE_TYPE) {
-			if (aftype == TUPLE_TYPE) {
-				(*gtype) += TUPLE_OFFSET;
-				(*atype) += TUPLE_OFFSET;
-				dftype = **gtype;
-				aftype = **atype;
-			} else {
-				result = 0;
-			}
+		while ((result) && (RT_HAS_ANNOTATION_TYPE(dftype))) {
+			result = (aftype == dftype);
+			*gtype +=1;
+			*atype +=1;
+			dftype = **gtype;
+			aftype = **atype;
 		}
-
-		if (dftype == FORMAL_TYPE) {
-			if (aftype == FORMAL_TYPE) {
-				(*gtype)++;
-				(*atype)++;
-				result = (**gtype == **atype ? 1 : 0);
-			} else {
-				result = 0;
-			}
-		} else if (result) {
-			if (dftype <= MAX_DTYPE  &&  aftype <= MAX_DTYPE) {
-				EIF_TYPE_INDEX g = RTUD (dftype);
-				if (type_defined (aftype)) {
-					result = (g == type_description (aftype)->new_type);
+		if (result) {
+			if (dftype == TUPLE_TYPE) {
+				if (aftype == TUPLE_TYPE) {
+					(*gtype) += TUPLE_OFFSET;
+					(*atype) += TUPLE_OFFSET;
+					dftype = **gtype;
+					aftype = **atype;
 				} else {
 					result = 0;
 				}
-			} else {
-				result = (dftype == aftype ? 1 : 0);
+			}
+
+			if (dftype == FORMAL_TYPE) {
+				if (aftype == FORMAL_TYPE) {
+					(*gtype)++;
+					(*atype)++;
+					result = (**gtype == **atype ? 1 : 0);
+				} else {
+					result = 0;
+				}
+			} else if (result) {
+				if (dftype <= MAX_DTYPE  &&  aftype <= MAX_DTYPE) {
+					if (type_defined (aftype)) {
+						result = (dftype == type_description (aftype)->new_type);
+					} else {
+						result = 0;
+					}
+				} else {
+					result = (dftype == aftype ? 1 : 0);
+				}
 			}
 		}
 	}
@@ -3576,7 +3308,7 @@ rt_private void iread_header_new (EIF_CONTEXT_NOARG)
 
 #ifdef RECOVERABLE_DEBUG
 				printf ("Type %d {%s ", dtype, vis_name);
-				print_old_generic_names ((int32 *) gtypes, nb_gen);
+				print_old_generic_names (gtypes, nb_gen);
 				printf ("}\n");
 #endif
 				for (t = info->patterns; ; ) {

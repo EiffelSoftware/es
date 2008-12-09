@@ -14,19 +14,34 @@ inherit
 	ES_CLICKABLE_EVENT_LIST_TOOL_PANEL_BASE
 		redefine
 			build_tool_interface,
+			on_after_initialized,
 			internal_recycle,
 			create_right_tool_bar_items,
 			is_appliable_event,
 			surpress_synchronization,
-			on_event_added,
-			on_event_removed,
+			on_event_item_added,
+			on_event_item_removed,
+			on_handle_key,
 			update_content_applicable_widgets,
-			show
+			show,
+			show_context_menu
+		end
+
+	ES_HELP_CONTEXT
+		export
+			{NONE} all
 		end
 
 	ES_ERROR_LIST_COMMANDER_I
 		export
 			{ES_ERROR_LIST_COMMAND} all
+		end
+
+	SESSION_EVENT_OBSERVER
+		export
+			{NONE} all
+		redefine
+			on_session_value_changed
 		end
 
 	SHARED_ERROR_TRACER
@@ -39,6 +54,36 @@ create
 
 feature {NONE} -- Iniitalization
 
+	on_after_initialized
+			-- <Precursor>
+		do
+				-- Enable copying to clipboard
+			enable_copy_to_clipboard
+
+				-- Bind redirecting pick and drop actions
+			stone_director.bind (grid_events, Current)
+
+				-- Hook up events for session data
+			if session_manager.is_service_available then
+				session_data.connect_events (Current)
+				if {l_expand: !BOOLEAN_REF} session_data.value_or_default (expand_errors_session_id, False) then
+					expand_errors := l_expand.item
+					if expand_errors then
+						expand_errors_button.enable_select
+					else
+						expand_errors_button.disable_select
+					end
+				end
+			end
+
+				-- Set UI based on initial state
+			update_content_applicable_navigation_buttons
+
+			Precursor
+		end
+
+feature {NONE} -- User interface initialization
+
 	 build_tool_interface (a_widget: ES_GRID) is
 			-- Builds the tools user interface elements.
 			-- Note: This function is called prior to showing the tool for the first time.
@@ -46,7 +91,6 @@ feature {NONE} -- Iniitalization
 			-- `a_widget': A widget to build the tool interface using.
 		local
 			l_col: EV_GRID_COLUMN
-			l_session: SESSION_I
 		do
 			Precursor {ES_CLICKABLE_EVENT_LIST_TOOL_PANEL_BASE} (a_widget)
 			a_widget.set_column_count_to (position_column)
@@ -73,12 +117,12 @@ feature {NONE} -- Iniitalization
 			a_widget.disable_row_height_fixed
 			a_widget.enable_auto_size_best_fit_column (error_column)
 			a_widget.enable_multiple_row_selection
-			a_widget.item_deactivate_actions.extend (agent (a_row: EV_GRID_ITEM)
+			register_action (a_widget.row_deselect_actions, agent (a_row: EV_GRID_ROW)
 				do
 						-- Updates UI based on selection and row count.
 					update_content_applicable_widgets (grid_events.row_count > 0)
 				end)
-			a_widget.row_select_actions.extend (agent (a_row: EV_GRID_ROW)
+			register_action (a_widget.row_select_actions, agent (a_row: EV_GRID_ROW)
 				do
 						-- Updates UI based on selection and row count.
 					update_content_applicable_widgets (grid_events.row_count > 0)
@@ -89,47 +133,19 @@ feature {NONE} -- Iniitalization
 				a_widget.column (error_column),
 				a_widget.column (context_column),
 				a_widget.column (position_column)>>)
-
-				-- Enable copying to clipboard
-			enable_copy_to_clipboard
-
-				-- Bind redirecting pick and drop actions
-			stone_director.bind (a_widget)
-
-				-- Set UI based on initial state
-			update_content_applicable_navigation_buttons
-
-				-- Hook up events for session data
-			if session_manager.is_service_available then
-				l_session := session_manager.service.retrieve (False)
-				l_session.value_changed_event.subscribe (agent on_session_value_changed)
-				if {l_expand: !BOOLEAN_REF} l_session.value_or_default (expand_errors_session_id, False) then
-					expand_errors := l_expand.item
-					if expand_errors then
-						expand_errors_button.enable_select
-					else
-						expand_errors_button.disable_select
-					end
-				end
-			end
 		end
 
 feature {NONE} -- Clean up
 
-	internal_recycle is
-			-- Recycle tool.
+	internal_recycle
+			-- <Precursor>
 		do
 			if is_initialized then
-				stone_director.unbind (grid_events)
-
-				filter_widget.filter_changed_actions.prune (agent on_warnings_filter_changed)
-				errors_button.select_actions.prune (agent on_toogle_errors_button)
-				warnings_button.select_actions.prune (agent on_toogle_warnings_button)
-
 				if session_manager.is_service_available then
-					session_manager.service.retrieve (False).value_changed_event.unsubscribe (agent on_session_value_changed)
+					if session_data.is_connected (Current) then
+						session_data.disconnect_events (Current)
+					end
 				end
-
 			end
 			Precursor {ES_CLICKABLE_EVENT_LIST_TOOL_PANEL_BASE}
 		end
@@ -141,6 +157,14 @@ feature -- Access
 
 	warning_count: NATURAL
 			-- Number of warnings
+
+feature -- Access: Help
+
+	help_context_id: !STRING_GENERAL
+			-- <Precursor>
+		once
+			Result := "62F36EFA-1D3A-9E48-3A6A-7DA40B7E2046"
+		end
 
 feature -- Status report
 
@@ -178,6 +202,9 @@ feature {NONE} -- User interface items
 
 	expand_errors_button: SD_TOOL_BAR_TOGGLE_BUTTON
 			-- Toogle to expanded error events automatically
+
+	delete_items_button: SD_TOOL_BAR_BUTTON
+			-- Delete selected items button
 
 	error_info_button: SD_TOOL_BAR_BUTTON
 			-- Error information button
@@ -414,9 +441,58 @@ feature {NONE} -- Basic operations
 			end
 		end
 
+	show_context_menu (a_item: EV_GRID_ITEM; a_x: INTEGER; a_y: INTEGER)
+			-- <Precursor>
+		local
+			l_menu: EV_MENU
+			l_remove: EV_MENU_ITEM
+		do
+			if {l_item: EVENT_LIST_ITEM_I} a_item.row.data then
+				create l_menu
+
+					-- Remove, singluar
+				create l_remove.make_with_text (interface_names.m_remove)
+				l_remove.set_pixmap (stock_pixmaps.general_delete_icon)
+				l_remove.select_actions.extend (agent remove_event_list_row (a_item.row))
+				l_menu.extend (l_remove)
+
+				if grid_events.selected_rows /= Void and then not grid_events.selected_rows.is_empty then
+						-- Remove, multiple
+					create l_remove.make_with_text (interface_names.m_remove_all)
+					l_remove.set_pixmap (stock_pixmaps.general_delete_icon)
+					l_remove.select_actions.extend (agent on_remove_selected_rows)
+					l_menu.extend (l_remove)
+				end
+				l_menu.show_at (a_item.row.parent, a_x, a_y)
+			else
+					-- This occurs when the user requests a context menu on an error list subrow, which
+					-- do not have context menus.
+				check
+					row_parented: a_item.row.parent_row /= Void
+				end
+			end
+
+		end
+
+feature {NONE} -- Action handlers
+
+	on_handle_key (a_key: EV_KEY; a_alt: BOOLEAN; a_ctrl: BOOLEAN; a_shift: BOOLEAN; a_released: BOOLEAN): BOOLEAN
+			-- <Precursor>
+		do
+			if a_released and then not a_alt and then not a_ctrl and then not a_shift then
+				if a_key.code = {EV_KEY_CONSTANTS}.key_delete then
+					remove_all_selected_event_list_rows
+					Result := True
+				end
+			end
+			if not Result then
+				Result := Precursor (a_key, a_alt, a_ctrl, a_shift, a_released)
+			end
+		end
+
 feature {NONE} -- Events
 
-	on_event_added (a_service: EVENT_LIST_S; a_event_item: EVENT_LIST_ITEM_I)
+	on_event_item_added (a_service: EVENT_LIST_S; a_event_item: EVENT_LIST_ITEM_I)
 			-- <Precursor>
 		local
 			l_applicable: BOOLEAN
@@ -445,7 +521,7 @@ feature {NONE} -- Events
 			is_initialized: is_appliable_event (a_event_item) implies is_initialized
 		end
 
-	on_event_removed (a_service: EVENT_LIST_S; a_event_item: EVENT_LIST_ITEM_I) is
+	on_event_item_removed (a_service: EVENT_LIST_S; a_event_item: EVENT_LIST_ITEM_I) is
 			-- <Precursor>
 		local
 			l_applicable: BOOLEAN
@@ -504,6 +580,15 @@ feature {NONE} -- Events
 			end
 
 			update_content_applicable_navigation_buttons
+		end
+
+	on_remove_selected_rows
+			-- Caled when the `delete_items_button' is selected.
+		require
+			is_interface_usable: is_interface_usable
+			is_initialized: is_initialized
+		do
+			remove_all_selected_event_list_rows
 		end
 
 	on_toogle_warnings_button is
@@ -698,13 +783,8 @@ feature {NONE} -- Events
 			end
 		end
 
-	on_session_value_changed (a_session: SESSION; a_id: STRING_8) is
-			-- Called when the session changes
-		require
-			is_interface_usable: is_interface_usable
-			is_initialized: is_initialized
-			a_session_attached: a_session /= Void
-			a_session_is_interface_usable: a_session.is_interface_usable
+	on_session_value_changed (a_session: SESSION; a_id: STRING_8)
+			-- <Precursor>
 		do
 			if a_id.is_equal (expand_errors_session_id) then
 					-- Retrieve global session
@@ -757,7 +837,7 @@ feature {NONE} -- Factory
 		local
 			l_button: SD_TOOL_BAR_BUTTON
 		do
-			create Result.make (8)
+			create Result.make (9)
 
 				-- Navigation buttons
 			l_button := go_to_next_error_command.new_sd_toolbar_item (False)
@@ -772,6 +852,13 @@ feature {NONE} -- Factory
 			l_button := go_to_previous_warning_command.new_sd_toolbar_item (False)
 			Result.put_last (l_button)
 
+			create delete_items_button.make
+			delete_items_button.set_pixel_buffer (stock_pixmaps.general_delete_icon_buffer)
+			delete_items_button.set_pixmap (stock_pixmaps.general_delete_icon)
+			delete_items_button.set_tooltip (locale_formatter.translation (tt_delete_items))
+			register_action (delete_items_button.select_actions, agent on_remove_selected_rows)
+			Result.put_last (delete_items_button)
+
 				-- Separator
 			Result.put_last (create {SD_TOOL_BAR_SEPARATOR}.make)
 
@@ -780,20 +867,19 @@ feature {NONE} -- Factory
 			expand_errors_button.set_pixmap (stock_pixmaps.errors_and_warnings_expand_errors_icon)
 			expand_errors_button.set_pixel_buffer (stock_pixmaps.errors_and_warnings_expand_errors_icon_buffer)
 			expand_errors_button.set_tooltip (interface_names.f_toogle_expand_errors)
-			expand_errors_button.select_actions.extend (agent on_toggle_expand_errors_button)
-			expand_errors_button.select_actions.compare_objects
+			register_action (expand_errors_button.select_actions, agent on_toggle_expand_errors_button)
 			Result.put_last (expand_errors_button)
 
 			create error_info_command.make
 			error_info_button := error_info_command.new_sd_toolbar_item (False)
 				-- We need to do something else, like handle grid selection
 			error_info_button.select_actions.wipe_out
-			error_info_button.select_actions.extend (agent on_error_info)
+			register_action (error_info_button.select_actions, agent on_error_info)
 			Result.put_last (error_info_button)
 
 				-- Filter pop up widget
 			create filter_widget.make
-			filter_widget.filter_changed_actions.extend (agent on_warnings_filter_changed)
+			register_action (filter_widget.filter_changed_actions, agent on_warnings_filter_changed)
 
 				-- Filter button
 			create filter_button.make
@@ -807,7 +893,7 @@ feature {NONE} -- Factory
 			filter_button_attached: filter_button /= Void
 		end
 
-feature {NONE} -- User interface manipulation
+feature -- User interface manipulation
 
 	show is
 			-- Redefine
@@ -827,6 +913,8 @@ feature {NONE} -- User interface manipulation
 				end
 			end
 		end
+
+feature {NONE} -- User interface manipulation
 
 	set_error_count (a_count: like error_count)
 			-- Sets `error_count' to `a_count'
@@ -904,10 +992,12 @@ feature {NONE} -- User interface manipulation
 			--
 			-- `a_enable': True to indicate there is content available, False otherwise
 		do
-			if a_enable and grid_events.selected_rows.count = 1 then
+			if a_enable and grid_events.selected_rows.count >= 1 then
 				error_info_command.enable_sensitive
+				delete_items_button.enable_sensitive
 			else
 				error_info_command.disable_sensitive
+				delete_items_button.disable_sensitive
 			end
 		end
 
@@ -1099,17 +1189,23 @@ feature {NONE} -- Constants
 	context_column: INTEGER = 4
 	position_column: INTEGER = 5
 
-	expand_errors_session_id: STRING_8 = "com.eiffel.error_list.expand_errors"
+	expand_errors_session_id: !STRING = "com.eiffel.error_list.expand_errors"
+
+feature {NONE} -- Internationalization
+
+	tt_delete_items: !STRING = "Delete all the selected [completed] items"
 
 invariant
 	errors_button_attached: is_initialized implies errors_button /= Void
 	warnings_button_attached: is_initialized implies warnings_button /= Void
-	filter_button_attached: is_initialized implies filter_button /= Void
+	delete_items_button_attached: is_initialized implies delete_items_button /= Void
 	expand_errors_button_attached: is_initialized implies expand_errors_button /= Void
+	error_info_button_attached: is_initialized implies error_info_button /= Void
+	filter_button_attached: is_initialized implies filter_button /= Void
 	item_count_matches_error_and_warning_count: error_count + warning_count = item_count
 
 ;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

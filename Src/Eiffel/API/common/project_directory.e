@@ -18,6 +18,8 @@ inherit
 			{NONE} all
 		end
 
+	REFACTORING_HELPER
+
 create
 	make
 
@@ -245,6 +247,30 @@ feature -- Directories
 			data_path_not_void: Result /= Void
 		end
 
+	eifgens_cluster_path: DIRECTORY_NAME is
+			-- Path to internal cluster located in EIFGENs directory
+		do
+			Result := internal_eifgens_cluster_path
+			if Result = Void then
+				create Result.make_from_string (target_path)
+				Result.extend (eifgens_cluster_directory)
+				internal_eifgens_cluster_path := Result
+			end
+		ensure
+			result_attached: Result /= Void
+		end
+
+	testing_results_path: DIRECTORY_NAME
+			-- Path to testing result directory in EIFGENs directory
+		do
+			Result := internal_testing_results_path
+			if Result = Void then
+				create Result.make_from_string (target_path)
+				Result.extend (testing_results_directory)
+				internal_testing_results_path := Result
+			end
+		end
+
 feature -- Files
 
 	project_file_name: FILE_NAME is
@@ -328,6 +354,7 @@ feature -- Files
 	executable_file_name: FILE_NAME
 			-- File name of executable.
 		do
+			fixme ("'target' is not always the executable filename, check output or system name.")
 			if platform_constants.is_windows then
 				create Result.make_from_string (target + ".exe")
 			else
@@ -551,6 +578,8 @@ feature {NONE} -- Implementation: Access
 	internal_workbench_assemblies_path: like workbench_assemblies_path
 	internal_workbench_path: like workbench_path
 	internal_data_path: like data_path
+	internal_eifgens_cluster_path: like eifgens_cluster_path
+	internal_testing_results_path: like testing_results_path
 			-- Placeholders for storing path.
 
 	internal_precompilation_file_name: like precompilation_file_name

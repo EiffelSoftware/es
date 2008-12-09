@@ -7,7 +7,7 @@ indexing
 
 class
 	EG_ITEM
-	
+
 inherit
 	HASHABLE
 		rename
@@ -15,7 +15,7 @@ inherit
 		redefine
 			default_create
 		end
-		
+
 feature {NONE} -- Initialization
 
 	default_create is
@@ -29,20 +29,20 @@ feature -- Access
 
 	graph: EG_GRAPH
 			-- The graph model `Current' is part of (if not Void).
-			
+
 	id: INTEGER is
 			-- Unique id.
 		do
 			if internal_hash_id = 0  then
-				counter.set_item (counter.item + 1)
+				counter.put (counter.item + 1)
 				internal_hash_id := counter.item
 			end
 			Result := internal_hash_id
 		end
-		
+
 	name: STRING
 			-- Name of `Current'.
-			
+
 	set_name (a_name: STRING) is
 			-- Set `name' to `a_name'.
 		do
@@ -53,10 +53,10 @@ feature -- Access
 		ensure
 			set: name = a_name
 		end
-		
+
 	name_change_actions: EV_NOTIFY_ACTION_SEQUENCE
 			-- Called when `name' was changed.
-		
+
 feature {EG_GRAPH} -- Element change.
 
 	set_graph (a_graph: like graph) is
@@ -74,18 +74,20 @@ feature {NONE} -- Implementation
 
 	internal_hash_id: like id
 			-- internal id for the hash code.
-			
-	counter: INTEGER_REF is
+
+	counter: CELL [INTEGER] is
 			-- Id counter.
 		once
-			create Result
+			create Result.put (0)
+		ensure
+			counter_not_void: Result /= Void
 		end
-		
+
 invariant
 	name_change_actions_not_void: name_change_actions /= Void
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			 Eiffel Software
@@ -95,8 +97,4 @@ indexing
 			 Customer support http://support.eiffel.com
 		]"
 
-
-
-
 end -- class EG_ITEM
-

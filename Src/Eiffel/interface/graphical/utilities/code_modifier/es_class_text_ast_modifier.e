@@ -14,7 +14,12 @@ inherit
 	ES_CLASS_TEXT_MODIFIER
 		redefine
 			modified_data,
-			create_modified_data
+			new_modified_data
+		end
+
+	SHARED_EIFFEL_PARSER_WRAPPER
+		export
+			{NONE} all
 		end
 
 create
@@ -61,9 +66,17 @@ feature -- Status report
 			modified_data_is_ast_available: Result implies (modified_data.is_prepared and then modified_data.is_ast_available)
 		end
 
+feature {NONE} -- Helpers
+
+	validating_parser: !EIFFEL_PARSER
+			-- A parser used to validate a parse
+		once
+			create Result.make_with_factory (create {AST_NULL_FACTORY})
+		end
+
 feature -- Query
 
-	ast_position (a_ast: ?AST_EIFFEL): TUPLE [start_position: INTEGER; end_position: INTEGER]
+	ast_position (a_ast: ?AST_EIFFEL): !TUPLE [start_position: INTEGER; end_position: INTEGER]
 			-- Retrieve an AST node's position.
 			-- Note: The result is unadjusted! To account for ajustement, pass through `modified_data.adjusted_position'.
 			--
@@ -89,7 +102,6 @@ feature -- Query
 				Result := [0, 0]
 			end
 		ensure
-			result_attached: Result /= Void
 			result_start_position_small_enough: Result.start_position <= Result.end_position
 		end
 
@@ -165,23 +177,23 @@ feature -- Basic operations
 
 feature -- Operation constants
 
-	remove_white_space_nothing: INTEGER = unique
+	remove_white_space_none: INTEGER = 0
 			-- Remove neither heading nor trailing white spaces.
 
-	remove_white_space_heading: INTEGER = unique
+	remove_white_space_heading: INTEGER = 1
 			-- Remove heading white spaces until the closest leading '%N' (including '%N').
 
-	remove_white_space_trailing: INTEGER = unique
+	remove_white_space_trailing: INTEGER = 2
 			-- Remove trailing white spaces until the first trailing '%N' (including '%N').
 
 feature {NONE} -- Factory
 
-	create_modified_data: !like modified_data
+	new_modified_data: !like modified_data
 			-- <Precursor>
 		local
 			l_class: !like context_class
 			l_editor: like active_editor_for_class
-			l_text: !STRING
+			l_text: !STRING_32
 		do
 			l_class := context_class
 			l_editor := active_editor_for_class (l_class)
@@ -189,7 +201,7 @@ feature {NONE} -- Factory
 					-- There's no open editor, use the class text from disk instead.
 				l_text := original_text
 			else
-				l_text ?= l_editor.text
+				create l_text.make_from_string (l_editor.wide_text)
 			end
 			create Result.make (l_class, l_text)
 		end

@@ -17,6 +17,9 @@ inherit
 		end
 
 	EB_RECYCLABLE
+		redefine
+			internal_detach_entities
+		end
 
 	SHARED_WORKBENCH
 		export
@@ -685,6 +688,45 @@ feature -- Memory management
 			parent := Void
 		end
 
+	internal_detach_entities is
+			-- <Precursor>
+		do
+			address_dialog := Void
+			choice := Void
+			class_address := Void
+			class_i := Void
+			class_label := Void
+			class_list := Void
+			class_name := Void
+			cluster_address := Void
+			cluster_label := Void
+			context_menu_factory := Void
+			current_feature := Void
+			current_group := Void
+			current_typed_class := Void
+			feature_address := Void
+			feature_label := Void
+			feature_list := Void
+			feature_name := Void
+			formatters_combo := Void
+			group_list := Void
+			header_info := Void
+			internal_recycle_actions := Void
+			internal_recycle_pool := Void
+			known_formatters := Void
+			label_changed_actions := Void
+			new_class_win := Void
+			output_line := Void
+			parent := Void
+			recycler := Void
+			tool_bar_items := Void
+			view_points_combo := Void
+			view_points_widget := Void
+			viewpoints := Void
+			widget := Void
+			Precursor
+		end
+
 feature {EB_DEVELOPMENT_WINDOW, EB_DEVELOPMENT_WINDOW_DIRECTOR, EB_DEVELOPMENT_WINDOW_MAIN_BUILDER} -- Vision2 Controls
 
 	cluster_address: EV_COMBO_BOX
@@ -857,7 +899,7 @@ feature {NONE} -- Execution
 		require
 			looking_for_a_feature: feature_list /= Void
 		do
-			if pos > 0 then
+			if feature_list.valid_index (pos) then
 				current_feature := feature_list.i_th (pos)
 				feature_address.set_text (current_feature.name.as_lower)
 			end
@@ -1473,25 +1515,9 @@ feature {NONE} -- open new class
 		require
 			class_selected: class_i /= Void
 			valid_class: current_class /= Void
-		local
-			t: E_FEATURE_TABLE
-			found: BOOLEAN
 		do
-			t := current_class.api_feature_table
-			if t /= Void then
-					-- Even in a class_c, the feature table may be Void (if half-compiled).
-				from
-					t.start
-				until
-					t.after or else found
-				loop
-					if t.item_for_iteration.name.is_equal (name) then
-						Result := t.item_for_iteration
-						found := True
-					else
-						t.forth
-					end
-				end
+			if current_class.has_feature_table then
+				Result := current_class.feature_with_name (name)
 			end
 		end
 

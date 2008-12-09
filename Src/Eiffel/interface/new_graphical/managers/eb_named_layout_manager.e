@@ -8,7 +8,9 @@ indexing
 class
 	EB_NAMED_LAYOUT_MANAGER
 
-inherit --{NONE}
+inherit
+	ANY
+
 	EIFFEL_LAYOUT
 		export
 			{NONE} all
@@ -83,7 +85,7 @@ feature {NONE} -- Initlization
 
 feature -- Command
 
-	add_layout (a_name: STRING_GENERAL) is
+	add_layout (a_name: STRING_GENERAL): BOOLEAN is
 			-- Add a new layout which name is `a_name if not exist.
 			-- Otherwise overwrite the exsiting one.
 		require
@@ -99,8 +101,8 @@ feature -- Command
 				l_fn := layout_file_name (a_name.as_string_8, is_normal_mode)
 			end
 			create l_file_utils
-			l_file_utils.create_directory_for_file (({!STRING_GENERAL}) #? l_fn.string)
-			development_window.docking_manager.save_tools_config_with_name (l_fn, a_name)
+			l_file_utils.create_directory_for_file (l_fn.string.as_attached)
+			Result := development_window.docking_manager.save_tools_data_with_name (l_fn, a_name)
 		end
 
 	open_layout (a_name: STRING_GENERAL) is
@@ -156,7 +158,7 @@ feature -- Command
 				if not l_r then
 					-- If opening failed, we open orignal layout before opening.
 					(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_error_prompt (interface_names.l_open_layout_error, development_window.window, Void)
-					development_window.restore_standard_tools_docking_layout
+					development_window.docking_layout_manager.restore_standard_tools_docking_layout
 				end
 
 				development_window.menus.update_menu_lock_items
@@ -226,9 +228,9 @@ invariant
 	not_void: layouts /= Void
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -239,19 +241,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

@@ -1,3 +1,4 @@
+
 /*
 	description: "[
 			Dummy declarations for variables and routines called in the run-time but
@@ -5,7 +6,7 @@
 			]"
 	date:		"$Date$"
 	revision:	"$Revision$"
-	copyright:	"Copyright (c) 1985-2006, Eiffel Software."
+	copyright:	"Copyright (c) 1985-2008, Eiffel Software."
 	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"Commercial license is available at http://www.eiffel.com/licensing"
 	copying: "[
@@ -295,6 +296,7 @@ rt_public EIF_TYPE_INDEX egc_str_dtype;
 rt_public EIF_TYPE_INDEX egc_arr_dtype;
 rt_public EIF_TYPE_INDEX egc_tup_dtype;
 rt_public int32 egc_disp_rout_id;
+rt_public int32 egc_copy_rout_id;
 rt_public EIF_TYPE_INDEX egc_bit_dtype;
 
 rt_public EIF_TYPE_INDEX egc_sp_bool;
@@ -367,10 +369,10 @@ rt_public void (*egc_einit)(void);
 rt_public void (*egc_tabinit)(void);	
 rt_public int32 **egc_fcall;
 rt_public struct rout_info *egc_forg_table;
-rt_public EIF_TYPE_INDEX *egc_fdtypes;
 
 #else
 rt_public void (**egc_edispose)(void);
+rt_public void (**egc_copy)(EIF_REFERENCE, EIF_REFERENCE);
 rt_public char *(**egc_ecreate)(void);
 rt_public char *(**egc_exp_create)(void);
 rt_public struct ctable *egc_ce_rname;
@@ -386,10 +388,15 @@ rt_public long *egc_fsize;
 	rt_public EIF_REFERENCE (*egc_twin)(EIF_REFERENCE); /* {ANY}.twin */
 #endif
 
-rt_public int32 egc_rcdt;				/* E1/einit.c */
-rt_public int32 egc_rcorigin;			/* E1/einit.c */
-rt_public int32 egc_rcoffset;			/* E1/einit.c */
-rt_public int32 egc_rcarg;				/* E1/einit.c */
+rt_public int32 egc_rcount;
+rt_public int32 egc_ridx;
+rt_public char  **egc_rlist;
+rt_public char  *egc_eif_root;
+rt_public int32 *egc_rcdt;				/* E1/einit.c */
+rt_public int32 *egc_rcorigin;			/* E1/einit.c */
+rt_public int32 *egc_rcoffset;			/* E1/einit.c */
+rt_public int32 *egc_rcarg;				/* E1/einit.c */
+
 
 rt_public char *egc_system_name;
 		/* Used in `misc.c' for storing and retrieving of Windows registry keys.

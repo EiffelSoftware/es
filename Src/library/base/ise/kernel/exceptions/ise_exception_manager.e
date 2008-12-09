@@ -29,7 +29,7 @@ inherit
 
 feature -- Access
 
-	last_exception: EXCEPTION
+	last_exception: ?EXCEPTION
 			-- Last exception
 		do
 			Result := last_exception_cell.item
@@ -63,7 +63,7 @@ feature -- Raise
 feature -- Status setting
 
 	ignore (a_exception: TYPE [EXCEPTION]) is
-			-- Make sure that any exception of code `code' will be
+			-- Make sure that any exception of type `a_exception' will be
 			-- ignored. This is not the default.
 		local
 			l_type: INTEGER
@@ -271,7 +271,7 @@ feature {EXCEPTIONS} -- Compatibility support
 
 feature {NONE} -- Access
 
-	exception_data: TUPLE [code: INTEGER; signal_code: INTEGER; error_code: INTEGER; tag, recipient, eclass: STRING; rf_routine, rf_class: STRING; trace: STRING; line_number: INTEGER; is_invariant_entry: BOOLEAN] is
+	exception_data: ?TUPLE [code: INTEGER; signal_code: INTEGER; error_code: INTEGER; tag, recipient, eclass: STRING; rf_routine, rf_class: STRING; trace: STRING; line_number: INTEGER; is_invariant_entry: BOOLEAN] is
 			-- Exception data
 			-- Used to store temporary exception information,
 			-- which is used to create exception object later.
@@ -293,7 +293,7 @@ feature {NONE} -- Element change
 						rf_routine, rf_class: STRING; trace: STRING; line_number: INTEGER; is_invariant_entry: BOOLEAN) is
 			-- Set exception data.
 		local
-			l_exception: EXCEPTION
+			l_exception: ?EXCEPTION
 		do
 			exception_data_cell.put ([code, signal_code, error_code, tag, recipient, eclass, rf_routine, rf_class, trace, line_number, is_invariant_entry])
 			if new_obj then
@@ -351,33 +351,47 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Cells
 
-	exception_data_cell: CELL [TUPLE [code: INTEGER; signal_code: INTEGER; error_code: INTEGER; tag, recipient, eclass: STRING; rf_routine, rf_class: STRING; trace: STRING; line_number: INTEGER; is_invariant_entry: BOOLEAN]] is
+	exception_data_cell: CELL [?TUPLE [code: INTEGER; signal_code: INTEGER; error_code: INTEGER; tag, recipient, eclass: STRING; rf_routine, rf_class: STRING; trace: STRING; line_number: INTEGER; is_invariant_entry: BOOLEAN]] is
 			-- Cell to hold current exception data
 		once
-			create Result
+			create Result.put (Void)
 		end
 
-	last_exception_cell: CELL [EXCEPTION] is
+	last_exception_cell: CELL [?EXCEPTION] is
 			-- Cell to hold last exception
 		once
-			create Result
+			create Result.put (Void)
+		end
+
+	no_memory_exception_object_cell: CELL [?EXCEPTION] is
+			-- No more memory exception object.
+		once
+			create Result.put (Void)
 		end
 
 feature {NONE} -- Implementation
 
 	exception_from_data: ?EXCEPTION is
 			-- Create an exception object `exception_data'
+		local
+			t: ?EXCEPTION
 		do
 			if
 				{l_data: like exception_data} exception_data and then
 				{e: EXCEPTION} exception_from_code (l_data.code)
 			then
 				if {l_rf: ROUTINE_FAILURE} e then
-					e.set_throwing_exception (last_exception)
+					t := last_exception
+					if t /= Void then
+						e.set_throwing_exception (t)
+					end
 					l_rf.set_routine_name (l_data.rf_routine)
 					l_rf.set_class_name (l_data.rf_class)
 				elseif {l_ov: OLD_VIOLATION} e then
-					e.set_throwing_exception (last_exception)
+					t := last_exception
+					if t /= Void then
+						e.set_throwing_exception (t)
+					end
 				else
 					if {l_inva: INVARIANT_VIOLATION} e then
 						l_inva.set_is_entry (l_data.is_invariant_entry)
@@ -401,36 +415,23 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	internal_object: INTERNAL
-		once
-			create Result
-		end
-
 	once_raise (a_exception: EXCEPTION) is
 			-- Called by runtime to raise saved exception for once routines.
 		local
-			c_meaning, c_message: ANY
+			p_meaning, p_message: POINTER
 		do
 			if not a_exception.is_ignored then
 				set_last_exception (a_exception)
-				if {s: STRING} a_exception.meaning  then
-					c_meaning := s.to_c
+					-- Meaning is not yet used in the runtime.
+					-- We passes NULL, until we implemented it.
+				p_meaning := default_pointer
+				if {m: C_STRING} a_exception.c_message then
+					p_message := m.item
 				else
-					c_meaning := ("").to_c
+					p_message := default_pointer
 				end
-				if {m: STRING} a_exception.message  then
-					c_message := m.to_c
-				else
-					c_message := ("").to_c
-				end
-				developer_raise (a_exception.code, $c_meaning, $c_message)
+				developer_raise (a_exception.code, p_meaning, p_message)
 			end
-		end
-
-	no_memory_exception_object_cell: CELL [EXCEPTION] is
-			-- No more memory exception object.
-		once
-			create Result
 		end
 
 	frozen init_exception_manager is
@@ -456,9 +457,19 @@ feature {NONE} -- Implementation
 			no_memory_exception_object_cell.put (l_nomem)
 		end
 
+	internal_object: INTERNAL
+		once
+			create Result
+		end
+
 	frozen free_preallocated_trace is
+		local
+			e: ?EXCEPTION
 		do
-			no_memory_exception_object_cell.item.set_message (Void)
+			e := no_memory_exception_object_cell.item
+			if e /= Void then
+				e.set_message (Void)
+			end
 		end
 
 	developer_raise (a_code: INTEGER; a_meaning, a_message: POINTER) is

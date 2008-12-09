@@ -51,6 +51,7 @@ SHAREDLINK= $sharedlink
 L = $manext
 LIBS = $libs
 LINT = lint
+LINTFLAGS = $lintflags \$(CFLAGS)
 LN = $ln
 MANSRC = $installmansrc
 MAKE = make
@@ -112,7 +113,7 @@ LSRC = malloc.c garcol.c local.c store.c retrieve.c \
 	hash.c traverse.c hashin.c tools.c internal.c plug.c \
 	copy.c equal.c lmalloc.c out.c timer.c urgent.c sig.c \
 	hector.c cecil.c bits.c file.c dir.c misc.c \
-	error.c umain.c memory.c argv.c boolstr.c search.c \
+	error.c umain.c memory.c memory_analyzer.c argv.c boolstr.c search.c \
 	run_idr.c path_name.c object_id.c eif_threads.c eif_project.c \
 	eif_rw_lock.c gen_conf.c eif_type_id.c rout_obj.c \
 	option.c compress.c console.c offset.c main.c except.c
@@ -154,6 +155,7 @@ WOBJ = \
 	werror.o \
 	wumain.o \
 	wmemory.o \
+	wmemory_analyzer.o \
 	wargv.o \
 	wboolstr.o \
 	wsearch.o \
@@ -202,6 +204,7 @@ LOBJ = \
 	error.o \
 	umain.o \
 	memory.o \
+	memory_analyzer.o \
 	argv.o \
 	boolstr.o \
 	search.o \
@@ -256,6 +259,7 @@ MT_WOBJ = \
 	MTwerror.o \
 	MTwumain.o \
 	MTwmemory.o \
+	MTwmemory_analyzer.o \
 	MTwargv.o \
 	MTwboolstr.o \
 	MTwsearch.o \
@@ -304,6 +308,7 @@ MT_LOBJ = \
 	MTerror.o \
 	MTumain.o \
 	MTmemory.o \
+	MTmemory_analyzer.o \
 	MTargv.o \
 	MTboolstr.o \
 	MTsearch.o \
@@ -402,6 +407,9 @@ wumain.o: umain.c
 	       $(CC) -c $(JCFLAGS) -DWORKBENCH $? -o $@
 
 wmemory.o: memory.c
+	       $(CC) -c $(JCFLAGS) -DWORKBENCH $? -o $@
+
+wmemory_analyzer.o: memory_analyzer.c
 	       $(CC) -c $(JCFLAGS) -DWORKBENCH $? -o $@
 
 wargv.o: argv.c
@@ -540,6 +548,9 @@ MTumain.o: umain.c
 MTmemory.o: memory.c
 	       $(CC) -c $(JMTCFLAGS) $? -o $@
 
+MTmemory_analyzer.o: memory_analyzer.c
+	       $(CC) -c $(JMTCFLAGS) $? -o $@
+
 MTargv.o: argv.c
 	       $(CC) -c $(JMTCFLAGS) $? -o $@
 
@@ -674,6 +685,9 @@ MTwumain.o: umain.c
 	       $(CC) -c $(JMTCFLAGS) -DWORKBENCH $? -o $@
 
 MTwmemory.o: memory.c
+	       $(CC) -c $(JMTCFLAGS) -DWORKBENCH $? -o $@
+
+MTwmemory_analyzer.o: memory_analyzer.c
 	       $(CC) -c $(JMTCFLAGS) -DWORKBENCH $? -o $@
 
 MTwargv.o: argv.c

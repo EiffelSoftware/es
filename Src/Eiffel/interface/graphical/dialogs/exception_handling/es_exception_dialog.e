@@ -85,6 +85,7 @@ feature {NONE} -- Initialize
 			register_kamikaze_action (show_actions, agent l_box.set_background_color (colors.stock_colors.black))
 
 			create exception_text_panel
+			exception_text_panel.set_cursors (create {EB_EDITOR_CURSORS})
 			exception_text_panel.disable_line_numbers
 			exception_text_panel.widget.set_minimum_size (400, 165)
 			if trace /= Void then
@@ -138,6 +139,10 @@ feature -- Access
 
 	trace: STRING_32
 			-- Exception trace message
+
+	last_description: STRING
+			-- Last description for submitting bug report
+			-- Maybe void if not recorded
 
 	support_login: COMM_SUPPORT_BUG_REPORTER
 			-- Support site login proxy communicator
@@ -201,6 +206,7 @@ feature {NONE} -- Basic operations
 			l_width: INTEGER
 		do
 			l_width := (exception_text_panel.left_margin_width * 2) + exception_text_panel.font.string_width (trace) + exception_text_panel.vertical_scrollbar.width
+			l_width := l_width.min ({ES_UI_CONSTANTS}.dialog_maximum_width)
 			exception_text_panel.widget.set_minimum_width (l_width)
 		end
 
@@ -289,10 +295,14 @@ feature {NONE} -- Action handlers
 		local
 			l_dialog: ES_EXCEPTION_SUBMIT_DIALOG
 		do
-			create l_dialog.make (support_login)
+			create l_dialog.make (support_login, last_description)
 			l_dialog.show (dialog)
 			if l_dialog.dialog_result = l_dialog.dialog_buttons.ok_button then
-				submit_bug_button.disable_sensitive
+				if l_dialog.is_submit_successed then
+					submit_bug_button.disable_sensitive
+				else
+					last_description := l_dialog.user_description
+				end
 			end
 		end
 
@@ -317,12 +327,12 @@ feature -- Button constants
 		end
 
 invariant
-	support_login_attached: support_login /= Void
+	support_login_attached: is_interface_usable implies support_login /= Void
 
 ;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -333,19 +343,19 @@ invariant
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

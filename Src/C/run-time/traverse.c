@@ -163,6 +163,13 @@ rt_private void account_attributes (EIF_TYPE_INDEX dtype)
 		EIF_TYPE_INDEX *gtypes = System (dtype).cn_gtypes[i] + 1;
 		for (k=0; gtypes[k] != TERMINATOR; k++) {
 			EIF_TYPE_INDEX gtype = gtypes[k];
+
+				/* Skip all annotations. */
+			while (RT_HAS_ANNOTATION_TYPE(gtype)) {
+				k++;
+				gtype = gtypes[k];
+			}
+
 			if (gtype == TUPLE_TYPE) {
 				k = k + TUPLE_OFFSET;
 				gtype = gtypes[k];
@@ -171,9 +178,6 @@ rt_private void account_attributes (EIF_TYPE_INDEX dtype)
 					/* Skip formal position, no special treatment to be done. */
 				k = k + 1;
 			} else {
-				if (gtype <= MAX_DTYPE) {
-					gtype = RTUD (gtype);
-				}
 				if (gtype <= MAX_DTYPE) {
 					account[gtype] |= ACCOUNT_TYPE;
 				}
@@ -226,6 +230,11 @@ rt_private void account_type (EIF_TYPE_INDEX dftype, int p_accounting)
 		while (i--)
 		{
 			dtype = *(l_cidarr++);
+
+				/* There is an annotation, we can simply discard all of them. */
+			while (RT_HAS_ANNOTATION_TYPE(dtype)) {
+				dtype = *(l_cidarr++);
+			}
 
 			if (dtype == TUPLE_TYPE) {
 				i = i - TUPLE_OFFSET;
@@ -360,7 +369,7 @@ rt_shared void traversal(EIF_REFERENCE object, int p_accounting)
 			/* Special object filled with references */
 			for (i = 0; i < count; i++) {
 				reference = *((char **) object + i);
-				if (0 != reference)		/* Non void reference */
+				if (reference)		/* Non void reference */
 					traversal(reference, p_accounting);
 			}
 		else {
@@ -465,7 +474,7 @@ rt_shared void map_reset(int emergency)
 	 */
 
 	if (emergency) {
-		for (next = map_stack.st_hd; next != 0; /*empty */) {
+		for (next = map_stack.st_hd; next != NULL; /*empty */) {
 			cur = next;						/* Current chunk to be freed */
 			next = next->sk_next;			/* Compute next chunk... */
 			eif_rt_xfree((char *) cur);			/* ...before freeing it */
@@ -702,7 +711,6 @@ rt_private EIF_REFERENCE matching (void (*action_fnptr) (EIF_REFERENCE, EIF_REFE
 	char gc_stopped;
 	struct obj_array l_found, l_marked;
 	union overhead *zone;
-	uint16 flags;
 	EIF_REFERENCE Result;
 	EIF_REFERENCE ref;
 	
@@ -788,7 +796,6 @@ rt_private EIF_REFERENCE matching (void (*action_fnptr) (EIF_REFERENCE, EIF_REFE
 	for (i = 0 ; i < l_marked.count ; i++) {
 			/* Reset `EO_STORE' flags */
 		zone = HEADER(l_marked.area [i]);
-		flags = zone->ov_flags;
 		zone->ov_flags &= (~EO_STORE);
 	}
 

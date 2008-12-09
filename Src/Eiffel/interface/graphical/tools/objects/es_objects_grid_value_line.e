@@ -76,7 +76,8 @@ feature -- Properties
 			Result := object.name
 		end
 
-	object_address: STRING
+	object_address: DBG_ADDRESS
+			-- <Precursor>
 
 	object_dynamic_class: CLASS_C is
 		do
@@ -112,7 +113,7 @@ feature {NONE} -- Object stone
 							create fost.make (related_line.object_address, feat)
 							t := internal_item_stone_data_i_th (0)
 							if t /= Void then
-								objst ?= t.stone
+								objst ?= t.pebble
 								if objst /= Void then
 									fost.attach_object_stone (objst)
 								end
@@ -120,7 +121,7 @@ feature {NONE} -- Object stone
 							fst := fost
 
 							create t
-							t.stone := fst
+							t.pebble := fst
 							t.accept_cursor := fst.stone_cursor
 							t.deny_cursor := fst.X_stone_cursor
 							internal_items_stone_data[col_name_index] := t
@@ -150,11 +151,8 @@ feature -- Query
 		end
 
 	reset_special_attributes_values is
-		local
-			spec_items: ABSTRACT_SPECIAL_VALUE
 		do
-			spec_items ?= object
-			if spec_items /= Void then
+			if {spec_items: ABSTRACT_SPECIAL_VALUE} object then
 				spec_items.reset_items
 				spec_items.set_sp_bounds (object_spec_lower, object_spec_upper)
 			end
@@ -166,16 +164,22 @@ feature -- Query
 		end
 
 	sorted_once_routines: LIST [E_FEATURE] is
-		local
-			l_class: CLASS_C
 		do
-			l_class := object_dynamic_class
-			if l_class = Void then
+			if {l_class: like object_dynamic_class} object_dynamic_class then
+				Result := l_class.once_routines
+			else
 				--| Q: Why do we have Void dynamic_class ?
 				--| ANSWER : because of external class in dotnet system
 				--| Should be fixed now by using SYSTEM_OBJECT for unknown type
+			end
+		end
+
+	sorted_constant_features: LIST [E_CONSTANT] is
+		do
+			if {l_class: like object_dynamic_class} object_dynamic_class then
+				Result := l_class.constant_features
 			else
-				Result := l_class.once_routines
+				--| Q: Why do we have Void dynamic_class ?
 			end
 		end
 

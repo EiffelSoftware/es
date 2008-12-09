@@ -2,7 +2,7 @@
 	description: "Interpreter declarations and definitions."
 	date:		"$Date$"
 	revision:	"$Revision$"
-	copyright:	"Copyright (c) 1985-2007, Eiffel Software."
+	copyright:	"Copyright (c) 1985-2008, Eiffel Software."
 	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"Commercial license is available at http://www.eiffel.com/licensing"
 	copying: "[
@@ -54,8 +54,10 @@ extern struct opstack op_stack;               /* Operational stack */
 #define IV_RESULT	3				/* Result value wanted */
 
 /* Kinds of once routines */
+#define ONCE_MARK_NONE             0	/* Do-routine */
 #define ONCE_MARK_THREAD_RELATIVE  1	/* Thread-relative once routine */
 #define ONCE_MARK_PROCESS_RELATIVE 2	/* Process-relative once routine */
+#define ONCE_MARK_ATTRIBUTE        4	/* Attribute */
 
 /*
  * Byte-code tokens
@@ -197,9 +199,7 @@ extern struct opstack op_stack;               /* Operational stack */
 
 #define BC_REF_TO_PTR		(unsigned char) 132
 #define BC_RCREATE		(unsigned char) 133
-
-/* Byte code for the creation of a generic parameter */
-#define BC_GEN_PARAM_CREATE	(unsigned char) 134
+#define BC_NOTUSED_134	(unsigned char) 134
 
 /* Byte code for expression creation */
 #define BC_CAST_CHAR32		(unsigned char) 135
@@ -254,7 +254,7 @@ extern struct opstack op_stack;               /* Operational stack */
 #define BC_CATCALL			(unsigned char) 156
 #define BC_START_CATCALL	(unsigned char) 157
 #define BC_END_CATCALL		(unsigned char) 158
-#define BC_NOTUSED_159		(unsigned char) 159
+#define BC_IS_ATTACHED		(unsigned char) 159
 #define BC_NOTUSED_160		(unsigned char) 160
 #define BC_NOTUSED_161		(unsigned char) 161
 #define BC_NOTUSED_162		(unsigned char) 162
@@ -281,6 +281,7 @@ typedef struct tag_EIF_DEBUG_VALUE {
 extern void metamorphose_top(struct stochunk * scur, EIF_TYPED_VALUE * volatile stop); /* Converts the top-level item on the operational stack from a basic type to a reference type */
 
 extern void call_disp(EIF_TYPE_INDEX dtype, char *object);	/* Function to call dispose routines */ 
+extern void call_copy (EIF_TYPE_INDEX dtype, EIF_REFERENCE Current, EIF_REFERENCE other); /* Function to call copy routines */
 extern void xiinv(unsigned char *icval, int where);			/* Invariant interpreter */
 extern void xinitint(void);										/* Initialize the interpreter */
 extern EIF_TYPED_VALUE *otop(void);									/* Top of the stack */

@@ -39,7 +39,9 @@ feature {NONE} -- Implementation
 		do
 			create vb
 			widget := vb
-			vb.set_border_width (layout_constants.small_border_size)
+			if not is_associated_with_tool then
+				vb.set_border_width (layout_constants.small_border_size)
+			end
 			vb.set_padding_width (layout_constants.tiny_padding_size)
 
 				--| Viewer
@@ -120,8 +122,9 @@ feature -- Change
 		local
 			cdv, dv: DUMP_VALUE
 			info: ARRAY [TUPLE [name: STRING; value: DUMP_VALUE]]
-			i: INTEGER
+			i,r: INTEGER
 			s: STRING_32
+			glab: EV_GRID_LABEL_ITEM
 			grid: EV_GRID
 		do
 			clear
@@ -138,22 +141,29 @@ feature -- Change
 						else
 							from
 								i := info.lower
+								r := 1
 								grid.insert_new_rows (info.count, 1)
 							until
 								i > info.upper
 							loop
-								grid.set_item (1, i, create {EV_GRID_LABEL_ITEM}.make_with_text (info[i].name))
 								dv := info[i].value
+								grid.set_item (1, r, create {EV_GRID_LABEL_ITEM}.make_with_text (info[i].name))
 								if dv /= Void then
 									if dv.has_formatted_output then
 										s := dv.string_representation
 									else
 										s := dv.output_value (True)
 									end
-									grid.set_item (2, i, create {EV_GRID_LABEL_ITEM}.make_with_text (s))
+									create glab.make_with_text (s)
+									grid.set_item (2, r, glab)
+									r := r + 1
 								else
-									grid.set_item (2, i, create {EV_GRID_ITEM})
+									create glab
+									glab.set_pixmap (pixmaps.mini_pixmaps.debugger_error_icon)
+									grid.set_item (2, r, glab)
+									r := r + 1
 								end
+
 								i := i + 1
 							end
 							if grid.column_count > 1 then
@@ -256,9 +266,9 @@ feature {NONE} -- Event handling
 		end
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -269,19 +279,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

@@ -556,10 +556,15 @@ feature
 			safe_process (l_as.rparan_symbol (match_list))
 		end
 
+	process_converted_expr_as (l_as: CONVERTED_EXPR_AS) is
+		do
+			l_as.expr.process (Current)
+		end
+
 	process_paran_as (l_as: PARAN_AS) is
 		do
 			safe_process (l_as.lparan_symbol (match_list))
-			safe_process (l_as.expr)
+			l_as.expr.process (Current)
 			safe_process (l_as.rparan_symbol (match_list))
 		end
 
@@ -890,16 +895,33 @@ feature
 		end
 
 	process_loop_as (l_as: LOOP_AS) is
+		local
+			l_until: KEYWORD_AS
+			l_variant_processing_after: BOOLEAN
 		do
 			safe_process (l_as.from_keyword (match_list))
 			safe_process (l_as.from_part)
 			safe_process (l_as.invariant_keyword (match_list))
 			safe_process (l_as.full_invariant_list)
-			safe_process (l_as.variant_part)
-			safe_process (l_as.until_keyword (match_list))
+				-- Special code to handle the old or new ordering of the `variant'
+				-- clause in a loop.
+			l_until := l_as.until_keyword (match_list)
+			if l_as.variant_part /= Void and l_until /= Void then
+				if l_as.variant_part.start_position > l_until.start_position then
+					l_variant_processing_after := True
+				else
+					safe_process (l_as.variant_part)
+				end
+			else
+				safe_process (l_as.variant_part)
+			end
+			safe_process (l_until)
 			safe_process (l_as.stop)
 			safe_process (l_as.loop_keyword (match_list))
 			safe_process (l_as.compound)
+			if l_variant_processing_after then
+				l_as.variant_part.process (Current)
+			end
 			safe_process (l_as.end_keyword)
 		end
 
@@ -909,6 +931,12 @@ feature
 			safe_process (l_as.language_name)
 			safe_process (l_as.alias_keyword (match_list))
 			safe_process (l_as.alias_name_literal)
+		end
+
+	process_attribute_as (l_as: ATTRIBUTE_AS) is
+		do
+			safe_process (l_as.attribute_keyword (match_list))
+			safe_process (l_as.compound)
 		end
 
 	process_do_as (l_as: DO_AS) is

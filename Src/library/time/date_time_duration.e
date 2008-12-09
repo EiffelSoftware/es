@@ -115,10 +115,10 @@ feature -- Access
 	origin_date_time: DATE_TIME
 			-- Origin date time of duration
 
-	Zero: DATE_TIME_DURATION is
+	zero: like Current is
 			-- Neutral element for "+" and "-"
-		once
-			Create Result.make_by_date_time (date.zero, time.zero)
+		do
+			create Result.make_by_date_time (date.zero, time.zero)
 		end
 
 	seconds_count: INTEGER_64 is
@@ -207,7 +207,7 @@ feature -- Status report
 
 feature -- Status setting
 
-	set_origin_date_time (dt: DATE_TIME) is
+	set_origin_date_time (dt: ?DATE_TIME) is
 			-- Set `origin_date_time' to `dt'.
 		do
 			origin_date_time := dt

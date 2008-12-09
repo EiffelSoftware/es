@@ -21,15 +21,17 @@ indexing
 #pragma module NET_NETWORK
 #endif /* __VMS */
 
+#include "eif_config.h"
+
 #ifdef EIF_WINDOWS
 #define FD_SETSIZE 256
 #endif
 
-#include "eif_config.h"
 #include "eif_portable.h" 	/* required for VMS, recommended for others */
 #include "eif_except.h"  
 #include "eif_size.h"     	/* for LNGSIZ */
 #include "eif_error.h"    	/* for eio() */
+
 
 #ifdef EIF_WINDOWS
 #define WIN32_LEAN_AND_MEAN
@@ -192,7 +194,7 @@ void eif_net_check (int retcode) {
 #else
 		/* Get the last error here, and signal it like above...*/
 	if (retcode < 0) {
-		if ((retcode != EWOULDBLOCK) && (retcode != EINPROGRESS)) {
+		if ((errno != EWOULDBLOCK) && (errno != EINPROGRESS)) {
 			eraise(NULL, EN_IO);
 		} else {
 			errno = 0;
@@ -648,7 +650,7 @@ EIF_INTEGER c_select(EIF_INTEGER nfds, EIF_POINTER rmask, EIF_POINTER wmask, EIF
 	}
 
 	t.tv_sec = timeout;
-	t.tv_usec = timeoutm;
+	t.tv_usec = (timeoutm * 1000);
 
 	result = select((int) nfds, (fd_set *) rmask, (fd_set *) wmask, (fd_set *) emask, &t);
 	eif_net_check (result);

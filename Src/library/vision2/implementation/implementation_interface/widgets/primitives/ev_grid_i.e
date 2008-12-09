@@ -463,11 +463,7 @@ feature -- Access
 			elseif is_vertical_scrolling_per_item then
 				row_index := last_first_row_in_per_item_scrolling
 				if row_index <= row_count and row_index > 0 then
-					if not uses_row_offsets then
-						virtual_y_position_of_last_row := (row_index - 1) * row_height
-					else
-						virtual_y_position_of_last_row := row_internal (row_index).virtual_y_position
-					end
+					virtual_y_position_of_last_row := row_internal (row_index).virtual_y_position_unlocked
 					l_calculation := total_row_height - virtual_y_position_of_last_row
 				end
 			elseif is_vertical_scrolling_per_item = False then
@@ -2630,7 +2626,14 @@ feature -- Removal
 			set_vertical_computation_required ((lower_index - 1).max (1))
 			unlock_update
 			reset_internal_grid_attributes
-			recompute_vertical_scroll_bar
+
+				-- Recompute vertical scroll bar on idle.
+			if not vertical_computation_added_to_once_idle_actions then
+					-- Do nothing if `Current' is empty or the agent is already contained
+					-- in the do once on idle actions.
+				ev_application.do_once_on_idle (agent recompute_vertical_scroll_bar_from_once_idle_actions)
+				vertical_computation_added_to_once_idle_actions := True
+			end
 		ensure
 			row_count_consistent: row_count = (old row_count) - (upper_index - lower_index + 1)
 			lower_row_removed: (old row (lower_index)).parent = Void
@@ -2713,14 +2716,13 @@ feature -- Removal
 							if current_item.internal_is_selected then
 								current_item.disable_select_internal
 							end
-							current_item.unparent
+							current_item.update_for_removal
 						end
 						j := j + 1
 					end
 				end
 				i := i + 1
 			end
-			locked_indexes.wipe_out
 			from
 				i := 1
 			until
@@ -2728,6 +2730,10 @@ feature -- Removal
 			loop
 				current_row := rows.i_th (i)
 				if current_row /= Void then
+					if current_row.is_locked then
+							-- Make sure that row is unlocked before removal.
+						current_row.unlock
+					end
 					current_row.unparent
 				end
 				i := i + 1
@@ -2738,6 +2744,10 @@ feature -- Removal
 				i > l_column_count
 			loop
 				current_column := columns.i_th (i)
+				if current_column.is_locked then
+						-- Make sure that column is unlocked before removal.
+					current_column.unlock
+				end
 				if current_column.is_show_requested then
 						-- Now remove associated header item.
 					header.go_i_th (1)
@@ -3359,11 +3369,10 @@ feature {EV_GRID_COLUMN_I, EV_GRID_I, EV_GRID_DRAWER_I, EV_GRID_ROW_I, EV_GRID_I
 			if not is_locked then
 					-- Only perform the redraw if the grid is not locked.
 
-
 					-- Increase the number of times that `redraw_item' has been called
 					-- since the last refresh.
-				redraw_item_counter := redraw_item_counter + 1
-				if redraw_item_counter < maximum_items_redrawn_between_refresh then
+				redraw_object_counter := redraw_object_counter + 1
+				if redraw_object_counter < maximum_objects_redrawn_between_refresh then
 						-- Only perform the exact item calculation if our threshold
 						-- for individual item redrawing has not been met.
 
@@ -3382,7 +3391,7 @@ feature {EV_GRID_COLUMN_I, EV_GRID_I, EV_GRID_DRAWER_I, EV_GRID_ROW_I, EV_GRID_I
 						-- prevents `item_indent' being called twice, once in the virtual x offset calculation
 						-- and once for calculating the width of the item to draw.
 					drawable.redraw_rectangle (column_i.virtual_x_position + l_indent - (internal_client_x - viewport_x_offset), an_item.virtual_y_position - (internal_client_y - viewport_y_offset), column_i.width - l_indent, item_height)
-				elseif redraw_item_counter = maximum_items_redrawn_between_refresh then
+				elseif redraw_object_counter = maximum_objects_redrawn_between_refresh then
 						-- The threshold has been met, so invalidate the complete client area.
 
 					redraw_client_area
@@ -3391,22 +3400,22 @@ feature {EV_GRID_COLUMN_I, EV_GRID_I, EV_GRID_DRAWER_I, EV_GRID_ROW_I, EV_GRID_I
 			redraw_locked
 		end
 
-	maximum_items_redrawn_between_refresh: INTEGER is 500
-		-- The maximum number of items for which `redraw_item' works on an individual item
-		-- basis, before the complete client area is invalidated. By performing this, the
-		-- calculation of the items exact position may be by-passed, ensuring large performance
-		-- gains while adding many items.
+	maximum_objects_redrawn_between_refresh: INTEGER is 250
+		-- The maximum number of grid objects for which a combination `redraw_item/row/column'
+		-- may be called before the complete client area is invalidated. By performing this, the
+		-- calculation of the objects exact position may be by-passed, ensuring large performance
+		-- gains while adding many grud objects.
 
-	redraw_item_counter: INTEGER
-		-- A counter to hold the number of times `redraw_item' has been called
+	redraw_object_counter: INTEGER
+		-- A counter to hold the number of times `redraw_item/row/column' has been called
 		-- since the last redraw.
 
-	reset_redraw_item_counter is
+	reset_redraw_object_counter is
 			-- Reset `redraw_item_counter' to 0.
 		do
-			redraw_item_counter := 0
+			redraw_object_counter := 0
 		ensure
-			redraw_item_counter_zero: redraw_item_counter = 0
+			redraw_object_counter_zero: redraw_object_counter = 0
 		end
 
 	redraw_client_area is
@@ -3428,8 +3437,13 @@ feature {EV_GRID_COLUMN_I, EV_GRID_I, EV_GRID_DRAWER_I, EV_GRID_ROW_I, EV_GRID_I
 			col_x1: INTEGER
 		do
 			if not is_locked then
-				col_x1 := a_column.virtual_x_position
-				drawable.redraw_rectangle (col_x1, viewport_y_offset, a_column.width, viewable_height)
+				redraw_object_counter := redraw_object_counter + 1
+				if redraw_object_counter < maximum_objects_redrawn_between_refresh then
+					col_x1 := a_column.virtual_x_position
+					drawable.redraw_rectangle (col_x1, viewport_y_offset, a_column.width, viewable_height)
+				elseif redraw_object_counter = maximum_objects_redrawn_between_refresh then
+					redraw_client_area
+				end
 				redraw_locked
 			end
 		end
@@ -3473,15 +3487,19 @@ feature {EV_GRID_COLUMN_I, EV_GRID_I, EV_GRID_DRAWER_I, EV_GRID_ROW_I, EV_GRID_I
 			row_y1: INTEGER
 		do
 			if not is_locked then
-				row_y1 := a_row.virtual_y_position - (internal_client_y - viewport_y_offset)
-				if is_row_height_fixed then
-					drawable.redraw_rectangle (viewport_x_offset, row_y1, viewable_width, row_height)
-				else
-					drawable.redraw_rectangle (viewport_x_offset, row_y1, viewable_width, a_row.height)
+				redraw_object_counter := redraw_object_counter + 1
+				if redraw_object_counter < maximum_objects_redrawn_between_refresh then
+					row_y1 := a_row.virtual_y_position - (internal_client_y - viewport_y_offset)
+					if is_row_height_fixed then
+						drawable.redraw_rectangle (viewport_x_offset, row_y1, viewable_width, row_height)
+					else
+						drawable.redraw_rectangle (viewport_x_offset, row_y1, viewable_width, a_row.height)
+					end
+				elseif redraw_object_counter = maximum_objects_redrawn_between_refresh then
+					redraw_client_area
 				end
 				redraw_locked
 			end
-
 		end
 
 	redraw_locked is
@@ -4068,9 +4086,11 @@ feature {EV_GRID_LOCKED_I} -- Drawing implementation
 			create vertical_scroll_bar
 			vertical_scroll_bar.hide
 			vertical_scroll_bar.set_leap (default_scroll_bar_leap)
+			vertical_scroll_bar.set_step (default_scroll_bar_step)
 			vertical_scroll_bar.change_actions.extend (agent vertical_scroll_bar_changed)
 			create horizontal_scroll_bar
-			horizontal_scroll_bar.set_step (default_scroll_bar_leap)
+			horizontal_scroll_bar.set_step (default_scroll_bar_step)
+			horizontal_scroll_bar.set_leap (default_scroll_bar_leap)
 			horizontal_scroll_bar.change_actions.extend (agent horizontal_scroll_bar_changed)
 			create horizontal_box
 			create vertical_box
@@ -5297,10 +5317,22 @@ feature {EV_GRID_LOCKED_I} -- Event handling
 						l_make_item_visible := horizontal_scroll_bar.is_displayed
 						if not is_row_selection_enabled then
 								-- Key right shouldn't affect row selection
-							if prev_sel_item /= Void and then not is_item_navigatable_to (prev_sel_item) then
+							if not is_item_navigatable_to (prev_sel_item) then
 								a_sel_item := find_next_item_in_column (prev_sel_item.column, prev_sel_item.row.index, False, True)
 							else
 								a_sel_item := find_next_item_in_row (prev_sel_item.row, prev_sel_item.column.index, True)
+								if a_sel_item = Void and then is_tree_enabled then
+										-- We may have a tree item so we should perform tree key handling
+										-- If node is collapsed then we expand it.
+									if prev_sel_item.row.subrow_count > 0 then
+											-- We have a subrow(s) so we select the first one if expanded
+										if not prev_sel_item.row.is_expanded then
+											prev_sel_item.row.expand
+										else
+											a_sel_item := find_next_item_in_row (prev_sel_item.row.subrow (1), prev_sel_item.column.index - 1, True)
+										end
+									end
+								end
 							end
 						elseif l_make_item_visible then
 							items_spanning := drawer.items_spanning_horizontal_span (virtual_x_position + width, 0)
@@ -5308,14 +5340,47 @@ feature {EV_GRID_LOCKED_I} -- Event handling
 								(columns @ (items_spanning @ 1)).ensure_visible
 							end
 						end
+					when {EV_KEY_CONSTANTS}.key_back_space then
+						if not is_row_selection_enabled then
+							if
+								is_tree_enabled and then
+								is_item_navigatable_to (prev_sel_item) and then
+								find_next_item_in_row (prev_sel_item.row, prev_sel_item.column.index, False) = Void
+							then
+								if prev_sel_item.row.parent_row /= Void then
+									a_sel_item := find_next_item_in_row (prev_sel_item.row.parent_row, prev_sel_item.column.index.min (prev_sel_item.row.parent_row.count) + 1, False)
+									if a_sel_item /= Void then
+										a_sel_item.ensure_visible
+									end
+								end
+							end
+						end
 					when {EV_KEY_CONSTANTS}.Key_left then
 						l_make_item_visible := horizontal_scroll_bar.is_displayed
 						if not is_row_selection_enabled then
 								-- Key left shouldn't affect row selection
-							if prev_sel_item /= Void and then not is_item_navigatable_to (prev_sel_item) then
+							if not is_item_navigatable_to (prev_sel_item) then
 								a_sel_item := find_next_item_in_column (prev_sel_item.column, prev_sel_item.row.index, False, True)
 							else
 								a_sel_item := find_next_item_in_row (prev_sel_item.row, prev_sel_item.column.index, False)
+								if a_sel_item = Void then
+									if is_tree_enabled then
+											-- We may have a tree item so we should perform tree key handling
+											-- If node is expanded then we collapse it.
+										if prev_sel_item.row.is_expanded then
+											prev_sel_item.row.collapse
+										else
+											if prev_sel_item.row.parent_row /= Void then
+												a_sel_item := find_next_item_in_row (prev_sel_item.row.parent_row, prev_sel_item.column.index.min (prev_sel_item.row.parent_row.count) + 1, False)
+												if a_sel_item /= Void then
+													a_sel_item.ensure_visible
+												end
+											end
+										end
+									end
+								else
+									a_sel_item.ensure_visible
+								end
 							end
 						elseif l_make_item_visible then
 								-- If the row has children then
@@ -5335,7 +5400,8 @@ feature {EV_GRID_LOCKED_I} -- Event handling
 						a_sel_item := find_next_item_in_column (column (1), 0, True, True)
 					end
 				end
-				if a_sel_item /= Void then
+				if a_sel_item /= Void and then not ev_application.alt_pressed then
+						-- 'Alt' should have no effect on selection handling.
 					if
 						a_sel_item.is_selected and then
 						last_selected_item /= Void and then
@@ -5672,10 +5738,8 @@ feature {EV_GRID_ROW_I, EV_GRID_COLUMN_I, EV_GRID_DRAWER_I} -- Implementation
 			update_grid_row_indices (a_index)
 			set_vertical_computation_required (a_index)
 
-				-- Redraw content of shifted item if not inserting at the end. Otherwise
-				-- nothing to be done since a redraw will be done as soon as new items
-				-- are inserted.
-			if a_index <= old_count then
+				-- Redraw if inserting within static content or else if content is dynamic.
+			if a_index <= old_count or else is_content_partially_dynamic then
 				redraw_client_area
 			end
 		end
@@ -5849,7 +5913,9 @@ feature {NONE} -- Implementation
 	maximum_header_width: INTEGER is 30000
 		-- Maximium width of `header'.
 
-	default_scroll_bar_leap: INTEGER is 1
+	default_scroll_bar_leap: INTEGER is 16
+	default_scroll_bar_step: INTEGER is 1
+		-- Default scrolling values for scrollbars.
 
 	enlarge_row (a_index, new_count: INTEGER) is
 			-- Enlarge the row at index `a_index' to `new_count'.

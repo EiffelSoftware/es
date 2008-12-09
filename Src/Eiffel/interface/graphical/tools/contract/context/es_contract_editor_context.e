@@ -13,7 +13,7 @@ deferred class
 inherit
 	EB_RECYCLABLE
 
-	ES_STONABLE_I
+	ES_STONABLE
 		redefine
 			query_set_stone
 		end
@@ -32,16 +32,19 @@ feature {NONE} -- Clean up
 
 feature -- Access
 
-	stone: ?STONE assign set_stone
-			-- <Precursor>
-
-	context_stone: !G
+	context_stone: G
 			-- Context stone
 		require
 			is_interface_usable: is_interface_usable
 			has_stone: has_stone
 		do
-			Result ?= stone
+			if {l_result: G} stone then
+				Result := l_result
+			else
+				check not_possible: False end
+			end
+		ensure
+			context_stone_not_void: {l_g: G} Result
 		end
 
 	context_class: !CLASS_I
@@ -50,46 +53,38 @@ feature -- Access
 			is_interface_usable: is_interface_usable
 			has_stone: has_stone
 		do
-			Result ?= context_stone.class_i
+			Result := context_stone.class_i.as_attached
 		end
 
-	context_parents: !DS_LIST [CLASS_C]
+	context_parents: !DS_LINKED_LIST [CLASS_C]
 			-- Context parent classes containing contracts
 		require
 			is_interface_usable: is_interface_usable
 			has_stone: has_stone
-		local
-			l_list: !DS_LIST [CLASS_C]
-			l_result: !DS_LINKED_LIST [CLASS_C]
 		do
-			if internal_context_parents = Void then
-				create l_result.make_default
-				l_list ?= l_result
-				calculate_parents (context_class, l_list)
-				internal_context_parents := l_result
-				Result ?= l_result
+			if {l_result: like context_parents} internal_context_parents then
+				Result := l_result
 			else
-				Result ?= internal_context_parents
+				create Result.make_default
+				calculate_parents (context_class, Result)
+				internal_context_parents := Result
 			end
 		ensure
 			result_contains_attached_item: not Result.has (Void)
 			result_consistent: Result = context_parents
 		end
 
-	text_modifier: !like create_text_modifier
+	text_modifier: like create_text_modifier
 			-- Access to text modifier used to modify the contracts
 		require
 			is_interface_usable: is_interface_usable
 			has_stone: has_stone
-		local
-			l_result: like internal_text_modifier
 		do
-			l_result := internal_text_modifier
-			if l_result = Void then
-				Result ?= create_text_modifier
-				internal_text_modifier := Result
+			if {l_result: like text_modifier} internal_text_modifier then
+				Result := l_result
 			else
-				Result ?= l_result
+				Result := create_text_modifier
+				internal_text_modifier := Result
 			end
 		ensure
 			result_is_interface_usable: Result.is_interface_usable
@@ -116,41 +111,7 @@ feature -- Contracts
 			result_contracts_is_empty: ((not a_live and not a_class.is_compiled) or (a_live and not Result.modifier.is_ast_available)) implies Result.contracts.is_empty
 		end
 
-feature -- Element change
-
-	set_stone (a_stone: ?STONE)
-			-- <Precursor>
-		do
-			if stone /= a_stone then
-					-- Reset any cached data
-				reset
-
-				if internal_text_modifier /= Void then
-					internal_text_modifier.recycle
-				end
-				internal_text_modifier := Void
-				stone := a_stone
-			end
-		ensure then
-			internal_text_modifier_detached: (old stone) /= a_stone implies internal_text_modifier = Void
-			internal_text_modifier_is_recycled: (old internal_text_modifier /= Void) implies not (old internal_text_modifier).is_interface_usable
-		end
-
 feature -- Status report
-
-	is_stone_usable (a_stone: ?STONE): BOOLEAN
-			-- <Precursor>
-		local
-			l_stone: ?G
-		do
-			Result := a_stone = Void
-			if not Result then
-				l_stone ?= a_stone
-				Result := l_stone /= Void
-			end
-		ensure then
-			is_class_stone: Result implies (a_stone = Void or else (({G}) #? a_stone) /= Void)
-		end
 
 	is_editable: BOOLEAN
 			-- Indicates if the context allows for modifications
@@ -161,6 +122,16 @@ feature -- Status report
 			Result := not context_class.is_read_only
 		ensure
 			context_class_is_writable: Result implies not context_class.is_read_only
+		end
+
+feature {NONE} -- Status report
+
+	internal_is_stone_usable (a_stone: !like stone): BOOLEAN
+			-- <Precursor>
+		do
+			Result := {l_g: G} a_stone
+		ensure then
+			is_class_stone: Result implies ({?G}) #? a_stone /= Void
 		end
 
 feature -- Query
@@ -236,19 +207,29 @@ feature -- Synchronization
 			--| Does nothing!
 		end
 
+feature {NONE} -- Action handlers
+
+	on_stone_changed (a_old_stone: ?STONE)
+			-- <Precursor>
+		do
+				-- Reset any cached data
+			reset
+		ensure then
+			internal_text_modifier_detached: internal_text_modifier = Void
+			internal_text_modifier_is_recycled: (old internal_text_modifier /= Void) implies not (old internal_text_modifier).is_interface_usable
+		end
+
 feature {NONE} -- Factory
 
-	create_text_modifier: ?ES_CONTRACT_TEXT_MODIFIER [AST_EIFFEL]
+	create_text_modifier: !ES_CONTRACT_TEXT_MODIFIER [AST_EIFFEL]
 			-- Creates a text modifier
 		require
 			is_interface_usable: is_interface_usable
 			has_stone: has_stone
 		deferred
-		ensure
-			result_attached: Result /= Void
 		end
 
-	create_parent_text_modifier (a_parent: CLASS_C): ?like create_text_modifier
+	create_parent_text_modifier (a_parent: CLASS_C): like create_text_modifier
 			-- Creates a text modifier for a given parent class.
 			--
 			-- `a_parent': A parent class to generate a modifier for.
@@ -259,8 +240,6 @@ feature {NONE} -- Factory
 			a_parent_not_void: a_parent /= Void
 			context_parents_has_a_parent: context_parents.has (a_parent)
 		deferred
-		ensure
-			result_attached: Result /= Void
 		end
 
 feature {NONE} -- Internal implementation cache

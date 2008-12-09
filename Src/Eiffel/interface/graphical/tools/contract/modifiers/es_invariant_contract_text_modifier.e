@@ -21,7 +21,9 @@ feature -- Access
 	contract_ast: ?INVARIANT_AS
 			-- <Precursor>
 		do
-			Result := ast.invariant_part
+				-- We use the `ast.internal_invariant' because `ast.invariant_part' is detached when there
+				-- are not invariants.
+			Result := ast.internal_invariant
 		end
 
 	contract_insertion_position: INTEGER
@@ -55,7 +57,7 @@ feature {NONE} -- Access
 	template_identifier: !STRING_32
 			-- <Precursor>
 		once
-			create Result.make_from_string ("invariant")
+			create Result.make_from_string ({EIFFEL_KEYWORD_CONSTANTS}.invariant_keyword)
 		end
 
 feature {NONE} -- Element change

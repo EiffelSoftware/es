@@ -13,12 +13,18 @@ deferred class
 inherit
 	EB_RECYCLABLE
 
+--inherit {NONE}
 	EV_SHARED_APPLICATION
 		export
 			{NONE} all
 		end
 
 	ES_SHARED_FONTS_AND_COLORS
+		export
+			{NONE} all
+		end
+
+	ES_SHARED_LOCALE_FORMATTER
 		export
 			{NONE} all
 		end
@@ -171,13 +177,13 @@ feature {NONE} -- Helpers
 	frozen stock_pixmaps: !ES_PIXMAPS_16X16
 			-- Shared access to stock 16x16 EiffelStudio pixmaps
 		once
-			Result ?= (create {EB_SHARED_PIXMAPS}).icon_pixmaps
+			Result := (create {EB_SHARED_PIXMAPS}).icon_pixmaps.as_attached
 		end
 
 	frozen mini_stock_pixmaps: !ES_PIXMAPS_10X10
 			-- Shared access to stock 10x10 EiffelStudio pixmaps
 		once
-			Result ?= (create {EB_SHARED_PIXMAPS}).mini_pixmaps
+			Result := (create {EB_SHARED_PIXMAPS}).mini_pixmaps.as_attached
 		end
 
 	frozen helpers: !EVS_HELPERS
@@ -191,7 +197,7 @@ feature {NONE} -- Helpers
 		require
 			preferences_initialized: (create {EB_SHARED_PREFERENCES}).preferences /= Void
 		once
-			Result ?= (create {EB_SHARED_PREFERENCES}).preferences
+			Result := (create {EB_SHARED_PREFERENCES}).preferences.as_attached
 		end
 
 	frozen session_manager: !SERVICE_CONSUMER [SESSION_MANAGER_S]
@@ -300,6 +306,13 @@ feature {NONE} -- Basic operations
 					l_list.forth
 				end
 				l_list.go_to (l_cursor)
+			elseif {l_split: EV_SPLIT_AREA} a_start_widget then
+				if {l_first: !EV_WIDGET} l_split.first and then not l_first.is_destroyed then
+					propagate_action (l_first, a_action, a_excluded)
+				end
+				if {l_second: !EV_WIDGET} l_split.second and then not l_second.is_destroyed then
+					propagate_action (l_second, a_action, a_excluded)
+				end
 			end
 		end
 
@@ -344,6 +357,13 @@ feature {NONE} -- Basic operations
 					l_list.forth
 				end
 				l_list.go_to (l_cursor)
+			elseif {l_split: EV_SPLIT_AREA} l_start_widget then
+				if {l_first: !EV_WIDGET} l_split.first and then not l_first.is_destroyed then
+					propagate_register_action (l_first, a_sequence, a_action, a_excluded)
+				end
+				if {l_second: !EV_WIDGET} l_split.second and then not l_second.is_destroyed then
+					propagate_register_action (l_second, a_sequence, a_action, a_excluded)
+				end
 			end
 		end
 
@@ -403,9 +423,9 @@ feature {NONE} -- Action Handlers
 		end
 
 ;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -416,19 +436,19 @@ feature {NONE} -- Action Handlers
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

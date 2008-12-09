@@ -17,12 +17,30 @@ inherit
 		redefine
 			on_after_initialized,
 			internal_recycle,
+			is_stone_sychronization_required,
 			create_mini_tool_bar_items
+		end
+
+	ES_HELP_CONTEXT
+		export
+			{NONE} all
 		end
 
 	ES_FEATURES_TOOL_COMMANDER_I
 		export
-			{ES_TOOL} all
+			{ES_FEATURES_TOOL_COMMANDER_I} all
+		end
+
+	SESSION_EVENT_OBSERVER
+		export
+			{NONE} all
+		redefine
+			on_session_value_changed
+		end
+
+	SHARED_ERROR_HANDLER
+		export
+			{NONE}
 		end
 
 create {ES_FEATURES_TOOL}
@@ -49,7 +67,7 @@ feature {NONE} -- User interface initialization
 			if session_manager.is_service_available then
 					-- Hook up events
 				l_session := session_data
-				l_session.value_changed_event.subscribe (agent on_session_value_changed)
+				l_session.connect_events (Current)
 
 					-- Retrieve session data and set button states
 				if {l_toggle1: !BOOLEAN_REF} l_session.value_or_default (show_alias_session_id, False) then
@@ -78,12 +96,14 @@ feature {NONE} -- User interface initialization
 
 feature {NONE} -- Clean up
 
-	internal_recycle is
-			-- Recycle tool.
+	internal_recycle
+			-- <Precursor>
 		do
 			if is_initialized then
 				if session_manager.is_service_available then
-					session_data.value_changed_event.unsubscribe (agent on_session_value_changed)
+					if session_data.is_connected (Current) then
+						session_data.disconnect_events (Current)
+					end
 				end
 			end
 			Precursor {ES_DOCKABLE_STONABLE_TOOL_PANEL}
@@ -104,6 +124,14 @@ feature {NONE} -- Access
 
 	current_compiled_class: CLASS_C
 			-- Last synchonrized class
+
+feature -- Access: Help
+
+	help_context_id: !STRING_GENERAL
+			-- <Precursor>
+		once
+			Result := "BC9B2EF1-B4C4-773A-9BA8-97143FB2727A"
+		end
 
 feature {ES_FEATURES_GRID} -- Status report
 
@@ -129,6 +157,15 @@ feature {ES_FEATURES_GRID} -- Status report
 			if is_initialized then
 				Result := show_signatures_button.is_selected
 			end
+		end
+
+feature {NONE} -- Status report
+
+	is_stone_sychronization_required (a_old_stone: ?STONE; a_new_stone: ?STONE): BOOLEAN
+			-- <Precursor>
+		do
+				-- Always update the view.
+			Result := True
 		end
 
 feature {ES_TOOL} -- Basic operations
@@ -180,16 +217,8 @@ feature {NONE} -- Basic operations
 
 feature {NONE} -- Event handlers
 
-	on_session_value_changed (a_session: SESSION; a_id: STRING_8) is
-			-- Called when the session changes
-			--
-			-- `a_session': Session object which the change occured in.
-			-- `a_id': The identifier of the changed session value.
-		require
-			is_interface_usable: is_interface_usable
-			is_initialized: is_initialized
-			a_session_attached: a_session /= Void
-			a_session_is_interface_usable: a_session.is_interface_usable
+	on_session_value_changed (a_session: SESSION; a_id: STRING_8)
+			-- <Precursor>
 		local
 			l_button: SD_TOOL_BAR_TOGGLE_BUTTON
 		do
@@ -283,6 +312,8 @@ feature {NONE} -- Action handlers
 							l_class_ast := l_class.ast
 						elseif l_class.eiffel_class_c.file_is_readable then
 							l_class_ast := l_class.eiffel_class_c.parsed_ast (False)
+								-- Clear error handler, as per-note in parsed_ast
+							error_handler.wipe_out
 						end
 
 						if l_class_ast /= Void then

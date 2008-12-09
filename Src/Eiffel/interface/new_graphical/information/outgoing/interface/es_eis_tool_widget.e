@@ -119,7 +119,7 @@ feature {NONE} -- Initialization
 			create sweep_now_button.make
 			sweep_now_button.set_tooltip (interface_names.t_sweeping_the_system_now)
 			sweep_now_button.set_pixel_buffer (pixmaps.icon_pixmaps.information_sweep_now_icon_buffer)
-			sweep_now_button.select_actions.extend (agent panel.sweep_now)
+			sweep_now_button.select_actions.extend (agent panel.on_sweep_now)
 			l_toolbar.extend (sweep_now_button)
 				-- Delete button
 			create l_button.make
@@ -227,7 +227,6 @@ feature {NONE} -- Initialization
 			-- EIS item detail panel.
 		local
 			l_vbox: EV_VERTICAL_BOX
-			l_support: EB_EDITOR_TOKEN_GRID_SUPPORT
 			l_border: ES_BORDERED_WIDGET [like entry_list]
 		do
 			create l_vbox
@@ -238,15 +237,18 @@ feature {NONE} -- Initialization
 			create l_border.make (entry_list)
 			l_vbox.extend (l_border)
 
-			create l_support.make_with_grid (entry_list)
-			l_support.enable_grid_item_pnd_support
-			l_support.enable_ctrl_right_click_to_open_new_window
-			l_support.synchronize_scroll_behavior_with_editor
-			l_support.set_context_menu_factory_function (agent context_menu_factory)
+			create grid_support.make_with_grid (entry_list)
+			grid_support.enable_grid_item_pnd_support
+			grid_support.enable_ctrl_right_click_to_open_new_window
+			grid_support.synchronize_scroll_behavior_with_editor
+			grid_support.set_context_menu_factory_function (agent context_menu_factory)
 		end
 
 	context_menu_factory: EB_CONTEXT_MENU_FACTORY
 			-- Context menu factory
+
+	grid_support: EB_EDITOR_TOKEN_GRID_SUPPORT
+			-- Grid support for `entry_list'
 
 feature -- Synchronization
 
@@ -373,6 +375,8 @@ feature {NONE} -- Implementation
 	internal_recycle is
 			-- <precursor>
 		do
+			grid_support.desynchronize_scroll_behavior_with_editor
+			entry_list.recycle
 			tree.recycle
 		end
 

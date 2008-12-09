@@ -21,6 +21,7 @@ inherit
             pixel_buffer as icon,
             build_interface as on_before_initialize
         redefine
+        	make,
             internal_recycle,
             internal_detach_entities,
             build_mini_toolbar,
@@ -31,12 +32,20 @@ inherit
             build_docking_content
 		end
 
-    SHARED_SERVICE_PROVIDER
+	ES_HELP_REQUEST_BINDER
+		export
+			{NONE} all
+		redefine
+			show_help
+		end
+
+--inherit {NONE}
+    ES_SHARED_FONTS_AND_COLORS
         export
             {NONE} all
         end
 
-	ES_HELP_REQUEST_BINDER
+	ES_SHARED_LOCALE_FORMATTER
 		export
 			{NONE} all
 		end
@@ -46,15 +55,16 @@ inherit
             {NONE} all
         end
 
-    ES_SHARED_FONTS_AND_COLORS
-        export
-            {NONE} all
-        end
-
 feature {NONE} -- Initialization
 
+	frozen make (a_window: like develop_window; a_tool: like tool_descriptor)
+			-- <Precursor>
+		do
+			Precursor {EB_TOOL} (a_window, a_tool)
+		end
+
     frozen initialize
-            -- Initializes the creation of the tool
+            -- Initializes the creation of the tool.
         require
             not_is_initialized: not is_initialized
         do
@@ -65,6 +75,7 @@ feature {NONE} -- Initialization
                 else
                     widget.extend (user_widget)
                 end
+
                 build_tool_interface (user_widget)
 
                 is_initializing := False
@@ -80,6 +91,68 @@ feature {NONE} -- Initialization
             end
         ensure
             is_initialized: not is_initializing implies is_initialized
+        end
+
+    on_before_initialize
+            -- Use to perform additional creation initializations, before the UI has been created.
+        do
+        end
+
+    on_after_initialized
+            -- Use to perform additional creation initializations, after the UI has been created.
+        require
+        	is_initialized: is_initialized
+        do
+        		-- Key handling
+        	register_action (user_widget.key_press_actions, agent on_key_pressed)
+        	register_action (user_widget.key_release_actions, agent on_key_released)
+
+        		-- Focus
+        	register_action (content.focus_in_actions, agent
+        		do
+        			if is_interface_usable and then is_initialized and then shown then
+        				on_focus_in
+        			end
+        		end)
+        	register_action (content.focus_out_actions, agent
+        		do
+        			if is_interface_usable and then is_initialized then
+        				on_focus_out
+        			end
+        		end)
+
+				-- Show actions
+        	register_kamikaze_action (content.show_actions, agent
+        			-- We need a widget that is parented to a window so we need to wait until after the
+        			-- docking content is attached to the window.
+        		do
+		        	if {l_window: !EV_WINDOW} helpers.widget_top_level_window (user_widget, False) then
+		        			-- Set up help shortcut binding
+		        		bind_help_shortcut (l_window)
+		        	end
+        		end)
+        end
+
+feature {NONE} -- Initialization: User interface
+
+    build_mini_toolbar
+            -- Build mini tool bar.
+        do
+            mini_toolbar := mini_tool_bar_widget
+        end
+
+    build_tool_interface (a_widget: G)
+            -- Builds the tools user interface elements.
+            -- Note: This function is called prior to showing the tool for the first time.
+            --
+            -- `a_widget': A widget to build the tool interface using.
+        require
+            a_widget_attached: a_widget /= Void
+            not_a_widget_is_destoryed: not a_widget.is_destroyed
+            not_is_initialized: not is_initialized
+        deferred
+        ensure
+            not_is_initialized: not is_initialized
         end
 
     build_docking_content (a_docking_manager: SD_DOCKING_MANAGER) is
@@ -103,29 +176,10 @@ feature {NONE} -- Initialization
                 end)
         end
 
-    on_before_initialize
-            -- Use to perform additional creation initializations, before the UI has been created.
-        do
-        end
-
-    on_after_initialized
-            -- Use to perform additional creation initializations, after the UI has been created.
-        require
-        	is_initialized: is_initialized
-        do
-        	register_action (user_widget.key_press_actions, agent on_key_pressed)
-        	register_action (user_widget.key_release_actions, agent on_key_released)
-
-        	if {l_window: !EV_WINDOW} content then
-        			-- Set up help shortcut binding
-        		bind_help_shortcut (l_window)
-        	end
-        end
-
 feature {NONE} -- Clean up
 
     internal_recycle
-            -- Recycle tool.
+            -- <Precursor>
         local
             l_site: SITE [EB_DEVELOPMENT_WINDOW]
         do
@@ -134,8 +188,6 @@ feature {NONE} -- Clean up
         			-- The tool panel is automatically cleaned up.
         		tool_descriptor_recycled: tool_descriptor.is_recycled or tool_descriptor.is_recycling
         	end
-
-            internal_stone_director := Void
 
             if internal_icon_pixmap /= Void then
                 --internal_icon_pixmap.destroy
@@ -162,52 +214,17 @@ feature {NONE} -- Clean up
                 l_site.set_site (Void)
             end
 
-            Precursor {EB_TOOL}
+            Precursor
         end
 
-    internal_detach_entities is
-            -- Detaches objects from their container
-        do
-            Precursor {EB_TOOL}
-            internal_icon := Void
-            internal_icon_pixmap := Void
-            internal_widget := Void
-            internal_user_widget := Void
-            internal_mini_tool_bar_widget := Void
-            internal_tool_bar_widget := Void
-            internal_right_tool_bar_widget := Void
-        ensure then
-            internal_stone_director_detched: internal_stone_director = Void
-            internal_icon_pixmap_detached: internal_icon_pixmap = Void
-            internal_icon_detached: internal_icon = Void
-            internal_widget_detached: internal_widget = Void
-            internal_user_widget_detached: internal_user_widget = Void
-            internal_mini_tool_bar_widget_detached: internal_mini_tool_bar_widget = Void
-            internal_tool_bar_widget_detached: internal_tool_bar_widget = Void
-            internal_right_tool_bar_widget_detached: internal_right_tool_bar_widget = Void
-        end
-
-feature {NONE} -- User interface initialization
-
-    build_mini_toolbar
-            -- Build mini tool bar.
-        do
-            mini_toolbar := mini_tool_bar_widget
-        end
-
-    build_tool_interface (a_widget: G)
-            -- Builds the tools user interface elements.
-            -- Note: This function is called prior to showing the tool for the first time.
-            --
-            -- `a_widget': A widget to build the tool interface using.
-        require
-            a_widget_attached: a_widget /= Void
-            not_a_widget_is_destoryed: not a_widget.is_destroyed
-            not_is_initialized: not is_initialized
-        deferred
-        ensure
-            not_is_initialized: not is_initialized
-        end
+	internal_detach_entities
+			-- <Precursor>
+		do
+			internal_stone_director := Void
+			Precursor
+		ensure then
+			internal_stone_director_detached: internal_stone_director = Void
+		end
 
 feature -- Access
 
@@ -252,127 +269,6 @@ feature -- Access
 
 feature {NONE} -- Access
 
-    frozen user_widget: G
-            -- Access to user widget, as `widget' may not be the indicated user widget due to
-            -- tool bar additions
-        local
-            l_site: SITE [EB_DEVELOPMENT_WINDOW]
-        do
-            Result := internal_user_widget
-            if Result = Void then
-                Result := create_widget
-                auto_recycle (Result)
-
-				internal_user_widget := Result
-
-                    -- If user widget is siteable then site with the development window
-                l_site ?= Result
-                if l_site /= Void then
-                    l_site.set_site (develop_window)
-                end
-            end
-        ensure then
-            result_attached: Result /= Void
-            result_consistent: Result = user_widget
-        end
-
-    frozen mini_tool_bar_widget: SD_TOOL_BAR
-            -- Access to user widget, as `widget' may not be the indicated user widget due to
-            -- tool bar additions
-        local
-            l_cell: like internal_mini_tool_bar_widget
-            l_items: DS_LINEAR [SD_TOOL_BAR_ITEM]
-            l_multi: BOOLEAN
-            l_command: ES_NEW_TOOL_COMMAND
-            l_tools: ES_SHELL_TOOLS
-            l_type: TYPE [ES_TOOL [EB_TOOL]]
-        do
-            l_cell := internal_mini_tool_bar_widget
-            if l_cell = Void then
-                create l_cell
-                internal_mini_tool_bar_widget := l_cell
-                l_multi := tool_descriptor.is_supporting_multiple_instances
-
-                l_items := create_mini_tool_bar_items
-                if l_items /= Void or else l_multi then
-                    create {SD_WIDGET_TOOL_BAR} Result.make (create {SD_TOOL_BAR}.make)
-                end
-                if l_multi then
-                        -- Add new edition button
-                    l_tools := develop_window.shell_tools
-                    l_type := l_tools.dynamic_tool_type (tool_descriptor.generating_type)
-                    check
-                        l_type_attached: l_type /= Void
-                    end
-                    create l_command.make (tool_descriptor)
-                    auto_recycle (l_command)
-                    Result.extend (l_command.new_mini_sd_toolbar_item)
-                end
-                if l_items /= Void then
-                        -- Add tool buttons
-                    l_items.do_all (agent Result.extend)
-                end
-                if Result /= Void then
-                    l_cell.put (Result)
-                    Result.compute_minimum_size
-                end
-            else
-                Result := l_cell.item
-            end
-        ensure
-            result_consistent: Result = mini_tool_bar_widget
-        end
-
-    frozen tool_bar_widget: SD_TOOL_BAR
-            -- Main tool tool bar
-        local
-            l_cell: like internal_tool_bar_widget
-            l_items: DS_LINEAR [SD_TOOL_BAR_ITEM]
-        do
-            l_cell := internal_tool_bar_widget
-            if l_cell = Void then
-                create l_cell
-                internal_tool_bar_widget := l_cell
-
-                l_items := create_tool_bar_items
-                if l_items /= Void then
-                    create {SD_WIDGET_TOOL_BAR} Result.make (create {SD_TOOL_BAR}.make)
-                    l_items.do_all (agent Result.extend)
-                    l_cell.put (Result)
-                    Result.compute_minimum_size
-                end
-            else
-                Result := l_cell.item
-            end
-        ensure
-            result_consistent: Result = tool_bar_widget
-        end
-
-    frozen right_tool_bar_widget: SD_TOOL_BAR
-            -- Secondary right tool bar
-        local
-            l_cell: like internal_right_tool_bar_widget
-            l_items: DS_LINEAR [SD_TOOL_BAR_ITEM]
-        do
-            l_cell := internal_right_tool_bar_widget
-            if l_cell = Void then
-                create l_cell
-                internal_right_tool_bar_widget := l_cell
-
-                l_items := create_right_tool_bar_items
-                if l_items /= Void then
-                    create {SD_WIDGET_TOOL_BAR} Result.make (create {SD_TOOL_BAR}.make)
-                    Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
-                    l_items.do_all (agent Result.extend)
-                    l_cell.put (Result)
-                end
-            else
-                Result := l_cell.item
-            end
-        ensure
-            result_consistent: Result = right_tool_bar_widget
-        end
-
     tool_icon_buffer: like icon
             -- The tool's original icon as a pixel buffer.
         do
@@ -398,6 +294,17 @@ feature {NONE} -- Access
             result_attached: Result /= Void
             not_result_is_empty: not Result.is_empty
         end
+
+	frozen name: !STRING
+			-- The tool's associated name, used for modularizing development of a tool.
+		require
+			is_interface_usable: is_interface_usable
+		do
+			Result := tool_descriptor.name
+		ensure
+			not_result_is_empty: not Result.is_empty
+			result_consistent: Result = name
+		end
 
 	frozen session_data: SESSION_I
 			-- Provides access to the environment session data
@@ -456,22 +363,6 @@ feature {NONE} -- Helpers
             result_consistent: Result = Result
         end
 
-    frozen stock_pixmaps: ES_PIXMAPS_16X16
-            -- Shared access to stock 16x16 EiffelStudio pixmaps
-        once
-            Result := (create {EB_SHARED_PIXMAPS}).icon_pixmaps
-        ensure
-            result_attached: Result /= Void
-        end
-
-    frozen stock_mini_pixmaps: ES_PIXMAPS_10X10
-            -- Shared access to stock 10x10 EiffelStudio pixmaps
-        once
-            Result := (create {EB_SHARED_PIXMAPS}).mini_pixmaps
-        ensure
-            result_attached: Result /= Void
-        end
-
     frozen preferences: EB_PREFERENCES
         once
             Result := (create {EB_SHARED_PREFERENCES}).preferences
@@ -503,21 +394,6 @@ feature {NONE} -- Helpers
 			result_attached: Result /= Void
 		end
 
-feature {NONE} -- Concealed access
-
-    frozen icon_pixmap: EV_PIXMAP
-            -- Pixmap as it appears in tool bars and menu, there is no pixmap by default.
-        do
-            Result := internal_icon_pixmap
-            if Result = Void then
-                Result := icon.to_pixmap
-                internal_icon_pixmap := Result
-            end
-        ensure then
-            result_attached: Result /= Void
-            result_consistent: Result = Result
-        end
-
 feature -- Element change
 
     set_title (a_title: like title)
@@ -536,12 +412,14 @@ feature -- Element change
             --
             -- `a_buffer': A pixel buffer that presents the tool's icon.
         do
-                -- Set pixmap icon to void to ensure it's updated on next call
-            internal_icon_pixmap := Void
-            internal_icon := a_buffer
+        	if internal_icon /= a_buffer then
+	                 -- Set pixmap icon to void to ensure it's updated on next call
+	            internal_icon_pixmap := Void
+	            internal_icon := a_buffer
 
-            content.set_pixel_buffer (a_buffer)
-            content.set_pixmap (icon_pixmap)
+	            content.set_pixel_buffer (a_buffer)
+	            content.set_pixmap (icon_pixmap)
+        	end
         ensure
             icon_set: icon = a_buffer
         end
@@ -551,20 +429,32 @@ feature -- Basic operations
     show
             -- Show the tool, if possible
         do
-        	if develop_window/= Void and then not develop_window.is_recycling and not develop_window.is_recycled then
+        	if develop_window /= Void and then not develop_window.is_recycling and not develop_window.is_recycled then
         			-- The check here is to prevent a docking library bug from activating the tool.
-	            if not is_initialized then
+
+		    	if not is_initialized then
 	                    -- Delayed initialization may mean the user interface has not been shown yet.
 	                    -- Call to user_widget should create the widget
-	                initialize
-	            end
-	            Precursor {EB_TOOL}
+		    		initialize
+		    	end
+		    	Precursor {EB_TOOL}
 	        else
 	        	check False end
         	end
         ensure then
             is_initialized: (develop_window/= Void and then not develop_window.is_recycling and not develop_window.is_recycled) implies is_initialized
         end
+
+feature {NONE} -- Basic operations
+
+	show_help
+			-- <Precursor>
+		do
+			if is_initialized and then shown and content.has_focus then
+					-- Only show help for focused tool.
+				Precursor
+			end
+		end
 
 feature {NONE} -- Basic operations (Note code is replicated from ES_TOOL_FOUNDATIONS)
 
@@ -623,6 +513,13 @@ feature {NONE} -- Basic operations (Note code is replicated from ES_TOOL_FOUNDAT
 					l_list.forth
 				end
 				l_list.go_to (l_cursor)
+			elseif {l_split: EV_SPLIT_AREA} a_start_widget then
+				if {l_first: !EV_WIDGET} l_split.first and then not l_first.is_destroyed then
+					propagate_action (l_first, a_action, a_excluded)
+				end
+				if {l_second: !EV_WIDGET} l_split.second and then not l_second.is_destroyed then
+					propagate_action (l_second, a_action, a_excluded)
+				end
 			end
 		end
 
@@ -667,6 +564,13 @@ feature {NONE} -- Basic operations (Note code is replicated from ES_TOOL_FOUNDAT
 					l_list.forth
 				end
 				l_list.go_to (l_cursor)
+			elseif {l_split: EV_SPLIT_AREA} l_start_widget then
+				if {l_first: !EV_WIDGET} l_split.first and then not l_first.is_destroyed then
+					propagate_register_action (l_first, a_sequence, a_action, a_excluded)
+				end
+				if {l_second: !EV_WIDGET} l_split.second and then not l_second.is_destroyed then
+					propagate_register_action (l_second, a_sequence, a_action, a_excluded)
+				end
 			end
 		end
 
@@ -748,6 +652,213 @@ feature {NONE} -- Action handlers
 		do
 		end
 
+	on_focus_in
+			-- Called when the panel receives focus.
+		require
+			is_interface_usable: is_interface_usable
+			is_initialized: is_initialized
+			shown: shown
+		do
+		end
+
+	on_focus_out
+			-- Called when the panel loses focus.
+		require
+			is_interface_usable: is_interface_usable
+			is_initialized: is_initialized
+		do
+		end
+
+feature {NONE} -- User interface elements
+
+    frozen icon_pixmap: EV_PIXMAP
+            -- Pixmap as it appears in tool bars and menu, there is no pixmap by default.
+        do
+            Result := internal_icon_pixmap
+            if Result = Void then
+                Result := icon.to_pixmap
+                internal_icon_pixmap := Result
+            end
+        ensure then
+            result_attached: Result /= Void
+            result_consistent: Result = Result
+        end
+
+    frozen user_widget: G
+            -- Access to user widget, as `widget' may not be the indicated user widget due to
+            -- tool bar additions
+        local
+            l_result: ?G
+        do
+            l_result := internal_user_widget
+            if l_result = Void then
+                Result := create_widget
+                auto_recycle (Result)
+
+				internal_user_widget := Result
+
+                    -- If user widget is siteable then site with the development window
+                if {l_site: SITE [EB_DEVELOPMENT_WINDOW]} Result then
+                    l_site.set_site (develop_window)
+                end
+			else
+				check
+					correctly_sited: is_recycling or else
+						({l_other_site: SITE [EB_DEVELOPMENT_WINDOW]} l_result implies l_other_site.site ~ develop_window)
+				end
+				Result := l_result
+            end
+        ensure then
+            result_attached: Result /= Void
+            result_consistent: Result = user_widget
+        end
+
+    frozen mini_tool_bar_widget: SD_TOOL_BAR
+            -- Access to user widget, as `widget' may not be the indicated user widget due to
+            -- tool bar additions
+        local
+            l_cell: like internal_mini_tool_bar_widget
+            l_items: DS_LINEAR [SD_TOOL_BAR_ITEM]
+            l_help_button: ?SD_TOOL_BAR_ITEM
+            l_multi: BOOLEAN
+            l_command: ES_NEW_TOOL_COMMAND
+            l_tools: ES_SHELL_TOOLS
+            l_type: TYPE [ES_TOOL [EB_TOOL]]
+        do
+            l_cell := internal_mini_tool_bar_widget
+            if l_cell = Void then
+                create l_cell.put (Void)
+                internal_mini_tool_bar_widget := l_cell
+                l_multi := tool_descriptor.is_supporting_multiple_instances
+				if {l_context: HELP_CONTEXT_I} Current then
+						-- Create the help button
+					l_help_button := create_help_button
+				end
+
+                l_items := create_mini_tool_bar_items
+                if l_items /= Void or else l_multi or else l_help_button /= Void then
+                    create {SD_WIDGET_TOOL_BAR} Result.make (create {SD_TOOL_BAR}.make)
+
+	                if l_items /= Void then
+	                        -- Add tool bar items
+						from l_items.start until l_items.after loop
+							Result.extend (l_items.item_for_iteration)
+							l_items.forth
+						end
+
+							-- Register the resize actions.
+							-- Note: This is done after all of the tool bar items have been added because extending the tool bar
+							--       causes a resize, which in turn causes a post-condition violation in a deeper call.
+						from l_items.start until l_items.after loop
+							if {l_widget: SD_TOOL_BAR_WIDGET_ITEM} l_items.item_for_iteration then
+									-- The tool bar is a widget item, so register resize actions to recompute the minimum width
+									-- when the widget changes size.
+								register_action (l_widget.widget.resize_actions, agent (ia_tool_bar: !SD_TOOL_BAR; ia_x: INTEGER_32; ia_y: INTEGER_32; ia_width: INTEGER_32; ia_height: INTEGER_32)
+									do
+										if is_interface_usable then
+											ia_tool_bar.update_size
+										end
+									end (Result, ?, ?, ?, ?))
+							end
+							l_items.forth
+						end
+	                end
+	                if l_multi then
+	                        -- Add new edition button
+	                    l_tools := develop_window.shell_tools
+	                    l_type := l_tools.dynamic_tool_type (tool_descriptor.generating_type)
+	                    check
+	                        l_type_attached: l_type /= Void
+	                    end
+	                    create l_command.make (tool_descriptor)
+	                    auto_recycle (l_command)
+	                    Result.extend (l_command.new_mini_sd_toolbar_item)
+	                end
+					if l_help_button /= Void then
+						Result.extend (l_help_button)
+					end
+                    Result.compute_minimum_size
+                    l_cell.put (Result)
+                end
+            else
+                Result := l_cell.item
+            end
+        ensure
+            result_consistent: Result = mini_tool_bar_widget
+        end
+
+    frozen tool_bar_widget: SD_TOOL_BAR
+            -- Main tool tool bar
+        local
+            l_cell: like internal_tool_bar_widget
+            l_items: DS_LINEAR [SD_TOOL_BAR_ITEM]
+        do
+            l_cell := internal_tool_bar_widget
+            if l_cell = Void then
+                create l_cell.put (Void)
+                internal_tool_bar_widget := l_cell
+
+                l_items := create_tool_bar_items
+                if l_items /= Void then
+                    create {SD_WIDGET_TOOL_BAR} Result.make (create {SD_TOOL_BAR}.make)
+
+                        -- Add tool bar items
+					from l_items.start until l_items.after loop
+						Result.extend (l_items.item_for_iteration)
+						l_items.forth
+					end
+
+						-- Register the resize actions.
+						-- Note: This is done after all of the tool bar items have been added because extending the tool bar
+						--       causes a resize, which in turn causes a post-condition violation in a deeper call.
+					from l_items.start until l_items.after loop
+						if {l_widget: SD_TOOL_BAR_WIDGET_ITEM} l_items.item_for_iteration then
+								-- The tool bar is a widget item, so register resize actions to recompute the minimum width
+								-- when the widget changes size.
+							register_action (l_widget.widget.resize_actions, agent (ia_tool_bar: !SD_TOOL_BAR; ia_x: INTEGER_32; ia_y: INTEGER_32; ia_width: INTEGER_32; ia_height: INTEGER_32)
+								do
+									if is_interface_usable then
+										ia_tool_bar.update_size
+									end
+								end (Result, ?, ?, ?, ?))
+						end
+						l_items.forth
+					end
+                    l_cell.put (Result)
+                    Result.compute_minimum_size
+                end
+            else
+                Result := l_cell.item
+            end
+        ensure
+            result_consistent: Result = tool_bar_widget
+        end
+
+    frozen right_tool_bar_widget: SD_TOOL_BAR
+            -- Secondary right tool bar
+        local
+            l_cell: like internal_right_tool_bar_widget
+            l_items: DS_LINEAR [SD_TOOL_BAR_ITEM]
+        do
+            l_cell := internal_right_tool_bar_widget
+            if l_cell = Void then
+                create l_cell.put (Void)
+                internal_right_tool_bar_widget := l_cell
+
+                l_items := create_right_tool_bar_items
+                if l_items /= Void then
+                    create {SD_WIDGET_TOOL_BAR} Result.make (create {SD_TOOL_BAR}.make)
+                    Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
+                    l_items.do_all (agent Result.extend)
+                    l_cell.put (Result)
+                end
+            else
+                Result := l_cell.item
+            end
+        ensure
+            result_consistent: Result = right_tool_bar_widget
+        end
+
 feature {NONE} -- Action Handlers
 
 	frozen on_key_pressed (a_key: EV_KEY)
@@ -813,7 +924,7 @@ feature {NONE} -- Factory
             result_attached: Result /= Void
         end
 
-    create_mini_tool_bar_items: DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+    create_mini_tool_bar_items: ?DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
             -- Retrieves a list of tool bar items to display on the window title
         do
         ensure
@@ -821,7 +932,7 @@ feature {NONE} -- Factory
             result_contains_attached_items: Result /= Void implies not Result.has (Void)
         end
 
-    create_tool_bar_items: DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+    create_tool_bar_items: ?DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
             -- Retrieves a list of tool bar items to display at the top of the tool.
         deferred
         ensure
@@ -829,7 +940,7 @@ feature {NONE} -- Factory
             result_contains_attached_items: Result /= Void implies not Result.has (Void)
         end
 
-    create_right_tool_bar_items: DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+    create_right_tool_bar_items: ?DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
             -- Retrieves a list of tool bar items that should be displayed at the top, but right aligned.
             -- Note: Redefine to add a right tool bar.
         do
@@ -917,10 +1028,10 @@ feature {NONE} -- Factory
             result_attached: Result /= Void
         end
 
-	create_help_button: SD_TOOL_BAR_BUTTON is
+	create_help_button: SD_TOOL_BAR_BUTTON
 			-- Creates a help tool bar button for use in the mini tool bar
 		require
-			is_help_providers_service_available:
+			is_help_providers_service_available: help_providers.is_service_available
 		do
 			create Result.make
 			Result.set_pixel_buffer (stock_mini_pixmaps.callstack_send_to_external_editor_icon_buffer)
@@ -933,66 +1044,66 @@ feature {NONE} -- Factory
 
 feature {NONE} -- Internal implementation cache
 
-    internal_stone_director: like stone_director
+    internal_stone_director: ?like stone_director
             -- Cached version of `stone_director'
 
-    internal_icon_pixmap: like icon_pixmap
+    internal_icon_pixmap: ?like icon_pixmap
             -- Cached version of `pixmap'
 
-    internal_icon: like icon
+    internal_icon: ?like icon
             -- Cached version of `icon'
 
-    internal_title: like title
+    internal_title: ?like title
             -- Mutable version of `title'
 
-    internal_widget: like widget
+    internal_widget: ?like widget
             -- Cached version of `widget'
 
-    internal_user_widget: G
+    internal_user_widget: ?G
             -- User widget, which was returned from `create_widget'
 
-    internal_mini_tool_bar_widget: CELL [like mini_tool_bar_widget]
+    internal_mini_tool_bar_widget: ?CELL [?like mini_tool_bar_widget]
             -- Cached version of `mini_tool_bar_widget'
 
-    internal_tool_bar_widget: CELL [like tool_bar_widget]
+    internal_tool_bar_widget: ?CELL [?like tool_bar_widget]
             -- Cached version of `tool_bar_widget'
 
-    internal_right_tool_bar_widget: CELL [like right_tool_bar_widget]
+    internal_right_tool_bar_widget: ?CELL [?like right_tool_bar_widget]
             -- Cached version of `right_tool_bar_widget'
 
 invariant
     not_is_initialized: is_initializing implies not is_initialized
 
 ;indexing
-    copyright:    "Copyright (c) 1984-2007, Eiffel Software"
-    license:    "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-    licensing_options:    "http://www.eiffel.com/licensing"
-    copying: "[
-            This file is part of Eiffel Software's Eiffel Development Environment.
-            
-            Eiffel Software's Eiffel Development Environment is free
-            software; you can redistribute it and/or modify it under
-            the terms of the GNU General Public License as published
-            by the Free Software Foundation, version 2 of the License
-            (available at the URL listed under "license" above).
-            
-            Eiffel Software's Eiffel Development Environment is
-            distributed in the hope that it will be useful,    but
-            WITHOUT ANY WARRANTY; without even the implied warranty
-            of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-            See the    GNU General Public License for more details.
-            
-            You should have received a copy of the GNU General Public
-            License along with Eiffel Software's Eiffel Development
-            Environment; if not, write to the Free Software Foundation,
-            Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
-        ]"
-    source: "[
-             Eiffel Software
-             356 Storke Road, Goleta, CA 93117 USA
-             Telephone 805-685-1006, Fax 805-685-6869
-             Website http://www.eiffel.com
-             Customer support http://support.eiffel.com
-        ]"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			 Eiffel Software
+			 5949 Hollister Ave., Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
+		]"
 
 end

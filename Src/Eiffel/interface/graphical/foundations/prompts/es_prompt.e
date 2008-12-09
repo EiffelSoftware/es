@@ -338,15 +338,10 @@ feature -- Element change
 		require
 			a_id_is_valid_button_id: dialog_buttons.is_valid_button_id (a_id)
 			buttons_contains_a_id: buttons.has (a_id)
-		local
-			l_button: EV_BUTTON
 		do
 			default_button := a_id
-			l_button := dialog_window_buttons.item (a_id)
-			if l_button.is_displayed then
-				l_button.set_focus
-			else
-				dialog.show_actions.extend (agent l_button.set_focus)
+			if is_initialized then
+				dialog.set_default_push_button (dialog_window_buttons.item (a_id))
 			end
 		ensure
 			default_button_set: default_button = a_id
@@ -376,7 +371,9 @@ feature -- Element change
 			buttons_contains_a_id: buttons.has (a_id)
 		do
 			default_cancel_button := a_id
-			dialog.set_default_cancel_button (dialog_window_buttons.item (a_id))
+			if is_initialized then
+				dialog.set_default_cancel_button (dialog_window_buttons.item (a_id))
+			end
 		ensure
 			default_cancel_button_set: default_cancel_button = a_id
 		end
@@ -541,7 +538,7 @@ feature {NONE} -- Basic operations
 
 					l_buttons := buttons.new_cursor
 					l_dialog_buttons := dialog_window_buttons
-					from l_buttons.start until l_buttons.after or l_stop  loop
+					from l_buttons.start until l_buttons.after or l_stop loop
 							-- Locate button
 						l_button_id := l_buttons.item
 						l_button := l_dialog_buttons.item (l_button_id)
@@ -567,6 +564,7 @@ feature {NONE} -- Basic operations
 						end
 						l_buttons.forth
 					end
+					l_buttons.go_after
 				end
 			end
 
@@ -608,6 +606,7 @@ feature {NONE} -- Basic operations
 						l_buttons.forth
 					end
 				end
+				l_buttons.go_after
 			end
 		end
 
@@ -644,6 +643,7 @@ feature {NONE} -- Basic operations
 						l_buttons.forth
 					end
 				end
+				l_buttons.go_after
 			end
 		end
 

@@ -15,7 +15,7 @@ class
 inherit
 	SESSION_I
 
-	EVENT_OBSERVER_CONNECTION [!SESSION_EVENT_OBSERVER]
+	EVENT_OBSERVER_CONNECTION [SESSION_EVENT_OBSERVER]
 		redefine
 			safe_dispose
 		end
@@ -44,7 +44,7 @@ feature {NONE} -- Initialization
 			manager_set: manager = a_manager
 		end
 
-	make_per_window (a_per_project: BOOLEAN; a_window: EB_DEVELOPMENT_WINDOW; a_manager: like manager)
+	make_per_window (a_per_project: BOOLEAN; a_window: SHELL_WINDOW_I; a_manager: like manager)
 			-- Initialize a session bound to a window.
 			--
 			-- `a_per_project': True to initialize a per-project session.
@@ -52,7 +52,7 @@ feature {NONE} -- Initialization
 			-- `a_manager': Session manager that owns Current.
 		require
 			a_window_attached: a_window /= Void
-			not_a_window_is_recycled: not a_window.is_recycled
+			a_window_is_interface_usable: a_window.is_interface_usable
 			a_manager_attached: a_manager /= Void
 			a_manager_is_interface_usable: a_manager.is_interface_usable
 		do
@@ -72,8 +72,6 @@ feature {NONE} -- Clean up
 			--
 			-- `a_disposing': True if Current is being explictly disposed of, False to indicate finalization.
 		do
-			Precursor {EVENT_OBSERVER_CONNECTION} (a_disposing)
-
 			if a_disposing then
 				if is_dirty and then manager.is_interface_usable then
 					manager.store (Current)
@@ -81,6 +79,13 @@ feature {NONE} -- Clean up
 				data.wipe_out
 				value_changed_event.dispose
 			end
+			Precursor {EVENT_OBSERVER_CONNECTION} (a_disposing)
+			manager := Void
+		ensure then
+			not_is_dirty: a_disposing implies not is_dirty
+			data_is_empty: a_disposing implies (old data).is_empty
+			not_value_changed_event_is_interface_usable: a_disposing implies not (old value_changed_event).is_interface_usable
+			manager_detached: manager = Void
 		end
 
 feature -- Access
@@ -354,12 +359,14 @@ feature {SESSION_DATA_I, SESSION_I} -- Basic operations
 					-- Post notification
 				is_dirty := True
 				value_changed_event.publish ([Current, l_cursor.key])
+				l_cursor.go_after
 			end
+			check gobo_cursor_cleanup: l_cursor.off end
 		end
 
 feature -- Events
 
-	value_changed_event: EVENT_TYPE [TUPLE [session: SESSION_I; id: STRING_8]]
+	value_changed_event: !EVENT_TYPE [TUPLE [session: SESSION_I; id: STRING_8]]
 			-- Events fired when a value, indexed by an id, in the session object changes.
 			--
 			-- `session': The session where the change occured.
@@ -511,10 +518,9 @@ feature {NONE} -- Conversion type tables
 		end
 
 invariant
-	manager_attached: manager /= Void
+	manager_attached: not is_zombie implies manager /= Void
 	manager_is_zombie: not is_zombie implies manager.is_interface_usable
 	data_attached: data /= Void
-	value_changed_events_attached: value_changed_event /= Void
 
 ;indexing
 	copyright:	"Copyright (c) 1984-2007, Eiffel Software"

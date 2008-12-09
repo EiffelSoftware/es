@@ -31,12 +31,17 @@ feature -- Basic operations
 			-- To be called when the button has became useless.
 		local
 			l_pool: like internal_recycle_pool
+			l_recycle_actions: like internal_recycle_actions
+			l_action: TUPLE [sequence: ACTION_SEQUENCE [TUPLE]; action: PROCEDURE [ANY, TUPLE]]
 			l_recycled: ARRAYED_LIST [EB_RECYCLABLE]
+			l_recycling: BOOLEAN
+			l_compare: BOOLEAN
 		do
 			if not is_recycled and not is_recycling then
 					-- Prevents multiple calls.
 
 				is_recycling := True
+				l_recycling := True
 
 					-- Recycled pooled objects
 				l_pool := internal_recycle_pool
@@ -48,9 +53,8 @@ feature -- Basic operations
 								l_entity: ANY
 								l_recycable: EB_RECYCLABLE
 								l_ev: EV_ANY
-								retried: BOOLEAN
 							do
-								if not retried and a_item /= Void then
+								if a_item /= Void then
 									l_entity := reveal_recyclable_item (a_item)
 									if l_entity /= Void then
 										l_recycable ?= l_entity
@@ -67,9 +71,6 @@ feature -- Basic operations
 										end
 									end
 								end
-							rescue
-								retried := True
-								retry
 							end).call ([l_pool.item, l_recycled])
 						l_pool.forth
 					end
@@ -87,23 +88,25 @@ feature -- Basic operations
 				end
 
 					-- Perform recycling of Current
-				is_recycled := True
 				internal_recycle
+				is_recycled := True
 
 					-- Remove registered actions
+				l_recycle_actions := internal_recycle_actions
 				if internal_recycle_actions /= Void then
-					internal_recycle_actions.do_all (agent (a_item: TUPLE [sequence: ACTION_SEQUENCE [TUPLE]; action: PROCEDURE [ANY, TUPLE]])
-						local
-							l_compare: BOOLEAN
-						do
-							l_compare := a_item.sequence.object_comparison
-							a_item.sequence.compare_objects
-							a_item.sequence.prune_all (a_item.action)
+					from l_recycle_actions.start until l_recycle_actions.after loop
+						l_action := l_recycle_actions.item
+						if l_action /= Void then
+							l_compare := l_action.sequence.object_comparison
+							l_action.sequence.compare_objects
+							l_action.sequence.prune_all (l_action.action)
 							if not l_compare then
-								a_item.sequence.compare_references
+								l_action.sequence.compare_references
 							end
-						end)
-					internal_recycle_actions.wipe_out
+						end
+						l_recycle_actions.forth
+					end
+					l_recycle_actions.wipe_out
 				end
 
 					-- Detachment processing
@@ -129,6 +132,12 @@ feature -- Basic operations
 		ensure
 			recycled: is_recycling or else is_recycled
 			internal_recycle_pool_detached: is_recycled implies internal_recycle_pool = Void
+		rescue
+			if l_recycling then
+					-- Recycling was actually performed so set the state flags, even though there was an exception.
+				is_recycling := False
+				is_recycled := True
+			end
 		end
 
 feature {NONE} -- Basic operations

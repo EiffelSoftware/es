@@ -84,6 +84,10 @@ feature -- Access
 	is_in_creation_call: BOOLEAN
 			-- Is current call a creation instruction?
 
+feature {NONE} -- Status report
+
+	is_initialization: BOOLEAN
+			-- Is initialization code being processed?
 
 feature -- Routine visitor
 
@@ -149,14 +153,14 @@ feature {NONE} -- Visitors
 				ba.append_integer (l_rout_info.offset)
 				ba.append_short_integer (l_real_ty.type_id (context.context_class_type.type) - 1)
 				ba.append_short_integer (context.class_type.static_type_id - 1)
-				l_real_ty.make_gen_type_byte_code (ba, True, context.context_class_type.type)
+				l_real_ty.make_type_byte_code (ba, True, context.context_class_type.type)
 				ba.append_short_integer (-1)
 			else
 				ba.append (Bc_array)
 				ba.append_short_integer (l_real_ty.static_type_id (context.context_class_type.type) - 1)
 				ba.append_short_integer (l_real_ty.type_id (context.context_class_type.type) - 1)
 				ba.append_short_integer (context.class_type.static_type_id - 1)
-				l_real_ty.make_gen_type_byte_code (ba, True, context.context_class_type.type)
+				l_real_ty.make_type_byte_code (ba, True, context.context_class_type.type)
 				ba.append_short_integer (-1)
 				ba.append_short_integer (l_feat_i.feature_id)
 			end
@@ -175,11 +179,12 @@ feature {NONE} -- Visitors
 			l_target_type: TYPE_A
 			l_target_node: ACCESS_B
 			l_hector_b: HECTOR_B
+			l_mark_count: NATURAL
 		do
-			generate_melted_debugger_hook
-				-- Generate expression byte code	
 			l_target_node := a_node.target
 			l_target_type := Context.real_type_fixed (l_target_node.type)
+			generate_melted_debugger_hook
+				-- Generate expression byte code
 			if a_node.is_creation_instruction then
 					-- Avoid object cloning.
 				a_node.source.process (Current)
@@ -204,6 +209,16 @@ feature {NONE} -- Visitors
 				ba.append (l_target_node.assign_code)
 			end
 			melted_assignment_generator.generate_assignment (ba, l_target_node)
+				-- Write marks if required.
+			from
+			until
+				l_mark_count = 0
+			loop
+				ba.write_forward
+				l_mark_count := l_mark_count - 1
+			variant
+				l_mark_count.as_integer_32
+			end
 		end
 
 	process_attribute_b (a_node: ATTRIBUTE_B) is
@@ -212,37 +227,43 @@ feature {NONE} -- Visitors
 			l_type: TYPE_A
 			l_cl_type: CL_TYPE_A
 			l_rout_info: ROUT_INFO
+			f: FEATURE_B
 		do
-			l_type := context.real_type (a_node.type)
-			l_cl_type ?= a_node.context_type
-			if l_cl_type.is_basic and not l_cl_type.is_bit then
-					-- Access to `item' from basic types.
-					-- Nothing to be done since the right value is already on the stack.
+			f := a_node.wrapper
+			if f /= Void then
+				process_feature_b (f)
 			else
-				if a_node.is_first then
-					ba.append (bc_current)
-				end
-				if l_cl_type.associated_class.is_precompiled then
-					l_rout_info := system.rout_info_table.item (a_node.routine_id)
-					if a_node.is_first then
-						ba.append (bc_pattribute)
-					else
-						ba.append (bc_pattribute_inv)
-						ba.append_raw_string (a_node.attribute_name)
-					end
-					ba.append_integer (l_rout_info.origin)
-					ba.append_integer (l_rout_info.offset)
+				l_type := context.real_type (a_node.type)
+				l_cl_type ?= a_node.context_type
+				if l_cl_type.is_basic and not l_cl_type.is_bit then
+						-- Access to `item' from basic types.
+						-- Nothing to be done since the right value is already on the stack.
 				else
 					if a_node.is_first then
-						ba.append (bc_attribute)
-					else
-						ba.append (bc_attribute_inv)
-						ba.append_raw_string (a_node.attribute_name)
+						ba.append (bc_current)
 					end
-					ba.append_integer (a_node.real_feature_id (l_cl_type))
-					ba.append_short_integer (l_cl_type.static_type_id (context.context_class_type.type) - 1)
+					if l_cl_type.associated_class.is_precompiled then
+						l_rout_info := system.rout_info_table.item (a_node.routine_id)
+						if a_node.is_first then
+							ba.append (bc_pattribute)
+						else
+							ba.append (bc_pattribute_inv)
+							ba.append_raw_string (a_node.attribute_name)
+						end
+						ba.append_integer (l_rout_info.origin)
+						ba.append_integer (l_rout_info.offset)
+					else
+						if a_node.is_first then
+							ba.append (bc_attribute)
+						else
+							ba.append (bc_attribute_inv)
+							ba.append_raw_string (a_node.attribute_name)
+						end
+						ba.append_integer (a_node.real_feature_id (l_cl_type))
+						ba.append_short_integer (l_cl_type.static_type_id (context.context_class_type.type) - 1)
+					end
+					ba.append_uint32_integer (l_type.sk_value (context.context_class_type.type))
 				end
-				ba.append_uint32_integer (l_type.sk_value (context.context_class_type.type))
 			end
 		end
 
@@ -560,7 +581,7 @@ feature {NONE} -- Visitors
 			else
 				l_call := a_node.call
 				if l_call /= Void and then l_call.routine_id = system.special_make_rout_id then
-					l_special_type := context.creation_type (a_node.type)
+					l_special_type := context.real_type (a_node.type)
 					check
 						is_special_call_valid: a_node.is_special_call_valid
 						is_special_type: l_special_type /= Void and then
@@ -1112,6 +1133,10 @@ feature {NONE} -- Visitors
 				-- No arguments
 			l_tmp_ba.append_short_integer (0)
 
+
+			ba.append_raw_string ("_invariant")
+			ba.append_short_integer (context.class_type.static_type_id - 1)
+
 				-- No rescue
 			ba.append ('%U')
 			l_context.set_assertion_type ({ASSERT_TYPE}.in_invariant)
@@ -1289,7 +1314,7 @@ feature {NONE} -- Visitors
 		do
 				-- Generate expression byte code
 			l_source_type := context.real_type (a_node.expression.type)
-			l_target_type := context.creation_type (a_node.target.type)
+			l_target_type := context.real_type (a_node.target.type)
 
 			make_expression_byte_code_for_type (a_node.expression, l_target_type)
 
@@ -1541,14 +1566,17 @@ feature {NONE} -- Visitors
 
 	process_tuple_access_b (a_node: TUPLE_ACCESS_B) is
 			-- Process `a_node'.
+		local
+			l_tuple_type: TYPE_A
 		do
+			l_tuple_type := context.real_type (a_node.tuple_element_type)
 				-- It is guaranteed that the TUPLE object is on the stack because
 				-- TUPLE_ACCESS_B is always the message of a NESTED_B node.
 			if a_node.source /= Void then
 					-- Assignment to a tuple entry.
 				generate_melted_debugger_hook
 				a_node.source.process (Current)
-				if a_node.tuple_element_type.c_type.is_pointer then
+				if l_tuple_type.c_type.is_pointer then
 					context.make_catcall_check (ba, a_node.tuple_type.generics.item (a_node.position), a_node.position, False)
 				end
 				ba.append (bc_tuple_assign)
@@ -1557,7 +1585,7 @@ feature {NONE} -- Visitors
 				ba.append (bc_tuple_access)
 			end
 			ba.append_integer_32 (a_node.position)
-			ba.append_uint32_integer (a_node.tuple_element_type.sk_value (context.context_class_type.type))
+			ba.append_uint32_integer (l_tuple_type.sk_value (context.context_class_type.type))
 		end
 
 	process_tuple_const_b (a_node: TUPLE_CONST_B) is
@@ -1578,19 +1606,28 @@ feature {NONE} -- Visitors
 				l_expr ?= a_node.expressions.item
 				check l_expr_not_void: l_expr /= Void end
 				l_expr.process (Current)
+				if l_expr.is_hector then
+					if {l_hector_b: HECTOR_B} l_expr then
+						make_protected_byte_code (l_hector_b, 0)
+					else
+						check
+							is_hector_expression: False
+						end
+					end
+				end
 				a_node.expressions.back
 			end
 			if l_real_ty.associated_class.is_precompiled then
 				ba.append (Bc_ptuple)
 				ba.append_short_integer (l_real_ty.type_id (context.context_class_type.type) - 1)
 				ba.append_short_integer (context.class_type.static_type_id-1)
-				l_real_ty.make_gen_type_byte_code (ba, True, context.context_class_type.type)
+				l_real_ty.make_type_byte_code (ba, True, context.context_class_type.type)
 				ba.append_short_integer (-1)
 			else
 				ba.append (Bc_tuple)
 				ba.append_short_integer (l_real_ty.type_id (context.context_class_type.type) - 1)
 				ba.append_short_integer (context.class_type.static_type_id - 1)
-				l_real_ty.make_gen_type_byte_code (ba, True, context.context_class_type.type)
+				l_real_ty.make_type_byte_code (ba, True, context.context_class_type.type)
 				ba.append_short_integer (-1)
 			end
 			ba.append_integer (a_node.expressions.count + 1)
@@ -1604,14 +1641,14 @@ feature {NONE} -- Visitors
 	process_type_expr_b (a_node: TYPE_EXPR_B) is
 			-- Process `a_node'.
 		local
-			l_type_creator: CREATE_TYPE
+			l_type_creator: CREATE_INFO
 		do
 			fixme ("Instance should be unique.")
 			ba.append (Bc_create)
 				-- There is no feature call:
 			ba.append_boolean (False)
 
-			create l_type_creator.make (context.real_type (a_node.type_data))
+			l_type_creator := context.real_type (a_node.type_data).create_info
 			l_type_creator.make_byte_code (ba)
 
 				-- Runtime is in charge to make sure that newly created object

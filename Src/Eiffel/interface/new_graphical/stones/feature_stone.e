@@ -122,17 +122,14 @@ feature -- Status report
 	same_as (other: STONE): BOOLEAN is
 			-- Is `other' the same stone?
 			-- Ie: does `other' represent the same feature?
-		local
-			fns: FEATURE_STONE
 		do
-			fns ?= other
-			Result := fns /= Void and then same_feature (e_feature, fns.e_feature)
+			Result := {fns: FEATURE_STONE} other and then same_feature (e_feature, fns.e_feature)
 		end
 
 	is_valid: BOOLEAN is
 			-- Is `Current' a valid stone?
 		do
-			Result := e_feature /= Void and then Precursor {CLASSC_STONE}
+			Result := e_feature /= Void and then e_feature.is_valid and then Precursor {CLASSC_STONE}
 		end
 
 feature -- dragging
@@ -167,10 +164,7 @@ feature -- dragging
 	file_name: FILE_NAME is
 			-- The one from class origin of `e_feature'
 		do
-			if
-				e_feature /= Void and then e_feature.written_class /= Void and then
-				e_class /= Void
-			then
+			if e_feature /= Void and then e_feature.is_valid then
 				create Result.make_from_string (e_feature.written_class.file_name)
 			end
 		end
@@ -187,19 +181,32 @@ feature -- dragging
 	header: STRING_GENERAL is
 			-- Name for the stone.
 		local
-			a_base_name: STRING
+			l_feature_name: STRING_32
+			l_file_name: FILE_NAME
 		do
-			create {STRING_32}Result.make (20)
-			Result.append ("{")
-			Result.append (e_class.name_in_upper)
-			Result.append ("}.")
-			Result.append (feature_name)
+
+			create l_feature_name.make (20)
+			l_feature_name.append ("{")
+			l_feature_name.append (e_class.name_in_upper)
+			l_feature_name.append ("}.")
+			l_feature_name.append (feature_name)
 			if class_i /= Void then
-				a_base_name := class_i.file_name
-				if a_base_name /= Void then
-					Result.append (interface_names.l_located_in (a_base_name))
-				end
+				l_file_name := class_i.file_name
 			end
+
+			if not e_class.is_precompiled then
+				Result := interface_names.l_feature_header (eiffel_system.name,
+															eiffel_universe.target_name,
+															e_class.group.name,
+															l_feature_name,
+															l_file_name)
+			else
+				Result := interface_names.l_feature_header_precompiled (eiffel_system.name,
+															eiffel_universe.target_name,
+															e_class.group.name,
+															l_feature_name)
+			end
+
 		end
 
 	stone_cursor: EV_POINTER_STYLE is
@@ -225,16 +232,13 @@ feature -- dragging
 
 	update is
 			-- Update current feature stone.
-		local
-			body_as: FEATURE_AS
 		do
 			if internal_start_position = -1 and then e_feature /= Void then
 					-- Position has not been initialized
-				body_as := e_feature.ast
-				if body_as /= Void then
-					internal_start_position := body_as.start_position
-					internal_end_position := body_as.end_position
-					internal_start_line_number := body_as.start_location.line
+				if not e_feature.is_il_external and then {l_body_as: FEATURE_AS} e_feature.ast then
+					internal_start_position := l_body_as.start_position
+					internal_end_position := l_body_as.end_position
+					internal_start_line_number := l_body_as.start_location.line
 				else
 					internal_start_position := 1
 					internal_end_position := 1

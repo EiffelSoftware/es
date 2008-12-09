@@ -141,7 +141,7 @@ feature {NONE} -- Initialization
 				l_tags.after
 			loop
 				if not l_tags.key_for_iteration.is_empty then
-					l_managed_tags.extend (l_tags.key_for_iteration)
+					l_managed_tags.extend (l_tags.key_for_iteration.as_attached)
 				end
 				l_tags.forth
 			end
@@ -370,7 +370,7 @@ feature {NONE} -- Access
 			-- Sorted tags. Do not change directly out of EIS observer.
 
 invariant
-	only_first_item_is_off_mapping: managed_tags.count = tag_header.count - 1
+	only_first_item_is_off_mapping: (tag_header /= Void and not is_recycled) implies managed_tags.count = tag_header.count - 1
 
 indexing
 	copyright: "Copyright (c) 1984-2007, Eiffel Software"
@@ -403,9 +403,5 @@ indexing
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com
 		]"
-
-
-
-
 
 end

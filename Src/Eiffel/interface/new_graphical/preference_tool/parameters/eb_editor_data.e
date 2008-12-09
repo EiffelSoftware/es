@@ -51,9 +51,10 @@ feature {EB_PREFERENCES} -- Initialization
 			-- Create
 		do
 			Precursor {EDITOR_DATA} (a_preferences)
+			create post_update_actions
 		end
 
-feature {EB_EDITORS_MANAGER, EB_SHARED_PREFERENCES, EDITOR_TOKEN, ES_DIALOG, ES_DOCKABLE_TOOL_PANEL} -- Value
+feature -- Value
 
 	breakpoint_background_color: EV_COLOR is
 			-- Background color used to display breakpoints		
@@ -227,6 +228,12 @@ feature {EB_EDITORS_MANAGER, EB_SHARED_PREFERENCES, EDITOR_TOKEN, ES_DIALOG, ES_
 			Result := filter_completion_list_preference.value
 		end
 
+	highlight_matching_braces: BOOLEAN
+			-- Should matching braces be highlighted at the carets position?
+		do
+			Result := highlight_matching_braces_preference.value
+		end
+
 	show_completion_signature: BOOLEAN is
 			-- Should feature signature be shown in completion list?
 		do
@@ -333,7 +340,13 @@ feature {EB_EDITORS_MANAGER, EB_SHARED_PREFERENCES, EDITOR_TOKEN, ES_DIALOG, ES_
 			result_attached: Result /= Void
 		end
 
-feature {EB_SHARED_PREFERENCES} -- Preference
+	auto_show_feature_contract_tooltips: BOOLEAN
+			-- Should feature contract tool tips be automatically shown
+		do
+			Result := auto_show_feature_contract_tooltips_preference.value
+		end
+
+feature -- Preference
 
 	breakpoint_background_color_preference: COLOR_PREFERENCE
 			-- Background color used to display breakpoints		
@@ -390,6 +403,9 @@ feature {EB_SHARED_PREFERENCES} -- Preference
 			-- Indicates if completion list matches should be filtered down based on current matches.  If not then
 			-- the list will always contain possible completion options and closest match will be selected during typing.
 
+	highlight_matching_braces_preference: BOOLEAN_PREFERENCE
+			-- Should matching braces be highlighted at the carets position?
+
 	show_completion_signature_preference: BOOLEAN_PREFERENCE
 			-- Should feature signature be shown in completion list?
 
@@ -423,6 +439,9 @@ feature {EB_SHARED_PREFERENCES} -- Preference
 	folder_text_color_preference: COLOR_PREFERENCE
 	folder_background_color_preference: COLOR_PREFERENCE
 			-- Color of name of folders displayed in metric tool
+
+	auto_show_feature_contract_tooltips_preference: BOOLEAN_PREFERENCE
+			-- Should feature contract tool tips be automatically shown
 
 feature {NONE} -- Preference Strings
 
@@ -510,6 +529,12 @@ feature {NONE} -- Preference Strings
 	new_tab_at_left_string: STRING is "editor.general.new_tab_at_left"
 			-- Create new tab at left side of the target notebook?
 
+	highlight_matching_braces_string: STRING is "editor.eiffel.highlight_matching_braces"
+			-- Should matching braces be highlighted at the carets position?
+
+	auto_show_feature_contract_tooltips_string: STRING = "editor.eiffel.auto_show_feature_contract_tooltip"
+			-- Should feature contract tool tips be automatically shown
+
 feature {NONE} -- Init colors and fonts.
 
 	init_colors is
@@ -561,7 +586,12 @@ feature -- Update
 			init_colors
 			window_manager.quick_refresh_all_editors
 			Precursor {EB_SHORTCUTS_DATA}
+			post_update_actions.call (Void)
 		end
+
+	post_update_actions: EV_NOTIFY_ACTION_SEQUENCE
+			-- Actions called after preferences has been called.
+			-- NOTE: Actions registered should be removed when they become useless, otherwise memory leaks.
 
 feature {NONE} -- Initialization
 
@@ -617,6 +647,7 @@ feature {NONE} -- Initialization
 			auto_complete_words_preference := l_manager.new_boolean_preference_value (l_manager, auto_complete_words_string, True)
 			auto_remove_trailing_blank_when_saving_preference := l_manager.new_boolean_preference_value (l_manager, auto_remove_trailing_blank_when_saving_string, True)
 			filter_completion_list_preference := l_manager.new_boolean_preference_value (l_manager, filter_completion_list_string, True)
+			highlight_matching_braces_preference := l_manager.new_boolean_preference_value (l_manager, highlight_matching_braces_string, True)
 			show_completion_signature_preference := l_manager.new_boolean_preference_value (l_manager, show_completion_signature_string, True)
 			show_completion_type_preference := l_manager.new_boolean_preference_value (l_manager, show_completion_type_string, True)
 			show_completion_disambiguated_name_preference := l_manager.new_boolean_preference_value (l_manager, show_completion_disambiguated_name_string, False)
@@ -628,6 +659,7 @@ feature {NONE} -- Initialization
 			customized_string_3_preference := l_manager.new_string_preference_value (l_manager, customized_string_3_string, "")
 			customized_strings.extend (customized_string_3_preference)
 			new_tab_at_left_preference := l_manager.new_boolean_preference_value (l_manager, new_tab_at_left_string, True)
+			auto_show_feature_contract_tooltips_preference := l_manager.new_boolean_preference_value (l_manager, auto_show_feature_contract_tooltips_string, True)
 
 				-- Auto colors
 			indexing_tag_background_color_preference.set_auto_preference (normal_background_color_preference)
@@ -636,11 +668,11 @@ feature {NONE} -- Initialization
 			local_background_color_preference.set_auto_preference (normal_background_color_preference)
 
 			keyword_font_preference.change_actions.extend (agent update)
-			font_zoom_factor_preference.change_actions.extend (agent update_font)
 			normal_text_color_preference.change_actions.extend (agent update)
 			normal_background_color_preference.change_actions.extend (agent update)
 			selection_text_color_preference.change_actions.extend (agent update)
 			selection_background_color_preference.change_actions.extend (agent update)
+			focus_out_selection_background_color_preference.change_actions.extend (agent update)
 			string_text_color_preference.change_actions.extend (agent update)
 			string_background_color_preference.change_actions.extend (agent update)
 			keyword_text_color_preference.change_actions.extend (agent update)
@@ -1045,7 +1077,7 @@ feature -- Keybord shortcuts Customization
 			create Result.make (default_shortcut_actions.count)
 		end
 
-	default_shortcut_actions: ARRAYED_LIST [TUPLE [HASH_TABLE [TUPLE [BOOLEAN, BOOLEAN, BOOLEAN, STRING_8], STRING_8], MANAGED_SHORTCUT_GROUP]]
+	default_shortcut_actions: ARRAYED_LIST [TUPLE [actions: HASH_TABLE [TUPLE [BOOLEAN, BOOLEAN, BOOLEAN, STRING_8], STRING_8]; group: MANAGED_SHORTCUT_GROUP]]
 			-- Array of shortcut defaults (Alt/Ctrl/Shift/KeyString)
 
 	editor_shortcut_actions: ARRAYED_LIST [TUPLE [HASH_TABLE [TUPLE [BOOLEAN, BOOLEAN, BOOLEAN, STRING_8], STRING_8], MANAGED_SHORTCUT_GROUP]] is
@@ -1055,7 +1087,7 @@ feature -- Keybord shortcuts Customization
 			create Result.make (1)
 
 				-- Shortcuts for main window group
-			create l_hash.make (14)
+			create l_hash.make (15)
 			l_hash.put ([False, False, False, key_strings.item (Key_F2).twin.as_string_8], "customized_insertion_1")
 			l_hash.put ([False,  True, False, key_strings.item (Key_F2).twin.as_string_8], "customized_insertion_2")
 			l_hash.put ([False, False,  True, key_strings.item (Key_F2).twin.as_string_8], "customized_insertion_3")
@@ -1076,7 +1108,18 @@ feature -- Keybord shortcuts Customization
 			l_hash.put ([False,  True, False, key_strings.item (Key_i).twin.as_string_8], "embed_if_clause")
 			l_hash.put ([False,  True, False, key_strings.item (Key_d).twin.as_string_8], "embed_debug_clause")
 
+			l_hash.put ([False,  True, False, key_strings.item (key_open_bracket).twin.as_string_8], "find_matching_brace")
+
 			l_hash.put ([False, True, False, key_strings.item (Key_g).twin.as_string_8], "show_goto_dialog")
+
+			l_hash.put ([False,  True, False, key_strings.item (Key_equal).twin.as_string_8], "zoom_in")
+			l_hash.put ([False,  True, False, key_strings.item (Key_dash).twin.as_string_8], "zoom_out")
+
+			l_hash.put ([False,  True, False, key_strings.item (key_numpad_add).twin.as_string_8], "zoom_in_numpad")
+			l_hash.put ([False,  True, False, key_strings.item (key_numpad_subtract).twin.as_string_8], "zoom_out_numpad")
+
+			l_hash.put ([False,  True, False, key_strings.item (key_0).twin.as_string_8], "zoom_reset")
+			l_hash.put ([False,  True, False, key_strings.item (key_numpad_0).twin.as_string_8], "zoom_reset_numpad")
 
 			Result.extend ([l_hash, main_window_group])
 		end
@@ -1105,6 +1148,7 @@ feature -- Keybord shortcuts Customization
 
 invariant
 	preferences_not_void: preferences /= Void
+	post_update_actions_not_void: post_update_actions /= Void
 	keyword_font_preference_not_void: keyword_font_preference /= Void
 	editor_font_zoom_factor_preference: font_zoom_factor_preference /= Void
 	smart_indentation_preference_not_void: smart_indentation_preference /= Void
@@ -1166,6 +1210,8 @@ invariant
 	warning_background_color_preference_attached: warning_background_color_preference /= Void
 	argument_text_color_preference_attached: argument_text_color_preference /= Void
 	argument_background_color_preference_attached: argument_background_color_preference /= Void
+	highlight_matching_braces_preference_attached: highlight_matching_braces_preference /= Void
+	auto_show_feature_contract_tooltips_preference_attached: auto_show_feature_contract_tooltips_preference /= Void
 
 
 indexing

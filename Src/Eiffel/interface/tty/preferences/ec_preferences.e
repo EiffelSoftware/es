@@ -25,10 +25,11 @@ feature {NONE} -- Initialization
 		require
 			preferences_not_void: a_preferences /= Void
 		do
+			make_compiler (a_preferences)
 			create misc_data.make (a_preferences)
 			create feature_tool_data.make (a_preferences)
 			create flat_short_data.make (a_preferences)
-			make_compiler (a_preferences)
+			preferences := a_preferences
 		end
 
 feature -- Access

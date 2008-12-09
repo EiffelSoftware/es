@@ -21,12 +21,17 @@ inherit
 		undefine
 			copy, is_equal
 		redefine
+			as_attached_type,
+			as_implicitly_attached,
+			as_implicitly_detachable,
 			has_expanded,
 			has_formal_generic,
 			instantiation_in,
 			is_loose,
 			internal_is_valid_for_class,
 			is_type_set,
+			to_other_attachment,
+			to_other_immediate_attachment,
 			to_type_set,
 			is_class_valid
 		end
@@ -1316,6 +1321,143 @@ feature -- Access
 	last_type_checked: RENAMED_TYPE_A [TYPE_A]
 		-- Last type checked.
 		-- Use this feature for error reporting.
+
+feature -- Attachment properties
+
+	as_attached_type: like Current
+			-- Attached variant of the current type
+		local
+			i: INTEGER
+			r: RENAMED_TYPE_A [TYPE_A]
+			t: TYPE_A
+		do
+			Result := Precursor
+			from
+				i := count
+			until
+				i <= 0
+			loop
+				r := Result [i]
+				t := r.type
+				if not t.is_attached then
+					r := r.duplicate
+					r.set_type (t.as_attached_type)
+					Result [i] := r
+				end
+				i := i - 1
+			end
+		end
+
+	as_implicitly_attached: like Current
+			-- Implicitly attached type
+		local
+			i: INTEGER
+			r: RENAMED_TYPE_A [TYPE_A]
+			t: TYPE_A
+		do
+			Result := Precursor
+			from
+				i := count
+			until
+				i <= 0
+			loop
+				r := Result [i]
+				t := r.type
+				if not t.is_attached and then not t.is_implicitly_attached then
+					r := r.duplicate
+					r.set_type (t.as_implicitly_attached)
+					Result [i] := r
+				end
+				i := i - 1
+			end
+		end
+
+	as_implicitly_detachable: like Current
+			-- Implicitly detachable type
+		local
+			i: INTEGER
+			r: RENAMED_TYPE_A [TYPE_A]
+			t: TYPE_A
+		do
+			Result := Precursor
+			from
+				i := count
+			until
+				i <= 0
+			loop
+				r := Result [i]
+				t := r.type
+				if is_implicitly_attached then
+					r := r.duplicate
+					r.set_type (t.as_implicitly_detachable)
+					Result [i] := r
+				end
+				i := i - 1
+			end
+		end
+
+	to_other_attachment (other: ATTACHABLE_TYPE_A): like Current
+			-- Current type to which attachment status of `other' is applied
+		local
+			i: INTEGER
+			r: RENAMED_TYPE_A [TYPE_A]
+			t: TYPE_A
+			a: TYPE_A
+		do
+			Result := Current
+			from
+				i := count
+			until
+				i <= 0
+			loop
+				r := Result [i]
+				t := r.type
+				a := t.to_other_attachment (other)
+				if a /= t then
+						-- The type is different from what we have in the current one.
+					r := r.duplicate
+					r.set_type (a)
+					if Result = Current then
+							-- Avoid changing current type descriptor.
+						Result := duplicate
+					end
+					Result [i] := r
+				end
+				i := i - 1
+			end
+		end
+
+	to_other_immediate_attachment (other: ATTACHABLE_TYPE_A): like Current
+			-- Current type to which attachment status of `other' is applied
+			-- without taking into consideration attachment status of an anchor (if any)
+		local
+			i: INTEGER
+			r: RENAMED_TYPE_A [TYPE_A]
+			t: TYPE_A
+			a: TYPE_A
+		do
+			Result := Current
+			from
+				i := count
+			until
+				i <= 0
+			loop
+				r := Result [i]
+				t := r.type
+				a := t.to_other_immediate_attachment (other)
+				if a /= t then
+						-- The type is different from what we have in the current one.
+					r := r.duplicate
+					r.set_type (a)
+					if Result = Current then
+							-- Avoid changing current type descriptor.
+						Result := duplicate
+					end
+					Result [i] := r
+				end
+				i := i - 1
+			end
+		end
 
 feature -- Not anymore applicable: a type set has most likley not one, but many associated classes.
 

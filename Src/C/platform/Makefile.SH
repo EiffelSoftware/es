@@ -41,6 +41,7 @@ CC = $cc
 CTAGS = ctags
 JCFLAGS = \$(CFLAGS) $optimize $warning_level $ccflags $large
 LINT = lint
+LINTFLAGS = $lintflags \$(CFLAGS)
 MAKE = make
 MKDEP = $mkdep \$(DPFLAGS) --
 MV = $mv

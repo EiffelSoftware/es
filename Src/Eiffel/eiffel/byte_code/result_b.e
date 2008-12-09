@@ -1,7 +1,7 @@
 indexing
+	description: "Access to Result"
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
--- Access to Result
 
 class RESULT_B
 
@@ -59,8 +59,8 @@ feature
 	enlarged: RESULT_B is
 			-- Enlarges the result node
 		do
-			create {RESULT_BL} Result.make (type);
-		end;
+			create {RESULT_BL} Result.make (type)
+		end
 
 	register_name: STRING is
 			-- The "Result" string
@@ -70,7 +70,7 @@ feature
 
 feature -- IL code generation
 
-	is_fast_as_local: BOOLEAN is true
+	is_fast_as_local: BOOLEAN = True
 			-- Is expression calculation as fast as loading a local?
 			-- (This is not true for once functions, but there is not enough information to figure it out.)
 
@@ -110,7 +110,7 @@ feature -- Inlining
 		end
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

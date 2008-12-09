@@ -129,7 +129,7 @@ rt_private struct idr_discrim u_Request[] = {
  * Public (de)serializing routine.
  */
 
-rt_public bool_t idr_void(IDR *idrs, void *ext)
+rt_private bool_t idr_void(IDR *idrs, void *ext)
 {
 	return TRUE;
 }
@@ -226,7 +226,8 @@ rt_private bool_t idr_Dumped (IDR *idrs, void *ext)
 		if ((!exv) ||
 			(! (idr_unsigned_char (idrs, &exv->ex_type)
 			&& idr_unsigned_char (idrs, &exv->ex_retry)
-			&& idr_unsigned_char (idrs, &exv->ex_rescue)))) {
+			&& idr_unsigned_char (idrs, &exv->ex_rescue)
+			&& idr_unsigned_char (idrs, &exv->ex_is_invariant)))) {
 			return FALSE;
 		}
 		switch (exv->ex_type) {

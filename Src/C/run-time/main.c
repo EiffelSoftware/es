@@ -51,6 +51,7 @@ doc:<file name="main.c" header="eif_main.h" version="$Id$" summary="Initializati
 #include "rt_except.h"
 #include "rt_sig.h"
 #include "rt_gen_conf.h"
+#include "rt_struct.h"
 
 #ifdef WORKBENCH
 #include "eif_wbench.h"		/* %%ss added for create_desc */
@@ -300,7 +301,7 @@ doc:		<thread_safety>Safe</thread_safety>
 doc:		<synchronization>None since initialized and used only during start-up.</synchronization>
 doc:	</attribute>
 */
-rt_shared BODY_INDEX * EIF_once_indexes = 0;
+rt_shared BODY_INDEX * EIF_once_indexes = NULL;
 #endif
 
 #ifdef EIF_THREADS
@@ -322,7 +323,7 @@ doc:		<thread_safety>Safe</thread_safety>
 doc:		<synchronization>None since initialized and used only during start-up.</synchronization>
 doc:	</attribute>
 */
-rt_shared BODY_INDEX * EIF_process_once_indexes = 0;
+rt_shared BODY_INDEX * EIF_process_once_indexes = NULL;
 
 /*
 doc:	<attribute name="EIF_process_once_values" return_type="EIF_process_once_value_t *" export="public">
@@ -687,6 +688,55 @@ rt_private void notify_root_thread (void)
 #endif
 #endif
 
+rt_public void eif_retrieve_root (int *argc, char **argv)
+{
+	/*
+	 * If -eif_root is provided, record its value and decrease argument count so argument is not
+	 * visisble to users application.
+	 */
+	egc_ridx = 0;
+	egc_eif_root = NULL;
+	if ((*argc) > 1) {
+		if (0 == strcmp (argv[(*argc)-2], "-eif_root")) {
+			egc_eif_root = argv[(*argc)-1];
+			(*argc) -= 2;
+		}
+		else if (0 == strcmp (argv[(*argc)-1], "-eif_root")) {
+			egc_ridx = -1;
+		}
+	}
+}
+
+rt_public void eif_init_root (void)
+{
+	/*
+	 * If -eif_root was provided, check if requested root feature is available. Otherwise print
+	 * list of valid root features and terminate.
+	 */
+	int i;
+	if (egc_ridx >= 0 && egc_eif_root != NULL) {
+		egc_ridx = -1;
+		for (i = 0; i < egc_rcount; i++) {
+			if (0 == strcmp (egc_eif_root, egc_rlist[i])) {
+				egc_ridx = i;
+				break;
+			}
+		}
+		if (egc_ridx < 0) {
+			fprintf (stderr, "%s: unknown root procedure\n", egc_eif_root);
+			exit (1);
+		}
+	}
+	if (egc_ridx < 0) {
+		fprintf (stderr, "\nPlease specify a valid root procedure. Valid root procedures are:\n\n");
+		for (i = 0; i < egc_rcount; i++) {
+			fprintf (stderr, "\t- %s\n", egc_rlist[i]);
+		}
+		fprintf (stderr, "\n");
+		exit (1);
+	}
+}
+
 rt_public void eif_rtinit(int argc, char **argv, char **envp)
 {
 	char *eif_timeout;
@@ -811,11 +861,11 @@ rt_public void eif_rtinit(int argc, char **argv, char **envp)
 #endif
 #endif
 #ifdef WORKBENCH
-	if (egc_routdisp_wb == 0) {
+	if (egc_routdisp_wb == NULL) {
 		egc_routdisp_wb = (void (*)(EIF_REFERENCE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE, EIF_TYPED_VALUE)) egc_routdisp;
 	}
 #else
-	if (egc_routdisp_fl == 0) {
+	if (egc_routdisp_fl == NULL) {
 		egc_routdisp_fl = (void (*)(EIF_REFERENCE, EIF_POINTER, EIF_POINTER, EIF_POINTER, EIF_REFERENCE, EIF_BOOLEAN, EIF_INTEGER)) egc_routdisp;
 	}
 #endif

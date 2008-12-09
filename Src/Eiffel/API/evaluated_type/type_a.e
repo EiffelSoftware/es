@@ -57,6 +57,21 @@ feature -- Visitor
 
 feature -- Generic conformance
 
+	annotation_flags: NATURAL_16 is
+			-- Flags for annotations of Current.
+			-- Currently only `!' and `frozen' are supported
+		do
+ 				-- Only if a type is not expanded do we need to generate the
+				-- attached annotation since by default expanded implies attached.
+			if is_attached and not is_expanded then
+				Result := {SHARED_GEN_CONF_LEVEL}.attached_type
+			end
+-- To uncomment when variant/frozen proposal for generics is supported.
+--			if is_frozen then
+--				Result := Result | {SHARED_GEN_CONF_LEVEL}.frozen_type
+--			end
+		end
+
 	generated_id (final_mode: BOOLEAN; a_context_type: TYPE_A): NATURAL_16 is
 			-- Mode dependent type id - just for convenience
 		require
@@ -69,19 +84,20 @@ feature -- Generic conformance
 		end
 
 	generate_cid (buffer: GENERATION_BUFFER; final_mode, use_info: BOOLEAN; a_context_type: TYPE_A) is
-			-- Generate mode dependent sequence of type id's 
+			-- Generate mode dependent sequence of type id's
 			-- separated by commas. `use_info' is true iff
 			-- we generate code for a creation instruction.
 		require
 			valid_file : buffer /= Void
 			context_type_valid: is_valid_context_type (a_context_type)
 		do
+			generate_cid_prefix (buffer, Void)
 			buffer.put_integer (generated_id (final_mode, a_context_type))
 			buffer.put_character (',')
 		end
 
 	generate_cid_array (buffer: GENERATION_BUFFER; final_mode, use_info: BOOLEAN; idx_cnt: COUNTER; a_context_type: TYPE_A) is
-			-- Generate mode dependent sequence of type id's 
+			-- Generate mode dependent sequence of type id's
 			-- separated by commas. `use_info' is true iff
 			-- we generate code for a creation instruction.
 			-- 'idx_cnt' holds the index in the array for
@@ -93,6 +109,7 @@ feature -- Generic conformance
 		local
 			dummy : INTEGER
 		do
+			generate_cid_prefix (buffer, idx_cnt)
 			buffer.put_integer (generated_id (final_mode, a_context_type))
 			buffer.put_character (',')
 
@@ -112,11 +129,12 @@ feature -- Generic conformance
 		local
 			dummy : INTEGER
 		do
+			generate_cid_prefix (Void, idx_cnt)
 				-- Increment counter
 			dummy := idx_cnt.next
 		end
 
-	make_full_type_byte_code (ba: BYTE_ARRAY; a_context_type: TYPE_A) is
+	frozen make_full_type_byte_code (ba: BYTE_ARRAY; a_context_type: TYPE_A) is
 			-- Append full type info for the current type to `ba'
 			-- following the format for locals, creation expressions, etc.
 		require
@@ -131,12 +149,12 @@ feature -- Generic conformance
 			end
 				-- We can provide `Void' for `generated_id' since it is the one
 				-- from `a_context_type' that we are retrieving.
-			ba.append_short_integer (a_context_type.generated_id (False, Void))
-			make_gen_type_byte_code (ba, True, a_context_type)
+			ba.append_natural_16 (a_context_type.generated_id (False, Void))
+			make_type_byte_code (ba, True, a_context_type)
 			ba.append_short_integer (-1)
 		end
 
-	make_gen_type_byte_code (ba: BYTE_ARRAY; use_info: BOOLEAN; a_context_type: TYPE_A) is
+	make_type_byte_code (ba: BYTE_ARRAY; use_info: BOOLEAN; a_context_type: TYPE_A) is
 			-- Put type id's in byte array.
 			-- `use_info' is true iff we generate code for a
 			-- creation instruction.
@@ -144,7 +162,8 @@ feature -- Generic conformance
 			ba_attached: ba /= Void
 			context_type_valid: is_valid_context_type (a_context_type)
 		do
-			ba.append_short_integer (generated_id (False, a_context_type))
+			make_type_prefix_byte_code (ba)
+			ba.append_natural_16 (generated_id (False, a_context_type))
 		end
 
 	generate_gen_type_il (il_generator: IL_CODE_GENERATOR; use_info: BOOLEAN) is
@@ -153,6 +172,44 @@ feature -- Generic conformance
 		require
 			il_generator_not_void: il_generator /= Void
 		do
+		end
+
+feature {NONE} -- Generic conformance
+
+	generate_cid_prefix (buffer: GENERATION_BUFFER; idx_cnt: COUNTER) is
+			-- Generate prefix to a type specification if `buffer' specified.
+			-- Increment `idx_cnt' accordingly if specified.
+		local
+			l_annotation: like annotation_flags
+			l_dummy: INTEGER
+		do
+			l_annotation := annotation_flags
+			if l_annotation /= 0 then
+					-- If `buffer' was provided, outputs annotation.
+				if buffer /= Void then
+					buffer.put_hex_natural_16 (l_annotation)
+					buffer.put_character (',')
+				end
+					-- If counter was provided, increments it.
+				if idx_cnt /= Void then
+					l_dummy := idx_cnt.next
+				end
+			end
+		end
+
+	make_type_prefix_byte_code (ba: BYTE_ARRAY) is
+			-- Put type id's in byte array.
+			-- `use_info' is true iff we generate code for a
+			-- creation instruction.
+		require
+			ba_attached: ba /= Void
+		local
+			l_annotation: like annotation_flags
+		do
+			l_annotation := annotation_flags
+			if l_annotation /= 0 then
+				ba.append_natural_16 (l_annotation)
+			end
 		end
 
 feature -- C code generation
@@ -590,6 +647,14 @@ feature -- Properties
 				-- False by default
 		end
 
+	is_initialization_required: BOOLEAN
+			-- Is initialization required for this type in void-safe mode?
+		do
+			if not is_expanded and then is_attached then
+				Result := True
+			end
+		end
+
 	is_standalone: BOOLEAN is
 			-- Is type standalone, i.e. does not depend on formal generic or acnhored type?
 		do
@@ -607,7 +672,8 @@ feature -- Comparison
 			is_valid: is_valid
 		do
 			if other /= Void and then other.same_type (Current) then
-				Result := other.is_valid and then is_equivalent (other)
+				Result := {l_other: like Current} other and then
+					l_other.is_valid and then is_equivalent (l_other)
 			end
 		end;
 
@@ -727,24 +793,14 @@ feature -- Access
 			-- Result := Void
 		end
 
-	as_attached: like Current
+feature -- Attachment properties
+
+	as_attached_type: like Current
 			-- Attached variant of the current type
 		require
 			not_is_attached: not is_attached
 		do
-			Result := duplicate
-			Result.set_attached_mark
-		ensure
-			result_attached: Result /= Void
-		end
-
-	as_detachable: like Current
-			-- Detachable variant of the current type
-		require
-			is_attached: is_attached or else is_implicitly_attached
-		do
-			Result := duplicate
-			Result.set_detachable_mark
+			Result := Current
 		ensure
 			result_attached: Result /= Void
 		end
@@ -769,22 +825,33 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-feature -- Modification
-
-	set_attached_mark
-			-- Mark type as having an explicit attached mark.
+	as_attachment_mark_free: like Current
+			-- Same as Current but without any attachment mark
 		do
-			debug ("to_implement")
-				(create {REFACTORING_HELPER}).to_implement ("Support attachment mark for tuples and formal generics")
-			end
+			Result := Current
+		ensure
+			as_attachment_mark_free_not_void: Result /= Void
 		end
 
-	set_detachable_mark
-			-- Mark type as having an explicit detachable mark.
+	to_other_attachment (other: ATTACHABLE_TYPE_A): like Current
+			-- Current type to which attachment status of `other' is applied
+		require
+			other_attached: other /= Void
 		do
-			debug ("to_implement")
-				(create {REFACTORING_HELPER}).to_implement ("Support attachment mark for tuples and formal generics")
-			end
+			Result := Current
+		ensure
+			result_attached: Result /= Void
+		end
+
+	to_other_immediate_attachment (other: ATTACHABLE_TYPE_A): like Current
+			-- Current type to which attachment status of `other' is applied
+			-- without taking into consideration attachment status of an anchor (if any)
+		require
+			other_attached: other /= Void
+		do
+			Result := Current
+		ensure
+			result_attached: Result /= Void
 		end
 
 feature -- Output
@@ -1105,10 +1172,11 @@ feature -- Access
 			a_descendant_not_void: a_descendant /= Void
 			a_descendant_valid: a_descendant.is_valid
 			a_descendant_compiled: a_descendant.has_feature_table
-			real_descendant: (a_feature = Void or else not a_feature.has_replicated_ast) implies a_descendant.simple_conform_to (a_ancestor)
-			a_feature_valid: (a_feature /= Void and then not a_feature.has_replicated_ast) implies
-				(a_feature.access_class.simple_conform_to (a_ancestor) and
-				a_descendant.simple_conform_to (a_feature.access_class))
+--| FIXME IEK Features from a non-conforming parent fail in this routine when assertions are evaluated.
+--			real_descendant: (a_feature = Void or else not a_feature.has_replicated_ast) implies a_descendant.simple_conform_to (a_ancestor)
+--			a_feature_valid: (a_feature /= Void and then not a_feature.has_replicated_ast) implies
+--				(a_feature.access_class.simple_conform_to (a_ancestor) and
+--				a_descendant.simple_conform_to (a_feature.access_class))
 			is_feature_needed: has_like_argument implies a_feature /= Void
 			is_valid_for_class: is_valid_for_class (a_ancestor)
 		do
@@ -1168,30 +1236,28 @@ feature -- Access
 			Result := act_type.is_expanded and then act_type.associated_class.is_deferred
 		end
 
-	valid_expanded_creation (class_c: CLASS_C): BOOLEAN is
+	valid_expanded_creation (c: CLASS_C): BOOLEAN
 			-- Is the expanded type has an associated class with one
 			-- creation routine which is a version of {ANY}.default_create
-			-- exported `class_c'.
+			-- exported to `class_c'.
 		require
 			has_expanded
 		local
-			a_class: CLASS_C
+			a: CLASS_C
 			creators: HASH_TABLE [EXPORT_I, STRING]
-			l_export: EXPORT_I
 		do
 			if is_expanded then
-				a_class := associated_class
-				if a_class.is_external then
+				a := associated_class
+				if a.is_external then
 					Result := True
 				else
-					creators := a_class.creators
+					creators := a.creators
 					if creators = Void then
 						Result := True
 					else
-						creators.search (a_class.default_create_feature.feature_name)
+						creators.search (a.default_create_feature.feature_name)
 						if creators.found then
-							l_export := creators.found_item
-							Result := l_export.valid_for (class_c)
+							Result := creators.found_item.valid_for (c)
 						end
 					end
 				end
@@ -1218,6 +1284,8 @@ feature -- Access
 		require
 			is_valid: is_valid
 		deferred
+		ensure
+			create_info_not_void: Result /= Void
 		end
 
 	check_for_obsolete_class (current_class: CLASS_C; current_feature: FEATURE_I) is
@@ -1233,8 +1301,7 @@ feature -- Access
 		   		if actual_type.has_associated_class then
 					ass_class := actual_type.associated_class
 					if ass_class.is_obsolete and then ass_class.lace_class.options.is_warning_enabled (w_obsolete_class) then
-						create warn
-						warn.set_class (current_class)
+						create warn.make_with_class (current_class)
 						if current_feature /= Void then
 							warn.set_feature (current_feature)
 						end
@@ -1366,7 +1433,7 @@ invariant
 	generics_not_void_implies_generics_not_empty_or_tuple: (generics /= Void implies (not generics.is_empty or is_tuple))
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

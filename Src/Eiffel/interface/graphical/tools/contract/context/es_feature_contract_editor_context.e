@@ -13,18 +13,18 @@ deferred class
 inherit
 	ES_CONTRACT_EDITOR_CONTEXT [FEATURE_STONE]
 		redefine
-			is_stone_usable
+			internal_is_stone_usable
 		end
 
 feature -- Access
 
-	context_feature: !E_ROUTINE
+	context_feature: !E_FEATURE
 			-- Context class for contract modifications
 		require
 			is_interface_usable: is_interface_usable
 			has_stone: has_stone
 		do
-			Result ?= context_stone.e_feature
+			Result := context_stone.e_feature.as_attached
 		end
 
 feature -- Contracts
@@ -32,7 +32,7 @@ feature -- Contracts
 	contracts_for_class (a_class: !CLASS_I; a_live: BOOLEAN): !TUPLE [contracts: !DS_LIST [TAGGED_AS]; modifier: !ES_CONTRACT_TEXT_MODIFIER [AST_EIFFEL]]
 			-- <Precursor>
 		local
-			l_modifier: ?like create_text_modifier
+			l_modifier: like create_text_modifier
 			l_e_feature: ?like context_feature
 			l_class_c: CLASS_C
 			l_feature_as: ?FEATURE_AS
@@ -57,8 +57,6 @@ feature -- Contracts
 				end
 			end
 
-			check l_modifier_attached: l_modifier /= Void end
-
 			if a_live then
 					-- We have a text modifier now, extract the contracts
 				if not l_modifier.is_prepared then
@@ -81,7 +79,7 @@ feature -- Contracts
 
 			if l_feature_as /= Void then
 					-- Extract contracts
-				l_assertions := contracts_for_feature (({!FEATURE_AS}) #? l_feature_as)
+				l_assertions := contracts_for_feature (l_feature_as)
 				if l_assertions /= Void then
 					l_cursor := l_assertions.cursor
 					from l_assertions.start until l_assertions.after loop
@@ -92,7 +90,7 @@ feature -- Contracts
 				end
 			end
 
-			Result ?= [l_result, ({!ES_CONTRACT_TEXT_MODIFIER [AST_EIFFEL]}) #? l_modifier]
+			Result := [l_result, (({!ES_CONTRACT_TEXT_MODIFIER [AST_EIFFEL]}) #? l_modifier).as_attached]
 		end
 
 feature {NONE} -- Contracts
@@ -105,13 +103,13 @@ feature {NONE} -- Contracts
 		deferred
 		end
 
-feature -- Status report
+feature {NONE} -- Status report
 
-	is_stone_usable (a_stone: ?STONE): BOOLEAN
+	internal_is_stone_usable (a_stone: !like stone): BOOLEAN
 			-- <Precursor>
 		do
 			Result := Precursor {ES_CONTRACT_EDITOR_CONTEXT} (a_stone)
-			if a_stone /= Void and then Result then
+			if Result then
 				if {l_stone: FEATURE_STONE} a_stone then
 					Result := {l_routine: E_ROUTINE} l_stone.e_feature
 				else
@@ -119,7 +117,7 @@ feature -- Status report
 				end
 			end
 		ensure then
-			is_class_stone: (Result and a_stone /= Void) implies ({E_ROUTINE}) #? (({FEATURE_STONE}) #? a_stone).e_feature /= Void
+			is_feature_stone: Result implies ({?E_ROUTINE}) #? (({!FEATURE_STONE}) #? a_stone).e_feature /= Void
 		end
 
 feature {NONE} -- Query
@@ -154,7 +152,7 @@ feature {NONE} -- Query
 
 feature {NONE} -- Factory
 
-	create_text_modifier: ?ES_FEATURE_CONTRACT_TEXT_MODIFIER [AST_EIFFEL]
+	create_text_modifier: !ES_FEATURE_CONTRACT_TEXT_MODIFIER [AST_EIFFEL]
 			-- Creates a text modifier
 		deferred
 		end

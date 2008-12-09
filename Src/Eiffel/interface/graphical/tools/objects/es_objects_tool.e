@@ -56,52 +56,38 @@ feature {DEBUGGER_MANAGER} -- Access
 			end
 		end
 
-feature -- Query
-
-	is_stone_usable (a_stone: STONE): BOOLEAN
-			-- Determines if a stone can be used by Current.
-			--
-			-- `a_stone': Stone to determine usablity.
-			-- `Result': True if the stone can be used, False otherwise.
-		do
-			Result := {l_stone: CALL_STACK_STONE} a_stone
-		end
-
 feature -- Access
 
 	icon: EV_PIXEL_BUFFER
-			-- Tool icon
-			-- Note: Do not call `tool.icon' as it will create the tool unnecessarly!
+			-- <Precursor>
 		do
 			Result := stock_pixmaps.tool_objects_icon_buffer
 		end
 
 	icon_pixmap: EV_PIXMAP
-			-- Tool icon pixmap
-			-- Note: Do not call `tool.icon' as it will create the tool unnecessarly!
+			-- <Precursor>
 		do
 			Result := stock_pixmaps.tool_objects_icon
 		end
 
 	title: STRING_32
-			-- Tool title.
-			-- Note: Do not call `tool.title' as it will create the tool unnecessarly!
+			-- <Precursor>
 		do
 			Result := interface_names.t_object_tool
 		end
 
-	shortcut_preference_name: STRING_32
-			-- An optional shortcut preference name, for automatic preference binding.
-			-- Note: The preference should be registered in the default.xml file
-			--       as well as in the {EB_MISC_SHORTCUT_DATA} class.
+feature {NONE} -- Status report
+
+	internal_is_stone_usable (a_stone: !like stone): BOOLEAN
+			-- <Precursor>
 		do
-			Result := "show_objects_tool"
+			Result := {l_stone: CALL_STACK_STONE} a_stone
 		end
 
 feature {NONE} -- Factory
 
 	create_tool: ES_OBJECTS_TOOL_PANEL
-			-- Creates the tool for first use on the development `window'
+			-- <Precursor>
 		do
 			create Result.make (window, Current)
 			Result.set_debugger_manager (debugger_manager)

@@ -33,8 +33,7 @@ inherit
 			reset,
 			go_to_next_token,
 			go_to_previous_token,
-			after_searched_token,
-			set_up_local_analyzer
+			after_searched_token
 		end
 
 	EB_SHARED_DEBUGGER_MANAGER
@@ -52,7 +51,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	insertion: STRING is
+	insertion: STRING_32 is
 			-- Insertion
 		do
 			Result := insertion_cell.item
@@ -94,7 +93,7 @@ feature -- Basic operation
 			-- Prepare completion
 		do
 			Precursor
-			create insertion_cell
+			create insertion_cell.put (Void)
 			if dynamic_context_class_c_function /= Void then
 				context_class_c := dynamic_context_class_c_function.item (Void)
 			end
@@ -118,7 +117,7 @@ feature -- Basic operation
 				if provide_features then
 					current_token := text_field.current_token_in_line (watching_line)
 					current_line := watching_line
-					build_completion_list (current_token)
+					build_completion_list (current_token, current_pos_in_token)
 				end
 			end
 			if provide_classes then
@@ -192,9 +191,9 @@ feature {NONE} -- Class info analyzer
 		do
 			if current_token /= Void then
 				from
-					if is_string (current_token) and then not current_token.image.is_empty then
+					if is_string (current_token) and then not current_token.wide_image.is_empty then
 							-- we check if there is a string split on several lines
-						if current_token.image @ 1 = '%%' then
+						if current_token.wide_image @ 1 = '%%' then
 							uncomplete_string := True
 						end
 					end
@@ -223,9 +222,9 @@ feature {NONE} -- Class info analyzer
 								current_token := current_line.real_first_token
 							end
 						else
-							if is_string (current_token) and then not current_token.image.is_empty then
+							if is_string (current_token) and then not current_token.wide_image.is_empty then
 									-- we check if a string is split on several lines
-								if current_token.image @ 1 = '%%' then
+								if current_token.wide_image @ 1 = '%%' then
 									uncomplete_string := True
 								else
 										-- if the string is on one lines, we skip it
@@ -261,9 +260,9 @@ feature {NONE} -- Class info analyzer
 		do
 			if current_token /= Void then
 				from
-					if is_string (current_token) and then not current_token.image.is_empty then
+					if is_string (current_token) and then not current_token.wide_image.is_empty then
 							-- we check if there is a string split on several lines
-						if current_token.image @ current_token.image.count = '%%' then
+						if current_token.wide_image @ current_token.wide_image.count = '%%' then
 							uncomplete_string := True
 						end
 					end
@@ -291,9 +290,9 @@ feature {NONE} -- Class info analyzer
 								current_token := current_line.eol_token
 							end
 						else
-							if is_string (current_token) and then not current_token.image.is_empty then
+							if is_string (current_token) and then not current_token.wide_image.is_empty then
 									-- we check if a string is split on several lines
-								if current_token.image @ 1 = '%%' then
+								if current_token.wide_image @ 1 = '%%' then
 									uncomplete_string := True
 								else
 										-- if the string is on one lines, we skip it
@@ -382,20 +381,6 @@ feature {NONE} -- Build completion possibilities
 			end
 		end
 
-	set_up_local_analyzer (a_line: EDITOR_LINE; a_token: EDITOR_TOKEN; a_class_c: CLASS_C) is
-		local
-			l_analyzer: EB_LOCAL_ENTITIES_FINDER_FROM_AST
-		do
-			l_analyzer ?= local_analyzer
-			if l_analyzer = Void then
-				create l_analyzer.make
-				local_analyzer_cell.put (l_analyzer)
-			end
-			if context_feature_as /= Void then
-				l_analyzer.build_entities_list (context_feature_as)
-			end
-		end
-
 	watching_line: EDITOR_LINE
 			-- Line
 
@@ -403,7 +388,7 @@ feature {NONE} -- Build completion possibilities
 			-- Function to retrieve group
 
 ;indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

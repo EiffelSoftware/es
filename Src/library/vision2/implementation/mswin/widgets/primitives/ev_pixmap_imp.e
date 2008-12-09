@@ -78,9 +78,9 @@ feature {NONE} -- Initialization
 			check not_void: l_pixel_buffer /= Void end
 			l_gdip_bitmap := l_pixel_buffer.gdip_bitmap
 			if l_gdip_bitmap /= Void and then color_depth = 32 then
-				-- We create a 32bit DIB bitmap if possible, so current can have alpha informations.
-				-- Because EV_PIXMAP_IMP_STATE doesn't have `private_bitmap' and `private_mask_bitmap' features,
-				-- we have to implement it in this class.				
+					-- We create a 32bit DIB bitmap if possible, so current can have alpha informations.
+					-- Because EV_PIXMAP_IMP_STATE doesn't have `private_bitmap' and `private_mask_bitmap' features,
+					-- we have to implement it in this class.				
 				if private_bitmap /= Void then
 					private_bitmap.delete
 				end
@@ -145,7 +145,7 @@ feature {EV_ANY_I, EV_STOCK_PIXMAPS_IMP} -- Loading/Saving
 		end
 
 	read_from_named_file (file_name: STRING_GENERAL) is
-			-- Load the pixmap described in 'file_name'. 
+			-- Load the pixmap described in 'file_name'.
 			-- Exceptions "No such file or directory",
 			--            "Unable to retrieve icon information",
 			--            "Unable to load the file".
@@ -1443,12 +1443,18 @@ feature {NONE} -- Implementation
 					private_width := private_bitmap.width
 					private_height := private_bitmap.height
 
-						-- We keep the palette
+						-- We reused the palette, we need to temporarily share
+						-- the palette object so that it doesn't get destroyed when
+						-- we dispose the DIB, then unshare it afterwards.
 					private_palette := dib.palette
+					private_palette.set_shared
 					private_palette.enable_reference_tracking
 
 					dib.dispose
 					dib := Void
+
+						-- Reset shared status back to unshared.
+					private_palette.set_unshared
 
 						-- Let's build the mask.
 					if alpha_data /= Default_pointer then
@@ -1856,7 +1862,7 @@ feature {NONE} -- Color depth implementation
 		indexing
 			once_status: global
 		once
-			create Result
+			create Result.put (0)
 		ensure
 			not_void: Result /= Void
 		end
@@ -1958,7 +1964,7 @@ invariant
 			private_cursor.reference_tracked
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			 Eiffel Software
@@ -1968,8 +1974,4 @@ indexing
 			 Customer support http://support.eiffel.com
 		]"
 
-
-
-
 end -- class EV_PIXMAP_IMP
-

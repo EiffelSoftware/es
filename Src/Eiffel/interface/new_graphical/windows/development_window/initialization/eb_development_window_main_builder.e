@@ -46,18 +46,36 @@ feature -- Command
 		local
 			l_screen: EB_STUDIO_SCREEN
 			l_x, l_y: INTEGER
+			l_data: EB_DEVELOPMENT_WINDOW_DATA
+			l_border_width: INTEGER
 		do
+			-- There are two development window data (EB_DEVELOPMENT_WINDOW_DATA) saved.
+			-- One is saved in preferences
+			-- The other is saved in session manager
+			-- Maybe we should divide the class EB_DEVELOPMENT_WINDOW_DATA into two classes?
+			if(create {SHARED_WORKBENCH}).workbench.system_defined then
+				l_data ?= develop_window.project_session_data.value (develop_window.development_window_data.development_window_data_id)
+			end
+
+			if l_data = Void then
+				l_data := develop_window.development_window_data
+			end
 			create l_screen
+				-- Take into account `border_width'
+			l_border_width := (develop_window.window.width - develop_window.window.client_width) // 2
+
+				-- When window is maximized, then the border might be slightly off screen.
 			develop_window.window.set_size (
-				develop_window.development_window_data.width.min (l_screen.width),
-				develop_window.development_window_data.height.min (l_screen.height))
-			l_x := develop_window.development_window_data.x_position
-			if l_x < l_screen.virtual_left or l_x > l_screen.virtual_right then
+				l_data.width.min (l_screen.width + l_border_width * 2),
+				l_data.height.min (l_screen.height + l_border_width * 2))
+
+			l_x := l_data.x_position
+			if (l_x + l_border_width) < l_screen.virtual_left or (l_x + l_border_width) > l_screen.virtual_right then
 					-- Somehow screens have changed, reset it to 0
 				l_x := 0
 			end
-			l_y := develop_window.development_window_data.y_position
-			if l_y < l_screen.virtual_top or l_y > l_screen.virtual_bottom then
+			l_y := l_data.y_position
+			if (l_y + l_border_width) < l_screen.virtual_top or (l_y + l_border_width) > l_screen.virtual_bottom then
 					-- Somehow screens have changed, reset it to 0
 				l_y := 0
 			end
@@ -86,17 +104,6 @@ feature -- Command
 			end
 			if l_modified then
 				develop_window.window.set_position (l_x, l_y)
-			end
-		end
-
-	window_displayed is
-			-- `Current' has been displayed on screen.
-		do
-				-- Minimize or Maximize window if needed.
-			if develop_window.development_window_data.is_maximized then
-				develop_window.window.maximize
-			elseif develop_window.development_window_data.is_minimized then
-				develop_window.window.minimize
 			end
 		end
 
@@ -138,7 +145,6 @@ feature -- Command
 			l_simple_shortcut_commands: ARRAYED_LIST [EB_SIMPLE_SHORTCUT_COMMAND]
 
 			l_reset_command: EB_RESET_LAYOUT_COMMAND
-			l_set_default_layout_command: EB_SET_DEFAULT_LAYOUT_COMMAND
 			l_save_layout_as_command: EB_SAVE_LAYOUT_AS_COMMAND
 			l_open_layout_command: EB_OPEN_LAYOUT_COMMAND
 			l_shortcut: SHORTCUT_PREFERENCE
@@ -147,6 +153,13 @@ feature -- Command
 			l_lock_editor_docking_command: EB_LOCK_EDITOR_DOCKING_COMMAND
 			l_minimize_editors_command: EB_MINIMIZE_EDITORS_COMMAND
 			l_restore_editors_command: EB_RESTORE_EDITORS_COMMAND
+
+			l_editor_font_zoom_in_command: EB_EDITOR_FONT_ZOOM_IN_COMMAND
+			l_editor_font_zoom_in_numpad_command: ES_EDITOR_FONT_ZOOM_IN_NUMPAD_COMMAND
+			l_editor_font_zoom_out_command: EB_EDITOR_FONT_ZOOM_OUT_COMMAND
+			l_editor_font_zoom_out_numpad_command: ES_EDITOR_FONT_ZOOM_OUT_NUMPAD_COMMAND
+			l_editor_font_zoom_reset_command: EB_EDITOR_FONT_ZOOM_RESET_COMMAND
+			l_editor_font_zoom_reset_numpad_command: ES_EDITOR_FONT_ZOOM_RESET_NUMPAD_COMMAND
 
 			l_edit_contracts_command: ES_EDIT_CONTRACTS_COMMAND
 		do
@@ -249,7 +262,7 @@ feature -- Command
 			develop_window.commands.set_editor_paste_cmd (l_editor_paste_cmd)
 			develop_window.commands.toolbarable_commands.extend (l_editor_paste_cmd)
 
-			create l_new_cluster_cmd.make (develop_window)
+			create l_new_cluster_cmd.make (develop_window, False)
 			auto_recycle (l_new_cluster_cmd)
 			develop_window.commands.set_new_cluster_cmd (l_new_cluster_cmd)
 			develop_window.commands.toolbarable_commands.extend (l_new_cluster_cmd)
@@ -324,9 +337,6 @@ feature -- Command
 			create l_reset_command.make (develop_window)
 			develop_window.commands.set_reset_layout_command (l_reset_command)
 
-			create l_set_default_layout_command.make (develop_window)
-			develop_window.commands.set_set_default_layout_command (l_set_default_layout_command)
-
 			create l_save_layout_as_command.make (develop_window)
 			develop_window.commands.set_save_layout_as_command (l_save_layout_as_command)
 
@@ -347,6 +357,20 @@ feature -- Command
 
 			create l_restore_editors_command.make (develop_window)
 			develop_window.commands.set_restore_editors_command (l_restore_editors_command)
+
+			create l_editor_font_zoom_in_command.make (develop_window)
+			develop_window.commands.set_editor_font_zoom_in_command (l_editor_font_zoom_in_command)
+			create l_editor_font_zoom_in_numpad_command.make (develop_window)
+			develop_window.commands.set_editor_font_zoom_in_numpad_command (l_editor_font_zoom_in_numpad_command)
+			create l_editor_font_zoom_out_command.make (develop_window)
+			develop_window.commands.set_editor_font_zoom_out_command (l_editor_font_zoom_out_command)
+			create l_editor_font_zoom_out_numpad_command.make (develop_window)
+			develop_window.commands.set_editor_font_zoom_out_numpad_command (l_editor_font_zoom_out_numpad_command)
+
+			create l_editor_font_zoom_reset_command.make (develop_window)
+			develop_window.commands.set_editor_font_zoom_reset_command (l_editor_font_zoom_reset_command)
+			create l_editor_font_zoom_reset_numpad_command.make (develop_window)
+			develop_window.commands.set_editor_font_zoom_reset_numpad_command (l_editor_font_zoom_reset_numpad_command)
 
 			develop_window.commands.set_customized_formatter_command (create {EB_SETUP_CUSTOMIZED_FORMATTER_COMMAND})
 			develop_window.commands.set_customized_tool_command (create {EB_SETUP_CUSTOMIZED_TOOL_COMMAND})
@@ -374,6 +398,8 @@ feature -- Command
 			l_go_to_previous_warning_cmd: ES_PREVIOUS_WARNING_COMMAND
 			l_ear_commander: ES_ERROR_LIST_COMMANDER_I
 			l_maximize_editor_area_command: EB_MAXIMIZE_EDITOR_AREA_COMMAND
+			l_minimize_editor_area_command: EB_MINIMIZE_EDITOR_AREA_COMMAND
+			l_restore_editor_area_command: EB_RESTORE_EDITOR_AREA_COMMAND
 		do
 				-- Error navigation
 			l_ear_commander ?= develop_window.shell_tools.tool ({ES_ERROR_LIST_TOOL})
@@ -399,6 +425,12 @@ feature -- Command
 
 				create l_maximize_editor_area_command.make (develop_window)
 				develop_window.commands.set_maximize_editor_area_command (l_maximize_editor_area_command)
+
+				create l_minimize_editor_area_command.make (develop_window)
+				develop_window.commands.set_minimize_editor_area_command (l_minimize_editor_area_command)
+
+				create l_restore_editor_area_command.make (develop_window)
+				develop_window.commands.set_restore_editor_area_command (l_restore_editor_area_command)
 			end
 		end
 
@@ -715,15 +747,14 @@ feature -- Command
 				-- Vision2 initialization
 			create l_window
 			develop_window.set_window (l_window)
-			register_action (l_window.show_actions, agent window_displayed)
 			register_action (l_window.restore_actions, agent safe_restore)
 			init_size_and_position
 			l_window.close_request_actions.wipe_out
 			register_action (l_window.close_request_actions, agent develop_window.destroy)
 			l_window.set_icon_pixmap (develop_window.pixmap)
 
-			register_action (l_window.resize_actions, agent develop_window.save_size)
-			register_action (l_window.move_actions, agent develop_window.save_position)
+			register_action (l_window.resize_actions, agent (x,y,w,h: INTEGER) do develop_window.save_size end)
+			register_action (l_window.move_actions, agent (x,y,w,h: INTEGER) do develop_window.save_position end)
 
 				-- Initialize commands and connect them.
 			init_commands
@@ -733,22 +764,6 @@ feature -- Command
 
 				-- Initialize commands and connect them.
 			init_tool_commands
-		end
-
-	build_help_engine is
-			-- Build help engine and focus in actions.
-		local
-			l_help_engine: EB_HELP_ENGINE
-		do
-				-- Set up the minimize title if it's not done
-			if develop_window.minimized_title = Void or else develop_window.minimized_title.is_empty then
-				develop_window.set_minimized_title (develop_window.title)
-			end
-
-			create l_help_engine.make
-			develop_window.set_help_engine (l_help_engine)
-			develop_window.register_action (develop_window.window.focus_in_actions, agent (develop_window.window_manager).set_focused_window (develop_window))
-			develop_window.set_initialized_for_builder (True)
 		end
 
 	build_interface is

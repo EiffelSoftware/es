@@ -34,18 +34,36 @@ inherit
 			is_compiled
 		redefine
 			cluster,
-			class_type
+			class_type,
+			options
 		end
 
 	CLASS_I
 		rename
 			group as cluster
+		redefine
+			set_changed,
+			reset_options
 		end
 
 create {CONF_COMP_FACTORY}
 	make
 
 feature -- Access
+
+	options: CONF_OPTION is
+			-- <Precursor>
+		do
+			if options_internal /= Void then
+				Result := options_internal
+			else
+				Result := Precursor
+				if workbench.is_compiling then
+					options_internal := Result
+						-- We can cache the result as we know that it will be reset after compilation.
+				end
+			end
+		end
 
 	cluster: CLUSTER_I
 			-- Cluster to which the class belongs to
@@ -133,6 +151,14 @@ feature -- Access
 			end
 		end
 
+feature -- Status setting
+
+	set_changed (b: BOOLEAN) is
+			-- Assign `b' to `changed'.
+		do
+			changed := b
+		end
+
 feature -- Setting
 
 	set_base_name (s: STRING) is
@@ -146,9 +172,25 @@ feature -- Setting
 			base_name_set: base_name = s
 		end
 
+feature {COMPILER_EXPORTER} -- Setting
+
+	reset_options is
+			-- <Precursor>
+		do
+			options_internal := Void
+		end
+
+feature {NONE} -- Implementation
+
+	options_internal: like options
+		-- Temporary store for internal options.
+
 feature {NONE} -- Type anchor
 
-	class_type: EIFFEL_CLASS_I
+	class_type: EIFFEL_CLASS_I is
+			-- <Precursor>
+		do
+		end
 
 invariant
 	name_not_void: name /= Void

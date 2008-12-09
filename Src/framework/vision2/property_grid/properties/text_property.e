@@ -27,8 +27,7 @@ inherit
 		redefine
 			initialize,
 			activate_action,
-			implementation,
-			data
+			implementation
 		end
 
 feature {NONE} -- Initialization
@@ -101,7 +100,10 @@ feature {NONE} -- Agents
 		local
 			l_data: like value
 		do
-			l_data := convert_to_data (text_field.text)
+				-- We cannot read from `text_field', which already been destroyed and disconnected.
+				-- Instead, the implementation in `deactivate' already set `text' with correct value.
+			check text_set: text /= Void end
+			l_data := convert_to_data (text)
 			if is_valid_value (l_data) then
 				set_value (l_data)
 			else

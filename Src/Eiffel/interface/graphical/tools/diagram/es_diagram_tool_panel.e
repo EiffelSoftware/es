@@ -546,6 +546,7 @@ feature -- EB_TOOL features
 
 			create history_manager.make (Current)
 			create address_manager.make (Current, True)
+			auto_recycle (address_manager)
 			address_manager.set_context_menu_factory (develop_window.menus.context_menu_factory)
 		end
 
@@ -563,7 +564,7 @@ feature -- EB_TOOL features
 			address_manager.label_changed_actions.extend (agent (develop_window.docking_manager).update_mini_tool_bar_size (content))
 		end
 
-feature
+feature -- Initialization
 
 	attach_to_docking_manager (a_docking_manager: SD_DOCKING_MANAGER) is
 			-- Attach to docking manager
@@ -1344,6 +1345,7 @@ feature {NONE} -- Clean up
 			toggle_selected_classes_descendents_cmd := Void
 			toggle_selected_classes_clients_cmd := Void
 			toggle_selected_classes_suppliers_cmd := Void
+			address_manager := Void
 			Precursor {EB_STONABLE_TOOL}
 			Precursor {EB_HISTORY_OWNER}
 		ensure then

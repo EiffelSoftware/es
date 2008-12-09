@@ -38,6 +38,8 @@
 doc:<file name="debug.c" header="eif_debug.h" version="$Id$" summary="Routines used for debugging.">
 */
 
+#ifdef WORKBENCH
+
 #include "eif_portable.h"
 #include "eif_confmagic.h"	
 #include "rt_macros.h"
@@ -165,13 +167,13 @@ rt_public struct c_opstack cop_stack = {
 };
 #endif /* !EIF_THREADS */
 /*
-doc:	<attribute name="d_globaldata" return_type="struct dbglobalinfo" export="shared">
+doc:	<attribute name="d_globaldata" return_type="struct dbglobalinfo" export="private">
 doc:		<summary>Is debugging disabled for a while? Is current code location a breakpoint which is set?</summary>
 doc:		<thread_safety>Not safe</thread_safety>
 doc:		<fixme>No synchronization is done on accessing fileds of this structure.</fixme>
 doc:	</attribute>
 */
-rt_shared struct dbglobalinfo d_globaldata = {
+rt_private struct dbglobalinfo d_globaldata = {
 	NULL			/* db_bpinfo */
 };
 
@@ -192,12 +194,19 @@ rt_private EIF_LW_MUTEX_TYPE  *db_mutex;	/* Mutex to protect `dstop' against con
 	EIF_LW_MUTEX_DESTROY(db_mutex, "Cannot destroy mutex for the debugger [dbreak]\n");
 #define DBGMTX_LOCK	\
 	EIF_ENTER_C; EIF_ASYNC_SAFE_LW_MUTEX_LOCK(db_mutex, "Cannot lock mutex for the debugger [dbreak]\n"); EIF_EXIT_C; RTGC
+rt_private EIF_BOOLEAN dbgmtx_trylock(EIF_LW_MUTEX_TYPE *a_mutex) {
+	EIF_BOOLEAN result;
+	EIF_LW_MUTEX_TRYLOCK(db_mutex, result, "Cannot lock mutex for the debugger [dbreak]\n");
+	return result;
+}
+#define DBGMTX_TRYLOCK	dbgmtx_trylock(db_mutex)
 #define DBGMTX_UNLOCK \
 	EIF_ASYNC_SAFE_LW_MUTEX_UNLOCK(db_mutex, "Cannot unlock mutex for the debugger [dbreak]\n"); 
 #else
 #define DBGMTX_CREATE 
 #define DBGMTX_DESTROY 
 #define DBGMTX_LOCK 
+#define DBGMTX_TRYLOCK 
 #define DBGMTX_UNLOCK 
 #endif
 
@@ -213,10 +222,10 @@ rt_shared void debug_initialize(void);	/* Initialize debug information */
 rt_public void dnotify(int, int);		/* Notify the daemon event and data, no answer waited */
 rt_public void dstop(struct ex_vect *exvect, uint32 offset); /* Breakable point reached */
 rt_public void dstop_nested(struct ex_vect *exvect, uint32 break_index, uint32 nested_break_index); /* Breakable point in the middle of a nested call reached */
-rt_public void set_breakpoint_count(int num);	/* Sets the n breakpoint to stop at*/
+rt_shared void set_breakpoint_count(int num);	/* Sets the n breakpoint to stop at*/
 rt_private void dbreak_create_table(void);
 rt_shared void dbreak_free_table(void);
-rt_shared void dbreak (EIF_CONTEXT int why);
+rt_shared void dbreak (EIF_CONTEXT int why, int wait);
 rt_shared void safe_dbreak (int why);
 rt_private void set_breakpoint_in_table(BODY_INDEX body_id, uint32 offset);
 rt_private void remove_breakpoint_in_table(BODY_INDEX body_id, uint32 offset);
@@ -280,25 +289,25 @@ doc:	</attribute>
 rt_private uint32 previous_break_index = (uint32) -1;
 
 /*
-doc:	<attribute name="critical_stack_depth" return_type="uint32" export="public">
+doc:	<attribute name="critical_stack_depth" return_type="uint32" export="shared">
 doc:		<summary>Limit to which we warn EiffelStudio user there might be a stack overflow.</summary>
 doc:		<thread_safety>Safe</thread_safety>
 doc:		<synchronization>db_mutex</synchronization>
 doc:	</attribute>
 */
-rt_public uint32 critical_stack_depth = (uint32) -1;
+rt_shared uint32 critical_stack_depth = (uint32) -1;
 
 /*
-doc:	<attribute name="alread_warned" return_type="int" export="public">
+doc:	<attribute name="alread_warned" return_type="int" export="shared">
 doc:		<summary>Did we warn user of a potential stack overflow? We won't warn him again before the call stack depth goes under `critical_stack_depth' limit.</summary>
 doc:		<thread_safety>Safe</thread_safety>
 doc:		<synchronization>db_mutex</synchronization>
 doc:	</attribute>
 */
-rt_public int already_warned;
+rt_shared int already_warned;
 
 /* debug initialization */
-rt_shared void debug_initialize() /* Initialize debug information (breakpoints ...) */
+rt_shared void debug_initialize(void) /* Initialize debug information (breakpoints ...) */
 {
 	dbreak_create_table();			/* create the structure used to store breakpoints information */
 }
@@ -307,7 +316,7 @@ rt_shared void debug_initialize() /* Initialize debug information (breakpoints .
  * Context set up and handling.
  */
 
-rt_public void discard_breakpoints()
+rt_public void discard_breakpoints(void)
 {
 	/* This routine is called when we don't want to stop anymore
 	 * The typical usage of this routine is made in emain.c
@@ -335,7 +344,7 @@ rt_public void discard_breakpoints()
 	RT_ENTER_EIFFELCODE;
 }
 
-rt_public void undiscard_breakpoints()
+rt_public void undiscard_breakpoints(void)
 {
 	/* This routine is called after a call to discard_breakpoints,
 	 * when we want to re-take breakable line into account
@@ -485,7 +494,7 @@ rt_public void dstatus(int dx)
 * Debugging hooks.
 *************************************************************************************************************************/
 
-rt_public void set_breakpoint_count (int num)
+rt_shared void set_breakpoint_count (int num)
 	{
 	/*
 	 * Sets the number of hooks (dnext) that the application
@@ -697,15 +706,23 @@ rt_shared void dcatcall(int a_arg_position, EIF_TYPE_INDEX a_expected_dftype, EI
 * Breakpoints handling.
 *************************************************************************************************************************/
 
-rt_shared void dbreak(EIF_CONTEXT int why)
+rt_shared void dbreak(int why, int wait)
 	/* Safe entry point for multithreaded application */
+	/* If `wait' then wait until we get mutex, otherwise do nothing. */
 {
+#ifdef EIF_THREADS
 	RT_GET_CONTEXT
-	DBGMTX_LOCK;
-
+	if (wait) {
+		DBGMTX_LOCK;
+		safe_dbreak(why);
+		DBGMTX_UNLOCK;
+	} else if (DBGMTX_TRYLOCK) {
+		safe_dbreak(why);
+		DBGMTX_UNLOCK;
+	}
+#else
 	safe_dbreak(why);
-
-	DBGMTX_UNLOCK;
+#endif
 }
 
 rt_shared void safe_dbreak (int why)
@@ -1083,7 +1100,7 @@ rt_shared void ewhere(struct where *where)
 	/* Now compute things the remote process will like to know. First, the
 	 * dynamic type of the current object...
 	 */
-	if (ex->ex_id != 0) {
+	if (ex->ex_id) {
 		where->wh_type = Dtype(ex->ex_id);	/* Dynamic type */
 	} else {
 		where->wh_type = -1;
@@ -1249,6 +1266,7 @@ rt_private struct dcall *dbstack_allocate(register int size)
 	return arena;			/* Stack allocated */
 }
 
+#ifdef EIF_THREADS
 rt_shared void dbstack_reset(struct dbstack *stk)
 {
 	/* Reset the stack 'stk' to its minimal state and disgard all its
@@ -1266,6 +1284,7 @@ rt_shared void dbstack_reset(struct dbstack *stk)
 
 	memset (stk, 0, sizeof(struct dbstack));
 }
+#endif
 
 
 
@@ -1702,10 +1721,12 @@ rt_public void drecord_bc(BODY_INDEX old_body_id, BODY_INDEX body_id, unsigned c
 		fatal_error ("Once routines cannot be dynamically plugged-in.");
 		break;
 #endif
+	case ONCE_MARK_NONE:
+	case ONCE_MARK_ATTRIBUTE:
+		break;
 #ifdef MAY_PANIC
 	default:
-		if (*addr)
-			eif_panic("Invalid once mark.");
+		eif_panic("Invalid once mark.");
 #endif
 	}
 }
@@ -2137,7 +2158,6 @@ rt_public void c_wipe_out(register struct c_stochunk *chunk)
 /*
  * RT_EXTENSION interaction for debugging
  */
-#ifdef WORKBENCH
 rt_public void rt_ext_notify_event (int op, EIF_REFERENCE ref, int i1, int i2, int i3)
 {
 
@@ -2448,7 +2468,6 @@ rt_public int rt_dbg_set_stack_value (uint32 stack_depth, uint32 loc_type, uint3
 	}
 	return error_code;
 }
-
 
 #endif
 

@@ -52,7 +52,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make_with_text (a_text: STRING) is
+	make_with_text (a_text: like text) is
 			-- Create `Current' and assign `a_text' to `text'
 		require
 			a_text_attached: a_text /= Void
@@ -88,7 +88,7 @@ feature -- Access
 			-- Spacing between `text' and `pixmap' in pixels.
 			-- If both are not visible, this value does not affect appearance of `Current'.
 
-	text: STRING is
+	text: STRING_32 is
 			-- Text of current item.
 		do
 			Result := editor_token_text.string_representation
@@ -270,18 +270,44 @@ feature -- Setting
 			try_call_setting_change_actions
 		end
 
-	set_text (a_text: STRING) is
+	set_text (a_text: like text) is
 			-- Set `text' with `a_text'.
 		require
 			a_text_attached: a_text /= Void
 		local
 			l_writer: like token_writer
+			l_mode: BOOLEAN
 		do
 			lock_update
 			l_writer := token_writer
-			l_writer.new_line
+
+				-- Alter mulitline state according to the passed text.
+			l_mode := l_writer.is_multiline_mode
+			if a_text.occurrences ('%N') > 0 then
+				if not l_mode then
+					l_writer.enable_multiline
+				end
+			elseif l_mode then
+				l_writer.disable_multiline
+			end
+
+			l_writer.wipe_out_lines
 			l_writer.add (a_text)
-			set_text_with_tokens (l_writer.last_line.content)
+			if l_writer.is_multiline_mode then
+					-- Add new line to retrieve the last line. This is a bug in the token generator API.
+				l_writer.add_new_line
+			end
+			set_text_with_tokens (l_writer.tokens (0))
+
+			if l_mode /= l_writer.is_multiline_mode then
+					-- Reset mode
+				if l_mode then
+					l_writer.enable_multiline
+				else
+					l_writer.disable_multiline
+				end
+			end
+
 			unlock_update
 			try_call_setting_change_actions
 		ensure
@@ -389,7 +415,7 @@ feature -- Searchable
 			image_set: image /= Void and then image.is_equal (a_image)
 		end
 
-	image: STRING is
+	image: STRING_32 is
 			-- Image of current used in search
 		do
 			Result := image_internal
@@ -403,7 +429,7 @@ feature{NONE} -- Implementation
 	image_internal: like image
 			-- Implementation of `image'
 
-	internal_replace (original, new: STRING) is
+	internal_replace (original, new: like image) is
 			-- Replace every occurrence of `original' with `new' in `image'.
 		do
 		end

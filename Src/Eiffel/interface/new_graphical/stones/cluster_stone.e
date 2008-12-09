@@ -84,14 +84,16 @@ feature -- Access
 
 	header: STRING_GENERAL is
 		do
-			Result := history_name.twin
-			Result.append (Interface_names.l_Located_in (group.location.evaluated_path))
+			Result := Interface_names.l_cluster_header (eiffel_system.name,
+															eiffel_universe.target_name,
+															stone_signature,
+															group.location.evaluated_path)
 		end
 
 	history_name: STRING_GENERAL is
 			-- What represents `Current' in the history.
 		do
-			Result := Interface_names.s_Cluster_stone.as_string_32 + stone_signature
+			Result := "[" + stone_signature + "]"
 		end
 
 	stone_cursor: EV_POINTER_STYLE is
@@ -171,11 +173,8 @@ feature -- Status report
 
  	same_as (other: STONE): BOOLEAN is
  			-- Does `other' and `Current' represent the same cluster?
- 		local
- 			conv_clu: CLUSTER_STONE
  		do
- 			conv_clu ?= other
- 			Result := conv_clu /= Void and then conv_clu.group = group
+ 			Result := {conv_clu: CLUSTER_STONE} other and then conv_clu.group = group
  		end
 
 	is_cluster: BOOLEAN is

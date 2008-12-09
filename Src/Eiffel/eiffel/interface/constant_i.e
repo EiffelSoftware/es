@@ -111,7 +111,7 @@ feature -- Settings
 			if not type.is_attached then
 					-- Type of constant is always attached.
 				if feat_tbl.associated_class.lace_class.is_void_safe then
-					type := type.as_attached
+					type := type.as_attached_type
 				elseif not type.is_implicitly_attached then
 					type := type.as_implicitly_attached
 				end
@@ -137,7 +137,7 @@ feature -- Settings
 		do
 			create Result
 			Result.set_body_index (body_index)
-			Result.set_type_a (type.actual_type)
+			Result.set_type_a (type)
 
 			if
 				not byte_context.workbench_mode and then generate_in /= 0
@@ -145,8 +145,13 @@ feature -- Settings
 				Result.set_written_in (generate_in)
 				Result.set_access_in (generate_in)
 			else
-				Result.set_access_in (written_in)
-				Result.set_written_in (written_in)
+				if has_replicated_ast then
+					Result.set_access_in (access_in)
+					Result.set_written_in (written_in)
+				else
+					Result.set_written_in (written_in)
+					Result.set_access_in (written_in)
+				end
 			end
 			Result.set_pattern_id (pattern_id)
 			Result.set_feature_id (feature_id)

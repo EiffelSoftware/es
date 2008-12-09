@@ -2,7 +2,7 @@
 	description: "Implementation of copying/cloning routines of ANY."
 	date:		"$Date$"
 	revision:	"$Revision$"
-	copyright:	"Copyright (c) 1985-2007, Eiffel Software."
+	copyright:	"Copyright (c) 1985-2008, Eiffel Software."
 	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"Commercial license is available at http://www.eiffel.com/licensing"
 	copying: "[
@@ -58,6 +58,7 @@ doc:<file name="copy.c" header="eif_copy.h" version="$Id$" summary="Various obje
 #include "eif_size.h"		/* For macro LNGPAD */
 #include <string.h>
 #include "rt_assert.h"
+#include "rt_interp.h"		/* For routine call_copy */
 
 #define SHALLOW		1		/* Copy first level only */
 #define DEEP		2		/* Recursive copy */
@@ -106,6 +107,68 @@ rt_public EIF_REFERENCE eclone(register EIF_REFERENCE source)
 	} else {
 		return emalloc(dftype);
 	}
+}
+
+/*
+doc:	<routine name="eif_twin" export="public">
+doc:		<summary>Default implementation of feature {ANY}.twin.</summary>
+doc:		<thread_safety>Safe</thread_safety>
+doc:		<synchronization>None required</synchronization>
+doc:	</routine>
+*/
+rt_public EIF_REFERENCE eif_twin (EIF_REFERENCE Current)
+{
+	EIF_BOOLEAN a;
+	EIF_REFERENCE Result = NULL;
+
+	EIF_GET_CONTEXT
+
+	REQUIRE ("current_attached", Current);
+
+	RT_GC_PROTECT (Current);	/* Protect against GC */
+	RT_GC_PROTECT (Result);
+
+	a = c_check_assert (EIF_FALSE);
+	Result = eclone (Current);
+#ifdef WORKBENCH
+	call_copy (Dtype (Result), Result, Current);
+#else
+	egc_copy [Dtype (Result)] (Result, Current);
+#endif
+	c_check_assert (a);
+
+	RT_GC_WEAN_N(2);		/* Remove protection */
+
+	return Result;
+}
+
+/*
+doc:	<routine name="eif_standard_twin" export="public">
+doc:		<summary>Default implementation of feature {ANY}.standard_twin.</summary>
+doc:		<thread_safety>Safe</thread_safety>
+doc:		<synchronization>None required</synchronization>
+doc:	</routine>
+*/
+rt_public EIF_REFERENCE eif_standard_twin (EIF_REFERENCE Current)
+{
+	EIF_BOOLEAN a;
+	EIF_REFERENCE Result = NULL;
+
+	EIF_GET_CONTEXT
+
+	REQUIRE ("current_attached", Current);
+
+	RT_GC_PROTECT (Current);	/* Protect against GC */
+	RT_GC_PROTECT (Result);
+
+	a = c_check_assert (EIF_FALSE);
+	Result = eclone (Current);
+	ecopy (Result, Current);
+	c_check_assert (a);
+
+	RT_GC_WEAN_N(2);		/* Remove protection */
+
+	return Result;
 }
 
 rt_public void ecopy(register EIF_REFERENCE source, register EIF_REFERENCE target)
@@ -193,8 +256,9 @@ rt_public EIF_REFERENCE edclone(EIF_CONTEXT EIF_REFERENCE source)
 	int xobjs;
 #endif
 
-	if (0 == source)
-		return (EIF_REFERENCE) 0;			/* Void source */
+	if (source == NULL) {
+		return NULL;			/* Void source */
+	}
 
 	/* The deep clone of the source will be attached in the 'boot' entry from
 	 * the anchor structure. It all happens as if we were in fact deep cloning
@@ -438,7 +502,7 @@ rt_private void rdeepclone (EIF_REFERENCE source, EIF_REFERENCE enclosing, rt_ui
 			for (offset = 0; count > 0; count--, offset += REFSIZ) {
 				c_field = *(EIF_REFERENCE *) (clone + offset);
 				/* Iteration on non void references and Eiffel references */
-				if (0 == c_field || (HEADER(c_field)->ov_flags & EO_C))
+				if ((c_field == NULL) || (HEADER(c_field)->ov_flags & EO_C))
 					continue;
 				rdeepclone(c_field, clone, offset);
 			}
@@ -732,7 +796,7 @@ rt_private void expanded_update(EIF_REFERENCE source, EIF_REFERENCE target, int 
 		nb_ref--, t_offset += REFSIZ, s_offset += REFSIZ 
 	) {
 		t_reference = *(EIF_REFERENCE *) (t_enclosing + t_offset);
-		if (0 == t_reference)
+		if (t_reference == NULL)
 			continue;		/* Void reference */
 
 		zone = HEADER(t_reference);
@@ -871,7 +935,7 @@ rt_public void spclearall (EIF_REFERENCE spobj)
 	if (zone->ov_flags & EO_COMP) {
 			/* case of a special object of expanded structures */
 			/* Initialize new expanded elements, if any */
-		sp_init (spobj, eif_gen_param_id (INVALID_DTYPE, Dftype(spobj), 1), 0, count - 1);
+		sp_init (spobj, eif_gen_param_id (Dftype(spobj), 1), 0, count - 1);
 	}
 }
 

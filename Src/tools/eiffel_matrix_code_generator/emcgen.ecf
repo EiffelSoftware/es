@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="ISO-8859-1"?><system xmlns="http://www.eiffel.com/developers/xml/configuration-1-0-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-0-0 http://www.eiffel.com/developers/xml/configuration-1-0-0.xsd" name="eiffel_matrix_code_generator" uuid="9B77ADD2-9C67-4F5F-8699-50FEA6F23FD1">
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-4-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-4-0 http://www.eiffel.com/developers/xml/configuration-1-4-0.xsd" name="eiffel_matrix_code_generator" uuid="9B77ADD2-9C67-4F5F-8699-50FEA6F23FD1">
 	<description>Eiffel code generator for Eiffel Matrix Pixmaps</description>
 	<target name="eiffel_matrix_code_generator">
 		<root class="APPLICATION" feature="make"/>
@@ -18,16 +19,17 @@
 		<setting name="inlining_size" value="0"/>
 		<setting name="line_generation" value="false"/>
 		<setting name="multithreaded" value="false"/>
-		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf" readonly="true"/>
+		<library name="argument_parser" location="$ISE_LIBRARY\library\argument_parser\argument_parser.ecf"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="error_manager" location="$EIFFEL_SRC\framework\base\application\error_manager\error_manager.ecf"/>
+		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
+		<library name="ini" location="$EIFFEL_SRC\framework\file_formats\ini.ecf"/>
+		<library name="text" location="$EIFFEL_SRC\framework\base\text\text.ecf"/>
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf">
 			<option>
-				<assertions precondition="false" postcondition="false" check="false" invariant="false" loop="false"/>
+				<assertions/>
 			</option>
 		</library>
-		<cluster name="base_ext" location="${EIFFEL_SRC}\framework\base\" recursive="true">
-			<option warning="true">
-			</option>
-		</cluster>
 		<cluster name="eiffel_matrix_code_generator" location="${EIFFEL_SRC}\tools\eiffel_matrix_code_generator\" recursive="true">
 			<option warning="true">
 			</option>
@@ -36,6 +38,5 @@
 				<exclude>/example$</exclude>
 			</file_rule>
 		</cluster>
-		<cluster name="ini_reader" location="${EIFFEL_SRC}\framework\file_formats\ini\" recursive="true"/>
 	</target>
 </system>

@@ -177,6 +177,10 @@ feature
 			expr_b: EXPR_B
 			saved_context: like context
 		do
+			target_type := target.type
+			check not target_type.is_multi_constrained end
+			target_type := context.real_type_fixed (target_type)
+
 				-- The target is always expanded in-line for de-referencing.
 			context.init_propagation
 
@@ -193,10 +197,6 @@ feature
 				analyze_simple_assignment
 			end
 			create saved_context.make_from_context (context)
-			target_type := target.type
-
-			check not target_type.is_multi_constrained end
-			target_type := context.real_type_fixed (target_type)
 
 			if simple_op_assignment = No_simple_op then
 				source_type := context.real_type_fixed (source.type)
@@ -248,10 +248,15 @@ feature
 					elseif target_type.is_bit then
 						is_bit_assignment := True
 					else
-							-- I can't expand because of the aging tests.
-							-- (macro RTAP evaluates its argument more than
-							-- once). This of course if target is a reference.
-						if not target.c_type.is_pointer then
+							-- Nothing to be done because:
+							-- 1 - For reference target, we need an aging test which is a macro
+							--     that might evaluate more than once its argument, so we have to
+							--     store `source' in a register.
+							-- 2 - To fix an ordering problem for assignment with gcc 4.x (see eweasel test#runtime007)
+							--     we have to do the same for basic types, but this time is to ensure
+							--     that target is actually evaluated after source. This is only needed
+							--     if source allocates some memory.
+						if not source.allocates_memory and not target.c_type.is_pointer  then
 							source.propagate (No_register)
 						end
 					end
@@ -338,7 +343,7 @@ feature
 		do
 			generate_line_info
 			generate_frozen_debugger_hook
-			if context.workbench_mode then
+			if context.workbench_mode and then context.assertion_type /= context.in_invariant then
 				generate_frozen_debugger_recording_assignment (target)
 			end
 			if last_in_result then

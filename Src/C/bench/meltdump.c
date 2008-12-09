@@ -40,6 +40,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <memory.h>
+#include "rt_gen_types.h"
 #include "eif_interp.h"
 
 #define BCDB_TAG    't'
@@ -63,17 +64,18 @@ static  int     ctype_max;
 
 /*------------------------------------------------------------------*/
 
-static  void    prepare_types (void);
-static  void    analyze_file (void);
-static  void    analyze_cnodes (void);
-static  void    analyze_routids (void);
-static  void    analyze_parents (void);
-static  void    analyze_cecil (void);
-static  void    analyze_options (void);
-static  void    analyze_routinfo (void);
-static  void    analyze_desc (void);
-static  void    read_byte_code (void);
-static  void    panic (void);
+static void prepare_types (void);
+static void analyze_file (void);
+static void analyze_cnodes (void);
+static void analyze_routids (void);
+static void analyze_parents (void);
+static void analyze_cecil (void);
+static void analyze_options (void);
+static void analyze_routinfo (void);
+static void analyze_desc (void);
+static void analyze_root (void);
+static void read_byte_code (void);
+static void panic (void);
 
 /*------------------------------------------------------------------*/
 
@@ -130,16 +132,15 @@ int main (int argc, char **argv)
 
 	printf ("Files \"melted.txt\" and \"bytecode.eif\" generated\n");
 
-	exit (0);
 	return 0;
 }
 /*------------------------------------------------------------------*/
 
-static  void    prepare_types ()
+static  void    prepare_types (void)
 
 {
 	long    count, acount, i, ctype;
-	short   slen, pcount, dtype;
+	short   slen, dtype;
 	char    *dname;
 
 	(void) rchar ();	/* Is there something to read */
@@ -242,21 +243,11 @@ static  void    prepare_types ()
 
 		while (i--)
 		{
-			if (rshort ())
-			{
-				short t;
-
-				while ((t = rshort())!=-1)
+			if (rshort ()) {
+				while (rshort() != -1)
 					;
 			}
 		}
-
-		pcount = rshort ();
-
-		i = (long) pcount;
-
-		while (i--)
-			(void) rshort ();
 
 		(void) rshort(); /* Skeleton flags */
 		i = acount;
@@ -296,7 +287,7 @@ static  void    prepare_types ()
 }
 /*------------------------------------------------------------------*/
 
-static  void    analyze_file ()
+static  void    analyze_file (void)
 
 {
 	if (rchar ())
@@ -329,32 +320,17 @@ static  void    analyze_file ()
 	analyze_options ();
 	analyze_routinfo ();
 	analyze_desc ();
-
-	fprintf (mfp,"Root class origin       : %d\n", rlong ());
-		/* Root type computation */
-	(void) rlong ();	/* Read dynamic type of ANY. */
-	fprintf (mfp,"Root type description: ");
-	{
-		short t;
-		fprintf (mfp, "{");
-		while ((t = rshort())!=-1) {
-			fprintf (mfp, "%d, ", (int) t);
-		}
-		fprintf (mfp, "-1}");
-		fprintf (mfp, "\n");
-	}
-	fprintf (mfp,"Root class offset       : %d\n", rlong ());
-	fprintf (mfp,"Root class arguments    : %d\n", rlong ());
+	analyze_root ();
 
 	print_line ();
 }
 /*------------------------------------------------------------------*/
 
-static  void    analyze_cnodes ()
+static  void    analyze_cnodes (void)
 
 {
 	long    count, acount, i, ctype;
-	short   slen, pcount, pid, dtype;
+	short   slen, dtype;
 	char    *dname;
 
 	printf ("Analyzing Cnodes\n");
@@ -444,18 +420,6 @@ static  void    analyze_cnodes ()
 			fprintf (mfp, "\n");
 		}
 
-		pcount = rshort ();
-
-		fprintf (mfp,"Nr. of parents     : %d\n", (int) pcount);
-
-		i = (long) pcount;
-
-		while (i--)
-		{
-			pid = rshort ();
-			fprintf (mfp,"   Parent id       : %d\n", (int) pid);
-		}
-
 		fprintf (mfp,"Flags are          : 0x%x\n", (int) rshort ());
 
 		fprintf (mfp,"Attribute ids      : %ld\n", acount);
@@ -481,7 +445,7 @@ static  void    analyze_cnodes ()
 }
 /*------------------------------------------------------------------*/
 
-static  void    analyze_routids ()
+static  void    analyze_routids (void)
 
 {
 	long    class_id, asize, hsize, i, j, dtype, orig_dtype;
@@ -490,8 +454,6 @@ static  void    analyze_routids ()
 	char    has_cecil;
 
 	printf ("Analyzing Routids\n");
-
-	rids = (long *) 0;
 
 	for (;;)
 	{
@@ -506,7 +468,7 @@ static  void    analyze_routids ()
 /*
 		fprintf (mfp,"Routine ids: %ld\n", asize);
 */
-		if (asize)
+		if (asize > 0)
 		{
 			rids = (long *) malloc (asize * sizeof (long));
 
@@ -593,7 +555,7 @@ static  void    analyze_routids ()
 }
 /*------------------------------------------------------------------*/
 
-static  void    read_byte_code ()
+static  void    read_byte_code (void)
 
 {
 	long    body_id, bsize;
@@ -694,10 +656,10 @@ static  void    read_byte_code ()
 
 /*------------------------------------------------------------------*/
 
-static  void    analyze_parents ()
+static  void    analyze_parents (void)
 
 {
-	short   dtype, gcount, class_name_count;
+	unsigned short   dtype;
 
 	printf ("Analyzing Parents\n");
 
@@ -715,33 +677,30 @@ static  void    analyze_parents ()
 	{
 		dtype = rshort ();
 
-		if (dtype == -1)
+		if (dtype == TERMINATOR)
 			break;
 
-		gcount = rshort ();
+			/* Read number of generics. */
+		(void) rshort ();
 
-		/* Read class name */
-
-		class_name_count = rshort ();
-
-		while (class_name_count--)
-			fprintf (mfp, "%c", rchar ());
+			/* Read dynamic type */
+		fprintf (mfp, "[%d, ", rshort ());
 
 		if (rchar ())
-			fprintf (mfp, " E ");     /* Expanded */
+			fprintf (mfp, "E, ");     /* Expanded */
 		else
 			fprintf (mfp, " ");       /* Not expanded */
 
-		while (rshort () != -1)
-			;
-/*
-		asize = rshort ();
-
-		fprintf (mfp,"Dynamic type : %d  Generics = %d Table size = %d\n", 
-							(int) dtype, (int) gcount, (int) asize);
-		
-		rseq (asize * sizeof (short));
-*/
+		dtype = rshort();
+		while (dtype != TERMINATOR) {
+			if (dtype == PARENT_TYPE_SEPARATOR) {
+				fprintf (mfp, "| ");
+			} else {
+				fprintf (mfp, "%d ", dtype);
+			}
+			dtype = rshort ();
+		}
+		fprintf (mfp, "]\n");
 	}
 
 	print_line ();
@@ -750,7 +709,7 @@ static  void    analyze_parents ()
 }
 /*------------------------------------------------------------------*/
 
-static  void    analyze_cecil ()
+static  void    analyze_cecil (void)
 
 {
 	int     i, j;
@@ -790,7 +749,7 @@ static  void    analyze_cecil ()
 }
 /*------------------------------------------------------------------*/
 
-static  void    analyze_options ()
+static  void    analyze_options (void)
 
 {
 	short   dtype, dbcount, slen, i;
@@ -838,7 +797,7 @@ static  void    analyze_options ()
 }
 /*------------------------------------------------------------------*/
 
-static  void    analyze_routinfo ()
+static  void    analyze_routinfo (void)
 
 {
 	long    count, rid, org, off;
@@ -865,8 +824,7 @@ static  void    analyze_routinfo ()
 }
 /*------------------------------------------------------------------*/
 
-static  void    analyze_desc ()
-
+static  void    analyze_desc (void)
 {
 	long    count, tid, info, type, offset, i, j;
 	short   org_count, info_count, org_id;
@@ -876,44 +834,33 @@ static  void    analyze_desc ()
 
 	fprintf (mfp,"Descriptors : (desc_tab)\n");
 
-	for (;;)
-	{
-		count = rlong ();
-
-		if (count == -1)
-			break;
-
-		while (count--)
-		{
+	while ((count = rlong()) != -1L) {
+		while (count-- > 0) {
 			tid       = (long) rshort ();
 			org_count = rshort ();
 
-			while (org_count--)
-			{
+			while (org_count-- > 0) {
 				org_id = rshort ();
 
 				fprintf (mfp,"Origin_id %5d  Dtype_id %8ld\n", (int) org_id, tid);
 
 				info_count = rshort ();
 
-				if (info_count)
-				{
+				if (info_count > 0) {
 					dinfo = (short *) malloc (3*info_count * sizeof (short));
 
-					if (dinfo == (short *) 0)
-					{
+					if (dinfo == (short *) 0) {
 						fprintf (stderr,"Out of memory\n");
 						panic ();
 					}
-				}
-				else
+				} else {
 					dinfo = (short *) 0;
+				}
 
 				i = 0;
 				j = info_count;
 
-				while (j--)
-				{
+				while (j--) {
 					info = (long) rbody_index ();
 					offset = (long) ruint32 ();
 					type = (long) rshort ();
@@ -932,30 +879,64 @@ static  void    analyze_desc ()
 
 				fprintf (mfp, "desc_tab [%d][%ld] = ", org_id, tid-1);
 
-				for (i = 0; i < info_count; ++i)
-				{
-					if ((i % 8) == 0)
+				for (i = 0; i < info_count; ++i) {
+					if ((i % 8) == 0) {
 						fprintf (mfp, "\n  ");
-
-					fprintf (mfp, "%ld: (%d,%d,%d) ",
-							 i, dinfo [3*i], dinfo [3*i+1], dinfo [3 * i + 2]);
+					}
+					fprintf (mfp, "%ld: (%d,%d,%d) ", i, dinfo [3*i], dinfo [3*i+1], dinfo [3 * i + 2]);
 				}
 
 				fprintf (mfp, "\n");
 
-				if (dinfo != (short *) 0)
+				if (dinfo != (short *) 0) {
 					free ((char *) dinfo);
+				}
 			}
 		}
 	}
 
 	print_line ();
 }
+
+/*------------------------------------------------------------------*/
+static void analyze_root (void)
+{
+	uint32 nb_roots, i, slen;
+
+	nb_roots = rlong();
+
+	fprintf(mfp, "Number of roots is %d\n", nb_roots);
+
+	for (i = 0; i < nb_roots; i++) {
+		fprintf(mfp, "Root class/feature name: ");
+		slen = rlong();
+		while (slen--) {
+			fprintf (mfp, "%c", rchar());
+			++i;
+		}
+		fprintf (mfp,"\nRoot class origin: %d\n", rlong ());
+			/* Root type computation */
+		(void) rlong ();	/* Read dynamic type of ANY. */
+		fprintf (mfp,"Root type description: ");
+		{
+			short t;
+			fprintf (mfp, "{");
+			while ((t = rshort())!=-1) {
+				fprintf (mfp, "%d, ", (int) t);
+			}
+			fprintf (mfp, "-1}");
+			fprintf (mfp, "\n");
+		}
+		fprintf (mfp,"Root class offset       : %d\n", rlong ());
+		fprintf (mfp,"Root class arguments    : %d\n", rlong ());
+	}
+}
+
 /*------------------------------------------------------------------*/
 
-static EIF_CHARACTER rchar ()
+static EIF_CHARACTER rchar (void)
 {
-	EIF_CHARACTER    result;
+	EIF_CHARACTER    result = 0;
 
 	if (fread (&result, sizeof (EIF_CHARACTER), 1, ifp) != 1)
 	{
@@ -967,9 +948,9 @@ static EIF_CHARACTER rchar ()
 }
 /*------------------------------------------------------------------*/
 
-static EIF_INTEGER_32 rlong ()
+static EIF_INTEGER_32 rlong (void)
 {
-	EIF_INTEGER_32 result;
+	EIF_INTEGER_32 result = 0;
 
 	if (fread (&result, sizeof (EIF_INTEGER_32), 1, ifp) != 1)
 	{
@@ -981,9 +962,9 @@ static EIF_INTEGER_32 rlong ()
 }
 /*------------------------------------------------------------------*/
 
-static EIF_INTEGER_16 rshort ()
+static EIF_INTEGER_16 rshort (void)
 {
-	EIF_INTEGER_16 result;
+	EIF_INTEGER_16 result = 0;
 
 	if (fread (&result, sizeof (EIF_INTEGER_16), 1, ifp) != 1)
 	{
@@ -995,10 +976,10 @@ static EIF_INTEGER_16 rshort ()
 }
 /*------------------------------------------------------------------*/
 
-static  uint32  ruint32 ()
+static  uint32  ruint32 (void)
 
 {
-	uint32    result;
+	uint32    result = 0;
 
 	if (fread (&result, sizeof (uint32), 1, ifp) != 1)
 	{
@@ -1009,7 +990,7 @@ static  uint32  ruint32 ()
 	return result;
 }
 
-static BODY_INDEX rbody_index () {
+static BODY_INDEX rbody_index (void) {
 	return ruint32 ();
 }
 /*------------------------------------------------------------------*/
@@ -1050,6 +1031,7 @@ static  char    *rbuf (int size)
 	{
 		fprintf (stderr,"Read error (rbuf)\n");
 		free (result);
+		result = NULL;
 		panic ();
 	}
 
@@ -1057,7 +1039,7 @@ static  char    *rbuf (int size)
 }
 /*------------------------------------------------------------------*/
 
-static  void    print_line ()
+static  void    print_line (void)
 
 {
 	fprintf (mfp,"---------------------------\n");
@@ -1118,7 +1100,7 @@ static  void    print_dtype (uint32 type)
 }
 /*------------------------------------------------------------------*/
 
-static  void    panic ()
+static  void    panic (void)
 
 {
 	if (ifp != (FILE *) 0)

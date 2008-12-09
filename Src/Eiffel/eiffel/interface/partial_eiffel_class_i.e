@@ -29,7 +29,7 @@ inherit
 			file_name as base_name,
 			group as cluster
 		undefine
-			is_compiled
+			is_compiled, options
 		redefine
 			cluster,
 			class_type
@@ -52,7 +52,10 @@ feature -- Access
 
 feature {NONE} -- Type anchor
 
-	class_type: PARTIAL_EIFFEL_CLASS_I;
+	class_type: PARTIAL_EIFFEL_CLASS_I is
+			-- <Precursor>
+		do
+		end
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

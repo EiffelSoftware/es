@@ -44,23 +44,12 @@ feature -- Access
 			Result := interface_names.t_features_tool
 		end
 
-	shortcut_preference_name: STRING_32
-			-- An optional shortcut preference name, for automatic preference binding.
-			-- Note: The preference should be registered in the default.xml file
-			--       as well as in the {EB_MISC_SHORTCUT_DATA} class.
-		do
-			Result := "show_features_tool"
-		end
+feature {NONE} -- Status report
 
-feature -- Query
-
-	is_stone_usable (a_stone: STONE): BOOLEAN
-			-- Determines if a stone can be used by Current.
-			--
-			-- `a_stone': Stone to determine usablity.
-			-- `Result': True if the stone can be used, False otherwise.
+	internal_is_stone_usable (a_stone: !like stone): BOOLEAN
+			-- <Precursor>
 		do
-			Result := {l_stone: !CLASSI_STONE} a_stone or {l_cluster: !CLUSTER_STONE} a_stone
+			Result := ({l_stone: !CLASSI_STONE} a_stone or {l_cluster: !CLUSTER_STONE} a_stone)
 		end
 
 feature -- Basic operations

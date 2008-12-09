@@ -23,7 +23,7 @@ inherit
 
 feature -- String encoding convertion
 
-	convert_to (a_from_code_page: STRING; a_from_string: STRING_GENERAL; a_to_code_page: STRING): STRING_GENERAL is
+	convert_to (a_from_code_page: STRING; a_from_string: STRING_GENERAL; a_to_code_page: STRING) is
 			-- Convert `a_from_string' of `a_from_code_page' to a string of `a_to_code_page'.
 		local
 			l_managed_pointer, l_fp, l_tp: MANAGED_POINTER
@@ -37,17 +37,18 @@ feature -- String encoding convertion
 			l_error: INTEGER
 			l_failure: CONVERSION_FAILURE
 			l_retried: BOOLEAN
+			l_converted: STRING_GENERAL
 		do
 			if not l_retried then
-				l_big_endian := big_endian_codesets.has (a_from_code_page) or else (not is_little_endian and not little_endian_codesets.has (a_from_code_page))
-				if four_byte_codesets.has (a_from_code_page) then
+				l_big_endian := is_big_endian_code_page (a_from_code_page) or else (not is_little_endian and not is_little_endian_code_page (a_from_code_page))
+				if is_four_byte_code_page (a_from_code_page) then
 					l_string_32 := a_from_string.twin
 					if not l_big_endian then
 						l_string_32.precede (byte_order_mark)
 					end
 					l_managed_pointer := string_32_to_pointer (l_string_32)
 					l_count := (l_string_32.count) * 4
-				elseif two_byte_codesets.has (a_from_code_page) then
+				elseif is_two_byte_code_page (a_from_code_page) then
 					l_string_32 := a_from_string.twin
 					if not l_big_endian then
 						l_string_32.precede (byte_order_mark)
@@ -68,45 +69,47 @@ feature -- String encoding convertion
 					last_conversion_successful := True
 				end
 				if l_pointer /= Void then
-					l_no_endian := not big_endian_codesets.has (a_to_code_page) and not little_endian_codesets.has (a_to_code_page)
-					if four_byte_codesets.has (a_to_code_page) then
-						Result := pointer_to_string_32 (l_pointer, l_out_count)
-						if not Result.is_empty then
-							if bom_little_endian (Result.code (1)) then
-								Result := Result.substring (2, Result.count)
+					l_no_endian := not is_big_endian_code_page (a_to_code_page) and not is_little_endian_code_page (a_to_code_page)
+					if is_four_byte_code_page (a_to_code_page) then
+						l_converted := pointer_to_string_32 (l_pointer, l_out_count)
+						if not l_converted.is_empty then
+							if bom_little_endian (l_converted.code (1)) then
+								l_converted := l_converted.substring (2, l_converted.count)
 								if l_no_endian and then not is_little_endian then
-									Result := string_32_switch_endian (Result)
+									l_converted := string_32_switch_endian (l_converted)
 								end
-							elseif bom_big_endian (Result.code (1)) then
-								Result := Result.substring (2, Result.count)
+							elseif bom_big_endian (l_converted.code (1)) then
+								l_converted := l_converted.substring (2, l_converted.count)
 								if l_no_endian and then is_little_endian then
-									Result := string_32_switch_endian (Result)
+									l_converted := string_32_switch_endian (l_converted)
 								end
 							end
 						end
-					elseif two_byte_codesets.has (a_to_code_page) then
-						Result := pointer_to_wide_string (l_pointer, l_out_count)
-						if not Result.is_empty then
-							if bom_little_endian (Result.code (1)) then
-								Result := Result.substring (2, Result.count)
+					elseif is_two_byte_code_page (a_to_code_page) then
+						l_converted := pointer_to_wide_string (l_pointer, l_out_count)
+						if not l_converted.is_empty then
+							if bom_little_endian (l_converted.code (1)) then
+								l_converted := l_converted.substring (2, l_converted.count)
 								if l_no_endian and then not is_little_endian then
-									Result := string_16_switch_endian (Result)
+									l_converted := string_16_switch_endian (l_converted)
 								end
-							elseif bom_big_endian (Result.code (1)) then
-								Result := Result.substring (2, Result.count)
+							elseif bom_big_endian (l_converted.code (1)) then
+								l_converted := l_converted.substring (2, l_converted.count)
 								if l_no_endian and then is_little_endian then
-									Result := string_16_switch_endian (Result)
+									l_converted := string_16_switch_endian (l_converted)
 								end
 							end
 						end
+						last_was_wide_string := True
 					else
-						Result := pointer_to_multi_byte (l_pointer, l_out_count)
+						l_converted := pointer_to_multi_byte (l_pointer, l_out_count)
 					end
 				else
 					check
 						l_pointer_not_void: l_pointer /= Void
 					end
 				end
+				last_converted_string := l_converted
 				if l_pointer /= Void then
 					l_pointer.memory_free
 				end
@@ -131,7 +134,9 @@ feature -- Status report
 			-- Is `a_code_page' valid?
 			-- We don't care this on Unix. What we are really interested is `is_code_page_convertable'.
 		do
-			Result := a_code_page /= Void and then not a_code_page.is_empty
+			if a_code_page /= Void and then not a_code_page.is_empty then
+				Result := is_known_code_page (a_code_page.as_lower)
+			end
 		end
 
 	is_code_page_convertable (a_from_code_page, a_to_code_page: STRING_8): BOOLEAN
@@ -156,6 +161,64 @@ feature -- Status report
 			Result := False
 			l_retried := True
 			retry
+		end
+
+feature {NONE} -- Status report
+
+	is_known_code_page (a_code_page: STRING): BOOLEAN is
+			-- Is `a_code_page' a known code page?
+		require
+			a_code_page_not_void: a_code_page /= Void
+			a_code_page_not_empty: not a_code_page.is_empty
+		local
+			l_pointer: MANAGED_POINTER
+			l_error: INTEGER
+		do
+			if not a_code_page.is_case_insensitive_equal (utf8) then
+				l_pointer := multi_byte_to_pointer (a_code_page)
+				Result := c_codeset_valid (l_pointer.item, $l_error)
+				if l_error /= 0 then
+					conversion_exception (l_error).raise
+				end
+			else
+				Result := True
+			end
+		end
+
+	is_two_byte_code_page (a_code_page: STRING): BOOLEAN is
+			-- Is `a_code_page' a known code page?
+		require
+			a_code_page_not_void: a_code_page /= Void
+			a_code_page_not_empty: not a_code_page.is_empty
+		do
+			Result := two_byte_code_pages.has (a_code_page.as_lower)
+		end
+
+	is_four_byte_code_page (a_code_page: STRING): BOOLEAN is
+			-- Is `a_code_page' a known code page?
+		require
+			a_code_page_not_void: a_code_page /= Void
+			a_code_page_not_empty: not a_code_page.is_empty
+		do
+			Result := four_byte_code_pages.has (a_code_page.as_lower)
+		end
+
+	is_big_endian_code_page (a_code_page: STRING): BOOLEAN is
+			-- Is `a_code_page' a known code page?
+		require
+			a_code_page_not_void: a_code_page /= Void
+			a_code_page_not_empty: not a_code_page.is_empty
+		do
+			Result := big_endian_code_pages.has (a_code_page.as_lower)
+		end
+
+	is_little_endian_code_page (a_code_page: STRING): BOOLEAN is
+			-- Is `a_code_page' a known code page?
+		require
+			a_code_page_not_void: a_code_page /= Void
+			a_code_page_not_empty: not a_code_page.is_empty
+		do
+			Result := little_endian_code_pages.has (a_code_page.as_lower)
 		end
 
 feature {NONE} -- Implementation
@@ -329,9 +392,29 @@ feature {NONE} -- Implementation
 			]"
 		end
 
+	c_codeset_valid (a_code_set: POINTER; a_error: TYPED_POINTER [INTEGER]): BOOLEAN is
+			-- Check if `a_code_set' is convertible to utf-8 to see if it is valid.
+			-- Some systems do not support utf-8 to utf-8 conversion, so checking utf-8
+			-- should be avoided.
+		external
+			"C inline use <iconv.h>"
+		alias
+			"[
+				iconv_t cd;
+				cd = iconv_open ($a_code_set, "utf-8");
+				if (cd != (iconv_t)(-1)){
+					if (iconv_close(cd)) {
+						*$a_error = 8;
+					}
+					return EIF_TRUE;
+				}else
+					return EIF_FALSE;
+			]"
+		end
+
 indexing
-	library:   "EiffelBase: Library of reusable components for Eiffel."
-	copyright: "Copyright (c) 1984-2006, Eiffel Software and others"
+	library:   "Encoding: Library of reusable components for Eiffel."
+	copyright: "Copyright (c) 1984-2008, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
@@ -340,5 +423,7 @@ indexing
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com
 		]"
+
+
 
 end

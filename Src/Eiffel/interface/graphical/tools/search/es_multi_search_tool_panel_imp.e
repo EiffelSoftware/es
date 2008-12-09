@@ -10,7 +10,6 @@ deferred class
 	ES_MULTI_SEARCH_TOOL_PANEL_IMP
 
 inherit
-
 	EB_TOOL
 		export
 			{NONE} show
@@ -18,6 +17,7 @@ inherit
 			mini_toolbar,
 			build_mini_toolbar,
 			internal_recycle,
+			internal_detach_entities,
 			show
 		end
 
@@ -560,13 +560,10 @@ feature {NONE} -- Destroy behavior.
 			save_preferences
 			show_actions.wipe_out
 			widget.destroy
-			recycle_widgets
-			widget := Void
-			content := Void
 			Precursor {EB_TOOL}
 		end
 
-	recycle_widgets is
+	internal_detach_entities is
 			-- Recycle all widgets so that we can better detect memory leaks.
 		do
 			scope := Void
@@ -592,17 +589,18 @@ feature {NONE} -- Destroy behavior.
 			replace_button := Void
 			search_backward_button := Void
 			options := Void
+			Precursor
 		end
 
 feature {NONE} -- Implementation
 
 	min_width_of_keyword_field: INTEGER is 100
 
-	currently_searched: STRING is
+	currently_searched: STRING_32 is
 		deferred
 		end
 
-	currently_replacing: STRING is
+	currently_replacing: STRING_32 is
 		deferred
 		end
 

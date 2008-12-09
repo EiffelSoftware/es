@@ -51,12 +51,6 @@ feature {NONE} -- Initialization
 			edit_contract_grid.disable_row_height_fixed
 			edit_contract_grid.enable_always_selected
 
-				-- Colors
-			edit_contract_grid.set_focused_selection_color (colors.grid_focus_selection_color)
-			edit_contract_grid.set_focused_selection_text_color (colors.grid_focus_selection_text_color)
-			edit_contract_grid.set_non_focused_selection_color (colors.grid_unfocus_selection_color)
-			edit_contract_grid.set_non_focused_selection_text_color (colors.grid_unfocus_selection_text_color)
-
 			register_action (edit_contract_grid.row_select_actions, agent (a_row: EV_GRID_ROW)
 					-- Call the source select actions
 				local
@@ -88,7 +82,7 @@ feature -- Access
 	context: ?ES_CONTRACT_EDITOR_CONTEXT [CLASSI_STONE] assign set_context
 			-- Contract editor context information
 
-	context_contracts: !DS_BILINEAR [!ES_CONTRACT_LINE]
+	context_contracts: !DS_ARRAYED_LIST [!ES_CONTRACT_LINE]
 			-- Retrieves just the context's contracts.
 			-- Note: Only the top contracts are returned because we only support edition of the context contracts,
 			--       in the future this may change.
@@ -97,14 +91,15 @@ feature -- Access
 			is_initialized: is_initialized
 			has_context: has_context
 		local
-			l_result: DS_ARRAYED_LIST [!ES_CONTRACT_LINE]
 			l_grid: !like edit_contract_grid
 			l_row: EV_GRID_ROW
 			l_sub_row: EV_GRID_ROW
 			l_count, i: INTEGER
 		do
-			if internal_context_contracts = Void then
-				create l_result.make_default
+			if {l_contract: like context_contracts} internal_context_contracts then
+				Result := l_contract
+			else
+				create Result.make_default
 				l_grid := edit_contract_grid
 				if l_grid.row_count > 0 then
 					l_row := l_grid.row (1)
@@ -112,16 +107,12 @@ feature -- Access
 					from i := 1 until i > l_count loop
 						l_sub_row := l_row.subrow (i)
 						if {l_line: !ES_CONTRACT_LINE} l_sub_row.data then
-							l_result.force_last (l_line)
+							Result.force_last (l_line)
 						end
 						i := i + l_sub_row.subrow_count_recursive + 1
 					end
 				end
-
-				Result ?= l_result
 				internal_context_contracts := Result
-			else
-				Result ?= internal_context_contracts
 			end
 		ensure
 			result_consistent: Result = context_contracts
@@ -139,13 +130,13 @@ feature {NONE} -- Access
 
 feature -- Element change
 
-	set_context (a_context: like context)
+	set_context (a_context: ?like context)
 			-- Set contract editor context.
 			--
 			-- `a_context': A contract editor context to set.
 		require
 			is_interface_usable: is_interface_usable
-			a_context_is_interface_usable: a_context.is_interface_usable
+			a_context_is_interface_usable: a_context /= Void implies a_context.is_interface_usable
 		do
 			if context /= a_context then
 				context := a_context
@@ -240,15 +231,14 @@ feature -- Basic operations
 		require
 			is_interface_usable: is_interface_usable
 			is_initialized: is_initialized
-			has_context: has_context
 		local
 			l_grid: !like edit_contract_grid
 			l_selected_rows: ARRAYED_LIST [EV_GRID_ROW]
 			l_selected_index: INTEGER
 			l_visible_index: INTEGER
 			l_parents: !DS_LIST [CLASS_C]
-			l_parent: !CLASS_I
-			l_row: !EV_GRID_ROW
+			l_parent: CLASS_I
+			l_row: EV_GRID_ROW
 			l_col: EV_GRID_COLUMN
 			i: INTEGER
 		do
@@ -282,17 +272,22 @@ feature -- Basic operations
 			if {l_context: !like context} context then
 					-- Extract contracts for current class
 				l_grid.set_row_count_to (l_grid.row_count + 1)
-				l_row ?= l_grid.row (1)
+				l_row := l_grid.row (1)
+				check l_row_not_void: l_row /= Void end
 				populate_contracts_row (l_context.context_class, l_row, l_context)
 
 					-- Traverse through parents
 				l_parents := l_context.context_parents
 				if not l_parents.is_empty then
 					from l_parents.start until l_parents.after loop
-						l_parent ?= l_parents.item_for_iteration.lace_class
+						l_parent := l_parents.item_for_iteration.lace_class
 						i := l_grid.row_count + 1
 						l_grid.set_row_count_to (i)
-						l_row ?= l_grid.row (i)
+						l_row := l_grid.row (i)
+						check
+							l_parent_not_void: l_parent /= Void
+							l_row_not_void: l_row /= Void
+						end
 						populate_contracts_row (l_parent, l_row, l_context)
 						l_parents.forth
 					end
@@ -413,7 +408,7 @@ feature -- Modification
 			not_a_contract_is_empty: not a_contract.is_empty
 			a_source_is_editable: a_source.source.is_editable
 		local
-			l_new_row: !EV_GRID_ROW
+			l_new_row: EV_GRID_ROW
 			l_selected: BOOLEAN
 			i: INTEGER
 		do
@@ -425,10 +420,10 @@ feature -- Modification
 				if l_row.parent_row = Void then
 					if l_row.subrow_count = 0 or else not context_contracts.is_empty then
 						l_row.insert_subrow (1)
-						l_new_row ?= l_row.subrow (1)
+						l_new_row := l_row.subrow (1)
 					else
 							-- There is a place holder, just reuse it.
-						l_new_row ?= l_row.subrow (1)
+						l_new_row := l_row.subrow (1)
 						if not l_selected then
 							l_selected := l_new_row.is_selected
 						end
@@ -436,9 +431,10 @@ feature -- Modification
 				else
 					i := l_row.index - l_row.parent_row.index + 1
 					l_row.parent_row.insert_subrow (i)
-					l_new_row ?= l_row.parent_row.subrow (i)
+					l_new_row := l_row.parent_row.subrow (i)
 				end
 				edit_contract_grid.row_select_actions.block
+				check l_new_row_not_void: l_new_row /= Void end
 				populate_editable_contract_row (a_contract, a_source.source, l_new_row)
 				edit_contract_grid.row_select_actions.resume
 
@@ -462,8 +458,8 @@ feature -- Modification
 			context_contracts_has_a_line: context_contracts.has (a_line)
 		local
 			l_grid: !like edit_contract_grid
-			l_row: !EV_GRID_ROW
-			l_sub_row: !EV_GRID_ROW
+			l_row: EV_GRID_ROW
+			l_sub_row: EV_GRID_ROW
 			l_source: !ES_CONTRACT_SOURCE_I
 			l_count, i: INTEGER
 			l_sub_count, j: INTEGER
@@ -474,12 +470,12 @@ feature -- Modification
 			l_grid := edit_contract_grid
 			l_count := l_grid.row_count
 			from i := 1 until i > l_count or l_removed loop
-				l_row ?= l_grid.row (i)
+				l_row := l_grid.row (i)
 				if l_row.data = l_source then
 						-- Matching source
 					l_sub_count := l_row.subrow_count_recursive
 					from j := 1 until j > l_sub_count or l_removed loop
-						l_sub_row ?= l_row.subrow (j)
+						l_sub_row := l_row.subrow (j)
 						if l_sub_row.data = a_line then
 							l_selected := l_sub_row.is_selected
 							if l_selected then
@@ -492,6 +488,7 @@ feature -- Modification
 							end
 							if l_sub_count = 1 then
 									-- Only one item left so replace with the no contract message
+								check l_sub_row_not_void: l_sub_row /= Void end
 								populate_no_contract_row (l_sub_row)
 							else
 									-- Remove extra row
@@ -640,7 +637,7 @@ feature {NONE} -- User interface elements
 	edit_contract_grid: !ES_GRID
 			-- The grid used to display and edit the contracts for the current context
 		do
-			Result ?= widget
+			Result := widget
 		end
 
 feature -- Actions
@@ -680,7 +677,7 @@ feature {NONE} -- Population
 			l_feat_decorator: FEAT_TEXT_FORMATTER_DECORATOR
 			l_token_generator: EB_EDITOR_TOKEN_GENERATOR
 			l_feature_i: FEATURE_I
-			l_row: !EV_GRID_ROW
+			l_row: EV_GRID_ROW
 			l_editor_item: EB_GRID_EDITOR_TOKEN_ITEM
 			l_scanner: ?like token_scanner
 			l_tagged_text: STRING
@@ -730,7 +727,7 @@ feature {NONE} -- Population
 					l_tagged := l_contracts.item_for_iteration
 					check l_tagged_attached: l_tagged /= Void end
 					if l_tagged /= Void then
-						l_row ?= a_row.subrow (i)
+						l_row := a_row.subrow (i)
 
 						if l_editable then
 							check
@@ -746,7 +743,8 @@ feature {NONE} -- Population
 								l_tagged_text.prepend ("%T%T%T")
 							end
 								-- Call will set row data!
-							populate_editable_contract_row (({!STRING_32}) #? l_tagged_text.as_string_32, l_contract_source, l_row)
+							check l_row_not_void: l_row /= Void end
+							populate_editable_contract_row (l_tagged_text.as_string_32.as_attached, l_contract_source, l_row)
 						else
 								-- Perform formatting with decorator, enabling clickable text.
 							l_class_c := l_mod_contract.modifier.context_class.compiled_class
@@ -758,6 +756,7 @@ feature {NONE} -- Population
 							else
 								create l_decorator.make (l_class_c, l_token_generator)
 							end
+							l_decorator.set_source_class (l_class_c)
 
 							check l_decorator_attached: l_decorator /= Void end
 							l_decorator.format_ast (l_tagged)
@@ -775,7 +774,7 @@ feature {NONE} -- Population
 							l_token_generator.wipe_out_lines
 
 								-- Set contract line data
-							create l_contract_line.make_from_string (({!STRING_32}) #? l_tagged_text.as_string_32, l_contract_source)
+							create l_contract_line.make_from_string (l_tagged_text.as_string_32.as_attached, l_contract_source)
 							l_row.set_data (l_contract_line)
 						end
 
@@ -799,7 +798,8 @@ feature {NONE} -- Population
 					-- Add "No contracts found" sub row for first item, as first items represent the context
 					-- class and should always be seen.
 				a_row.insert_subrows (1, 1)
-				l_row ?= a_row.subrow (a_row.subrow_count)
+				l_row := a_row.subrow (a_row.subrow_count)
+				check l_row_not_void: l_row /= Void end
 
 				if not l_editable or else a_context.text_modifier.is_ast_available then
 					populate_no_contract_row (l_row)
@@ -874,12 +874,12 @@ feature {NONE} -- Population
 
 					-- Set icon
 				if l_e_feature /= Void then
-					l_pixmap := pixmap_factory.pixmap_from_e_feature (l_e_feature)
+					l_pixmap := pixmap_factory.pixel_buffer_from_e_feature (l_e_feature)
 				else
 					l_pixmap := stock_pixmaps.feature_routine_icon_buffer
 				end
 				if not a_editable then
-					l_pixmap := (create {EB_SHARED_PIXMAPS}).icon_buffer_with_overlay (l_pixmap, stock_pixmaps.overlay_locked_icon_buffer, 0, 0)
+					l_pixmap := stock_pixmaps.icon_buffer_with_overlay (l_pixmap, stock_pixmaps.overlay_locked_icon_buffer, 0, 0)
 				end
 				l_item.set_pixmap (l_pixmap)
 
@@ -903,9 +903,9 @@ feature {NONE} -- Population
 			else
 					-- Keywords
 				create l_item
-				l_pixmap := pixmap_factory.pixmap_from_class_i (a_class)
+				l_pixmap := pixmap_factory.pixel_buffer_from_class_i (a_class)
 				if not a_editable then
-					l_pixmap := (create {EB_SHARED_PIXMAPS}).icon_buffer_with_overlay (l_pixmap, stock_pixmaps.overlay_locked_icon_buffer, 0, 0)
+					l_pixmap := stock_pixmaps.icon_buffer_with_overlay (l_pixmap, stock_pixmaps.overlay_locked_icon_buffer, 0, 0)
 				end
 				l_item.set_pixmap (l_pixmap)
 				l_item.set_text_with_tokens (a_context.contract_keywords (True))
@@ -1105,7 +1105,7 @@ feature {NONE} -- Factory
 	create_widget: !ES_GRID
 			-- Creates a new widget, which will be initialized when `build_interface' is called.
 		do
-			create Result
+			create {ES_EDITOR_TOKEN_GRID}Result
 		end
 
 feature {NONE} -- Columns
@@ -1128,9 +1128,9 @@ feature {NONE} -- Internal implementation cache
 			-- Note: Do not use directly!
 
 ;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -1141,19 +1141,19 @@ feature {NONE} -- Internal implementation cache
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

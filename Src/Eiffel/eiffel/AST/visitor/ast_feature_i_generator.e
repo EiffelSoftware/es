@@ -31,6 +31,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_ERROR_HANDLER
+		export
+			{NONE} all
+		end
+
 feature -- Factory
 
 	new_feature (a_node: FEATURE_AS; a_name_id: INTEGER; a_class: CLASS_C): FEATURE_I is
@@ -44,6 +49,7 @@ feature -- Factory
 		do
 			current_class := a_class
 			feature_name_id := a_name_id
+			node := a_node
 			process_body_as (a_node.body)
 			current_class := Void
 			Result := last_feature
@@ -70,6 +76,7 @@ feature -- Factory
 					end
 				end
 			end
+			node := Void
 		end
 
 feature {NONE} -- Implementation: Access
@@ -79,6 +86,9 @@ feature {NONE} -- Implementation: Access
 
 	feature_name_id: INTEGER
 			-- Name of feature being processed
+
+	node: FEATURE_AS
+			-- Current node (can be used to report errors)
 
 	current_class: CLASS_C
 			-- Class in which a FEATURE_AS is converted into a FEATURE_I.
@@ -202,6 +212,11 @@ feature {NONE} -- Implementation
 						end
 					end
 				else
+					if l_routine.is_attribute then
+						error_handler.insert_error (create {VFFD1}.make_attribute_without_query_mark
+							(current_class, names_heap.item (feature_name_id), node.start_location)
+						)
+					end
 					create {DYN_PROC_I} l_proc
 				end
 				if l_as.arguments /= Void then
@@ -242,7 +257,18 @@ feature {NONE} -- Implementation
 					end
 				end
 				if l_result = Void and l_func = Void then
-					if l_routine.is_deferred then
+					if l_routine.is_attribute then
+						if l_as.arguments /= Void then
+							error_handler.insert_error (create {VFFD1}.make_attribute_with_arguments
+								(current_class, names_heap.item (feature_name_id), node.start_location)
+							)
+						end
+						create l_attr.make
+						l_attr.set_type (query_type (l_as.type), l_assigner_name_id)
+						l_attr.set_has_body (True)
+						l_result := l_attr
+						l_result.set_is_empty (l_as.content.is_empty)
+					elseif l_routine.is_deferred then
 							-- Deferred function
 						create l_def_func
 						l_func := l_def_func
@@ -335,7 +361,7 @@ feature {NONE} -- Implementation
 		end
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

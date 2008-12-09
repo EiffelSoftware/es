@@ -713,6 +713,9 @@ rt_public EIF_POINTER *stream_malloc (EIF_INTEGER stream_size)	/*08/04/98*/
 	else {
 		real_buffer = (EIF_POINTER *) eif_malloc (sizeof (char *));
 		if (!real_buffer) {
+				/* We could not allocate `real_buffer' so we have to free `buffer' before
+				 * raising the exception. */
+			eif_free (buffer);
 			xraise(EN_MEM);
 		} else {
 			*real_buffer = buffer;
@@ -755,11 +758,22 @@ rt_public void allocate_gen_buffer (void)
 
 rt_shared void internal_store(char *object)
 {
+	EIF_GET_CONTEXT
 	RT_GET_CONTEXT
 	/* Store object hierarchy of root `object' in file `file_ptr' and
 	 * produce header if `accounting'.
 	 */
 	char c;
+	jmp_buf exenv;
+	RTYD;
+
+	excatch(&exenv);	/* Record pseudo execution vector */
+	if (setjmp(exenv)) {
+		RTXSC;					/* Restore stack contexts */
+		EIF_EO_STORE_UNLOCK;	/* Unlock mutex which was locked in `internal_store'. */
+		rt_reset_store ();				/* Reset data structure */
+		ereturn(MTC_NOARG);				/* Propagate exception */
+	}
 
 	if (accounting) {		/* Prepare character array */
 		account = (char *) eif_rt_xmalloc(scount * sizeof(char), C_T, GC_OFF);
@@ -783,8 +797,8 @@ rt_shared void internal_store(char *object)
 			printf ("Storing in new recoverable format\n");
 #endif
 			if (eif_is_new_recoverable_format) {
-				c = INDEPENDENT_STORE_6_0;
-				rt_kind_version = INDEPENDENT_STORE_6_0;
+				c = INDEPENDENT_STORE_6_3;
+				rt_kind_version = INDEPENDENT_STORE_6_3;
 			}
 		}
 		else {
@@ -867,6 +881,7 @@ printf ("Malloc on sorted_attributes %d %d %lx\n", scount, scount * sizeof(unsig
 #ifdef RECOVERABLE_DEBUG
 	fflush (stdout);
 #endif
+	expop(&eif_stack);
 }
 
 rt_private void st_store(EIF_REFERENCE object)
@@ -1265,7 +1280,7 @@ rt_private void gen_object_write(char *object, uint16 flags, EIF_TYPE_INDEX dfty
 							break;
 						case SK_EXP:
 							elem_size = RT_SPECIAL_ELEM_SIZE_WITH_INFO(o_ptr);
-							exp_dftype = eif_gen_param_id(INVALID_DTYPE, dftype, 1);
+							exp_dftype = eif_gen_param_id(dftype, 1);
 							store_flags = Merged_flags_dtype(EO_EXP,To_dtype(exp_dftype));
 							buffer_write((char *) (&store_flags), sizeof(uint32));
 							st_write_cid (exp_dftype);
@@ -1289,7 +1304,7 @@ rt_private void gen_object_write(char *object, uint16 flags, EIF_TYPE_INDEX dfty
 						buffer_write(object, count*sizeof(EIF_REFERENCE));
 					} else {			/* Special of composites */
 						elem_size = RT_SPECIAL_ELEM_SIZE_WITH_INFO(o_ptr);
-						exp_dftype = eif_gen_param_id(INVALID_DTYPE, dftype, 1);
+						exp_dftype = eif_gen_param_id(dftype, 1);
 						store_flags = Merged_flags_dtype(EO_EXP,To_dtype(exp_dftype));
 						buffer_write((char *)(&store_flags), sizeof(uint32));
 						st_write_cid (exp_dftype);
@@ -1486,7 +1501,7 @@ rt_private void object_write(char *object, uint16 flags, EIF_TYPE_INDEX dftype)
 							break;
 						case SK_EXP:
 							elem_size = RT_SPECIAL_ELEM_SIZE_WITH_INFO(o_ptr);
-							exp_dftype = eif_gen_param_id(INVALID_DTYPE, dftype, 1);
+							exp_dftype = eif_gen_param_id(dftype, 1);
 							store_flags = Merged_flags_dtype(EO_EXP,To_dtype(exp_dftype));
 							widr_norm_int(&store_flags);
 							ist_write_cid (exp_dftype);
@@ -1510,7 +1525,7 @@ rt_private void object_write(char *object, uint16 flags, EIF_TYPE_INDEX dftype)
 						widr_multi_any (object, count);
 					} else {			/* Special of composites */
 						elem_size = RT_SPECIAL_ELEM_SIZE_WITH_INFO(o_ptr);
-						exp_dftype = eif_gen_param_id(INVALID_DTYPE, dftype, 1);
+						exp_dftype = eif_gen_param_id(dftype, 1);
 						store_flags = Merged_flags_dtype(EO_EXP,To_dtype(exp_dftype));
 						widr_norm_int(&store_flags);
 						ist_write_cid (exp_dftype);
@@ -1546,8 +1561,6 @@ rt_public void make_header(EIF_CONTEXT_NOARG)
 			eif_rt_xfree(s_buffer);
 		}
 		RTXSC;					/* Restore stack contexts */
-		EIF_EO_STORE_UNLOCK;	/* Unlock mutex which was locked in `internal_store'. */
-		rt_reset_store ();				/* Reset data structure */
 		ereturn(MTC_NOARG);				/* Propagate exception */
 	}
 
@@ -1722,8 +1735,6 @@ rt_public void imake_header(EIF_CONTEXT_NOARG)
 			eif_rt_xfree(s_buffer);
 		}
 		RTXSC;					/* Restore stack contexts */
-		EIF_EO_STORE_UNLOCK;	/* Unlock mutex which was locked in `internal_store'. */
-		rt_reset_store ();				/* Clean data structure */
 		ereturn(MTC_NOARG);				/* Propagate exception */
 	}
 
@@ -1891,6 +1902,12 @@ rt_private void widr_type_attribute (int16 dtype, int16 attrib_index)
 		printf ("%s%s", i==0 ? " " : i==1 ? " [" : ", ", name_of_attribute_type (&typearr));
 		typearr++;
 #endif
+		while (RT_HAS_ANNOTATION_TYPE (gtype)) {
+				/* Write annotation mark. */
+			widr_multi_uint16 (&gtype, 1);
+			i += 1;
+			gtype = gtypes [i];
+		}
 		if (gtype == TUPLE_TYPE) {
 				/* Write TUPLE_TYPE, nb generic parames */
 			widr_multi_uint16 (gtypes + i, TUPLE_OFFSET);
@@ -1902,9 +1919,6 @@ rt_private void widr_type_attribute (int16 dtype, int16 attrib_index)
 			widr_multi_uint16 (gtypes + i, 2);
 			i += 1;
 		} else {
-			if (gtype <= MAX_DTYPE) {
-				gtype = RTUD (gtype);
-			}
 			widr_multi_uint16 (&gtype, 1);
 		}
 	}
@@ -1988,21 +2002,10 @@ rt_public void rmake_header(EIF_CONTEXT_NOARG)
 {
 	/* Generate header for stored hiearchy retrivable by other systems. */
 	RT_GET_CONTEXT
-	EIF_GET_CONTEXT
 	int16 ohead = OVERHEAD;
 	int16 max_types = scount;	/* Here there is a problem if `scount' is more than 2^16.*/
 	int16 type_count;
 	int16 i;
-	jmp_buf exenv;
-	RTYD;
-
-	excatch(&exenv);	/* Record pseudo execution vector */
-	if (setjmp(exenv)) {
-		RTXSC;					/* Restore stack contexts */
-		EIF_EO_STORE_UNLOCK;	/* Unlock mutex which was locked in `internal_store'. */
-		rt_reset_store ();				/* Clean data structure */
-		ereturn(MTC_NOARG);				/* Propagate exception */
-	}
 
 	/* count number of types actually present in objects to be stored */
 	for (type_count=0, i=0; i<scount; i++) {
@@ -2025,7 +2028,6 @@ rt_public void rmake_header(EIF_CONTEXT_NOARG)
 		if (account[i])
 			widr_type (i);
 	}
-	expop(&eif_stack);
 }
 
 rt_public void free_sorted_attributes(void)
@@ -2081,29 +2083,6 @@ rt_shared void buffer_write(char *data, size_t size)
 		}
 	}
 	current_position = l_cur_pos;
-}
-
-/* Bufferization of information on buffer. If the buffer is full
- * we write the buffer on IO_MEDIUM and flush the buffer so we can
- * do another write operation */
-rt_public void new_buffer_write(char *data, int size)
-{
-	RT_GET_CONTEXT
-	if (current_position + size >= buffer_size) {
-			/* Copy the data buffer into the general_buffer until the last one is full
-			 * launch a writing operation on the IO_MEDIUM and do a recursive call to
-			 * finish the writing of data */
-		memcpy (general_buffer + current_position, data, buffer_size - current_position);
-		current_position = buffer_size;
-		store_write_func (current_position);
-			/* Recursive call to finish the storage on the IO_MEDIUM */
-		buffer_write (data + buffer_size, size - buffer_size);
-	} else {
-			/* Copy the data buffer into the general_buffer
-			 * Set also `current_position' to the position in the general_buffer */
-		memcpy (general_buffer + current_position, data, size);
-		current_position += size;
-	}
 }
 
 rt_public void flush_st_buffer (void)

@@ -55,12 +55,26 @@ feature {NONE} -- Initialization
 	load_preferences is
 		local
 			bp: BOOLEAN_PREFERENCE
+			colp: COLOR_PREFERENCE
 		do
 			bp := preferences.debugger_data.generating_type_evaluation_enabled_preference
 			generating_type_evaluation_enabled := bp.value
 			bp.typed_change_actions.extend (agent (b: BOOLEAN)
 					do
 						generating_type_evaluation_enabled := b
+					end)
+
+			colp := preferences.debug_tool_data.grid_background_color_preference
+			set_background_color (colp.value)
+			colp.typed_change_actions.extend (agent (c: EV_COLOR)
+					do
+						set_background_color (c)
+					end)
+			colp := preferences.debug_tool_data.grid_foreground_color_preference
+			set_foreground_color (colp.value)
+			colp.typed_change_actions.extend (agent (c: EV_COLOR)
+					do
+						set_foreground_color (c)
 					end)
 		end
 
@@ -444,7 +458,7 @@ feature {ES_OBJECTS_TOOL_PANEL, ES_OBJECTS_GRID_MANAGER, ES_OBJECTS_GRID_LINE, E
 			Result ?= a_row.data
 		end
 
-	objects_grid_item (add: STRING): ES_OBJECTS_GRID_OBJECT_LINE is
+	objects_grid_item (add: DBG_ADDRESS): ES_OBJECTS_GRID_OBJECT_LINE is
 		require
 			valid_address: add /= Void
 		do
@@ -458,7 +472,7 @@ feature {ES_OBJECTS_TOOL_PANEL, ES_OBJECTS_GRID_MANAGER, ES_OBJECTS_GRID_LINE, E
 				)
 		end
 
-	objects_grid_item_function: FUNCTION [ANY, TUPLE [STRING], like objects_grid_item]
+	objects_grid_item_function: FUNCTION [ANY, TUPLE [DBG_ADDRESS], like objects_grid_item]
 			-- Function used to retrieve the objects_grid objects line related to `addr'.
 
 	set_objects_grid_item_function (fct: like objects_grid_item_function) is
@@ -624,12 +638,9 @@ feature {NONE} -- Actions implementation
 		end
 
 	on_pointer_double_press_item (ax,ay,ab: INTEGER; a_item: EV_GRID_ITEM) is
-		local
-			ei: ES_OBJECTS_GRID_CELL
 		do
 			if ab = 1 then
-				ei ?= a_item
-				if ei /= Void then
+				if {ei: ES_OBJECTS_GRID_CELL} a_item then
 					activate_grid_item (ei)
 				end
 			end
@@ -639,8 +650,11 @@ feature {NONE} -- Actions implementation
 			-- Action to be performed when pointer right click on grid
 			-- Behavior is launch the stone contained in pointer hovered editor token in a new development window.	
 		do
-			if ab =  {EV_POINTER_CONSTANTS}.right and ev_application.ctrl_pressed then
-				if {l_stone: STONE} grid_pebble_from_cell (a_item) and then l_stone.is_valid then
+			if
+				{i: EV_GRID_ITEM} a_item and then
+				(ab =  {EV_POINTER_CONSTANTS}.right and ev_application.ctrl_pressed)
+			then
+				if {l_stone: STONE} grid_pebble_from_cell (i) and then l_stone.is_valid then
 					(create {EB_CONTROL_PICK_HANDLER}).launch_stone (l_stone)
 				end
 			end
@@ -739,7 +753,7 @@ feature {ES_OBJECTS_GRID_MANAGER} -- Keep object
 			kept_object_references.compare_objects
 		end
 
-	kept_object_references: LINKED_SET [STRING]
+	kept_object_references: LINKED_SET [DBG_ADDRESS]
 
 	clear_kept_object_references is
 		do
@@ -747,7 +761,7 @@ feature {ES_OBJECTS_GRID_MANAGER} -- Keep object
 			kept_object_references.wipe_out
 		end
 
-	keep_object_in_debugger_for_gui_need (add: STRING) is
+	keep_object_in_debugger_for_gui_need (add: DBG_ADDRESS) is
 		require
 			application_is_executing: debugger_manager.application_is_executing
 		do
@@ -797,14 +811,14 @@ feature {ES_OBJECTS_GRID_MANAGER} -- Layout managment
 			lab: EV_GRID_LABEL_ITEM
 			s: STRING
 			line: like object_line_from_row
-			addr: STRING
+			addr: DBG_ADDRESS
 		do
 			if a_row.parent /= Void then
 				line ?= object_line_from_row (a_row)
 				if line /= Void then
 					addr := line.object_address
-					if addr /= Void then
-						s := addr.twin
+					if addr /= Void and then not addr.is_void then
+						s := addr.output
 						if is_recording_layout then
 							keep_object_in_debugger_for_gui_need (addr)
 							fixme ("We should 'adopt' the object in order to be sure the address value will stay the same")

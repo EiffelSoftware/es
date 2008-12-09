@@ -79,6 +79,7 @@ feature -- Initialization
 			array_make (1, 1)
 				-- By default all tables are considered using only deferred routines.
 			is_deferred := True
+			has_body := False
 			pattern_id := -2
 		end
 
@@ -211,6 +212,9 @@ feature
 	is_deferred: BOOLEAN
 			-- Is the table only containing deferred routines?
 
+	has_body: BOOLEAN
+			-- Is there an explicit body for any attribute in the table?
+
 	pattern_id: INTEGER
 			-- Is the table only containing routines with the same `pattern_id'?
 			-- `-1' otherwise and `-2' when not yet computed.
@@ -271,12 +275,6 @@ feature
 			position := i
 		end
 
-	has_type_table: BOOLEAN is
-			-- Is a type table needed for the current table ?
-		do
-			Result := System.type_set.has (rout_id)
-		end
-
 	has_one_type: BOOLEAN is
 			-- Is the type table not polymorphic ?
 		require
@@ -285,24 +283,24 @@ feature
 			i, nb: INTEGER
 			first_type, this_type: TYPE_A
 		do
-			from
-				i := lower
-				first_type := array_item (i).type
-				i := i + 1
-				nb := max_position
-				Result := True
-			until
-				i > nb or else not Result
-			loop
-				this_type := array_item (i).type
-				Result := (first_type = Void and then this_type = Void)
-						or else ((first_type /= Void and then this_type /= Void)
-						and then first_type.same_as (this_type)
-						and then this_type.same_as (first_type))
-				i := i + 1
-			end
-			if Result then
-				Result := first_type.is_explicit
+			i := lower
+			first_type := array_item (i).type
+			if first_type /= Void then
+				from
+					first_type := first_type.deep_actual_type
+					i := i + 1
+					nb := max_position
+					Result := True
+				until
+					i > nb
+				loop
+					this_type := array_item (i).type.deep_actual_type
+					if not first_type.same_as (this_type) then
+						Result := False
+						i := nb	-- Jump out of loop.
+					end
+					i := i + 1
+				end
 			end
 		end
 
@@ -509,6 +507,9 @@ feature -- Insertion
 			if not v.is_deferred then
 				is_deferred := False
 			end
+			if v.is_initialization_required then
+				has_body := True
+			end
 			put (v, max_position)
 		ensure
 			max_position_updated: max_position = old max_position + 1
@@ -534,6 +535,10 @@ feature -- Insertion
 				-- Reset `is_deferred' flag if other contains no deferred entries.
 			if not other.is_deferred then
 				is_deferred := False
+			end
+
+			if other.has_body then
+				has_body := True
 			end
 
 			if (nb > upper) then
@@ -595,6 +600,49 @@ feature -- Status
 			-- Is there an element?
 		do
 			Result := max_position = 0
+		end
+
+	is_initialization_required (t: TYPE_A; context_class_type: CLASS_TYPE): BOOLEAN
+			-- Is initialization required for an attribute from `t' or a descendant?
+		require
+			t_attached: t /= Void
+			context_class_type_attached: context_class_type /= Void
+		local
+			type_id: INTEGER
+			i: INTEGER
+			nb: INTEGER
+			entry: ENTRY
+			old_position: like position
+			system_i: SYSTEM_I
+		do
+			if has_body then
+				type_id := t.type_id (context_class_type.type)
+				old_position := position
+				goto_used (type_id)
+				if not item.type.is_expanded then
+						-- Expanded types are initialized elsewhere.
+					if t.is_expanded then
+							-- Check current type only
+						Result := item.is_initialization_required
+					else
+							-- Check all conforming descendants
+						system_i := system
+						from
+							i := position
+							nb := max_position
+						until
+							Result or else i > nb
+						loop
+							entry := array_item (i)
+							if entry.used and then system_i.class_type_of_id (entry.type_id).dynamic_conform_to (t, type_id, context_class_type.type) then
+								Result := entry.is_initialization_required
+							end
+							i := i + 1
+						end
+					end
+				end
+				position := old_position
+			end
 		end
 
 feature -- Sort
@@ -771,7 +819,7 @@ feature {NONE} -- Implementation
 		end
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

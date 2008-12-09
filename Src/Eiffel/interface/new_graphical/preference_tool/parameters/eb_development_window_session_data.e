@@ -13,6 +13,8 @@ inherit
 
 	ES_TOOLBAR_PREFERENCE
 
+	SESSION_DATA_I
+
 create
 	make_from_window_data
 
@@ -23,18 +25,14 @@ feature {NONE} -- Creation
 		require
 			a_window_data_not_void: a_window_data /= Void
 		do
-			save_size (a_window_data.width, a_window_data.height)
 			save_window_state (a_window_data.is_minimized, a_window_data.is_maximized)
+			save_size (a_window_data.width, a_window_data.height)
+			save_maximized_size (a_window_data.maximized_width, a_window_data.maximized_height)
 			save_position (a_window_data.x_position, a_window_data.y_position)
+			save_maximized_position (a_window_data.maximized_x_position, a_window_data.maximized_y_position)
 			save_force_debug_mode (a_window_data.is_force_debug_mode)
 			general_toolbar_layout := a_window_data.general_toolbar_layout.twin
 			refactoring_toolbar_layout := a_window_data.refactoring_toolbar_layout.twin
-			show_general_toolbar := a_window_data.show_general_toolbar
-			show_refactoring_toolbar := a_window_data.show_refactoring_toolbar
-			show_project_toolbar := a_window_data.show_project_toolbar
-			show_all_text_in_general_toolbar := a_window_data.show_all_text_in_general_toolbar
-			show_text_in_general_toolbar := a_window_data.show_text_in_general_toolbar
-			show_address_toolbar := a_window_data.show_address_toolbar
 		end
 
 feature {EB_DEVELOPMENT_WINDOW, EB_DEVELOPMENT_WINDOW_DIRECTOR} -- Access
@@ -71,17 +69,17 @@ feature {EB_DEVELOPMENT_WINDOW, EB_DEVELOPMENT_WINDOW_DIRECTOR} -- Access
 	show_formatter_marks: BOOLEAN
 			-- Show formatter marks?
 
-	width: INTEGER
-			-- Width for the development window.
+	width, height: INTEGER
+			-- Width and height for the development window.
 
-	height: INTEGER
-			-- Height for the development window.
+	x_position, y_position: INTEGER
+			-- X and Y position for development window.
 
-	x_position: INTEGER
-			-- X position for development window.
+	maximized_width, maximized_height: INTEGER
+			-- Width and height for the development window when maximized.
 
-	y_position: INTEGER
-			-- Y position for development window.
+	maximized_x_position, maximized_y_position: INTEGER
+			-- X and Y position for development window when mazimized.
 
 	is_maximized: BOOLEAN
 			-- Is the development window maximized?
@@ -103,30 +101,6 @@ feature {EB_DEVELOPMENT_WINDOW, EB_DEVELOPMENT_WINDOW_DIRECTOR} -- Access
 
 	right_panel_layout: ARRAY [STRING]
 			-- Layout of the left panel of the window.
-
-	show_general_toolbar: BOOLEAN
-			-- Show the general toolbar (New, Save, Cut, ...)?
-
-	show_text_in_general_toolbar: BOOLEAN
-			-- Show only selected text in the general toolbar?
-
-	show_all_text_in_general_toolbar: BOOLEAN
-			-- Show all text in the general toolbar?
-
-	show_text_in_refactoring_toolbar: BOOLEAN
-			-- Show only selected text in the refactoring toolbar?
-
-	show_all_text_in_refactoring_toolbar: BOOLEAN
-			-- Show all text in the refactoring toolbar?
-
-	show_address_toolbar: BOOLEAN
-			-- Show the address toolbar (Back, Forward, Class, Feature, ...)?
-
-	show_project_toolbar: BOOLEAN
-			-- Show the project toolbar (Breakpoints, ...)?
-
-	show_refactoring_toolbar: BOOLEAN
-			-- Show the refactoring toolbar.
 
 	context_unified_stone: BOOLEAN
 			-- Is the context tool linked?
@@ -208,14 +182,35 @@ feature {EB_DEVELOPMENT_WINDOW} -- Element change
 		end
 
 	save_size (a_width, a_height: INTEGER) is
-			-- Save the width and the height of the window.
+			-- <Precursor>
 		do
 			width := a_width
 			height := a_height
 		end
 
+	save_maximized_size (a_width, a_height: INTEGER) is
+			-- <Precursor>
+		do
+			maximized_width := a_width
+			maximized_height := a_height
+		end
+
+	save_position (a_x, a_y: INTEGER) is
+			-- <Precursor>
+		do
+			x_position := a_x
+			y_position := a_y
+		end
+
+	save_maximized_position (a_x, a_y: INTEGER) is
+			-- <Precursor>
+		do
+			maximized_x_position := a_x
+			maximized_y_position := a_y
+		end
+
 	save_window_state (a_minimized, a_maximized: BOOLEAN) is
-			-- Save the window state of the window.
+			-- <Precursor>
 		do
 			is_maximized := a_maximized
 			is_minimized := a_minimized
@@ -225,13 +220,6 @@ feature {EB_DEVELOPMENT_WINDOW} -- Element change
 			-- Save if `is_force_debug_mode'
 		do
 			is_force_debug_mode := a_bool
-		end
-
-	save_position (a_x, a_y: INTEGER) is
-			-- Save the position of the window.
-		do
-			x_position := a_x
-			y_position := a_y
 		end
 
 feature -- Basic operations

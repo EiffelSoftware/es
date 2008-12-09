@@ -27,18 +27,24 @@ inherit
 			initialize_customizable_commands,
 			basic_cursor_move,
 			text_displayed,
-			internal_recycle	,
+			internal_recycle,
+			internal_detach_entities,
 			file_loading_setup,
 			on_text_back_to_its_last_saved_state,
 			on_text_edited,
 			on_text_reset,
 			on_key_down,
 			on_mouse_wheel,
+			on_mouse_button_up,
+			on_char,
 			make,
 			create_token_handler
 		end
 
 	EB_TAB_CODE_COMPLETABLE
+		rename
+			is_word as is_word_token,
+			is_keyword as is_keyword_token
 		export
 			{NONE} all
 		undefine
@@ -94,12 +100,29 @@ feature {NONE} -- Initialize
 
 feature {NONE} -- Access
 
+	editor_context_cookie: !UUID
+			-- The associated editor's context cookie for use with the event list service.
+		do
+			if {l_cookie: UUID} internal_editor_context_cookie then
+				Result := l_cookie
+			else
+				Result := (create {UUID_GENERATOR}).generate_uuid.as_attached
+				internal_editor_context_cookie := Result
+			end
+		end
+
+	event_list: !SERVICE_CONSUMER [EVENT_LIST_S]
+			-- Access to the event list service for adding class syntax errors/warnings.
+		once
+			create Result
+		end
+
 	help_uri_scavenger: !ES_HELP_CONTEXT_SCAVENGER [!EB_SMART_EDITOR]
 			-- Scavenger used to local help contexts within the editor
 		require
 			help_providers_is_service_available: help_providers.is_service_available
 		once
-			Result ?= create {!ES_EDITOR_HELP_CONTEXT_SCAVENGER}
+			create {ES_EDITOR_HELP_CONTEXT_SCAVENGER} Result
 		ensure
 			result_is_interface_usable: Result.is_interface_usable
 		end
@@ -139,7 +162,7 @@ feature {NONE} -- Basic operations
 
 feature -- Content change
 
-	set_editor_text (s: STRING) is
+	set_editor_text (s: STRING_32) is
 			-- load text represented by `s' in the editor
 			-- text is considered edited after load, i.e. save command
 			-- is sensitive.
@@ -211,7 +234,7 @@ feature -- Status setting
 
 feature -- Search
 
-	find_feature_named (a_name: STRING) is
+	find_feature_named (a_name: STRING_32) is
 			-- Look for a feature named `a_name' in the text and
 			-- scroll to the corresponding line.
 		local
@@ -265,7 +288,59 @@ feature {EB_COMMAND, EB_DEVELOPMENT_WINDOW, EB_DEVELOPMENT_WINDOW_MENU_BUILDER} 
 			end
 		end
 
-	embed_in_block (keyword: STRING; pos_in_keyword: INTEGER) is
+	find_matching_brace
+			-- Attempts to find a matching brace under the caret.
+		require
+			is_interface_usable: is_interface_usable
+			not_is_empty: not is_empty
+			text_is_fully_loaded: text_is_fully_loaded
+		local
+			l_brace: ?like brace_match_caret_token
+			l_caret_outside: BOOLEAN
+		do
+			l_brace := brace_match_caret_token
+			if l_brace /= Void then
+				-- Determine location of caret, if it's before/after then the new cursor position
+					-- should be after/before the matching brace.
+				if brace_matcher.is_opening_brace (l_brace.token) then
+					l_caret_outside := position <= l_brace.token.pos_in_text
+				else
+					l_caret_outside := position >= l_brace.token.pos_in_text + l_brace.token.wide_image.count
+				end
+
+				l_brace := brace_matcher.match_brace (l_brace.token, l_brace.line, Void)
+				if l_brace /= Void then
+					if has_selection then
+							-- Remove any previous selection.
+						disable_selection
+					end
+
+						-- Set new cursor position
+					if {l_eiffel_line: EIFFEL_EDITOR_LINE} l_brace.line then
+						check valid_line: l_eiffel_line.is_valid end
+						text_displayed.cursor.set_line (l_eiffel_line)
+						if brace_matcher.is_closing_brace (l_brace.token) then
+							if l_caret_outside then
+								text_displayed.cursor.set_current_char (l_brace.token.next, 1)
+							else
+								text_displayed.cursor.set_current_char (l_brace.token, 1)
+							end
+						else
+							if l_caret_outside then
+								text_displayed.cursor.set_current_char (l_brace.token, 1)
+							else
+								text_displayed.cursor.set_current_char (l_brace.token.next, 1)
+							end
+						end
+					else
+							-- Should never happen, we are using an Eiffel editor.
+						check False end
+					end
+				end
+			end
+		end
+
+	embed_in_block (keyword: STRING_32; pos_in_keyword: INTEGER) is
 			-- Embed selection or current line in block formed by `keyword' and "end".
 			-- Cursor is positioned to the `pos_in_keyword'-th character of `keyword'.
 		require
@@ -297,9 +372,12 @@ feature {NONE} -- Text loading
 	string_loading_setup, file_loading_setup is
 			-- Setup editor just before file/string loading begins.
 		do
-			text_displayed.enable_click_tool
-			text_displayed.setup_click_tool (dev_window.stone, not is_unix_file)
-			process_click_tool_error
+					-- If `load_file_error' has been set before, we simply do not setup the click tool.
+			if not load_file_error then
+				text_displayed.enable_click_tool
+				text_displayed.setup_click_tool (dev_window.stone, not is_unix_file)
+				process_click_tool_error
+			end
 		end
 
 	on_text_back_to_its_last_saved_state is
@@ -310,35 +388,47 @@ feature {NONE} -- Text loading
 				text_displayed.update_click_list (dev_window.stone, True)
 				text_displayed.clear_syntax_error
 			end
-			set_title_saved (true)
+			set_title_saved (True)
 		end
 
 	on_text_reset is
 			-- Redefine
 		do
 			Precursor
-			set_title_saved (true)
+			set_title_saved (True)
 		end
 
 	on_text_edited (directly_edited: BOOLEAN) is
 			-- Redefine
 		do
 			Precursor (directly_edited)
-			set_title_saved (false)
+			set_title_saved (False)
 		end
 
 	is_text_loaded_called: BOOLEAN
 			-- If text loaded called?
 
+feature -- Process Vision2 events
+
+ 	on_char (character_string: STRING_32) is
+   			-- Process displayable character key press event.
+   		do
+   			Precursor (character_string)
+			if not ignore_keyboard_input and then not character_string.is_empty and then not is_empty then
+					-- Perform brace match highlighting/unhighlighting.
+	   			highlight_matched_braces (True)
+			end
+ 		end
+
 feature {EB_COMPLETION_CHOICE_WINDOW} -- Process Vision2 Events
 
-	handle_character (c: CHARACTER) is
+	handle_character (c: CHARACTER_32) is
  			-- Process the push on a character key.
 		local
 			t: EDITOR_TOKEN_KEYWORD
 			token: EDITOR_TOKEN
 			look_for_keyword: BOOLEAN
-			insert: CHARACTER
+			insert: CHARACTER_32
 			syntax_completed: BOOLEAN
 			cur: like cursor_type
  		do
@@ -469,6 +559,14 @@ feature {EB_COMPLETION_CHOICE_WINDOW} -- Process Vision2 Events
 				end
 			end
 			auto_point := switch_auto_point xor auto_point
+
+			if not is_empty then
+				if ev_key.code = key_back_space or else ev_key.code = key_delete or else ev_key.code = key_enter then
+						-- Perform brace match highlighting/unhighlighting.
+						-- Enter key requires special processing.
+					highlight_matched_braces (ev_key.code = key_enter)
+				end
+			end
 		end
 
 	handle_extended_ctrled_key (ev_key: EV_KEY) is
@@ -496,6 +594,11 @@ feature {NONE} -- Handle keystrokes
 		do
 			Precursor {EB_CLICKABLE_EDITOR} (action)
 			switch_auto_point := False
+
+			if not is_empty then
+					-- Perform brace match highlighting/unhighlighting.
+				highlight_matched_braces (True)
+			end
 		end
 
 feature {EB_CODE_COMPLETION_WINDOW} -- automatic completion
@@ -510,10 +613,16 @@ feature {EB_CODE_COMPLETION_WINDOW} -- automatic completion
 			-- Set mode to normal (not completion mode).
 		do
 			is_completing := False
+
 				-- Invalidating cursor forces cursor to be updated.
 			invalidate_cursor_rect (False)
 			resume_cursor_blinking
 			set_focus
+
+			if not is_empty then
+					-- Perform brace match highlighting/unhighlighting.
+				highlight_matched_braces (True)
+			end
 		end
 
 	calculate_completion_list_x_position: INTEGER is
@@ -700,20 +809,181 @@ feature {EB_CODE_COMPLETION_WINDOW} -- automatic completion
 			end
 		end
 
+feature {NONE} -- Brace matching
+
+	brace_matcher: !ES_EDITOR_BRACE_MATCHER
+			-- Brace matcher utility access.
+		require
+			is_interface_usable: is_interface_usable
+		once
+			create Result
+		end
+
+	brace_match_caret_token: ?TUPLE [token: !EDITOR_TOKEN; line: !EDITOR_LINE]
+			-- Attempts to retrieve the most applicable brace match token under the caret.
+			--
+			-- `Result': The most applicable token or Void if no token was found.
+		require
+			is_interface_usable: is_interface_usable
+			not_is_empty: not is_empty
+			text_is_fully_loaded: text_is_fully_loaded
+		local
+			l_utils: !like brace_matcher
+			l_token: ?EDITOR_TOKEN
+			l_prev_token: ?EDITOR_TOKEN
+			l_line: ?EDITOR_LINE
+		do
+				-- Locate applicable tokens
+			l_utils := brace_matcher
+			l_token := text_displayed.cursor.token
+			l_line := text_displayed.cursor.line
+			if l_token /= Void and l_line /= Void then
+				l_prev_token ?= l_token.previous
+				if l_utils.is_closing_brace (l_token) and then position = l_token.pos_in_text
+						and then l_prev_token /= Void and then l_utils.is_closing_brace (l_prev_token) then
+							-- Check the previous token for a closing brace, because it has priority
+					if not l_token.is_highlighted then
+							-- This is a minor hack, and not even a hack really but it's necessary due to the brace finder's
+							-- function to place the caret on the inside of outside of a matching brace, based on the original
+							-- position. For instance, )|), where | is the caret has two possible matches. For this case, if the right
+							-- token is hightlighted, it has priority, overriding the left-priority semantics.
+						l_token := l_prev_token
+					end
+
+				else
+					if not l_utils.is_brace (l_token) and then (l_token.is_new_line or else position <= l_token.pos_in_text) then
+							-- Grab previous token because the move will always get the next token.
+						l_token := l_prev_token
+					end
+				end
+
+				if l_token /= Void and then l_utils.is_brace (l_token) then
+					Result := [l_token, l_line]
+				end
+			end
+		ensure
+			result_token_belongs_on_line: Result /= Void implies Result.line.has_token (Result.token)
+			result_token_is_brace: Result /= Void implies brace_matcher.is_brace (Result.token)
+		end
+
+	highlight_matched_braces (a_update: BOOLEAN)
+			-- Match editor braces.
+		require
+			is_interface_usable: is_interface_usable
+			not_is_empty: not is_empty
+			text_is_fully_loaded: text_is_fully_loaded
+		local
+			l_utils: !like brace_matcher
+			l_token: !EDITOR_TOKEN
+			l_line: !EDITOR_LINE
+			l_brace: ?like brace_match_caret_token
+			l_invalidated_lines: ARRAYED_SET [EDITOR_LINE]
+			l_last_matches: !like last_highlighted_matched_braces
+			l_invalidated_line: ?EDITOR_LINE
+		do
+			create l_invalidated_lines.make (2)
+
+				-- Remove last matches
+			l_last_matches := last_highlighted_matched_braces
+			from l_last_matches.start until l_last_matches.after loop
+				l_brace ?= l_last_matches.item
+				if l_brace /= Void then
+					l_brace.token.set_highlighted (False)
+					if not l_invalidated_lines.has (l_brace.line) then
+						l_invalidated_lines.extend (l_brace.line)
+					end
+				end
+				l_last_matches.remove
+			end
+
+			if not has_selection and then preferences.editor_data.highlight_matching_braces then
+					-- Locate applicable tokens
+				l_brace := brace_match_caret_token
+				if l_brace /= Void then
+					l_token := l_brace.token
+					l_line := l_brace.line
+
+						-- Find matching brace tokens.
+					l_utils := brace_matcher
+					if l_utils.is_brace (l_token) and then l_line.has_token (l_token) then
+						l_brace := l_utils.match_brace (l_token, l_line, Void)
+						if l_brace /= Void then
+								-- There was a match.
+							l_token.set_highlighted (True)
+							if not l_invalidated_lines.has (l_line) then
+								l_invalidated_lines.extend (l_line)
+							end
+							l_last_matches.extend ([l_token, l_line])
+
+							l_brace.token.set_highlighted (True)
+							if not l_invalidated_lines.has (l_brace.line) then
+								l_invalidated_lines.extend (l_brace.line)
+							end
+							l_last_matches.extend ([l_brace.token, l_brace.line])
+						end
+					end
+				end
+			end
+
+			if a_update and then not l_invalidated_lines.is_empty then
+					-- Perform line redraws
+				from l_invalidated_lines.start until l_invalidated_lines.after loop
+					l_invalidated_line := l_invalidated_lines.item
+					if l_invalidated_line.is_valid then
+						invalidate_line (l_invalidated_line.index, True)
+					end
+					l_invalidated_lines.forth
+				end
+			end
+		end
+
+	last_highlighted_matched_braces: !ARRAYED_LIST [!TUPLE [token: EDITOR_TOKEN; line: EDITOR_LINE]]
+			-- Last matched brace tokens, set in `highlight_matched_braces'.
+		require
+			is_interface_usable: is_interface_usable
+		once
+			create Result.make (2)
+		end
+
 feature {EB_SAVE_FILE_COMMAND, EB_SAVE_ALL_FILE_COMMAND, EB_DEVELOPMENT_WINDOW, EB_STONE_CHECKER} -- Docking title
 
 	set_title_saved (a_saved: BOOLEAN) is
 			-- Set '*' in the title base on `a_saved'.
 		local
-			l_title: STRING
+			l_title: STRING_32
 		do
 			if docking_content /= Void then
 				if docking_content.short_title /= Void then
-					l_title := docking_content.short_title.as_string_8
+					l_title := docking_content.short_title.as_string_32
 				else
 					create l_title.make_empty
 				end
-				if not l_title.is_empty then
+
+				set_title_saved_with (a_saved, l_title)
+			end
+		end
+
+	set_title_saved_with (a_saved: BOOLEAN; a_title: STRING) is
+			-- Set '*' in the title base on `a_saved'.
+			-- `a_title' will be used as name in editor docking_content
+		require
+			not_void: a_title /= Void
+		local
+			l_short_title: STRING
+			l_title: STRING
+		do
+			if docking_content /= Void then
+				if not a_title.is_empty then
+					-- We must twin it, otherwise it will change the class name
+					l_title := a_title.twin
+
+					-- First we make sure docking_content title has `l_title'
+					l_short_title := docking_content.short_title.as_string_8
+					if l_short_title = Void or else not l_short_title.has_substring (l_title) then
+						docking_content.set_short_title (l_title)
+						docking_content.set_long_title (l_title)
+					end
+
 					if l_title.item (1).code = ('*').code then
 						if a_saved then
 							l_title.keep_tail (l_title.count - 1)
@@ -722,7 +992,7 @@ feature {EB_SAVE_FILE_COMMAND, EB_SAVE_ALL_FILE_COMMAND, EB_DEVELOPMENT_WINDOW, 
 						end
 					else
 						if not a_saved then
-							l_title := "*" + l_title
+							l_title.insert_string ("*", 1)
 							docking_content.set_short_title (l_title)
 							docking_content.set_long_title (l_title)
 						end
@@ -763,22 +1033,22 @@ feature {NONE} -- syntax completion
 	latest_typed_word_is_keyword: BOOLEAN
 			-- Is the preceeding token a keyword?
 
-	previous_token_image: STRING
+	previous_token_image: STRING_32
 			-- Image of the previous token
 
-	keyword_image (token: EDITOR_TOKEN_KEYWORD): STRING is
+	keyword_image (token: EDITOR_TOKEN_KEYWORD): STRING_32 is
 			-- Image of keyword beginning by `token'.
 		local
-			test: STRING
+			test: STRING_32
 			kw: like token
 			blnk: EDITOR_TOKEN_BLANK
 			tok: EDITOR_TOKEN
 			is_else, is_then: BOOLEAN
 		do
-			Result :=token.image.twin
-			test := Result.as_lower
-			is_else := test.is_equal ("else")
-			is_then := test.is_equal ("then")
+			Result := token.wide_image.twin
+			test := Result
+			is_else := string_32_is_caseless_ascii_string (test, "else")
+			is_then := string_32_is_caseless_ascii_string (test, "then")
 			if is_else or is_then then
 				from
 					blnk ?= token.previous
@@ -791,17 +1061,17 @@ feature {NONE} -- syntax completion
 				kw ?= tok
 				if kw /= Void then
 					if is_else then
-						test :=kw.image.as_lower
-						if test.is_equal ("or") then
+						test := kw.wide_image.twin
+						if string_32_is_caseless_ascii_string (test, "or") then
 							Result.prepend ("or ")
-						elseif test.is_equal ("require") then
+						elseif string_32_is_caseless_ascii_string (test, "require") then
 							Result.prepend ("require ")
 						end
 					elseif is_then then
-						test := kw.image.as_lower
-						if test.is_equal ("and") then
+						test := kw.wide_image.twin
+						if string_32_is_caseless_ascii_string (test, "and") then
 							Result.prepend ("and ")
-						elseif test.is_equal ("ensure") then
+						elseif string_32_is_caseless_ascii_string (test, "ensure") then
 							Result.prepend ("ensure ")
 						end
 					end
@@ -818,15 +1088,31 @@ feature {NONE} -- Implementation
 
 	process_click_tool_error is
 			-- Show warning corresponding to `click_tool' error.
+		local
+			l_displayed: ES_ERROR_DISPLAYER
+			l_item: EVENT_LIST_ERROR_ITEM
+			l_error: SYNTAX_ERROR
 		do
+			if event_list.is_service_available then
+					-- Remove any error items associated with the editor
+				event_list.service.prune_event_items (editor_context_cookie)
+			end
+
 			if text_displayed.click_tool_status = text_displayed.class_name_changed then
 				show_warning_message (Warning_messages.w_Class_name_changed)
 			elseif text_displayed.click_tool_status = text_displayed.syntax_error then
-				show_syntax_warning
+					-- There has been a syntax error so add the item to the list
+				l_error := text_displayed.last_syntax_error
+				check l_error_attached: l_error /= Void end
+				if event_list.is_service_available then
+					create l_displayed.make (window_manager)
+					create l_item.make ({ENVIRONMENT_CATEGORIES}.editor, l_error.out, l_error)
+					event_list.service.put_event_item (editor_context_cookie, l_item)
+				end
 			end
 		end
 
-	complementary_character (c:CHARACTER): CHARACTER is
+	complementary_character (c:CHARACTER_32): CHARACTER_32 is
 			-- Character complementary to `c', i.e. closing bracket
 			-- for an opening one for instance.
 		do
@@ -895,13 +1181,13 @@ feature {NONE} -- Implementation
 			dev_window_is_not_void: dev_window /= Void
 		local
 			syn_error: SYNTAX_ERROR
-			txt: STRING
+			txt: STRING_32
 			retried: BOOLEAN
 			fl: RAW_FILE
 		do
 			if text_is_fully_loaded then
 				if retried then
-					show_warning_message (Warning_messages.w_Cannot_read_file (file_name).out)
+					show_warning_message (Warning_messages.w_Cannot_read_file (file_name))
 				else
 					deselect_all
 					syn_error := text_displayed.last_syntax_error
@@ -939,6 +1225,16 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	on_mouse_button_up (x_pos, y_pos, button: INTEGER; unused1,unused2,unused3: DOUBLE; unused4,unused5:INTEGER) is
+			-- <Precursor>
+		do
+			if button = 1 and then not is_empty then
+					-- Perform brace match highlighting/unhighlighting.
+				highlight_matched_braces (True)
+			end
+			Precursor (x_pos, y_pos, button, unused1, unused2, unused3, unused4, unused5)
+		end
+
 feature -- Text Loading	
 
 	load_file (a_file_name: FILE_NAME) is
@@ -953,8 +1249,8 @@ feature -- Text Loading
 			load_without_save := False
 		end
 
-	load_text (s: STRING) is
-			-- Load text represented by `s' in the editor.
+	load_text (s: STRING_GENERAL) is
+			-- <Precursor>
 		local
 			l_d_class : DOCUMENT_CLASS
 			l_scanner: EDITOR_EIFFEL_SCANNER
@@ -990,7 +1286,22 @@ feature {NONE} -- Memory management
 			if completion_timeout /= Void and then not completion_timeout.is_destroyed then
 				completion_timeout.destroy
 			end
+
+			if event_list.is_service_available then
+					-- Remove any added error items
+				event_list.service.prune_event_items (editor_context_cookie)
+			end
+		end
+
+	internal_detach_entities is
+			-- <Precursor>
+		do
 			completion_timeout := Void
+			internal_editor_context_cookie := Void
+			auto_point_token := Void
+			previous_token_image := Void
+			saved_cursor := Void
+			Precursor
 		end
 
 feature {NONE} -- Factory
@@ -1041,10 +1352,11 @@ feature {NONE} -- Code completable implementation
 					until
 						l_line.after or l_end_loop
 					loop
-						if l_line.item.image.as_lower.is_equal ("feature") then
+						if string_32_is_caseless_ascii_string (l_line.item.wide_image, "feature") then
 							l_kt ?= l_line.item
 							if l_kt /= Void then
 								l_end_loop := True
+								check l_line_valid: l_line.is_valid end
 								create l_cursor.make_from_relative_pos (l_line, l_kt, 1, text_displayed)
 								if l_cursor.pos_in_text < text_displayed.cursor.pos_in_text then
 									set_discard_feature_signature (False)
@@ -1072,7 +1384,7 @@ feature {NONE} -- Code completable implementation
 								if l_found_blank then
 										-- We do not need signature after "like feature"
 										-- We do not need feature signature when it is a pointer reference. case: "$  feature"
-									if l_token.image.as_lower.is_equal ("like") or l_token.image.is_equal ("$") then
+									if string_32_is_caseless_ascii_string (l_token.wide_image, "like") or token_equal (l_token, "$") then
 										l_end_loop := True
 										set_discard_feature_signature (True)
 									else
@@ -1080,13 +1392,13 @@ feature {NONE} -- Code completable implementation
 									end
 								end
 									-- Prevent create {like a}.input (a, b) from signature being discarded.
-								if l_token.image.as_lower.is_equal ("}") then
+								if token_equal (l_token, "}") then
 									l_end_loop := True
 								end
 							end
 							-- We do not need feature signature when it is a pointer reference. case2: "$feature"
 							if not l_found_blank and then not l_quit and then not l_end_loop then
-								if l_token.image.is_equal ("$") then
+								if token_equal (l_token, "$") then
 									l_end_loop := True
 									set_discard_feature_signature (True)
 								end
@@ -1101,7 +1413,7 @@ feature {NONE} -- Code completable implementation
 						l_token := text_displayed.cursor.token
 						l_end_loop := False
 						if l_token /= Void then
-							if l_token.image.is_equal ("(") then
+							if token_equal (l_token, "(") then
 								l_end_loop := True
 								set_discard_feature_signature (True)
 							end
@@ -1113,7 +1425,7 @@ feature {NONE} -- Code completable implementation
 						if l_token /= Void then
 							if not l_token.is_blank then
 								l_end_loop := True
-								if l_token.image.is_equal ("(") then
+								if token_equal (l_token, "(") then
 									need_tabbing := True
 									set_discard_feature_signature (True)
 								end
@@ -1250,6 +1562,7 @@ feature {NONE} -- Code completable implementation
 			if has_selection then
 				disable_selection
 			end
+			check a_line_valid: a_line.is_valid end
 			text_displayed.cursor.make_from_relative_pos (a_line, a_token, 1, text_displayed)
 		end
 
@@ -1258,6 +1571,10 @@ feature {NONE} -- Code completable implementation
 		do
 			if has_selection then
 				disable_selection
+			end
+			check
+				start_line_valid: a_start_line.is_valid
+				end_line_valid: a_end_line.is_valid
 			end
 			text_displayed.selection_cursor.make_from_relative_pos (a_start_line, a_start_token, 1, text_displayed)
 			text_displayed.cursor.make_from_relative_pos (a_end_line, a_end_token, 1, text_displayed)
@@ -1270,7 +1587,12 @@ feature {NONE} -- Code completable implementation
 			l_current_line: like current_line
 			l_current_token, l_cur_token: EDITOR_TOKEN
 			l_comment: EDITOR_TOKEN_COMMENT
-			l_has_left_brace_ahead, l_has_right_brace_following, l_has_right_brace_ahead, seperator_ahead: BOOLEAN
+			l_has_left_brace_ahead,
+			l_has_right_brace_ahead,
+			l_has_right_brace_following,
+			l_has_left_brace_following,
+			l_seperator_ahead,
+			l_seperator_following: BOOLEAN
 			l_comment_ahead: BOOLEAN
 		do
 			if has_selection implies text_displayed.selection_start.y_in_lines = text_displayed.selection_end.y_in_lines then
@@ -1295,14 +1617,18 @@ feature {NONE} -- Code completable implementation
 					until
 						l_current_line.after or l_current_line.item = text_displayed.cursor.token
 					loop
-						if l_current_line.item.is_text and then l_current_line.item.image.is_equal ("(") then
+						if not l_has_left_brace_ahead and then l_current_line.item.is_text and then token_equal (l_current_line.item, "(") then
 							l_has_left_brace_ahead := True
 						end
-						if l_current_line.item.is_text and then l_current_line.item.image.is_equal (")") then
+						if not l_has_right_brace_ahead and then l_current_line.item.is_text and then token_equal (l_current_line.item, ")") then
 							l_has_right_brace_ahead := True
 						end
-						if l_current_line.item.is_text and then (l_current_line.item.image.is_equal (",") or else l_current_line.item.image.is_equal (";")) then
-							seperator_ahead := True
+						if
+							not l_seperator_ahead and then
+							l_current_line.item.is_text and then
+							(token_equal (l_current_line.item, ",") or else token_equal (l_current_line.item, ";"))
+						then
+							l_seperator_ahead := True
 						end
 						l_current_line.forth
 					end
@@ -1310,16 +1636,31 @@ feature {NONE} -- Code completable implementation
 					from
 						l_current_token := current_token_in_line (l_current_line)
 					until
-						l_current_token = Void or else l_current_token = l_current_line.eol_token
+						l_current_token = Void or else
+						l_current_token = l_current_line.eol_token or else
+						{lt_com: EDITOR_TOKEN_COMMENT}l_current_token
 					loop
-						if l_current_token.image.is_equal (")") then
+						if
+							not l_has_right_brace_following and then
+							token_equal (l_current_token, ")")
+						then
 							l_has_right_brace_following := True
+						end
+						if
+							not l_has_left_brace_following and then
+							token_equal (l_current_token, "(") then
+							l_has_left_brace_following := True
+						end
+						if
+							not l_seperator_following and then
+							l_current_token.is_text and then
+							(token_equal (l_current_token, ",") or else token_equal (l_current_token, ";"))
+						then
+							l_seperator_following := True
 						end
 						l_current_token := l_current_token.next
 					end
-					Result := 	l_has_left_brace_ahead or
-								(l_has_right_brace_following and seperator_ahead) or
-								l_has_right_brace_ahead
+					Result := 	((l_has_left_brace_ahead or l_seperator_ahead) and then (l_has_right_brace_following or l_seperator_following))
 				end
 			end
 		end
@@ -1372,6 +1713,11 @@ feature {NONE} -- Code completable implementation
 				disable_selection
 			end
 			text_displayed.delete_char
+
+			if not is_empty then
+					-- Perform brace match highlighting/unhighlighting.
+				highlight_matched_braces (False)
+			end
 		end
 
 	back_delete_char is
@@ -1381,18 +1727,28 @@ feature {NONE} -- Code completable implementation
 				disable_selection
 			end
 			text_displayed.back_delete_char
+
+			if not is_empty then
+					-- Perform brace match highlighting/unhighlighting.
+				highlight_matched_braces (False)
+			end
 		end
 
-	insert_string (a_str: STRING) is
+	insert_string (a_str: STRING_32) is
 			-- Insert `a_str' at cursor position.
 		do
 			if has_selection then
 				disable_selection
 			end
 			text_displayed.insert_string (a_str)
+
+			if not is_empty then
+					-- Perform brace match highlighting/unhighlighting.
+				highlight_matched_braces (False)
+			end
 		end
 
-	insert_char (a_char: CHARACTER) is
+	insert_char (a_char: CHARACTER_32) is
 			-- Insert `a_char' at cursor position.
 		do
 			if has_selection then
@@ -1401,7 +1757,7 @@ feature {NONE} -- Code completable implementation
 			text_displayed.insert_char (a_char)
 		end
 
-	replace_char (a_char: CHARACTER) is
+	replace_char (a_char: CHARACTER_32) is
 			-- Replace current char with `a_char'.
 		do
 			if has_selection then
@@ -1452,7 +1808,7 @@ feature {NONE} -- Code completable implementation
 
 	saved_cursor: EDITOR_CURSOR
 
-	complete_feature_call (completed: STRING; is_feature_signature: BOOLEAN; appended_character: CHARACTER; remainder: INTEGER; a_continue_completion: BOOLEAN) is
+	complete_feature_call (completed: STRING_32; is_feature_signature: BOOLEAN; appended_character: CHARACTER_32; remainder: INTEGER; a_continue_completion: BOOLEAN) is
 			--
 		do
 			text_displayed.complete_feature_call (completed, is_feature_signature, appended_character, remainder, not a_continue_completion)
@@ -1474,10 +1830,10 @@ feature {NONE} -- Code completable implementation
 			Result := text_displayed.cursor.token = text_displayed.cursor.line.eol_token
 		end
 
-	current_char: CHARACTER is
+	current_char: CHARACTER_32 is
 			-- Current character, to the right of the cursor.
 		do
-			Result := text_displayed.cursor.item
+			Result := text_displayed.cursor.wide_item
 		end
 
 	on_key_pressed (a_key: EV_KEY) is
@@ -1510,8 +1866,8 @@ feature {NONE} -- Code completable implementation
 					l_tok := l_tok.previous
 				end
 				if l_tok /= Void and then l_tok.is_text then
-					if not l_tok.image.is_empty then
-						Result := not completion_activator_characters.has (l_tok.image.item (1))
+					if not l_tok.wide_image.is_empty then
+						Result := not completion_activator_characters.has (l_tok.wide_image.item (1))
 					else
 						Result := True
 					end
@@ -1528,7 +1884,13 @@ feature {NONE} -- Code completable implementation
 			completing_automatically_reset: completing_automatically = False
 		end
 
-indexing
+feature {NONE} -- Implementation: Internal cache
+
+	internal_editor_context_cookie: ?like editor_context_cookie
+			-- Cached version of `editor_context_cookie'
+			-- Note: Do not use directly!
+
+;indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

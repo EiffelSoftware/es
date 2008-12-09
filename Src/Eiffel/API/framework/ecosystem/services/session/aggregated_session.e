@@ -16,6 +16,7 @@ inherit
 			make as make_session,
 			make_per_window as make_per_window_session
 		redefine
+			safe_dispose,
 			value,
 			value_or_default
 		end
@@ -46,7 +47,7 @@ feature {NONE} -- Initialization
 			inner_session_set: inner_session = a_session
 		end
 
-	make_per_window (a_per_project: BOOLEAN; a_window: EB_DEVELOPMENT_WINDOW; a_manager: like manager; a_session: like inner_session)
+	make_per_window (a_per_project: BOOLEAN; a_window: SHELL_WINDOW_I; a_manager: like manager; a_session: like inner_session)
 			-- Initialize a session bound to a window.
 			--
 			-- `a_per_project': True to initialize a per-project session.
@@ -55,7 +56,7 @@ feature {NONE} -- Initialization
 			-- `a_session': An inner session that Current aggregates.
 		require -- from SESSION
 			a_window_attached: a_window /= Void
-			not_a_window_is_recycled: not a_window.is_recycled
+			a_window_is_interface_usable: a_window.is_interface_usable
 			a_manager_attached: a_manager /= Void
 			a_manager_is_interface_usable: a_manager.is_interface_usable
 			a_session_attached: a_session /= Void
@@ -70,9 +71,22 @@ feature {NONE} -- Initialization
 			inner_session_set: inner_session = a_session
 		end
 
+feature {NONE} -- Clean up
+
+	safe_dispose (a_disposing: BOOLEAN)
+			-- <Precursor>
+		do
+			if a_disposing then
+				set_inner_session (Void)
+			end
+			Precursor (a_disposing)
+		ensure then
+			inner_session_detached: inner_session = Void
+		end
+
 feature {SESSION_MANAGER_S} -- Access
 
-	inner_session: SESSION_I assign set_inner_session
+	inner_session: ?SESSION_I assign set_inner_session
 			-- Inner session object
 
 feature {SESSION_MANAGER_S} -- Element change
@@ -81,16 +95,19 @@ feature {SESSION_MANAGER_S} -- Element change
 			-- <Precursor>
 		require
 			is_interface_usable: is_interface_usable
-			a_session_attached: a_session /= Void
-			a_session_is_interface_usable: a_session.is_interface_usable
+			a_session_is_interface_usable: a_session /= Void implies a_session.is_interface_usable
 		do
-			if inner_session /= Void then
+			if inner_session /= Void and then inner_session.is_interface_usable then
 					-- remove old event handler
 				inner_session.value_changed_event.unsubscribe (agent on_inner_session_value_changed)
 			end
 
 				-- Set extension name
-			set_extension_name (a_session.extension_name)
+			if a_session /= Void then
+				set_extension_name (a_session.extension_name)
+			else
+				set_extension_name (Void)
+			end
 
 			inner_session := a_session
 			if a_session /= Void then
@@ -99,7 +116,8 @@ feature {SESSION_MANAGER_S} -- Element change
 			end
 		ensure
 			inner_session_set: inner_session = a_session
-			extension_name_set: equal (extension_name,  a_session.extension_name)
+			extension_name_set: (a_session /= Void and then equal (extension_name, a_session.extension_name)) or else
+				(a_session = Void and then extension_name = Void)
 		end
 
 feature -- Query
@@ -140,11 +158,10 @@ feature {NONE} -- Event handlers
 		end
 
 invariant
-	inner_session_attached: is_interface_usable implies inner_session /= Void
-	extension_name_set: equal (extension_name, inner_session.extension_name)
+	extension_name_set: not (is_actively_disposing or is_zombie) implies inner_session /= Void and then equal (extension_name, inner_session.extension_name)
 
 ;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

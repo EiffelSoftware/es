@@ -26,13 +26,15 @@ inherit
 			check_const_gen_conformance,
 			is_reference,
 			is_expanded,
+			is_initialization_required,
 			internal_is_valid_for_class,
 			description,
 			generated_id,
 			generate_cid, generate_cid_array, generate_cid_init,
-			make_gen_type_byte_code,
+			make_type_byte_code,
 			generate_gen_type_il,
-			generic_il_type_name
+			generic_il_type_name,
+			annotation_flags
 		end
 
 	REFACTORING_HELPER
@@ -108,6 +110,31 @@ feature -- Property
 			l_generics := a_context_class.generics
 			check l_generics_not_void: l_generics /= Void end
 			Result := l_generics.i_th (position).is_single_constraint_without_renaming (l_generics)
+		end
+
+	is_initialization_required: BOOLEAN
+			-- Is initialization required for this type in void-safe mode?
+		do
+			if not is_expanded and then not has_detachable_mark then
+				Result := True
+			end
+		end
+
+	annotation_flags: NATURAL_16
+			-- <Precursor>
+		do
+				-- Unlike {TYPE_A}, we actually need to know if the formal is declared with
+				-- an attachment mark and if it is which one. When there are no attachment mark
+				-- at runtime, we will use the attachment mark of the actual generic parameter.
+			if has_attached_mark then
+				Result := {SHARED_GEN_CONF_LEVEL}.attached_type
+			elseif has_detachable_mark then
+				Result := {SHARED_GEN_CONF_LEVEL}.detachable_type
+			end
+-- To uncomment when variant/frozen proposal for generics is supported.
+--			if is_frozen then
+--				Result := Result | {SHARED_GEN_CONF_LEVEL}.frozen_type
+--			end
 		end
 
 feature -- IL code generation
@@ -259,44 +286,69 @@ feature -- Generic conformance
 	generated_id (final_mode: BOOLEAN; a_context_type: TYPE_A): NATURAL_16 is
 			-- Id of a `like xxx'.
 		do
+				-- Not really applicable.
 			Result := {SHARED_GEN_CONF_LEVEL}.formal_type
 		end
 
 	generate_cid (buffer: GENERATION_BUFFER; final_mode, use_info: BOOLEAN; a_context_type: TYPE_A) is
 		do
-			buffer.put_hex_natural_16 ({SHARED_GEN_CONF_LEVEL}.formal_type)
-			buffer.put_character (',')
-			buffer.put_integer (position)
-			buffer.put_character (',')
+			generate_cid_prefix (buffer, Void)
+			if use_info then
+				initialize_info (shared_create_info)
+				shared_create_info.generate_cid (buffer, final_mode)
+			else
+				buffer.put_hex_natural_16 ({SHARED_GEN_CONF_LEVEL}.formal_type)
+				buffer.put_character (',')
+				buffer.put_integer (position)
+				buffer.put_character (',')
+			end
 		end
 
 	generate_cid_array (buffer: GENERATION_BUFFER; final_mode, use_info: BOOLEAN; idx_cnt: COUNTER; a_context_type: TYPE_A) is
 		local
 			dummy: INTEGER
 		do
-			buffer.put_hex_natural_16 ({SHARED_GEN_CONF_LEVEL}.formal_type)
-			buffer.put_character (',')
-			buffer.put_integer (position)
-			buffer.put_character (',')
-			dummy := idx_cnt.next
-			dummy := idx_cnt.next
+			generate_cid_prefix (buffer, idx_cnt)
+			if use_info then
+				initialize_info (shared_create_info)
+				shared_create_info.generate_cid_array (buffer, final_mode, idx_cnt)
+			else
+				buffer.put_hex_natural_16 ({SHARED_GEN_CONF_LEVEL}.formal_type)
+				buffer.put_character (',')
+				buffer.put_integer (position)
+				buffer.put_character (',')
+				dummy := idx_cnt.next
+				dummy := idx_cnt.next
+			end
 		end
 
 	generate_cid_init (buffer: GENERATION_BUFFER; final_mode, use_info: BOOLEAN; idx_cnt: COUNTER; a_level: NATURAL) is
 		local
 			dummy: INTEGER
 		do
-			dummy := idx_cnt.next
-			dummy := idx_cnt.next
+			generate_cid_prefix (Void, idx_cnt)
+			if use_info then
+				initialize_info (shared_create_info)
+				shared_create_info.generate_cid_init (buffer, final_mode, idx_cnt, a_level)
+			else
+				dummy := idx_cnt.next
+				dummy := idx_cnt.next
+			end
 		end
 
-	make_gen_type_byte_code (ba: BYTE_ARRAY; use_info : BOOLEAN; a_context_type: TYPE_A) is
+	make_type_byte_code (ba: BYTE_ARRAY; use_info : BOOLEAN; a_context_type: TYPE_A) is
 			-- Put type id's in byte array.
 			-- `use_info' is true iff we generate code for a
 			-- creation instruction.
 		do
-			ba.append_natural_16 ({SHARED_GEN_CONF_LEVEL}.formal_type)
-			ba.append_short_integer (position)
+			make_type_prefix_byte_code (ba)
+			if use_info then
+				initialize_info (shared_create_info)
+				shared_create_info.make_type_byte_code (ba)
+			else
+				ba.append_natural_16 ({SHARED_GEN_CONF_LEVEL}.formal_type)
+				ba.append_short_integer (position)
+			end
 		end
 
 	generate_gen_type_il (il_generator: IL_CODE_GENERATOR; use_info: BOOLEAN) is
@@ -395,13 +447,28 @@ feature {COMPILER_EXPORTER}
 			-- Does Current conform to `other'?
 		local
 			l_constraints: TYPE_SET_A
-			c: like Current
+			t: TYPE_A
 		do
-			Result := same_as (other.conformance_type)
-			if not Result then
-				c ?= other
-				if c /= Void then
-					Result := is_equivalent (c) and then is_attachable_to (c)
+				-- Use `other.conformance_type' rather than `other' to get deanchored form.
+			t := other.conformance_type
+			Result := same_as (t)
+			if not Result and then {c: like Current} t and then is_equivalent (c) then
+					-- The rules are as follows, but we need to take care about implicit attachment status:
+    				-- 1. !G conforms to G, ?G and !G.
+					-- 2. G conforms to G and ?G.
+    				-- 3. ?G only conforms to ?G.
+				if is_implicitly_attached then
+						-- Case 1.
+						-- An (implicitly) attached type conforms to a type of any attachment status.
+					Result := True
+				elseif c.has_detachable_mark then
+						-- Case 1-3.
+						-- A type of any attachment status conforms to a detachable type.
+					Result := True
+				elseif not has_detachable_mark then
+						-- Case 2.
+						-- A type without the detachable mark conforms to the one without the detachable mark.
+					Result := not c.is_attached
 				end
 			end
 			if not Result then
@@ -417,7 +484,7 @@ feature {COMPILER_EXPORTER}
 					end
 						-- Get the actual type for the formal generic parameter
 					l_constraints := System.current_class.constraints_if_possible (position)
-					Result := l_constraints.constraining_types (system.current_class).conform_to_type (other)
+					Result := l_constraints.constraining_types (system.current_class).to_other_attachment (Current).conform_to_type (other)
 				end
 			end
 		end
@@ -448,12 +515,9 @@ feature {COMPILER_EXPORTER}
 	instantiation_in (type: TYPE_A; written_id: INTEGER): TYPE_A is
 			-- Instantiation of Current in the context of `class_type',
 			-- assuming that Current is written in class of id `written_id'.
-		local
-			class_type: CL_TYPE_A
 		do
-			class_type ?= type
-			if class_type /= Void then
-				Result := class_type.instantiation_of (Current, written_id)
+			if {l_cl_type: CL_TYPE_A} type.actual_type then
+				Result := l_cl_type.instantiation_of (Current, written_id).to_other_attachment (Current)
 			else
 				Result := Current
 			end
@@ -487,7 +551,7 @@ feature {COMPILER_EXPORTER}
 			-- assuming that Current is written in the associated class
 			-- of `class_type'.
 		do
-			Result := class_type.generics.item (position)
+			Result := class_type.generics.item (position).to_other_attachment (Current)
 		end
 
 	evaluated_type_in_descendant (a_ancestor, a_descendant: CLASS_C; a_feature: FEATURE_I): TYPE_A is
@@ -499,20 +563,27 @@ feature {COMPILER_EXPORTER}
 				-- Get associated feature in descendant.
 			l_feat := a_descendant.generic_features.item (l_feat.rout_id_set.first)
 			check l_feat_not_void: l_feat /= Void end
-			Result := l_feat.type.actual_type
-			if has_attached_mark then
-				Result := Result.duplicate
-				Result.set_attached_mark
-			elseif has_detachable_mark then
-				Result := Result.duplicate
-				Result.set_detachable_mark
-			end
+			Result := l_feat.type.actual_type.to_other_attachment (Current)
 		end
 
 	create_info: CREATE_FORMAL_TYPE is
 			-- Create formal type info.
 		do
+			create Result.make (as_attachment_mark_free)
+		end
+
+	shared_create_info: CREATE_FORMAL_TYPE is
+			-- Same as `create_info' except that it is a shared instance.
+		once
 			create Result.make (Current)
+		ensure
+			shared_create_info_not_void: Result /= Void
+		end
+
+	initialize_info (an_info: like shared_create_info) is
+			-- Initialize `an_info' with current type data.
+		do
+			an_info.make (Current)
 		end
 
 indexing

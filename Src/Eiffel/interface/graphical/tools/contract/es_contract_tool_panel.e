@@ -16,10 +16,24 @@ inherit
 			on_after_initialized,
 			internal_recycle,
 			query_set_stone,
-			synchronize,
 			create_right_tool_bar_items,
 			on_show,
+			on_focus_in,
 			on_handle_key
+		end
+
+	ES_MODIFIABLE
+		undefine
+			internal_detach_entities
+		redefine
+			internal_recycle,
+			query_save_modified,
+			on_dirty_state_changed
+		end
+
+	ES_HELP_CONTEXT
+		export
+			{NONE} all
 		end
 
 	SESSION_EVENT_OBSERVER
@@ -34,15 +48,6 @@ inherit
 			{NONE} all
 		redefine
 			on_catalog_changed
-		end
-
-	ES_MODIFIABLE
-		undefine
-			internal_detach_entities
-		redefine
-			internal_recycle,
-			query_save_modified,
-			on_dirty_state_changed
 		end
 
 create {ES_CONTRACT_TOOL}
@@ -97,7 +102,7 @@ feature {NONE} -- Initialization
 								l_item.row.enable_select
 								contract_editor.widget.enable_selection_on_click
 							end
-							on_row_selected_in_contract_editor (({!EV_GRID_ROW}) #? l_item.row, ia_x, ia_y + contract_editor.widget.header.height, ia_button)
+							on_row_selected_in_contract_editor (l_item.row.as_attached, ia_x, ia_y + contract_editor.widget.header.height, ia_button)
 						end
 					end
 				end)
@@ -116,12 +121,8 @@ feature {NONE} -- Initialization
 			register_action (show_all_lines_button.select_actions, agent on_show_all_rows)
 			register_action (show_callers_button.select_actions, agent on_show_callers)
 
-				-- Register action to perform updates on focus
-			register_action (content.focus_in_actions, agent update_if_modified)
-
 				-- Register menu item actions
 			register_action (add_manual_menu_item.select_actions, agent on_add_contract)
-			register_action (add_from_template_menu.select_actions, agent on_add_contract_from_template)
 		end
 
 	on_after_initialized
@@ -152,6 +153,11 @@ feature {NONE} -- Initialization
 				-- Performs UI initialization
 			set_contract_mode (contract_mode)
 			set_is_showing_all_rows (is_showing_all_rows)
+
+			if has_stone then
+					-- Update the view
+				update
+			end
 
 				-- Set button states
 			update_stone_buttons
@@ -206,7 +212,7 @@ feature {NONE} -- Access
 			has_stone: has_stone
 		do
 			check contract_editor_has_context: contract_editor.has_context end
-			Result ?= contract_editor.context
+			Result := contract_editor.context.as_attached
 		end
 
 	contract_code_templates: !DS_BILINEAR [!CODE_TEMPLATE_DEFINITION]
@@ -217,12 +223,20 @@ feature {NONE} -- Access
 			has_stone: has_stone
 			code_template_catalog_is_service_available: code_template_catalog.is_service_available
 		local
-			l_categories: DS_ARRAYED_LIST [STRING_32]
+			l_categories: DS_ARRAYED_LIST [!STRING]
 		do
 			create l_categories.make (2)
 			l_categories.put_last ({CODE_TEMPLATE_ENTITY_NAMES}.contract_category)
 			l_categories.put_last (context.template_category)
-			Result ?= code_template_catalog.service.templates_by_category (l_categories, True)
+			Result := code_template_catalog.service.templates_by_category (l_categories, True)
+		end
+
+feature -- Access: Help
+
+	help_context_id: !STRING_GENERAL
+			-- <Precursor>
+		once
+			Result := "28E1B33F-4B74-4DAB-AF6B-51E7E7FBAFCF"
 		end
 
 feature {NONE} -- Element change
@@ -255,7 +269,7 @@ feature {NONE} -- Element change
 
 				-- Make this check before updating incase the mode determination changes in the future.
 			check contract_mode_set: contract_mode = a_mode end
-			if has_stone and stone_change_notified then
+			if has_stone and has_performed_stone_change_notification then
 				refresh_stone
 			end
 		ensure
@@ -438,6 +452,9 @@ feature {NONE} -- Basic operations
 		do
 			if has_stone and then {l_context: !like context_for_mode} context_for_mode then
 				execute_with_busy_cursor (agent contract_editor.set_context (l_context))
+			else
+					-- Clear the editor
+				contract_editor.set_context (Void)
 			end
 			update_stone_buttons
 
@@ -452,15 +469,27 @@ feature {NONE} -- Basic operations
 		require
 			is_interface_usable: is_interface_usable
 			is_initialized: is_initialized
+		local
+			l_check_modifier: ES_CLASS_TEXT_MODIFIER
 		do
-			if
-				has_stone and then
-				file_notifier.is_service_available and then
-				{l_file_name: !FILE_NAME} context.context_class.file_name and then
-				{l_fn: !STRING_32} l_file_name.string.as_string_32
-			then
-					-- Poll for modifications, which will call `on_file_modified' if have occurred.
-				file_notifier.service.poll_modifications (l_fn).do_nothing
+			if has_stone and then context.has_stone then
+				if
+					file_notifier.is_service_available and then
+					{l_file_name: !FILE_NAME} context.context_class.file_name and then
+					{l_fn: !STRING_32} l_file_name.string.as_string_32
+				then
+						-- Poll for modifications, which will call `on_file_modified' if have occurred.
+					file_notifier.service.poll_modifications (l_fn).do_nothing
+				end
+
+				if not is_dirty then
+					create l_check_modifier.make (context.context_class)
+					if not l_check_modifier.original_text.is_equal (context.text_modifier.text) then
+							-- Updates the current view because the text is out of sync.
+							-- This happens if the user modifies the editor, or undoes, without saving.
+						refresh_stone
+					end
+				end
 			end
 		end
 
@@ -474,20 +503,6 @@ feature {NONE} -- Basic operations
 			set_is_dirty (False)
 		ensure
 			not_is_dirty: not is_dirty
-		end
-
-feature {ES_STONABLE_I, ES_TOOL} -- Synchronization
-
-	synchronize
-			-- Synchronizes any new data (compiled or other wise)
-		do
-			if is_initialized then
-				is_in_stone_synchronization := True
-				update
-				is_in_stone_synchronization := False
-			end
-		rescue
-			is_in_stone_synchronization := False
 		end
 
 feature {NONE} -- Helpers
@@ -663,49 +678,42 @@ feature {NONE} -- User interface manipulation
 			is_initialized: is_initialized
 			code_template_catalog_is_service_available: code_template_catalog.is_service_available
 		local
+			l_templates: like contract_code_templates
 			l_cursor: DS_BILINEAR_CURSOR [!CODE_TEMPLATE_DEFINITION]
 			l_definition: !CODE_TEMPLATE_DEFINITION
 			l_title: !STRING_32
-			l_menu: !EV_MENU
+			l_menu: EV_MENU
 			l_menu_item: EV_MENU_ITEM
 		do
-			l_menu ?= add_from_template_menu
+			l_menu := add_from_template_menu
 			l_menu.wipe_out
 
 			if has_stone and then contract_editor.has_context then
-				l_cursor := contract_code_templates.new_cursor
-				from l_cursor.start until l_cursor.after loop
-					l_definition := l_cursor.item
-					l_title := l_definition.metadata.title
-					if l_title.is_empty then
-						l_title := l_definition.metadata.shortcut
+				l_templates := contract_code_templates
+				if not l_templates.is_empty then
+					l_cursor := l_templates.new_cursor
+					from l_cursor.start until l_cursor.after loop
+						l_definition := l_cursor.item
+						l_title := l_definition.metadata.title
+						if l_title.is_empty then
+							l_title := l_definition.metadata.shortcut
+						end
+						if not l_title.is_empty then
+							create l_menu_item.make_with_text (l_title)
+							l_menu_item.set_pixmap (stock_pixmaps.general_document_icon)
+							l_menu_item.set_data (l_definition)
+							l_menu_item.select_actions.extend (agent on_add_contract_from_template (l_definition))
+							l_menu.extend (l_menu_item)
+						end
+						l_cursor.forth
 					end
-					if not l_title.is_empty then
-						create l_menu_item.make_with_text (l_title)
-						l_menu_item.set_pixmap (stock_pixmaps.general_document_icon)
-						l_menu_item.set_data (l_definition)
-						l_menu_item.select_actions.extend (agent on_add_contract_from_template (l_definition))
-						l_menu.extend (l_menu_item)
-					end
-					l_cursor.forth
+					add_from_template_menu.enable_sensitive
+				else
+					add_from_template_menu.disable_sensitive
+					check corrupt_delivery: False end
 				end
-				add_from_template_menu.enable_sensitive
 			else
 				add_from_template_menu.disable_sensitive
-			end
-		end
-
-feature {NONE} -- Actions handlers
-
-	on_row_selected (a_row: EV_GRID_ROW)
-			-- Called when a grid row is selected
-		require
-			is_interface_usable: is_interface_usable
-			is_initialized: is_initialized
-			a_row_attached: a_row /= Void
-		do
-			if {l_row: EV_GRID_ROW} a_row then
-				--update_context_buttons (is_editable_row (l_row))
 			end
 		end
 
@@ -783,7 +791,7 @@ feature {NONE} -- Event handlers
 						check is_dirty: is_dirty end
 
 							-- Add a warning overlay to the save button
-						l_new_buffer := (create {EB_SHARED_PIXMAPS}).icon_buffer_with_overlay (stock_pixmaps.general_save_icon_buffer, stock_pixmaps.overlay_warning_icon_buffer, 0, 0)
+						l_new_buffer := stock_pixmaps.icon_buffer_with_overlay (stock_pixmaps.general_save_icon_buffer, stock_pixmaps.overlay_warning_icon_buffer, 0, 0)
 						save_modifications_button.set_pixel_buffer (l_new_buffer)
 						save_modifications_button.set_pixmap (l_new_buffer)
 					end
@@ -860,6 +868,13 @@ feature {NONE} -- Tool action handlers
 			end
 		ensure then
 			last_file_change_notified_agent_detached: last_file_change_notified_agent = Void
+		end
+
+	on_focus_in
+			-- <Precursor>
+		do
+			Precursor
+			update_if_modified
 		end
 
 	on_handle_key (a_key: EV_KEY; a_alt: BOOLEAN; a_ctrl: BOOLEAN; a_shift: BOOLEAN; a_released: BOOLEAN): BOOLEAN is
@@ -1013,18 +1028,18 @@ feature {NONE} -- Action handlers
 			contract_editor_source_is_editable: contract_editor.selected_source.is_editable
 		local
 			l_dialog: ES_ADD_CONTRACT_DIALOG
-			l_source: !ES_CONTRACT_SOURCE_I
 		do
-			l_source ?= contract_editor.selected_source
-			create l_dialog.make
-			l_dialog.show_on_active_window
-			if l_dialog.dialog_result = l_dialog.default_confirm_button then
-				contract_editor.add_contract (l_dialog.contract.tag, l_dialog.contract.contract, l_source)
-				set_is_dirty (True)
-			end
+			if {l_source: ES_CONTRACT_SOURCE_I} contract_editor.selected_source then
+				create l_dialog.make
+				l_dialog.show_on_active_window
+				if l_dialog.dialog_result = l_dialog.default_confirm_button then
+					contract_editor.add_contract (l_dialog.contract.tag, l_dialog.contract.contract, l_source)
+					set_is_dirty (True)
+				end
 
-				-- Set focus back to editor.
-			contract_editor.widget.set_focus
+					-- Set focus back to editor.
+				contract_editor.widget.set_focus
+			end
 		end
 
 	on_add_contract_from_template (a_template: !CODE_TEMPLATE_DEFINITION) is
@@ -1065,18 +1080,18 @@ feature {NONE} -- Action handlers
 				if {l_fc: ES_FEATURE_CONTRACT_EDITOR_CONTEXT} context then
 					if l_symbol_table.has_id (feature_name_symbol_id) then
 						l_value := l_symbol_table.item (feature_name_symbol_id)
-						l_value.set_value (({!STRING_32}) #? l_fc.context_feature.name.as_string_32)
+						l_value.set_value (l_fc.context_feature.name.as_string_32.as_attached)
 					else
-						create l_value.make (({!STRING_32}) #? l_fc.context_feature.name.as_string_32)
+						create l_value.make (l_fc.context_feature.name.as_string_32.as_attached)
 						l_symbol_table.put (l_value, feature_name_symbol_id)
 					end
 				end
 				if {l_cc: ES_CLASS_CONTRACT_EDITOR_CONTEXT} context then
 					if l_symbol_table.has_id (feature_name_symbol_id) then
 						l_value := l_symbol_table.item (class_name_symbol_id)
-						l_value.set_value (({!STRING_32}) #? l_cc.context_class.name.as_string_32)
+						l_value.set_value (l_cc.context_class.name.as_string_32.as_attached)
 					else
-						create l_value.make (({!STRING_32}) #? l_cc.context_class.name.as_string_32)
+						create l_value.make (l_cc.context_class.name.as_string_32.as_attached)
 						l_symbol_table.put (l_value, class_name_symbol_id)
 					end
 				end
@@ -1084,7 +1099,7 @@ feature {NONE} -- Action handlers
 				l_dialog.show_on_active_window
 				if l_dialog.dialog_result = l_dialog.default_confirm_button then
 						-- User committed changes
-					l_contract ?= l_dialog.code_result
+					l_contract := l_dialog.code_result
 					if not l_contract.is_empty then
 						contract_editor.add_contract_string (l_contract, l_source)
 						set_is_dirty (True)
@@ -1137,25 +1152,25 @@ feature {NONE} -- Action handlers
 			contract_editor_has_selected_line: contract_editor.selected_line /= Void
 			contract_editor_line_is_editable: contract_editor.selected_line.is_editable
 		local
-			l_line: !ES_CONTRACT_LINE
-			l_contract: ?TUPLE [tag: !STRING_32; contract: !STRING_32]
+			l_contract: TUPLE [tag: !STRING_32; contract: !STRING_32]
 			l_dialog: ES_EDIT_CONTRACT_DIALOG
 		do
-			l_line ?= contract_editor.selected_line
-			create l_dialog.make
-			l_dialog.set_contract (l_line.tag, l_line.contract)
-			l_dialog.show_on_active_window
-			if l_dialog.dialog_result = l_dialog.default_confirm_button and then l_dialog.is_dirty then
-				l_contract := l_dialog.contract
-				if not (l_line.tag.is_equal (l_contract.tag) and then l_line.contract.is_equal (l_contract.contract)) then
-						-- Contract actually changed
-					contract_editor.replace_contract (l_contract.tag, l_contract.contract, l_line)
-					set_is_dirty (True)
+			if {l_line: ES_CONTRACT_LINE} contract_editor.selected_line then
+				create l_dialog.make
+				l_dialog.set_contract (l_line.tag, l_line.contract)
+				l_dialog.show_on_active_window
+				if l_dialog.dialog_result = l_dialog.default_confirm_button and then l_dialog.is_dirty then
+					l_contract := l_dialog.contract
+					if not (l_line.tag.is_equal (l_contract.tag) and then l_line.contract.is_equal (l_contract.contract)) then
+							-- Contract actually changed
+						contract_editor.replace_contract (l_contract.tag, l_contract.contract, l_line)
+						set_is_dirty (True)
+					end
 				end
-			end
 
-				-- Set focus back to editor.
-			contract_editor.widget.set_focus
+					-- Set focus back to editor.
+				contract_editor.widget.set_focus
+			end
 		end
 
 	on_move_contract_up
@@ -1178,7 +1193,7 @@ feature {NONE} -- Action handlers
 				if not l_contracts.after then
 					if l_contracts.first /= l_contracts.item_for_iteration then
 						l_contracts.back
-						l_other_line ?= l_contracts.item_for_iteration
+						l_other_line := l_contracts.item_for_iteration
 						contract_editor.swap_contracts (l_line, l_other_line)
 						set_is_dirty (True)
 					else
@@ -1217,7 +1232,7 @@ feature {NONE} -- Action handlers
 				if not l_contracts.after then
 					if l_contracts.last /= l_contracts.item_for_iteration then
 						l_contracts.forth
-						l_other_line ?= l_contracts.item_for_iteration
+						l_other_line := l_contracts.item_for_iteration
 						contract_editor.swap_contracts (l_line, l_other_line)
 						set_is_dirty (True)
 					else
@@ -1305,6 +1320,18 @@ feature {NONE} -- Action handlers
 			end
 		end
 
+	on_row_selected (a_row: EV_GRID_ROW)
+			-- Called when a grid row is selected
+		require
+			is_interface_usable: is_interface_usable
+			is_initialized: is_initialized
+			a_row_attached: a_row /= Void
+		do
+			if {l_row: EV_GRID_ROW} a_row then
+				--update_context_buttons (is_editable_row (l_row))
+			end
+		end
+
 	on_source_selected_in_editor (a_source: ?ES_CONTRACT_SOURCE_I)
 			-- Called when the editor recieves a selection/deselection of a source row.
 			--
@@ -1353,6 +1380,7 @@ feature {NONE} -- Factory
 		do
 				-- `contract_editor'
 			create contract_editor.make (develop_window)
+			auto_recycle (contract_editor)
 			Result := contract_editor.widget
 		end
 
@@ -1567,9 +1595,9 @@ invariant
 	contract_editor_attached: (is_initialized and is_interface_usable) implies contract_editor /= Void
 
 ;indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -1580,19 +1608,19 @@ invariant
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

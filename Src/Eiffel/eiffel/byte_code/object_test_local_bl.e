@@ -10,6 +10,8 @@ class OBJECT_TEST_LOCAL_BL
 inherit
 
 	LOCAL_BL
+		rename
+			make as make_local
 		undefine
 			array_descriptor,
 			assigns_to,

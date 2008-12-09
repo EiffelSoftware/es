@@ -12,8 +12,9 @@ inherit
 	CREATE_INFO
 		redefine
 			created_in,
-			generate_cid, make_gen_type_byte_code,
-			generate_cid_array, generate_cid_init
+			generate_cid, make_type_byte_code,
+			generate_cid_array, generate_cid_init,
+			generate_gen_type_conversion
 		end
 
 	SHARED_GENERATION
@@ -90,7 +91,7 @@ feature -- Generic conformance
 			context.buffer.put_character (',')
 		end
 
-	make_gen_type_byte_code (ba : BYTE_ARRAY) is
+	make_type_byte_code (ba : BYTE_ARRAY) is
 
 		do
 			ba.append_natural_16 ({SHARED_GEN_CONF_LEVEL}.like_current_type)
@@ -115,9 +116,9 @@ feature -- Generic conformance
 			buffer.put_natural_32 (a_level)
 			buffer.put_character ('[')
 			buffer.put_integer (idx_cnt.value)
-			buffer.put_string ("] = RTID(")
+			buffer.put_four_character (']', ' ', '=', ' ')
 			context.generate_current_dftype
-			buffer.put_string (");")
+			buffer.put_character (';')
 			dummy := idx_cnt.next
 		end
 

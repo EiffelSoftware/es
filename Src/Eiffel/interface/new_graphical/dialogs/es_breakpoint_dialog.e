@@ -14,6 +14,11 @@ inherit
 			is_size_and_position_remembered
 		end
 
+	ES_HELP_CONTEXT
+		export
+			{NONE} all
+		end
+
 	ES_SHARED_PROMPT_PROVIDER
 		export
 			{NONE} all
@@ -131,6 +136,14 @@ feature {NONE} -- User interface initialization
 			set_button_action_before_close (dialog_buttons.cancel_button, agent on_cancel)
 
 			dialog.resize_actions.force_extend (agent request_refresh_now)
+		end
+
+feature -- Access: Help
+
+	help_context_id: !STRING_GENERAL
+			-- <Precursor>
+		once
+			Result := "1AC830AB-7600-8E52-2351-C515BCC31D41"
 		end
 
 feature -- Widgets
@@ -447,7 +460,7 @@ feature {NONE} -- Condition
 				--| Widgets
 			f := new_panel_container (interface_names.l_condition, True)
 
-			create condition_expression_tf.make
+			create condition_expression_tf
 			condition_expression_tf.set_parent_window (dialog)
 			register_input_widget (condition_expression_tf)
 
@@ -847,7 +860,7 @@ feature -- change
 				check
 					bp.condition /= Void
 				end
-				condition_expression_tf.set_text (bp.condition.expression)
+				condition_expression_tf.set_text (bp.condition.text)
 				if bp.condition_as_is_true then
 					condition_is_true_rb.enable_select
 				end
@@ -929,7 +942,7 @@ feature -- change
 				if wh_a = Void then
 					insert_when_hits_action_print_message_entry (Void, box, a_has_focus)
 				else
-					if {x1: !BREAKPOINT_WHEN_HITS_ACTION_PRINT_MESSAGE} wh_a then
+					if {x1: BREAKPOINT_WHEN_HITS_ACTION_PRINT_MESSAGE} wh_a then
 						insert_when_hits_action_print_message_entry (x1, box, a_has_focus)
 					end
 				end
@@ -937,7 +950,7 @@ feature -- change
 				if wh_a = Void then
 					insert_when_hits_action_change_breakpoints_status_entry (Void, box, a_has_focus)
 				else
-					if {x2: !BREAKPOINT_WHEN_HITS_ACTION_CHANGE_BREAKPOINTS_STATUS} wh_a then
+					if {x2: BREAKPOINT_WHEN_HITS_ACTION_CHANGE_BREAKPOINTS_STATUS} wh_a then
 						insert_when_hits_action_change_breakpoints_status_entry (x2, box, a_has_focus)
 					end
 				end
@@ -946,7 +959,7 @@ feature -- change
 					if wh_a = Void then
 						insert_when_hits_action_change_assertion_checking_entry (Void, box, a_has_focus)
 					else
-						if {x3: !BREAKPOINT_WHEN_HITS_ACTION_CHANGE_ASSERTION_CHECKING} wh_a then
+						if {x3: BREAKPOINT_WHEN_HITS_ACTION_CHANGE_ASSERTION_CHECKING} wh_a then
 							insert_when_hits_action_change_assertion_checking_entry (x3, box, a_has_focus)
 						end
 					end
@@ -956,7 +969,7 @@ feature -- change
 					if wh_a = Void then
 						insert_when_hits_action_execution_recording_entry (Void, box, a_has_focus)
 					else
-						if {x4: !BREAKPOINT_WHEN_HITS_ACTION_EXECUTION_RECORDING} wh_a then
+						if {x4: BREAKPOINT_WHEN_HITS_ACTION_EXECUTION_RECORDING} wh_a then
 							insert_when_hits_action_execution_recording_entry (x4, box, a_has_focus)
 						end
 					end
@@ -966,7 +979,7 @@ feature -- change
 					if wh_a = Void then
 						insert_when_hits_action_reset_hits_count_entry (Void, box, a_has_focus)
 					else
-						if {x5: !BREAKPOINT_WHEN_HITS_ACTION_RESET_HIT_COUNT} wh_a then
+						if {x5: BREAKPOINT_WHEN_HITS_ACTION_RESET_HIT_COUNT} wh_a then
 							insert_when_hits_action_reset_hits_count_entry (x5, box, a_has_focus)
 						end
 					end
@@ -1054,6 +1067,8 @@ feature -- change
 				set_focus_within_crollable_area (cb, when_hits_action_scrollable_area)
 			end
 			extend_non_expandable_to (when_hits_action_container, create {EV_HORIZONTAL_SEPARATOR})
+				--| By default, enable new action
+			cb.enable_select
 		end
 
 	insert_when_hits_action_change_breakpoints_status_entry (a: BREAKPOINT_WHEN_HITS_ACTION_CHANGE_BREAKPOINTS_STATUS; box: EV_VERTICAL_BOX; a_has_focus: BOOLEAN) is
@@ -1129,6 +1144,9 @@ feature -- change
 				set_focus_within_crollable_area (cb, when_hits_action_scrollable_area)
 			end
 			extend_non_expandable_to (when_hits_action_container, create {EV_HORIZONTAL_SEPARATOR})
+
+				--| By default, enable new action
+			cb.enable_select
 		end
 
 	insert_when_hits_action_reset_hits_count_entry (a: BREAKPOINT_WHEN_HITS_ACTION_RESET_HIT_COUNT; box: EV_VERTICAL_BOX; a_has_focus: BOOLEAN) is
@@ -1186,6 +1204,9 @@ feature -- change
 				set_focus_within_crollable_area (cb, when_hits_action_scrollable_area)
 			end
 			extend_non_expandable_to (when_hits_action_container, create {EV_HORIZONTAL_SEPARATOR})
+
+				--| By default, enable new action
+			cb.enable_select
 		end
 
 	insert_when_hits_action_execution_recording_entry (a: BREAKPOINT_WHEN_HITS_ACTION_EXECUTION_RECORDING; box: EV_VERTICAL_BOX; a_has_focus: BOOLEAN) is
@@ -1246,6 +1267,9 @@ feature -- change
 				set_focus_within_crollable_area (cb, when_hits_action_scrollable_area)
 			end
 			extend_non_expandable_to (when_hits_action_container, create {EV_HORIZONTAL_SEPARATOR})
+
+				--| By default, enable new action
+			cb.enable_select
 		end
 
 	insert_when_hits_action_change_assertion_checking_entry (a: BREAKPOINT_WHEN_HITS_ACTION_CHANGE_ASSERTION_CHECKING; box: EV_VERTICAL_BOX; a_has_focus: BOOLEAN) is
@@ -1307,6 +1331,9 @@ feature -- change
 				set_focus_within_crollable_area (cb, when_hits_action_scrollable_area)
 			end
 			extend_non_expandable_to (when_hits_action_container, create {EV_HORIZONTAL_SEPARATOR})
+
+				--| By default, enable new action
+			cb.enable_select
 		end
 
 feature -- Action
@@ -1385,7 +1412,7 @@ feature -- Action
 				l_changes.extend (agent {BREAKPOINT}.remove_condition)
 				--| bp.remove_condition
 			else
-				create expr.make_for_context (s)
+				create expr.make_with_context (s)
 				if expr.syntax_error_occurred then
 					notify_error_on_text_field (condition_expression_tf)
 					err := True
@@ -1561,7 +1588,7 @@ feature -- Access
 			-- Indicates if the size and position information is remembered for the dialog	
 
 ;indexing
-	copyright: "Copyright (c) 1984-2007, Eiffel Software"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -1586,7 +1613,7 @@ feature -- Access
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

@@ -44,16 +44,25 @@ feature {NONE} -- Initialization
 		do
 			create locals.make (10)
 			create supplier_ids.make
-			create {ARRAYED_STACK [INTEGER]} scopes.make (0)
+			create scopes.make (0)
 			create object_test_locals.make (0)
 			create used_object_test_local_names.make (0)
-			if current_class /= Void then
-				if current_class.lace_class.is_void_safe then
-					create {AST_VOID_SAFE_VARIABLE_CONTEXT} variables
-				else
-					create {AST_VARIABLE_CONTEXT} variables
-				end
+		end
+
+feature -- Initialization
+
+	initialize_variables
+			-- Initializes `variables' to meet the void-safety requirements of `current_class'
+		require
+			current_class_attached: current_class /= Void
+		do
+			if current_class.lace_class.is_void_safe then
+				create {AST_VOID_SAFE_VARIABLE_CONTEXT} variables
+			else
+				create {AST_VARIABLE_CONTEXT} variables
 			end
+		ensure
+			variables_attached: variables /= Void
 		end
 
 feature -- Access
@@ -242,11 +251,17 @@ feature -- Scope state
 	init_variable_scopes
 			-- Prepare structures to track variable scopes.
 		do
+			initialization_keeper := scope_keeper_factory.create_scope_keeper (locals.count)
 			scope_keeper := scope_keeper_factory.create_scope_keeper (locals.count)
 		ensure
+			initialization_keeper_attached: initialization_keeper /= Void
+			initialization_keeper_initialized: initialization_keeper.local_count = locals.count
 			scope_keeper_attached: scope_keeper /= Void
 			scope_keeper_initialized: scope_keeper.local_count = locals.count
 		end
+
+	initialization_keeper: AST_INITIALIZATION_KEEPER
+			-- Keeper of initialized variables
 
 	scope_keeper: AST_SCOPE_KEEPER
 			-- Keeper of scopes of non-void variables
@@ -312,6 +327,18 @@ feature {AST_SCOPE_MATCHER, AST_FEATURE_CHECKER_GENERATOR} -- Local scopes: modi
 			is_result_attached: is_result_attached
 		end
 
+	set_local (id: INTEGER_32)
+			-- Mark that a local identified by `id' is set.
+		do
+			initialization_keeper.set_local (locals.item (id).position)
+		end
+
+	set_result
+			-- Mark that "Result" is set.
+		do
+			initialization_keeper.set_result
+		end
+
 feature {AST_SCOPE_MATCHER, SHARED_AST_CONTEXT} -- Local scopes: modification
 
 	add_object_test_expression_scope (id: INTEGER_32)
@@ -332,6 +359,24 @@ feature {AST_SCOPE_MATCHER, SHARED_AST_CONTEXT} -- Local scopes: modification
 
 feature {AST_FEATURE_CHECKER_GENERATOR, AST_CONTEXT} -- Local scopes: removal
 
+	remove_object_test_scopes (s: like scope)
+			-- Remove scopes of any known object test locals registered after scope identified by `s'.
+		do
+			from
+				scopes.go_i_th (s + 1)
+			until
+				scopes.after
+			loop
+				if object_test_locals.has (scopes.item) then
+					scopes.remove
+				else
+					scopes.forth
+				end
+			variant
+				scopes.count - scopes.index + 1
+			end
+		end
+
 	remove_local_scope (id: INTEGER_32)
 			-- Mark that an attached scope of a local identified by `id' is terminated.
 		do
@@ -346,6 +391,45 @@ feature {AST_FEATURE_CHECKER_GENERATOR, AST_CONTEXT} -- Local scopes: removal
 			scope_keeper.stop_result_scope
 		ensure
 			result_scope_removed: not is_result_attached
+		end
+
+feature -- Local initialization and scopes: nesting
+
+	enter_realm
+			-- Enter a new complex instruction with inner compound parts.
+		do
+			initialization_keeper.enter_realm
+			scope_keeper.enter_realm
+		end
+
+	update_realm
+			-- Update realm variable information from the current state.
+		do
+			initialization_keeper.update_realm
+			scope_keeper.update_realm
+		end
+
+	save_sibling
+			-- Save variable information of a sibling in a complex instrution.
+			-- For example, Then_part of Elseif condition.
+		do
+			initialization_keeper.save_sibling
+			scope_keeper.save_sibling
+		end
+
+	leave_realm
+			-- Leave a complex instruction and promote variable information to the outer compound.
+		do
+			initialization_keeper.leave_realm
+			scope_keeper.leave_realm
+		end
+
+	leave_optional_realm
+			-- Leave a complex instruction and discard its variable information.
+			-- For example, Debug instruction.
+		do
+			initialization_keeper.leave_optional_realm
+			scope_keeper.leave_optional_realm
 		end
 
 feature -- Variable context
@@ -379,7 +463,6 @@ feature -- Setting
 						-- Current is always attached
 					current_class_type.set_attached_mark
 				end
-				create {AST_VOID_SAFE_VARIABLE_CONTEXT} variables
 			else
 				if not current_class_type.is_attached and then
 					not current_class_type.is_implicitly_attached
@@ -387,14 +470,13 @@ feature -- Setting
 						-- Current is always attached
 					current_class_type.set_is_implicitly_attached
 				end
-				create {AST_VARIABLE_CONTEXT} variables
 			end
 			current_feature_table := a_feat_tbl
 			written_class := Void
 		ensure
 			current_class_set: current_class = a_class
 			current_class_type_set: current_class_type.conformance_type = a_type
-				or else current_class_type.conformance_type.same_as (a_type.as_attached)
+				or else current_class_type.conformance_type.same_as (a_type.as_attached_type)
 				or else current_class_type.conformance_type.same_as (a_type.as_implicitly_attached)
 			current_feature_table_set: current_feature_table = a_feat_tbl
 		end
@@ -618,13 +700,17 @@ feature	-- Saving contexts
 
 	save: AST_CONTEXT is
 			-- Returns a saved context
+		require
+			current_class_attached: current_class /= Void
 		do
 			Result := twin
 			create_local_containers
+			initialize_variables
 			used_argument_names := Void
 			used_local_names := Void
 			scopes.copy (Result.scopes)
 			scope_keeper := Void
+			initialization_keeper := Void
 		end
 
 	restore (context: AST_CONTEXT) is

@@ -52,6 +52,7 @@ FINAL_OBJECTS = \
 	$(INDIR)error.$obj \
 	$(INDIR)umain.$obj \
 	$(INDIR)memory.$obj \
+	$(INDIR)memory_analyzer.$obj \
 	$(INDIR)argv.$obj \
 	$(INDIR)boolstr.$obj \
 	$(INDIR)search.$obj \
@@ -105,6 +106,7 @@ WORKBENCH_OBJECTS = \
 	$(INDIR)werror.$obj \
 	$(INDIR)wumain.$obj \
 	$(INDIR)wmemory.$obj \
+	$(INDIR)wmemory_analyzer.$obj \
 	$(INDIR)wargv.$obj \
 	$(INDIR)wboolstr.$obj \
 	$(INDIR)wsearch.$obj \
@@ -126,7 +128,7 @@ WORKBENCH_OBJECTS = \
 	$(INDIR)wgen_conf.$obj \
 	$(INDIR)weif_type_id.$obj \
 	$(INDIR)wrout_obj.$obj \
-	$(TOP)$(DIR)console$(DIR)wwinconsole.$lib \
+	$(TOP)$(DIR)console$(DIR)wwinconsole.$lib
 
 WOBJECTS = $(WORKBENCH_OBJECTS) \
 	$(INDIR)wmain.$obj \
@@ -162,6 +164,7 @@ MT_FINAL_OBJECTS = \
 	$(INDIR)MTerror.$obj \
 	$(INDIR)MTumain.$obj \
 	$(INDIR)MTmemory.$obj \
+	$(INDIR)MTmemory_analyzer.$obj \
 	$(INDIR)MTargv.$obj \
 	$(INDIR)MTboolstr.$obj \
 	$(INDIR)MTsearch.$obj \
@@ -215,6 +218,7 @@ MT_WORKBENCH_OBJECTS = \
 	$(INDIR)MTwerror.$obj \
 	$(INDIR)MTwumain.$obj \
 	$(INDIR)MTwmemory.$obj \
+	$(INDIR)MTwmemory_analyzer.$obj \
 	$(INDIR)MTwargv.$obj \
 	$(INDIR)MTwboolstr.$obj \
 	$(INDIR)MTwsearch.$obj \
@@ -236,7 +240,7 @@ MT_WORKBENCH_OBJECTS = \
 	$(INDIR)MTwgen_conf.$obj \
 	$(INDIR)MTweif_type_id.$obj \
 	$(INDIR)MTwrout_obj.$obj \
-	$(TOP)$(DIR)console$(DIR)mtwwinconsole.$lib \
+	$(TOP)$(DIR)console$(DIR)mtwwinconsole.$lib
 
 MT_WOBJECTS = $(MT_WORKBENCH_OBJECTS) \
 	$(INDIR)MTwmain.$obj \
@@ -415,6 +419,9 @@ $(INDIR)malloc.$obj: $(RTSRC)malloc.c
 $(INDIR)memory.$obj: $(RTSRC)memory.c
 	$(CC) $(JCFLAGS) $(RTSRC)memory.c
 
+$(INDIR)memory_analyzer.$obj: $(RTSRC)memory_analyzer.c
+	$(CC) $(JCFLAGS) $(RTSRC)memory_analyzer.c
+
 $(INDIR)misc.$obj: $(RTSRC)misc.c
 	$(CC) $(JCFLAGS) $(RTSRC)misc.c
 
@@ -477,7 +484,7 @@ $(INDIR)interp.$obj: $(RTSRC)interp.c
 
 $(INDIR)eif_rw_lock.$obj : $(RTSRC)eif_rw_lock.c
 	$(CC) $(JCFLAGS) -DWORKBENCH $(RTSRC)eif_rw_lock.c
-
+	
 $(INDIR)wargv.$obj: $(RTSRC)argv.c
 	$(CC) $(JCFLAGS) -DWORKBENCH $(RTSRC)argv.c
 
@@ -562,6 +569,9 @@ $(INDIR)wmalloc.$obj: $(RTSRC)malloc.c
 $(INDIR)wmemory.$obj: $(RTSRC)memory.c
 	$(CC) $(JCFLAGS) -DWORKBENCH $(RTSRC)memory.c
 
+$(INDIR)wmemory_analyzer.$obj: $(RTSRC)memory_analyzer.c
+	$(CC) $(JCFLAGS) -DWORKBENCH $(RTSRC)memory_analyzer.c
+
 $(INDIR)wmisc.$obj: $(RTSRC)misc.c
 	$(CC) $(JCFLAGS) -DWORKBENCH $(RTSRC)misc.c
 
@@ -609,7 +619,7 @@ $(INDIR)wumain.$obj: $(RTSRC)umain.c
 
 $(INDIR)wurgent.$obj: $(RTSRC)urgent.c
 	$(CC) $(JCFLAGS) -DWORKBENCH $(RTSRC)urgent.c
-
+	
 final: finalized.$lib
 work: wkbench.$lib
 
@@ -701,6 +711,9 @@ $(INDIR)MTmalloc.$obj: $(RTSRC)malloc.c
 $(INDIR)MTmemory.$obj: $(RTSRC)memory.c
 	$(CC) $(JMTCFLAGS) $(RTSRC)memory.c
 
+$(INDIR)MTmemory_analyzer.$obj: $(RTSRC)memory_analyzer.c
+	$(CC) $(JMTCFLAGS) $(RTSRC)memory_analyzer.c
+
 $(INDIR)MTmisc.$obj: $(RTSRC)misc.c
 	$(CC) $(JMTCFLAGS) $(RTSRC)misc.c
 
@@ -760,7 +773,7 @@ $(INDIR)MTinterp.$obj: $(RTSRC)interp.c
 
 $(INDIR)MTeif_rw_lock.$obj : $(RTSRC)eif_rw_lock.c
 	$(CC) $(JMTCFLAGS) -DWORKBENCH $(RTSRC)eif_rw_lock.c
-
+	
 $(INDIR)MTwargv.$obj: $(RTSRC)argv.c
 	$(CC) $(JMTCFLAGS) -DWORKBENCH $(RTSRC)argv.c
 
@@ -845,6 +858,9 @@ $(INDIR)MTwmalloc.$obj: $(RTSRC)malloc.c
 $(INDIR)MTwmemory.$obj: $(RTSRC)memory.c
 	$(CC) $(JMTCFLAGS) -DWORKBENCH $(RTSRC)memory.c
 
+$(INDIR)MTwmemory_analyzer.$obj: $(RTSRC)memory_analyzer.c
+	$(CC) $(JMTCFLAGS) -DWORKBENCH $(RTSRC)memory_analyzer.c
+
 $(INDIR)MTwmisc.$obj: $(RTSRC)misc.c
 	$(CC) $(JMTCFLAGS) -DWORKBENCH $(RTSRC)misc.c
 
@@ -892,7 +908,7 @@ $(INDIR)MTwumain.$obj: $(RTSRC)umain.c
 
 $(INDIR)MTwurgent.$obj: $(RTSRC)urgent.c
 	$(CC) $(JMTCFLAGS) -DWORKBENCH $(RTSRC)urgent.c
-
+	
 TESTS = mram gram lram eram sram
 
 test : $(TESTS)

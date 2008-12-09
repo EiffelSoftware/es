@@ -28,9 +28,9 @@ create
 
 feature {NONE} -- Initialization
 
-	make (addr: STRING; a_name: STRING_32; dclass: CLASS_C) is
+	make (addr: DBG_ADDRESS; a_name: STRING_32; dclass: CLASS_C) is
 		require
-			not_addr_void: addr /= Void
+			not_addr_void: addr /= Void and then not addr.is_void
 			dclass_exists: dclass /= Void
 			not_name_void: a_name /= Void
 		do
@@ -45,7 +45,7 @@ feature -- Properties
 	name: STRING_32
 			-- Name associated with address (arg, local, result)
 
-	object_address: STRING
+	object_address: DBG_ADDRESS
 			-- Hector address (with an indirection)
 
 	dynamic_class: CLASS_C
@@ -74,7 +74,7 @@ feature -- Access
 			Result.append (": ")
 			Result.append (dynamic_class.name_in_upper)
 			Result.append (" object at ")
-			Result.append (object_address)
+			Result.append (object_address.output)
 		end
 
 	history_name: STRING_GENERAL is
@@ -85,7 +85,7 @@ feature -- Access
 			Result.append (": ")
 			Result.append (dynamic_class.name_in_upper)
 			Result.append (" [")
-			Result.append (object_address)
+			Result.append (object_address.output)
 			Result.append ("]")
 		end
 
@@ -122,8 +122,14 @@ feature -- Status report
 	is_valid: BOOLEAN is
 			-- Is `Current' a valid stone?
 		do
-			Result := Debugger_manager.safe_application_is_stopped
-					and then Debugger_manager.application.is_valid_object_address (object_address)
+			if
+				{dbg: like debugger_manager} Debugger_manager and then
+				dbg.application_is_executing
+			then
+				Result := {app: APPLICATION_EXECUTION} dbg.application and then
+						app.is_stopped and then
+						app.is_valid_object_address (object_address)
+			end
 		end
 
 	ev_item: EV_ANY

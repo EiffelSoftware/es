@@ -14,7 +14,7 @@ inherit
 			is_feature_call, basic_register, generate_parameters_list,
 			generate_access_on_type, is_polymorphic, has_call,
 			set_register, register, set_parent, parent, generate_access,
-			generate_on, analyze_on, analyze, generate_special_feature,
+			generate_on, analyze_on, analyze,
 			allocates_memory, generate_end, set_need_invariant, need_invariant
 		end
 
@@ -173,12 +173,6 @@ io.error.put_string ("Out feature_bl [analyze_on]: ")
 io.error.put_string (feature_name)
 io.error.put_new_line
 end
-		end
-
-	generate_special_feature (reg: REGISTRABLE; basic_type: BASIC_A) is
-			-- Generate code for special routines (is_equal, copy ...).
-		do
-			special_routines.generate (buffer, basic_type, reg, parameters)
 		end
 
 	generate_access is
@@ -523,7 +517,7 @@ feature {NONE} -- Implementation
 	is_deferred: CELL [BOOLEAN] is
 			-- Is current feature call a deferred feature without implementation?
 		once
-			create Result
+			create Result.put (False)
 		ensure
 			is_deferred_not_void: Result /= Void
 		end
@@ -531,7 +525,7 @@ feature {NONE} -- Implementation
 	is_direct_once: CELL [BOOLEAN] is
 			-- Is current call done on a once which value can be accessed directly?
 		once
-			create Result
+			create Result.put (False)
 		ensure
 			is_direct_once_not_void: Result /= Void
 		end
@@ -540,13 +534,13 @@ feature {NONE} -- Implementation
 			-- Does current call require to close a parenthesis?
 			-- Case when one use `nstcall' or `eif_optimize_return'.
 		once
-			create Result
+			create Result.put (False)
 		ensure
 			is_right_parenthesis_needed_not_void: Result /= Void
 		end
 
 indexing
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

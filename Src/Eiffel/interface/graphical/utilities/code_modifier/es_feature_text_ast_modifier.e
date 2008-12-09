@@ -16,7 +16,7 @@ inherit
 			make as make_with_class
 		redefine
 			modified_data,
-			create_modified_data
+			new_modified_data
 		end
 
 create
@@ -77,7 +77,7 @@ feature {NONE} -- Query
 			l_result: ?like context_feature
 		do
 			if a_class.is_compiled then
-				l_class_c ?= a_class.compiled_class
+				l_class_c := a_class.compiled_class
 				if l_class_c /= Void then
 					if a_feature.written_in = l_class_c.class_id then
 						l_result := a_feature
@@ -85,7 +85,7 @@ feature {NONE} -- Query
 						l_feature_i := l_class_c.feature_table.feature_of_rout_id_set (a_feature.rout_id_set)
 						check l_feature_i_attached: l_feature_i /= Void end
 						if l_feature_i /= Void and then l_feature_i.written_class = l_class_c then
-							l_result ?= l_feature_i.api_feature (l_class_c.class_id)
+							l_result := l_feature_i.api_feature (l_class_c.class_id)
 						end
 					end
 				end
@@ -93,21 +93,20 @@ feature {NONE} -- Query
 
 			if l_result = Void then
 					-- Should never end up here!
-				check False end
 				Result := a_feature
 			else
-				Result ?= l_result
+				Result := l_result
 			end
 		end
 
 feature {NONE} -- Factory
 
-	create_modified_data: !like modified_data
+	new_modified_data: !like modified_data
 			-- <Precursor>
 		local
 			l_class: !like context_class
 			l_editor: like active_editor_for_class
-			l_text: !STRING
+			l_text: !STRING_32
 		do
 			l_class := context_class
 			l_editor := active_editor_for_class (l_class)
@@ -115,7 +114,7 @@ feature {NONE} -- Factory
 					-- There's no open editor, use the class text from disk instead.
 				l_text := original_text
 			else
-				l_text ?= l_editor.text
+				create l_text.make_from_string (l_editor.wide_text)
 			end
 			create Result.make (l_class, context_feature, l_text)
 		end

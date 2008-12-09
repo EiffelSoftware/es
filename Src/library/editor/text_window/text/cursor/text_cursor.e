@@ -35,6 +35,13 @@ feature -- Initialization
 	make_from_relative_pos (a_line: like line; a_token: EDITOR_TOKEN;	pos: INTEGER; a_text: like text) is
 			-- Create a cursor for `text', at position given by
 			-- `a_line', `a_token' and `pos'.
+		require
+			a_line_not_void: a_line /= Void
+			a_line_valid: a_line.is_valid
+			a_token_not_void: a_token /= Void
+			a_text_not_void: a_text /= Void
+			pos_positive_not_null: pos >= 0
+			line_has_token: a_line.count > 0
 		do
 			text := a_text
 			line := a_line
@@ -104,6 +111,7 @@ feature -- Initialization
 			end
 			check
 				token_exists: t /= Void
+				cline_valid: cline.is_valid
 					-- position in file exists, therefore t exists.
 			end
 			make_from_relative_pos (cline, t, pos, text)
@@ -188,12 +196,20 @@ feature -- Access
 --| Other functions
 
 	item: CHARACTER is
-			-- Character `Current' points on.
+			-- Character current points on
+		obsolete
+			"Use wide_item instead"
+		do
+			Result := wide_item.to_character_8
+		end
+
+	wide_item: CHARACTER_32 is
+			-- Character current points on
 		do
 			if token = line.eol_token then
 				Result := '%N'
 			else
-				Result := token.image @ pos_in_token
+				Result := token.wide_image @ pos_in_token
 			end
 		end
 
@@ -211,7 +227,7 @@ feature -- Access
 				a_line = line
 			loop
 				--Result := Result + a_line.eol_token.x_in_characters
-				Result := Result + a_line.image.count
+				Result := Result + a_line.wide_image.count
 				a_line := a_line.next
 			end
 			Result := Result + x_in_characters
@@ -223,6 +239,7 @@ feature -- Element change
 			-- Make `a_line' the new value of `line'.
 		require
 			a_line_exists: a_line /= Void
+			a_line_valid: a_line.is_valid
 		do
 			line := a_line
 			y_in_lines := line.index
@@ -450,6 +467,7 @@ feature -- Cursor movement
 			-- Move up one line (to preceding line), if possible.
 		do
 			if line.previous /= Void then
+				check previous_is_valid: line.previous.is_valid end
 				set_line (line.previous)
 			end
 		end
@@ -458,6 +476,7 @@ feature -- Cursor movement
 			-- Move down one line (to next line), if possible.
 		do
 			if line.next /= Void then
+				check next_is_valid: line.next.is_valid end
 				set_line (line.next)
 			end
 		end
@@ -500,22 +519,22 @@ feature -- Cursor movement
 	go_start_word is
 			-- Move to beginning of word.
 		local
-			image: STRING
+			image: STRING_32
 			index: INTEGER
 		do
-			if char_is_blank (item) then
+			if char_is_blank (wide_item) then
 				from
 					internal_go_left_char
 				until
-					(not char_is_blank (item)) or else bound_reached
+					(not char_is_blank (wide_item)) or else bound_reached
 				loop
 					internal_go_left_char
 				end
-				if not char_is_blank (item) then
+				if not char_is_blank (wide_item) then
 					go_right_char
 				end
-			elseif not char_is_separator (item) then
-				image := token.image.mirrored
+			elseif not char_is_separator (wide_item) then
+				image := token.wide_image.mirrored
 				if not image.is_empty then
 					from
 						index := image.count - pos_in_token + 1
@@ -538,17 +557,17 @@ feature -- Cursor movement
 	go_end_word is
 			-- Move to end of word.
 		local
-			image: STRING
+			image: STRING_32
 			index: INTEGER
 		do
 			if token /= line.first_token or else pos_in_token /= 1 then
-				if char_is_blank (item) then
+				if char_is_blank (wide_item) then
 					internal_go_left_char
-					if char_is_blank (item) then
+					if char_is_blank (wide_item) then
 						from
 							internal_go_right_char
 						until
-							(not char_is_blank(item)) or else bound_reached
+							(not char_is_blank(wide_item)) or else bound_reached
 						loop
 							internal_go_right_char
 						end
@@ -556,7 +575,7 @@ feature -- Cursor movement
 						internal_go_right_char
 					end
 				else
-					image := token.image
+					image := token.wide_image
 					if not image.is_empty and then pos_in_token /= 1 and then not char_is_separator (image @ (pos_in_token - 1)) then
 						from
 							index := pos_in_token
@@ -628,17 +647,21 @@ feature -- Cursor movement
 			set_current_char (t, pos)
 		end
 
-	char_is_separator (char: CHARACTER): BOOLEAN is
+	char_is_separator (char: CHARACTER_32): BOOLEAN is
 			-- Is `char' considered a word separator?
 		do
-			Result := char_is_blank (char) or else
-					additional_separators.has (char)
+			if char.is_character_8 then
+				Result := char_is_blank (char) or else
+						additional_separators.has (char.to_character_8)
+			end
 		end
 
-	char_is_blank (char: CHARACTER): BOOLEAN is
+	char_is_blank (char: CHARACTER_32): BOOLEAN is
 			-- Is `char' a blank space or a tabulation?
 		do
-			Result := char = ' ' or char = '%T'
+			if char.is_character_8 then
+				Result := char = ' ' or char = '%T'
+			end
 		end
 
 feature -- Comparison
@@ -747,7 +770,7 @@ feature {NONE} -- Implementation
 invariant
 	y_in_lines_positive_or_null		: y_in_lines >= 0
 	pos_in_token_positive			: pos_in_token > 0
-	text_not_void			: text /= Void
+	text_not_void					: text /= Void
 
 indexing
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"

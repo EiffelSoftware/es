@@ -5,7 +5,7 @@
 			]"
 	date:		"$Date$"
 	revision:	"$Revision$"
-	copyright:	"Copyright (c) 1985-2006, Eiffel Software."
+	copyright:	"Copyright (c) 1985-2008, Eiffel Software."
 	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"Commercial license is available at http://www.eiffel.com/licensing"
 	copying: "[
@@ -101,6 +101,7 @@ extern "C" {
 	RT_LNK EIF_TYPE_INDEX egc_arr_dtype;				/* Dynamic type for ARRAY[ANY] */
 	RT_LNK EIF_TYPE_INDEX egc_tup_dtype;				/* Dynamic type for TUPLE */
 	RT_LNK int32 egc_disp_rout_id;			/* Dispose routine id */ 
+	RT_LNK int32 egc_copy_rout_id;			/* Copy routine id */ 
 	RT_LNK EIF_TYPE_INDEX egc_bit_dtype;			/* Dynamic type of BIT, E1/plug.c */
 	RT_LNK EIF_TYPE_INDEX egc_any_dtype;			/* Dynamic type of ANY */
 
@@ -174,10 +175,9 @@ extern "C" {
 
 	RT_LNK int32 **egc_fcall;	/* Routine id arrays indexed by feature id's */
 	RT_LNK struct rout_info *egc_forg_table;/* Routine origin/offset table */
-	RT_LNK EIF_TYPE_INDEX *egc_fdtypes;	/* Dynamic type  array indexed by old
-								* dynamic types (for re-freezing) */
 #else
 	RT_LNK void (**egc_edispose)(void);
+	RT_LNK void (**egc_copy)(EIF_REFERENCE, EIF_REFERENCE);
 	RT_LNK char *(**egc_ecreate)(void);
 	RT_LNK char *(**egc_exp_create)(void);
 	RT_LNK struct ctable *egc_ce_rname;
@@ -192,11 +192,14 @@ extern "C" {
 	RT_LNK EIF_BOOLEAN   (*egc_equal)(EIF_REFERENCE, EIF_REFERENCE, EIF_REFERENCE); /* {ANY}.equal */
 	RT_LNK EIF_REFERENCE (*egc_twin)(EIF_REFERENCE); /* {ANY}.twin */
 #endif
-
-	RT_LNK int32 egc_rcdt;				/* E1/einit.c */
-	RT_LNK int32 egc_rcorigin;			/* E1/einit.c */
-	RT_LNK int32 egc_rcoffset;			/* E1/einit.c */
-	RT_LNK int32 egc_rcarg;				/* E1/einit.c */
+	RT_LNK int32 egc_rcount;			/* Number of root creation procedures */
+	RT_LNK char  **egc_rlist;			/* List of root procedures ("class name"."feature name") */
+	RT_LNK char  *egc_eif_root;			/* Root name provided on command line (NULL if no name provided) */
+	RT_LNK int32 egc_ridx;				/* Index of root creation procedure */
+	RT_LNK int32 *egc_rcdt;				/* E1/einit.c */
+	RT_LNK int32 *egc_rcorigin;			/* E1/einit.c */
+	RT_LNK int32 *egc_rcoffset;			/* E1/einit.c */
+	RT_LNK int32 *egc_rcarg;			/* E1/einit.c */
 
 	RT_LNK char *egc_system_name;		/* Name of the generated system */
 	RT_LNK char *egc_system_location;	/* Location of the generated system */

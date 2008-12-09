@@ -13,27 +13,16 @@ inherit
 	ICOR_OBJECT
 		export
 			{ICOR_OBJECTS_MANAGER} clean_on_dispose
-		redefine
-			init_icor
 		end
 
 create {ICOR_OBJECTS_MANAGER}
 	make_by_pointer
 
-feature {ICOR_EXPORTER} -- Access
-
-	init_icor is
-			--
-		do
-			Precursor
-			token := get_token
-		end
-
 feature -- Addons
 
 	to_function_name: STRING is
 		do
-			Result := get_module.md_member_name (get_token)
+			Result := get_module.md_member_name (token)
 		end
 
 	to_string: STRING is
@@ -43,22 +32,27 @@ feature -- Addons
 			l_cl: ICOR_DEBUG_CLASS
 			l_module: ICOR_DEBUG_MODULE
 		do
-			Result := "Function [Ox" + item.out + "] "
-					+ " Token="+ get_token.out + "~0x" + get_token.to_hex_string
+			Result := "Function [" + item.out + "] "
+					+ " Token="+ token.out + "~0x" + token.to_hex_string
 			l_cl := get_class
 			if l_cl /= Void then
-				Result.append (" ClassToken=" + l_cl.get_token.out + "~0x" + l_cl.get_token.to_hex_string)
+				Result.append (" ClassToken=" + l_cl.token.out + "~0x" + l_cl.token.to_hex_string)
 --				l_cl.clean_on_dispose
 			else
 				Result.append (" Class= not IL ")
 			end
 			l_module := get_module
-			Result.append (" Module[" + l_module.get_token.out + "]=" + l_module.get_name + " .")
+			Result.append (" Module[" + l_module.get_token.out + "]=" + l_module.name + " .")
 		end
 
 feature {ICOR_EXPORTER} -- Access
 
-	token: INTEGER
+	token: NATURAL_32
+			-- Feature's token
+		do
+			--| FIXME jfiat [2008/11/12] : maybe try to cache the value ...
+			Result := get_token
+		end
 
 feature {ICOR_EXPORTER} -- Access
 
@@ -82,14 +76,6 @@ feature {ICOR_EXPORTER} -- Access
 			if p /= default_pointer then
 				Result := Icor_objects_manager.icd_class (p)
 			end
-		ensure
-			success: last_call_success = 0
-		end
-
-	get_token: INTEGER is
-		do
-			last_call_success := cpp_get_token (item, $Result)
-			token := Result
 		ensure
 			success: last_call_success = 0
 		end
@@ -136,7 +122,7 @@ feature {ICOR_EXPORTER} -- Access
 --			success: last_call_success = 0
 		end
 
-	get_local_var_sig_token: INTEGER is
+	get_local_var_sig_token: NATURAL_32 is
 			-- Returns mdSignature of Function
 		do
 			last_call_success := cpp_get_local_var_sig_token (item, $Result)
@@ -144,7 +130,7 @@ feature {ICOR_EXPORTER} -- Access
 			success: last_call_success = 0
 		end
 
-	get_current_version_number: INTEGER is
+	get_current_version_number: NATURAL_32 is
 			-- Returns version number of code
 		do
 			last_call_success := cpp_get_current_version_number (item, $Result)
@@ -152,9 +138,18 @@ feature {ICOR_EXPORTER} -- Access
 			success: last_call_success = 0
 		end
 
+feature {NONE} -- Access
+
+	get_token: like token is
+		do
+			last_call_success := cpp_get_token (item, $Result)
+		ensure
+			success: last_call_success = 0
+		end
+
 feature {NONE} -- Implementation
 
-	cpp_get_module (obj: POINTER; a_p: POINTER): INTEGER is
+	cpp_get_module (obj: POINTER; a_p: TYPED_POINTER [POINTER]): INTEGER is
 		external
 			"[
 				C++ ICorDebugFunction signature(ICorDebugModule**): EIF_INTEGER 
@@ -164,7 +159,7 @@ feature {NONE} -- Implementation
 			"GetModule"
 		end
 
-	cpp_get_class (obj: POINTER; a_p: POINTER): INTEGER is
+	cpp_get_class (obj: POINTER; a_p: TYPED_POINTER [POINTER]): INTEGER is
 		external
 			"[
 				C++ ICorDebugFunction signature(ICorDebugClass**): EIF_INTEGER 
@@ -174,7 +169,7 @@ feature {NONE} -- Implementation
 			"GetClass"
 		end
 
-	cpp_get_token (obj: POINTER; a_p: TYPED_POINTER [INTEGER]): INTEGER is
+	cpp_get_token (obj: POINTER; a_p: TYPED_POINTER [NATURAL_32]): INTEGER is
 		external
 			"[
 				C++ ICorDebugFunction signature(mdMethodDef*): EIF_INTEGER 
@@ -184,7 +179,7 @@ feature {NONE} -- Implementation
 			"GetToken"
 		end
 
-	cpp_get_il_code (obj: POINTER; a_p: POINTER): INTEGER is
+	cpp_get_il_code (obj: POINTER; a_p: TYPED_POINTER [POINTER]): INTEGER is
 		external
 			"[
 				C++ ICorDebugFunction signature(ICorDebugCode**): EIF_INTEGER 
@@ -194,7 +189,7 @@ feature {NONE} -- Implementation
 			"GetILCode"
 		end
 
-	cpp_get_native_code (obj: POINTER; a_p: POINTER): INTEGER is
+	cpp_get_native_code (obj: POINTER; a_p: TYPED_POINTER [POINTER]): INTEGER is
 		external
 			"[
 				C++ ICorDebugFunction signature(ICorDebugCode**): EIF_INTEGER 
@@ -204,7 +199,7 @@ feature {NONE} -- Implementation
 			"GetNativeCode"
 		end
 
-	cpp_create_breakpoint (obj: POINTER; a_p: POINTER): INTEGER is
+	cpp_create_breakpoint (obj: POINTER; a_p: TYPED_POINTER [POINTER]): INTEGER is
 		external
 			"[
 				C++ ICorDebugFunction signature(ICorDebugFunctionBreakpoint**): EIF_INTEGER 
@@ -214,7 +209,7 @@ feature {NONE} -- Implementation
 			"CreateBreakpoint"
 		end
 
-	cpp_get_local_var_sig_token (obj: POINTER; a_p_token: TYPED_POINTER [INTEGER]): INTEGER is
+	cpp_get_local_var_sig_token (obj: POINTER; a_p_token: TYPED_POINTER [NATURAL_32]): INTEGER is
 		external
 			"[
 				C++ ICorDebugFunction signature(mdSignature*): EIF_INTEGER 
@@ -224,7 +219,7 @@ feature {NONE} -- Implementation
 			"GetLocalVarSigToken"
 		end
 
-	cpp_get_current_version_number (obj: POINTER; a_p_vers_number: TYPED_POINTER [INTEGER]): INTEGER is
+	cpp_get_current_version_number (obj: POINTER; a_p_vers_number: TYPED_POINTER [NATURAL_32]): INTEGER is
 		external
 			"[
 				C++ ICorDebugFunction signature(ULONG32*): EIF_INTEGER 

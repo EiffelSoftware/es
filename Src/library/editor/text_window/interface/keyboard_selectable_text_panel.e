@@ -166,6 +166,7 @@ feature -- Cursor Management
 							tw := pointed_token.width
 						end
 					end
+					check pointed_line.is_valid end
 					if pointed_token /= Void then
 						debug ("editor")
 							print (pointed_token.out + "%N")
@@ -310,7 +311,7 @@ feature -- Text Selection
 			l_first_line := text_displayed.line (a_start)
 			l_last_line := text_displayed.line (a_end)
 			l_first_char := text_displayed.line_pos_in_chars (l_first_line)
-			l_last_char := text_displayed.line_pos_in_chars (l_last_line) + l_last_line.image.count
+			l_last_char := text_displayed.line_pos_in_chars (l_last_line) + l_last_line.wide_image.count
 			select_region (l_first_char, l_last_char)
 		end
 
@@ -319,11 +320,11 @@ feature -- Text Selection
 		require
 			text_is_not_empty: number_of_lines /= 0
 		local
-			copied_text: STRING
+			copied_text: STRING_32
 		do
 			if has_selection then
 				if not text_displayed.cursor.is_equal (text_displayed.selection_cursor) then
-					copied_text := text_displayed.selected_string
+					copied_text := text_displayed.selected_wide_string
 					if not copied_text.is_empty then
 						clipboard.set_text (copied_text)
 					end
@@ -393,7 +394,7 @@ feature -- Observation
 					set_first_line_displayed (stored_first_line, True)
 						-- We add 1 to represent the last position of a line.
 						-- The position of 1 means the position before the first character of a line.
-					if text_displayed.line (stored_cursor_line).image.count + 1 >= stored_cursor_char then
+					if text_displayed.line (stored_cursor_line).wide_image.count + 1 >= stored_cursor_char then
 						text_displayed.cursor.set_x_in_characters (stored_cursor_char)
 					end
 					invalidate_cursor_rect (True)
@@ -858,12 +859,16 @@ feature {NONE} -- Blink Cursor Management
 			end
 			media.set_xor_mode
 			if not do_show then
-				media.set_foreground_color (editor_preferences.plain_gray)
+					-- Non focus cusor color
+				media.set_foreground_color (editor_preferences.dark_gray)
 			elseif editor_preferences.blinking_cursor and has_focus then
 				if let_blink and then blink_on then
-					media.set_foreground_color (editor_preferences.plain_black)
+						-- Blink has been on, draw invert color twice back to what it was.
+					media.set_foreground_color (editor_preferences.plain_white)
+					media.fill_rectangle (x, y, width_cursor, ln_height)
 				else
-					media.set_foreground_color (editor_preferences.normal_background_color)
+						-- Blink has been off, draw invert color.
+					media.set_foreground_color (editor_preferences.plain_white)
 				end
 			else
 				media.set_foreground_color (editor_preferences.plain_white)

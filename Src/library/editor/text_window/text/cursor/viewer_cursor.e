@@ -46,6 +46,7 @@ feature -- Initialization
 		require
 			a_text_valid: a_text /= Void
 			a_line_valid: a_line /= Void
+			a_line_valid: a_line.is_valid
 			a_token_valid: a_token /= Void
 			pos_valid: pos >= 1
 		do
@@ -95,7 +96,7 @@ feature -- Initialization
 				end
 			end
 			make_from_relative_pos (cline, t, pos, a_text)
-		end	
+		end
 
 feature -- Access
 
@@ -141,11 +142,19 @@ feature -- Access
 
 	item: CHARACTER is
 			-- Character current points on
+		obsolete
+			"Use wide_item instead"
+		do
+			Result := wide_item.to_character_8
+		end
+
+	wide_item: CHARACTER_32 is
+			-- Character current points on
 		do
 			if token = line.eol_token then
 				Result := '%N'
 			else
-				Result := token.image @ pos_in_token
+				Result := token.wide_image @ pos_in_token
 			end
 		end
 
@@ -162,7 +171,7 @@ feature -- Access
 			until
 				a_line = line
 			loop
-				Result := Result + a_line.image.count
+				Result := Result + a_line.wide_image.count
 				a_line := a_line.next
 			end
 			Result := Result + x_in_characters
@@ -240,9 +249,10 @@ feature -- Element change
 			-- Make `a_line' the new value of `line'.
 		require
 			a_line_exists: a_line /= Void
+			a_line_valid: a_line.is_valid
 		do
 			line := a_line
-			y_in_lines := line.index
+			y_in_lines := a_line.index
 			update_current_char
 		end
 
@@ -260,7 +270,7 @@ feature -- Element change
 				-- Update the attributes.
 			token := a_token
 			pos_in_token := a_position
-			
+
 				-- Compute the size of the current token.
 			current_width := a_token.get_substring_width (a_position - 1)
 
@@ -335,7 +345,7 @@ feature -- Element change
 				before_goal: remaining_ch > 0
 			end
 			if current_token /= Void then
-					-- We stopped in a token. Now we look in the token. 
+					-- We stopped in a token. Now we look in the token.
 				token := current_token
 				pos_in_token := remaining_ch
 

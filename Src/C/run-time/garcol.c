@@ -645,7 +645,7 @@ doc:		<thread_safety>Safe</thread_safety>
 doc:		<synchronization>None</synchronization>
 doc:	</attribute>
 */
-rt_public EIF_BOOLEAN has_reclaim_been_called = 0;
+rt_private EIF_BOOLEAN has_reclaim_been_called = 0;
 
 #ifdef ISE_GC
 
@@ -787,9 +787,9 @@ doc:	</routine>
 rt_shared int acollect(void)
 {
 	static long nb_calls = 0;		/* Number of calls to function */
-	static rt_uint_ptr eif_total = 0;		/* Total Eiffel memory allocated */
 	int status;						/* Status returned by scollect() */
 #ifdef EIF_CONDITIONAL_COLLECT
+	static rt_uint_ptr eif_total = 0;		/* Total Eiffel memory allocated */
 	int freemem;					/* Amount of free memory */
 	int tau;						/* Mean allocation rate */
 	int half_tau;					
@@ -852,7 +852,9 @@ rt_shared int acollect(void)
 				 * which happens between `0' and `plsc_per', we still wait `plsc_per'
 				 * calls before launching the next full collection. */
 			nb_calls = 0;
+#ifdef EIF_CONDITIONAL_COLLECT
 			eif_total = rt_e_data.ml_total;
+#endif
 		} else							/* Generation-base collector */
 			status = collect();
 	} else {						/* Generation-base collector called, since
@@ -1192,7 +1194,7 @@ doc:		<thread_safety>Safe</thread_safety>
 doc:		<synchronization>Per thread data.</synchronization>
 doc:	</routine>
 */
-rt_shared EIF_REFERENCE ** alloc_oms ()
+rt_shared EIF_REFERENCE ** alloc_oms (void)
 {
 	EIF_REFERENCE ** result;
 	
@@ -1345,6 +1347,27 @@ rt_public void reclaim(void)
 				eif_lm_free ();
 #endif	/* LMALLOC_CHECK */
 #endif
+				/* Reclaim root creation procedure structures. */
+			if (egc_rlist) {
+				eif_free(egc_rlist);
+				egc_rlist = NULL;
+			}
+			if (egc_rcdt) {
+				eif_free(egc_rcdt);
+				egc_rcdt = NULL;
+			}
+			if (egc_rcorigin) {
+				eif_free(egc_rcorigin);
+				egc_rcorigin = NULL;
+			}
+			if (egc_rcoffset) {
+				eif_free(egc_rcoffset);
+				egc_rcoffset = NULL;
+			}
+			if (egc_rcarg) {
+				eif_free(egc_rcarg);
+				egc_rcarg = NULL;
+			}
 		}
 	}
 
@@ -2723,7 +2746,7 @@ rt_private void init_plsc(void)
 	if (!(rt_g_data.status & GC_PART)) {
 		ps_from.sc_arena = (EIF_REFERENCE) 0;		/* Will restart from end */
 		if (ps_to.sc_arena != (EIF_REFERENCE) 0) {	/* One chunk was kept in reserve */
-			CHECK("Block is indeed busy", ((union overhead *) ps_to.sc_active_arena)->ov_size |= B_BUSY);
+			CHECK("Block is indeed busy", ((union overhead *) ps_to.sc_active_arena)->ov_size & B_BUSY);
 			eif_rt_xfree (ps_to.sc_active_arena + OVERHEAD);
 			ps_to.sc_arena = (EIF_REFERENCE) 0;	/* No to zone yet */
 		}
@@ -3242,7 +3265,7 @@ doc:		<thread_safety>Safe with synchronization</thread_safety>
 doc:		<synchronization>Synchronization done through `scollect'.</synchronization>
 doc:	</routine>
 */
-rt_private struct chunk *find_from_space()
+rt_private struct chunk *find_from_space(void)
 {
 	char *l_arena;
 	struct chunk *start, *real_start;
@@ -4312,7 +4335,7 @@ rt_private void update_rem_set(void)
 	st_truncate(&rem_set);
 }
 
-rt_private void update_memory_set ()
+rt_private void update_memory_set (void)
 	/* Traverse the memory_set which contains all the objects, which have a
 	 * dispose routine. It calls the dispose routine
 	 * on the objects thar are garbage.
@@ -4385,8 +4408,6 @@ rt_private void update_memory_set ()
 			 * dispose routine on it and remove it from the stack. 
 			 */
 
-			CHECK ("Objects not in GSZ", !(zone->ov_flags & (EO_OLD | EO_NEW | EO_MARK | EO_SPEC)));	
-
 			if (zone->ov_size & B_FWD)	/* Object survived GS collection. */
 			{
 				current = zone->ov_fwd;		/* Update entry. */
@@ -4400,6 +4421,8 @@ rt_private void update_memory_set ()
 			}
 			else 									/* Object is dead. */
 			{										/* Call dispose routine.*/
+				CHECK ("Objects not in GSZ", !(zone->ov_flags & (EO_OLD | EO_NEW | EO_MARK | EO_SPEC)));	
+
 				dtype = zone->ov_dtype;	/* Need it for dispose.	*/ 
 
 				CHECK ("Has with dispose routine", Disp_rout (dtype));

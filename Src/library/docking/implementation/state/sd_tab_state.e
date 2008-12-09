@@ -332,7 +332,8 @@ feature -- Redefine
 		do
 			internal_docking_manager.command.lock_update (zone, False)
 			l_parent := tab_zone.parent
-			tab_zone.prune (internal_content, True)
+			-- If we are closing all contents, we should not give focus to next content, see bug#13796
+			tab_zone.prune (internal_content, not internal_docking_manager.is_closing_all)
 			-- When Eiffel Studio exiting and recycling, `l_parent' maybe void.
 			-- This is ok since Current whole tab zone will be destroyed.
 			if l_parent /= Void then
@@ -486,21 +487,33 @@ feature -- Redefine
 feature {SD_CONTENT} -- Redefine
 
 	change_title (a_title: STRING_GENERAL; a_content: SD_CONTENT) is
-			-- Redefine.
+			-- <Precursor>
 		do
-			tab_zone.set_title (a_title, a_content)
+			-- During zone transforming, `tab_zone' maybe not has `a_content'
+			-- See bug#14623
+			if tab_zone.has (a_content) then
+				tab_zone.set_title (a_title, a_content)
+			end
 		end
 
 	change_pixmap (a_pixmap: EV_PIXMAP; a_content: SD_CONTENT) is
-			-- Redefine.
+			-- <Precursor>
 		do
-			tab_zone.set_pixmap (a_pixmap, a_content)
+			-- During zone transforming, `tab_zone' maybe not has `a_content'
+			-- See bug#14623
+			if tab_zone.has (a_content) then
+				tab_zone.set_pixmap (a_pixmap, a_content)
+			end
 		end
 
 	change_tab_tooltip (a_text: STRING_GENERAL) is
-			-- Redefine.
+			-- <Precursor>
 		do
-			zone.change_tab_tooltip (content, a_text)
+			-- During zone transforming, `tab_zone' maybe not has `a_content'
+			-- See bug#14623
+			if zone.has (content) then
+				zone.change_tab_tooltip (content, a_text)
+			end
 		end
 
 feature {SD_OPEN_CONFIG_MEDIATOR, SD_STATE} -- Redefine

@@ -16,16 +16,6 @@ inherit
 create {NONE}
 	default_create
 
-feature -- Access
-
-	frozen debugger_manager: EB_DEBUGGER_MANAGER
-			-- Debugger manager to use for tool creation
-		do
-			Result ?= window.debugger_manager
-		ensure
-			result_attached: Result /= Void
-		end
-
 feature -- Status
 
 	shown: BOOLEAN is
@@ -65,14 +55,6 @@ feature -- Access
 			-- Note: Do not call `tool.title' as it will create the tool unnecessarly!
 		do
 			Result := interface_names.t_breakpoints_tool
-		end
-
-	shortcut_preference_name: STRING_32
-			-- An optional shortcut preference name, for automatic preference binding.
-			-- Note: The preference should be registered in the default.xml file
-			--       as well as in the {EB_MISC_SHORTCUT_DATA} class.
-		do
-			Result := "show_breakpoints_tool"
 		end
 
 feature {NONE} -- Factory
