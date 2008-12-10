@@ -2,7 +2,7 @@ indexing
 	description: "Objects that ..."
 	author: ""
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 74256 $"
 
 class
 	SAT_FILE_LOADER
@@ -14,6 +14,8 @@ feature{NONE} -- Initialization
 
 	make is
 			-- Initialize.
+		local
+			a: SAT_AGENT_BASED_FILE_ANALYZER
 		do
 			create {LINKED_LIST [SAT_FILE_ANALYZER]} analyzers.make
 			create analyzer_section_table.make (10)
@@ -38,6 +40,19 @@ feature -- Status report
 			Result := analyzers.has (a_analyzer)
 		ensure
 			good_result: Result = analyzers.has (a_analyzer)
+		end
+
+	should_stop_loading: BOOLEAN
+			-- Should loading be stopped?
+
+feature -- Setting
+
+	set_should_stop_loading (b: BOOLEAN) is
+			-- Set `should_stop_loading' with `b'.
+		do
+			should_stop_loading := b
+		ensure
+			should_stop_loading_set: should_stop_loading = b
 		end
 
 feature -- Basic operations
@@ -80,7 +95,7 @@ feature -- Basic operations
 				from
 					a_file_list.start
 				until
-					a_file_list.after
+					a_file_list.after or else should_stop_loading
 				loop
 					l_location := a_file_list.item
 					create l_file.make_open_read (l_location)
@@ -88,12 +103,12 @@ feature -- Basic operations
 						l_file.read_line
 						l_done := l_file.after
 					until
-						l_done
+						l_done or else should_stop_loading
 					loop
 						l_line := l_file.last_string.twin
 						if not l_line.is_empty then
 							if is_single_line_mode then
-								l_space_index := l_line.index_of (' ', 1)
+								l_space_index := l_line.index_of ('%T', 1)
 								l_cur_section_name := l_line.substring (1, l_space_index - 1)
 								l_line := l_line.substring (l_space_index + 1, l_line.count)
 								l_interested_analyzers := l_table.item (l_cur_section_name)

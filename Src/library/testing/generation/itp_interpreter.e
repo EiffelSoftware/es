@@ -173,6 +173,11 @@ feature {NONE} -- Handlers
 		local
 			l_byte_code: STRING
 		do
+			if sat_has_instrument then
+				sat_set_test_case_count (last_request.test_case_index)
+				sat_is_recording_enabled := (last_request.execution_flag & sat_real_test_case_request_flag) > 0
+			end
+
 			l_byte_code := last_request.data
 			if l_byte_code /= Void then
 				if l_byte_code.count = 0 then
@@ -195,6 +200,34 @@ feature {NONE} -- Handlers
 			end
 			send_response_to_socket
 		end
+
+--	parse_and_execute_byte_code (a_data: ANY) is
+--			-- Execute byte-code stored in `a_data'.
+--		local
+--			l_byte_code: STRING
+--		do
+--			l_byte_code ?= a_data
+--			if l_byte_code /= Void then
+--				if l_byte_code.count = 0 then
+--					report_error (byte_code_length_error)
+--				else
+--					log_message ("report_execute_request start%N")
+--						-- Inject received byte-code into byte-code array of Current process.
+--					eif_override_byte_code_of_body (
+--						byte_code_feature_body_id,
+--						byte_code_feature_pattern_id,
+--						pointer_for_byte_code (l_byte_code),
+--						l_byte_code.count)
+
+--						-- Run the feature with newly injected byte-code.
+--					execute_protected
+--					log_message ("report_execute_request end%N")
+--				end
+--			else
+--				report_error (byte_code_not_found_error)
+--			end
+--			send_response_to_socket
+--		end		
 
 feature {NONE} -- Error Reporting
 
@@ -338,7 +371,12 @@ feature{NONE} -- Socket IPC
 	socket: NETWORK_STREAM_SOCKET
 			-- Socket used for communitation between proxy and current interpreter
 
-	last_request: TUPLE [flag: NATURAL_8; data: STRING]
+--	last_request: TUPLE [flag: NATURAL_8; data: STRING]
+--			-- Last received request by `retrieve_request'
+--			-- `flag' indicates request type,
+--			-- `data' stores data needed for that reques type.
+
+	last_request: TUPLE [flag: NATURAL_8; test_case_index: INTEGER; execution_flag: NATURAL_16; data: STRING]
 			-- Last received request by `retrieve_request'
 			-- `flag' indicates request type,
 			-- `data' stores data needed for that reques type.
@@ -459,10 +497,20 @@ feature{NONE} -- Byte code
 		do
 			is_last_protected_execution_successfull := False
 			if not failed then
+				if sat_is_recording_enabled then
+					sat_enable_recording
+				end
 				execute_byte_code
+				if sat_is_recording_enabled then
+					sat_disable_recording
+				end
 				is_last_protected_execution_successfull := True
 			end
 		rescue
+			if sat_is_recording_enabled then
+				sat_flush_data
+				sat_disable_recording
+			end
 			failed := True
 			report_trace
 			if exception = Class_invariant then
@@ -555,12 +603,58 @@ feature{NONE} -- Error message
 
 	byte_code_length_error: STRING is "Length of retrieved byte-code is not the same as specified in request."
 
+feature{NONE} -- SATS project
+
+	sat_flush_data is
+			-- Flush data for SATS project.
+		external
+			"C macro use %"eif_main.h%""
+		alias
+			"sat_flush_data()"
+		end
+
+	sat_set_test_case_count (a_count: INTEGER) is
+			-- Set `sat_test_case_count' with `a_count'.
+		external
+			"C macro use %"eif_main.h%""
+		alias
+			"sat_set_test_case_count"
+		end
+
+	sat_enable_recording is
+			-- Enable instrumentation recording.
+		external
+			"C macro use %"eif_main.h%""
+		alias
+			"sat_enable_recording()"
+		end
+
+	sat_disable_recording is
+			-- Disable instrumentation recording.
+		external
+			"C macro use %"eif_main.h%""
+		alias
+			"sat_disable_recording()"
+		end
+
+	sat_has_instrument: BOOLEAN is
+			-- Does any instrumentation exist in Current system?
+		external
+			"C macro use %"eif_main.h%""
+		alias
+			"sat_has_instrument"
+		end
+
+	sat_is_recording_enabled: BOOLEAN
+			-- Should SATS related recording be enabled?
+
+
 invariant
 	log_file_open_write: log_file /= Void implies log_file.is_open_write
 	store_not_void: store /= Void
 	output_buffer_attached: output_buffer /= Void
 	error_buffer_attached: error_buffer /= Void
-	socket_attached: socket /= Void
+--	socket_attached: socket /= Void
 
 end
 

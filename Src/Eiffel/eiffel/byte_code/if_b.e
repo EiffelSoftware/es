@@ -362,6 +362,7 @@ feature -- Settings
 				buf.put_character ('}')
 			end
 			generate_closing_brakets
+			l_instrumentor.process_if_b_end (Current)
 		end
 
 	generate_closing_brakets is

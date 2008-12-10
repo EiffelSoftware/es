@@ -2,7 +2,7 @@ indexing
 	description: "Visitor to generate {EXPR_B} objects for AutoTest expressions"
 	author: ""
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 class
 	AUT_EXPRESSION_B_VISITOR

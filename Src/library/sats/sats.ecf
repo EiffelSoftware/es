@@ -6,8 +6,11 @@
 		<file_rule>
 			<exclude>/\.svn</exclude>
 		</file_rule>
+		<library name="auto_test" location="$EIFFEL_SRC\framework\auto_test\auto_test.ecf"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="compiler_kernel" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf"/>
 		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
+		<library name="gobo_extension" location="$ISE_LIBRARY\library\gobo_extension\gobo_extension.ecf"/>
 		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
 		<cluster name="instrument_log_reader" location="instrument_log_reader\" recursive="true"/>
 	</target>

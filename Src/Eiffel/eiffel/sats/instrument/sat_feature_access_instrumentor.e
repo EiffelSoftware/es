@@ -25,6 +25,7 @@ feature{NONE} -- Initialization
 		do
 			create {LINKED_LIST [STRING]} config_sections.make
 			config_sections.extend (fac_section_name)
+			config_sections.extend (setting_section_name)
 		end
 
 feature -- Status report
@@ -32,7 +33,17 @@ feature -- Status report
 	is_instrument_enabled: BOOLEAN is
 			-- Should instrumentation be generated?
 		do
-			Result := config.there_exists (agent {SAT_INSTRUMENT_CONFIG}.is_instrument_enabled (context))
+			Result :=
+				config.there_exists (agent {SAT_INSTRUMENT_CONFIG}.is_instrument_enabled (context)) and then
+				not is_auto_test_compiling
+		end
+
+feature -- Access
+
+	summary: STRING is
+			-- Summary of current instrument status
+		do
+			Result := fac_section_name + "=" + feature_index.out
 		end
 
 feature -- Reset
@@ -48,9 +59,19 @@ feature -- Reset
 	clear_feature_data is
 			-- Clear data related to currently processing feature.
 		do
-			position_index := 0
-		ensure then
-			position_index_reset: position_index = 0
+		end
+
+feature -- Basic operation
+
+	process_summary_record (a_section_name: STRING; a_record_line: STRING) is
+			-- Process instrument summary line `a_record_line' in section named `a_section_name'.
+		local
+			l_slot_count: STRING
+		do
+			l_slot_count := property_table (a_record_line.split ('%T')).item (fac_section_name.as_lower)
+			if l_slot_count /= Void and then l_slot_count.is_integer then
+				feature_index := l_slot_count.to_integer
+			end
 		end
 
 feature -- Byte node processing
@@ -58,10 +79,7 @@ feature -- Byte node processing
 	process_rescue_entry is
 			-- Process when a rescue clause is entered.
 		do
-			if is_instrument_enabled then
-				position_index := position_index + 1
-				generate_slot_hook
-			end
+--			generate_slot_hook
 		end
 
 	process_feature_entry is
@@ -125,6 +143,11 @@ feature -- Byte node processing
 
 	process_if_else_part_end is
 			-- Process at the end of a "Else_part" from a Conditional.
+		do
+		end
+
+	process_if_b_end (a_node: IF_B) is
+			-- Process after an entire "if" statement.
 		do
 		end
 
@@ -195,11 +218,6 @@ feature{NONE} -- Implementation
 			-- Feature index increases through the whole system
 			-- It is 0-based because the C array used in run-time is 0-based.
 
-	position_index: INTEGER
-			-- Index of the position of the hook
-			-- For feature body entry, the index is 0,
-			-- for rescue body entry, the index is 1
-
 	satfacl: STRING is "SATFAC("
 			-- Starting string for feature access coverage
 
@@ -214,9 +232,6 @@ feature{NONE} -- Implementation
 			l_buffer.append (context.associated_class.name_in_upper)
 			l_buffer.append_character ('.')
 			l_buffer.append (context.current_feature.feature_name)
-			l_buffer.append_character ('%T')
-			l_buffer.append ("local_id=")
-			l_buffer.append (position_index.out)
 			l_buffer.append_character ('%T')
 			l_buffer.append ("global_id=")
 			l_buffer.append (feature_index.out)
@@ -265,8 +280,20 @@ feature{NONE} -- Config file analysis
 	process_config_record (a_section_name: STRING; a_record_line: STRING) is
 			-- Process record line text in `a_record_line'.
 			-- This record line is in one of the section defined in `sections'.
+		local
+			l_slot_count: STRING
 		do
-			config.extend (instrument_config_from_string (a_record_line))
+			if a_section_name.is_case_insensitive_equal (fac_section_name) then
+					-- We are loading instrument config.
+				config.extend (instrument_config_from_string (a_record_line))
+			else
+					-- We are loading instrument summary.
+				check is_auto_test_compiling end
+				l_slot_count := property_table (a_record_line.split ('%T')).item (fac_section_name)
+				if l_slot_count /= Void and then l_slot_count.is_integer then
+					feature_index := l_slot_count.to_integer
+				end
+			end
 		end
 
 	config_sections: LIST [STRING]

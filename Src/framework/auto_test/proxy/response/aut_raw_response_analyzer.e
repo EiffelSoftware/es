@@ -6,7 +6,7 @@ indexing
 	]"
 	author: ""
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 class
 	AUT_RAW_RESPONSE_ANALYZER

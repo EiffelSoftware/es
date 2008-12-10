@@ -6,7 +6,7 @@ indexing
 	copyright: "Copyright (c) 2006, Andreas Leitner and others"
 	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 75356 $"
 
 class AUT_LOG_PARSER
 
@@ -92,6 +92,8 @@ feature -- Parsing
 						if line.same_string (proxy_has_started_and_connected_message) then
 							-- We are in the "start" request.
 							report_request_line (line)
+						else
+							report_comment_line (line)
 						end
 					else
 						if line.count >= interpreter_log_prefix.count and then line.substring (1, interpreter_log_prefix.count).same_string (interpreter_log_prefix) then
@@ -148,6 +150,7 @@ feature {NONE} -- Reporting
 			has_error := request_parser.has_error
 			if not has_error then
 				found_request_count := found_request_count + 1
+				update_request_with_test_case_info (request_parser.last_request)
 			end
 		end
 
@@ -208,12 +211,12 @@ feature {NONE} -- Processsing
 			l_last_response: AUT_RESPONSE
 			l_response_stream: KL_STRING_INPUT_STREAM
 		do
-			if variable_table.is_variable_defined (a_request.target) then
-				a_request.set_target_type (variable_table.variable_type (a_request.target))
-			end
 			if last_response_text.is_empty then
 				create {AUT_NORMAL_RESPONSE} l_last_response.make ("")
 			else
+				if variable_table.is_variable_defined (a_request.target) then
+					a_request.set_target_type (variable_table.variable_type (a_request.target))
+				end
 				create l_response_stream.make (last_response_text)
 				response_parser.set_input_stream (l_response_stream)
 				response_parser.parse_invoke_response
@@ -293,6 +296,28 @@ feature{NONE} -- Implementation
 
 	last_response_text: STRING
 			-- Last found response from interpreter
+
+feature -- Reporting
+
+	report_comment_line (a_line: STRING) is
+			-- Report that a comment line `a_line' is found.
+			-- `a_line' contains the comment starter "--".
+		require
+			a_line_attached: a_line /= Void
+			not_a_line_is_empty: not a_line.is_empty
+			a_line_is_comment: a_line.substring (1, 2).is_equal ("--")
+		do
+		end
+
+	update_request_with_test_case_info (a_request: AUT_REQUEST) is
+			-- Update `a_request' with test case information including:
+			-- `last_test_case_index',
+			-- `last_test_case_start_time'.
+		require
+			a_request_attached: a_request /= Void
+--			a_request_is_test_case: a_request.is_create_object_request or a_request.is_invoke_feature_request
+		do
+		end
 
 invariant
 	system_attached: system /= Void

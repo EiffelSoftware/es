@@ -5,7 +5,7 @@ indexing
 	]"
 	author: ""
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 frozen class
 	AUT_PROCESS_CONTROLLER

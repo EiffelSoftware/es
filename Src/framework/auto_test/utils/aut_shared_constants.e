@@ -2,7 +2,7 @@ indexing
 	description: "Shared constants for the proxy"
 	author: ""
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 75356 $"
 
 class
 	AUT_SHARED_CONSTANTS
@@ -41,5 +41,8 @@ feature -- Access
 
 	exception_thrown_message: STRING is "-- Exception thrown after: "
 			-- String used in proxy log to mark the time elpased until an exception is thrown
+
+	test_case_count_header: STRING is "-- Test case No."
+			-- Header for log message about number of test cases
 
 end

@@ -2,7 +2,7 @@ indexing
 	description: "Visitor to generate generic derivation of a type"
 	author: ""
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 class
 	AUT_GENERIC_DERIVATION_TYPE_VISITOR

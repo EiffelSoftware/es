@@ -107,6 +107,7 @@
 		<description>Eiffel Studio</description>
 		<root class="EB_KERNEL" feature="make"/>
 		<option is_void_safe="false">
+			<assertions precondition="true"/>
 			<warning name="once_in_generic" enabled="false"/>
 		</option>
 		<external_object location="$(EIFFEL_SRC)/C/ipc/ewb/libmtwewb.a">
@@ -151,7 +152,11 @@
 			</condition>
 		</external_object>
 		<variable name="batch_framework" value="false"/>
-		<library name="auto_test" location="$EIFFEL_SRC\framework\auto_test\auto_test.ecf" readonly="false"/>
+		<library name="auto_test" location="$EIFFEL_SRC\framework\auto_test\auto_test.ecf" readonly="false">
+			<option>
+				<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
+			</option>
+		</library>
 		<library name="command_tunnel" location="$EIFFEL_SRC\framework\command_tunnel\command_tunnel.ecf" readonly="false"/>
 		<library name="compiler_kernel" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf" readonly="false" use_application_options="true"/>
 		<library name="configuration_gui" location="$EIFFEL_SRC\framework\configuration\configuration_gui.ecf" readonly="false"/>
@@ -176,6 +181,7 @@
 				<platform excluded_value="windows"/>
 			</condition>
 		</library>
+		<library name="sats" location="$ISE_LIBRARY\library\sats\sats.ecf" readonly="false"/>
 		<library name="tagging" location="$EIFFEL_SRC\framework\tagging\tagging.ecf" readonly="false"/>
 		<library name="testing_engine" location="$EIFFEL_SRC\framework\testing\testing.ecf" readonly="false"/>
 		<library name="testing_library" location="$EIFFEL_SRC\library\testing\testing.ecf" readonly="false"/>

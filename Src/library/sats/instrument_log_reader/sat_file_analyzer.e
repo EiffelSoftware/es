@@ -2,7 +2,7 @@ indexing
 	description: "Objects to analyze instrument log files"
 	author: ""
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 74256 $"
 
 deferred class
 	SAT_FILE_ANALYZER

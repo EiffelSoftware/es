@@ -81,19 +81,21 @@ feature{NONE} -- Implementation
 				if not l_classes_i.is_empty then
 					instrumented_classes_internal.force_last (class_name)
 
-						-- Calculate ancestors of `class_name'.
-					create l_ancestors.make
-					calculate_parents (l_classes_i.first, l_ancestors)
+					if is_ancestor_enabled then
+							-- Calculate ancestors of `class_name'.
+						create l_ancestors.make
+						calculate_parents (l_classes_i.first, l_ancestors)
 
-						-- Add ancestors of `class_name' into `instrument_classes'.
-					l_cursor := l_ancestors.new_cursor
-					from
-						l_cursor.start
-					until
-						l_cursor.after
-					loop
-						instrumented_classes_internal.force_last (l_cursor.item.name_in_upper)
-						l_cursor.forth
+							-- Add ancestors of `class_name' into `instrument_classes'.
+						l_cursor := l_ancestors.new_cursor
+						from
+							l_cursor.start
+						until
+							l_cursor.after
+						loop
+							instrumented_classes_internal.force_last (l_cursor.item.name_in_upper)
+							l_cursor.forth
+						end
 					end
 				end
 			end

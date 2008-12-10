@@ -6,7 +6,7 @@ indexing
 	copyright: "Copyright (c) 2007, Andreas Leitner and others"
 	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 class
 	ERL_G_TRIE [G, H]

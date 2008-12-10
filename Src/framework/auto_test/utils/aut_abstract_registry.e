@@ -2,7 +2,7 @@ indexing
 	description	: "Abstract registry."
 	author: "Ilinca Ciupa and Andreas Leitner"
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 deferred class
 	AUT_ABSTRACT_REGISTRY

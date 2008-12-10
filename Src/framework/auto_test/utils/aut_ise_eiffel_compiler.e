@@ -2,7 +2,7 @@ indexing
 	description: "Objects which start the ISE Eiffel compiler (out of process)"
 	author: "Andreas Leitner"
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 class AUT_ISE_EIFFEL_COMPILER
 

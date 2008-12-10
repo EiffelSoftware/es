@@ -2,7 +2,7 @@ indexing
 	description: "Fake class for Windows."
 	author: "Andreas Leitner"
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 class POSIX_PROCESS
 

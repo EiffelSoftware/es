@@ -2,7 +2,7 @@ indexing
 	description: "Printer to print response from interpreter into log file."
 	author: ""
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 class
 	AUT_RESPONSE_LOG_PRINTER

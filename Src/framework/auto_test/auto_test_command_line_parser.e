@@ -7,7 +7,7 @@ indexing
 	copyright: "Copyright (c) 2004-2005, Andreas Leitner and others"
 	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 class AUTO_TEST_COMMAND_LINE_PARSER
 

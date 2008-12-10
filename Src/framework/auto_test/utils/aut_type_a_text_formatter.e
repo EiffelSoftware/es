@@ -2,7 +2,7 @@ indexing
 	description: "Text formatter for {TYPE_A} objects"
 	author: ""
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 class
 	AUT_TYPE_A_TEXT_FORMATTER

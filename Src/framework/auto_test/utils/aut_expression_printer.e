@@ -4,7 +4,7 @@ indexing
 		]"
 	author: "Andreas Leitner"
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 class AUT_EXPRESSION_PRINTER
 

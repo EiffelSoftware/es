@@ -7,7 +7,7 @@ indexing
 	copyright: "Copyright (c) 2005, Andreas Leitner and others"
 	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 class AUTO_TEST
 
@@ -49,6 +49,11 @@ inherit
 	AUT_SHARED_INTERPRETER_INFO
 
 	ERL_CONSTANTS
+
+	SAT_SHARED_INSTRUMENTATION
+		rename
+			system as sat_system
+		end
 
 create
 
@@ -167,7 +172,9 @@ feature {NONE} -- Interpreter generation
 				system.add_explicit_root (Void, interpreter_root_class_name, interpreter_root_feature_name)
 			end
 			if project_helper.can_compile then
+				auto_test_compiling.put (True)
 				project_helper.compile
+				auto_test_compiling.put (False)
 			end
 			system.remove_explicit_root (interpreter_root_class_name, interpreter_root_feature_name)
 		end

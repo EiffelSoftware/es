@@ -2,7 +2,7 @@ indexing
 	description: "Visitor for responses"
 	author: ""
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 deferred class
 	AUT_RESPONSE_VISITOR

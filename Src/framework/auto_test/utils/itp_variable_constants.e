@@ -2,7 +2,7 @@ indexing
 	description: "Summary description for {ITP_VARIABLE_CONSTANTS}."
 	author: ""
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 class
 	ITP_VARIABLE_CONSTANTS

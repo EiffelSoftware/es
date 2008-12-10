@@ -2,7 +2,7 @@ indexing
 	description: "Parser for requests stored in text form"
 	author: ""
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 deferred class
 	AUT_TEXT_REQUEST_PARSER

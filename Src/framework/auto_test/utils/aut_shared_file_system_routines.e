@@ -2,7 +2,7 @@ indexing
 	description: "Shared access to AUT_FILE_SYSTEM_ROUTINES"
 	author: "Ilinca Ciupa and Andreas Leitner"
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 class AUT_SHARED_FILE_SYSTEM_ROUTINES
 

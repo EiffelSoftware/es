@@ -2,7 +2,7 @@ indexing
 	description: "Objects that ..."
 	author: ""
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 74021 $"
 
 class
 	SAT_FEATURE_ACCESS_RECORD

@@ -2,7 +2,7 @@ indexing
 	description: "File system routines"
 	author: "Andreas Leitner"
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 class AUT_FILE_SYSTEM_ROUTINES
 

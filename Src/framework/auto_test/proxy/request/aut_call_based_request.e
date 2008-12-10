@@ -2,7 +2,7 @@ indexing
 	description: "Summary description for {AUT_CALL_BASED_REQUEST}."
 	author: ""
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 deferred class
 	AUT_CALL_BASED_REQUEST

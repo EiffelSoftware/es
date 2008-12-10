@@ -2,7 +2,7 @@ indexing
 	description: "Objects that wrap constants used in AutoTest"
 	author: ""
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 class AUT_CONSTANTS
 

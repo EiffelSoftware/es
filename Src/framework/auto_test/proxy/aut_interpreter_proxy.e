@@ -6,7 +6,7 @@ indexing
 	copyright: "Copyright (c) 2005, Andreas Leitner and others"
 	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 75523 $"
 
 class AUT_INTERPRETER_PROXY
 
@@ -59,6 +59,13 @@ inherit
 
 	AUT_SHARED_CONSTANTS
 
+	AUT_SHARED_RANDOM
+
+	SAT_SHARED_INSTRUMENTATION
+		rename
+			system as sat_system
+		end
+
 create
 	make
 
@@ -76,12 +83,10 @@ feature {NONE} -- Initialization
 			an_interpreter_log_filename_not_void: an_interpreter_log_filename /= Void
 			a_proxy_log_filename_not_void: a_proxy_log_filename /= Void
 			a_error_handler_not_void: a_error_handler /= Void
-			interpreter_root_class_attached: interpreter_root_class /= Void
 		local
 			l_itp_class: like interpreter_class
 		do
 			l_itp_class := interpreter_class
-
 
 			create variable_table.make (a_system)
 			create raw_response_analyzer
@@ -115,6 +120,7 @@ feature {NONE} -- Initialization
 			error_handler := a_error_handler
 			timeout := default_timeout
 			set_is_logging_enabled (True)
+			is_speed_logging_enabled := True
 		ensure
 			executable_file_name_set: executable_file_name = an_executable_file_name
 			system_set: system = a_system
@@ -229,6 +235,7 @@ feature -- Execution
 			not_running: not is_running
 		local
 			l_listener: AUT_SOCKET_LISTENER
+			i: INTEGER
 		do
 			log_time_stamp ("start")
 			create {AUT_START_REQUEST} last_request.make (system)
@@ -272,7 +279,7 @@ feature -- Execution
 						last_request.process (request_printer)
 						flush_process
 						log_line (proxy_has_started_and_connected_message)
-						log_line (itp_start_time_message + error_handler.duration_to_now.second_count.out)
+						log_line (itp_start_time_message + error_handler.duration_to_now.second_count.out + ", " + sat_time.out + ", seed: " + random.seed.out)
 						parse_start_response
 						last_request.set_response (last_response)
 						if last_response.is_bad then
@@ -280,7 +287,7 @@ feature -- Execution
 						end
 						is_ready := True
 					else
-						log_line ("-- Error: Interpreter was not able to connect.")
+						log_line ("-- Error: Interpreter was not able to connect." + " Port: " + port.out)
 					end
 				else
 					is_ready := False
@@ -363,6 +370,12 @@ feature -- Execution
 			create l_request.make (system, a_receiver, a_type, a_procedure, l_arg_list)
 
 			last_request := l_request
+
+				-- Setup for SATS recording.
+			test_case_count := test_case_count + 1
+			last_request.set_test_case_index (test_case_count)
+			last_request.set_execution_flag (sat_real_test_case_request_flag)
+
 			last_request.process (request_printer)
 			flush_process
 			parse_invoke_response
@@ -416,6 +429,12 @@ feature -- Execution
 			l_invoke_request.set_target_type (l_target_type)
 
 			last_request := l_invoke_request
+
+				-- Setup for SATS recording.
+			test_case_count := test_case_count + 1
+			last_request.set_test_case_index (test_case_count)
+			last_request.set_execution_flag (sat_real_test_case_request_flag)
+
 			last_request.process (request_printer)
 			flush_process
 			parse_invoke_response
@@ -453,6 +472,12 @@ feature -- Execution
 			create l_invoke_request.make_assign (system, a_receiver, a_query.feature_name, a_target, an_argument_list)
 			l_invoke_request.set_target_type (a_type)
 			last_request := l_invoke_request
+
+				-- Setup for SATS recording.
+			test_case_count := test_case_count + 1
+			last_request.set_test_case_index (test_case_count)
+			last_request.set_execution_flag (sat_real_test_case_request_flag)
+
 			last_request.process (request_printer)
 			flush_process
 			parse_invoke_response
@@ -541,7 +566,7 @@ feature -- Execution
 					variable_table.define_variable (a_variable, base_type (normal_response.text))
 				end
 			else
-				is_ready  := False
+				is_ready := False
 			end
 			stop_process_on_problems (last_response)
 		ensure
@@ -645,7 +670,7 @@ feature{NONE} -- Process scheduling
 
 				-- We need `injected_feature_body_id'-1 because the underlying C array is 0-based.
 			l_body_id := injected_feature_body_id - 1
-			create arguments.make_from_array (<<"localhost", port.out, l_body_id.out, injected_feature_pattern_id.out, interpreter_log_filename, "-eif_root", interpreter_root_class_name + "." + interpreter_root_feature_name>>)
+			create arguments.make_from_array (<<"127.0.0.1", port.out, l_body_id.out, injected_feature_pattern_id.out, interpreter_log_filename, "-eif_root", interpreter_root_class_name + "." + interpreter_root_feature_name>>)
 
 			create process.make (executable_file_name, arguments, ".")
 			process.set_timeout (0)
@@ -866,7 +891,42 @@ feature {NONE} -- Logging
 			log (duration.second_count.out)
 			log ("; ")
 			log_line (duration.millisecond_count.out)
+			log_speed
 		end
+
+    is_speed_logging_enabled: BOOLEAN
+            -- Is testing speed logging enabled?
+
+    last_speed_check_time: DT_DATE_TIME
+            -- Last time point when testing speed is checked
+
+    test_case_log_count: INTEGER
+            -- Test case count for speed logging
+
+    log_speed is
+            -- Log testing speed when `is_speed_logging_enabled' is True.
+        local
+            l_time_now: DT_DATE_TIME
+            l_speed: INTEGER
+            l_second_count: INTEGER
+        do
+            if is_speed_logging_enabled then
+                l_time_now := system_clock.date_time_now
+                if last_speed_check_time /= Void then
+                	l_second_count := l_time_now.duration (last_speed_check_time).second_count
+                    if l_second_count > 60 then
+                        l_speed := ((test_case_log_count.to_real / l_second_count) * 60).floor
+                        log_line ("-- testing speed: " + l_speed.out + " test cases per minute.")
+                        test_case_log_count := 0
+						last_speed_check_time := l_time_now
+                   	else
+                   		test_case_log_count := test_case_log_count + 1
+                    end
+                else
+                	last_speed_check_time := l_time_now
+                end
+            end
+        end
 
 feature {NONE} -- Implementation
 
@@ -908,6 +968,11 @@ feature {NONE} -- Implementation
 
 	default_timeout: INTEGER is 5
 			-- Default value in second for `timeout'
+
+feature{NONE} -- SATS project
+
+	test_case_count: INTEGER
+			-- Number of performed test cases
 
 invariant
 	is_running_implies_reader: is_running implies (stdout_reader /= Void)

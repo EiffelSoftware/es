@@ -2,7 +2,7 @@ indexing
 	description: "Objects that ..."
 	author: ""
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 74256 $"
 
 class
 	SAT_FILE_SEARCHER

@@ -4,7 +4,7 @@ indexing
 	]"
 	author: ""
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 75481 $"
 
 frozen class
 	AUT_SOCKET_LISTENER
@@ -125,7 +125,8 @@ feature {NONE} -- Implementation
 					port_cell.put (min_port)
 				end
 				current_port := port_cell.item
-				create Result.make_server_by_port (current_port)
+				create {AUT_SOCKET} Result.make_with_url_and_port (current_port, "127.0.0.1")
+--				create Result.make_server_by_port (current_port)
 				l_attempts := l_attempts + 1
 			end
 			if Result.is_open_read then
@@ -178,7 +179,8 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Constants
 
-	min_port: INTEGER = 49152
+	min_port: INTEGER = 49166
+--	min_port: INTEGER = 49152
 	max_port: INTEGER = 65535
 	max_attempts: NATURAL = 20
 

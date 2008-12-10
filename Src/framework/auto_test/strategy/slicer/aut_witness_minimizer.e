@@ -2,7 +2,7 @@ indexing
 	description: "Summary description for {AUT_WITNESS_MINIMIZER}."
 	author: ""
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 class
 	AUT_WITNESS_MINIMIZER

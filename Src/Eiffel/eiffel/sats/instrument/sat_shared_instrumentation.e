@@ -31,10 +31,27 @@ feature -- Status report
 			good_result:  Result = feature_coverage_enabled.item
 		end
 
+	is_auto_test_compiling: BOOLEAN is
+			-- Is current compilation for AutoTest?
+			-- During the compilation for AutoTest, we should not generate instrumentation.
+		do
+			Result := auto_test_compiling.item
+		ensure
+			good_result: Result = auto_test_compiling.item
+		end
+
 	instrument_config_file_name: STRING is
 			-- File containing config information for decision coverage
 		once
 			create Result.make (256)
+		end
+
+	sat_time: INTEGER is
+			-- System time
+		external
+			"C macro use %"eif_main.h%""
+		alias
+			"sat_time()"
 		end
 
 feature -- Setting
@@ -75,6 +92,12 @@ feature{NONE} -- Implementation
 		end
 
 	feature_coverage_enabled: CELL [BOOLEAN] is
+			--
+		once
+			create Result.put (False)
+		end
+
+	auto_test_compiling: CELL [BOOLEAN] is
 			--
 		once
 			create Result.put (False)

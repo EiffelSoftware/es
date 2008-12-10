@@ -2,7 +2,7 @@ indexing
 	description: "Windows registry implementation"
 	author: "Ilinca Ciupa and Andreas Leitner"
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 class AUT_REGISTRY
 

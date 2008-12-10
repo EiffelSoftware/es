@@ -967,6 +967,10 @@ rt_public EIF_BOOLEAN sat_has_instrument = EIF_FALSE;
 	 * */
 rt_public EIF_BOOLEAN sat_is_recording_enabled = EIF_FALSE; 
 
+/* Test case index
+ * This indicates the number of test cases that have been performed already.
+ */
+rt_public EIF_INTEGER sat_test_case_count = 0;
 
 /* SATS decision coverage variables */
 rt_public EIF_INTEGER sat_dcs_slot_count;              /* Number of branch in the instrumented code. */
@@ -978,7 +982,14 @@ rt_public EIF_INTEGER sat_fac_slot_count;              /* Number of procedures i
 rt_public EIF_BOOLEAN sat_fac_is_enabled = EIF_FALSE; /* Is feature access coverage recording enabled? Has effects only when sat_is_recording_enabled is True. */
 rt_public struct sat_fac_coverage* sat_fac_record = 0; 	/* Struct to store recorded feature access coverage related data. */
 
-
+void sat_set_test_case_count (int test_case_count) 
+		  /* Set `sat_test_case_count' with `test_case_count'. 
+			* And flush recorded data into log file.
+			* */
+{	
+	sat_flush_data();
+	sat_test_case_count = test_case_count;
+}
 
 void sat_flush_data()
 	/* Flush SATS related data into log file. */
@@ -1010,11 +1021,21 @@ void sat_dcs_flush_coverage () {
 
 	last_flush_time = cov->last_flush_time;
 
-	fprintf(file, cov->header);
-	for(i=0; i<cnt; i++) {
-		visited_time = record[i];
-		if(visited_time>=last_flush_time) {
-			fprintf (file, "%d,%d\n", i, visited_time);
+	/* We only output log when there is new reached branches. */
+	if(cov->dirty_record_count>0) {
+		fprintf(file, cov->header);
+		for(i=0; i<cnt; i++) {
+			visited_time = record[i];
+			if(visited_time>=last_flush_time) {
+					 /* Log data: 
+					  * the first integer is decision slot index,
+					  * the second integer is the test case count,
+					  * the third integer is visit time for that slot. */
+				fprintf (file, "%d,%d,%d\n", i, sat_test_case_count, visited_time);
+	
+					/* Reset the slot so when a new test case starts, if the same slot is visited again, it will be recorded too. */
+				record[i]=0;
+			}
 		}
 	}
 	cov->last_flush_time = sat_time();
@@ -1027,17 +1048,27 @@ void sat_fac_flush_coverage () {
 	int cnt = cov->slot_count;
 	time_t last_flush_time;
 	time_t* record = cov->record;
-	EIF_INTEGER* visit_times = cov->visit_times;
 	FILE* file = sat_log_file;
 	time_t visited_time;
 
 	last_flush_time = cov->last_flush_time;
 
-	fprintf(file, cov->header);
-	for(i=0; i<cnt; i++) {
-		visited_time = record[i];
-		if(visited_time>=last_flush_time) {
-			fprintf (file, "%d,%d,%d\n", i, visit_times[i], visited_time);
+	/* We only output log when there is new reached branches. */
+	if(cov->dirty_record_count>0) {
+		fprintf(file, cov->header);
+		for(i=0; i<cnt; i++) {
+			visited_time = record[i];
+			if(visited_time>=last_flush_time) {
+					  /* Log data:
+						* The first integer is feature access slot index,
+							* the second integer is the test case count,
+						* the third integer is last visit time of that slot.
+						*/
+				fprintf (file, "%d,%d,%d\n", i, sat_test_case_count, visited_time);
+
+					/* Reset the slot so when a new test case starts, if the same slot is visited again, it will be recorded too. */
+				record[i]=0;
+			}
 		}
 	}
 	cov->last_flush_time = sat_time();
@@ -1079,9 +1110,7 @@ void sat_fac_record_coverage (int feature_index)
 			record[feature_index] = time_now;
 			cov->dirty_record_count++;
 		}
-//		cov->last_visit_time[feature_index] = time_now;
-		cov->visit_times[feature_index]++;
-
+		
 		/* We flush newly recorded data if it is big enough. */
 		if(cov->dirty_record_count > cov->flush_threshold) {
 			sat_fac_flush_coverage ();
@@ -1108,7 +1137,7 @@ void sat_dcs_initialize()
 	sat_dcs_record->slot_count = sat_dcs_slot_count;
 	sat_dcs_record->last_flush_time = sat_time();
 	sat_dcs_record->dirty_record_count = 0;
-	sat_dcs_record->flush_threshold = 50;	
+	sat_dcs_record->flush_threshold = 100;	
 }
 
 void sat_dcs_reclaim()
@@ -1130,8 +1159,6 @@ void sat_fac_initialize()
 	sprintf(sat_fac_record->header, "--FAC\n");
 
 	sat_fac_record->record = (time_t *) calloc (sizeof (time_t) * sat_fac_slot_count, 1);	
-//	sat_fac_record->last_visit_time = (time_t *) calloc (sizeof (time_t) * sat_fac_slot_count, 1);
-	sat_fac_record->visit_times = (EIF_INTEGER *) calloc (sizeof (int) * sat_fac_slot_count, 1);
 	
 	sat_fac_record->slot_count = sat_fac_slot_count;
 	sat_fac_record->last_flush_time = sat_time();
@@ -1145,8 +1172,6 @@ void sat_fac_reclaim()
 	if(sat_fac_record->dirty_record_count>0) sat_fac_flush_coverage();
 	free (sat_fac_record->header);
 	free (sat_fac_record->record);
-//	free (sat_fac_record->last_visit_time);
-	free (sat_fac_record->visit_times);	
 	free (sat_fac_record);
 }
 
@@ -1168,6 +1193,11 @@ void sat_initialize()
 		 * */
 
 	if(sat_has_instrument) {
+
+		/* Disable catcall detection at run-time. */
+		set_catcall_detection_console (EIF_FALSE);
+		set_catcall_detection_debugger (EIF_FALSE);
+
 		sat_log_file = fopen (sat_log_file_name, "w");
 		free (sat_log_file_name);
 
@@ -1186,7 +1216,8 @@ void sat_initialize()
 void sat_reclaim()
 {
 	if(sat_has_instrument) {
-		
+		sat_flush_data();
+
 		/* Reclaim for decision coverage recording. */
 		if(sat_dcs_is_enabled) {
 			sat_dcs_reclaim();

@@ -13,6 +13,7 @@ inherit
 	SHARED_BYTE_CONTEXT
 
 	BYTE_NODE_NULL_VISITOR
+		export {ANY}all end
 
 	SAT_SHARED_NAMES
 
@@ -22,6 +23,8 @@ inherit
 			sections as config_sections,
 			process_record as process_config_record
 		end
+
+	SAT_INSTRUMENT_UTILITY
 
 feature -- Status report
 
@@ -58,6 +61,13 @@ feature -- Access
 	map_file_storage_action: PROCEDURE [ANY, TUPLE [STRING]]
 			-- Action to store a string into map file
 
+	summary: STRING is
+			-- Summary of current instrument status
+		deferred
+		ensure
+			result_attached: Result /= Void
+		end
+
 feature -- Setting
 
 	set_map_file_storage_action (a_action: like map_file_storage_action) is
@@ -90,6 +100,15 @@ feature -- Basic operations
 			if map_file_storage_action /= Void then
 				map_file_storage_action.call ([a_string])
 			end
+		end
+
+	process_summary_record (a_section_name: STRING; a_record_line: STRING) is
+			-- Process instrument summary line `a_record_line' in section named `a_section_name'.
+		require
+			a_section_name_attached: a_section_name /= Void
+			not_a_section_name_is_empty: not a_section_name.is_empty
+			a_record_line_attached: a_record_line /= Void
+		deferred
 		end
 
 feature -- Byte node processing
@@ -150,6 +169,13 @@ feature -- Byte node processing
 
 	process_if_else_part_end is
 			-- Process at the end of a "Else_part" from a Conditional.
+		deferred
+		end
+
+	process_if_b_end (a_node: IF_B) is
+			-- Process after an entire "if" statement.
+		require
+			a_node_attached: a_node /= Void
 		deferred
 		end
 
@@ -239,73 +265,13 @@ feature{NONE} -- Implementation/Config
 					-- We only have a class name.
 				create l_class_config.make (l_data.a_class_name)
 				l_ancestor := l_data.a_properties.item ("ancestor")
-				l_class_config.set_is_ancestor_enabled (l_ancestor /= Void and then l_ancestor.is_equal ("true"))
+				l_class_config.set_is_ancestor_enabled (l_ancestor /= Void and then l_ancestor.is_case_insensitive_equal ("true"))
 				Result := l_class_config
 			else
 					-- We have a class name and a feature name.
 				create l_feature_config.make (l_data.a_class_name, l_data.a_feature_name)
 				Result := l_feature_config
 			end
-		end
-
-	config_from_string (a_string: STRING): TUPLE [a_class_name: STRING; a_feature_name: STRING; a_properties: HASH_TABLE [STRING, STRING]] is
-			-- Configs from `a_string'
-			-- If there is no feature associated with `a_string', `a_feature_name' will be empty.
-			-- `a_properties' stored a name-value table associated with current config. [value, name]
-			-----------------------------------------------------------------------------------------
-			-- One config line has one of the following formats:
-			--  1. Class_name.feature_name TAB prop_name=value TAB prop_name=value
-			--  2. Class_name TAB prop_name=value TAB prop_name=value
-			--  There can be no propery in a config line.
-			--  All strings in the config line is case-insensitive.
-			-----------------------------------------------------------------------------------------
-		require
-			a_string_valid: a_string /= Void and then not a_string.is_empty
-		local
-			l_parts: LIST [STRING]
-			l_code_section: LIST [STRING]
-			l_class_name: STRING
-			l_feature_name: STRING
-			l_property: LIST [STRING]
-			l_property_tbl: HASH_TABLE [STRING, STRING]
-			l_prop_name: STRING
-			l_prop_value: STRING
-		do
-			create l_property_tbl.make (1)
-			l_parts := a_string.split ('%T')
-
-				-- Find out class name and (optional) feature name of current config.
-			l_code_section := l_parts.first.split ('.')
-			l_class_name := l_code_section.i_th (1).as_upper
-			if l_code_section.count = 2 then
-					-- We have a class name and a feature name.
-				l_feature_name := l_code_section.i_th (2).as_lower
-			else
-				l_feature_name := ""
-			end
-
-				-- We have name-value pair properties.
-			if l_parts.count > 1 then
-				from
-					l_parts.start
-					l_parts.forth
-				until
-					l_parts.after
-				loop
-					l_property := l_parts.item.split ('=')
-					check l_property.count = 2 end
-					l_prop_name := l_property.i_th (1).as_lower
-					l_prop_name.left_adjust
-					l_prop_name.right_adjust
-					l_prop_value := l_property.i_th (2).as_lower
-					l_prop_value.left_adjust
-					l_prop_value.right_adjust
-					l_property_tbl.force (l_prop_value, l_prop_name)
-					l_parts.forth
-				end
-			end
-
-			Result := [l_class_name, l_feature_name, l_property_tbl]
 		end
 
 end

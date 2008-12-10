@@ -2,7 +2,7 @@ indexing
 	description: "Type formatter"
 	author: ""
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 class
 	AUT_SHARED_TYPE_FORMATTER

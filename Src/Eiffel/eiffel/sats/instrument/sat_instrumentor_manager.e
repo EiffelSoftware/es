@@ -14,7 +14,8 @@ inherit
 			process_if_b,
 			process_case_b,
 			process_inspect_b,
-			process_loop_b
+			process_loop_b,
+			process_elsif_b
 		end
 
 	SAT_SHARED_INSTRUMENTATION
@@ -45,6 +46,27 @@ feature -- Access
 			Result := "sat_%%d.log"
 		ensure
 			result_attached: Result /= Void
+		end
+
+	summary: STRING is
+			-- Summary of current instrument status
+		local
+			cur: CURSOR
+		do
+			create Result.make (256)
+			cur := instrumentors.cursor
+			from
+				instrumentors.start
+			until
+				instrumentors.after
+			loop
+				Result.append (setting_section_name)
+				Result.append_character ('%T')
+				Result.append (instrumentors.item.summary)
+				Result.append_character ('%N')
+				instrumentors.forth
+			end
+			instrumentors.go_to (cur)
 		end
 
 feature -- Status report
@@ -121,6 +143,13 @@ feature -- Setting
 			is_instrument_enabled_set: is_instrument_generation_enabled = b
 		end
 
+feature -- Basic operations
+
+	process_summary_record (a_section_name: STRING; a_record_line: STRING) is
+			-- Process instrument summary line `a_record_line' in section named `a_section_name'.
+		do
+		end
+
 feature -- Data clearing
 
 	reset is
@@ -144,41 +173,38 @@ feature -- Basic operations
 		local
 			l_loader: SAT_FILE_LOADER
 		do
-			create l_loader.make
+			create config_loader.make
+			l_loader := config_loader
 			instrumentors.do_all (agent l_loader.register_analyzer ({SAT_INSTRUMENTOR}?))
+			l_loader.register_analyzer (Current)
 			l_loader.reset_analyzers
 			l_loader.load_file (a_file_name)
 			instrumentors.do_all (agent l_loader.remove_analyzer ({SAT_INSTRUMENTOR}?))
+			l_loader.remove_analyzer (Current)
 		end
+
+	config_loader: SAT_FILE_LOADER
+			-- Config file loader to analyze the instrumentation config file
 
 	prepare_before_generation is
 			-- Prepare before instrument generation.
 		local
 			l_agent: PROCEDURE [ANY, TUPLE [STRING]]
-			l_has_instrument: BOOLEAN
 		do
 
 				-- Check if any instrumentor is needed.			
-			l_has_instrument := is_decision_coverage_enabled or is_feature_coverage_enabled
-			set_is_instrument_enabled (l_has_instrument)
+				-- We consider that instrumentation is needed when a instrument config file is provied,
+				-- even though that file can be empty.
+			set_is_instrument_enabled (instrument_config_file_name /= Void and then not instrument_config_file_name.is_empty)
 
 			if is_instrument_enabled then
-					-- Create and register needed instrumentors.
-					-- Setup decision coverage instrumentor
-				if is_decision_coverage_enabled then
-					setup_decision_coverage_instrumentor
-				end
-
-					-- Setup feature coverage instrumentor
-				if is_feature_coverage_enabled then
-					setup_feature_access_coverage_instrumentor
-				end
-
-				reset
-
 					-- Load instrument config file.
 				if not instrument_config_file_name.is_empty then
 					load_instrument_config_file (instrument_config_file_name)
+				end
+
+				if is_auto_test_compiling then
+					load_instrument_summary
 				end
 
 					-- Setup map file storage action.
@@ -194,6 +220,7 @@ feature -- Basic operations
 			-- Dispose after instrument generation.
 		do
 			if is_instrument_enabled then
+				put_string_in_map_file (summary)
 				instrumentors.do_all (agent {SAT_INSTRUMENTOR}.set_map_file_storage_action (Void))
 				instrumentors.do_all (agent remove_instrumentor)
 				set_is_instrument_generate_enabled (False)
@@ -216,6 +243,14 @@ feature -- Byte node processing
 		do
 			if should_generate_instrument then
 				instrumentors.do_all (agent a_node.process ({SAT_INSTRUMENTOR}?))
+			end
+		end
+
+	process_if_b_end (a_node: IF_B) is
+			-- Process after an entire "if" statement.
+		do
+			if should_generate_instrument then
+				instrumentors.do_all (agent {SAT_INSTRUMENTOR}.process_if_b_end (a_node))
 			end
 		end
 
@@ -264,6 +299,14 @@ feature -- Byte node processing
 		do
 			if should_generate_instrument then
 				instrumentors.do_all (agent (a_ins: SAT_INSTRUMENTOR) do a_ins.process_if_else_part_end end)
+			end
+		end
+
+	process_elsif_b (a_node: ELSIF_B) is
+			-- Process `a_node'.
+		do
+			if should_generate_instrument then
+				instrumentors.do_all (agent {SAT_INSTRUMENTOR}.process_elsif_b (a_node))
 			end
 		end
 
@@ -463,8 +506,16 @@ feature{NONE} -- Config file analysis
 	process_config_record (a_section_name: STRING; a_record_line: STRING) is
 			-- Process record line text in `a_record_line'.
 			-- This record line is in one of the section defined in `sections'.
+		local
+			l_properties: HASH_TABLE [STRING, STRING]
 		do
-			check Should_not_be_here: False end
+			l_properties := property_table (a_record_line.split ('%T'))
+			if has_property (dcs_section_name, "true", l_properties) then
+				setup_decision_coverage_instrumentor
+			end
+			if has_property (fac_section_name, "true", l_properties) then
+				setup_feature_access_coverage_instrumentor
+			end
 		end
 
 	config_sections: LIST [STRING] is
@@ -472,21 +523,34 @@ feature{NONE} -- Config file analysis
 			-- Only data in sections contained in this list will be passed to Current analyzer.
 			-- Section names are case-sensitive.
 		do
-			check Should_not_be_here: False end
+			create {ARRAYED_LIST [STRING]} Result.make (1)
+			Result.extend ({SAT_SHARED_NAMES}.setting_section_name)
 		end
 
 feature{NONE} -- Implmentation
 
 	setup_decision_coverage_instrumentor is
 			-- Setup instrumentor for decision coverage.
+		local
+			l_instrumentor: SAT_DECISION_INSTRUMENTOR
 		do
-			register_instrumentor (create {SAT_DECISION_INSTRUMENTOR}.make)
+			set_is_decision_coverage_enabled (True)
+			create l_instrumentor.make
+			l_instrumentor.reset
+			register_instrumentor (l_instrumentor)
+			config_loader.register_analyzer (l_instrumentor)
 		end
 
 	setup_feature_access_coverage_instrumentor is
 			-- Setup instrumentor for feature access coverage.
+		local
+			l_instrumentor: SAT_FEATURE_ACCESS_INSTRUMENTOR
 		do
-			register_instrumentor (create {SAT_FEATURE_ACCESS_INSTRUMENTOR}.make)
+		set_is_feature_coverage_enabled (True)
+			create l_instrumentor.make
+			l_instrumentor.reset
+			register_instrumentor (l_instrumentor)
+			config_loader.register_analyzer (l_instrumentor)
 		end
 
 	map_file: PLAIN_TEXT_FILE
@@ -497,32 +561,68 @@ feature{NONE} -- Implmentation
 		require
 			a_string_attached: a_string /= Void
 		do
-			check map_file /= Void and then map_file.is_open_write end
-			map_file.put_string (a_string)
+			if not is_auto_test_compiling then
+				check map_file /= Void and then map_file.is_open_write end
+				map_file.put_string (a_string)
+			end
 		end
 
 	open_map_file is
 			-- Open map file.
-		local
-			l_file_name: FILE_NAME
 		do
-			if workbench.system.byte_context.final_mode then
-				create l_file_name.make_from_string (system.project_location.final_path)
-			else
-				create l_file_name.make_from_string (system.project_location.workbench_path)
+			if not is_auto_test_compiling then
+				create map_file.make_create_read_write (map_file_path)
 			end
-			l_file_name.set_file_name (map_file_name)
-			create map_file.make_create_read_write (l_file_name)
 		end
 
 	close_map_file is
 			-- Close map file.
 		do
-			map_file.close
+			if not is_auto_test_compiling then
+				map_file.close
+			end
 		end
 
-	map_file_name: STRING is "sat_map.txt"
+	map_file_name: STRING is "sat_translator.txt"
 			-- Name of map file.
+
+	map_file_path: FILE_NAME is
+			-- Full path of the file to store instrumentation map file
+		do
+			create Result.make_from_string (system.project_location.workbench_path)
+			Result.set_file_name (map_file_name)
+		ensure
+			result_attached: Result /= Void
+		end
+
+	load_instrument_summary is
+			-- Load instrument summary from `map_file_path'.
+		require
+			compiling_for_auto_test: is_auto_test_compiling
+		local
+			l_loader: SAT_FILE_LOADER
+			l_analyzer: SAT_AGENT_BASED_FILE_ANALYZER
+			l_sections: LINKED_LIST [STRING]
+			cur: CURSOR
+		do
+			create l_loader.make
+			l_loader.set_is_single_line_mode (True)
+			cur := instrumentors.cursor
+			create l_sections.make
+			l_sections.extend (setting_section_name)
+
+			from
+				instrumentors.start
+			until
+				instrumentors.after
+			loop
+				create l_analyzer.make (agent (instrumentors.item).process_summary_record, agent do_nothing, l_sections)
+				l_loader.register_analyzer (l_analyzer)
+				instrumentors.forth
+			end
+			instrumentors.go_to (cur)
+			l_loader.load_file (map_file_path)
+		end
 
 invariant
 	instrumentors_attached: instrumentors /= Void

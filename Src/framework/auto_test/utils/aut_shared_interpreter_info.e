@@ -2,7 +2,7 @@ indexing
 	description: "Summary description for {AUT_SHARED_INTERPRETER_INFO}."
 	author: ""
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 deferred class
 	AUT_SHARED_INTERPRETER_INFO

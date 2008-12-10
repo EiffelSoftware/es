@@ -2,7 +2,7 @@ indexing
 	description: "Printer to print requests into text form"
 	author: ""
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 75356 $"
 
 class
 	AUT_REQUEST_TEXT_PRINTER
@@ -19,6 +19,13 @@ inherit
 	AUT_SHARED_INTERPRETER_INFO
 
 	ITP_VARIABLE_CONSTANTS
+
+	AUT_SHARED_CONSTANTS
+
+	SAT_SHARED_INSTRUMENTATION
+		rename
+			system as sat_system
+		end
 
 create
 	make
@@ -74,6 +81,7 @@ feature {AUT_REQUEST} -- Processing
 
 	process_create_object_request (a_request: AUT_CREATE_OBJECT_REQUEST) is
 		do
+			put_test_case_count_log (a_request)
 			output_stream.put_string (execute_request_header)
 			output_stream.put_string ("create {")
 			output_stream.put_string (type_name (a_request.target_type, a_request.creation_procedure))
@@ -89,6 +97,7 @@ feature {AUT_REQUEST} -- Processing
 
 	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST) is
 		do
+			put_test_case_count_log (a_request)
 			output_stream.put_string (execute_request_header)
 			if a_request.is_feature_query then
 				output_stream.put_string (a_request.receiver.name (variable_name_prefix))
@@ -106,6 +115,7 @@ feature {AUT_REQUEST} -- Processing
 
 	process_assign_expression_request (a_request: AUT_ASSIGN_EXPRESSION_REQUEST) is
 		do
+			put_test_case_count_log (a_request)
 			output_stream.put_string (execute_request_header)
 			output_stream.put_string (a_request.receiver.name (variable_name_prefix))
 			output_stream.put_character (' ')
@@ -157,6 +167,20 @@ feature {NONE} -- Printing
 
 	execute_request_header: STRING is ":execute "
 			-- Header for "execute" request
+
+	put_test_case_count_log (a_request: AUT_REQUEST) is
+			-- Add log message about test case index and time.
+		require
+			a_request_attached: a_request /= Void
+		do
+			if a_request.is_real_test_case then
+					-- We output this message only if it is a real test case.
+				output_stream.put_string (test_case_count_header)
+				output_stream.put_string (a_request.test_case_index.out)
+				output_stream.put_string (",")
+				output_stream.put_line (sat_time.out)
+			end
+		end
 
 invariant
 	system_not_void: system /= Void

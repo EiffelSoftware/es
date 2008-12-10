@@ -2,7 +2,7 @@ indexing
 	description: "Factory to generate byte node structure"
 	author: ""
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 deferred class
 	AUT_BYTE_NODE_FACTORY

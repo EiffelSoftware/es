@@ -2,7 +2,7 @@ indexing
 	description: "AutoTest request processor"
 	author: ""
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 76108 $"
 
 class
 	AUT_REQUEST_PROCESSORS

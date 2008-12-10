@@ -6,7 +6,7 @@ indexing
 	copyright: "Copyright (c) 2005, Andreas Leitner and others"
 	license: "Eiffel Forum License v2 (see forum.txt)"
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$Revision: 75356 $"
 
 class AUT_TEST_CASE_RESULT_SET
 
@@ -147,6 +147,8 @@ feature {NONE} -- Status update
 				end
 			end
 		end
+
+feature -- Access
 
 	unique_failure_list: DS_ARRAYED_LIST [AUT_TEST_CASE_RESULT]
 			-- List of unique failures contained in set (using heuristics from witness)
