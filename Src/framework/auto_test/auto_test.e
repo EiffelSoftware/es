@@ -92,7 +92,9 @@ feature -- Execution
 
 							-- Analyze test results.
 						build_result_repository
-						generate_pre_minimize_statistics
+						if is_minimization_enabled then
+							generate_pre_minimize_statistics
+						end
 
 							-- Test case minimization.
 						if is_minimization_enabled then

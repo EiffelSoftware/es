@@ -608,6 +608,7 @@ feature -- Update
 			ewb_senders: EWB_SENDERS
 			ewb_callees: EWB_CALLEES
 			l_arg: STRING
+			auto_test_arguments: LINKED_LIST [STRING]
 		do
 			filter_name := ""
 			option := argument (current_option);
@@ -1212,6 +1213,18 @@ feature -- Update
 				else
 					option_error := True
 				end
+			elseif option.is_equal ("-auto_test") then
+					-- When this option is present, all the following arguments are parsed as AutoTest specific arguments.
+				create auto_test_arguments.make
+				from
+					current_option := current_option + 1
+				until
+					current_option > argument_count
+				loop
+					auto_test_arguments.extend (argument (current_option))
+					current_option := current_option + 1
+				end
+				create {EWB_AUTO_TEST} command.make_with_arguments (auto_test_arguments)
 			elseif option.is_equal ("-instrument_config") then
 				if current_option + 1 <= argument_count then
 					current_option := current_option + 1
@@ -1344,9 +1357,9 @@ feature {NONE} -- Implementation
 		end
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -1357,19 +1370,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com

@@ -1194,10 +1194,11 @@ void sat_initialize()
 
 	if(sat_has_instrument) {
 
+#ifdef WORKBENCH
 		/* Disable catcall detection at run-time. */
 		set_catcall_detection_console (EIF_FALSE);
 		set_catcall_detection_debugger (EIF_FALSE);
-
+#endif
 		sat_log_file = fopen (sat_log_file_name, "w");
 		free (sat_log_file_name);
 
