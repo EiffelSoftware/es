@@ -174,13 +174,19 @@ feature {NONE} -- Implementation
 			-- Write locals initialization
 		local
 			i: INTEGER
+			l_type: TYPE_A
 		do
 			from
 				i := 1
 			until
 				i > a_byte_code.local_count
 			loop
-				put_line (name_generator.local_name (i) + " := " + default_value (a_byte_code.locals.item (i)) + ";")
+				l_type := a_byte_code.locals.item (i).actual_type
+				if l_type.is_attached and not l_type.is_expanded then
+					put_line ("assume IsAllocatedAndNotVoid(Heap, " + name_generator.local_name (i) + ");")
+				else
+					put_line (name_generator.local_name (i) + " := " + default_value (a_byte_code.locals.item (i)) + ";")
+				end
 				i := i + 1
 			end
 		end

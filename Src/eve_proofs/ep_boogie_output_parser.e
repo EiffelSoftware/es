@@ -133,19 +133,28 @@ feature {NONE} -- Implementation
 		local
 			l_class: CLASS_I
 			l_feature: E_FEATURE
+			l_feature_name: STRING
 		do
 			l_class := universe.classes_with_name (a_class).first
-			l_feature := l_class.compiled_class.feature_with_name (a_feature)
+
+			if a_feature.has ('$') then
+					-- It's a mangled operator
+				l_feature_name := name_generator.feature_name_for_mangled_operator (a_feature)
+			else
+				l_feature_name := a_feature
+			end
+
+			l_feature := l_class.compiled_class.feature_with_name (l_feature_name)
 			output_manager.add (names.message_verifying)
 			output_manager.add_space
 			output_manager.add ("{")
 			output_manager.add_class (l_class)
 			output_manager.add ("}.")
-			output_manager.add_feature (l_feature, a_feature)
+			output_manager.add_feature (l_feature, l_feature_name)
 			output_manager.add (": ")
 
 			current_class := l_class.compiled_class
-			current_feature := current_class.feature_named (a_feature)
+			current_feature := current_class.feature_named (l_feature_name)
 		end
 
 	handle_verified (a_time, a_result: STRING)
@@ -169,7 +178,7 @@ feature {NONE} -- Implementation
 		do
 			l_source_line := input_lines.i_th (a_line.to_integer)
 			if a_error.is_equal ("BP5001") then
-				handle_assertion_error (l_source_line)
+				handle_assertion_error (a_line.to_integer, l_source_line)
 			elseif a_error.is_equal ("BP5002") then
 				handle_precondition_error (a_line.to_integer)
 			elseif a_error.is_equal ("BP5003") then
@@ -181,7 +190,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	handle_assertion_error (a_source_line: STRING)
+	handle_assertion_error (a_source_line_number: INTEGER; a_source_line: STRING)
 			-- Handle assertion error.
 		local
 			l_type: STRING
@@ -201,8 +210,10 @@ feature {NONE} -- Implementation
 				elseif l_type.is_equal ("attached") then
 						-- TODO: internationalization
 					create last_error.make ("Target may not be attached")
+					last_error.set_description ("Target of feature call may not be attached")
 					last_error.set_class (current_class)
 					last_error.set_feature (current_feature)
+					last_error.set_position (instruction_line_position (a_source_line_number), 0)
 				else
 					check false end
 				end
@@ -253,6 +264,11 @@ feature {NONE} -- Implementation
 					if assert_regexp.captured_substring (4).is_integer then
 							-- Assertion has line number of precondition (it's generated automatically)
 						last_error.set_associated_feature (feature_at_position (a_line.to_integer))
+					elseif assert_regexp.captured_substring (4).is_equal ("combined") then
+							-- It's a weakend precondition
+						last_error.set_associated_feature (feature_at_position (a_line.to_integer))
+							-- TODO: internationalization + better description
+						l_tag := "weakend precondition"
 					else
 							-- Assertion has feature name of precondition (it's part of the theory)
 						last_error.set_associated_feature (feature_with_name (assert_regexp.captured_substring (3), assert_regexp.captured_substring (4)))
@@ -375,7 +391,7 @@ feature {NONE} -- Regular expressions
 			-- Regular expression for verifying section.
 		once
 			create Result.make
-			Result.compile ("^Verifying\s*(\w+)\.(\w+)\.(\w+).*$")
+			Result.compile ("^Verifying\s*(\w+)\.(\w+)\.([\w$]+).*$")
 		end
 
 	verified_regexp: RX_PCRE_REGULAR_EXPRESSION

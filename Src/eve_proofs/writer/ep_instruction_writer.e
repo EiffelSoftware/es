@@ -114,7 +114,9 @@ feature -- Processing
 				output.put ("[")
 				output.put (name_mapper.current_name)
 				output.put (", ")
+				-- TODO: here and in other places, use routine id instead of name id in case of renamed features
 				l_feature ?= system.class_of_id (l_attribute.written_in).feature_of_name_id (l_attribute.attribute_name_id)
+				check l_feature /= Void end
 				output.put (name_generator.attribute_name (l_feature))
 				output.put ("]")
 			else
@@ -283,8 +285,9 @@ feature -- Processing
 			ep_context.set_line_number (a_node.line_number)
 			output.put_comment_line ("Inspect statement: ignored")
 				-- TODO: implement
-			create l_error.make ("Inspect statement not supported")
-			errors.extend (l_error)
+			create l_error.make ("Inspect statement ignored")
+			l_error.set_from_context
+			warnings.extend (l_error)
 		end
 
 	process_instr_call_b (a_node: INSTR_CALL_B)
@@ -380,8 +383,9 @@ feature -- Processing
 		do
 			ep_context.set_line_number (a_node.line_number)
 			output.put_comment_line ("Retry instruction: ignored")
-			create l_error.make ("Retry instruction not supported")
-			errors.extend (l_error)
+			create l_error.make ("Retry instruction ignored")
+			l_error.set_from_context
+			warnings.extend (l_error)
 		end
 
 	process_reverse_b (a_node: REVERSE_B)

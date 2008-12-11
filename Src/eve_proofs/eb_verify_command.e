@@ -44,7 +44,7 @@ inherit {NONE}
 	EB_SHARED_PREFERENCES
 		export {NONE} all end
 
-	EB_SHARED_WINDOW_MANAGER
+	EB_SHARED_MANAGERS
 		export {NONE} all end
 
 feature {NONE} -- Initialization
@@ -125,11 +125,21 @@ feature -- Basic operations
 				if l_class_stone /= Void then
 					load_class (l_class_stone.class_i)
 				elseif l_cluster_stone /= Void then
-					load_cluster (l_cluster_stone.group)
+					if l_cluster_stone.is_cluster then
+						load_cluster (l_cluster_stone.cluster_i)
+					else
+						load_group (l_cluster_stone.group)
+					end
 				end
 			end
 
-			if eve_proofs.is_ready then
+			if eve_proofs.classes_to_verify.is_empty then
+					-- TODO: internationalization
+				output_manager.clear
+				output_manager.add ("No classes to verify")
+				output_manager.add_new_line
+				output_manager.end_processing
+			else
 				eve_proofs.execute_verification
 			end
 
@@ -159,7 +169,38 @@ feature -- Basic operations
 			end
 		end
 
-	load_cluster (a_group: CONF_GROUP)
+	load_cluster (a_cluster: CLUSTER_I)
+			-- Load `a_cluster' for verification.
+		require
+			a_cluster_not_void: a_cluster /= Void
+		local
+			l_conf_class: CONF_CLASS
+			l_class_i: CLASS_I
+			l_class_c: CLASS_C
+		do
+			from
+				a_cluster.classes.start
+			until
+				a_cluster.classes.after
+			loop
+				l_conf_class := a_cluster.classes.item_for_iteration
+				l_class_i := eiffel_universe.class_named (l_conf_class.name, a_cluster)
+				load_class (l_class_i)
+				a_cluster.classes.forth
+			end
+			if a_cluster.sub_clusters /= Void then
+				from
+					a_cluster.sub_clusters.start
+				until
+					a_cluster.sub_clusters.after
+				loop
+					load_cluster (a_cluster.sub_clusters.item_for_iteration)
+					a_cluster.sub_clusters.forth
+				end
+			end
+		end
+
+	load_group (a_group: CONF_GROUP)
 			-- Load `a_group' for verification.
 		require
 			a_group_not_void: a_group /= Void
@@ -175,11 +216,7 @@ feature -- Basic operations
 			loop
 				l_conf_class := a_group.classes.item_for_iteration
 				l_class_i := eiffel_universe.class_named (l_conf_class.name, a_group)
-				if l_class_i.is_compiled then
-					l_class_c := l_class_i.compiled_class
-					check l_class_c /= Void end
-					eve_proofs.add_class_to_verify (l_class_c)
-				end
+				load_class (l_class_i)
 				a_group.classes.forth
 			end
 		end

@@ -20,6 +20,7 @@ inherit
 			process_bin_and_then_b,
 			process_bin_div_b,
 			process_bin_eq_b,
+			process_bin_free_b,
 			process_bin_ge_b,
 			process_bin_gt_b,
 			process_bin_implies_b,
@@ -57,6 +58,7 @@ inherit
 			process_result_b,
 			process_routine_creation_b,
 			process_string_b,
+			process_un_free_b,
 			process_un_minus_b,
 			process_un_not_b,
 			process_un_old_b,
@@ -220,6 +222,12 @@ feature {BYTE_NODE} -- Visitors
 			safe_process (a_node.left)
 			expression.put (" == ")
 			safe_process (a_node.right)
+		end
+
+	process_bin_free_b (a_node: BIN_FREE_B)
+			-- Process `a_node'.
+		do
+			process_binary_infix (a_node)
 		end
 
 	process_bin_ge_b (a_node: BIN_GE_B)
@@ -696,17 +704,21 @@ feature {BYTE_NODE} -- Visitors
 			side_effect.put_line ("assume (forall heap: [ref, <x>name]x" + l_typed_arguments + " :: ")
 			side_effect.put_line ("            { routine.precondition_" + l_open_argument_count.out + "(heap" + l_arguments + ") } // Trigger")
 			side_effect.put_line ("        routine.precondition_" + l_open_argument_count.out + "(heap" + l_arguments + ") <==> " + l_contract_writer.full_precondition + ");")
+-- TODO: fix for demo
+--			side_effect.put_line ("assume (forall $o: ref, $f: name :: ")
+--			side_effect.put_line ("            { agent.modifies(" + l_agent_variable + ", $o, $f) } // Trigger")
+--			side_effect.put_line ("        agent.modifies(" + l_agent_variable + ", $o, $f) <==> ($o == arg.a_paragraph));")
 			side_effect.put_line ("assume (forall $o: ref, $f: name :: ")
 			side_effect.put_line ("            { agent.modifies(" + l_agent_variable + ", $o, $f) } // Trigger")
-			side_effect.put_line ("        agent.modifies(" + l_agent_variable + ", $o, $f) <==> ($o == arg.a_paragraph));")
+			side_effect.put_line ("        agent.modifies(" + l_agent_variable + ", $o, $f) <==> (true));")
 			if l_attached_feature.has_return_value then
-				side_effect.put_line ("assume (forall heap: [ref, <x>name]x, old_heap: [ref, <x>name]x" + l_typed_arguments + " :: ")
-				side_effect.put_line ("            { function.postcondition_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ") } // Trigger")
-				side_effect.put_line ("        function.postcondition_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ") <==> " + l_contract_writer.full_postcondition + ");")
-			else
 				side_effect.put_line ("assume (forall heap: [ref, <x>name]x, old_heap: [ref, <x>name]x" + l_typed_arguments + ", result:any :: ")
-				side_effect.put_line ("            { routine.postcondition_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ", result) } // Trigger")
-				side_effect.put_line ("        routine.postcondition_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ", result) <==> " + l_contract_writer.full_postcondition + ");")
+				side_effect.put_line ("            { function.postcondition_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ", result) } // Trigger")
+				side_effect.put_line ("        function.postcondition_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ", result) <==> " + l_contract_writer.full_postcondition + ");")
+			else
+				side_effect.put_line ("assume (forall heap: [ref, <x>name]x, old_heap: [ref, <x>name]x" + l_typed_arguments + " :: ")
+				side_effect.put_line ("            { routine.postcondition_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ") } // Trigger")
+				side_effect.put_line ("        routine.postcondition_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ") <==> " + l_contract_writer.full_postcondition + ");")
 			end
 
 				-- Store expression which is assigned in here
@@ -720,6 +732,13 @@ feature {BYTE_NODE} -- Visitors
 			side_effect.put_line ("havoc " + last_local + ";")
 			side_effect.put_line ("assume " + last_local + " != null && Heap[" + last_local + ", $allocated];")
 			expression.put (last_local)
+		end
+
+	process_un_free_b (a_node: UN_FREE_B)
+			-- Process `a_node'.
+		do
+			-- TODO: implement
+			check false end
 		end
 
 	process_un_minus_b (a_node: UN_MINUS_B)

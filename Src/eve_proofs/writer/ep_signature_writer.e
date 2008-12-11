@@ -49,7 +49,9 @@ feature -- Basic operations
 
 			put_comment_line ("Frame condition")
 			put_line ("modifies Heap;")
-			put_line ("ensures " + contract_writer.frame_expression + "; // frame " + a_feature.written_class.name_in_upper + ":" + a_feature.feature_name)
+-- TODO: generate real frame condition
+--			put_line ("ensures frame.modifies_current(Heap, old(Heap), Current); // frame " + a_feature.written_class.name_in_upper + ":" + a_feature.feature_name)
+--			put_line ("ensures " + contract_writer.frame_expression + "; // frame " + a_feature.written_class.name_in_upper + ":" + a_feature.feature_name)
 
 			environment.output_buffer.set_indentation ("")
 			put_new_line
@@ -71,7 +73,8 @@ feature -- Basic operations
 
 			-- TODO: Generate real frame condition
 			put_line ("modifies Heap;")
-			put_line ("ensures (forall $o: ref, $f: name :: { Heap[$o, $f] } ($o != null && old(Heap)[$o, $allocated] && $o != Current) ==> (old(Heap)[$o, $f] == Heap[$o, $f]));")
+			put_line ("ensures frame.modifies_current(Heap, old(Heap), Current);")
+--			put_line ("ensures (forall $o: ref, $f: name :: { Heap[$o, $f] } ($o != null && old(Heap)[$o, $allocated] && $o != Current) ==> (old(Heap)[$o, $f] == Heap[$o, $f]));")
 
 			put_comment_line ("Creation routine condition")
 			put_line ("free ensures Heap[Current, $allocated];")
@@ -116,7 +119,7 @@ feature {NONE} -- Implementation
 			-- Name mapper used for the expression writer
 
 	write_procedure_definition (a_feature: !FEATURE_I; a_procedure_name: STRING)
-			-- Write procedure definition of feature `a_feature_name' 
+			-- Write procedure definition of feature `a_feature_name'
 			-- using `a_procedure_name' for the Boogie name.
 		local
 			l_argument_name: STRING
@@ -190,7 +193,7 @@ feature {NONE} -- Implementation
 			put_comment_line ("User preconditions")
 			if contract_writer.has_weakened_preconditions then
 					-- Write combined precondition
-				put_line ("requires " + contract_writer.full_precondition + "; // combined precondition")
+				put_line ("requires " + contract_writer.full_precondition + "; // pre DUMMY:combined")
 			else
 					-- Write individual preconditions
 				from

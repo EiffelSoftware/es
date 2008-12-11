@@ -40,12 +40,40 @@ feature -- Element change
 
 	record_creation_routine_needed (a_feature: !FEATURE_I)
 			-- Record that `a_feature' is needed as a creation routine.
+		local
+			l_found: BOOLEAN
 		do
-			if not creation_routines_generated.has (a_feature) then
+			-- TODO: do this different...
+			from
+				creation_routines_needed.start
+			until
+				creation_routines_needed.after or l_found
+			loop
+				if creation_routines_needed.item_for_iteration.rout_id_set.first = a_feature.rout_id_set.first then
+					l_found := True
+				end
+				creation_routines_needed.forth
+			end
+			from
+				creation_routines_generated.start
+			until
+				creation_routines_generated.after or l_found
+			loop
+				if creation_routines_generated.item_for_iteration.rout_id_set.first = a_feature.rout_id_set.first then
+					l_found := True
+				end
+				creation_routines_generated.forth
+			end
+
+			if not l_found then
 				creation_routines_needed.extend (a_feature)
 			end
-		ensure
-			not creation_routines_generated.has (a_feature) implies creation_routines_needed.has (a_feature)
+
+--			if not creation_routines_generated.has (a_feature) then
+--				creation_routines_needed.extend (a_feature)
+--			end
+--		ensure
+--			not creation_routines_generated.has (a_feature) implies creation_routines_needed.has (a_feature)
 		end
 
 	record_feature_needed (a_feature: !FEATURE_I)

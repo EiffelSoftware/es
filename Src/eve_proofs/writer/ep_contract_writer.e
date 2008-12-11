@@ -125,6 +125,7 @@ feature -- Basic operations
 				-- Set up byte context
 			Context.clear_feature_data
 			Context.clear_class_type_data
+-- TODO: types can be empty
 			Context.init (current_feature.written_class.types.first)
 			Context.set_current_feature (current_feature)
 
