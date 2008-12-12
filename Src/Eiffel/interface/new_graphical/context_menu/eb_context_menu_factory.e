@@ -1797,10 +1797,10 @@ feature {NONE} -- EVE Proofs menu
 			a_menu_not_void: a_menu /= Void
 			a_class_stone_not_void: a_class_stone /= Void
 		do
-			a_menu.extend (dev_window.commands.verify_class_command.new_menu_item_unmanaged)
-			a_menu.last.set_text (dev_window.commands.verify_class_command.context_menu_name (last_name))
+			a_menu.extend (dev_window.commands.proof_command.new_menu_item_unmanaged)
+			a_menu.last.set_text (dev_window.commands.proof_command.class_context_menu_name (last_name))
 			a_menu.last.select_actions.wipe_out
-			a_menu.last.select_actions.extend (agent (dev_window.commands.verify_class_command).execute_with_stone (a_class_stone))
+			a_menu.last.select_actions.extend (agent (dev_window.commands.proof_command).execute_with_stone (a_class_stone))
 		end
 
 	extend_eve_proofs_cluster_menu (a_menu: EV_MENU; a_cluster_stone: CLUSTER_STONE) is
@@ -1809,10 +1809,10 @@ feature {NONE} -- EVE Proofs menu
 			a_menu_not_void: a_menu /= Void
 			a_class_stone_not_void: a_cluster_stone /= Void
 		do
-			a_menu.extend (dev_window.commands.verify_cluster_command.new_menu_item_unmanaged)
-			a_menu.last.set_text (dev_window.commands.verify_cluster_command.context_menu_name (a_cluster_stone, last_name))
+			a_menu.extend (dev_window.commands.proof_command.new_menu_item_unmanaged)
+			a_menu.last.set_text (dev_window.commands.proof_command.cluster_context_menu_name (a_cluster_stone, last_name))
 			a_menu.last.select_actions.wipe_out
-			a_menu.last.select_actions.extend (agent (dev_window.commands.verify_cluster_command).execute_with_stone (a_cluster_stone))
+			a_menu.last.select_actions.extend (agent (dev_window.commands.proof_command).execute_with_stone (a_cluster_stone))
 		end
 
 feature {NONE} -- Implementation

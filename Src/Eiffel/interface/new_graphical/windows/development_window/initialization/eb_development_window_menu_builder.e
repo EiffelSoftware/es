@@ -969,8 +969,8 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 				-- Separator -------------------------------------------------
 			l_tools_menu.extend (create {EV_MENU_SEPARATOR})
 
-				-- Ballet verify command
-			l_command_menu_item := develop_window.commands.verify_class_command.new_menu_item
+				-- EVE Proofs command
+			l_command_menu_item := develop_window.commands.proof_command.new_menu_item
 			auto_recycle (l_command_menu_item)
 			l_tools_menu.extend (l_command_menu_item)
 

@@ -260,6 +260,9 @@ feature {NONE} -- Initialization
 			create exec_replay_right_cmd.make_right (Current)
 			toolbarable_commands.extend (exec_replay_right_cmd)
 
+			create proof_command.make
+			proof_command.enable_sensitive
+			toolbarable_commands.extend (proof_command)
 
 			toggle_exec_replay_mode_cmd.disable_sensitive
 			exec_replay_back_cmd.disable_sensitive
@@ -421,6 +424,9 @@ feature -- Access
 
 	force_debug_mode_cmd: EB_FORCE_DEBUG_MODE_CMD
 			-- Force debug mode command.
+
+	proof_command: EB_PROOF_COMMAND
+			-- EVE Proofs command
 
 feature {EB_DEVELOPMENT_WINDOW, EB_DEVELOPMENT_WINDOW_PART} -- Implementation
 

@@ -154,8 +154,7 @@ feature -- Command
 			l_minimize_editors_command: EB_MINIMIZE_EDITORS_COMMAND
 			l_restore_editors_command: EB_RESTORE_EDITORS_COMMAND
 
-			l_verify_class_command: EB_VERIFY_CLASS_COMMAND
-			l_verify_cluster_command: EB_VERIFY_CLUSTER_COMMAND
+			l_proof_command: EB_PROOF_COMMAND
 
 			l_editor_font_zoom_in_command: EB_EDITOR_FONT_ZOOM_IN_COMMAND
 			l_editor_font_zoom_in_numpad_command: ES_EDITOR_FONT_ZOOM_IN_NUMPAD_COMMAND
@@ -381,12 +380,9 @@ feature -- Command
 			create l_edit_contracts_command.make (develop_window.shell_tools.tool ({ES_CONTRACT_TOOL}))
 			develop_window.commands.set_edit_contracts_command (l_edit_contracts_command)
 
-				-- Ballet commands
-			create l_verify_class_command.make (develop_window)
-			develop_window.commands.set_verify_class_command (l_verify_class_command)
-			create l_verify_cluster_command.make (develop_window)
-			develop_window.commands.set_verify_cluster_command (l_verify_cluster_command)
-
+				-- EVE Proofs command
+			create l_proof_command.make_with_window (develop_window)
+			develop_window.commands.set_proof_command (l_proof_command)
 
 				-- Add history commands to toolbarable_commands.
 				-- Setup its accelerators.

@@ -1,27 +1,20 @@
 indexing
 	description:
 		"[
-			Base class for commands to launch EVE Proofs.
+			Command to launch EVE Proofs.
 		]"
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class EB_VERIFY_COMMAND
+class EB_PROOF_COMMAND
 
 inherit
 
 	EB_TOOLBARABLE_AND_MENUABLE_COMMAND
-		undefine
-			tooltext
 		redefine
+			tooltext,
 			new_sd_toolbar_item,
 			new_mini_sd_toolbar_item
-		end
-
-	EB_DEVELOPMENT_WINDOW_COMMAND
-		rename
-			target as development_window,
-			make as make_old
 		end
 
 	COMPILER_EXPORTER
@@ -47,20 +40,45 @@ inherit {NONE}
 	EB_SHARED_MANAGERS
 		export {NONE} all end
 
+create
+	make,
+	make_with_window
+
 feature {NONE} -- Initialization
 
-	make (dev_window: EB_DEVELOPMENT_WINDOW)
+	make
+			-- Creation method.
+		do
+			enable_sensitive
+		end
+
+	make_with_window (a_window: EB_DEVELOPMENT_WINDOW)
 			-- Creation method.
 		require
-			dev_window_attached: dev_window /= Void
+			a_window /= Void
 		do
-			development_window := dev_window
-			enable_sensitive
+			window := a_window
+			make
 		ensure
-			development_window_attached: development_window = dev_window
+			window_set: window = a_window
 		end
 
 feature -- Execution
+
+	execute is
+			-- Execute menu command.
+		local
+			l_window: EB_DEVELOPMENT_WINDOW
+		do
+			if window /= Void then
+				l_window := window
+			else
+				l_window := window_manager.last_focused_development_window
+			end
+			if l_window /= Void and then droppable (l_window.stone) then
+				execute_with_stone (l_window.stone)
+			end
+		end
 
 	execute_with_stone (a_stone: STONE)
 			-- Execute with `a_stone'.
@@ -153,7 +171,7 @@ feature -- Basic operations
 			if not errors.is_empty then
 				error_handler.error_displayer.force_display
 			else
-				development_window.tools.output_tool.force_display
+				output_manager.force_display
 			end
 		end
 
@@ -176,7 +194,6 @@ feature -- Basic operations
 		local
 			l_conf_class: CONF_CLASS
 			l_class_i: CLASS_I
-			l_class_c: CLASS_C
 		do
 			from
 				a_cluster.classes.start
@@ -207,7 +224,6 @@ feature -- Basic operations
 		local
 			l_conf_class: CONF_CLASS
 			l_class_i: CLASS_I
-			l_class_c: CLASS_C
 		do
 			from
 				a_group.classes.start
@@ -239,7 +255,28 @@ feature -- Items
 			Result.drop_actions.set_veto_pebble_function (agent droppable)
 		end
 
+feature -- Context menu
+
+	class_context_menu_name (a_name: STRING_GENERAL): STRING_32
+			-- Name of context menu for `a_cluster_stone'
+		do
+			Result := names.verify_class_context_menu_name (a_name)
+		end
+
+	cluster_context_menu_name (a_cluster_stone: CLUSTER_STONE; a_name: STRING_GENERAL): STRING_32
+			-- Name of context menu for `a_cluster_stone'
+		do
+			if a_cluster_stone.group.is_library then
+				Result := names.verify_library_context_menu_name (a_name)
+			else
+				Result := names.verify_cluster_context_menu_name (a_name)
+			end
+		end
+
 feature {NONE} -- Implementation
+
+	window: EB_DEVELOPMENT_WINDOW
+			-- Associated development window (if any)
 
 	pixmap: EV_PIXMAP
 			-- Pixmap representing the command.
@@ -255,7 +292,49 @@ feature {NONE} -- Implementation
 
 	droppable (a_pebble: ANY): BOOLEAN is
 			-- Can user drop `a_pebble' on `Current'?
-		deferred
+		local
+			l_class_stone: CLASSI_STONE
+			l_cluster_stone: CLUSTER_STONE
+		do
+			l_class_stone ?= a_pebble
+			l_cluster_stone ?= a_pebble
+			Result := l_class_stone /= Void or else l_cluster_stone /= Void
+		end
+
+feature {NONE} -- Implementation
+
+	menu_name: STRING_GENERAL
+			-- Name as it appears in the menu (with & symbol).
+		do
+			-- TODO: internationalization
+			Result := "Proof Current Item"
+		end
+
+	tooltip: STRING_GENERAL
+			-- Tooltip for the toolbar button.
+		do
+			-- TODO: internationalization
+			Result := "Proof class or cluster"
+		end
+
+	tooltext: STRING_GENERAL
+			-- Text for the toolbar button.
+		do
+			Result := "Proof"
+		end
+
+	description: STRING_GENERAL
+			-- Description for this command.
+		do
+			-- TODO: internationalization
+			Result := "Proof class or cluster"
+		end
+
+	name: STRING_GENERAL
+			-- Name of the command. Used to store the command in the
+			-- preferences.
+		do
+			Result := "Proof"
 		end
 
 end

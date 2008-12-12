@@ -78,7 +78,7 @@ feature -- Convenience
 				loop
 					l_index := a_indexing_clause.item
 						-- TODO: extract string literal
-					if l_index.tag.name.as_lower.is_equal ("verify") then
+					if l_index.tag.name.as_lower.is_equal ("proof") then
 						l_found := True
 						l_bool ?= l_index.index_list.first
 						if l_bool /= Void then

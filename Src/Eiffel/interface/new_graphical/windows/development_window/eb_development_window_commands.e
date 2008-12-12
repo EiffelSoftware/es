@@ -168,11 +168,8 @@ feature -- Query
 	edit_contracts_command: !ES_EDIT_CONTRACTS_COMMAND
 			-- Edit contracts command
 
-	verify_class_command: !EB_VERIFY_CLASS_COMMAND
-			-- Verify class command
-
-	verify_cluster_command: !EB_VERIFY_CLUSTER_COMMAND
-			-- Verify cluster command
+	proof_command: !EB_PROOF_COMMAND
+			-- EVE Proofs command
 
 feature -- Commands
 
@@ -598,20 +595,12 @@ feature {EB_DEVELOPMENT_WINDOW_BUILDER, EB_DEVELOPMENT_WINDOW_TOOLBAR_BUILDER} -
 			edit_contracts_command_set: edit_contracts_command = a_command
 		end
 
-	set_verify_class_command (a_command: like verify_class_command)
-			-- Sets `verify_class_command' with `a_command'
+	set_proof_command (a_command: like proof_command)
+			-- Sets `proof_command' with `a_command'
 		do
-			verify_class_command := a_command
+			proof_command := a_command
 		ensure
-			verify_class_command_set: verify_class_command = a_command
-		end
-
-	set_verify_cluster_command (a_command: like verify_cluster_command)
-			-- Sets `verify_cluster_command' with `a_command'
-		do
-			verify_cluster_command := a_command
-		ensure
-			verify_cluster_command_set: verify_cluster_command = a_command
+			proof_command_set: proof_command = a_command
 		end
 
 feature -- Recycle
