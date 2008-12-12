@@ -106,6 +106,7 @@ feature -- Basic operations
 						l_done or else should_stop_loading
 					loop
 						l_line := l_file.last_string.twin
+						l_line.replace_substring_all ("%R", "")
 						if not l_line.is_empty then
 							if is_single_line_mode then
 								l_space_index := l_line.index_of ('%T', 1)
