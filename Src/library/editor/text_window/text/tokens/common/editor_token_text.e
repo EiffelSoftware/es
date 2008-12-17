@@ -20,6 +20,8 @@ inherit
 
 	DOUBLE_MATH
 
+	SAT_SHARED_EDITOR_TOKEN_CONSTANTS
+
 create
 	make
 
@@ -31,6 +33,7 @@ feature -- Initialisation
 			no_eol_in_text: not text.has ('%N')
 		do
 			set_image (text)
+			set_is_token_visited (is_visited)
 		ensure
 			wide_image_not_void: wide_image /= Void
 		end

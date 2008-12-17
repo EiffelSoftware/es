@@ -20,6 +20,8 @@ inherit
 
 	SAT_RESULT_ANALYZER_UTILITY
 
+	AUT_SHARED_INTERPRETER_INFO
+
 create
 	make
 
@@ -42,6 +44,8 @@ feature {NONE} -- Initialization
 
 			create fault_frequency_table.make (1, 100)
 			create fault_first_found_time_table.make (1, 100)
+
+			compute_interpreter_root_class
 		end
 
 feature -- Analysis time zone
@@ -355,49 +359,49 @@ feature{NONE} -- Reporting
 			l_last_reported_request := last_reported_request
 			if has_failure_repsone (l_last_reported_request) then
 				request_list.force_i_th (l_last_reported_request, reported_request_count)
-			end
 
-			create witness.make (request_list, last_start_index, reported_request_count)
-			l_test_case_start_time := witness.item (witness.count).test_case_start_time
-			if  l_test_case_start_time >= analysis_start_time then
-				if analyzsis_end_time >=0 and then l_test_case_start_time > analyzsis_end_time then
-					is_parse_ended := True
-				end
+				create witness.make (request_list, last_start_index, reported_request_count)
+				l_test_case_start_time := witness.item (witness.count).test_case_start_time
+				if  l_test_case_start_time >= analysis_start_time then
+					if analyzsis_end_time >=0 and then l_test_case_start_time > analyzsis_end_time then
+						is_parse_ended := True
+					end
 
-				if not is_parse_ended then
+					if not is_parse_ended then
 
-						-- We only add failed test cases.
-					if witness.is_fail then
-						l_unique_witnesses := unique_failure_witnesses
-						from
-							l_unique_witnesses.start
-						until
-							l_unique_witnesses.after or l_old_failure
-						loop
-							l_old_failure := witness.is_same_bug (l_unique_witnesses.item)
-							if l_old_failure then
-								l_index := l_unique_witnesses.index
+							-- We only add failed test cases.
+						if witness.is_fail then
+							l_unique_witnesses := unique_failure_witnesses
+							from
+								l_unique_witnesses.start
+							until
+								l_unique_witnesses.after or l_old_failure
+							loop
+								l_old_failure := witness.is_same_bug (l_unique_witnesses.item)
+								if l_old_failure then
+									l_index := l_unique_witnesses.index
+								end
+								l_unique_witnesses.forth
 							end
-							l_unique_witnesses.forth
-						end
 
-							-- We found a new failure.
-						if not l_old_failure then
-							last_result_repository.add_witness (witness)
-							unique_failure_witnesses.extend (witness)
-							l_index := unique_failure_witnesses.count
+								-- We found a new failure.
+							if not l_old_failure then
+								last_result_repository.add_witness (witness)
+								unique_failure_witnesses.extend (witness)
+								l_index := unique_failure_witnesses.count
 
-							l_fault_first_found_table := fault_first_found_time_table
-							l_fault_first_found_table.force ([l_last_reported_request.test_case_start_time, l_last_reported_request.test_case_index], l_index)
-						end
+								l_fault_first_found_table := fault_first_found_time_table
+								l_fault_first_found_table.force ([l_last_reported_request.test_case_start_time, l_last_reported_request.test_case_index], l_index)
+							end
 
-						l_fault_frequency_table := fault_frequency_table
-						if l_fault_frequency_table.valid_index (l_index) then
-							l_fault_frequency_table.force (l_fault_frequency_table.item (l_index) + 1, l_index)
-						else
-							l_fault_frequency_table.force (1, l_index)
+							l_fault_frequency_table := fault_frequency_table
+							if l_fault_frequency_table.valid_index (l_index) then
+								l_fault_frequency_table.force (l_fault_frequency_table.item (l_index) + 1, l_index)
+							else
+								l_fault_frequency_table.force (1, l_index)
+							end
+							io.put_string ((witness.item (witness.count).test_case_start_time // 60).out + ", ")
 						end
-						io.put_string ((witness.item (witness.count).test_case_start_time // 60).out + ", ")
 					end
 				end
 			end

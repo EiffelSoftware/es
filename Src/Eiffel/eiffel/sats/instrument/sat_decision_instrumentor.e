@@ -36,6 +36,7 @@ feature{NONE} -- Initialization
 			config_sections.extend (setting_section_name)
 			create branch_index_stack.make
 			create current_branch_indexes.make
+			create processed_feature_table.make (50)
 		end
 
 feature -- Status report
@@ -77,6 +78,8 @@ feature -- Data clearing
 			config.wipe_out
 			branch_index_stack.wipe_out
 			current_branch_indexes.wipe_out
+			max_slot_index := 0
+			max_branch_index := 1
 		ensure then
 			slot_number_is_zero: slot_index = 0
 			local_slot_index_is_zero: local_slot_index = 0
@@ -89,6 +92,12 @@ feature -- Data clearing
 			-- Clear data related to currently processing feature.
 		do
 			local_slot_index := 0
+			if slot_index > max_slot_index then
+				max_slot_index := slot_index
+			end
+			if branch_index > max_branch_index then
+				max_branch_index := branch_index
+			end
 		ensure then
 			local_slot_index_is_zero: local_slot_index = 0
 		end
@@ -103,9 +112,77 @@ feature -- Byte node processing
 			is_rescue_entry_slot := False
 		end
 
-	process_feature_entry is
-			-- Process when a feature is entered.			
+	max_slot_index: INTEGER
+
+	max_branch_index: INTEGER
+
+	processed_feature_table: HASH_TABLE [HASH_TABLE [TUPLE [a_slot_id: INTEGER; a_branch_id: INTEGER], STRING], CLASS_C]
+			-- Table of features that are already processed.
+			-- The key of the outer hash table is class name, and the value in the hash set is
+			-- The key of the inner hash table is feature name, and the value of the inner hash table
+			-- is the starting slot index and branch index when that feature was processed for the first time
+			-- because the same slot index and brnach index are used for all generic derivation versions of the same feature.
+
+	is_feature_processed (a_class: CLASS_C; a_feature: FEATURE_I): BOOLEAN is
+			-- Is `a_feature' in `a_class' already processed?
+		require
+			a_class_attached: a_class /= Void
+			a_feature_attached: a_feature /= Void
+		local
+			l_feat_table: HASH_TABLE [TUPLE [a_slot_id: INTEGER; a_branch_id: INTEGER], STRING]
 		do
+			l_feat_table := processed_feature_table.item (a_class)
+			if l_feat_table /= Void then
+				Result := l_feat_table.item (a_feature.feature_name.as_lower) /= Void
+			end
+		end
+
+	mark_feature_as_processed (a_class: CLASS_C; a_feature: FEATURE_I; a_start_slot_index: INTEGER; a_start_branch_index: INTEGER) is
+			-- Mark `a_feature' in `a_class' as processed.
+		require
+			a_class_attached: a_class /= Void
+			a_feature_attached: a_feature /= Void
+			a_start_slot_index_non_negative: a_start_slot_index >= 0
+			a_start_branch_index_positive: a_start_branch_index > 0
+		local
+			l_feat_table: HASH_TABLE [TUPLE [a_slot_id: INTEGER; a_branch_id: INTEGER], STRING]
+		do
+			l_feat_table := processed_feature_table.item (a_class)
+			if l_feat_table = Void then
+				create l_feat_table.make (20)
+				processed_feature_table.force (l_feat_table, a_class)
+			end
+
+			l_feat_table.force ([a_start_slot_index, a_start_branch_index], a_feature.feature_name.as_lower)
+		ensure
+			feature_marked_as_processed: is_feature_processed (a_class, a_feature)
+		end
+
+	is_current_feature_processed: BOOLEAN
+			-- Is Current feature processed?
+
+	process_feature_entry is
+			-- Process when a feature is entered.
+		local
+			l_class: CLASS_C
+			l_feature: FEATURE_I
+			l_indexes: TUPLE [a_slot_id: INTEGER; a_branch_id: INTEGER]
+		do
+			l_class := context.associated_class
+			l_feature := context.current_feature
+			is_current_feature_processed := is_feature_processed (l_class, l_feature)
+
+				-- Current feature has already been processed,
+				-- it is another generic derivation.			
+			if is_current_feature_processed then
+				l_indexes := processed_feature_table.item (l_class).item (l_feature.feature_name.as_lower)
+				slot_index := l_indexes.a_slot_id
+				branch_index := l_indexes.a_branch_id
+			else
+				slot_index := max_slot_index
+				branch_index := max_branch_index
+				mark_feature_as_processed (l_class, l_feature, slot_index, branch_index)
+			end
 			is_feature_entry_slot := True
 			generate_instrument_for_feature_entry_or_rescue
 			is_feature_entry_slot := False
@@ -377,65 +454,67 @@ feature{NONE} -- Implementation
 			l_cnt: INTEGER
 			l_indexes: like current_branch_indexes
 		do
-			create l_buffer.make (128)
-			l_buffer.append (dcs_section_name)
-			l_buffer.append_character ('%T')
+			if not is_current_feature_processed then
+				create l_buffer.make (128)
+				l_buffer.append (dcs_section_name)
+				l_buffer.append_character ('%T')
 
-				-- Log current class and feature.
-			l_buffer.append (location_name)
-			l_buffer.append_character ('=')
-			l_buffer.append (context.associated_class.name_in_upper)
-			l_buffer.append_character ('.')
-			l_buffer.append (context.current_feature.feature_name)
-			l_buffer.append_character ('%T')
+					-- Log current class and feature.
+				l_buffer.append (location_name)
+				l_buffer.append_character ('=')
+				l_buffer.append (context.associated_class.name_in_upper)
+				l_buffer.append_character ('.')
+				l_buffer.append (context.current_feature.feature_name)
+				l_buffer.append_character ('%T')
 
-				-- Log current slot index.
-			l_buffer.append (slot_id_name)
-			l_buffer.append_character ('=')
-			l_buffer.append (slot_index.out)
-			l_buffer.append_character ('%T')
+					-- Log current slot index.
+				l_buffer.append (slot_id_name)
+				l_buffer.append_character ('=')
+				l_buffer.append (slot_index.out)
+				l_buffer.append_character ('%T')
 
-				-- Log current local slot index.
-			l_buffer.append (local_slot_id_name)
-			l_buffer.append_character ('=')
-			l_buffer.append (local_slot_index.out)
-			l_buffer.append_character ('%T')
+					-- Log current local slot index.
+				l_buffer.append (local_slot_id_name)
+				l_buffer.append_character ('=')
+				l_buffer.append (local_slot_index.out)
+				l_buffer.append_character ('%T')
 
-				-- Log branch index set corresponding to current slot index.
-			l_buffer.append (dcs_branch_id_set)
-			l_buffer.append_character ('=')
-			from
-				l_indexes := current_branch_indexes
-				l_cnt := l_indexes.count
-				l_indexes.start
-			until
-				l_indexes.after
-			loop
-				l_buffer.append (l_indexes.item.out)
-				if l_indexes.index < l_cnt then
-					l_buffer.append_character (',')
+					-- Log branch index set corresponding to current slot index.
+				l_buffer.append (dcs_branch_id_set)
+				l_buffer.append_character ('=')
+				from
+					l_indexes := current_branch_indexes
+					l_cnt := l_indexes.count
+					l_indexes.start
+				until
+					l_indexes.after
+				loop
+					l_buffer.append (l_indexes.item.out)
+					if l_indexes.index < l_cnt then
+						l_buffer.append_character (',')
+					end
+					l_indexes.forth
 				end
-				l_indexes.forth
-			end
 
-				-- Log feature entry property
-			if is_feature_entry_slot then
-				l_buffer.append_character ('%T')
-				l_buffer.append (is_feature_entry_name)
-				l_buffer.append_character ('=')
-				l_buffer.append ("true")
-			end
+					-- Log feature entry property
+				if is_feature_entry_slot then
+					l_buffer.append_character ('%T')
+					l_buffer.append (is_feature_entry_name)
+					l_buffer.append_character ('=')
+					l_buffer.append ("true")
+				end
 
-				-- Log rescue entry property
-			if is_rescue_entry_slot then
-				l_buffer.append_character ('%T')
-				l_buffer.append (is_rescue_entry_name)
-				l_buffer.append_character ('=')
-				l_buffer.append ("true")
-			end
+					-- Log rescue entry property
+				if is_rescue_entry_slot then
+					l_buffer.append_character ('%T')
+					l_buffer.append (is_rescue_entry_name)
+					l_buffer.append_character ('=')
+					l_buffer.append ("true")
+				end
 
-			l_buffer.append_character ('%N')
-			log_string_in_map_file (l_buffer)
+				l_buffer.append_character ('%N')
+				log_string_in_map_file (l_buffer)
+			end
 		end
 
 	generate_instrument is

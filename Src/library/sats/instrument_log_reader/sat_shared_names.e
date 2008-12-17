@@ -34,4 +34,12 @@ feature -- Section names in configure or log files
 
 	is_rescue_entry_name: STRING is "is_rescue_entry"
 
+	map_file_name: STRING is "sat_translator.txt"
+			-- Name of map file
+
+	slot_file_name: STRING is "slots.txt"
+			-- Slot file name
+
+	sats_directory_name: STRING is "sats"
+
 end

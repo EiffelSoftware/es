@@ -583,9 +583,6 @@ feature{NONE} -- Implmentation
 			end
 		end
 
-	map_file_name: STRING is "sat_translator.txt"
-			-- Name of map file.
-
 	map_file_path: FILE_NAME is
 			-- Full path of the file to store instrumentation map file
 		do

@@ -19,6 +19,8 @@ inherit
 
 	EDITOR_TOKEN_IDS
 
+	SAT_SHARED_EDITOR_TOKEN_CONSTANTS
+
 feature -- Access
 
 	wide_image: STRING_32
@@ -45,6 +47,16 @@ feature -- Access
 			-- pebble to be picked when user right-clicks
 			-- on this token.
 			-- Only cursors are used in the class STONE.
+
+	is_token_visited: BOOLEAN
+			-- Is Current editor token been visited?
+
+	set_is_token_visited (b: BOOLEAN) is
+			--
+		do
+			is_token_visited := b
+		end
+
 
 
 feature -- Token type status Report
@@ -244,7 +256,19 @@ feature -- Color
 
 	background_color: EV_COLOR is
 		do
-			Result := editor_preferences.color_of_id (background_color_id)
+				-- TODO: It would be better to display  unvisited tokens in a special background color,
+				-- TODO: because those tokens need more attention. Jason 12.17.2008
+			if is_token_visited then
+				Result := visited_background_color
+			else
+				Result := editor_preferences.color_of_id (background_color_id)
+			end
+		end
+
+	visited_background_color: EV_COLOR is
+			-- Background color for visited tokens
+		once
+			create Result.make_with_8_bit_rgb (220, 220, 220)
 		end
 
 	selected_text_color: EV_COLOR is
