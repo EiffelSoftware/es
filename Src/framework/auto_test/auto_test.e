@@ -101,7 +101,9 @@ feature -- Execution
 							minimize_witnesses
 						end
 						interpreter.cleanup
-						generate_statistics
+						if is_minimization_enabled then
+							generate_statistics
+						end
 				end
 			end
 		end
