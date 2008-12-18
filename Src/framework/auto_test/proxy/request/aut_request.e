@@ -99,7 +99,7 @@ feature -- SATS project
 			-- and recorded instrumentation log
 
 	test_case_start_time: INTEGER
-			-- Start time in second from starting point of current testing session 
+			-- Start time in second from starting point of current testing session
 
 	execution_flag: NATURAL_16
 			-- Flag to indicate details for test case execution
@@ -134,7 +134,7 @@ feature -- SATS project
 	set_test_case_start_time (a_start_time: INTEGER) is
 			-- Set `test_case_start_time' with `a_start_time'.
 		require
-			a_start_time_positive: a_start_time > 0
+			a_start_time_positive: a_start_time >= 0
 		do
 			test_case_start_time := a_start_time
 		ensure

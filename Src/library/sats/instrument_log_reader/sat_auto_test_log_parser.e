@@ -45,7 +45,7 @@ feature {NONE} -- Initialization
 			create fault_frequency_table.make (1, 100)
 			create fault_first_found_time_table.make (1, 100)
 
-			compute_interpreter_root_class
+			compute_interpreter_class
 		end
 
 feature -- Analysis time zone
