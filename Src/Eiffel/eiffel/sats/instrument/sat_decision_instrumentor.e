@@ -33,7 +33,6 @@ feature{NONE} -- Initialization
 				-- Initialize `config_sections'.
 			create {LINKED_LIST [STRING]} config_sections.make
 			config_sections.extend (dcs_section_name)
-			config_sections.extend (setting_section_name)
 			create branch_index_stack.make
 			create current_branch_indexes.make
 			create processed_feature_table.make (50)
@@ -168,24 +167,26 @@ feature -- Byte node processing
 			l_feature: FEATURE_I
 			l_indexes: TUPLE [a_slot_id: INTEGER; a_branch_id: INTEGER]
 		do
-			l_class := context.associated_class
-			l_feature := context.current_feature
-			is_current_feature_processed := is_feature_processed (l_class, l_feature)
+			if is_instrument_enabled then
+				l_class := context.associated_class
+				l_feature := context.current_feature
+				is_current_feature_processed := is_feature_processed (l_class, l_feature)
 
-				-- Current feature has already been processed,
-				-- it is another generic derivation.			
-			if is_current_feature_processed then
-				l_indexes := processed_feature_table.item (l_class).item (l_feature.feature_name.as_lower)
-				slot_index := l_indexes.a_slot_id
-				branch_index := l_indexes.a_branch_id
-			else
-				slot_index := max_slot_index
-				branch_index := max_branch_index
-				mark_feature_as_processed (l_class, l_feature, slot_index, branch_index)
+					-- Current feature has already been processed,
+					-- it is another generic derivation.			
+				if is_current_feature_processed then
+					l_indexes := processed_feature_table.item (l_class).item (l_feature.feature_name.as_lower)
+					slot_index := l_indexes.a_slot_id
+					branch_index := l_indexes.a_branch_id
+				else
+					slot_index := max_slot_index
+					branch_index := max_branch_index
+					mark_feature_as_processed (l_class, l_feature, slot_index, branch_index)
+				end
+				is_feature_entry_slot := True
+				generate_instrument_for_feature_entry_or_rescue
+				is_feature_entry_slot := False
 			end
-			is_feature_entry_slot := True
-			generate_instrument_for_feature_entry_or_rescue
-			is_feature_entry_slot := False
 		end
 
 	process_if_b (a_node: IF_B) is
@@ -586,17 +587,9 @@ feature{NONE} -- Config file analysis
 		local
 			l_slot_count: STRING
 		do
-			if a_section_name.is_case_insensitive_equal (dcs_section_name) then
-					-- We are loading instrument config.
-				config.extend (instrument_config_from_string (a_record_line))
-			else
-					-- We are loading instrument summary.
---				check is_auto_test_compiling end
-				l_slot_count := property_table (a_record_line.split ('%T')).item (dcs_section_name)
-				if l_slot_count /= Void and then l_slot_count.is_integer then
-					slot_index := l_slot_count.to_integer
-				end
-			end
+			check a_section_name.is_case_insensitive_equal (dcs_section_name) end
+				-- We are loading instrument config.
+			config.extend (instrument_config_from_string (a_record_line))
 		end
 
 	process_summary_record (a_section_name: STRING; a_record_line: STRING) is
@@ -604,10 +597,9 @@ feature{NONE} -- Config file analysis
 		local
 			l_slot_count: STRING
 		do
-			l_slot_count := property_table (a_record_line.split ('%T')).item (dcs_section_name.as_lower)
-			if l_slot_count /= Void and then l_slot_count.is_integer then
-				slot_index := l_slot_count.to_integer
-			end
+			l_slot_count := property_table (a_record_line.split ('%T')).item (dcs_slot_count_name.as_lower)
+			check l_slot_count /= Void and then l_slot_count.is_integer end
+			slot_index := l_slot_count.to_integer
 		end
 
 	config_sections: LIST [STRING]
