@@ -1426,7 +1426,7 @@ rt_public EIF_REFERENCE rt_nmake(long int objectCount)
 	EIF_OBJECT new_hector;
 	uint16 flags;
 	EIF_TYPE_INDEX dtype, dftype;
-	uint32 spec_size = 0;
+	uint32 spec_count, spec_elem_size = 0;
 	volatile size_t n = objectCount;
 #ifdef ISE_GC
 	volatile char g_status = rt_g_data.status;
@@ -1478,12 +1478,15 @@ rt_public EIF_REFERENCE rt_nmake(long int objectCount)
 		/* Read a possible size */
 		if (flags & EO_SPEC) {
 				/* Special object: read the saved size */
-			buffer_read((char *) &spec_size, (sizeof(uint32)));
-			nb_byte = spec_size & B_SIZE;
+			buffer_read((char *) &spec_count, (sizeof(uint32)));
+			buffer_read((char *) &spec_elem_size, (sizeof(uint32)));
+			nb_byte = spec_count * spec_elem_size;
 			if (flags & EO_TUPLE) {
 				newadd = RTLNT(dftype);
 			} else {
-				newadd = spmalloc (nb_byte, EIF_TEST(!(flags & EO_REF)));
+				newadd = spmalloc (nb_byte + LNGPAD_2, EIF_TEST(!(flags & EO_REF)));
+				RT_SPECIAL_COUNT(newadd) = spec_count;
+				RT_SPECIAL_ELEM_SIZE(newadd) = spec_elem_size;
 			}
 			if (newadd == (EIF_REFERENCE) 0) {
 					/* Creation of Eiffel object failed */
@@ -4737,7 +4740,7 @@ rt_private EIF_REFERENCE object_rread_special (
 	type_descriptor *conv = type_description (old_dtype);
 	EIF_REFERENCE addr, trash = NULL;
 
-	CHECK ("Must have generics", conv->generic_count > 0);
+	REQUIRE("Must have generics", conv->generic_count > 0);
 	if (object != NULL)
 		addr = object;
 	else {
