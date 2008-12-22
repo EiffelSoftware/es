@@ -15,6 +15,7 @@ inherit
 	EXCEP_CONST
 		export {NONE} all end
 
+
 create
 
 	make
@@ -199,7 +200,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	interpreter_class: STRING is "ITP_INTERPRETER"
+	interpreter_root_class_name: STRING is "ITP_INTERPRETER_ROOT"
 	dash_line: STRING is "-------------------------------------------------------------------------------"
 
 	is_erl_class_imp_line (v: STRING): BOOLEAN is
@@ -207,8 +208,8 @@ feature {NONE} -- Implementation
 		require
 			v_not_void: v /= Void
 		do
-			Result := v.count > interpreter_class.count and then
-					(v.substring (1, interpreter_class.count).is_equal (interpreter_class))
+			Result := v.count > interpreter_root_class_name.count and then
+					(v.substring (1, interpreter_root_class_name.count).is_equal (interpreter_root_class_name))
 		end
 
 	break_point_slot_regexp: RX_PCRE_REGULAR_EXPRESSION is
