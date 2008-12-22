@@ -43,7 +43,7 @@ feature -- Process
 			text_formatter_decorator.put_new_line
 
 				-- Check slot coverage.	
-			local_slot_index := 0
+			local_slot_index := -1
 			check_slot_entry
 
 			if l_as.alias_name_literal /= Void then
@@ -68,7 +68,7 @@ feature -- Process
 			text_formatter_decorator.put_new_line
 
 				-- Check slot coverage.	
-			local_slot_index := 0
+			local_slot_index := -1
 			check_slot_entry
 
 			if l_as.compound /= Void then
@@ -91,7 +91,7 @@ feature -- Process
 			text_formatter_decorator.put_new_line
 
 				-- Check slot coverage.	
-			local_slot_index := 0
+			local_slot_index := -1
 			check_slot_entry
 
 			if l_as.compound /= Void then
@@ -142,8 +142,7 @@ feature -- Process
 				text_formatter_decorator.indent
 				text_formatter_decorator.put_new_line
 
-				increase_local_slot_index
-				process_visit_status_entry
+				check_slot_entry
 
 				text_formatter_decorator.set_new_line_between_tokens
 				format_compound (l_as.else_part)
@@ -215,8 +214,7 @@ feature -- Process
 				text_formatter_decorator.indent
 				text_formatter_decorator.put_new_line
 
-				increase_local_slot_index
-				process_visit_status_entry
+				check_slot_entry
 
 				text_formatter_decorator.set_separator (Void)
 				text_formatter_decorator.set_new_line_between_tokens
@@ -480,6 +478,7 @@ feature{NONE} -- Implicaiton
 			l_global_index: INTEGER
 			l_visited_times: INTEGER
 		do
+			local_slot_index := local_slot_index + 1
 				-- Check the original feature, to make sure the inherited feature and
 				-- feature renaming is resolved.
 			l_class_name := source_class.name.as_upper
