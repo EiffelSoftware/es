@@ -42,10 +42,20 @@ feature -- Status report
 
 	is_instrument_enabled: BOOLEAN is
 			-- Should instrumentation be generated?
+		local
+			l_feature: FEATURE_I
 		do
 			Result :=
 				config.there_exists (agent {SAT_INSTRUMENT_CONFIG}.is_instrument_enabled (context)) and then
 				not is_auto_test_compiling
+
+			l_feature := context.current_feature
+
+				-- Instrument in prefix/infix features are not included because AutoTest cannot test those features
+				-- directrly for the moment. 12.22.2008 Jason			
+			if Result then
+				Result := not (l_feature.is_prefix or l_feature.is_infix)
+			end
 		end
 
 feature -- Access
