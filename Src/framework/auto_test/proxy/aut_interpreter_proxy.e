@@ -236,65 +236,79 @@ feature -- Execution
 		local
 			l_listener: AUT_SOCKET_LISTENER
 			i: INTEGER
+			l_error: INTEGER
 		do
 			log_time_stamp ("start")
-			create {AUT_START_REQUEST} last_request.make (system)
-			variable_table.wipe_out
 
-				-- Create socket and start listening on `port'.
-			if socket /= Void and then socket.exists and then not socket.is_closed then
-				socket.cleanup
-			end
+			from
+				i := 1
+			until
+				is_ready or else i > 10
+			loop
+				create {AUT_START_REQUEST} last_request.make (system)
+				variable_table.wipe_out
 
---				-- Initialize a new socket for IPC.
---				-- Fixeme: port number is increased every time when we try to launch the interpreter
---				-- It should be possible to reuse port number, but when I tried it, I always got
---				-- socket connection problems. Jason 2008.10.21
---			fixme ("Try to reuse port number.")
---			port := next_port_number
---			create l_socket.make_server_by_port (port)
---			l_socket.set_blocking
---			l_socket.listen (1)
+					-- Create socket and start listening on `port'.
+				if socket /= Void and then socket.exists and then not socket.is_closed then
+					socket.cleanup
+				end
 
-			create l_listener.make
-			l_listener.open_new_socket
-			if l_listener.is_listening then
-				port := l_listener.current_port
+				create l_listener.make
+				l_listener.open_new_socket
+				if l_listener.is_listening then
+					port := l_listener.current_port
 
-					-- Launch interpreter process.			
-				launch_process
+						-- Launch interpreter process.			
+					launch_process
 
-				if is_running then
-
-						-- Get socket to communicate with interpreter.
---					l_socket.accept
---					fixme ("If interpreter process dies now, current thread will be blocked forever.")
---					(create {EXECUTION_ENVIRONMENT}).sleep (1000000000)
---					socket := l_socket.accepted
-
-					if {l_socket: like socket} l_listener.wait_for_connection (5000) then
-						socket := l_socket
-						process.set_timeout (timeout)
-						log_stream.string.wipe_out
-						last_request.process (request_printer)
-						flush_process
-						log_line (proxy_has_started_and_connected_message)
-						log_line (itp_start_time_message + error_handler.duration_to_now.second_count.out + ", " + sat_time.out + ", seed: " + random.seed.out)
-						parse_start_response
-						last_request.set_response (last_response)
-						if last_response.is_bad then
-							log_bad_response
+					if is_running then
+						if {l_socket: like socket} l_listener.wait_for_connection (5000) then
+							socket := l_socket
+							process.set_timeout (timeout)
+							log_stream.string.wipe_out
+							last_request.process (request_printer)
+							flush_process
+							log_line (proxy_has_started_and_connected_message)
+							log_line (itp_start_time_message + error_handler.duration_to_now.second_count.out + ", " + sat_time.out + ", seed: " + random.seed.out)
+							parse_start_response
+							last_request.set_response (last_response)
+							if last_response.is_bad then
+								log_bad_response
+							end
+							is_ready := True
+						else
+							process.terminate
+							is_ready := False
+							l_error := 1
+--							log_line ("-- Error: Interpreter was not able to connect." + " Port: " + port.out)
 						end
-						is_ready := True
 					else
-						log_line ("-- Error: Interpreter was not able to connect." + " Port: " + port.out)
+						is_ready := False
+						l_error := 2
+--						log_line ("-- Error: Could not start and connect to interpreter.")
 					end
 				else
 					is_ready := False
-					log_line ("-- Error: Could not start and connect to interpreter.")
+					l_error := 3
+--					log_line ("-- Error: Could not find available port for listening.")
 				end
-			else
-				log_line ("-- Error: Could not find available port for listening.")
+				if i = 1 then
+					is_ready := False
+					process.terminate
+				end
+				i := i + 1
+			end
+
+			if not is_ready then
+				inspect
+					l_error
+				when 1 then
+					log_line ("-- Error: Interpreter was not able to connect." + " Port: " + port.out)
+				when 2 then
+					log_line ("-- Error: Could not start and connect to interpreter.")
+				when 3 then
+					log_line ("-- Error: Could not find available port for listening.")
+				end
 			end
 		ensure
 			last_request_not_void: last_request /= Void
