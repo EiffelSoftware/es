@@ -80,15 +80,6 @@ feature -- Access
 	faults: DS_ARRAYED_LIST [AUT_TEST_CASE_RESULT]
 			-- Table of found distinguish faults in `last_repository'
 
---	fault_index_table: HASH_TABLE [AUT_TEST_CASE_RESULT, INTEGER]
---			-- Table for `faults'
---			-- This table assigns an unique index for each fault in `faults'.
---			-- [test case result for a fault, index of that fault]
---			-- All the indexes are positive.
---			-- TODO: This is not an efficient solution because `fault_index_table' needs to be traversed to find
---			-- the index for a given fault. A better solution would be make {AUT_TEST_CASE_RESULT} hashable and redefine
---			-- its `is_equal' feature.
-
 	fault_frequency_table: ARRAY [INTEGER]
 			-- Table of fault frequency.
 			-- Index is fault id given by `fault_index_table'.
@@ -232,22 +223,6 @@ feature -- Access
 
 feature -- Operations
 
---	load (a_directory_name: STRING) is
---			-- Load log file from `a_directory_name'.
---			-- Make result available from `last_result_repository',
---			-- `faults'.
---		require
---			a_directory_name_attached: a_directory_name /= Void
---			not_a_directory_name_is_empty: not a_directory_name.is_empty
---		local
---			l_file_path: FILE_NAME
---		do
---			create last_result_repository.make
---			create l_file_path.make_from_string (a_directory_name)
---			l_file_path.set_file_name ("proxy_log.txt")
---			load_file (l_file_path)
---		end
-
 	load_file (a_log_file_path: STRING) is
 			-- Load log file from `a_log_file_path'.
 			-- Make result available from `last_result_repository',
@@ -361,6 +336,8 @@ feature{NONE} -- Reporting
 				request_list.force_i_th (l_last_reported_request, reported_request_count)
 
 				create witness.make (request_list, last_start_index, reported_request_count)
+
+					-- Check if current test case is within the required time range.
 				l_test_case_start_time := witness.item (witness.count).test_case_start_time
 				if  l_test_case_start_time >= analysis_start_time then
 					if analyzsis_end_time >=0 and then l_test_case_start_time > analyzsis_end_time then
@@ -377,7 +354,7 @@ feature{NONE} -- Reporting
 							until
 								l_unique_witnesses.after or l_old_failure
 							loop
-								l_old_failure := witness.is_same_bug (l_unique_witnesses.item)
+								l_old_failure := is_witness_the_same (l_unique_witnesses.item, witness)
 								if l_old_failure then
 									l_index := l_unique_witnesses.index
 								end
@@ -405,6 +382,15 @@ feature{NONE} -- Reporting
 					end
 				end
 			end
+		end
+
+	is_witness_the_same (a_witness, b_witness: AUT_WITNESS): BOOLEAN is
+			-- Do `a_witness' the same as `b_witness' reveal the same bug?
+		require
+			a_witness_attached: a_witness /= Void
+			b_witness_attached: b_witness /= Void
+		do
+			Result := a_witness.is_same_original_bug (b_witness)
 		end
 
 	unique_failure_witnesses: LINKED_LIST [AUT_WITNESS]
@@ -479,58 +465,6 @@ feature{NONE} -- Fault calculation
 			fault_first_found_time_table.conservative_resize (1, faults.count)
 		end
 
---	calculate_fault_statistics is
---			-- Calculate fault statistics and make result available through
---			-- `fault_frequency_table', `fault_first_found_time_table'.
---		require
---			faults_attached: faults /= Void
---			fault_index_table_attached: fault_index_table /= Void
---		local
---			l_witnesses: DS_ARRAYED_LIST [AUT_WITNESS]
---			l_cur: DS_ARRAYED_LIST_CURSOR [AUT_WITNESS]
---			l_fault_tbl: like fault_index_table
---			l_done: BOOLEAN
---			l_fault_index: INTEGER
---			l_end_time: INTEGER
---			l_witness: AUT_WITNESS
---		do
---			l_witnesses := last_result_repository.witnesses
---			l_fault_tbl := fault_index_table
---			from
---				l_cur := l_witnesses.new_cursor
---				l_cur.start
---			until
---				l_cur.after
---			loop
---				if l_cur.item.is_fail then
---					from
---						l_done := False
---						l_fault_tbl.start
---					until
---						l_fault_tbl.after or l_done
---					loop
---						l_fault_index := l_fault_tbl.key_for_iteration
---						if l_cur.item.is_same_bug (l_fault_tbl.item_for_iteration.witness) then
---								-- Update the number of times that a fault is found.
---							fault_frequency_table.put (fault_frequency_table.item (l_fault_index) + 1, l_fault_index)
-
---								-- Update the first time when a fault is found.
---							l_end_time := witness_end_time (l_cur.item)
---							l_witness := l_fault_tbl.item_for_iteration.witness
---							if l_end_time <= witness_end_time (l_witness) then
---								fault_first_found_time_table.put ([l_end_time, l_witness.item (l_witness.count).test_case_index ], l_fault_index)
---							end
---						end
---						l_fault_tbl.forth
---					end
---				end
---				l_cur.forth
---			end
---		ensure
---			fault_frequency_table_set: fault_frequency_table /= Void
---			fault_first_found_time_table_set: fault_first_found_time_table /= Void
---		end
-
 feature{NONE}  -- Implementation
 
 	witness_end_time (a_witness: AUT_WITNESS): INTEGER is
@@ -553,27 +487,6 @@ feature{NONE}  -- Implementation
 	interpreter_start_comment_header: STRING is "-- Interpreter started after: "
 
 	test_case_comment_header: STRING is "-- Test case No."
-
---	index_of_fault (a_fault: AUT_TEST_CASE_RESULT): INTEGER is
---			-- Index of `a_fault' given by `fault_index_table'
---		require
---			a_fault_attached: a_fault /= Void
---			a_fault_is_fault: a_fault.is_fail
---		local
---			l_index_tbl: like fault_index_table
---		do
---			l_index_tbl := fault_index_table
---			from
---				l_index_tbl.start
---			until
---				l_index_tbl.after or Result > 0
---			loop
---				if l_index_tbl.item_for_iteration.witness.is_same_bug (a_fault.witness) then
---					Result := l_index_tbl.key_for_iteration
---				end
---				l_index_tbl.forth
---			end
---		end
 
 	update_request_with_test_case_info (a_request: AUT_REQUEST) is
 			-- Update `a_request' with test case information including:
