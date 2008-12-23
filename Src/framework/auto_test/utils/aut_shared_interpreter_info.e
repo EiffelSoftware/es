@@ -35,12 +35,16 @@ feature -- Access
 			-- (from AUT_SHARED_INTERPRETER_INFO)
 		local
 			l_class: CLASS_I
+			l_classes: LIST [CLASS_I]
 		do
-			interpreter_root_class_cell.put (Void)
-			if {l_cluster: CONF_CLUSTER} system.eifgens_cluster then
-				l_class := system.universe.class_named (interpreter_class_name, l_cluster)
-				if l_class /= Void and then l_class.is_compiled then
-					interpreter_root_class_cell.put (l_class.compiled_class)
+			compute_interpreter_root_class
+			if interpreter_root_class = Void then
+				l_classes := system.universe.classes_with_name (interpreter_class_name)
+				if not l_classes.is_empty then
+					l_class := l_classes.first
+					if l_class /= Void and then l_class.is_compiled then
+						interpreter_root_class_cell.put (l_class.compiled_class)
+					end
 				end
 			end
 		end
