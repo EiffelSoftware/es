@@ -208,7 +208,7 @@ feature {NONE} -- Implementation
 		require
 			v_not_void: v /= Void
 		do
-			Result := v.count > interpreter_root_class_name.count and then
+			Result := v.count >= interpreter_root_class_name.count and then
 					(v.substring (1, interpreter_root_class_name.count).is_equal (interpreter_root_class_name))
 		end
 
