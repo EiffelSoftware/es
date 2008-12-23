@@ -324,7 +324,7 @@ feature -- Access
 				Result.put (
 					[l_frequency_tbl.item (i),								-- Covered times
 					 l_first_cover_tbl.item (i).first_visit_time,			-- First cover time
-					 l_first_cover_tbl.item (1).first_visit_test_case_index -- First cover test case index
+					 l_first_cover_tbl.item (i).first_visit_test_case_index -- First cover test case index
 					], i)
 				i := i + 1
 			end
