@@ -56,7 +56,55 @@ feature -- Status report
 			if Result then
 				Result := not (l_feature.is_prefix or l_feature.is_infix)
 			end
+
+			if Result then
+				Result := config_classes.there_exists (agent can_feature_reach_class (l_feature, context.associated_class, ?))
+				l_feature := Void
+			end
 		end
+
+	can_feature_reach_class (a_feature: FEATURE_I; a_written_class: CLASS_C; a_context_class: CLASS_C): BOOLEAN is
+			-- Can `a_feature' written in `a_written_class' reach `a_context_class'?
+		require
+			a_feature_attached: a_feature /= Void
+			a_written_class_attached: a_written_class /= Void
+			a_context_class_attached: a_context_class /= Void
+			a_feature_written_in_a_written_class: a_feature.written_class = a_written_class
+		do
+			Result := a_context_class.feature_with_rout_id (a_feature.rout_id_set.first).written_class = a_written_class
+		end
+
+	config_classes: LINKED_LIST [CLASS_C] is
+			-- Classes mentioned in `config'
+		local
+			l_classes: LIST [CLASS_I]
+			l_class_c: CLASS_C
+		do
+			if config_classes_internal = Void then
+				create config_classes_internal.make
+				from
+					config.start
+				until
+					config.after
+				loop
+					l_classes := system.universe.classes_with_name (config.item.class_name)
+					if l_classes /= Void and then not l_classes.is_empty then
+						l_class_c := l_classes.first.compiled_representation
+						if l_class_c /= Void then
+							config_classes_internal.extend (l_class_c)
+						end
+					end
+					config.forth
+				end
+			end
+			Result := config_classes_internal
+		ensure
+			result_attached: Result /= Void
+		end
+
+	config_classes_internal: like config_classes
+			-- Implementation of `config_classes'
+
 
 feature -- Access
 
