@@ -45,9 +45,9 @@ feature{NONE} -- Processing
 
 	process_start_request (a_request: AUT_START_REQUEST) is
 		do
-			check
-				a_request_in_history: request_history.has (a_request)
-			end
+--			check
+--				a_request_in_history: request_history.has (a_request)
+--			end
 			Precursor (a_request)
 			last_start_index := request_history.count + 1
 		end
