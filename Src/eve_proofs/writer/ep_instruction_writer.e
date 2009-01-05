@@ -24,8 +24,6 @@ inherit
 			process_reverse_b
 		end
 
-inherit {NONE}
-
 	SHARED_EP_ENVIRONMENT
 		export {NONE} all end
 
@@ -87,7 +85,7 @@ feature -- Processing
 			l_local: LOCAL_B
 			l_attribute: ATTRIBUTE_B
 			l_result: RESULT_B
-			l_feature: !FEATURE_I
+			l_feature: FEATURE_I
 		do
 			ep_context.set_line_number (a_node.line_number)
 			output.put_comment_line ("Assignment --- " + file_location(a_node))

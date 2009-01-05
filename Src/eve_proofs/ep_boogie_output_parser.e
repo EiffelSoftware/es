@@ -10,12 +10,9 @@ indexing
 
 class EP_BOOGIE_OUTPUT_PARSER
 
-inherit {NONE}
+inherit
 
 	SHARED_EP_ENVIRONMENT
-		export {NONE} all end
-
-	EB_SHARED_MANAGERS
 		export {NONE} all end
 
 	SHARED_WORKBENCH
@@ -117,15 +114,15 @@ feature {NONE} -- Implementation
 	handle_version (a_version: STRING)
 			-- Handle version information.
 		do
-			output_manager.add (names.message_boogie_version (a_version))
-			output_manager.add_new_line
+			text_output.add (names.message_boogie_version (a_version))
+			text_output.add_new_line
 		end
 
 	handle_finished (a_verified, a_errors: STRING)
 			-- Handle verification finished information.
 		do
-			output_manager.add (names.message_boogie_finished (a_verified, a_errors))
-			output_manager.add_new_line
+			text_output.add (names.message_boogie_finished (a_verified, a_errors))
+			text_output.add_new_line
 		end
 
 	handle_verifying (a_type, a_class, a_feature: STRING)
@@ -145,13 +142,13 @@ feature {NONE} -- Implementation
 			end
 
 			l_feature := l_class.compiled_class.feature_with_name (l_feature_name)
-			output_manager.add (names.message_verifying)
-			output_manager.add_space
-			output_manager.add ("{")
-			output_manager.add_class (l_class)
-			output_manager.add ("}.")
-			output_manager.add_feature (l_feature, l_feature_name)
-			output_manager.add (": ")
+			text_output.add (names.message_verifying)
+			text_output.add_space
+			text_output.add ("{")
+			text_output.add_class (l_class)
+			text_output.add ("}.")
+			text_output.add_feature (l_feature, l_feature_name)
+			text_output.add (": ")
 
 			current_class := l_class.compiled_class
 			current_feature := current_class.feature_named (l_feature_name)
@@ -162,12 +159,12 @@ feature {NONE} -- Implementation
 		do
 			if a_result.is_equal ("error") or a_result.is_equal ("errors") then
 				check last_error /= Void end
-				output_manager.add_error (last_error, names.message_failed)
+				text_output.add_error (last_error, names.message_failed)
 			else
 				check a_result.is_equal ("verified") end
-				output_manager.add (names.message_successful)
+				text_output.add (names.message_successful)
 			end
-			output_manager.add_new_line
+			text_output.add_new_line
 			last_error := Void
 		end
 

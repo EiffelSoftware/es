@@ -8,7 +8,7 @@ indexing
 
 class EP_CONSTANT_WRITER
 
-inherit {NONE}
+inherit
 
 	SHARED_EP_ENVIRONMENT
 		export {NONE} all end

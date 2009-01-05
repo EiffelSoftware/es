@@ -8,7 +8,7 @@ indexing
 
 class EP_GENERATOR
 
-inherit {NONE}
+inherit
 
 	SHARED_EP_ENVIRONMENT
 		export {NONE} all end
@@ -189,8 +189,8 @@ feature {NONE} -- Implementation
 				l_creator_name := a_class.creators.key_for_iteration
 
 				l_feature := a_class.feature_named (l_creator_name)
-				l_attached_feature ?= l_feature
 				check l_feature /= Void end
+				l_attached_feature := l_feature
 
 				process_creation_routine (l_attached_feature)
 
@@ -212,8 +212,8 @@ feature {NONE} -- Implementation
 				a_class.feature_table.after
 			loop
 				l_feature := a_class.feature_table.item_for_iteration
-				l_attached_feature ?= l_feature
 				check l_feature /= Void end
+				l_attached_feature := l_feature
 
 					-- Only write features which are written in that class
 				if l_feature.written_in = a_class.class_id then

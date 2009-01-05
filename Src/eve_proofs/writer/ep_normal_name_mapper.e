@@ -73,8 +73,8 @@ feature -- Access
 		do
 			l_class := system.class_of_id (a_node.written_in)
 			l_feature := l_class.feature_of_feature_id (a_node.feature_id)
-			l_attached_feature ?= l_feature
 			check l_feature /= Void end
+			l_attached_feature := l_feature
 			Result := name_generator.functional_feature_name (l_attached_feature)
 		end
 

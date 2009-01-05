@@ -56,6 +56,18 @@ feature -- Access
 			create Result
 		end
 
+	text_output: TEXT_FORMATTER
+			-- Access to text output handler
+		do
+			Result := text_output_cell.item
+		end
+
+	text_output_cell: CELL [TEXT_FORMATTER]
+			-- Cell to hold text output handler
+		once
+			create Result
+		end
+
 feature -- Convenience
 
 -- TODO: move to its own class?

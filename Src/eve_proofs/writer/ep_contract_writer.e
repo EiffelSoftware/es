@@ -8,7 +8,7 @@ indexing
 
 class EP_CONTRACT_WRITER
 
-inherit {NONE}
+inherit
 
 	SHARED_SERVER
 		export {NONE} all end

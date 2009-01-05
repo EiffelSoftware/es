@@ -8,7 +8,7 @@ indexing
 
 deferred class EP_NAME_MAPPER
 
-inherit {NONE}
+inherit
 
 	SHARED_SERVER
 		export {NONE} all end

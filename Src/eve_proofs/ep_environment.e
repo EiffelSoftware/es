@@ -5,7 +5,7 @@ indexing
 
 class EP_ENVIRONMENT
 
-inherit {NONE}
+inherit
 
 	KL_SHARED_STANDARD_FILES
 		export {NONE} all end

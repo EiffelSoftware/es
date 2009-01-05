@@ -8,7 +8,7 @@ indexing
 
 class EP_VERIFIER
 
-inherit {NONE}
+inherit
 
 	SHARED_EP_ENVIRONMENT
 		export {NONE} all end
@@ -132,8 +132,9 @@ feature {NONE} -- Implementation
 			-- Launch Boogie on output file.
 		local
 			l_ee: EXECUTION_ENVIRONMENT
-			l_launcher: EP_BOOGIE_LAUNCHER
 			l_arguments: LINKED_LIST [STRING]
+			l_process_factory: PROCESS_FACTORY
+			l_process: PROCESS
 		do
 			create l_ee
 				-- Prepare command line arguments
@@ -141,12 +142,14 @@ feature {NONE} -- Implementation
 			l_arguments.extend ("/trace")
 			l_arguments.extend (boogie_output_file_name)
 
-			create l_launcher.make
-			l_launcher.set_output_handler (agent handle_boogie_output)
-			l_launcher.set_on_fail_launch_handler (agent handle_launch_failed)
-			l_launcher.prepare_command_line ("boogie", l_arguments, l_ee.current_working_directory)
-			l_launcher.launch (True, True)
-			l_launcher.wait_for_exit
+			create l_process_factory
+			l_process := l_process_factory.process_launcher ("boogie", l_arguments, l_ee.current_working_directory)
+
+			l_process.redirect_output_to_agent (agent handle_boogie_output (?))
+			l_process.redirect_error_to_same_as_output
+			l_process.set_on_fail_launch_handler (agent handle_launch_failed)
+			l_process.launch
+			l_process.wait_for_exit
 		end
 
 	handle_boogie_output (a_output: STRING)

@@ -8,7 +8,7 @@ indexing
 
 class EP_IMPLEMENTATION_WRITER
 
-inherit {NONE}
+inherit
 
 	SHARED_EP_ENVIRONMENT
 		export {NONE} all end

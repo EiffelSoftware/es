@@ -12,8 +12,6 @@ inherit
 
 	BYTE_NODE_VISITOR
 
-inherit {NONE}
-
 	SHARED_SERVER
 		export {NONE} all end
 
@@ -308,12 +306,6 @@ feature {BYTE_NODE} -- Visitors
 			-- Process `a_node'.
 		do
 			safe_process (a_node.parameters)
-		end
-
-	process_frame_b (a_node: FRAME_B)
-			-- Process `a_node'.
-		do
-			safe_process (a_node.expr)
 		end
 
 	process_agent_call_b (a_node: AGENT_CALL_B)

@@ -8,15 +8,9 @@ indexing
 
 class EVE_PROOFS
 
-inherit {NONE}
+inherit
 
 	SHARED_EP_ENVIRONMENT
-		export {NONE} all end
-
-	EB_SHARED_MANAGERS
-		export {NONE} all end
-
-	EV_SHARED_APPLICATION
 		export {NONE} all end
 
 create
@@ -88,7 +82,7 @@ feature -- Basic operations
 		local
 			l_current_class: !CLASS_C
 		do
-			output_manager.clear
+			--output_manager.clear
 			show_messages (names.message_eve_proofs_started, names.window_message_eve_proofs_started)
 
 				-- Prepare environment for new verification
@@ -147,11 +141,11 @@ feature {NONE} -- Implementation
 	show_messages (l_output_line, l_status_bar: STRING)
 			-- Show `l_output_line' in output window and `l_status_bar' in status bar.
 		do
-			output_manager.add_string (l_output_line)
-			output_manager.add_new_line
-			output_manager.end_processing
-			window_manager.display_message (l_status_bar)
-			ev_application.process_events
+			text_output.add_string (l_output_line)
+			text_output.add_new_line
+--			output_manager.end_processing
+--			window_manager.display_message (l_status_bar)
+--			ev_application.process_events
 		end
 
 	set_up_environment
@@ -214,7 +208,9 @@ feature {NONE} -- Implementation
 			ee: EXECUTION_ENVIRONMENT
 		once
 			create ee
-			Result ?= ee.get("EIFFEL_SRC") + "/eve_proofs/eve_proofs_theory.bpl"
+			if {l_result: STRING} (ee.get("EIFFEL_SRC") + "/eve_proofs/eve_proofs_theory.bpl") then
+				Result := l_result
+			end
 		end
 
 end

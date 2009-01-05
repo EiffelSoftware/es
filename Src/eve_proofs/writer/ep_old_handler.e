@@ -8,7 +8,7 @@ indexing
 
 deferred class EP_OLD_HANDLER
 
-inherit {NONE}
+inherit
 
 	SHARED_EP_ENVIRONMENT
 		export {NONE} all end

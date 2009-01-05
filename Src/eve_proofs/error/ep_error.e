@@ -19,8 +19,6 @@ inherit
 			trace_single_line
 		end
 
-inherit {NONE}
-
 	ERROR_CONTEXT_PRINTER
 		export {NONE} all end
 

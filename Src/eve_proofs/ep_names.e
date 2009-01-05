@@ -8,7 +8,7 @@ indexing
 
 class EP_NAMES
 
-inherit {NONE}
+inherit
 
 	SHARED_LOCALE
 		export {NONE} all end

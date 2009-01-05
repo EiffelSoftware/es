@@ -65,8 +65,6 @@ inherit
 			process_void_b
 		end
 
-inherit {NONE}
-
 	SHARED_EP_ENVIRONMENT
 		export {NONE} all end
 
@@ -171,7 +169,7 @@ feature {BYTE_NODE} -- Visitors
 				-- TODO: why go over feature name and not feature id?
 			l_feature := system.class_of_id (a_node.written_in).feature_of_name_id (a_node.attribute_name_id)
 			check l_feature /= Void end
-			l_attached_feature ?= l_feature
+			l_attached_feature := l_feature
 
 			feature_list.record_feature_needed (l_attached_feature)
 
@@ -427,7 +425,7 @@ feature {BYTE_NODE} -- Visitors
 			l_type ?= a_node.type
 			l_feature := system.class_of_id (l_type.class_id).feature_of_feature_id (a_node.call.feature_id)
 			check l_feature /= Void end
-			l_attached_feature ?= l_feature
+			l_attached_feature := l_feature
 
 			feature_list.record_creation_routine_needed (l_attached_feature)
 			l_creation_routine_name := name_generator.creation_routine_name (l_attached_feature)
@@ -474,7 +472,7 @@ feature {BYTE_NODE} -- Visitors
 				-- TODO: why go over feature name and not feature id?
 			l_feature := system.class_of_id (a_node.written_in).feature_of_name_id (a_node.feature_name_id)
 			check l_feature /= Void end
-			l_attached_feature ?= l_feature
+			l_attached_feature := l_feature
 
 			process_feature_call (l_attached_feature, a_node.parameters)
 		end
@@ -488,7 +486,7 @@ feature {BYTE_NODE} -- Visitors
 				-- TODO: why go over feature name and not feature id?
 			l_feature := system.class_of_id (a_node.written_in).feature_of_name_id (a_node.feature_name_id)
 			check l_feature /= Void end
-			l_attached_feature ?= l_feature
+			l_attached_feature := l_feature
 
 			process_feature_call (l_attached_feature, a_node.parameters)
 		end
@@ -623,7 +621,7 @@ feature {BYTE_NODE} -- Visitors
 			l_agent_class := system.class_of_id (a_node.origin_class_id)
 			l_agent_feature := l_agent_class.feature_of_feature_id (a_node.feature_id)
 			check l_agent_feature /= Void end
-			l_attached_feature ?= l_agent_feature
+			l_attached_feature := l_agent_feature
 
 			create_new_reference_local
 			l_agent_variable := last_local
@@ -938,7 +936,7 @@ feature {NONE} -- Implementation
 				-- TODO: why go over feature name and not feature id?
 			l_feature := system.class_of_id (a_node.access.written_in).feature_of_name_id (a_node.access.feature_name_id)
 			check l_feature /= Void end
-			l_attached_feature ?= l_feature
+			l_attached_feature := l_feature
 
 			create l_parameters.make (1)
 			create l_parameter
