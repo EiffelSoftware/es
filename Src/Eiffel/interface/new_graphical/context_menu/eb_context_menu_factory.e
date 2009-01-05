@@ -573,6 +573,8 @@ feature {NONE} -- Menu section, Granularity 2.
 				extend_class_refactoring_menus (a_menu, l_stonec)
 				extend_debug_class_menus (a_menu, l_stonec.e_class)
 				extend_add_to_menu (a_menu, l_stone)
+				extend_separator (a_menu)
+				extend_eve_proofs_class_menu (a_menu, l_stonec)
 			elseif l_stonei /= Void then
 				extend_basic_opening_menus (a_menu, l_stonei, True)
 				extend_separator (a_menu)
@@ -581,6 +583,8 @@ feature {NONE} -- Menu section, Granularity 2.
 			elseif l_cluster_stone /= Void then
 				extend_basic_opening_menus (a_menu, l_stone, False)
 				extend_add_to_menu (a_menu, l_stone)
+				extend_separator (a_menu)
+				extend_eve_proofs_cluster_menu (a_menu, l_cluster_stone)
 			end
 		end
 
@@ -1785,6 +1789,32 @@ feature {NONE} -- Metrics tool section, Granularity 1.
 			end
 		end
 
+feature {NONE} -- EVE Proofs menu
+
+	extend_eve_proofs_class_menu (a_menu: EV_MENU; a_class_stone: CLASSC_STONE) is
+			-- Extend class menu with verify command.
+		require
+			a_menu_not_void: a_menu /= Void
+			a_class_stone_not_void: a_class_stone /= Void
+		do
+			a_menu.extend (dev_window.commands.proof_command.new_menu_item_unmanaged)
+			a_menu.last.set_text (dev_window.commands.proof_command.class_context_menu_name (last_name))
+			a_menu.last.select_actions.wipe_out
+			a_menu.last.select_actions.extend (agent (dev_window.commands.proof_command).execute_with_stone (a_class_stone))
+		end
+
+	extend_eve_proofs_cluster_menu (a_menu: EV_MENU; a_cluster_stone: CLUSTER_STONE) is
+			-- Extend cluster menu with verify command.
+		require
+			a_menu_not_void: a_menu /= Void
+			a_class_stone_not_void: a_cluster_stone /= Void
+		do
+			a_menu.extend (dev_window.commands.proof_command.new_menu_item_unmanaged)
+			a_menu.last.set_text (dev_window.commands.proof_command.cluster_context_menu_name (a_cluster_stone, last_name))
+			a_menu.last.select_actions.wipe_out
+			a_menu.last.select_actions.extend (agent (dev_window.commands.proof_command).execute_with_stone (a_cluster_stone))
+		end
+
 feature {NONE} -- Implementation
 
 	setup_pick_item (a_menu: EV_MENU; a_pebble: ANY) is
@@ -1918,9 +1948,9 @@ invariant
 	dev_window_not_void: dev_window /= Void
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -1931,19 +1961,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com
