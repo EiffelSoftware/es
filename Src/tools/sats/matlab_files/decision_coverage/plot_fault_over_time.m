@@ -27,7 +27,7 @@ end
 handles = plot (X, Y);
 
 %Setup legends.
-legend (handles, classes, 'Location', 'EastOutside');
+legend (handles, classes, 'Location', 'NortheastOutside');
 
 %Setup X-axis label.
 if time_unit == 1
@@ -43,7 +43,8 @@ xlabel (time_label);
 
 %Setup Y-axis label.
 ylabel ('Number of faults');
-set(gca,'YTick',0:0.05:1.2);
+xlim ([0, 360]);
+set(gca,'YTick',0:max_number_of_fault + 1);
 Result = 0;
 
 

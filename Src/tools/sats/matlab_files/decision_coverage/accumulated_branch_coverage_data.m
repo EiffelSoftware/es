@@ -23,7 +23,9 @@ if fault_rows ==1 && branch_rows ==1 && fault_columns == branch_columns
     for i = 1:session_count
         % Get faults for current test session.
         curr_faults = faults{i};
-        curr_faults = curr_faults(:, [1, 3]);
+        fid = find (curr_faults(:,2)>0);
+        curr_faults = curr_faults(fid, [1, 3]);
+%        curr_faults = curr_faults(:, [1, 3]);
         acc_faults = horzcat (acc_faults, accumulated_event_time_table (curr_faults, start_time, end_time, time_unit));
         
         % Get branches for current test session.

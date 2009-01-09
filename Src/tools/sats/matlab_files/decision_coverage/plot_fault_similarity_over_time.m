@@ -1,4 +1,4 @@
-function simi = plot_branch_coverage_similarity_over_time(classes, faults, branches, start_time, end_time, time_unit, central_method)
+function simi = plot_fault_similarity_over_time(classes, faults, branches, start_time, end_time, time_unit, central_method)
 % Load branch coverage data.
 % `classes' is a cell array containing the list of names of classes.
 % `faults' is a cell array containing the fault data of corresponding class in `classes'.
@@ -21,7 +21,7 @@ XSD=[];
 YSD=[];
 
 for i=1:number_of_class
-    bchs = branches{i};
+    bchs = faults{i};
     sz = size (bchs{1});
     number_of_branch = sz(1);
     
@@ -112,9 +112,9 @@ end
 xlabel (time_label);
 
 %Setup Y-axis label.
-ylabel ('% of branch coverage similarity');
+ylabel ('% of detected fault similarity');
 xlim([1, 360]);
-ylim([82,102]);
+ylim([0,110]);
 
 %Plot standard deviation of branch coverage.
 figure

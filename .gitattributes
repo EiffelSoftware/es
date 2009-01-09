@@ -3726,7 +3726,10 @@ Src/tools/sats/matlab_files/decision_coverage/plot_data.m -text
 Src/tools/sats/matlab_files/decision_coverage/plot_fault_branch.m -text
 Src/tools/sats/matlab_files/decision_coverage/plot_fault_branch_time.m -text
 Src/tools/sats/matlab_files/decision_coverage/plot_fault_over_time.m -text
+Src/tools/sats/matlab_files/decision_coverage/plot_fault_similarity_over_time.m -text
+Src/tools/sats/matlab_files/decision_coverage/plot_normalized_branch_coverage_over_time.m -text
 Src/tools/sats/matlab_files/decision_coverage/plot_sd_data.m -text
+Src/tools/sats/matlab_files/decision_coverage/scatter_branch_fault_correlation.m -text
 Src/tools/sats/matlab_files/decision_coverage/session_branch_data.m -text
 Src/tools/sats/matlab_files/decision_coverage/session_time_branch_data.m -text
 Src/tools/sats/matlab_files/decision_coverage/similarity.m -text
