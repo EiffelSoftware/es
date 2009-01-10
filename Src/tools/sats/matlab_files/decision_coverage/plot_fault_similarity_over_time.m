@@ -95,7 +95,8 @@ handles = plot (X, Y);
 set(handles(number_of_class + 1), 'LineWidth', 2);
 set(handles(number_of_class + 1), 'Color', 'k');
 lgd_names = horzcat (classes, {'Median of medians'});
-
+set(gca,'YTick',0.4:0.1:1.1);
+ylim([0.4, 1.1])
 %Setup legends.
 legend (handles, lgd_names, 'Location', 'NortheastOutside');
 
@@ -112,17 +113,17 @@ end
 xlabel (time_label);
 
 %Setup Y-axis label.
-ylabel ('% of detected fault similarity');
+ylabel ('Fault detection similarity');
 xlim([1, 360]);
-ylim([0,110]);
+set(gca,'XTick',0:30:360);
 
 %Plot standard deviation of branch coverage.
 figure
-YSD = YSD ./ Y .* 100
+%YSD = YSD ./ Y .* 100
 std_handles = plot (XSD, YSD);
 
 %Setup legends.
-std_lgd_names = horzcat (classes, {'Median of coefficient of variation'});
+std_lgd_names = horzcat (classes, {'Median of stdevs'});
 legend (std_handles, std_lgd_names, 'Location', 'NortheastOutside');
 set(std_handles(number_of_class + 1), 'LineWidth', 2);
 set(std_handles(number_of_class + 1), 'Color', 'k');
@@ -138,9 +139,11 @@ else
     time_label = 'Time';
 end
 xlabel (time_label);
-xlim([1, 360]);
+ylim([-0.1, 0.3])
+set(gca,'YTick',0:0.05:0.3);
+xlim([0, 360]);
 
 %Setup Y-axis label.
-ylabel ('Coefficient of variation');
+ylabel ('Standard deviation of fault detection similarity');
 
 

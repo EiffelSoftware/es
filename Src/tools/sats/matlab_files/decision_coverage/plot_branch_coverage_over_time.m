@@ -26,8 +26,6 @@ number_of_class = sz(2);
 X=[];
 Y=[];
 
-central_faults = {};
-central_branches = {};
 for i=1:number_of_class
     [cf, cb] = central_branch_coverage_data (faults{i}, branches{i}, start_time, end_time, time_unit, central_method);
     sz = size (branches{i}{1});
