@@ -1,10 +1,13 @@
-function simi = plot_branch_coverage_similarity_over_time(classes, faults, branches, start_time, end_time, time_unit, central_method)
+function [mdn_of_mdn_cov_simi, std_of_mdn_of_mdn_cov_simi] = plot_branch_coverage_similarity_over_time(classes, faults, branches, start_time, end_time, time_unit, central_method)
 % Load branch coverage data.
 % `classes' is a cell array containing the list of names of classes.
 % `faults' is a cell array containing the fault data of corresponding class in `classes'.
 % `branches' is a cell array containing the branch data of corresponding class in `classes'.
 % `similarity' is a cell array, each element is a branch coverage similarity table for the corresponding class in `classes' of the form 
 % [time, similarity_by_the_end_of_time].
+
+% mdn_cov_simi is a table of the form
+% [time, median of medians of branch coverage similarity over classes] 
 
 sz = size (classes);
 number_of_class = sz(2);
@@ -73,6 +76,8 @@ end
 
 simi = horzcat (simi, {median_of_bch_cov});
 
+mdn_of_mdn_cov_simi = horzcat (X(:,1), median_of_bch_cov);
+
 X = horzcat (X, (start_time:end_time)');
 Y = horzcat (Y, median_of_bch_cov);
 
@@ -89,6 +94,8 @@ end
 
 XSD = horzcat (XSD, (start_time:end_time)');
 YSD = horzcat (YSD, median_of_std_bch_cov);
+
+std_of_mdn_of_mdn_cov_simi = horzcat ((start_time:end_time)', median_of_std_bch_cov);
 
 handles = plot (X, Y);
 
@@ -112,17 +119,17 @@ end
 xlabel (time_label);
 
 %Setup Y-axis label.
-ylabel ('% of branch coverage similarity');
+ylabel ('Branch coverage similarity');
 xlim([1, 360]);
-ylim([82,102]);
+ylim([0.8,1.02]);
 
 %Plot standard deviation of branch coverage.
 figure
-YSD = YSD ./ Y .* 100
+%YSD = YSD ./ Y .* 100
 std_handles = plot (XSD, YSD);
 
 %Setup legends.
-std_lgd_names = horzcat (classes, {'Median of coefficient of variation'});
+std_lgd_names = horzcat (classes, {'Median of stdev'});
 legend (std_handles, std_lgd_names, 'Location', 'NortheastOutside');
 set(std_handles(number_of_class + 1), 'LineWidth', 2);
 set(std_handles(number_of_class + 1), 'Color', 'k');
@@ -138,9 +145,9 @@ else
     time_label = 'Time';
 end
 xlabel (time_label);
-xlim([1, 360]);
+xlim([start_time, end_time]);
 
 %Setup Y-axis label.
-ylabel ('Coefficient of variation');
+ylabel ('Standard deviation of similarity');
 
 

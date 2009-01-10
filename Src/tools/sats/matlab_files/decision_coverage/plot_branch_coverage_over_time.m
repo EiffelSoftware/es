@@ -1,8 +1,23 @@
-function [median_cov, std_cov, median_cov_over_time] = plot_branch_coverage_over_time(classes, faults, branches, start_time, end_time, time_unit, central_method)
+function [mdn_of_mdn_of_cov, mdn_of_mdn_of_cov_end, stdev_of_mdn_of_cov_end, coef_of_var_of_mdn_of_cov_end, min_mdn_cov_end, max_mdn_cov_end] = plot_branch_coverage_over_time(classes, faults, branches, start_time, end_time, time_unit, central_method)
 % Load branch coverage data.
 % `classes' is a cell array containing the list of names of classes.
 % `faults' is a cell array containing the fault data of corresponding class in `classes'.
 % `branches' is a cell array containing the branch data of corresponding class in `classes'.
+% Return values:
+% mdn_of_mdn_of_cov is a table of the form 
+% [time, median of median of coverage level over time], it describes the
+% overall branch coverage trend for all classes.
+% mdn_of_mdn_of_cov_end is the median of medians of branch coverage level
+% at the end time slot over all classes. 
+% stdev_of_mdn_of_cove_end is the standard deviation of medians of branch
+% coverage level at the end time slot.
+% coef_of_var_of_mdn_of_cov_end is the cofficient of variation of median of
+% medians of branch coverage level at the end time slot.
+% min_mdn_cov_end is the minimal branch coverage level over all classes at
+% the end time slot.
+% max_mdn_cov_end is the maximal branch coverage level over all classes at
+% the end time slot.
+
 
 sz = size (classes);
 number_of_class = sz(2);
@@ -19,15 +34,19 @@ for i=1:number_of_class
     number_of_branch = sz(1);
     
     X = horzcat (X, cb{1}(:, 1));
-    Y = horzcat (Y, (cb{1}(:, 2) ./ number_of_branch) .* 100);
+    Y = horzcat (Y, (cb{1}(:, 2) ./ number_of_branch));
 end
 
-%Calculate the median of coverage levels over classes at the end of test
-%runs.
+%Calculate result values.
 sz = size (Y);
 number_of_time = sz(1);
-median_cov = median (Y (number_of_time, :));
-std_cov = std (Y (number_of_time, :));
+
+mdn_end = Y (number_of_time, :);
+mdn_of_mdn_of_cov_end = median(mdn_end);
+stdev_of_mdn_of_cov_end = std (mdn_end);
+coef_of_var_of_mdn_of_cov_end = stdev_of_mdn_of_cov_end / mdn_of_mdn_of_cov_end * 100;
+min_mdn_cov_end = min (mdn_end);
+max_mdn_cov_end = max (mdn_end);
 
 %Calculate the median of branch coverage over time.
 X = horzcat (X, cb{1}(:, 1));
@@ -39,12 +58,19 @@ for i=1:number_of_time
     mcov(i) = median (mm);
 end
 Y = horzcat (Y, mcov);
-median_cov_over_time = mcov;
 
+%Calculate result values.
+mdn_of_mdn_of_cov = horzcat (X(:,1), mcov);
+
+%Plot graph.
 figure
 handles = plot (X, Y);
+
+%Set properties for the curve of median of medians of branch coverage
+%level.
 set (handles(number_of_class+1), 'LineWidth', 2);
 set (handles(number_of_class+1), 'Color', 'k');
+
 %Setup legends.
 lgd_names =horzcat (classes, {'Median of medians'});
 legend (handles, lgd_names, 'Location', 'NortheastOutside');
@@ -61,11 +87,10 @@ else
 end
 xlabel (time_label);
 xlim ([0, 360]);
-ylim ([30, 90])
-%Setup Y-axis label.
-ylabel ('% of branch coverage');
+ylim ([0.3, 0.9]);
 
-Result = 0;
+%Setup Y-axis label.
+ylabel ('Branch coverage level');
 
 
 

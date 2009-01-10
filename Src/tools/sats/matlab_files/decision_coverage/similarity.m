@@ -21,7 +21,7 @@ bch_dif = 0;
 for i=1:number_of_branch
     bch_dif = bch_dif + xor (abch(i), bbch(i));
 end
-Result = (1 - bch_dif / number_of_branch) * 100;
+Result = (1 - bch_dif / number_of_branch);
 
 % Calculate angle between two vectors as similarity
 %Result = (sum(abch.*bbch)) / (sqrt(sum(abch.^2)) * sqrt(sum(bbch.^2)));

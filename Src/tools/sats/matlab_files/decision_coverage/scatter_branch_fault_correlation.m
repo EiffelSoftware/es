@@ -32,7 +32,7 @@ for i=1:number_of_class
     Y = horzcat (Y, mm);
 end
  
-figure
+figure ('Position', [0, 0, 500, 500]);
 cols = 3;
 rows = 3;
 for i=1:number_of_class
