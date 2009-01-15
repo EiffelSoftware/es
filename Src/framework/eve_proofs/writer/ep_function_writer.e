@@ -43,7 +43,7 @@ feature -- Basic operations
 		do
 			l_function_name := name_generator.functional_feature_name (a_feature)
 			l_full_function := l_function_name.twin
-			l_arguments := "heap: [ref, <x>name]x, current: ref"
+			l_arguments := "heap: HeapType, current: ref"
 			l_full_function.append ("(heap, current")
 			from
 				i := 1

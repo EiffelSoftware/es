@@ -699,22 +699,22 @@ feature {BYTE_NODE} -- Visitors
 			l_contract_writer.generate_contracts
 
 			side_effect.put_comment_line ("Agent properties")
-			side_effect.put_line ("assume (forall heap: [ref, <x>name]x" + l_typed_arguments + " :: ")
+			side_effect.put_line ("assume (forall heap: HeapType" + l_typed_arguments + " :: ")
 			side_effect.put_line ("            { routine.precondition_" + l_open_argument_count.out + "(heap" + l_arguments + ") } // Trigger")
 			side_effect.put_line ("        routine.precondition_" + l_open_argument_count.out + "(heap" + l_arguments + ") <==> " + l_contract_writer.full_precondition + ");")
 -- TODO: fix for demo
 --			side_effect.put_line ("assume (forall $o: ref, $f: name :: ")
 --			side_effect.put_line ("            { agent.modifies(" + l_agent_variable + ", $o, $f) } // Trigger")
 --			side_effect.put_line ("        agent.modifies(" + l_agent_variable + ", $o, $f) <==> ($o == arg.a_paragraph));")
-			side_effect.put_line ("assume (forall $o: ref, $f: name :: ")
+			side_effect.put_line ("assume (forall<alpha> $o: ref, $f: Field alpha :: ")
 			side_effect.put_line ("            { agent.modifies(" + l_agent_variable + ", $o, $f) } // Trigger")
 			side_effect.put_line ("        agent.modifies(" + l_agent_variable + ", $o, $f) <==> (true));")
 			if l_attached_feature.has_return_value then
-				side_effect.put_line ("assume (forall heap: [ref, <x>name]x, old_heap: [ref, <x>name]x" + l_typed_arguments + ", result:any :: ")
+				side_effect.put_line ("assume (forall heap: HeapType, old_heap: HeapType" + l_typed_arguments + ", result:any :: ")
 				side_effect.put_line ("            { function.postcondition_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ", result) } // Trigger")
 				side_effect.put_line ("        function.postcondition_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ", result) <==> " + l_contract_writer.full_postcondition + ");")
 			else
-				side_effect.put_line ("assume (forall heap: [ref, <x>name]x, old_heap: [ref, <x>name]x" + l_typed_arguments + " :: ")
+				side_effect.put_line ("assume (forall heap: HeapType, old_heap: HeapType" + l_typed_arguments + " :: ")
 				side_effect.put_line ("            { routine.postcondition_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ") } // Trigger")
 				side_effect.put_line ("        routine.postcondition_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ") <==> " + l_contract_writer.full_postcondition + ");")
 			end

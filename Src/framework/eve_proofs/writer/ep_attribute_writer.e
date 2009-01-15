@@ -29,15 +29,15 @@ feature -- Basic operations
 			l_type := type_mapper.boogie_type_for_type (a_feature.type)
 
 			put_comment_line ("Attribute name")
-			put_line ("const unique " + l_field_name + ": <" + l_type + ">name;")
+			put_line ("const unique " + l_field_name + ": Field " + l_type + ";")
 			put_new_line
 
 			put_comment_line ("Functional represenation of attribute")
-			put_line ("function " + l_functional_name + "(heap: [ref, <x>name]x, current: ref) returns (" + l_type + ");")
+			put_line ("function " + l_functional_name + "(heap: HeapType, current: ref) returns (" + l_type + ");")
 			put_new_line
 
 			put_comment_line ("Axiomatic mapping of attribute to heap location")
-			put_line ("axiom (forall heap: [ref, <x>name]x, current: ref ::")
+			put_line ("axiom (forall heap: HeapType, current: ref ::")
 			put_line ("            { " + l_functional_name + "(heap, current) } // Trigger");
 			put_line ("        IsHeap(heap) ==> (" + l_functional_name + "(heap, current) == heap[current, " + l_field_name + "]));")
 			put_new_line
