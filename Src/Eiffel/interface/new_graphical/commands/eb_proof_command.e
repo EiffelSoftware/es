@@ -14,7 +14,8 @@ inherit
 		redefine
 			tooltext,
 			new_sd_toolbar_item,
-			new_mini_sd_toolbar_item
+			new_mini_sd_toolbar_item,
+			initialize_sd_toolbar_item
 		end
 
 	COMPILER_EXPORTER
@@ -82,17 +83,15 @@ feature -- Execution
 	execute_with_stone (a_stone: STONE)
 			-- Execute with `a_stone'.
 		do
-			check droppable (a_stone) end
 			execute_with_stone_content (a_stone, Void)
 		end
 
 	execute_with_stone_content (a_stone: STONE; a_content: SD_CONTENT) is
-			-- Create a new tab which stone is `a_stone' and create at side of `a_content' if exists.
+			-- TODO.
 		local
 			l_save_confirm: ES_DISCARDABLE_COMPILE_SAVE_FILES_PROMPT
 			l_classes: DS_ARRAYED_LIST [CLASS_I]
 		do
-			check droppable (a_stone) end
 			if not eiffel_project.is_compiling then
 				if window_manager.has_modified_windows then
 					create l_classes.make_default
@@ -128,24 +127,40 @@ feature -- Basic operations
 
 	verify (a_stone: STONE)
 			-- Verify `a_stone'.
-		require
-			a_stone_not_void: a_stone /= Void
 		local
 			l_class_stone: CLASSI_STONE
 			l_cluster_stone: CLUSTER_STONE
+			l_cluster: CLUSTER_I
+			l_groups: ARRAYED_LIST [CONF_GROUP]
 		do
 			eve_proofs.reset
 
 			if eve_proofs.is_ready then
-				l_class_stone ?= a_stone
-				l_cluster_stone ?= a_stone
-				if l_class_stone /= Void then
-					load_class (l_class_stone.class_i)
-				elseif l_cluster_stone /= Void then
-					if l_cluster_stone.is_cluster then
-						load_cluster (l_cluster_stone.cluster_i)
-					else
-						load_group (l_cluster_stone.group)
+				if a_stone = Void then
+						-- Verify system
+					from
+						l_groups := eiffel_universe.groups
+						l_groups.start
+					until
+						l_groups.after
+					loop
+						l_cluster ?= l_groups.item_for_iteration
+						if l_cluster /= Void and then l_cluster.parent_cluster = Void then
+							load_cluster (l_cluster)
+						end
+						l_groups.forth
+					end
+				else
+					l_class_stone ?= a_stone
+					l_cluster_stone ?= a_stone
+					if l_class_stone /= Void then
+						load_class (l_class_stone.class_i)
+					elseif l_cluster_stone /= Void then
+						if l_cluster_stone.is_cluster then
+							load_cluster (l_cluster_stone.cluster_i)
+						else
+							load_group (l_cluster_stone.group)
+						end
 					end
 				end
 			end
@@ -238,10 +253,13 @@ feature -- Basic operations
 
 feature -- Items
 
-	new_sd_toolbar_item (display_text: BOOLEAN): EB_SD_COMMAND_TOOL_BAR_BUTTON
+	new_sd_toolbar_item (display_text: BOOLEAN): EB_SD_COMMAND_TOOL_BAR_DUAL_POPUP_BUTTON
 			-- New toolbar item for dockable toolbar.
 		do
-			Result := Precursor {EB_TOOLBARABLE_AND_MENUABLE_COMMAND}(display_text)
+			create Result.make (Current)
+			initialize_sd_toolbar_item (Result, display_text)
+			Result.select_actions.extend (agent execute)
+
 			Result.drop_actions.extend (agent execute_with_stone)
 			Result.drop_actions.set_veto_pebble_function (agent droppable)
 		end
@@ -252,6 +270,13 @@ feature -- Items
 			Result := Precursor {EB_TOOLBARABLE_AND_MENUABLE_COMMAND}
 			Result.drop_actions.extend (agent execute_with_stone)
 			Result.drop_actions.set_veto_pebble_function (agent droppable)
+		end
+
+	initialize_sd_toolbar_item (a_item: EB_SD_COMMAND_TOOL_BAR_DUAL_POPUP_BUTTON; display_text: BOOLEAN) is
+			-- <Precursor>
+		do
+			Precursor (a_item, display_text)
+			a_item.set_menu_function (agent drop_down_menu)
 		end
 
 feature -- Context menu
@@ -298,6 +323,56 @@ feature {NONE} -- Implementation
 			l_class_stone ?= a_pebble
 			l_cluster_stone ?= a_pebble
 			Result := l_class_stone /= Void or else l_cluster_stone /= Void
+		end
+
+	drop_down_menu: EV_MENU is
+			-- Drop down menu for `new_sd_toolbar_item'.
+		local
+			l_item: EV_MENU_ITEM
+		do
+			create Result
+				-- TODO: internationalization
+			create l_item.make_with_text_and_action ("Proof current item", agent execute)
+			Result.extend (l_item)
+			create l_item.make_with_text_and_action ("Proof parent cluster of current item", agent execute_proof_parent_cluster)
+			Result.extend (l_item)
+			create l_item.make_with_text_and_action ("Proof system", agent execute_proof_system)
+			Result.extend (l_item)
+		ensure
+			not_void: Result /= Void
+		end
+
+	execute_proof_parent_cluster is
+			-- Execute menu command.
+		local
+			l_window: EB_DEVELOPMENT_WINDOW
+			l_class_stone: CLASSC_STONE
+			l_cluster_stone: CLUSTER_STONE
+		do
+			if window /= Void then
+				l_window := window
+			else
+				l_window := window_manager.last_focused_development_window
+			end
+			l_class_stone ?= l_window.stone
+			l_cluster_stone ?= l_window.stone
+			if l_class_stone /= Void then
+				create l_cluster_stone.make (l_class_stone.group)
+				execute_with_stone (l_cluster_stone)
+			elseif l_cluster_stone /= Void then
+				if l_cluster_stone.cluster_i.parent_cluster /= Void then
+					create l_cluster_stone.make (l_cluster_stone.cluster_i.parent_cluster)
+				end
+				execute_with_stone (l_cluster_stone)
+			end
+		end
+
+	execute_proof_system is
+			-- Execute menu command.
+		local
+			l_window: EB_DEVELOPMENT_WINDOW
+		do
+			execute_with_stone (Void)
 		end
 
 feature {NONE} -- Implementation
