@@ -33,9 +33,6 @@ inherit
 	SHARED_EIFFEL_PROJECT
 		export {NONE} all end
 
-	EB_SHARED_PREFERENCES
-		export {NONE} all end
-
 	EB_SHARED_MANAGERS
 		export {NONE} all end
 

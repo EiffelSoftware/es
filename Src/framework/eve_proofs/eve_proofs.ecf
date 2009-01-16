@@ -14,6 +14,17 @@
 		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
 		<library name="process" location="$ISE_LIBRARY\library\process\process.ecf"/>
         <library name="interface_names" location="$EIFFEL_SRC\framework\interface_names\interface_names.ecf"/>
+		<library name="wel" location="$ISE_LIBRARY\library\wel\wel.ecf"/>
+		<library name="preferences_reg" location="$ISE_LIBRARY\library\preferences\preferences_reg.ecf">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</library>
+		<library name="preferences_xml" location="$ISE_LIBRARY\library\preferences\preferences_xml.ecf">
+			<condition>
+				<platform excluded_value="windows"/>
+			</condition>
+		</library>
 		<cluster name="eve_proofs" location=".\" recursive="true">
 			<option namespace="EveProofs">
 			</option>

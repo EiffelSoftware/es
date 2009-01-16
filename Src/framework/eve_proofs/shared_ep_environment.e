@@ -1,10 +1,13 @@
 indexing
 	description: "Shared access to an EP_ENVIRONMENT"
-	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class SHARED_EP_ENVIRONMENT
+
+inherit
+
+	SHARED_EVE_PROOFS_PREFERENCES
 
 feature -- Access
 

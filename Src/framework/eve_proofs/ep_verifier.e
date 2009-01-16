@@ -135,19 +135,37 @@ feature {NONE} -- Implementation
 			l_arguments: LINKED_LIST [STRING]
 			l_process_factory: PROCESS_FACTORY
 			l_process: PROCESS
+			l_registry: WEL_REGISTRY
+			l_registry_value: WEL_REGISTRY_KEY_VALUE
+			l_boogie_executable: STRING
+			l_error: EP_GENERAL_ERROR
 		do
-			create l_ee
 				-- Prepare command line arguments
 			create l_arguments.make
 			l_arguments.extend ("/trace")
 			l_arguments.extend (boogie_output_file_name)
 
+				-- Find Boogie executable
+			l_boogie_executable := preferences.boogie_executable
+			if l_boogie_executable.is_empty then
+				create l_registry
+				l_registry_value := l_registry.open_key_value ("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\SpecSharp", "InstallDir")
+
+				if l_registry_value = Void then
+					l_boogie_executable := "boogie"
+				else
+					l_boogie_executable := l_registry_value.string_value + "boogie"
+				end
+			end
+
+				-- Launch Boogie
+			create l_ee
 			create l_process_factory
-			l_process := l_process_factory.process_launcher ("boogie", l_arguments, l_ee.current_working_directory)
+			l_process := l_process_factory.process_launcher (l_boogie_executable, l_arguments, l_ee.current_working_directory)
 
 			l_process.redirect_output_to_agent (agent handle_boogie_output (?))
 			l_process.redirect_error_to_same_as_output
-			l_process.set_on_fail_launch_handler (agent handle_launch_failed)
+			l_process.set_on_fail_launch_handler (agent handle_launch_failed (l_boogie_executable))
 			l_process.launch
 			l_process.wait_for_exit
 		end
@@ -158,12 +176,13 @@ feature {NONE} -- Implementation
 			boogie_output.append (a_output)
 		end
 
-	handle_launch_failed
+	handle_launch_failed (a_executable: STRING)
 			-- Handle launch of Boogie failed.
 		local
 			l_error: EP_GENERAL_ERROR
 		do
 			create l_error.make (names.error_launching_boogie_failed)
+				-- TODO: provide better help with executable
 			l_error.set_description (names.description_launching_boogie_failed)
 			errors.extend (l_error)
 		end
