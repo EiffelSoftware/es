@@ -96,7 +96,7 @@ XSD = horzcat (XSD, (start_time:end_time)');
 YSD = horzcat (YSD, median_of_std_bch_cov);
 
 std_of_mdn_of_mdn_cov_simi = horzcat ((start_time:end_time)', median_of_std_bch_cov);
-
+set(gcf,'DefaultAxesColorOrder',[1 1 0; 1 0 1; 0 1 1; 1 0 0; 0 1 0; 0 0 1; 0 0 0; 0.3216 0.1882 0.1882; 0 0.498 0; 0.4784 0.06275 0.8941; 0.04314 0.5176 0.7804; 0.8706 0.4902 0; 0.2 0.2 0; 0 0.4 0.8; 0.6 0 0.2]);
 handles = plot (X, Y);
 
 set(handles(number_of_class + 1), 'LineWidth', 2);
@@ -126,6 +126,7 @@ ylim([0.8,1.02]);
 %Plot standard deviation of branch coverage.
 figure
 %YSD = YSD ./ Y .* 100
+set(gcf,'DefaultAxesColorOrder',[1 1 0; 1 0 1; 0 1 1; 1 0 0; 0 1 0; 0 0 1; 0 0 0; 0.3216 0.1882 0.1882; 0 0.498 0; 0.4784 0.06275 0.8941; 0.04314 0.5176 0.7804; 0.8706 0.4902 0; 0.2 0.2 0; 0 0.4 0.8; 0.6 0 0.2]);
 std_handles = plot (XSD, YSD);
 
 %Setup legends.

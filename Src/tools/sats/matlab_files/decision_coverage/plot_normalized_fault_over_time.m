@@ -39,6 +39,7 @@ X = horzcat (X, (start_time:end_time)');
 Y = horzcat (Y, mdn_norf);
 mdn_normalized_fault = horzcat ((start_time:end_time)', mdn_norf);
 
+set(gcf,'DefaultAxesColorOrder',[1 1 0; 1 0 1; 0 1 1; 1 0 0; 0 1 0; 0 0 1; 0 0 0; 0.3216 0.1882 0.1882; 0 0.498 0; 0.4784 0.06275 0.8941; 0.04314 0.5176 0.7804; 0.8706 0.4902 0; 0.2 0.2 0; 0 0.4 0.8; 0.6 0 0.2]);
 handles = plot (X, Y);
 %Setup legends.
 legend_names = horzcat (classes, {'Median of medians'});
@@ -64,7 +65,7 @@ ylabel ('Number of faults');
 xlim ([0, 360]);
 ylim ([0,1.1])
 set(gca,'YTick',0:0.1:1.1);
-Result = 0;
+
 
 
 

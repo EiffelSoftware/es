@@ -15,8 +15,7 @@ function [classes, faults, branches, normalized_faults, normalized_branches] = l
 is_original_faults=true;
 start_index=1;
 end_index=number_of_session;
-
-classes={'HASH_TABLE', 'FIXED_LIST', 'LINKED_LIST', 'ARRAYED_LIST', 'BINARY_TREE', 'ACTIVE_LIST', 'ARRAYED_SET', 'BINARY_SEARCH_TREE_SET', 'LINKED_CIRCULAR'};
+classes={'ACTIVE_LIST', 'ARRAY', 'ARRAYED_LIST', 'ARRAYED_SET', 'ARRAYED_STACK', 'BINARY_SEARCH_TREE', 'BINARY_SEARCH_TREE_SET', 'BINARY_TREE', 'FIXED_LIST', 'HASH_TABLE', 'HEAP_PRIORITY_QUEUE', 'LINKED_CIRCULAR', 'LINKED_LIST', 'PART_SORTED_TWO_WAY_LIST'}
 faults={};
 branches={};
 normalized_faults={};
@@ -32,5 +31,6 @@ for i=1:number_of_class
     normalized_faults = horzcat (normalized_faults, {nf});
     normalized_branches = horzcat (normalized_branches, {nb});    
 end
-classes={'HASH\_TABLE', 'FIXED\_LIST', 'LINKED\_LIST', 'ARRAYED\_LIST', 'BINARY\_TREE', 'ACTIVE\_LIST', 'ARRAYED\_SET', 'BINARY\_SEARCH\_TREE\_SET', 'LINKED\_CIRCULAR'};
+classes={'ACTIVE\_LIST', 'ARRAY', 'ARRAYED\_LIST', 'ARRAYED\_SET', 'ARRAYED\_STACK', 'BINARY\_SEARCH\_TREE', 'BINARY\_SEARCH\_TREE\_SET', 'BINARY\_TREE', 'FIXED\_LIST', 'HASH\_TABLE', 'HEAP\_PRIORITY\_QUEUE', 'LINKED\_CIRCULAR', 'LINKED\_LIST', 'PART\_SORTED\_TWO\_WAY\_LIST'}
+
 

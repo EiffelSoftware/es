@@ -50,7 +50,7 @@ for j=1:number_of_class
 end
  
 figure;
-cols = 4;
+cols = 5;
 rows = number_of_class / cols;
 if rows < 1 
     rows = 1;

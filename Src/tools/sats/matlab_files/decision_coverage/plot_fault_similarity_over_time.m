@@ -1,4 +1,4 @@
-function simi = plot_fault_similarity_over_time(classes, faults, branches, start_time, end_time, time_unit, central_method)
+function [simi, mdn_simi, std_mdn_simi] = plot_fault_similarity_over_time(classes, faults, branches, start_time, end_time, time_unit, central_method)
 % Load branch coverage data.
 % `classes' is a cell array containing the list of names of classes.
 % `faults' is a cell array containing the fault data of corresponding class in `classes'.
@@ -76,6 +76,8 @@ simi = horzcat (simi, {median_of_bch_cov});
 X = horzcat (X, (start_time:end_time)');
 Y = horzcat (Y, median_of_bch_cov);
 
+mdn_simi = horzcat ((start_time:end_time)', median_of_bch_cov);
+
 %Calculate median of standard deviation of branch coverage similarity.
 median_of_std_bch_cov = zeros (number_of_time, 1);
 for t=start_time:end_time
@@ -89,7 +91,9 @@ end
 
 XSD = horzcat (XSD, (start_time:end_time)');
 YSD = horzcat (YSD, median_of_std_bch_cov);
+std_mdn_simi = horzcat ((start_time:end_time)', median_of_std_bch_cov);
 
+set(gcf,'DefaultAxesColorOrder',[1 1 0; 1 0 1; 0 1 1; 1 0 0; 0 1 0; 0 0 1; 0 0 0; 0.3216 0.1882 0.1882; 0 0.498 0; 0.4784 0.06275 0.8941; 0.04314 0.5176 0.7804; 0.8706 0.4902 0; 0.2 0.2 0; 0 0.4 0.8; 0.6 0 0.2]);
 handles = plot (X, Y);
 
 set(handles(number_of_class + 1), 'LineWidth', 2);
@@ -120,6 +124,7 @@ set(gca,'XTick',0:30:360);
 %Plot standard deviation of branch coverage.
 figure
 %YSD = YSD ./ Y .* 100
+set(gcf,'DefaultAxesColorOrder',[1 1 0; 1 0 1; 0 1 1; 1 0 0; 0 1 0; 0 0 1; 0 0 0; 0.3216 0.1882 0.1882; 0 0.498 0; 0.4784 0.06275 0.8941; 0.04314 0.5176 0.7804; 0.8706 0.4902 0; 0.2 0.2 0; 0 0.4 0.8; 0.6 0 0.2]);
 std_handles = plot (XSD, YSD);
 
 %Setup legends.
@@ -142,7 +147,7 @@ xlabel (time_label);
 ylim([-0.1, 0.3])
 set(gca,'YTick',0:0.05:0.3);
 xlim([0, 360]);
-
+set(gca,'XTick',0:30:360);
 %Setup Y-axis label.
 ylabel ('Standard deviation of fault detection similarity');
 
