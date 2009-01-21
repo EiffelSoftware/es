@@ -19,7 +19,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_test_session_start_time: INTEGER; a_instrument_config: SAT_DCS_INSTRUMENT_CONFIG_LOADER) is
+	make (a_test_session_start_time: INTEGER; a_analyze_start_time: INTEGER; a_analyze_end_time: INTEGER; a_instrument_config: SAT_DCS_INSTRUMENT_CONFIG_LOADER) is
 			-- Initialize Current.
 		require
 			a_instrument_config_attached: a_instrument_config /= Void
@@ -35,8 +35,9 @@ feature{NONE} -- Initialization
 			create test_case_start_record_table.make (initial_storage_size)
 			create slot_frequency_table.make (0, slot_count - 1)
 			create slot_first_coverage_time_table.make (0, slot_count - 1)
+			create fault_branch_visit_table.make (20)
 			initialize_sections
-			set_analysis_time (0, -1)
+			set_analysis_time (a_analyze_start_time, a_analyze_end_time)
 
 			create branch_frequency_table.make (1, branch_count)
 			create branch_first_coverage_time_table.make (1, branch_count)
@@ -369,6 +370,25 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
+	fault_table: HASH_TABLE [AUT_TEST_CASE_RESULT, INTEGER]
+			-- Fault table
+			-- [Fault, index of test case which reveals this fault]
+
+	set_fault_table (a_fault_table: like fault_table) is
+			-- Set `fault_table' with `a_fault_table'.
+		do
+			fault_table := a_fault_table
+		ensure
+			fault_table_set: fault_table = a_fault_table
+		end
+
+	fault_branch_visit_table: HASH_TABLE [HASH_TABLE [INTEGER, INTEGER], INTEGER]
+			-- Table of branch coverage information for fault revealing test cases.
+			-- The key of the outer table is fault revealing test case index
+			-- The key of the inner table is slot index visited by that test case,
+			-- the value of the inner table is the number of times that the slot is visited
+			-- until now.
+
 feature -- Operations
 
 	load (a_directory_name: STRING) is
@@ -543,6 +563,9 @@ feature{SAT_INSTRUMENT_LOG_SEARCHER} -- Basic operations
 			l_feature_list: DS_LINKED_LIST [SAT_FEATURE_ACCESS_RECORD]
 			l_frequency_table: like slot_frequency_table
 			l_first_visit_table: like slot_first_coverage_time_table
+			l_fault_table: like fault_table
+			l_fault_branch_table: like fault_branch_visit_table
+			l_branch_visit_table: HASH_TABLE [INTEGER, INTEGER]
 		do
 			l_frequency_table := slot_frequency_table
 			l_first_visit_table := slot_first_coverage_time_table
@@ -568,13 +591,6 @@ feature{SAT_INSTRUMENT_LOG_SEARCHER} -- Basic operations
 					end
 					last_slot := l_decision_record
 
---					l_decision_list := decision_table.item (l_slot)
---					if l_decision_list = Void then
---						create l_decision_list.make
---						decision_table.extend (l_decision_list, l_slot)
---					end
---					l_decision_list.force_last (l_decision_record)
-
 					if not test_case_start_record_table.has (l_test_case_index) then
 						test_case_start_record_table.force (l_decision_record, l_test_case_index)
 					end
@@ -588,6 +604,20 @@ feature{SAT_INSTRUMENT_LOG_SEARCHER} -- Basic operations
 						l_first_visit_table.put (l_decision_record, l_slot)
 					end
 					update_branch_first_visit_table (l_slot, l_time, l_test_case_index)
+
+						-- Update branch visit information for fault revealing test case.
+					l_fault_table := fault_table
+					if l_fault_table /= Void and then l_fault_table.has (l_test_case_index) then
+						l_fault_branch_table := fault_branch_visit_table
+						l_branch_visit_table := l_fault_branch_table.item (l_test_case_index)
+						if l_branch_visit_table = Void then
+							create l_branch_visit_table.make (10)
+							l_fault_branch_table.force (l_branch_visit_table, l_test_case_index)
+						end
+						if not l_branch_visit_table.has (l_slot) then
+							l_branch_visit_table.put (l_frequency_table.item (l_slot), l_slot)
+						end
+					end
 				else
 					log_loader.set_should_stop_loading (True)
 				end

@@ -225,15 +225,7 @@ feature {NONE} -- Implementation
 								create classification.make (Current, class_, feature_)
 								classifications.force_last (classification)
 							end
-						elseif normal_response.exception.code = class_invariant and then normal_response.exception.break_point_slot = 0 then
-								-- Class invariant violation on feature entry is considered as invalid too.
-								-- Fixme: This may be too strong, because there may be some code:
-								-- goo do
-								--   foo
-								--   Current.bar
-								-- end
-								-- where in foo, the invariant is violated. This should be marked as a bug. 12.23.2008 Jason
-
+						elseif is_class_invariant_violation_on_test_feature_entry (normal_response, class_.name_in_upper) then
 							is_invalid := True
 							if feature_ /= Void then
 								create classification.make (Current, class_, feature_)
@@ -253,6 +245,30 @@ feature {NONE} -- Implementation
 			else
 				-- No response recorded (maybe the request was not executed because of an inconsistency) -> invalid
 				is_invalid := True
+			end
+		end
+
+	is_class_invariant_violation_on_test_feature_entry (a_response: AUT_NORMAL_RESPONSE; a_class_under_test: STRING): BOOLEAN is
+			-- Does `a_response' reveal a class invariant violation on enty
+			-- of testee feature from `a_class_under_test'?
+		require
+			a_response_attached: a_response /= Void
+			a_class_under_test_attached: a_class_under_test /= Void
+		local
+			l_levels: LINKED_LIST [TUPLE [class_name: STRING; bp_slot: INTEGER]]
+			l_class_under_test: STRING
+
+		do
+			l_levels := a_response.exception.trace_levels
+			if
+				a_response.exception.code = class_invariant and then
+				l_levels.count = 3 and then
+				l_levels.i_th (3).bp_slot = 0
+			then
+				Result :=
+					(l_levels.i_th (1).class_name ~ a_class_under_test) and then
+					(l_levels.i_th (2).class_name ~ a_class_under_test) and then
+					(l_levels.i_th (3).class_name ~ a_class_under_test)
 			end
 		end
 

@@ -39,6 +39,7 @@ feature {NONE} -- Initialization
 			class_name := an_exception_class_name
 			tag_name := an_exception_tag_name
 			trace := an_exception_trace
+			create trace_levels.make
 			parse_trace
 		ensure
 			exception_code_set: code = an_exception_code
@@ -179,7 +180,6 @@ feature {NONE} -- Implementation
 				-- Something is wrong the the trace.
 				-- Not exactly sure what to do. For now we leave `trace_depth' and `break_point_slot' to their default values.
 			end
-
 		end
 
 	go_after_next_dash_line (a_cs: DS_LINEAR_CURSOR [STRING]) is
@@ -188,15 +188,40 @@ feature {NONE} -- Implementation
 			a_cs_not_off: not a_cs.off
 		local
 			dash_line_found: BOOLEAN
+			l_lines: LINKED_LIST [STRING]
+			l_class_line: STRING
+			l_bp_slot_line: STRING
+			l_class_name: STRING
+			l_bp_slot: INTEGER
 		do
+			create l_lines.make
 			from
 			until
 				dash_line_found or a_cs.off
 			loop
 				if a_cs.item.is_equal (dash_line) then
 					dash_line_found := True
+				else
+					l_lines.extend (a_cs.item)
 				end
 				a_cs.forth
+			end
+
+			if l_lines.count = 2 or l_lines.count = 3 then
+				l_class_line := l_lines.i_th (1)
+				if l_lines.count = 2 then
+					l_bp_slot_line := l_lines.i_th (1)
+				else
+					l_bp_slot_line := l_lines.i_th (2)
+				end
+
+				l_class_line.left_adjust
+				l_class_name := l_class_line.split (' ').first
+				break_point_slot_regexp.match (l_bp_slot_line)
+				if break_point_slot_regexp.has_matched then
+					l_bp_slot := break_point_slot_regexp.captured_substring (1).to_integer
+				end
+				trace_levels.extend ([l_class_name, l_bp_slot])
 			end
 		end
 
@@ -219,6 +244,11 @@ feature {NONE} -- Implementation
 			create Result.make
 			Result.compile (".*@(\d+)")
 		end
+
+feature -- Class invariant violation detection
+
+	trace_levels: LINKED_LIST [TUPLE [class_name: STRING; breakpoint_slot: INTEGER]];
+			-- Class name and breakpoint slots for analyzed levels of the exception trace from the top
 
 invariant
 

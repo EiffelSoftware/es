@@ -12,7 +12,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_directory: STRING; a_system: SYSTEM_I; a_start_time, a_end_time: INTEGER) is
+	make (a_directory: STRING; a_system: SYSTEM_I; a_start_time, a_end_time: INTEGER; a_session_length: INTEGER) is
 			-- Initialize current to load result from `a_directory'.
 		require
 			a_directory_attached: a_directory /= Void
@@ -21,10 +21,14 @@ feature{NONE} -- Initialization
 			system := a_system
 			start_time := a_start_time
 			end_time := a_end_time
+			session_length := a_session_length
 		end
 
 	start_time: INTEGER
 	end_time: INTEGER
+
+	session_length: INTEGER
+			-- Session length in minute
 
 feature -- Access
 
@@ -40,8 +44,11 @@ feature -- Access
 	instrument_log: SAT_DECISION_COVERAGE_LOG_ANALYZER
 			-- Instrumentation log
 
-	proxy_log: SAT_AUTO_TEST_LOG_PARSER
-			-- Proxy log from AutoTest
+--	proxy_log: SAT_AUTO_TEST_LOG_PARSER
+--			-- Proxy log loader to analyze faults
+
+	original_proxy_log: SAT_AUTO_TEST_LOG_PARSER
+			-- Proxy log loader to analyze original faults
 
 feature -- Basic operations
 
@@ -63,25 +70,30 @@ feature -- Basic operations
 			l_branch_first_time_tbl: ARRAY [INTEGER]
 			l_file_name: FILE_NAME
 		do
---			create l_file.make_create_read_write (a_output_file_name)
-
---			generate_summary (l_file)
---			generate_branch_coverage_table (l_file)
---			generate_slot_coverage_table (l_file)
---			generate_fault_fault_table (l_file)
---			generate_fault_coverage_time_table (l_file)
---			generate_fault_summary (l_file)
-
---			l_file.close
-
 				-- Generate fault related results.
 			create l_file_name.make_from_string (directory)
 			l_file_name.set_file_name ("fault_description.txt")
-			generate_fault_description (l_file_name)
+			generate_fault_description (original_proxy_log, l_file_name)
+			if original_proxy_log.last_test_case_time < (session_length * 60) * 0.99 then
+				create l_file_name.make_from_string (directory)
+				l_file_name.set_file_name ("warning.txt")
+				create l_file.make_create_read_write (l_file_name)
+				l_file.put_string ("Session length: " + original_proxy_log.last_test_case_time.out + "%N")
+				l_file.close
+			end
+
+--			create l_file_name.make_from_string (directory)
+--			l_file_name.set_file_name ("faults.txt")
+--			generate_fault_statistics_result (proxy_log, l_file_name)
+
+				-- Generate original fault related results.
+			create l_file_name.make_from_string (directory)
+			l_file_name.set_file_name ("original_fault_description.txt")
+			generate_fault_description (original_proxy_log, l_file_name)
 
 			create l_file_name.make_from_string (directory)
-			l_file_name.set_file_name ("faults.txt")
-			generate_fault_statistics_result (l_file_name)
+			l_file_name.set_file_name ("original_faults.txt")
+			generate_fault_statistics_result (original_proxy_log, l_file_name)
 
 				-- Generate branch results.
 			create l_file_name.make_from_string (directory)
@@ -124,128 +136,38 @@ feature{NONE} -- Loading
 		do
 			create l_log_file.make_from_string (directory)
 			l_log_file.set_file_name ("proxy_log.txt")
-			create proxy_log.make (system, create {AUT_ERROR_HANDLER}.make (system))
-			proxy_log.set_analyzsis_time (start_time, end_time)
-			proxy_log.load_file (l_log_file)
+
+--				-- Analyze faults.
+--			create proxy_log.make (system, create {AUT_ERROR_HANDLER}.make (system))
+--			proxy_log.set_analyzsis_time (start_time, end_time)
+--			proxy_log.set_same_witness_function (agent proxy_log.is_same_bug)
+--			proxy_log.load_file (l_log_file)
+
+				-- Analyze original faults.
+			create original_proxy_log.make (system, create {AUT_ERROR_HANDLER}.make (system))
+			original_proxy_log.set_analyzsis_time (start_time, end_time)
+			original_proxy_log.set_same_witness_function (agent original_proxy_log.is_same_original_bug)
+			original_proxy_log.load_file (l_log_file)
 		end
 
 	load_instrument_log is
 			-- Load `instrument_log' from `directory'.
 		require
-			proxy_log_attached: proxy_log /= Void
+			proxy_log_attached: original_proxy_log /= Void
 		do
-			create instrument_log.make (proxy_log.test_session_start_time, instrument_config)
+			create instrument_log.make (original_proxy_log.test_session_start_time, start_time, end_time, instrument_config)
+			instrument_log.set_fault_table (original_proxy_log.fault_table)
 			instrument_log.load (directory)
 		end
 
 feature{NONE} -- Statistics generation
 
-	generate_summary (a_file: PLAIN_TEXT_FILE) is
-			-- Generate branch coverage information into `a_file'.
-		require
-			a_file_attached: a_file /= Void
-			a_file_writable: a_file.writable
-		local
-			l_covered_branches: LIST [INTEGER]
-		do
-			l_covered_branches := instrument_log.covered_branches (instrument_config)
-			a_file.put_string ("Summary%N")
-			a_file.put_string ("Testing time=" + ((instrument_log.last_slot_visit_time - instrument_log.first_slot_visit_time) // 60 + 1).out + "m%N")
-			a_file.put_string ("Found faults=" + proxy_log.faults.count.out + "%N")
-			a_file.put_string ("Branches=" + instrument_config.branch_count.out + "%N")
-			a_file.put_string ("Covered branches=" + l_covered_branches.count.out + "%N")
-			a_file.put_string ("Covered percentage=" + ((l_covered_branches.count.to_real / instrument_config.branch_count) * 100).floor.out + "%N")
-			a_file.put_string ("%N")
-		end
-
 	horizantal_line: STRING is "==================================================================%N"
 
-	generate_branch_coverage_table (a_file: PLAIN_TEXT_FILE) is
-			-- Generate branch coverage information into `a_file'.
+	generate_fault_statistics_result (a_fault_analyzer: like original_proxy_log; a_file_name: STRING) is
+			-- Generate fault statistics result in `a_file_name' from `a_fault_analyzer'.
 		require
-			a_file_attached: a_file /= Void
-			a_file_writable: a_file.writable
-		local
-			l_branch_frequency_tbl: ARRAY [INTEGER]
-			l_branch_first_time_tbl: ARRAY [TUPLE [first_visit_time: INTEGER; first_visit_test_case_index: INTEGER]]
-			i: INTEGER
-			l_lower, l_upper: INTEGER
-		do
-			a_file.put_string (horizantal_line)
-			l_branch_frequency_tbl := instrument_log.branch_frequency_table
-			l_branch_first_time_tbl := instrument_log.branch_first_coverage_time_table
-
-				-- Generate branch coverage table.
-			a_file.put_string ("Branch coverage table%N")
-			a_file.put_string ("Branch_id%TCovered_times%TFirst_covered_time%N")
-			from
-				l_lower := l_branch_first_time_tbl.lower
-				l_upper := l_branch_first_time_tbl.upper
-				i := l_lower
-			until
-				i > l_upper
-			loop
-				a_file.put_string (i.out)
-				a_file.put_string ("%T")
-
-				a_file.put_string (l_branch_frequency_tbl.item (i).out)
-				a_file.put_string ("%T")
-
-				a_file.put_string (l_branch_first_time_tbl.item (i).first_visit_time.out)
-				a_file.put_string ("%N")
-				i := i + 1
-			end
-			a_file.put_string ("%N")
-		end
-
-	generate_slot_coverage_table (a_file: PLAIN_TEXT_FILE) is
-			-- Generate slot coverage information into `a_file'.
-		require
-			a_file_attached: a_file /= Void
-			a_file_writable: a_file.writable
-		local
-			l_slot_frequency_tbl: ARRAY [INTEGER]
-			l_slot_first_time_tbl: ARRAY [SAT_DECISION_COVERAGE_RECORD]
-			i: INTEGER
-			l_lower, l_upper: INTEGER
-		do
-			a_file.put_string (horizantal_line)
-			l_slot_frequency_tbl := instrument_log.slot_frequency_table
-			l_slot_first_time_tbl := instrument_log.slot_first_coverage_time_table
-
-			l_slot_frequency_tbl := instrument_log.slot_frequency_table
-			l_slot_first_time_tbl := instrument_log.slot_first_coverage_time_table
-
-				-- Generate branch coverage table.
-			a_file.put_string ("Slot coverage table%N")
-			a_file.put_string ("Slot_id%TCovered_times%TFirst_covered_time%N")
-			from
-				l_lower := l_slot_first_time_tbl.lower
-				l_upper := l_slot_first_time_tbl.upper
-				i := l_lower
-			until
-				i > l_upper
-			loop
-				a_file.put_string (i.out)
-				a_file.put_string ("%T")
-
-				a_file.put_string (l_slot_frequency_tbl.item (i).out)
-				a_file.put_string ("%T")
-				if l_slot_first_time_tbl.item (i) /= Void then
-					a_file.put_string (l_slot_first_time_tbl.item (i).time.out)
-				else
-					a_file.put_string ("-1")
-				end
-
-				a_file.put_string ("%N")
-				i := i + 1
-			end
-			a_file.put_string ("%N")
-		end
-
-	generate_fault_statistics_result (a_file_name: STRING) is
-			-- Generate fault statistics result in `a_file_name.
-		require
+			a_fault_analyzer_attached: a_fault_analyzer /= Void
 			a_file_name_attached: a_file_name /= Void and then not a_file_name.is_empty
 		local
 			l_file: PLAIN_TEXT_FILE
@@ -257,7 +179,7 @@ feature{NONE} -- Statistics generation
 			create l_file.make_create_read_write (a_file_name)
 			l_file.put_string ("Fault_id%TFrequency%TFirst_found_time%Tfirst_found_test_case%N")
 			from
-				l_faults := proxy_log.fault_statistics
+				l_faults := a_fault_analyzer.fault_statistics
 				i := 1
 				count := l_faults.count
 			until
@@ -273,9 +195,10 @@ feature{NONE} -- Statistics generation
 			l_file.close
 		end
 
-	generate_fault_description (a_file_name: STRING) is
-			-- Generate fault descriptions in `a_file_name'.
+	generate_fault_description (a_fault_analyzer: like original_proxy_log; a_file_name: STRING) is
+			-- Generate fault descriptions in `a_file_name' from `a_fault_analyzer'.
 		require
+			a_fault_analyzer_attached: a_fault_analyzer /= Void
 			a_file_name_attached: a_file_name /= Void and then not a_file_name.is_empty
 		local
 			l_file: PLAIN_TEXT_FILE
@@ -283,10 +206,11 @@ feature{NONE} -- Statistics generation
 			l_fault: TUPLE [found_times: INTEGER; first_found_time: INTEGER; first_found_test_case_index: INTEGER; summary: STRING]
 			i: INTEGER
 			count: INTEGER
+			l_slot_table: HASH_TABLE [INTEGER, INTEGER]
 		do
 			create l_file.make_create_read_write (a_file_name)
 			from
-				l_faults := proxy_log.fault_statistics
+				l_faults := a_fault_analyzer.fault_statistics
 				i := 1
 				count := l_faults.count
 			until
@@ -295,6 +219,20 @@ feature{NONE} -- Statistics generation
 				l_fault := l_faults.item (i)
 				l_file.put_string (i.out + "%T") 									-- Fault index
 				l_file.put_string (l_fault.summary + "%N")					-- Fault description
+
+				if instrument_log.fault_branch_visit_table.has (l_fault.first_found_test_case_index) then
+					l_slot_table := instrument_log.fault_branch_visit_table.item (l_fault.first_found_test_case_index)
+					from
+						l_slot_table.start
+					until
+						l_slot_table.after
+					loop
+						l_file.put_string ("-- >> ")
+						l_file.put_string (l_slot_table.key_for_iteration.out + "%T" + l_slot_table.item_for_iteration.out + "%N")
+						l_slot_table.forth
+					end
+					l_file.put_string ("%N")
+				end
 				i := i + 1
 			end
 			l_file.close
@@ -358,126 +296,6 @@ feature{NONE} -- Statistics generation
 				i := i + 1
 			end
 			l_file.close
-		end
-
-	generate_fault_fault_table (a_file: PLAIN_TEXT_FILE) is
-			-- Generate fault finding information into `a_file'.
-		require
-			a_file_attached: a_file /= Void
-			a_file_writable: a_file.writable
-		local
-			l_fault_frequency_tbl: ARRAY [INTEGER]
-			l_fault_first_time_tbl: ARRAY [TUPLE [first_found_time: INTEGER; first_found_test_case_index: INTEGER]]
-			i: INTEGER
-			l_lower, l_upper: INTEGER
-		do
-			l_fault_frequency_tbl := proxy_log.fault_frequency_table
-			l_fault_first_time_tbl := proxy_log.fault_first_found_time_table
-
-				-- Generate fault finding table.
-			a_file.put_string (horizantal_line)
-			a_file.put_string ("Fault table%N")
-			a_file.put_string ("Fault_id%TFound_times%TFirst_found_time%N")
-			from
-				l_lower := l_fault_first_time_tbl.lower
-				l_upper := l_fault_first_time_tbl.upper
-				i := l_lower
-			until
-				i > l_upper
-			loop
-				a_file.put_string (i.out)
-				a_file.put_string ("%T")
-
-				a_file.put_string (l_fault_frequency_tbl.item (i).out)
-				a_file.put_string ("%T")
-
-				a_file.put_string (l_fault_first_time_tbl.item (i).first_found_time.out)
-				a_file.put_string ("%N")
-				i := i + 1
-			end
-			a_file.put_string ("%N")
-		end
-
-	generate_fault_coverage_time_table (a_file: PLAIN_TEXT_FILE) is
-			-- Generate fault/coverage time information into `a_file'.
-		require
-			a_file_attached: a_file /= Void
-			a_file_writable: a_file.writable
-		local
-			l_fault_time_table: ARRAY [INTEGER]
-			l_branch_time_table: ARRAY [INTEGER]
-			l_fault_number: INTEGER
-			l_branch_number: INTEGER
-			i: INTEGER
-			l_lower, l_upper: INTEGER
-		do
-			l_fault_number := proxy_log.faults.count
-			l_branch_number := instrument_config.branch_count
-			l_fault_time_table := proxy_log.accumulated_fault_time_table (0, testing_time_in_minute, 60)
-			l_branch_time_table := instrument_log.accumulated_branch_coverage_time_table (0, testing_time_in_minute, 60, instrument_config)
-
-			a_file.put_string (horizantal_line)
-			a_file.put_string ("Fault/coverage time table%N")
-			a_file.put_string ("Time(m)%TFault_number%TFault_percentage%TCovered_branch_number%TCovered_branch_percentage%N")
-			from
-				l_lower := l_fault_time_table.lower
-				l_upper := l_fault_time_table.upper
-				i := l_lower
-			until
-				i > l_upper
-			loop
-				a_file.put_string (i.out + "%T")
-				a_file.put_string (l_fault_time_table.item (i).out + "%T")
-				if l_fault_number > 0 then
-					a_file.put_string ((l_fault_time_table.item (i).to_real / l_fault_number * 100).floor.out + "%T")
-				else
-					a_file.put_string ("0%T")
-				end
-				a_file.put_string (l_branch_time_table.item (i).out + "%T")
-				if l_branch_number > 0 then
-					a_file.put_string ((l_branch_time_table.item (i).to_real / l_branch_number * 100).floor.out + "%N")
-				else
-					a_file.put_string ("0%T")
-				end
-				i := i + 1
-			end
-			a_file.put_string ("%N")
-		end
-
-	generate_fault_summary (a_file: PLAIN_TEXT_FILE) is
-			-- Generate fault finding information into `a_file'.
-		require
-			a_file_attached: a_file /= Void
-			a_file_writable: a_file.writable
-		local
-			i: INTEGER
-			l_fault_index: INTEGER
-		do
---			a_file.put_string (horizantal_line)
---			a_file.put_string ("Fault summary%N")
---			from
---				proxy_log.faults.start
---			until
---				proxy_log.faults.after
---			loop
---				l_fault_index := 0
---				from
---					proxy_log.fault_index_table.start
---				until
---					proxy_log.fault_index_table.after or else l_fault_index /= 0
---				loop
---					if proxy_log.fault_index_table.item_for_iteration.witness.is_same_bug (proxy_log.faults.item_for_iteration.witness) then
---						l_fault_index := proxy_log.fault_index_table.key_for_iteration
---					end
---					proxy_log.fault_index_table.forth
---				end
---				check l_fault_index /= 0 end
---				a_file.put_string (l_fault_index.out + "%T")
---				a_file.put_string (proxy_log.test_case_result_summary (proxy_log.faults.item_for_iteration))
---				a_file.put_string ("%N")
---				proxy_log.faults.forth
---			end
---			a_file.put_string ("%N")
 		end
 
 invariant

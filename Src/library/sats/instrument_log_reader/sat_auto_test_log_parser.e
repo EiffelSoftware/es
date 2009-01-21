@@ -80,6 +80,28 @@ feature -- Access
 	faults: DS_ARRAYED_LIST [AUT_TEST_CASE_RESULT]
 			-- Table of found distinguish faults in `last_repository'
 
+	fault_table: HASH_TABLE [AUT_TEST_CASE_RESULT, INTEGER] is
+			-- Table of `faults'.
+			-- [faults, index of test case which reveals this fault]
+		require
+			faults_attached: faults /= Void
+		local
+			l_cur: DS_ARRAYED_LIST_CURSOR [AUT_TEST_CASE_RESULT]
+		do
+			create Result.make (faults.count)
+			l_cur := faults.new_cursor
+			from
+				l_cur.start
+			until
+				l_cur.after
+			loop
+				Result.put (l_cur.item, l_cur.item.witness.item (l_cur.item.witness.count).test_case_index)
+				l_cur.forth
+			end
+		ensure
+			result_attached: Result /= Void
+		end
+
 	fault_frequency_table: ARRAY [INTEGER]
 			-- Table of fault frequency.
 			-- Index is fault id given by `fault_index_table'.
@@ -221,6 +243,48 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
+	same_witness_function: FUNCTION [ANY, TUPLE [a_witness: AUT_WITNESS; b_witness: AUT_WITNESS], BOOLEAN]
+			-- Function to decide if `a_witness' and `b_witness' reveal the same fault
+			-- If Void, `default_same_witness_function' is used when comparing two witnesses.
+
+	first_test_case_time: INTEGER
+			-- Start time of first test case
+
+	last_test_case_time: INTEGER
+			-- Start time of last test case
+
+feature -- Status report
+
+	is_same_original_bug (a_witness, b_witness: AUT_WITNESS): BOOLEAN is
+			-- Do `a_witness' the same as `b_witness' reveal the same bug?
+		require
+			a_witness_attached: a_witness /= Void
+			b_witness_attached: b_witness /= Void
+		do
+			Result := a_witness.is_same_original_bug (b_witness)
+		end
+
+	is_same_bug (a_witness: AUT_WITNESS; b_witness: AUT_WITNESS): BOOLEAN is
+			-- Is `a_witness' the same as `b_witness'?
+		require
+			a_witness_attached: a_witness /= Void
+			b_witness_attached: b_witness /= Void
+		do
+			Result := a_witness.is_same_bug (b_witness)
+		ensure
+			good_result: Result = a_witness.is_same_bug (b_witness)
+		end
+
+feature -- Setting
+
+	set_same_witness_function (a_function: like same_witness_function) is
+			-- Set `same_witness_function' with `a_function'			
+		do
+			same_witness_function := a_function
+		ensure
+			same_witness_function_set: same_witness_function = a_function
+		end
+
 feature -- Operations
 
 	load_file (a_log_file_path: STRING) is
@@ -329,6 +393,7 @@ feature{NONE} -- Reporting
 			l_fault_first_found_table: like fault_first_found_time_table
 			l_fault_frequency_table: like fault_frequency_table
 			l_last_reported_request: like last_reported_request
+			l_actual_same_witness_func: like same_witness_function
 		do
 			check last_reported_request /= Void end
 			l_last_reported_request := last_reported_request
@@ -349,12 +414,13 @@ feature{NONE} -- Reporting
 							-- We only add failed test cases.
 						if witness.is_fail then
 							l_unique_witnesses := unique_failure_witnesses
+							l_actual_same_witness_func := actual_same_witness_function
 							from
 								l_unique_witnesses.start
 							until
 								l_unique_witnesses.after or l_old_failure
 							loop
-								l_old_failure := is_witness_the_same (l_unique_witnesses.item, witness)
+								l_old_failure := l_actual_same_witness_func.item ([l_unique_witnesses.item, witness])
 								if l_old_failure then
 									l_index := l_unique_witnesses.index
 								end
@@ -382,15 +448,6 @@ feature{NONE} -- Reporting
 					end
 				end
 			end
-		end
-
-	is_witness_the_same (a_witness, b_witness: AUT_WITNESS): BOOLEAN is
-			-- Do `a_witness' the same as `b_witness' reveal the same bug?
-		require
-			a_witness_attached: a_witness /= Void
-			b_witness_attached: b_witness /= Void
-		do
-			Result := a_witness.is_same_original_bug (b_witness)
 		end
 
 	unique_failure_witnesses: LINKED_LIST [AUT_WITNESS]
@@ -503,6 +560,10 @@ feature{NONE}  -- Implementation
 			if l_create_request /= Void or else l_invoke_request /= Void then
 				a_request.set_test_case_index (last_test_case_index)
 				a_request.set_test_case_start_time (last_test_case_start_time - test_session_start_time)
+				if last_test_case_index = 1 then
+					first_test_case_time := last_test_case_start_time - test_session_start_time
+				end
+				last_test_case_time := last_test_case_start_time - test_session_start_time
 			end
 		end
 
@@ -515,6 +576,19 @@ feature{NONE}  -- Implementation
 
 	dummy_request: AUT_DUMMY_REQUEST
 			-- Dummy request
+
+	actual_same_witness_function: like same_witness_function is
+			-- Actual function used to decide if two witnesses reveal the same bug.
+			-- If `same_witness_function' is not Void, it is used.
+			-- If `same_witness_function' is Void, `is_same_bug' is used.
+		do
+			Result := same_witness_function
+			if Result = Void then
+				Result := agent is_same_bug
+			end
+		ensure
+			result_attached: Result /= Void
+		end
 
 invariant
 	request_list_attached: request_list /= Void

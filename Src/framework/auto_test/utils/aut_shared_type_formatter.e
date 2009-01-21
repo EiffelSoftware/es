@@ -43,7 +43,7 @@ feature -- Access
 
 feature{NONE} -- Implementation
 
-	type_output_strategy: AST_TYPE_OUTPUT_STRATEGY is
+	type_output_strategy: AUT_AST_TYPE_OUTPUT_STRATEGY is
 			-- Output strategy for type
 		once
 			create Result

@@ -1232,6 +1232,13 @@ feature -- Update
 				else
 					option_error := True
 				end
+			elseif option.is_equal ("-sats") then
+				if current_option + 3 <= argument_count and then argument (current_option + 2).is_integer then
+					create {EWB_SAT_ANALYZER} command.make (argument (current_option + 1), argument (current_option + 2).to_integer, argument (current_option + 3))
+					current_option := current_option + 3
+				else
+					option_error := True
+				end
 			elseif is_eiffel_class_file_name (option) then
 					-- This option is only valid if no other config options are set
 				if config_file_name = Void and target_name = Void and old_ace_file = Void and old_project_file = Void then
