@@ -23,5 +23,9 @@ for i=1:number_of_branch
 end
 Result = (1 - bch_dif / number_of_branch);
 
+
+%coef=corrcoef(abch, bbch);
+%Result =coef(1,2);
+
 % Calculate angle between two vectors as similarity
 %Result = (sum(abch.*bbch)) / (sqrt(sum(abch.^2)) * sqrt(sum(bbch.^2)));

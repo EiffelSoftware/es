@@ -119,9 +119,10 @@ end
 xlabel (time_label);
 
 %Setup Y-axis label.
-ylabel ('Branch coverage similarity');
+ylabel ('Branch coverage similarity', 'FontSize', 12);
 xlim([1, 360]);
 ylim([0.8,1.02]);
+set(gca,'XTick',[0:30:360]);
 
 %Plot standard deviation of branch coverage.
 figure
@@ -149,6 +150,8 @@ xlabel (time_label);
 xlim([start_time, end_time]);
 
 %Setup Y-axis label.
-ylabel ('Standard deviation of similarity');
+ylabel ('Standard deviation of similarity', 'FontSize', 12);
+set(gca,'XTick',[0:30:360]);
+
 
 

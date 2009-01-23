@@ -50,9 +50,10 @@ end
 xlabel (time_label);
 
 %Setup Y-axis label.
-ylabel ('Number of faults');
+ylabel ('Number of faults', 'FontSize', 12);
 xlim ([0, 360]);
 set(gca,'YTick',0:5:max_number_of_fault + 1);
+set(gca,'XTick', [0:30:360]);
 Result = 0;
 
 

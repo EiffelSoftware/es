@@ -61,11 +61,11 @@ end
 xlabel (time_label);
 
 %Setup Y-axis label.
-ylabel ('Number of faults');
+ylabel ('Number of normalized faults', 'FontSize', 12);
 xlim ([0, 360]);
 ylim ([0,1.1])
 set(gca,'YTick',0:0.1:1.1);
-
+set(gca,'XTick',[0:30:360]);
 
 
 

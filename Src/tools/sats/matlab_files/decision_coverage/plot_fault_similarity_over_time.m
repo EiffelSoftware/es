@@ -117,7 +117,7 @@ end
 xlabel (time_label);
 
 %Setup Y-axis label.
-ylabel ('Fault detection similarity');
+ylabel ('Fault detection similarity', 'FontSize', 12);
 xlim([1, 360]);
 set(gca,'XTick',0:30:360);
 
@@ -149,6 +149,6 @@ set(gca,'YTick',0:0.05:0.3);
 xlim([0, 360]);
 set(gca,'XTick',0:30:360);
 %Setup Y-axis label.
-ylabel ('Standard deviation of fault detection similarity');
+ylabel ('Standard deviation of fault detection similarity', 'FontSize', 12);
 
 

@@ -26,16 +26,19 @@ for j=1:number_of_class
 end
  
 figure;
-cols = 5;
+cols = 4;
 rows = number_of_class / cols;
 if rows < 1 
     rows = 1;
 end
+rows=round(rows);
 
+set(gcf,'DefaultAxesColorOrder',[0,0,0; 0,0,0]);
 for i=1:number_of_class
     subplot (rows, cols, i);    
     [AX,H1,H2] = plotyy (data{i}(:,1), data{i}(:,2), data{i}(:, 1), data{i}(:, 3));
-    
+    set(H1, 'Color', 'k');
+    set(H2, 'Color', 'k');
     %    set(gca,'YTick',0:0.25:1);
 %    set(gca,'XTick',0:0.25:1);
 
@@ -58,16 +61,17 @@ for i=1:number_of_class
     xlim(AX(2), [start_time, end_time]);
     ylim(AX(1), [0, 1.1]);
     ylim(AX(2), [0, 1.1]);
+    set(AX(1),'YTick',0:0.2:1); 
     set(get(AX(1),'Ylabel'),'String','Branch'); 
     set(get(AX(2),'Ylabel'),'String','Fault');
     
-    xlim ([start_time, end_time]);
-    
+    xlim ([start_time, end_time]);    
     set (H2, 'LineWidth', 2);
-    legend ('Branch', 'Fault', 'Location', 'SouthEast');
+%    legend ('Branch', 'Fault', 'Location', 'SouthEast');
 
 end
 
-    
+subplotspace('horizantal', 5);
+subplotspace('vertical', 3);
 Result = 0;
 

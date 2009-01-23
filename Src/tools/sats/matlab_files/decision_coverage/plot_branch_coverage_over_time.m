@@ -1,4 +1,4 @@
-function [mdn_of_mdn_of_cov, mdn_of_mdn_of_cov_end, stdev_of_mdn_of_cov_end, coef_of_var_of_mdn_of_cov_end, min_mdn_cov_end, max_mdn_cov_end] = plot_branch_coverage_over_time(classes, faults, branches, start_time, end_time, time_unit, central_method)
+function [mdn_of_mdn_of_cov, mdn_of_mdn_of_cov_end, stdev_of_mdn_of_cov_end, coef_of_var_of_mdn_of_cov_end, min_mdn_cov_end, max_mdn_cov_end, bc] = plot_branch_coverage_over_time(classes, faults, branches, start_time, end_time, time_unit, central_method)
 % Load branch coverage data.
 % `classes' is a cell array containing the list of names of classes.
 % `faults' is a cell array containing the fault data of corresponding class in `classes'.
@@ -25,6 +25,8 @@ number_of_class = sz(2);
 X=[];
 Y=[];
 
+bc=zeros(number_of_class, 1);
+
 for i=1:number_of_class
     [cf, cb] = central_branch_coverage_data (faults{i}, branches{i}, start_time, end_time, time_unit, central_method);
     sz = size (branches{i}{1});
@@ -32,6 +34,7 @@ for i=1:number_of_class
     
     X = horzcat (X, cb{1}(:, 1));
     Y = horzcat (Y, (cb{1}(:, 2) ./ number_of_branch));
+    bc(i) = Y(end_time - start_time + 1, i);
 end
 
 %Calculate result values.
@@ -85,9 +88,11 @@ else
 end
 xlabel (time_label);
 xlim ([0, 360]);
+set(gca,'XTick',[0:30:360])
 ylim ([0.3, 0.9]);
 %Setup Y-axis label.
-ylabel ('Branch coverage level');
+ylabel ('Branch coverage level', 'FontSize', 12);
+
 
 
 
