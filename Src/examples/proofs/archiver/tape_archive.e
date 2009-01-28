@@ -36,6 +36,7 @@ feature
 			tape = Void
 			not is_loaded
 		end
+
 	store (o: ANY)
 			-- TODO
 		require
@@ -44,5 +45,8 @@ feature
 		do
 			tape.save (o)
 		end
+
+invariant
+	is_loaded implies tape /= Void
 
 end

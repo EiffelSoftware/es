@@ -6,6 +6,7 @@ indexing
 	date: "$Date$"
 	revision: "$Revision$"
 
+-- TODO: rename to EP_BOOGIE_CODE_GENERATOR
 class EP_GENERATOR
 
 inherit
@@ -147,7 +148,10 @@ feature -- Basic operations
 			signature_writer.write_creation_routine_signature (a_feature)
 			put_new_line
 
-				-- TODO: create implmementation
+				-- Generate implementation
+			if is_generating_implementation then
+				-- TODO: write implementation
+			end
 
 			feature_list.mark_creation_routine_as_generated (a_feature)
 		ensure

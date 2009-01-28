@@ -199,7 +199,7 @@ feature {NONE} -- Implementation
 			elseif a_type.is_boolean then
 				Result := "false"
 			else
-				Result := "null"
+				Result := "Void"
 			end
 		end
 

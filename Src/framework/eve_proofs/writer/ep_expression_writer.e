@@ -447,7 +447,7 @@ feature {BYTE_NODE} -- Visitors
 
 			side_effect.put_comment_line ("Object creation")
 			side_effect.put_line ("havoc " + l_local_name + ";")
-			side_effect.put_line ("assume !" + name_mapper.heap_name + "[" + l_local_name + ", $allocated] && " + l_local_name + " != null;")
+			side_effect.put_line ("assume !" + name_mapper.heap_name + "[" + l_local_name + ", $allocated] && " + l_local_name + " != Void;")
 			side_effect.put_line ("call " + l_creation_routine_name + "(" + l_arguments + ");")
 
 			expression.put (l_local_name)
@@ -629,7 +629,7 @@ feature {BYTE_NODE} -- Visitors
 				-- Initialize agent variable
 			side_effect.put_comment_line ("Create agent")
 			side_effect.put_line ("havoc " + l_agent_variable + ";")
-			side_effect.put_line ("assume Heap[" + l_agent_variable + ", $allocated] == false && " + l_agent_variable + " != null;")
+			side_effect.put_line ("assume Heap[" + l_agent_variable + ", $allocated] == false && " + l_agent_variable + " != Void;")
 			side_effect.put_line ("call routine.create (" + l_agent_variable + ");")
 
 				-- Create arguments
@@ -728,7 +728,7 @@ feature {BYTE_NODE} -- Visitors
 		do
 			create_new_reference_local
 			side_effect.put_line ("havoc " + last_local + ";")
-			side_effect.put_line ("assume " + last_local + " != null && Heap[" + last_local + ", $allocated];")
+			side_effect.put_line ("assume " + last_local + " != Void && Heap[" + last_local + ", $allocated];")
 			expression.put (last_local)
 		end
 
@@ -766,7 +766,7 @@ feature {BYTE_NODE} -- Visitors
 	process_void_b (a_node: VOID_B)
 			-- Process `a_node'.
 		do
-			expression.put ("null")
+			expression.put ("Void")
 		end
 
 feature {NONE} -- Implementation

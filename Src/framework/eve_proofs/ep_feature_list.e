@@ -20,6 +20,7 @@ feature {NONE} -- Implementation
 			create {LINKED_LIST [!FEATURE_I]} creation_routines_generated.make
 			create {LINKED_LIST [!FEATURE_I]} features_needed.make
 			create {LINKED_LIST [!FEATURE_I]} features_generated.make
+			create {LINKED_LIST [!FEATURE_I]} features_used_in_contracts.make
 		end
 
 feature -- Access
@@ -35,6 +36,11 @@ feature -- Access
 
 	features_generated: !LIST [!FEATURE_I]
 			-- List of featurew which have already been generated
+
+	features_used_in_contracts: !LIST [!FEATURE_I]
+			-- List of features used in contracts
+			-- This list is used to determine which referenced features should
+			-- be marked as pure when their signature is printed
 
 feature -- Element change
 
@@ -115,6 +121,7 @@ feature -- Basic operations
 			creation_routines_generated.wipe_out
 			features_needed.wipe_out
 			features_generated.wipe_out
+			features_used_in_contracts.wipe_out
 		end
 
 end

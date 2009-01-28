@@ -43,7 +43,7 @@ feature
 
 	invariant_violation
 		do
-			-- TODO: fix invariant checking
+			invariant_field := 1
 		end
 
 	loop_invariant_violation
@@ -62,8 +62,17 @@ feature
 		end
 
 	frame_violation
+		indexing
+			pure: True
 		do
-			-- TODO: implement frame condition
+			field := 1
 		end
+
+	field: INTEGER
+
+	invariant_field: INTEGER
+
+invariant
+	constant_field: invariant_field = 5
 
 end

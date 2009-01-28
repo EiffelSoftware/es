@@ -21,18 +21,6 @@ feature -- Access: Error strings
 			Result := locale.translation ("No description available.")
 		end
 
-	error_unsupported_platform: STRING_32
-			-- Error message for unsupported platform
-		do
-			Result := locale.translation ("Unsupported platform")
-		end
-
-	description_unsupported_platform: STRING_32
-			-- Error description for unsupported platform
-		do
-			Result := locale.translation ("EVE Proofs is using Boogie which currently only runs on Windows.")
-		end
-
 	error_file_not_found: STRING_32
 			-- Error message for file not found
 		do
@@ -66,7 +54,7 @@ feature -- Access: Error strings
 	description_launching_boogie_failed: STRING_32
 			-- Error description for file not found
 		do
-			Result := locale.translation ("Launching of Boogie failed.%NMake sure the Boogie executable 'boogie' is installed and in the PATH.")
+			Result := locale.translation ("Launching of Boogie failed.%NMake sure Spec# is installed.%NYou can download it from http://research.microsoft.com/specsharp/.")
 		end
 
 	error_unsupported_constant_type: STRING_32

@@ -84,7 +84,7 @@ feature -- Execution
 		end
 
 	execute_with_stone_content (a_stone: STONE; a_content: SD_CONTENT) is
-			-- TODO.
+			-- Execute with `a_stone'.
 		local
 			l_save_confirm: ES_DISCARDABLE_COMPILE_SAVE_FILES_PROMPT
 			l_classes: DS_ARRAYED_LIST [CLASS_I]
@@ -127,41 +127,55 @@ feature -- Basic operations
 		local
 			l_class_stone: CLASSI_STONE
 			l_cluster_stone: CLUSTER_STONE
+			l_data_stone: DATA_STONE
 			l_cluster: CLUSTER_I
-			l_groups: ARRAYED_LIST [CONF_GROUP]
+			l_groups: LIST [CONF_GROUP]
 		do
 			eve_proofs.reset
 
-			if eve_proofs.is_ready then
-				if a_stone = Void then
-						-- Verify system
-					from
-						l_groups := eiffel_universe.groups
-						l_groups.start
-					until
-						l_groups.after
-					loop
-						l_cluster ?= l_groups.item_for_iteration
-						if l_cluster /= Void and then l_cluster.parent_cluster = Void then
-							load_cluster (l_cluster)
-						end
-						l_groups.forth
+			l_class_stone ?= a_stone
+			l_cluster_stone ?= a_stone
+			l_data_stone ?= a_stone
+			if a_stone = Void then
+					-- Verify system
+				from
+					l_groups := eiffel_universe.groups
+					l_groups.start
+				until
+					l_groups.after
+				loop
+					l_cluster ?= l_groups.item_for_iteration
+						-- Only load top-level clusters, as they are loaded recursively afterwards
+					if l_cluster /= Void and then l_cluster.parent_cluster = Void then
+						load_cluster (l_cluster)
 					end
+					l_groups.forth
+				end
+			elseif l_class_stone /= Void then
+				load_class (l_class_stone.class_i)
+			elseif l_cluster_stone /= Void then
+				if l_cluster_stone.is_cluster then
+					load_cluster (l_cluster_stone.cluster_i)
 				else
-					l_class_stone ?= a_stone
-					l_cluster_stone ?= a_stone
-					if l_class_stone /= Void then
-						load_class (l_class_stone.class_i)
-					elseif l_cluster_stone /= Void then
-						if l_cluster_stone.is_cluster then
-							load_cluster (l_cluster_stone.cluster_i)
-						else
-							load_group (l_cluster_stone.group)
-						end
+					load_group (l_cluster_stone.group)
+				end
+			elseif l_data_stone /= Void then
+				from
+					l_groups ?= l_data_stone.data
+					check l_groups /= Void end
+					l_groups.start
+				until
+					l_groups.after
+				loop
+					l_cluster ?= l_groups.item_for_iteration
+					if l_cluster /= Void then
+						load_cluster (l_cluster)
 					end
+					l_groups.forth
 				end
 			end
 
+				-- Do verification
 			output_manager.clear
 			if eve_proofs.classes_to_verify.is_empty then
 					-- TODO: internationalization
@@ -251,7 +265,7 @@ feature -- Basic operations
 feature -- Items
 
 	new_sd_toolbar_item (display_text: BOOLEAN): EB_SD_COMMAND_TOOL_BAR_DUAL_POPUP_BUTTON
-			-- New toolbar item for dockable toolbar.
+			-- <Precursor>
 		do
 			create Result.make (Current)
 			initialize_sd_toolbar_item (Result, display_text)
@@ -262,7 +276,7 @@ feature -- Items
 		end
 
 	new_mini_sd_toolbar_item: EB_SD_COMMAND_TOOL_BAR_BUTTON
-			-- New mini toolbar item.
+			-- <Precursor>
 		do
 			Result := Precursor {EB_TOOLBARABLE_AND_MENUABLE_COMMAND}
 			Result.drop_actions.extend (agent execute_with_stone)
@@ -279,13 +293,13 @@ feature -- Items
 feature -- Context menu
 
 	class_context_menu_name (a_name: STRING_GENERAL): STRING_32
-			-- Name of context menu for `a_cluster_stone'
+			-- Name of context menu for class `a_name'
 		do
 			Result := names.verify_class_context_menu_name (a_name)
 		end
 
 	cluster_context_menu_name (a_cluster_stone: CLUSTER_STONE; a_name: STRING_GENERAL): STRING_32
-			-- Name of context menu for `a_cluster_stone'
+			-- Name of context menu for cluster `a_name' and stone `a_cluster_stone'
 		do
 			if a_cluster_stone.group.is_library then
 				Result := names.verify_library_context_menu_name (a_name)
@@ -316,10 +330,16 @@ feature {NONE} -- Implementation
 		local
 			l_class_stone: CLASSI_STONE
 			l_cluster_stone: CLUSTER_STONE
+			l_data_stone: DATA_STONE
+			l_list: LIST [CONF_GROUP]
 		do
 			l_class_stone ?= a_pebble
 			l_cluster_stone ?= a_pebble
-			Result := l_class_stone /= Void or else l_cluster_stone /= Void
+			l_data_stone ?= a_pebble
+			if l_data_stone /= Void then
+				l_list ?= l_data_stone.data
+			end
+			Result := l_class_stone /= Void or else l_cluster_stone /= Void or else l_list /= Void
 		end
 
 	drop_down_menu: EV_MENU is
@@ -340,7 +360,7 @@ feature {NONE} -- Implementation
 		end
 
 	execute_proof_parent_cluster is
-			-- Execute menu command.
+			-- Proof parent cluster of window item.
 		local
 			l_window: EB_DEVELOPMENT_WINDOW
 			l_class_stone: CLASSC_STONE
@@ -365,9 +385,7 @@ feature {NONE} -- Implementation
 		end
 
 	execute_proof_system is
-			-- Execute menu command.
-		local
-			l_window: EB_DEVELOPMENT_WINDOW
+			-- Proof whole system (excluding libraries).
 		do
 			execute_with_stone (Void)
 		end
@@ -391,6 +409,7 @@ feature {NONE} -- Implementation
 	tooltext: STRING_GENERAL
 			-- Text for the toolbar button.
 		do
+			-- TODO: internationalization
 			Result := "Proof"
 		end
 

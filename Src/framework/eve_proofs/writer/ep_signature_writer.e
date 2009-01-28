@@ -31,6 +31,7 @@ feature {NONE} -- Initialization
 			create expression_writer.make (name_mapper, create {EP_OLD_KEYWORD_HANDLER})
 			create contract_writer.make
 			contract_writer.set_expression_writer (expression_writer)
+			create frame_extractor.make
 		end
 
 feature -- Basic operations
@@ -49,9 +50,8 @@ feature -- Basic operations
 
 			put_comment_line ("Frame condition")
 			put_line ("modifies Heap;")
--- TODO: generate real frame condition
---			put_line ("ensures frame.modifies_current(Heap, old(Heap), Current); // frame " + a_feature.written_class.name_in_upper + ":" + a_feature.feature_name)
---			put_line ("ensures " + contract_writer.frame_expression + "; // frame " + a_feature.written_class.name_in_upper + ":" + a_feature.feature_name)
+			frame_extractor.build_frame_condition (a_feature)
+			put_line ("ensures " + frame_extractor.last_frame_condition + "; // frame " + a_feature.written_class.name_in_upper + ":" + a_feature.feature_name)
 
 			environment.output_buffer.set_indentation ("")
 			put_new_line
@@ -74,7 +74,7 @@ feature -- Basic operations
 			-- TODO: Generate real frame condition
 			put_line ("modifies Heap;")
 			put_line ("ensures frame.modifies_current(Heap, old(Heap), Current);")
---			put_line ("ensures (forall $o: ref, $f: name :: { Heap[$o, $f] } ($o != null && old(Heap)[$o, $allocated] && $o != Current) ==> (old(Heap)[$o, $f] == Heap[$o, $f]));")
+--			put_line ("ensures (forall $o: ref, $f: name :: { Heap[$o, $f] } ($o != Void && old(Heap)[$o, $allocated] && $o != Current) ==> (old(Heap)[$o, $f] == Heap[$o, $f]));")
 
 			put_comment_line ("Creation routine condition")
 			put_line ("free ensures Heap[Current, $allocated];")
@@ -98,7 +98,7 @@ feature -- Basic operations
 
 			put ("procedure ")
 			put (l_procedure_name)
-			put ("(Current: ref where Current != null && Heap[Current, $allocated]) returns (Result:")
+			put ("(Current: ref where Current != Void && Heap[Current, $allocated]) returns (Result:")
 			put (type_mapper.boogie_type_for_type (a_feature.type))
 			put (");%N")
 			put ("    free ensures ")
@@ -115,6 +115,9 @@ feature {NONE} -- Implementation
 	contract_writer: !EP_CONTRACT_WRITER
 			-- Contract writer used to generate Boogie code
 
+	frame_extractor: !EP_FRAME_EXTRACTOR
+			-- Frame extractor to generate frame condition
+
 	name_mapper: !EP_NORMAL_NAME_MAPPER
 			-- Name mapper used for the expression writer
 
@@ -130,10 +133,10 @@ feature {NONE} -- Implementation
 
 			put ("procedure " + a_procedure_name + "(")
 			if a_feature.argument_count = 0 then
-				put ("Current: ref where Current != null && Heap[Current, $allocated]")
+				put ("Current: ref where Current != Void && Heap[Current, $allocated]")
 			else
 				put ("%N")
-				put ("            Current: ref where Current != null && Heap[Current, $allocated]")
+				put ("            Current: ref where Current != Void && Heap[Current, $allocated]")
 
 				from
 					i := 1
@@ -147,9 +150,9 @@ feature {NONE} -- Implementation
 					put ("            " + l_argument_name + ": " + type_mapper.boogie_type_for_type (l_argument_type))
 					if not l_argument_type.is_expanded then
 						if l_argument_type.is_attached then
-							put (" where " + l_argument_name + " != null && Heap[" + l_argument_name + ", $allocated]")
+							put (" where IsAllocatedAndNotVoid(Heap, " + l_argument_name + ")")
 						else
-							put (" where " + l_argument_name + " != null ==> Heap[" + l_argument_name + ", $allocated]")
+							put (" where IsAllocatedIfNotVoid(Heap, " + l_argument_name + ")")
 						end
 					end
 

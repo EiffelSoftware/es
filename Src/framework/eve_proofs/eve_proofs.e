@@ -2,6 +2,7 @@ indexing
 	description:
 		"[
 			Interface to use the verification system.
+			TODO: store the outcome of the verification, so others can access it (e.g. for testing integration)
 		]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -20,34 +21,16 @@ feature {NONE} -- Initialization
 
 	make is
 			-- Initialize object.
-		local
-			l_error: EP_GENERAL_ERROR
 		do
-			if {PLATFORM}.is_windows then
-				create verifier.make
-			else
-				create l_error.make (names.error_unsupported_platform)
-				l_error.set_description (names.description_unsupported_platform)
-				errors.extend (l_error)
-			end
+			create verifier.make
 			create boogie_generator.make
 			create {LINKED_LIST [!CLASS_C]} classes_to_verify.make
-		ensure
-			supporting_windows: {PLATFORM}.is_windows implies is_ready
 		end
 
 feature -- Access
 
 	classes_to_verify: !LIST [!CLASS_C]
 			-- Classes which will be verified
-
-feature -- Status report
-
-	is_ready: BOOLEAN
-			-- Is ready for verification?
-		do
-			Result := verifier /= Void
-		end
 
 feature -- Element change
 
@@ -65,11 +48,9 @@ feature -- Element change
 feature -- Basic operations
 
 	reset
-			-- Reset the classes and feature.
+			-- Reset classes to verify.
 		do
 			classes_to_verify.wipe_out
-			errors.wipe_out
-			warnings.wipe_out
 		ensure
 			no_classes_to_verify: classes_to_verify.is_empty
 		end
@@ -78,11 +59,9 @@ feature -- Basic operations
 			-- Execute verification on added classes.
 		require
 			class_added: not classes_to_verify.is_empty
-			ready: is_ready
 		local
 			l_current_class: !CLASS_C
 		do
-			--output_manager.clear
 			show_messages (names.message_eve_proofs_started, names.window_message_eve_proofs_started)
 
 				-- Prepare environment for new verification
@@ -143,6 +122,8 @@ feature {NONE} -- Implementation
 		do
 			text_output.add_string (l_output_line)
 			text_output.add_new_line
+-- TODO: the feedback system is not nice...
+-- TODO: maybe add an agent to register for feedback, let EB_PROOF_COMMAND register one and handle the rest
 --			output_manager.end_processing
 --			window_manager.display_message (l_status_bar)
 --			ev_application.process_events
@@ -151,6 +132,8 @@ feature {NONE} -- Implementation
 	set_up_environment
 			-- Set up environment for a new verification session.
 		do
+			errors.wipe_out
+			warnings.wipe_out
 			feature_list.reset
 			boogie_generator.reset
 			verifier.reset
@@ -202,6 +185,7 @@ feature {NONE} -- Implementation
 
 
 -- TODO: move file someplace else
+-- TODO: this should go into the Delivery somewhere...
 	background_theory_file_name: !STRING is
 			-- File to include for the background theory
 		local

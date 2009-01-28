@@ -94,6 +94,18 @@ feature -- Basic operations
 			buffer.put_string (indentation)
 		end
 
+	indent
+			-- Increase indentation.
+		do
+			indentation.append_string ("  ")
+		end
+
+	unindent
+			-- Decreasee indentation.
+		do
+			indentation.remove_tail (2)
+		end
+
 feature {NONE} -- Implementation
 
 	buffer: KL_STRING_OUTPUT_STREAM

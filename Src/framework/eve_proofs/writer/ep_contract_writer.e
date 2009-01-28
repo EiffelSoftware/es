@@ -148,7 +148,7 @@ feature -- Basic operations
 			end
 
 -- TODO: reenable
---			generate_invariants
+			generate_invariants
 
 			generate_full_precondition
 			generate_full_postcondition
@@ -315,7 +315,11 @@ feature {NONE} -- Implementation
 			until
 				l_classes.after
 			loop
-				process_invariants (l_classes.item)
+					-- TODO: make this an option
+					-- Ignoring invariants from ANY
+				if not l_classes.item.name_in_upper.is_equal ("ANY") then
+					process_invariants (l_classes.item)
+				end
 				l_classes.forth
 			end
 		end
@@ -372,7 +376,7 @@ feature {NONE} -- Implementation
 	generate_frame_condition
 			-- TODO
 		do
-			frame_expression.prepend ("(forall $o: ref, $f: name :: { Heap[$o, $f] } ($o != null && old(Heap)[$o, $allocated]")
+			frame_expression.prepend ("(forall $o: ref, $f: name :: { Heap[$o, $f] } ($o != Void && old(Heap)[$o, $allocated]")
 			frame_expression.append (") ==> (old(Heap)[$o, $f] == Heap[$o, $f]))")
 		end
 
