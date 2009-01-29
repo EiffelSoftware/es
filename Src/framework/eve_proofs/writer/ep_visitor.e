@@ -55,7 +55,7 @@ feature {BYTE_NODE} -- Visitors
 		end
 
 	process_attribute_b (a_node: ATTRIBUTE_B)
-			-- Process `a_node'.
+			-- <Precursor>
 		do
 			-- No Subnode
 		end

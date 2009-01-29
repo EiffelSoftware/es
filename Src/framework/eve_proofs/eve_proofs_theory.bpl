@@ -302,7 +302,7 @@ axiom (forall heap: HeapType, old_heap: HeapType ::
         frame.modifies_nothing(heap, old_heap) <==> 
             (forall<alpha> $o: ref, $f: Field alpha :: 
                     { heap[$o, $f] } // Trigger
-                ($o != Void && old_heap[$o, $allocated]) ==> (old_heap[$o, $f] == heap[$o, $f])));
+                ($o != Void && IsAllocated(old_heap, $o)) ==> (old_heap[$o, $f] == heap[$o, $f])));
 
 // Frame condition for a feature which modifies only the `Current' object.
 function frame.modifies_current(heap: HeapType, old_heap: HeapType, current: ref) returns (bool);
@@ -311,7 +311,7 @@ axiom (forall heap: HeapType, old_heap: HeapType, current: ref ::
         frame.modifies_current(heap, old_heap, current) <==> 
             (forall<alpha> $o: ref, $f: Field alpha :: 
                     { heap[$o, $f] } // Trigger
-                ($o != Void && old_heap[$o, $allocated] && $o != current) ==> (old_heap[$o, $f] == heap[$o, $f])));
+                ($o != Void && IsAllocated(old_heap, $o) && $o != current) ==> (old_heap[$o, $f] == heap[$o, $f])));
 
 // Frame condition for a feature which modifies what the `agent' modifies.
 function frame.modifies_agent(heap: HeapType, old_heap: HeapType, agent: ref) returns (bool);
@@ -320,4 +320,13 @@ axiom (forall heap: HeapType, old_heap: HeapType, agent: ref ::
         frame.modifies_agent(heap, old_heap, agent) <==> 
             (forall<alpha> $o: ref, $f: Field alpha :: 
                     { heap[$o, $f] } // Trigger
-                ($o != Void && old_heap[$o, $allocated] && !agent.modifies(agent, $o, $f)) ==> (old_heap[$o, $f] == heap[$o, $f])));
+                ($o != Void && IsAllocated(old_heap, $o) && !agent.modifies(agent, $o, $f)) ==> (old_heap[$o, $f] == heap[$o, $f])));
+
+// Frame condition saying that all objects which were allocated before are still allocated after a call.
+function frame.no_objects_destroyed(heap: HeapType, old_heap: HeapType) returns (bool);
+axiom (forall heap: HeapType, old_heap: HeapType :: 
+            { frame.modifies_nothing(heap, old_heap) } // Trigger
+        frame.modifies_nothing(heap, old_heap) <==> 
+            (forall $o: ref :: 
+                    { IsAllocated(heap, $o) } // Trigger
+                (IsAllocated(old_heap, $o) ==> IsAllocated(heap, $o))));
