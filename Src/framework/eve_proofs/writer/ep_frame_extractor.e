@@ -44,11 +44,14 @@ feature -- Basic operations
 
 	build_frame_condition (a_feature: !FEATURE_I)
 			-- Build frame condition for feature `a_feature'.
+		local
+			l_item: TUPLE [target: STRING; field: STRING]
 		do
-			if is_pure (a_feature) then
+			if feature_list.is_pure (a_feature) then
 				last_frame_condition := "Heap == old(Heap)"
 			else
 				modified_attributes.wipe_out
+				target := "Current"
 				process_feature_postcondition (a_feature)
 				if modified_attributes.is_empty then
 					last_frame_condition := "true"
@@ -59,7 +62,8 @@ feature -- Basic operations
 					until
 						modified_attributes.after
 					loop
-						last_frame_condition.append (" && ($o != Current || $f != " + modified_attributes.item_for_iteration + ")")
+						l_item := modified_attributes.item_for_iteration
+						last_frame_condition.append (" && ($o != " + l_item.target + " || $f != " + l_item.field + ")")
 						modified_attributes.forth
 					end
 					last_frame_condition.append (" ==> (old(Heap)[$o, $f] == Heap[$o, $f]))")
@@ -78,6 +82,7 @@ feature {NONE} -- Visitors
 			l_previous_byte_code: BYTE_CODE
 			l_previous_feature: FEATURE_I
 		do
+			current_feature := a_feature
 			if byte_server.has (a_feature.code_id) then
 				l_byte_code := byte_server.item (a_feature.code_id)
 
@@ -105,7 +110,7 @@ feature {NONE} -- Visitors
 		local
 			l_feature: FEATURE_I
 			l_attached_feature: !FEATURE_I
-			l_boogie_name: STRING
+			l_target, l_boogie_name: STRING
 		do
 				-- TODO: why go over feature name and not feature id?
 			l_feature := system.class_of_id (a_node.written_in).feature_of_name_id (a_node.attribute_name_id)
@@ -114,7 +119,8 @@ feature {NONE} -- Visitors
 
 				-- Record attribute for frame condition
 			l_boogie_name := name_generator.attribute_name (l_attached_feature)
-			modified_attributes.extend (l_boogie_name)
+			create l_target.make_from_string (target)
+			modified_attributes.extend ([l_target, l_boogie_name])
 		end
 
 	process_feature_b (a_node: FEATURE_B)
@@ -122,57 +128,49 @@ feature {NONE} -- Visitors
 		local
 			l_feature: FEATURE_I
 			l_attached_feature: !FEATURE_I
+			l_current_feature: !FEATURE_I
 		do
 				-- TODO: why go over feature name and not feature id?
 			l_feature := system.class_of_id (a_node.written_in).feature_of_name_id (a_node.feature_name_id)
 			check l_feature /= Void end
 			l_attached_feature := l_feature
 
+			l_current_feature := current_feature
 			process_feature_postcondition (l_attached_feature)
+			current_feature := l_current_feature
 		end
 
 	process_nested_b (a_node: NESTED_B)
 			-- <Precursor>
+		local
+			l_last_target: STRING
 		do
-			-- Ignore nested calls for the moment
+			create l_last_target.make_from_string (target)
+
+			-- TODO: follow nested calls, i.e. set the new target object and follow the feature call
+			-- Problem: all the field accesses in the nested calls have to be transformed to the current context
+
+			if {l_argument_b: ARGUMENT_B} a_node.target then
+				-- TODO ...
+			elseif {l_attribute_b: ATTRIBUTE_B} a_node.target then
+				-- TODO ...
+			elseif {l_result_b: RESULT_B} a_node.target then
+				target := "Result"
+				-- TODO ...
+			end
+
+			target := l_last_target
 		end
 
 feature {NONE} -- Implementation
 
-	modified_attributes: LINKED_LIST [STRING]
+	modified_attributes: LINKED_LIST [TUPLE [target: STRING; field: STRING]]
 			-- List of modified attributes
 
+	target: STRING
+			-- Current target
 
--- TODO: move someplace else and improve
-	is_pure (a_feature: !FEATURE_I): BOOLEAN
-			-- Is `a_feature' a pure feature?
-		local
-			l_indexing_clause: INDEXING_CLAUSE_AS
-			l_index: INDEX_AS
-			l_bool: BOOL_AS
-			l_found: BOOLEAN
-		do
-			Result := feature_list.features_used_in_contracts.has (a_feature)
-			if not Result then
-				l_indexing_clause := a_feature.written_class.ast.feature_with_name (a_feature.feature_name_id).indexes
-				if l_indexing_clause /= Void then
-					from
-						l_indexing_clause.start
-					until
-						l_indexing_clause.after or l_found
-					loop
-						l_index := l_indexing_clause.item
-						if l_index.tag.name.as_lower.is_equal ("pure") then
-							l_found := True
-							l_bool ?= l_index.index_list.first
-							if l_bool /= Void then
-								Result := l_bool.value
-							end
-						end
-						l_indexing_clause.forth
-					end
-				end
-			end
-		end
+	current_feature: !FEATURE_I
+			-- Current processed feature
 
 end

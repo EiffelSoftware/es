@@ -111,10 +111,10 @@ feature -- Basic operations
 
 feature {NONE} -- Implementation
 
-	boogie_generator: EP_GENERATOR
+	boogie_generator: EP_BOOGIE_CODE_GENERATOR
 			-- Generator used to generate Boogie code
 
-	verifier: EP_VERIFIER
+	verifier: EP_BOOGIE_VERIFIER
 			-- Verifier used to run Boogie
 
 	show_messages (l_output_line, l_status_bar: STRING)

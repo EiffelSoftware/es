@@ -191,12 +191,12 @@ function routine.postcondition_2<arg1Type, arg2Type> (heap: HeapType, old_heap: 
 function routine.postcondition_3<arg1Type, arg2Type, arg3Type> (heap: HeapType, old_heap: HeapType, agent: ref, arg1: arg1Type, arg2: arg2Type, arg3: arg3Type) returns (bool);
 
 // Postcondition functions for different number of arguments and return values
-/*
-function function.postcondition_0 (heap: HeapType, old_heap: HeapType, agent: ref, result: any) returns (bool);
-function function.postcondition_1 (heap: HeapType, old_heap: HeapType, agent: ref, arg1: any, result: any) returns (bool);
-function function.postcondition_2 (heap: HeapType, old_heap: HeapType, agent: ref, arg1: any, arg2: any, result: any) returns (bool);
-function function.postcondition_3 (heap: HeapType, old_heap: HeapType, agent: ref, arg1: any, arg2: any, arg3: any, result: any) returns (bool);
-*/
+
+function function.postcondition_0<resultType> (heap: HeapType, old_heap: HeapType, agent: ref, result: resultType) returns (bool);
+function function.postcondition_1<arg1Type, resultType> (heap: HeapType, old_heap: HeapType, agent: ref, arg1: arg1Type, result: resultType) returns (bool);
+function function.postcondition_2<arg1Type, arg2Type, resultType> (heap: HeapType, old_heap: HeapType, agent: ref, arg1: arg1Type, arg2: arg2Type, result: resultType) returns (bool);
+function function.postcondition_3<arg1Type, arg2Type, arg3Type, resultType> (heap: HeapType, old_heap: HeapType, agent: ref, arg1: arg1Type, arg2: arg2Type, arg3: arg3Type, result: resultType) returns (bool);
+
 // Frame condition function
 
 function agent.modifies<alpha>(agent: ref, $o: ref, $f: Field alpha) returns (bool);
@@ -253,45 +253,45 @@ procedure routine.call_3<arg1Type, arg2Type, arg3Type> (
     ensures routine.postcondition_3(Heap, old(Heap), Current, arg1, arg2, arg3);
 
 // Item functions for different number of arguments
-/*
-procedure function.item_0 (
+
+procedure function.item_0<resultType> (
         Current: ref where Current != Void && Heap[Current,$allocated]     // The agent object
-    ) returns (Result: any);
+    ) returns (Result: resultType);
     requires routine.precondition_0(Heap, Current);
     modifies Heap;
     ensures frame.modifies_agent(Heap, old(Heap), Current); // frame FUNCTION:item
     ensures function.postcondition_0(Heap, old(Heap), Current, Result);
 
-procedure function.item_1 (
+procedure function.item_1<arg1Type, resultType> (
         Current: ref where Current != Void && Heap[Current,$allocated],     // The agent object
-        arg1: any                                                           // First argument
-    ) returns (Result: any);
+        arg1: arg1Type                                                           // First argument
+    ) returns (Result: resultType);
     requires routine.precondition_1(Heap, Current, arg1);
     modifies Heap;
     ensures frame.modifies_agent(Heap, old(Heap), Current); // frame FUNCTION:item
     ensures function.postcondition_1(Heap, old(Heap), Current, arg1, Result);
 
-procedure function.item_2 (
+procedure function.item_2<arg1Type, arg2Type, resultType> (
         Current: ref where Current != Void && Heap[Current,$allocated],     // The agent object
-        arg1: any,                                                          // First argument
-        arg2: any                                                           // Second argument
-    ) returns (Result: any);
+        arg1: arg1Type,                                                          // First argument
+        arg2: arg2Type                                                           // Second argument
+    ) returns (Result: resultType);
     requires routine.precondition_2(Heap, Current, arg1, arg2);
     modifies Heap;
     ensures frame.modifies_agent(Heap, old(Heap), Current); // frame FUNCTION:item
     ensures function.postcondition_2(Heap, old(Heap), Current, arg1, arg2, Result);
 
-procedure function.item_3 (
+procedure function.item_3<arg1Type, arg2Type, arg3Type, resultType> (
         Current: ref where Current != Void && Heap[Current,$allocated],     // The agent object
-        arg1: any,                                                          // First argument
-        arg2: any,                                                          // Second argument
-        arg3: any                                                           // Third argument
-    ) returns (Result: any);
+        arg1: arg1Type,                                                          // First argument
+        arg2: arg2Type,                                                          // Second argument
+        arg3: arg3Type                                                           // Third argument
+    ) returns (Result: resultType);
     requires routine.precondition_3(Heap, Current, arg1, arg2, arg3);
     modifies Heap;
     ensures frame.modifies_agent(Heap, old(Heap), Current); // frame FUNCTION:item
     ensures function.postcondition_3(Heap, old(Heap), Current, arg1, arg2, arg3, Result);
-*/
+
 // ----------------------------------------------------------------------
 // Frame conditions
 

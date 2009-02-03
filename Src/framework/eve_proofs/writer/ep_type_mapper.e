@@ -14,12 +14,21 @@ feature -- Access
 			-- Boogie type for type `a_type'
 		require
 			type_not_void: a_type /= Void
+		local
+			l_type: TYPE_A
 		do
-			if a_type.is_boolean then
+			if a_type.is_like then
+				l_type := a_type.actual_type
+			else
+				l_type := a_type
+			end
+			check not l_type.is_like end
+			if l_type.is_boolean then
 				Result := "bool"
-			elseif a_type.is_integer or a_type.is_character then
+			elseif l_type.is_integer or l_type.is_character or l_type.is_natural then
 				Result := "int"
-			elseif a_type.is_expanded then
+			elseif l_type.is_expanded then
+					-- TODO: this type doesn't exist anymore in Boogie 2
 				Result := "any"
 			else
 				Result := "ref"

@@ -188,7 +188,9 @@ feature {NONE} -- Implementation
 				l_assert ?= a_assertion.item_for_iteration
 				check l_assert /= Void end
 				expression_writer.reset
+				expression_writer.set_processing_contract
 				l_assert.expr.process (expression_writer)
+				expression_writer.set_not_processing_contract
 
 				a_list.extend ([l_assert.tag, expression_writer.expression.string, a_class_id, l_assert.line_number])
 
@@ -343,7 +345,9 @@ feature {NONE} -- Implementation
 					l_assert ?= l_list.item
 					check l_assert /= Void end
 					expression_writer.reset
+					expression_writer.set_processing_contract
 					l_assert.expr.process (expression_writer)
+					expression_writer.set_not_processing_contract
 
 					invariants.extend ([l_assert.tag, expression_writer.expression.string, a_class.class_id, l_assert.line_number])
 

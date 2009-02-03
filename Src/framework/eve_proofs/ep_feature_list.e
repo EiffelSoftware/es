@@ -42,54 +42,95 @@ feature -- Access
 			-- This list is used to determine which referenced features should
 			-- be marked as pure when their signature is printed
 
+feature -- Status report
+
+	has_feature_used_in_contract (a_feature: !FEATURE_I): BOOLEAN
+			-- Is `a_feature' used in a contract?
+		do
+			Result := features_used_in_contracts.there_exists (agent has_routine_id (?, a_feature.rout_id_set.first))
+		end
+
+-- TODO: move someplace else and improve
+	is_pure (a_feature: !FEATURE_I): BOOLEAN
+			-- Is `a_feature' a pure feature?
+		local
+			l_indexing_clause: INDEXING_CLAUSE_AS
+			l_index: INDEX_AS
+			l_bool: BOOL_AS
+			l_found: BOOLEAN
+		do
+			Result := has_feature_used_in_contract (a_feature)
+			if not Result then
+				l_indexing_clause := a_feature.written_class.ast.feature_with_name (a_feature.feature_name_id).indexes
+				if l_indexing_clause /= Void then
+					from
+						l_indexing_clause.start
+					until
+						l_indexing_clause.after or l_found
+					loop
+						l_index := l_indexing_clause.item
+						if l_index.tag.name.as_lower.is_equal ("pure") then
+							l_found := True
+							l_bool ?= l_index.index_list.first
+							if l_bool /= Void then
+								Result := l_bool.value
+							end
+						end
+						l_indexing_clause.forth
+					end
+				end
+			end
+		end
+
 feature -- Element change
 
 	record_creation_routine_needed (a_feature: !FEATURE_I)
 			-- Record that `a_feature' is needed as a creation routine.
 		local
-			l_found: BOOLEAN
+			l_routine_id: INTEGER
 		do
-			-- TODO: do this different...
-			from
-				creation_routines_needed.start
-			until
-				creation_routines_needed.after or l_found
-			loop
-				if creation_routines_needed.item_for_iteration.rout_id_set.first = a_feature.rout_id_set.first then
-					l_found := True
-				end
-				creation_routines_needed.forth
-			end
-			from
-				creation_routines_generated.start
-			until
-				creation_routines_generated.after or l_found
-			loop
-				if creation_routines_generated.item_for_iteration.rout_id_set.first = a_feature.rout_id_set.first then
-					l_found := True
-				end
-				creation_routines_generated.forth
-			end
-
-			if not l_found then
+			l_routine_id := a_feature.rout_id_set.first
+			if
+				not creation_routines_needed.there_exists (agent has_routine_id (?, l_routine_id)) and then
+				not creation_routines_generated.there_exists (agent has_routine_id (?, l_routine_id))
+			then
 				creation_routines_needed.extend (a_feature)
 			end
-
---			if not creation_routines_generated.has (a_feature) then
---				creation_routines_needed.extend (a_feature)
---			end
---		ensure
---			not creation_routines_generated.has (a_feature) implies creation_routines_needed.has (a_feature)
+		ensure
+			-- not working, as we are checking over routine ids and not object identities
+			--not creation_routines_generated.has (a_feature) implies creation_routines_needed.has (a_feature)
 		end
 
 	record_feature_needed (a_feature: !FEATURE_I)
 			-- Record that `a_feature' is needed either in a contract or an implementation.
+		local
+			l_routine_id: INTEGER
 		do
-			if not features_generated.has (a_feature) then
+			l_routine_id := a_feature.rout_id_set.first
+			if
+				not features_needed.there_exists (agent has_routine_id (?, l_routine_id)) and then
+				not features_generated.there_exists (agent has_routine_id (?, l_routine_id))
+			then
 				features_needed.extend (a_feature)
 			end
 		ensure
-			not features_generated.has (a_feature) implies features_needed.has (a_feature)
+			-- not working, as we are checking over routine ids and not object identities
+			--not features_generated.has (a_feature) implies features_needed.has (a_feature)
+		end
+
+
+	record_feature_used_in_contract (a_feature: !FEATURE_I)
+			-- Record that `a_feature' is used in a contract.
+		local
+			l_routine_id: INTEGER
+		do
+			l_routine_id := a_feature.rout_id_set.first
+			if not features_used_in_contracts.there_exists (agent has_routine_id (?, l_routine_id)) then
+				features_used_in_contracts.extend (a_feature)
+			end
+		ensure
+			-- not working, as we are checking over routine ids and not object identities
+			--not features_generated.has (a_feature) implies features_needed.has (a_feature)
 		end
 
 feature -- Basic operations
@@ -122,6 +163,14 @@ feature -- Basic operations
 			features_needed.wipe_out
 			features_generated.wipe_out
 			features_used_in_contracts.wipe_out
+		end
+
+feature {NONE} -- Implementation
+
+	has_routine_id (a_feature: !FEATURE_I; a_routine_id: INTEGER): BOOLEAN
+			-- Has `a_feature' routine id `a_routine_id'?
+		do
+			Result := a_feature.rout_id_set.first = a_routine_id
 		end
 
 end

@@ -6,8 +6,7 @@ indexing
 	date: "$Date$"
 	revision: "$Revision$"
 
--- TODO: Rename to EP_BOOGIE_VERIFIER
-class EP_VERIFIER
+class EP_BOOGIE_VERIFIER
 
 inherit
 

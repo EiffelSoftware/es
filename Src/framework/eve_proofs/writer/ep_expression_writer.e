@@ -118,6 +118,29 @@ feature -- Access
 	agents_called: !LIST [STRING]
 			-- TODO: should this be done in a more generic way?
 
+feature -- Status report
+
+	is_processing_contract: BOOLEAN
+			-- Is expression writer currently in the context of a contract?
+
+feature -- Status setting
+
+	set_processing_contract
+			-- Set `is_processing_contract' to true.
+		do
+			is_processing_contract := True
+		ensure
+			is_processing_contract: is_processing_contract
+		end
+
+	set_not_processing_contract
+			-- Set `is_processing_contract' to false.
+		do
+			is_processing_contract := False
+		ensure
+			not_processing_contract: not is_processing_contract
+		end
+
 feature -- Element change
 
 	set_name_mapper (a_mapper: like name_mapper)
@@ -172,6 +195,9 @@ feature {BYTE_NODE} -- Visitors
 			l_attached_feature := l_feature
 
 			feature_list.record_feature_needed (l_attached_feature)
+			if is_processing_contract then
+				feature_list.record_feature_used_in_contract (l_attached_feature)
+			end
 
 				-- TODO: ?
 			if not modified_objects.has (name_mapper.target_name) then
@@ -409,7 +435,12 @@ feature {BYTE_NODE} -- Visitors
 	process_constant_b (a_node: CONSTANT_B)
 			-- Process `a_node'.
 		do
-			expression.put (a_node.value.string_value)
+				-- TODO: merge code with code from EP_CONSTANT_WRITER
+			if a_node.value.is_boolean then
+				expression.put (a_node.value.string_value.as_lower)
+			else
+				expression.put (a_node.value.string_value)
+			end
 		end
 
 	process_creation_expr_b (a_node: CREATION_EXPR_B)
@@ -614,7 +645,7 @@ feature {BYTE_NODE} -- Visitors
 			l_expression_writer: !EP_EXPRESSION_WRITER
 			l_name_mapper: !EP_AGENT_NAME_MAPPER
 			l_open_argument_count, l_closed_argument_count: INTEGER
-			l_arguments, l_typed_arguments: STRING
+			l_arguments, l_typed_arguments, l_type: STRING
 			l_temp_expression: STRING
 			i, j, k: INTEGER
 		do
@@ -643,9 +674,9 @@ feature {BYTE_NODE} -- Visitors
 			create l_typed_arguments.make_empty
 
 			from
-				i := 1
-				j := 1
-				k := 1
+				i := 1 -- Argument position
+				j := 1 -- Open Argument index
+				k := 1 -- Closed Argument index
 				l_temp_expression := expression.string
 			until
 				i > l_attached_feature.argument_count + 1
@@ -657,13 +688,14 @@ feature {BYTE_NODE} -- Visitors
 						check not a_node.is_target_closed end
 						l_name_mapper.set_current_name ("a1")
 						l_name_mapper.set_target_name ("a1")
+						l_type := type_mapper.boogie_type_for_class (l_attached_feature.written_class)
 					else
 						l_name_mapper.argument_mappings.put ("a" + j.out, i - 1)
+						l_type := type_mapper.boogie_type_for_type (l_attached_feature.arguments.i_th (i - 1))
 					end
 
 					l_arguments.append (", a" + j.out)
-						-- TODO: use correct type
-					l_typed_arguments.append (", a" + j.out + ": ref")
+					l_typed_arguments.append (", a" + j.out + ": " + l_type)
 
 					j := j + 1
 				else
@@ -710,7 +742,7 @@ feature {BYTE_NODE} -- Visitors
 			side_effect.put_line ("            { agent.modifies(" + l_agent_variable + ", $o, $f) } // Trigger")
 			side_effect.put_line ("        agent.modifies(" + l_agent_variable + ", $o, $f) <==> (true));")
 			if l_attached_feature.has_return_value then
-				side_effect.put_line ("assume (forall heap: HeapType, old_heap: HeapType" + l_typed_arguments + ", result:any :: ")
+				side_effect.put_line ("assume (forall heap: HeapType, old_heap: HeapType" + l_typed_arguments + ", result:" + type_mapper.boogie_type_for_type (l_attached_feature.type) + " :: ")
 				side_effect.put_line ("            { function.postcondition_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ", result) } // Trigger")
 				side_effect.put_line ("        function.postcondition_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ", result) <==> " + l_contract_writer.full_postcondition + ");")
 			else
@@ -816,6 +848,7 @@ feature {NONE} -- Implementation
 			l_boogie_function: STRING
 			l_open_argument_count: INTEGER
 			l_is_function: BOOLEAN
+			l_return_local: BOOLEAN
 		do
 			l_feature_name := a_feature.feature_name
 
@@ -852,6 +885,7 @@ feature {NONE} -- Implementation
 				l_arguments := ""
 				l_arguments_suffix := ""
 				l_boogie_function := "function.item_" + l_open_argument_count.out
+				l_return_local := True
 			else
 				check false end
 			end
@@ -882,13 +916,21 @@ feature {NONE} -- Implementation
 				-- TODO: this is not correct!
 
 			if a_feature.has_return_value then
-				create_new_local (a_feature.type)
+				if a_feature.type.is_formal then
+						-- TODO: resolve formal...
+					create_new_local (system.integer_32_class.compiled_class.actual_type)
+				else
+					create_new_local (a_feature.type)
+				end
 				side_effect.put_line ("call " + last_local + " := " + l_boogie_function + "(" + l_arguments + ");")
 			else
 				side_effect.put_line ("call " + l_boogie_function + "(" + l_arguments + ");")
 			end
-			expression.put (l_boogie_function + "(" + l_arguments + ")")
-
+			if l_return_local then
+				expression.put (last_local)
+			else
+				expression.put (l_boogie_function + "(" + l_arguments + ")")
+			end
 		end
 
 	process_normal_feature_call (a_feature: !FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B])
@@ -898,6 +940,9 @@ feature {NONE} -- Implementation
 			l_temp_expression, l_arguments: STRING
 		do
 			feature_list.record_feature_needed (a_feature)
+			if is_processing_contract then
+				feature_list.record_feature_used_in_contract (a_feature)
+			end
 
 			l_function_name := name_generator.functional_feature_name (a_feature)
 			l_procedure_name := name_generator.procedural_feature_name (a_feature)
@@ -919,7 +964,13 @@ feature {NONE} -- Implementation
 			else
 				side_effect.put_line ("call " + l_procedure_name + "(" + l_arguments + ");")
 			end
-			expression.put (l_function_name + "(" + name_mapper.heap_name + ", " + l_arguments + ")")
+
+			if feature_list.is_pure (a_feature) or not a_feature.has_return_value then
+				expression.put (l_function_name + "(" + name_mapper.heap_name + ", " + l_arguments + ")")
+			else
+				check not is_processing_contract end
+				expression.put (last_local)
+			end
 		end
 
 	process_binary_infix (a_node: BINARY_B)

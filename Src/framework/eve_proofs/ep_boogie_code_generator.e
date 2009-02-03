@@ -6,8 +6,7 @@ indexing
 	date: "$Date$"
 	revision: "$Revision$"
 
--- TODO: rename to EP_BOOGIE_CODE_GENERATOR
-class EP_GENERATOR
+class EP_BOOGIE_CODE_GENERATOR
 
 inherit
 
@@ -111,7 +110,7 @@ feature -- Basic operations
 					-- Generate function and axiom
 				constant_writer.write_constant (a_feature)
 			else
-				if not a_feature.type.is_void then
+				if a_feature.has_return_value and then feature_list.is_pure (a_feature) then
 						-- It's a query, so generate functional representation
 					function_writer.write_functional_representation (a_feature)
 				end
