@@ -20,7 +20,7 @@ feature {NONE} -- Initialization
 			t: TAPE_ARCHIVE
 		do
 			create t.make
-			t.eject
+--			t.eject
 			c.log (agent t.store, "Hello, World!")
 		end
 

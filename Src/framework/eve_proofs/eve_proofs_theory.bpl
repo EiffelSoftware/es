@@ -24,7 +24,7 @@ function IsHeap(heap: HeapType) returns (bool);
 // The global heap (which is always a heap)
 var Heap: HeapType where IsHeap(Heap);
 
-// Allocation field
+// Allocation field (a gohst field)
 const unique $allocated: Field bool;
 
 // Function to check if an object is allocated
@@ -296,6 +296,8 @@ procedure function.item_3<arg1Type, arg2Type, arg3Type, resultType> (
 // Frame conditions
 
 // Frame condition for a feature which modifies nothing.
+// TODO: simpler to use "Heap == old(Heap)"
+/*
 function frame.modifies_nothing(heap: HeapType, old_heap: HeapType) returns (bool);
 axiom (forall heap: HeapType, old_heap: HeapType :: 
             { frame.modifies_nothing(heap, old_heap) } // Trigger
@@ -303,7 +305,7 @@ axiom (forall heap: HeapType, old_heap: HeapType ::
             (forall<alpha> $o: ref, $f: Field alpha :: 
                     { heap[$o, $f] } // Trigger
                 ($o != Void && IsAllocated(old_heap, $o)) ==> (old_heap[$o, $f] == heap[$o, $f])));
-
+*/
 // Frame condition for a feature which modifies only the `Current' object.
 function frame.modifies_current(heap: HeapType, old_heap: HeapType, current: ref) returns (bool);
 axiom (forall heap: HeapType, old_heap: HeapType, current: ref :: 
@@ -325,8 +327,8 @@ axiom (forall heap: HeapType, old_heap: HeapType, agent: ref ::
 // Frame condition saying that all objects which were allocated before are still allocated after a call.
 function frame.no_objects_destroyed(heap: HeapType, old_heap: HeapType) returns (bool);
 axiom (forall heap: HeapType, old_heap: HeapType :: 
-            { frame.modifies_nothing(heap, old_heap) } // Trigger
-        frame.modifies_nothing(heap, old_heap) <==> 
+            { frame.no_objects_destroyed(heap, old_heap) } // Trigger
+        frame.no_objects_destroyed(heap, old_heap) <==> 
             (forall $o: ref :: 
                     { IsAllocated(heap, $o) } // Trigger
                 (IsAllocated(old_heap, $o) ==> IsAllocated(heap, $o))));

@@ -308,7 +308,8 @@ feature -- Processing
 		local
 			l_head_label, l_end_label: STRING
 			l_until_expression, l_until_side_effect: STRING
-			l_invariant_asserts, l_invariant_side_effect: STRING
+			l_invariant_asserts, l_invariant_assumes, l_invariant_side_effect: STRING
+--			l_variant_expression, l_variant_side_effect, l_var_local, l_last_var_local: STRING
 			l_assert: ASSERT_B
 		do
 			ep_context.set_line_number (a_node.line_number)
@@ -328,6 +329,7 @@ feature -- Processing
 			l_until_side_effect := expression_writer.side_effect.string
 
 			create l_invariant_asserts.make_empty
+			create l_invariant_assumes.make_empty
 			create l_invariant_side_effect.make_empty
 			if a_node.invariant_part /= Void then
 				from
@@ -345,27 +347,65 @@ feature -- Processing
 					l_invariant_asserts.append ("); // ")
 					l_invariant_asserts.append (assert_location ("loop", l_assert))
 					l_invariant_asserts.append ("%N")
+					l_invariant_assumes.append ("    assume (")
+					l_invariant_assumes.append (expression_writer.expression.string)
+					l_invariant_assumes.append (");%N")
 					l_invariant_side_effect := expression_writer.side_effect.string
 					a_node.invariant_part.forth
 				end
 			end
 
-			-- TODO: generate assertion for variant
+--			if a_node.variant_part /= Void then
+--				create l_variant_expression.make_empty
+--				create l_variant_side_effect.make_empty
+--				expression_writer.reset
+--				a_node.variant_part.process (expression_writer)
+--				locals.append (expression_writer.locals)
+--				l_variant_expression.append (expression_writer.expression.string)
+--				l_variant_side_effect := expression_writer.side_effect.string
+--				l_var_local := "temp_var_" + current_label_number.out
+--				l_last_var_local := "temp_last_var_" + current_label_number.out
+--				locals.extend ([l_var_local, "int"])
+--				locals.extend ([l_last_var_local, "int"])
+--			end
 
-			output.put (l_until_side_effect)
 			output.put (l_invariant_side_effect)
 			output.put (l_invariant_asserts)
+
+--			if a_node.variant_part /= Void then
+--				output.put (l_variant_side_effect)
+--				output.put_line (l_var_local + " := " + l_variant_expression + ";")
+--				output.put ("assert " + l_var_local + ">= 0; // ")
+--				output.put (assert_location ("var_nn", a_node.variant_part))
+--				output.put_new_line
+--			end
+
+			output.put (l_until_side_effect)
 			output.put_line ("goto " + l_head_label + ", " + l_end_label + ";")
 			output.put_new_line
 
 			output.put ("  " + l_head_label + ":%N")
 			output.put_line ("assume (!(" + l_until_expression + "));")
+			output.put (l_invariant_assumes)
 
 			safe_process (a_node.compound)
 
-			output.put (l_until_side_effect)
 			output.put (l_invariant_side_effect)
 			output.put (l_invariant_asserts)
+
+--			if a_node.variant_part /= Void then
+--				output.put_line (l_last_var_local + " := " + l_var_local + ";")
+--				output.put (l_variant_side_effect)
+--				output.put_line (l_var_local + " := " + l_variant_expression + ";")
+--				output.put ("assert " + l_last_var_local + "> " + l_var_local + "; // ")
+--				output.put (assert_location ("var_sm", a_node.variant_part))
+--				output.put_new_line
+--				output.put ("assert " + l_var_local + ">= 0; // ")
+--				output.put (assert_location ("var_nn", a_node.variant_part))
+--				output.put_new_line
+--			end
+
+			output.put (l_until_side_effect)
 			output.put_line ("goto " + l_head_label + ", " + l_end_label + ";")
 			output.put_new_line
 

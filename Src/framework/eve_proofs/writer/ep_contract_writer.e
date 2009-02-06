@@ -29,7 +29,6 @@ feature {NONE} -- Initialization
 			create {LINKED_LIST [TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER; line_number: INTEGER]]} invariants.make
 			create full_precondition.make_empty
 			create full_postcondition.make_empty
-			create frame_expression.make_empty
 		end
 
 feature -- Access
@@ -56,9 +55,6 @@ feature -- Access
 
 	expression_writer: EP_EXPRESSION_WRITER
 			-- Writer used to generate contracts
-
-	frame_expression: !STRING
-			-- Frame expression
 
 feature -- Status report
 
@@ -101,7 +97,6 @@ feature -- Basic operations
 			create full_precondition.make_empty
 			create full_postcondition.make_empty
 			has_weakened_preconditions := False
-			create frame_expression.make_empty
 		ensure
 			current_feature_void: current_feature = Void
 			preconditions_reset: preconditions.is_empty
@@ -147,13 +142,10 @@ feature -- Basic operations
 				process_inherited_assertions (Context.inherited_assertion)
 			end
 
--- TODO: reenable
 			generate_invariants
 
 			generate_full_precondition
 			generate_full_postcondition
-
-			generate_frame_condition
 
 				-- Restore byte context
 			Context.clear_feature_data
@@ -193,8 +185,6 @@ feature {NONE} -- Implementation
 				expression_writer.set_not_processing_contract
 
 				a_list.extend ([l_assert.tag, expression_writer.expression.string, a_class_id, l_assert.line_number])
-
-				extend_frame_condition (expression_writer)
 
 				a_assertion.forth
 			end
@@ -354,34 +344,6 @@ feature {NONE} -- Implementation
 					l_list.forth
 				end
 			end
-		end
-
-	extend_frame_condition (a_expression_writer: EP_EXPRESSION_WRITER)
-			-- TODO
-		do
-			from
-				a_expression_writer.modified_objects.start
-			until
-				a_expression_writer.modified_objects.after
-			loop
-				frame_expression.append (" && $o!=" + a_expression_writer.modified_objects.item)
-				a_expression_writer.modified_objects.forth
-			end
-			from
-				a_expression_writer.agents_called.start
-			until
-				a_expression_writer.agents_called.after
-			loop
-				frame_expression.append (" && !agent.modifies(" + a_expression_writer.agents_called.item + ", $o, $f)")
-				a_expression_writer.agents_called.forth
-			end
-		end
-
-	generate_frame_condition
-			-- TODO
-		do
-			frame_expression.prepend ("(forall $o: ref, $f: name :: { Heap[$o, $f] } ($o != Void && old(Heap)[$o, $allocated]")
-			frame_expression.append (") ==> (old(Heap)[$o, $f] == Heap[$o, $f]))")
 		end
 
 end

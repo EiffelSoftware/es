@@ -6,9 +6,6 @@ indexing
 class
 	APPLICATION
 
-inherit
-	ARGUMENTS
-
 create
 	make
 

@@ -8,6 +8,8 @@ class TAPE
 feature
 
 	save (o: ANY)
+		indexing
+			pure: True
 		require
 			o_not_void: o /= Void
 		do

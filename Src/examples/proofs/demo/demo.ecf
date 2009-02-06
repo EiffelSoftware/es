@@ -12,10 +12,17 @@
 				<exclude>/.svn$</exclude>
 				<exclude>/CVS$</exclude>
 			</file_rule>
-			<cluster name="formatter" location="..\formatter\"/>
+			<cluster name="account" location="..\account\"/>
 			<cluster name="archiver" location="..\archiver\"/>
-			<cluster name="simple" location="..\simple\"/>
+<!--			<cluster name="arrayed_stack" location="..\arrayed_stack\"/>-->
+			<cluster name="cell" location="..\cell\"/>
+			<cluster name="counter" location="..\counter\"/>
 			<cluster name="errors" location="..\errors\"/>
+			<cluster name="formatter" location="..\formatter\"/>
+			<cluster name="marriage" location="..\marriage\"/>
+			<cluster name="mccarthy" location="..\mccarthy\"/>
+			<cluster name="simple" location="..\simple\"/>
+<!--			<cluster name="test" location="..\test\"/>-->
 		</cluster>
 	</target>
 </system>

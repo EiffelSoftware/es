@@ -37,7 +37,6 @@ feature {NONE} -- Initialization
 		do
 			l_agent := agent a_formatter.align_right
 			a_paragraph.format (l_agent)
-
 		ensure
 			not a_paragraph.is_left_aligned
 		end

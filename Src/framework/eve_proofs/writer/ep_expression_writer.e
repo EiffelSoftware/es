@@ -87,9 +87,6 @@ feature {NONE} -- Initialization
 			create expression.make
 			create side_effect.make
 			create {LINKED_LIST [TUPLE [name: STRING; type: STRING]]} locals.make
-			create {LINKED_LIST [STRING]}modified_objects.make
-			modified_objects.compare_objects
-			create {LINKED_LIST [STRING]}agents_called.make
 		ensure
 			name_mapper_set: name_mapper = a_name_mapper
 			old_handler_set: old_handler = a_old_handler
@@ -111,12 +108,6 @@ feature -- Access
 
 	locals: LIST [TUPLE [name: STRING; type: STRING]]
 			-- List of locals needed for side effects
-
-	modified_objects: !LIST [STRING]
-			-- TODO: should this be done in a more generic way?
-
-	agents_called: !LIST [STRING]
-			-- TODO: should this be done in a more generic way?
 
 feature -- Status report
 
@@ -158,8 +149,6 @@ feature -- Element change
 			side_effect.reset
 			side_effect.set_indentation ("    ")
 			locals.wipe_out
-			agents_called.wipe_out
-			modified_objects.wipe_out
 			last_target_type := Void
 		end
 
@@ -175,10 +164,6 @@ feature {BYTE_NODE} -- Visitors
 			-- Process `a_node'.
 		do
 			expression.put (name_mapper.argument_name (a_node))
-				-- TODO: ?
-			if not modified_objects.has (name_mapper.argument_name (a_node)) then
-				modified_objects.extend (name_mapper.argument_name (a_node))
-			end
 		end
 
 	process_attribute_b (a_node: ATTRIBUTE_B)
@@ -197,11 +182,6 @@ feature {BYTE_NODE} -- Visitors
 			feature_list.record_feature_needed (l_attached_feature)
 			if is_processing_contract then
 				feature_list.record_feature_used_in_contract (l_attached_feature)
-			end
-
-				-- TODO: ?
-			if not modified_objects.has (name_mapper.target_name) then
-				modified_objects.extend (name_mapper.target_name)
 			end
 
 --			l_field_name := name_generator.attribute_name (l_feature)
@@ -488,10 +468,6 @@ feature {BYTE_NODE} -- Visitors
 			-- Process `a_node'.
 		do
 			expression.put (name_mapper.current_name)
-				-- TODO: ?
-			if not modified_objects.has (name_mapper.current_name) then
-				modified_objects.extend (name_mapper.current_name)
-			end
 		end
 
 	process_external_b (a_node: EXTERNAL_B)
@@ -875,8 +851,6 @@ feature {NONE} -- Implementation
 					l_arguments_suffix := ""
 					l_boogie_function := "routine.postcondition_" + l_open_argument_count.out
 				end
-					-- TODO: this needs actually a code analysis
-				agents_called.extend (name_mapper.target_name)
 			elseif l_feature_name.is_equal ("call") then
 				l_arguments := ""
 				l_arguments_suffix := ""

@@ -24,6 +24,7 @@ feature {NONE} -- Initialization
 		do
 			create verifier.make
 			create boogie_generator.make
+			create pure_marker.make
 			create {LINKED_LIST [!CLASS_C]} classes_to_verify.make
 		end
 
@@ -111,11 +112,14 @@ feature -- Basic operations
 
 feature {NONE} -- Implementation
 
-	boogie_generator: EP_BOOGIE_CODE_GENERATOR
+	boogie_generator: !EP_BOOGIE_CODE_GENERATOR
 			-- Generator used to generate Boogie code
 
-	verifier: EP_BOOGIE_VERIFIER
+	verifier: !EP_BOOGIE_VERIFIER
 			-- Verifier used to run Boogie
+
+	pure_marker: !EP_PURE_MARKER
+			-- Marker to preprocess classes and find pure features
 
 	show_messages (l_output_line, l_status_bar: STRING)
 			-- Show `l_output_line' in output window and `l_status_bar' in status bar.
@@ -144,6 +148,8 @@ feature {NONE} -- Implementation
 		local
 			l_name: !STRING
 		do
+			pure_marker.traverse_class (a_class)
+
 			boogie_generator.reset
 			boogie_generator.generate_implementation
 
@@ -168,6 +174,9 @@ feature {NONE} -- Implementation
 			until
 				l_list.is_empty
 			loop
+				-- TODO: do this different
+				pure_marker.traverse_feature (l_list.first)
+
 				boogie_generator.process_creation_routine (l_list.first)
 			end
 
@@ -177,6 +186,9 @@ feature {NONE} -- Implementation
 			until
 				l_list.is_empty
 			loop
+				-- TODO: do this different
+				pure_marker.traverse_feature (l_list.first)
+
 				boogie_generator.process_feature (l_list.first)
 			end
 

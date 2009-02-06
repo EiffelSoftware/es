@@ -16,7 +16,7 @@ feature {NONE}
 			create tape
 			is_loaded := tape /= Void
 		ensure
-			tape_not_void: tape /= Void
+			tape_created: tape /= Void
 			loaded: is_loaded
 		end
 

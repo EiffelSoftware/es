@@ -52,6 +52,7 @@ feature -- Basic operations
 			put_line ("modifies Heap;")
 			frame_extractor.build_frame_condition (a_feature)
 			put_line ("ensures " + frame_extractor.last_frame_condition + "; // frame " + a_feature.written_class.name_in_upper + ":" + a_feature.feature_name)
+--			put_line ("free ensures (forall $o: ref :: { IsAllocated(Heap, $o) } IsAllocated(old(Heap), $o) ==> IsAllocated(Heap, $o)); // no deallocations")
 
 			environment.output_buffer.set_indentation ("")
 			put_new_line
@@ -74,7 +75,7 @@ feature -- Basic operations
 			-- TODO: Generate real frame condition
 			put_line ("modifies Heap;")
 			put_line ("ensures frame.modifies_current(Heap, old(Heap), Current);")
---			put_line ("ensures (forall $o: ref, $f: name :: { Heap[$o, $f] } ($o != Void && old(Heap)[$o, $allocated] && $o != Current) ==> (old(Heap)[$o, $f] == Heap[$o, $f]));")
+--			put_line ("free ensures (forall $o: ref :: { IsAllocated(Heap, $o) } IsAllocated(old(Heap), $o) ==> IsAllocated(Heap, $o)); // no deallocations")
 
 			put_comment_line ("Creation routine condition")
 			put_line ("free ensures Heap[Current, $allocated];")

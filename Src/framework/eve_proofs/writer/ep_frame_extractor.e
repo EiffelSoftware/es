@@ -14,7 +14,8 @@ inherit
 		redefine
 			process_attribute_b,
 			process_feature_b,
-			process_nested_b
+			process_nested_b,
+			process_un_old_b
 		end
 
 	SHARED_EP_ENVIRONMENT
@@ -135,31 +136,77 @@ feature {NONE} -- Visitors
 			check l_feature /= Void end
 			l_attached_feature := l_feature
 
-			l_current_feature := current_feature
-			process_feature_postcondition (l_attached_feature)
-			current_feature := l_current_feature
+				-- TODO: this only rules out simple recursion, but other recursion still leeds to a stack overflow
+			if current_feature.rout_id_set.first /= l_attached_feature.rout_id_set.first then
+				l_current_feature := current_feature
+				process_feature_postcondition (l_attached_feature)
+				current_feature := l_current_feature
+			end
 		end
 
 	process_nested_b (a_node: NESTED_B)
 			-- <Precursor>
 		local
-			l_last_target: STRING
+			l_target: BYTE_NODE
+			l_last_target, l_field: STRING
+			l_feature: FEATURE_I
+			l_attached_feature: !FEATURE_I
 		do
 			create l_last_target.make_from_string (target)
+
+--			l_target := a_node.target
+--			if {l_access_expr_b: ACCESS_EXPR_B} a_node.target then
+--				l_target := l_access_expr_b.expr
+--			end
 
 			-- TODO: follow nested calls, i.e. set the new target object and follow the feature call
 			-- Problem: all the field accesses in the nested calls have to be transformed to the current context
 
 			if {l_argument_b: ARGUMENT_B} a_node.target then
-				-- TODO ...
+				-- TODO: use name_mapper.argument_name
+				target := name_generator.argument_name (current_feature.arguments.item_name (l_argument_b.position))
+
+				a_node.message.process (Current)
+
 			elseif {l_attribute_b: ATTRIBUTE_B} a_node.target then
-				-- TODO ...
+				l_feature := system.class_of_id (l_attribute_b.written_in).feature_of_name_id (l_attribute_b.attribute_name_id)
+				check l_feature /= Void end
+				l_attached_feature := l_feature
+
+				l_field := name_generator.attribute_name (l_attached_feature)
+				if in_old then
+					target := "Heap[" + l_last_target + ", " + l_field + "]"
+				else
+					target := "old(Heap)[" + l_last_target + ", " + l_field + "]"
+				end
+
+				a_node.message.process (Current)
+
 			elseif {l_result_b: RESULT_B} a_node.target then
 				target := "Result"
+
+				a_node.message.process (Current)
+
+			else
 				-- TODO ...
 			end
 
 			target := l_last_target
+		end
+
+	process_un_old_b (a_node: UN_OLD_B)
+			-- <Precursor>
+		local
+			l_last_target, l_field: STRING
+		do
+			in_old := True
+--			create l_last_target.make_from_string (target)
+--			target := "old(" + l_last_target + ")"
+
+			a_node.expr.process (Current)
+
+			in_old := False
+--			target := l_last_target
 		end
 
 feature {NONE} -- Implementation
@@ -172,5 +219,8 @@ feature {NONE} -- Implementation
 
 	current_feature: !FEATURE_I
 			-- Current processed feature
+
+	in_old: BOOLEAN
+			-- TODO
 
 end
