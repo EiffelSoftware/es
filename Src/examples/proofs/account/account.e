@@ -50,6 +50,7 @@ feature -- Element change
 			-- Transfer `amount' from `Current' to `other'.
 		require
 			other_not_void: other /= Void
+			other_not_current: other /= Current
 			amount_not_negative: amount >= 0
 			amount_not_too_large: amount <= balance
 		do

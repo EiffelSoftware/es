@@ -64,7 +64,14 @@ feature -- Basic operations
 						modified_attributes.after
 					loop
 						l_item := modified_attributes.item_for_iteration
-						last_frame_condition.append (" && ($o != " + l_item.target + " || $f != " + l_item.field + ")")
+
+							-- TODO: refactor
+						if l_item.field.is_equal ("$agent$") then
+							last_frame_condition.append (" && (!agent.modifies(" + l_item.target + ", $o, $f))")
+						else
+							last_frame_condition.append (" && ($o != " + l_item.target + " || $f != " + l_item.field + ")")
+						end
+
 						modified_attributes.forth
 					end
 					last_frame_condition.append (" ==> (old(Heap)[$o, $f] == Heap[$o, $f]))")
@@ -72,6 +79,39 @@ feature -- Basic operations
 			end
 		ensure
 			frame_condition_built: not last_frame_condition.is_empty
+		end
+
+	build_agent_frame_condition (a_feature: !FEATURE_I)
+			-- TODO
+		local
+			l_item: TUPLE [target: STRING; field: STRING]
+		do
+			if feature_list.is_pure (a_feature) then
+				last_frame_condition := "false"
+			else
+				modified_attributes.wipe_out
+					-- TODO: use closed agent target
+				target := "Current"
+				process_feature_postcondition (a_feature)
+				last_frame_condition := "(true"
+				from
+					modified_attributes.start
+				until
+					modified_attributes.after
+				loop
+					l_item := modified_attributes.item_for_iteration
+
+						-- TODO: refactor
+					if l_item.field.is_equal ("$agent$") then
+							-- TODO: what to do here?
+					else
+						last_frame_condition.append (" && ($o == " + l_item.target + " && $f == " + l_item.field + ")")
+					end
+
+					modified_attributes.forth
+				end
+				last_frame_condition.append (")")
+			end
 		end
 
 feature {NONE} -- Visitors
@@ -103,6 +143,16 @@ feature {NONE} -- Visitors
 					l_byte_code.postcondition.process (Current)
 				end
 
+					-- Restore byte context
+				Context.clear_feature_data
+				Context.clear_class_type_data
+				if l_previous_feature /= Void then
+					Context.init (l_previous_feature.written_class.types.first)
+					Context.set_current_feature (l_previous_feature)
+				end
+				if l_previous_byte_code /= Void then
+					Context.set_byte_code (l_previous_byte_code)
+				end
 			end
 		end
 
@@ -131,16 +181,25 @@ feature {NONE} -- Visitors
 			l_attached_feature: !FEATURE_I
 			l_current_feature: !FEATURE_I
 		do
-				-- TODO: why go over feature name and not feature id?
-			l_feature := system.class_of_id (a_node.written_in).feature_of_name_id (a_node.feature_name_id)
-			check l_feature /= Void end
-			l_attached_feature := l_feature
+				-- TODO: make this nice
+			if a_node.feature_name.is_equal ("postcondition") then
+					-- Add agent frame condition
 
-				-- TODO: this only rules out simple recursion, but other recursion still leeds to a stack overflow
-			if current_feature.rout_id_set.first /= l_attached_feature.rout_id_set.first then
-				l_current_feature := current_feature
-				process_feature_postcondition (l_attached_feature)
-				current_feature := l_current_feature
+				modified_attributes.extend ([target, "$agent$"])
+
+				Precursor {EP_VISITOR} (a_node)
+			else
+					-- TODO: why go over feature name and not feature id?
+				l_feature := system.class_of_id (a_node.written_in).feature_of_name_id (a_node.feature_name_id)
+				check l_feature /= Void end
+				l_attached_feature := l_feature
+
+					-- TODO: this only rules out simple recursion, but other recursion still leeds to a stack overflow
+				if current_feature.rout_id_set.first /= l_attached_feature.rout_id_set.first then
+					l_current_feature := current_feature
+					process_feature_postcondition (l_attached_feature)
+					current_feature := l_current_feature
+				end
 			end
 		end
 

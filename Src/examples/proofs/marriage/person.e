@@ -12,6 +12,7 @@ create
 feature {NONE} -- Initialization
 
 	make
+			-- Initialize person.
 		do
 			spouse := Void
 		ensure
@@ -21,46 +22,50 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	spouse: PERSON
+			-- Spouse of persons
 
 feature -- Basic operations
 
 	marry (a_other: !PERSON)
+			-- Marry person `a_other'.
 		require
-			a_other /= Current
-			a_other.spouse = Void
-			spouse = Void
+			other_not_current: a_other /= Current
+			other_not_married: a_other.spouse = Void
+			current_not_married: spouse = Void
 		do
 			spouse := a_other
 			a_other.set_spouse (Current)
 		ensure
-			spouse = a_other
-			a_other.spouse = Current
+			married_to_other: spouse = a_other
+			married_to_current: a_other.spouse = Current
 		end
 
 	divorce
+			-- Divorce from `spouse'.
 		require
-			spouse /= Void
+			married: spouse /= Void
 		do
 			spouse.set_spouse (Void)
 			spouse := Void
 		ensure
-			spouse = Void
-			(old spouse).spouse = Void
+			not_married: spouse = Void
+			spouse_not_married: (old spouse).spouse = Void
 		end
 
 feature {PERSON} -- Implementation
 
 	set_spouse (a_person: PERSON)
+			-- Set `spouse' to `a_person'.
 		indexing
 			proof: False	-- Breaks invariant
 		do
 			spouse := a_person
 		ensure
-			spouse = a_person
+			spouse_set: spouse = a_person
 		end
 
 invariant
-	spouse /= Current
-	spouse /= Void implies spouse.spouse = Current
+	not_married_to_self: spouse /= Current
+	marriage_symmetric: spouse /= Void implies spouse.spouse = Current
 
 end

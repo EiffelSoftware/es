@@ -619,6 +619,7 @@ feature {BYTE_NODE} -- Visitors
 			l_attached_feature: !FEATURE_I
 			l_contract_writer: !EP_CONTRACT_WRITER
 			l_expression_writer: !EP_EXPRESSION_WRITER
+			l_frame_extractor: !EP_FRAME_EXTRACTOR
 			l_name_mapper: !EP_AGENT_NAME_MAPPER
 			l_open_argument_count, l_closed_argument_count: INTEGER
 			l_arguments, l_typed_arguments, l_type: STRING
@@ -706,6 +707,9 @@ feature {BYTE_NODE} -- Visitors
 			l_contract_writer.set_feature (l_attached_feature)
 			l_contract_writer.generate_contracts
 
+			create l_frame_extractor.make
+			l_frame_extractor.build_agent_frame_condition (l_attached_feature)
+
 			side_effect.put_comment_line ("Agent properties")
 			side_effect.put_line ("assume (forall heap: HeapType" + l_typed_arguments + " :: ")
 			side_effect.put_line ("            { routine.precondition_" + l_open_argument_count.out + "(heap" + l_arguments + ") } // Trigger")
@@ -716,7 +720,7 @@ feature {BYTE_NODE} -- Visitors
 --			side_effect.put_line ("        agent.modifies(" + l_agent_variable + ", $o, $f) <==> ($o == arg.a_paragraph));")
 			side_effect.put_line ("assume (forall<alpha> $o: ref, $f: Field alpha :: ")
 			side_effect.put_line ("            { agent.modifies(" + l_agent_variable + ", $o, $f) } // Trigger")
-			side_effect.put_line ("        agent.modifies(" + l_agent_variable + ", $o, $f) <==> (true));")
+			side_effect.put_line ("        agent.modifies(" + l_agent_variable + ", $o, $f) <==> " + l_frame_extractor.last_frame_condition + ");")
 			if l_attached_feature.has_return_value then
 				side_effect.put_line ("assume (forall heap: HeapType, old_heap: HeapType" + l_typed_arguments + ", result:" + type_mapper.boogie_type_for_type (l_attached_feature.type) + " :: ")
 				side_effect.put_line ("            { function.postcondition_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ", result) } // Trigger")

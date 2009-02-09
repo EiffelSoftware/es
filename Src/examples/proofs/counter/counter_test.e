@@ -37,7 +37,7 @@ feature {NONE} -- Initialization
 
 			check
 				c1.value = 3
-				c2.value = 2	-- violated due to automatic generated frame of `add'
+				violated: c2.value = 2  -- violated due to automatic generated frame of `add'
 			end
 		end
 

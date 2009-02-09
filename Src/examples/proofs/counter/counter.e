@@ -12,7 +12,7 @@ create
 feature {NONE} -- Initialization
 
 	make_zero
-			-- Initialize empty counter
+			-- Initialize empty counter.
 		do
 			value := 0
 		ensure
