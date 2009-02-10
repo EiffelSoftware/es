@@ -36,7 +36,6 @@ feature {NONE} -- Initialization
 			bob.divorce
 
 			check
-				false
 				alice.spouse = Void
 				bob.spouse = Void
 				eve.spouse = Void
@@ -46,8 +45,8 @@ feature {NONE} -- Initialization
 
 			check
 				alice.spouse = Void
-				bob.spouse = Void
-				eve.spouse = Void
+				bob.spouse = eve
+				eve.spouse = bob
 			end
 
 		end

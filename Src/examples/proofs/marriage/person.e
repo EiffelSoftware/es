@@ -22,7 +22,7 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	spouse: PERSON
-			-- Spouse of persons
+			-- Spouse of person
 
 feature -- Basic operations
 
@@ -57,7 +57,9 @@ feature {PERSON} -- Implementation
 	set_spouse (a_person: PERSON)
 			-- Set `spouse' to `a_person'.
 		indexing
-			proof: False	-- Breaks invariant
+			proof: False	-- May break invariant `marriage_symmetric'
+		require
+			person_not_current: a_person /= Current
 		do
 			spouse := a_person
 		ensure

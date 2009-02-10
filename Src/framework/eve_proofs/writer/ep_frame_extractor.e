@@ -12,9 +12,11 @@ inherit
 
 	EP_VISITOR
 		redefine
+			process_argument_b,
 			process_attribute_b,
 			process_feature_b,
 			process_nested_b,
+			process_result_b,
 			process_un_old_b
 		end
 
@@ -25,7 +27,8 @@ inherit
 		export {NONE} all end
 
 create
-	make
+	make,
+	make_with_name_mapper
 
 feature {NONE} -- Initialization
 
@@ -34,12 +37,26 @@ feature {NONE} -- Initialization
 		do
 			create last_frame_condition.make_empty
 			create modified_attributes.make
+			create {EP_NORMAL_NAME_MAPPER} name_mapper.make
+		end
+
+	make_with_name_mapper (a_name_mapper: !EP_NAME_MAPPER)
+			-- Initialize frame extractor using name mapper `a_name_mapper'.
+		do
+			create last_frame_condition.make_empty
+			create modified_attributes.make
+			name_mapper := a_name_mapper
+		ensure
+			name_mapper_set: name_mapper = a_name_mapper
 		end
 
 feature -- Access
 
 	last_frame_condition: STRING
 			-- Last built frame condition
+
+	name_mapper: !EP_NAME_MAPPER
+			-- Name mapper used to resolve names
 
 feature -- Basic operations
 
@@ -52,7 +69,7 @@ feature -- Basic operations
 				last_frame_condition := "Heap == old(Heap)"
 			else
 				modified_attributes.wipe_out
-				target := "Current"
+				target := name_mapper.current_name
 				process_feature_postcondition (a_feature)
 				if modified_attributes.is_empty then
 					last_frame_condition := "true"
@@ -90,8 +107,7 @@ feature -- Basic operations
 				last_frame_condition := "false"
 			else
 				modified_attributes.wipe_out
-					-- TODO: use closed agent target
-				target := "Current"
+				target := name_mapper.target_name
 				process_feature_postcondition (a_feature)
 				last_frame_condition := "(true"
 				from
@@ -156,6 +172,14 @@ feature {NONE} -- Visitors
 			end
 		end
 
+	process_argument_b (a_node: ARGUMENT_B)
+			-- <Precursor>
+		do
+			if in_target then
+				target := name_generator.argument_name (current_feature.arguments.item_name (a_node.position))
+			end
+		end
+
 	process_attribute_b (a_node: ATTRIBUTE_B)
 			-- <Precursor>
 		local
@@ -168,10 +192,23 @@ feature {NONE} -- Visitors
 			check l_feature /= Void end
 			l_attached_feature := l_feature
 
-				-- Record attribute for frame condition
 			l_boogie_name := name_generator.attribute_name (l_attached_feature)
-			create l_target.make_from_string (target)
-			modified_attributes.extend ([l_target, l_boogie_name])
+
+			if in_target then
+					-- Follow target
+				if in_old then
+						-- Use old handler and name mapper
+					target := "old(Heap)[" + target + ", " + l_boogie_name + "]"
+				else
+						-- Use old handler and name mapper
+					target := "Heap[" + target + ", " + l_boogie_name + "]"
+				end
+			else
+					-- Record attribute for frame condition
+				create l_target.make_from_string (target)
+				modified_attributes.extend ([l_target, l_boogie_name])
+			end
+
 		end
 
 	process_feature_b (a_node: FEATURE_B)
@@ -213,44 +250,19 @@ feature {NONE} -- Visitors
 		do
 			create l_last_target.make_from_string (target)
 
---			l_target := a_node.target
---			if {l_access_expr_b: ACCESS_EXPR_B} a_node.target then
---				l_target := l_access_expr_b.expr
---			end
+			in_target := True
+			a_node.target.process (Current)
+			in_target := False
 
-			-- TODO: follow nested calls, i.e. set the new target object and follow the feature call
-			-- Problem: all the field accesses in the nested calls have to be transformed to the current context
-
-			if {l_argument_b: ARGUMENT_B} a_node.target then
-				-- TODO: use name_mapper.argument_name
-				target := name_generator.argument_name (current_feature.arguments.item_name (l_argument_b.position))
-
-				a_node.message.process (Current)
-
-			elseif {l_attribute_b: ATTRIBUTE_B} a_node.target then
-				l_feature := system.class_of_id (l_attribute_b.written_in).feature_of_name_id (l_attribute_b.attribute_name_id)
-				check l_feature /= Void end
-				l_attached_feature := l_feature
-
-				l_field := name_generator.attribute_name (l_attached_feature)
-				if in_old then
-					target := "Heap[" + l_last_target + ", " + l_field + "]"
-				else
-					target := "old(Heap)[" + l_last_target + ", " + l_field + "]"
-				end
-
-				a_node.message.process (Current)
-
-			elseif {l_result_b: RESULT_B} a_node.target then
-				target := "Result"
-
-				a_node.message.process (Current)
-
-			else
-				-- TODO ...
-			end
+			a_node.message.process (Current)
 
 			target := l_last_target
+		end
+
+	process_result_b (a_node: RESULT_B)
+			-- <Precursor>
+		do
+--			target := name_mapper.result_name
 		end
 
 	process_un_old_b (a_node: UN_OLD_B)
@@ -259,13 +271,8 @@ feature {NONE} -- Visitors
 			l_last_target, l_field: STRING
 		do
 			in_old := True
---			create l_last_target.make_from_string (target)
---			target := "old(" + l_last_target + ")"
-
 			a_node.expr.process (Current)
-
 			in_old := False
---			target := l_last_target
 		end
 
 feature {NONE} -- Implementation
@@ -280,6 +287,12 @@ feature {NONE} -- Implementation
 			-- Current processed feature
 
 	in_old: BOOLEAN
+			-- TODO
+
+	in_target: BOOLEAN
+			-- TODO
+
+	in_message: BOOLEAN
 			-- TODO
 
 end

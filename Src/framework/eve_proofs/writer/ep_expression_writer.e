@@ -707,7 +707,7 @@ feature {BYTE_NODE} -- Visitors
 			l_contract_writer.set_feature (l_attached_feature)
 			l_contract_writer.generate_contracts
 
-			create l_frame_extractor.make
+			create l_frame_extractor.make_with_name_mapper (l_name_mapper)
 			l_frame_extractor.build_agent_frame_condition (l_attached_feature)
 
 			side_effect.put_comment_line ("Agent properties")

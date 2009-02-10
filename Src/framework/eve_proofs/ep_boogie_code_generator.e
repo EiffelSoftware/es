@@ -139,6 +139,10 @@ feature -- Basic operations
 	process_creation_routine (a_feature: !FEATURE_I)
 			-- Generate code for creation routine `a_feature'.
 		do
+			ep_context.set_current_class (a_feature.written_class)
+			ep_context.set_current_feature (a_feature)
+			ep_context.set_location (a_feature.body.start_location)
+
 			put_comment_line ("Creation routine " + a_feature.feature_name + " from class " + a_feature.written_class.name_in_upper)
 			put_comment_line ("--------------------------------------")
 			put_new_line
