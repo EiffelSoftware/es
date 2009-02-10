@@ -88,6 +88,9 @@ feature -- Basic operations
 					l_byte_code.formulate_inherited_assertions (a_feature.assert_id_set)
 					process_inherited_assertions (Context.inherited_assertion)
 				end
+
+				-- TODO: traverse invariants
+
 			end
 		end
 

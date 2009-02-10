@@ -180,11 +180,18 @@ feature {NONE} -- Implementation
 			if not contract_writer.postconditions.is_empty then
 				write_postconditions
 			end
-			if not contract_writer.invariants.is_empty then
-				write_invariants
-			end
 
-			-- TODO: generate invariants
+				-- Check export status of feature
+				-- TODO: this won't work for export status like {A, B} in class A. Has to make sure it's ONLY exported to A
+			if a_feature.export_status.is_none or else
+				(not a_feature.export_status.is_all and then
+				a_feature.export_status.is_exported_to (a_feature.written_class)) then
+					-- Don't write invariants for features exported to NONE or the own class
+			else
+				if not contract_writer.invariants.is_empty then
+					write_invariants
+				end
+			end
 
 			environment.output_buffer.set_indentation ("")
 		end

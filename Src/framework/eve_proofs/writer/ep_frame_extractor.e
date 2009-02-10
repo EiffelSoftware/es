@@ -86,7 +86,7 @@ feature -- Basic operations
 						if l_item.field.is_equal ("$agent$") then
 							last_frame_condition.append (" && (!agent.modifies(" + l_item.target + ", $o, $f))")
 						else
-							last_frame_condition.append (" && ($o != " + l_item.target + " || $f != " + l_item.field + ")")
+							last_frame_condition.append (" && (!($o == " + l_item.target + " && $f == " + l_item.field + "))")
 						end
 
 						modified_attributes.forth
