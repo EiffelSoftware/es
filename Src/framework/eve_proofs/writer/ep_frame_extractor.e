@@ -109,7 +109,11 @@ feature -- Basic operations
 				modified_attributes.wipe_out
 				target := name_mapper.target_name
 				process_feature_postcondition (a_feature)
-				last_frame_condition := "(true"
+				if modified_attributes.is_empty then
+					last_frame_condition := "(true"
+				else
+					last_frame_condition := "(false"
+				end
 				from
 					modified_attributes.start
 				until
@@ -121,7 +125,7 @@ feature -- Basic operations
 					if l_item.field.is_equal ("$agent$") then
 							-- TODO: what to do here?
 					else
-						last_frame_condition.append (" && ($o == " + l_item.target + " && $f == " + l_item.field + ")")
+						last_frame_condition.append (" || ($o == " + l_item.target + " && $f == " + l_item.field + ")")
 					end
 
 					modified_attributes.forth
