@@ -100,7 +100,7 @@ feature {NONE} -- Implementation
 	output_lines: LIST [STRING]
 			-- Boogie output lines
 
-	last_error: EP_VERIFICATION_ERROR
+	last_error: EP_ERROR
 			-- Last verification error
 
 	current_class: CLASS_C
@@ -181,7 +181,7 @@ feature {NONE} -- Implementation
 			elseif a_error.is_equal ("BP5003") then
 				handle_postcondition_error (a_line.to_integer)
 			else
-				create last_error.make (names.error_unknown_verification_error)
+				create {EP_GENERAL_ERROR} last_error.make (names.error_unknown_verification_error)
 				last_error.set_description (names.description_unknown_verification_error)
 				errors.extend (last_error)
 			end
@@ -191,35 +191,37 @@ feature {NONE} -- Implementation
 			-- Handle assertion error.
 		local
 			l_type: STRING
+			l_verification_error: EP_VERIFICATION_ERROR
 		do
 			if assert_regexp.matches (a_source_line) then
 				l_type := assert_regexp.captured_substring (2)
 				if l_type.is_equal ("check") then
-					create last_error.make (names.error_check_violation)
-					last_error.set_description (names.description_check_violation)
-					last_error.set_class (current_class)
-					last_error.set_feature (current_feature)
+					create l_verification_error.make (names.error_check_violation)
+					l_verification_error.set_description (names.description_check_violation)
+					l_verification_error.set_class (current_class)
+					l_verification_error.set_feature (current_feature)
 				elseif l_type.is_equal ("loop") then
-					create last_error.make (names.error_loop_invariant_violation)
-					last_error.set_description (names.description_loop_invariant_violation)
-					last_error.set_class (current_class)
-					last_error.set_feature (current_feature)
+					create l_verification_error.make (names.error_loop_invariant_violation)
+					l_verification_error.set_description (names.description_loop_invariant_violation)
+					l_verification_error.set_class (current_class)
+					l_verification_error.set_feature (current_feature)
 				elseif l_type.is_equal ("attached") then
 						-- TODO: internationalization
-					create last_error.make ("Target may not be attached")
-					last_error.set_description ("Target of feature call may not be attached")
-					last_error.set_class (current_class)
-					last_error.set_feature (current_feature)
-					last_error.set_position (instruction_line_position (a_source_line_number), 0)
+					create l_verification_error.make ("Target may not be attached")
+					l_verification_error.set_description ("Target of feature call may not be attached")
+					l_verification_error.set_class (current_class)
+					l_verification_error.set_feature (current_feature)
+					l_verification_error.set_position (instruction_line_position (a_source_line_number), 0)
 				else
 					check false end
 				end
 				if assert_regexp.captured_substring (4).is_integer then
-					last_error.set_position (assert_regexp.captured_substring (4).to_integer, 0)
+					l_verification_error.set_position (assert_regexp.captured_substring (4).to_integer, 0)
 				end
 				if assert_regexp.match_count > 5 then
-					last_error.set_tag (assert_regexp.captured_substring (6))
+					l_verification_error.set_tag (assert_regexp.captured_substring (6))
 				end
+				last_error := l_verification_error
 			else
 				check false end
 			end
@@ -230,7 +232,7 @@ feature {NONE} -- Implementation
 	handle_precondition_error (a_source_line_number: INTEGER)
 			-- Handle precondition error.
 		do
-			create last_error.make (names.error_precondition_violation)
+			create {EP_VERIFICATION_ERROR} last_error.make (names.error_precondition_violation)
 			last_error.set_description (names.description_precondition_violation)
 			last_error.set_class (current_class)
 			last_error.set_feature (current_feature)
@@ -248,6 +250,7 @@ feature {NONE} -- Implementation
 			-- Handle related information of an error.
 		local
 			l_type, l_tag: STRING
+			l_verification_error: EP_VERIFICATION_ERROR
 		do
 			if assert_regexp.matches (input_lines.i_th (a_line.to_integer)) then
 
@@ -257,45 +260,48 @@ feature {NONE} -- Implementation
 
 				l_type := assert_regexp.captured_substring (2)
 				if l_type.is_equal ("pre") then
-					check last_error /= Void end
+					l_verification_error ?= last_error
+					check l_verification_error /= Void end
+
 					if assert_regexp.captured_substring (4).is_integer then
 							-- Assertion has line number of precondition (it's generated automatically)
-						last_error.set_associated_feature (feature_at_position (a_line.to_integer))
+						l_verification_error.set_associated_feature (feature_at_position (a_line.to_integer))
 					elseif assert_regexp.captured_substring (4).is_equal ("combined") then
 							-- It's a weakend precondition
-						last_error.set_associated_feature (feature_at_position (a_line.to_integer))
+						l_verification_error.set_associated_feature (feature_at_position (a_line.to_integer))
 							-- TODO: internationalization + better description
 						l_tag := "weakend precondition"
 					else
 							-- Assertion has feature name of precondition (it's part of the theory)
-						last_error.set_associated_feature (feature_with_name (assert_regexp.captured_substring (3), assert_regexp.captured_substring (4)))
+						l_verification_error.set_associated_feature (feature_with_name (assert_regexp.captured_substring (3), assert_regexp.captured_substring (4)))
 					end
 					if l_tag /= Void then
-						last_error.set_tag (l_tag)
+						l_verification_error.set_tag (l_tag)
 					end
 				elseif l_type.is_equal ("post") then
-					create last_error.make (names.error_postcondition_violation)
-					last_error.set_description (names.description_postcondition_violation)
-					last_error.set_class (current_class)
-					last_error.set_feature (current_feature)
-					last_error.set_position (assert_regexp.captured_substring (4).to_integer, 0)
+					create l_verification_error.make (names.error_postcondition_violation)
+					l_verification_error.set_description (names.description_postcondition_violation)
+					l_verification_error.set_class (current_class)
+					l_verification_error.set_feature (current_feature)
+					l_verification_error.set_position (assert_regexp.captured_substring (4).to_integer, 0)
 					if l_tag /= Void then
-						last_error.set_tag (l_tag)
+						l_verification_error.set_tag (l_tag)
 					end
-					errors.extend (last_error)
+					errors.extend (l_verification_error)
+					last_error := l_verification_error
 				elseif l_type.is_equal ("inv") then
-					create last_error.make (names.error_invariant_violation)
-					last_error.set_description (names.description_invariant_violation)
-					last_error.set_class (current_class)
-					last_error.set_feature (current_feature)
-					last_error.set_position (assert_regexp.captured_substring (4).to_integer, 0)
+					create l_verification_error.make (names.error_invariant_violation)
+					l_verification_error.set_description (names.description_invariant_violation)
+					l_verification_error.set_class (current_class)
+					l_verification_error.set_feature (current_feature)
+					l_verification_error.set_position (assert_regexp.captured_substring (4).to_integer, 0)
 					if l_tag /= Void then
-						last_error.set_tag (l_tag)
+						l_verification_error.set_tag (l_tag)
 					end
-					errors.extend (last_error)
+					errors.extend (l_verification_error)
+					last_error := l_verification_error
 				elseif l_type.is_equal ("frame") then
-					create last_error.make (names.error_frame_violation)
-					last_error.set_description (names.description_frame_violation)
+					create {EP_FRAME_ERROR} last_error.make
 					last_error.set_class (current_class)
 					last_error.set_feature (current_feature)
 					errors.extend (last_error)

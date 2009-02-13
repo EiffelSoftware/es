@@ -44,7 +44,7 @@ feature -- Basic operations
 			name_mapper.set_current_feature (a_feature)
 			l_procedure_name := name_generator.procedural_feature_name (a_feature)
 
-			write_procedure_definition (a_feature, l_procedure_name)
+			write_procedure_definition (a_feature, l_procedure_name, False)
 
 			environment.output_buffer.set_indentation ("    ")
 
@@ -52,21 +52,20 @@ feature -- Basic operations
 			put_line ("modifies Heap;")
 			frame_extractor.build_frame_condition (a_feature)
 			put_line ("ensures " + frame_extractor.last_frame_condition + "; // frame " + a_feature.written_class.name_in_upper + ":" + a_feature.feature_name)
---			put_line ("free ensures (forall $o: ref :: { IsAllocated(Heap, $o) } IsAllocated(old(Heap), $o) ==> IsAllocated(Heap, $o)); // no deallocations")
 
 			environment.output_buffer.set_indentation ("")
 			put_new_line
 		end
 
 	write_creation_routine_signature (a_feature: !FEATURE_I)
-			-- Write Boogie code signature of `a_feature' as a creation routine.
+			-- Write Boogie code signature of `a_feature' as a creation routine of class `a_class'.
 		local
 			l_procedure_name: STRING
 		do
 			name_mapper.set_current_feature (a_feature)
 			l_procedure_name := name_generator.creation_routine_name (a_feature)
 
-			write_procedure_definition (a_feature, l_procedure_name)
+			write_procedure_definition (a_feature, l_procedure_name, True)
 
 			environment.output_buffer.set_indentation ("    ")
 
@@ -74,8 +73,8 @@ feature -- Basic operations
 
 			-- TODO: Generate real frame condition
 			put_line ("modifies Heap;")
-			put_line ("ensures frame.modifies_current(Heap, old(Heap), Current);")
---			put_line ("free ensures (forall $o: ref :: { IsAllocated(Heap, $o) } IsAllocated(old(Heap), $o) ==> IsAllocated(Heap, $o)); // no deallocations")
+			frame_extractor.build_frame_condition (a_feature)
+			put_line ("ensures " + frame_extractor.last_frame_condition + "; // frame " + a_feature.written_class.name_in_upper + ":" + a_feature.feature_name)
 
 			put_comment_line ("Creation routine condition")
 			put_line ("free ensures Heap[Current, $allocated];")
@@ -122,7 +121,7 @@ feature {NONE} -- Implementation
 	name_mapper: !EP_NORMAL_NAME_MAPPER
 			-- Name mapper used for the expression writer
 
-	write_procedure_definition (a_feature: !FEATURE_I; a_procedure_name: STRING)
+	write_procedure_definition (a_feature: !FEATURE_I; a_procedure_name: STRING; a_is_creation_routine: BOOLEAN)
 			-- Write procedure definition of feature `a_feature_name'
 			-- using `a_procedure_name' for the Boogie name.
 		local
@@ -181,15 +180,16 @@ feature {NONE} -- Implementation
 				write_postconditions
 			end
 
-				-- Check export status of feature
-				-- TODO: this won't work for export status like {A, B} in class A. Has to make sure it's ONLY exported to A
-			if a_feature.export_status.is_none or else
-				(not a_feature.export_status.is_all and then
-				a_feature.export_status.is_exported_to (a_feature.written_class)) then
-					-- Don't write invariants for features exported to NONE or the own class
-			else
+				-- Invariants are generated for creation routines and public features,
+				-- i.e. features exported to more than the current class
+				-- TODO: this check won't work for half-public features, i.e features
+				-- exported to multiple classes: {A, B, C} in class A should be considered public
+			if
+				a_is_creation_routine or else
+				a_feature.export_status.is_all
+			then
 				if not contract_writer.invariants.is_empty then
-					write_invariants
+					write_invariants (a_is_creation_routine)
 				end
 			end
 
@@ -249,26 +249,30 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	write_invariants
+	write_invariants (a_is_creation_routine: BOOLEAN)
 			-- Write Boogie code for postconditions from `contract_writer'.
 		local
 			l_item: TUPLE [tag: STRING; expression: !STRING; class_id: INTEGER; line_number: INTEGER]
 		do
-			put_comment_line ("User invariants (entry)")
-			from
-				contract_writer.invariants.start
-			until
-				contract_writer.invariants.after
-			loop
-				l_item := contract_writer.invariants.item
-				put_indentation
-				put ("free requires ")
-				put (l_item.expression)
-				put ("; // ")
-				put (assert_location ("inv", l_item))
-				put_new_line
+			if a_is_creation_routine then
+				put_comment_line ("User invariants (entry) ommited")
+			else
+				put_comment_line ("User invariants (entry)")
+				from
+					contract_writer.invariants.start
+				until
+					contract_writer.invariants.after
+				loop
+					l_item := contract_writer.invariants.item
+					put_indentation
+					put ("free requires ")
+					put (l_item.expression)
+					put ("; // ")
+					put (assert_location ("inv", l_item))
+					put_new_line
 
-				contract_writer.invariants.forth
+					contract_writer.invariants.forth
+				end
 			end
 			put_comment_line ("User invariants (exit)")
 			from

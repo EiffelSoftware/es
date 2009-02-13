@@ -286,7 +286,7 @@ feature -- Access: Command strings
 	verify_class_menu_name: STRING_32
 			-- Menu name to verify class
 		do
-			Result := locale.translation ("Verify class")
+			Result := locale.translation ("Proof class")
 		end
 
 	verify_class_menu_description: STRING_32
@@ -298,31 +298,31 @@ feature -- Access: Command strings
 	verify_class_context_menu_name (a_class: STRING_GENERAL): STRING_32
 			-- Menu name to verify class
 		do
-			Result := locale.formatted_string (locale.translation ("Verify class $1"), [a_class])
+			Result := locale.formatted_string (locale.translation ("Proof class $1"), [a_class])
 		end
 
 	verify_cluster_menu_name: STRING_32
 			-- Menu name to verify class
 		do
-			Result := locale.translation ("Verify cluster")
+			Result := locale.translation ("Proof cluster")
 		end
 
 	verify_cluster_menu_description: STRING_32
 			-- Menu name to verify class
 		do
-			Result := locale.translation ("Statically verify cluster using EVE Proofs")
+			Result := locale.translation ("Statically proof cluster using EVE Proofs")
 		end
 
 	verify_cluster_context_menu_name (a_cluster: STRING_GENERAL): STRING_32
 			-- Menu name to verify class
 		do
-			Result := locale.formatted_string (locale.translation ("Verify cluster $1"), [a_cluster])
+			Result := locale.formatted_string (locale.translation ("Proof cluster $1"), [a_cluster])
 		end
 
 	verify_library_context_menu_name (a_cluster: STRING_GENERAL): STRING_32
 			-- Menu name to verify class
 		do
-			Result := locale.formatted_string (locale.translation ("Verify library $1"), [a_cluster])
+			Result := locale.formatted_string (locale.translation ("Proof library $1"), [a_cluster])
 		end
 
 end

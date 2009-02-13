@@ -121,8 +121,10 @@ feature -- Basic operations
 					-- Generate implementation
 				if is_generating_implementation then
 						-- TODO: make this check look nicer
-					if verify_value_in_indexing (a_feature.written_class.ast.feature_with_name (a_feature.feature_name_id).indexes) then
-						implementation_writer.write_feature_implementation (a_feature)
+					if feature_list.is_creation_routine_already_generated (a_feature) then
+						put_comment_line ("Implementation already done for feature as creation routine")
+					elseif verify_value_in_indexing (a_feature.written_class.ast.feature_with_name (a_feature.feature_name_id).indexes) then
+						implementation_writer.write_feature_implementation (a_feature, False)
 					else
 						put_comment_line ("Implementation ignored due to indexing clause")
 					end
@@ -137,7 +139,7 @@ feature -- Basic operations
 		end
 
 	process_creation_routine (a_feature: !FEATURE_I)
-			-- Generate code for creation routine `a_feature'.
+			-- Generate code for creation routine `a_feature' for creation of class `a_class'.
 		do
 			ep_context.set_current_class (a_feature.written_class)
 			ep_context.set_current_feature (a_feature)
@@ -149,12 +151,18 @@ feature -- Basic operations
 
 				-- Generate signature
 			signature_writer.write_creation_routine_signature (a_feature)
-			put_new_line
 
 				-- Generate implementation
 			if is_generating_implementation then
-				-- TODO: write implementation
+					-- TODO: make this check look nicer
+				if verify_value_in_indexing (a_feature.written_class.ast.feature_with_name (a_feature.feature_name_id).indexes) then
+					implementation_writer.write_feature_implementation (a_feature, True)
+				else
+					put_comment_line ("Implementation ignored due to indexing clause")
+				end
 			end
+
+			put_new_line
 
 			feature_list.mark_creation_routine_as_generated (a_feature)
 		ensure
@@ -199,7 +207,11 @@ feature {NONE} -- Implementation
 				check l_feature /= Void end
 				l_attached_feature := l_feature
 
-				process_creation_routine (l_attached_feature)
+					-- Check if creation routine is not yet generated. This can happen if a subclass
+					-- uses the same feature as a creation routine as the parent.
+				if not feature_list.is_creation_routine_already_generated (l_attached_feature) then
+					process_creation_routine (l_attached_feature)
+				end
 
 				a_class.creators.forth
 			end

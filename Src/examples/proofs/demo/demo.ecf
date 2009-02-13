@@ -19,6 +19,7 @@
 			<cluster name="counter" location="..\counter\"/>
 			<cluster name="errors" location="..\errors\"/>
 			<cluster name="formatter" location="..\formatter\"/>
+			<cluster name="invalid_frames" location="..\invalid_frames\"/>
 			<cluster name="marriage" location="..\marriage\"/>
 			<cluster name="mccarthy" location="..\mccarthy\"/>
 			<cluster name="simple" location="..\simple\"/>

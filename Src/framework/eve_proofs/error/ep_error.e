@@ -41,10 +41,23 @@ feature -- Access
 	message: STRING
 			-- Error message
 
+	description: STRING
+			-- Description of error
+
 	code: STRING_8 is "EVE Proofs"
 			-- Error code
 
 feature -- Element change
+
+	set_description (a_text: STRING)
+			-- Set `description' to `a_text'.
+		require
+			a_text_not_void: a_text /= Void
+		do
+			description := a_text
+		ensure
+			description_set: description.is_equal (a_text)
+		end
 
 	set_from_context
 			-- Use data from `ev_context'.
@@ -57,10 +70,26 @@ feature -- Element change
 feature -- Output
 
 	build_explain (a_text_formatter: TEXT_FORMATTER)
-			-- Build specific explanation image for current error
-			-- in `error_window'.
+			-- <Precursor>
 		do
-			a_text_formatter.add ("build explain")
+			if description /= Void then
+				a_text_formatter.add (description)
+			else
+				a_text_formatter.add (names.description_no_description)
+			end
+			a_text_formatter.add_new_line
+			a_text_formatter.add_new_line
+
+			if class_c /= Void then
+				a_text_formatter.add ("Class: ")
+				class_c.append_name (a_text_formatter)
+				a_text_formatter.add_new_line
+			end
+			if e_feature /= Void then
+				a_text_formatter.add ("Feature: ")
+				e_feature.append_name (a_text_formatter)
+				a_text_formatter.add_new_line
+			end
 			a_text_formatter.add_new_line
 		end
 

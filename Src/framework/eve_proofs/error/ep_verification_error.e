@@ -21,9 +21,6 @@ create
 
 feature -- Access
 
-	description: STRING
-			-- Description of error
-
 	tag: STRING
 			-- Tag which is violated
 
@@ -31,16 +28,6 @@ feature -- Access
 			-- Feature associated with error
 
 feature -- Element change
-
-	set_description (a_text: STRING)
-			-- Set `description' to `a_text'.
-		require
-			a_text_not_void: a_text /= Void
-		do
-			description := a_text
-		ensure
-			description_set: description.is_equal (a_text)
-		end
 
 	set_tag (a_tag: like tag)
 			-- Set `tag' to `a_tag'.

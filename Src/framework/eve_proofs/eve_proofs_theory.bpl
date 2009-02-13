@@ -332,3 +332,23 @@ axiom (forall heap: HeapType, old_heap: HeapType ::
             (forall $o: ref :: 
                     { IsAllocated(heap, $o) } // Trigger
                 (IsAllocated(old_heap, $o) ==> IsAllocated(heap, $o))));
+
+
+// ----------------------------------------------------------------------
+// Default signatures
+
+// Creation routine default_create from class ANY
+// --------------------------------------
+
+// Signature
+procedure create.ANY.default_create(Current: ref where Current != Void && Heap[Current, $allocated]);
+    // User invariants (entry) ommited
+    // User invariants (exit)
+//    ensures fun.ANY.standard_is_equal(Heap, Current, Current); // inv ANY:372 tag:reflexive_equality
+//    ensures fun.ANY.conforms_to(Heap, Current, Current); // inv ANY:373 tag:reflexive_conformance
+    // Frame condition
+    modifies Heap;
+    ensures Heap == old(Heap); // frame ANY:default_create
+    // Creation routine condition
+    free ensures Heap[Current, $allocated];
+

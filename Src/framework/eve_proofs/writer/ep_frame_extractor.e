@@ -37,6 +37,7 @@ feature {NONE} -- Initialization
 		do
 			create last_frame_condition.make_empty
 			create modified_attributes.make
+			create visited_features.make
 			create {EP_NORMAL_NAME_MAPPER} name_mapper.make
 		end
 
@@ -45,6 +46,7 @@ feature {NONE} -- Initialization
 		do
 			create last_frame_condition.make_empty
 			create modified_attributes.make
+			create visited_features.make
 			name_mapper := a_name_mapper
 		ensure
 			name_mapper_set: name_mapper = a_name_mapper
@@ -68,6 +70,7 @@ feature -- Basic operations
 			if feature_list.is_pure (a_feature) then
 				last_frame_condition := "Heap == old(Heap)"
 			else
+				visited_features.wipe_out
 				modified_attributes.wipe_out
 				target := name_mapper.current_name
 				process_feature_postcondition (a_feature)
@@ -107,6 +110,7 @@ feature -- Basic operations
 				last_frame_condition := "false"
 			else
 				modified_attributes.wipe_out
+				visited_features.wipe_out
 				target := name_mapper.target_name
 				process_feature_postcondition (a_feature)
 				if modified_attributes.is_empty then
@@ -142,8 +146,10 @@ feature {NONE} -- Visitors
 			l_byte_code: BYTE_CODE
 			l_previous_byte_code: BYTE_CODE
 			l_previous_feature: FEATURE_I
+			l_list: LIST [ASSERTION_BYTE_CODE]
 		do
 			current_feature := a_feature
+			visited_features.extend (current_feature.rout_id_set.first)
 			if byte_server.has (a_feature.code_id) then
 				l_byte_code := byte_server.item (a_feature.code_id)
 
@@ -158,9 +164,24 @@ feature {NONE} -- Visitors
 				Context.set_current_feature (a_feature)
 				Context.set_byte_code (l_byte_code)
 
--- TODO: follow inherited assertions
+					-- Immediate postcondition
 				if l_byte_code.postcondition /= Void then
 					l_byte_code.postcondition.process (Current)
+				end
+
+					-- Inherited postconditions
+				Context.inherited_assertion.wipe_out
+				if a_feature.assert_id_set /= Void then
+					l_byte_code.formulate_inherited_assertions (a_feature.assert_id_set)
+					from
+						l_list := Context.inherited_assertion.postcondition_list
+						l_list.start
+					until
+						l_list.after
+					loop
+						l_list.item.process (Current)
+						l_list.forth
+					end
 				end
 
 					-- Restore byte context
@@ -235,8 +256,12 @@ feature {NONE} -- Visitors
 				check l_feature /= Void end
 				l_attached_feature := l_feature
 
-					-- TODO: this only rules out simple recursion, but other recursion still leeds to a stack overflow
-				if current_feature.rout_id_set.first /= l_attached_feature.rout_id_set.first then
+					-- Only visit every feature once to rule out recursive calls
+					-- TODO: Only features in the same class are visited. make a context switch and follow others too
+				if
+					current_feature.written_class.conform_to (l_attached_feature.written_class) and then
+					not visited_features.has (l_attached_feature.rout_id_set.first)
+				then
 					l_current_feature := current_feature
 					process_feature_postcondition (l_attached_feature)
 					current_feature := l_current_feature
@@ -280,6 +305,9 @@ feature {NONE} -- Visitors
 		end
 
 feature {NONE} -- Implementation
+
+	visited_features: LINKED_LIST [INTEGER]
+			-- List of routine ids of visited features
 
 	modified_attributes: LINKED_LIST [TUPLE [target: STRING; field: STRING]]
 			-- List of modified attributes

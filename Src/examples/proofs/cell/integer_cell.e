@@ -1,4 +1,5 @@
 indexing
+	description: "Summary description for {INTEGER_CELL}."
 	date: "$Date$"
 	revision: "$Revision$"
 

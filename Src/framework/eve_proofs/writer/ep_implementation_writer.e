@@ -35,7 +35,7 @@ feature {NONE} -- Initialization
 
 feature -- Basic operations
 
-	write_feature_implementation (a_feature: !FEATURE_I)
+	write_feature_implementation (a_feature: !FEATURE_I; is_creation_routine: BOOLEAN)
 			-- Write Boogie code for implementation of `a_feature'.
 		local
 			l_procedure_name, l_argument_name: STRING
@@ -44,7 +44,11 @@ feature -- Basic operations
 			l_byte_code: BYTE_CODE
 			l_has_locals: BOOLEAN
 		do
-			l_procedure_name := procedural_feature_name (a_feature)
+			if is_creation_routine then
+				l_procedure_name := creation_routine_name (a_feature)
+			else
+				l_procedure_name := procedural_feature_name (a_feature)
+			end
 
 			put_comment_line ("Implementation")
 

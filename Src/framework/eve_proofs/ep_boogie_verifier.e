@@ -93,6 +93,14 @@ feature -- Basic operations
 			verification_content.wipe_out
 			boogie_input.wipe_out
 			boogie_output.wipe_out
+
+
+			-- TODO: move someplace else
+			if {l_feature: !FEATURE_I} system.any_class.compiled_class.feature_named ("default_create") then
+				feature_list.mark_creation_routine_as_generated (l_feature)
+			else
+				check false end
+			end
 		ensure
 			is_reset: is_reset
 		end

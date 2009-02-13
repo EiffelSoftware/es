@@ -82,6 +82,14 @@ feature -- Status report
 			end
 		end
 
+
+	is_creation_routine_already_generated (a_feature: !FEATURE_I): BOOLEAN
+			-- Is `a_feature' already generated as a creation routine?
+		do
+			Result := creation_routines_generated.there_exists (agent has_routine_id (?, a_feature.rout_id_set.first))
+		end
+
+
 feature -- Element change
 
 	record_creation_routine_needed (a_feature: !FEATURE_I)
