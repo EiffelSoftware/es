@@ -87,6 +87,7 @@
 			</cluster>
 			<cluster name="tty" location="$|tty\" recursive="true"/>
 		</cluster>
+		<cluster name="selmetrics" location="$EIFFEL_SRC\library\selmetrics\" recursive="true"/>
 	</target>
 	<target name="batch_unix" extends="batch">
 		<description>Compiling UNIX batch compiler on other platforms than Windows</description>

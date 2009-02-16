@@ -211,6 +211,11 @@ feature -- Initialization
 				output_window.close
 			end
 			print_gc_statistics
+
+			-- finish the hook (doing the actual tests)
+			if hook /= Void then
+				hook.execute
+			end
 		rescue
 			if error_handler.is_developer_exception then
 				Error_handler.trace
@@ -244,6 +249,9 @@ feature -- Initialization
 		end
 
 feature -- Properties
+
+	hook : EWB_METRICS_CMD
+		-- our hook for testing the metrics project
 
 	error_occurred: BOOLEAN;
 			-- Did an error occur during the initialization
@@ -1220,6 +1228,12 @@ feature -- Update
 					current_option := current_option + 1
 				end
 				create {EWB_AUTO_TEST} command.make_with_arguments (auto_test_arguments)
+
+			-- metrics flag
+			elseif option.is_equal ("-metrics") then
+				current_option := current_option + 2
+				create hook.make (argument (current_option-1),argument (current_option))
+
 			elseif is_eiffel_class_file_name (option) then
 					-- This option is only valid if no other config options are set
 				if config_file_name = Void and target_name = Void and old_ace_file = Void and old_project_file = Void then
@@ -1345,9 +1359,9 @@ feature {NONE} -- Implementation
 		end
 
 indexing
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -1358,19 +1372,19 @@ indexing
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
+			 5949 Hollister Ave., Goleta, CA 93117 USA
 			 Telephone 805-685-1006, Fax 805-685-6869
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com
