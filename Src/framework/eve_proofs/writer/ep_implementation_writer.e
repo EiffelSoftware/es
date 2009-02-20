@@ -198,7 +198,7 @@ feature {NONE} -- Implementation
 	default_value (a_type: TYPE_A): STRING
 			-- Default value for variable of type `a_type'
 		do
-			if a_type.is_integer or a_type.is_character then
+			if a_type.is_integer or a_type.is_natural or a_type.is_character then
 				Result := "0"
 			elseif a_type.is_boolean then
 				Result := "false"

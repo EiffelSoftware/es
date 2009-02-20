@@ -1,4 +1,6 @@
-// Background theory starts here
+// Basic theory for EVE Proofs
+// Date: $Date$
+// Revision: $Revision$
 
 // ----------------------------------------------------------------------
 // Reference types
@@ -58,8 +60,37 @@ axiom (forall heap: HeapType ::
 // ----------------------------------------------------------------------
 // Typing
 
+// Type definition for Eiffel types
+type Type;
+
+// Function to define type of references
+function IsOfType(o: ref, t: Type) returns (bool);
+
+// Basic types
+const unique type.ANY: Type;
+
+// Void is of any type
+axiom (forall t: Type ::
+			{ IsOfType(Void, t) }
+		IsOfType(Void, t));
+
 // TODO: what functions do we need for typing?
 //function DeclaredType(field: name) returns (class: name);
+
+// ----------------------------------------------------------------------
+// Real types
+
+// Type definition for reference types
+type real;
+
+// ----------------------------------------------------------------------
+// Unhandled types (reference types other than integers)
+
+// Type definition for unhandled types
+type unknown;
+
+// Constant for initalizing unhandled types
+const Mistery: unknown;
 
 // ----------------------------------------------------------------------
 // Set theory

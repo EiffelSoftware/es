@@ -127,6 +127,7 @@ feature -- Basic operations
 				-- `byte_code' is Void if feature has no body, i.e. no contracts
 			if byte_code /= Void then
 				Context.set_byte_code (byte_code)
+				byte_code.setup_local_variables (False)
 
 				if byte_code.precondition /= Void then
 					process_assertion (byte_code.precondition, preconditions, current_feature.written_class.class_id)
@@ -156,6 +157,7 @@ feature -- Basic operations
 			end
 			if l_previous_byte_code /= Void then
 				Context.set_byte_code (l_previous_byte_code)
+				l_previous_byte_code.setup_local_variables (False)
 			end
 		end
 

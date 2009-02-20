@@ -570,14 +570,18 @@ feature {BYTE_NODE} -- Visitors
 			l_position: INTEGER
 			l_name, l_type: STRING
 		do
-			l_position := context.object_test_local_position (a_node.target)
-			l_name := name_generator.local_name (l_position)
-			-- TODO: this doesnt work as the context is not initialized for locals
-			l_type := type_mapper.boogie_type_for_type (a_node.target.type)
-			--l_type := "any"
-			locals.extend ([l_name, l_type])
-				-- TODO: generate code for object test
-			expression.put ("true")
+			-- TODO: ignore expression, add warning
+
+			if is_processing_contract then
+				expression.put ("false")
+			else
+				l_position := context.object_test_local_position (a_node.target)
+				l_name := name_generator.local_name (l_position)
+				l_type := type_mapper.boogie_type_for_type (a_node.target.type)
+				locals.extend ([l_name, l_type])
+					-- TODO: generate code for object test
+				expression.put ("false")
+			end
 		end
 
 	process_object_test_local_b (a_node: OBJECT_TEST_LOCAL_B)
@@ -585,8 +589,14 @@ feature {BYTE_NODE} -- Visitors
 		local
 			l_position: INTEGER
 		do
-			l_position := context.object_test_local_position (a_node)
-			expression.put (name_generator.local_name (l_position))
+			-- TODO: ignore expression, add warning
+
+			if is_processing_contract then
+				expression.put ("Void")
+			else
+				l_position := context.object_test_local_position (a_node)
+				expression.put (name_generator.local_name (l_position))
+			end
 		end
 
 	process_paran_b (a_node: PARAN_B)
