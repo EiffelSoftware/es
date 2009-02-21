@@ -160,13 +160,18 @@ feature {NONE} -- Implementation
 			if a_result.is_equal ("error") or a_result.is_equal ("errors") then
 				check last_error /= Void end
 				text_output.add_error (last_error, names.message_failed)
+
+				event_handler.add_proof_failed_event (current_class, current_feature, last_error)
 			else
 				check a_result.is_equal ("verified") end
 				text_output.add (names.message_successful)
+
+				event_handler.add_proof_successful_event (current_class, current_feature, a_time)
 			end
 			text_output.add_new_line
 			last_error := Void
 		end
+
 
 	handle_error (a_file, a_line, a_column, a_error, a_message: STRING)
 			-- Handle error output.

@@ -91,6 +91,7 @@ feature -- Basic operations
 					show_messages (
 						names.message_generating_boogie_class_ignored (l_current_class.name_in_upper),
 						names.window_message_generating_boogie_code_for_class (l_current_class.name_in_upper))
+					event_handler.add_proof_skipped_event (l_current_class, Void)
 				end
 
 				classes_to_verify.forth
@@ -138,6 +139,7 @@ feature {NONE} -- Implementation
 		do
 			errors.wipe_out
 			warnings.wipe_out
+			event_handler.clear_events
 			feature_list.reset
 			boogie_generator.reset
 			verifier.reset

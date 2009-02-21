@@ -71,6 +71,12 @@ feature -- Access
 			create Result
 		end
 
+	event_handler: EP_EVENT_HANDLER
+			-- Event handler
+		once
+			create Result
+		end
+
 feature -- Convenience
 
 -- TODO: move to its own class?

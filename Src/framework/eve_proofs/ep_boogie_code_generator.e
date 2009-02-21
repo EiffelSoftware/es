@@ -123,6 +123,7 @@ feature -- Basic operations
 					elseif is_feature_proof_done (a_feature) then
 						implementation_writer.write_feature_implementation (a_feature, False)
 					else
+						event_handler.add_proof_skipped_event (a_feature.written_class, a_feature)
 						put_comment_line ("Implementation ignored (proof skipped)")
 					end
 				end
@@ -154,6 +155,7 @@ feature -- Basic operations
 				if is_feature_proof_done (a_feature) then
 					implementation_writer.write_feature_implementation (a_feature, True)
 				else
+					event_handler.add_proof_skipped_event (a_feature.written_class, a_feature)
 					put_comment_line ("Implementation ignored (proof skipped)")
 				end
 			end

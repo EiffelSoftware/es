@@ -193,10 +193,32 @@ feature -- Basic operations
 			error_handler.error_list.finish
 			error_handler.trace
 
-			if not errors.is_empty then
-				error_handler.error_displayer.force_display
-			else
-				output_manager.force_display
+
+
+--			if not errors.is_empty then
+--				error_handler.error_displayer.force_display
+--			else
+--				output_manager.force_display
+--			end
+			show_proof_tool
+		end
+
+	show_proof_tool is
+			-- Shows the proof tool
+		local
+			l_tool: ES_TOOL [EB_TOOL]
+			l_window: EB_DEVELOPMENT_WINDOW
+		do
+			l_window := window
+			if l_window = Void then
+				l_window := window_manager.last_focused_development_window
+			end
+			if not l_window.is_recycled and then l_window.is_visible and then l_window = window_manager.last_focused_development_window then
+				l_tool := l_window.shell_tools.tool ({ES_PROOF_TOOL})
+				if l_tool /= Void and then not l_tool.is_recycled then
+						-- Force tool to be shown
+					l_tool.show (True)
+				end
 			end
 		end
 
