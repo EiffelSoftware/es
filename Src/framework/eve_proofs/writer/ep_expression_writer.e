@@ -171,8 +171,7 @@ feature {BYTE_NODE} -- Visitors
 		local
 			l_feature: FEATURE_I
 			l_attached_feature: !FEATURE_I
---			l_field_name: STRING
-			l_function_name: STRING
+			l_field_name: STRING
 		do
 				-- TODO: why go over feature name and not feature id?
 			l_feature := system.class_of_id (a_node.written_in).feature_of_name_id (a_node.attribute_name_id)
@@ -184,12 +183,8 @@ feature {BYTE_NODE} -- Visitors
 				feature_list.record_feature_used_in_contract (l_attached_feature)
 			end
 
---			l_field_name := name_generator.attribute_name (l_feature)
---			expression.put (name_mapper.heap_name + "[" + name_mapper.target_name + ", " + l_field_name + "]")
-
-				-- TODO: compute side effect?
-			l_function_name := name_generator.functional_feature_name (l_feature)
-			expression.put (l_function_name + "(" + name_mapper.heap_name + ", " + name_mapper.target_name + ")")
+			l_field_name := name_generator.attribute_name (l_feature)
+			expression.put (name_mapper.heap_name + "[" + name_mapper.target_name + ", " + l_field_name + "]")
 		end
 
 	process_bin_and_b (a_node: BIN_AND_B)

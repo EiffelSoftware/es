@@ -308,22 +308,7 @@ feature -- Context menu
 			end
 		end
 
-feature {NONE} -- Implementation
-
-	window: EB_DEVELOPMENT_WINDOW
-			-- Associated development window (if any)
-
-	pixmap: EV_PIXMAP
-			-- Pixmap representing the command.
-		do
-			Result := pixmaps.icon_pixmaps.general_tick_icon
-		end
-
-	pixel_buffer: EV_PIXEL_BUFFER
-			-- Pixel buffer representing the command.
-		do
-			Result := pixmaps.icon_pixmaps.general_tick_icon_buffer
-		end
+feature -- TODO
 
 	droppable (a_pebble: ANY): BOOLEAN is
 			-- Can user drop `a_pebble' on `Current'?
@@ -340,6 +325,23 @@ feature {NONE} -- Implementation
 				l_list ?= l_data_stone.data
 			end
 			Result := l_class_stone /= Void or else l_cluster_stone /= Void or else l_list /= Void
+		end
+
+feature {NONE} -- Implementation
+
+	window: EB_DEVELOPMENT_WINDOW
+			-- Associated development window (if any)
+
+	pixmap: EV_PIXMAP
+			-- Pixmap representing the command.
+		do
+			Result := pixmaps.icon_pixmaps.general_tick_icon
+		end
+
+	pixel_buffer: EV_PIXEL_BUFFER
+			-- Pixel buffer representing the command.
+		do
+			Result := pixmaps.icon_pixmaps.general_tick_icon_buffer
 		end
 
 	drop_down_menu: EV_MENU is

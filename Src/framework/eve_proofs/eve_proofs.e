@@ -82,7 +82,7 @@ feature -- Basic operations
 
 					-- Generate Boogie code of class
 					-- First check if class is ignored due to an indexing clause
-				if verify_value_in_indexing (l_current_class.ast.internal_top_indexes) then
+				if is_class_proof_done (l_current_class) then
 					show_messages (
 						names.message_generating_boogie_code_for_class (l_current_class.name_in_upper),
 						names.window_message_generating_boogie_code_for_class (l_current_class.name_in_upper))

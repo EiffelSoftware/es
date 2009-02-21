@@ -100,18 +100,16 @@ feature -- Basic operations
 			put_new_line
 
 			if a_feature.is_attribute then
-					-- Generate field name, function and axiom
+					-- Generate field name
 				attribute_writer.write_attribute (a_feature)
 
-					-- Generate signature
-					-- TODO: really needed?
-				signature_writer.write_attribute_signature (a_feature)
 			elseif a_feature.is_constant then
 					-- Generate function and axiom
 				constant_writer.write_constant (a_feature)
+
 			else
 				if a_feature.has_return_value and then feature_list.is_pure (a_feature) then
-						-- It's a query, so generate functional representation
+						-- It's a pure function, so generate functional representation
 					function_writer.write_functional_representation (a_feature)
 				end
 
@@ -120,13 +118,12 @@ feature -- Basic operations
 
 					-- Generate implementation
 				if is_generating_implementation then
-						-- TODO: make this check look nicer
 					if feature_list.is_creation_routine_already_generated (a_feature) then
 						put_comment_line ("Implementation already done for feature as creation routine")
-					elseif verify_value_in_indexing (a_feature.written_class.ast.feature_with_name (a_feature.feature_name_id).indexes) then
+					elseif is_feature_proof_done (a_feature) then
 						implementation_writer.write_feature_implementation (a_feature, False)
 					else
-						put_comment_line ("Implementation ignored due to indexing clause")
+						put_comment_line ("Implementation ignored (proof skipped)")
 					end
 				end
 			end
@@ -154,11 +151,10 @@ feature -- Basic operations
 
 				-- Generate implementation
 			if is_generating_implementation then
-					-- TODO: make this check look nicer
-				if verify_value_in_indexing (a_feature.written_class.ast.feature_with_name (a_feature.feature_name_id).indexes) then
+				if is_feature_proof_done (a_feature) then
 					implementation_writer.write_feature_implementation (a_feature, True)
 				else
-					put_comment_line ("Implementation ignored due to indexing clause")
+					put_comment_line ("Implementation ignored (proof skipped)")
 				end
 			end
 
