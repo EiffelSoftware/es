@@ -1,5 +1,8 @@
 indexing
-	description: "TODO"
+	description:
+		"[
+			Event handler which used to add proof events to the event service.
+		]"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -24,22 +27,30 @@ feature -- Basic operations
 			service.prune_event_items (event_context)
 		end
 
-	add_proof_successful_event (a_class: CLASS_C; a_feature: FEATURE_I; a_seconds: STRING)
-			-- TODO
+	add_proof_successful_event (a_class: CLASS_C; a_feature: FEATURE_I; a_milliseconds: NATURAL)
+			-- Add a successful proof event.
+		local
+			l_event: EVENT_LIST_PROOF_SUCCESSFUL_ITEM
 		do
-			service.put_event_item (event_context, create {EVENT_LIST_PROOF_SUCCESSFUL_ITEM}.make (a_class, a_feature))
+			create l_event.make (a_class, a_feature)
+			l_event.set_milliseconds_used (a_milliseconds)
+			service.put_event_item (event_context, l_event)
 		end
 
-	add_proof_failed_event (a_class: CLASS_C; a_feature: FEATURE_I; a_error: EP_ERROR)
-			-- TODO
+	add_proof_failed_event (a_class: CLASS_C; a_feature: FEATURE_I; a_error: EP_ERROR; a_milliseconds: NATURAL)
+			-- Add a failed proof event.
+		local
+			l_event: EVENT_LIST_PROOF_FAILED_ITEM
 		do
-			service.put_event_item (event_context, create {EVENT_LIST_PROOF_FAILED_ITEM}.make (a_class, a_feature, a_error))
+			create l_event.make (a_class, a_feature, a_error)
+			l_event.set_milliseconds_used (a_milliseconds)
+			service.put_event_item (event_context, l_event)
 		end
 
-	add_proof_skipped_event (a_class: CLASS_C; a_feature: FEATURE_I)
-			-- TODO
+	add_proof_skipped_event (a_class: CLASS_C; a_feature: FEATURE_I; a_reason: STRING)
+			-- Add a skipped proof event.
 		do
-			service.put_event_item (event_context, create {EVENT_LIST_PROOF_SKIPPED_ITEM}.make (a_class, a_feature))
+			service.put_event_item (event_context, create {EVENT_LIST_PROOF_SKIPPED_ITEM}.make (a_class, a_feature, a_reason))
 		end
 
 feature {NONE} -- Implementation

@@ -1,12 +1,15 @@
 indexing
-	description: "TODO"
+	description:
+		"[
+			Interface for events from EVE Proofs.
+		]"
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
-	EVENT_LIST_PROOF_ITEM_I
+deferred class EVENT_LIST_PROOF_ITEM_I
 
 inherit
+
 	EVENT_LIST_ITEM_I
 
 feature {NONE} -- Initialization
@@ -29,10 +32,13 @@ feature -- Access
 	context_feature: FEATURE_I
 			-- Feature corresponding to event
 
+	milliseconds_used: NATURAL
+			-- Milliseconds used for proof
+
 	frozen type: NATURAL_8
 			-- <Precursor>
 		once
-			Result := {EVENT_LIST_ITEM_TYPES}.error
+			Result := {EVENT_LIST_ITEM_TYPES}.unknown
 		end
 
 	frozen category: NATURAL_8
@@ -58,6 +64,16 @@ feature -- Status report
 			Result := True
 		end
 
+feature -- Element change
+
+	set_milliseconds_used (a_value: NATURAL)
+			-- Set `milliseconds_used' to `a_value'.
+		do
+			milliseconds_used := a_value
+		ensure
+			milliseconds_used_set: milliseconds_used = a_value
+		end
+
 feature -- Basic operations
 
 	invalidate
@@ -65,5 +81,9 @@ feature -- Basic operations
 		do
 			is_invalidated := True
 		end
+
+invariant
+
+	context_class_attached: context_class /= Void
 
 end

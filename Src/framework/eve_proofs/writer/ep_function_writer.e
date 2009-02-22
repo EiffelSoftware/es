@@ -28,7 +28,13 @@ feature {NONE} -- Initialization
 			create name_mapper.make
 			create expression_writer.make (name_mapper, create {EP_INVALID_OLD_HANDLER})
 			create contract_writer.make
+			create output.make
 		end
+
+feature -- Access
+
+	output: !EP_OUTPUT_BUFFER
+			-- TODO
 
 feature -- Basic operations
 
@@ -41,6 +47,8 @@ feature -- Basic operations
 			l_argument_name, l_full_function: STRING
 			i: INTEGER
 		do
+			output.reset
+
 			l_function_name := name_generator.functional_feature_name (a_feature)
 			l_full_function := l_function_name.twin
 			l_arguments := "heap: HeapType, current: ref"
@@ -64,8 +72,8 @@ feature -- Basic operations
 			l_full_function.append (")")
 			l_type := type_mapper.boogie_type_for_type (a_feature.type)
 
-			put_comment_line ("Functional representation of query")
-			put_line ("function " + l_function_name + "(" + l_arguments + ") returns (" + l_type + ");")
+			output.put_comment_line ("Functional representation of query")
+			output.put_line ("function " + l_function_name + "(" + l_arguments + ") returns (" + l_type + ");")
 
 			name_mapper.set_current_feature (a_feature)
 			name_mapper.set_current_name ("current")
@@ -80,11 +88,11 @@ feature -- Basic operations
 			contract_writer.set_expression_writer (expression_writer)
 			contract_writer.generate_contracts
 
-			put_line ("axiom (forall " + l_arguments + " ::")
-			put_line ("             { " + l_full_function + " } // Trigger")
-			put_line ("        (" + contract_writer.full_precondition + ") ==> (" + contract_writer.full_postcondition + "));")
+			output.put_line ("axiom (forall " + l_arguments + " ::")
+			output.put_line ("             { " + l_full_function + " } // Trigger")
+			output.put_line ("        (" + contract_writer.full_precondition + ") ==> (" + contract_writer.full_postcondition + "));")
 
-			put_new_line
+			output.put_new_line
 		end
 
 feature {NONE} -- Implementation

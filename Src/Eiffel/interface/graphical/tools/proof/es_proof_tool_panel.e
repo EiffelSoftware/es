@@ -1,5 +1,6 @@
 indexing
-	description: "TODO"
+	description:
+		"Graphical panel for Proof tool"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -54,8 +55,7 @@ feature {NONE} -- Initialization
 
 				-- "toggle successful" button
 			create successful_button.make
-				-- TODO: internationalization
-			successful_button.set_text ("Successful")
+			successful_button.set_text (ep_names.tool_button_successful)
 			successful_button.set_pixmap (stock_pixmaps.general_check_document_icon)
 			successful_button.set_pixel_buffer (stock_pixmaps.general_check_document_icon_buffer)
 			successful_button.enable_select
@@ -63,8 +63,7 @@ feature {NONE} -- Initialization
 
 				-- "toggle failed" button
 			create failed_button.make
-				-- TODO: internationalization
-			failed_button.set_text ("Failed")
+			failed_button.set_text (ep_names.tool_button_failed)
 			failed_button.set_pixmap (stock_pixmaps.debug_exception_handling_icon)
 			failed_button.set_pixel_buffer (stock_pixmaps.debug_exception_handling_icon_buffer)
 			failed_button.enable_select
@@ -72,8 +71,7 @@ feature {NONE} -- Initialization
 
 				-- "toggle skipped" button
 			create skipped_button.make
-				-- TODO: internationalization
-			skipped_button.set_text ("Skipped")
+			skipped_button.set_text (ep_names.tool_button_skipped)
 			skipped_button.set_pixmap (stock_pixmaps.general_warning_icon)
 			skipped_button.set_pixel_buffer (stock_pixmaps.general_warning_icon_buffer)
 			skipped_button.enable_select
@@ -96,7 +94,7 @@ feature {NONE} -- Initialization
 
 				-- live text filter
 			create l_box
-			l_box.extend (create {EV_LABEL}.make_with_text ("Filter: "))
+			l_box.extend (create {EV_LABEL}.make_with_text (ep_names.tool_text_filter + ": "))
 			l_box.disable_item_expand (l_box.last)
 			create text_filter
 			text_filter.key_release_actions.force_extend (agent on_update_visiblity)
@@ -128,32 +126,41 @@ feature {NONE} -- Initialization
 			l_col: EV_GRID_COLUMN
 		do
 			Precursor {ES_CLICKABLE_EVENT_LIST_TOOL_PANEL_BASE} (a_widget)
-			a_widget.set_column_count_to (info_column)
+			a_widget.set_column_count_to (time_column)
 
 				-- Create columns
-				-- TODO: internationalization
 			l_col := a_widget.column (1)
 			l_col.set_width (20)
 			l_col := a_widget.column (icon_column)
 			l_col.set_width (20)
 			l_col := a_widget.column (class_column)
-			l_col.set_title ("Class")
+			l_col.set_title (ep_names.tool_header_class)
 			l_col.set_width (100)
 			l_col := a_widget.column (feature_column)
-			l_col.set_title ("Feature")
+			l_col.set_title (ep_names.tool_header_feature)
 			l_col.set_width (120)
 			l_col := a_widget.column (info_column)
-			l_col.set_title ("Info")
+			l_col.set_title (ep_names.tool_header_information)
 			l_col.set_width (300)
+			l_col := a_widget.column (position_column)
+			l_col.set_title (ep_names.tool_header_position)
+			l_col.set_width (40)
+			l_col := a_widget.column (time_column)
+			l_col.set_title (ep_names.tool_header_time)
+			l_col.set_width (50)
 
 			a_widget.enable_tree
 			a_widget.disable_row_height_fixed
 			a_widget.enable_auto_size_best_fit_column (info_column)
 
 				-- Enable sorting
-			enable_sorting_on_columns (<<a_widget.column (icon_column),
-				a_widget.column (class_column),
-				a_widget.column (feature_column)>>)
+			enable_sorting_on_columns (
+				<<
+					a_widget.column (icon_column),
+					a_widget.column (class_column),
+					a_widget.column (feature_column),
+					a_widget.column (time_column)
+				>>)
 		end
 
 feature -- Access
@@ -412,6 +419,12 @@ feature {NONE} -- Basic operations
 				a_row.set_item (feature_column, l_editor_item)
 			end
 
+				-- Time information
+			if l_proof_event_item.milliseconds_used > 0 then
+				create l_label.make_with_text (l_proof_event_item.milliseconds_used.out)
+				a_row.set_item (time_column, l_label)
+			end
+
 			if is_successful_event (a_event_item) then
 					-- Icon
 				create l_label
@@ -512,6 +525,8 @@ feature {NONE} -- Constants
 	class_column: INTEGER = 3
 	feature_column: INTEGER = 4
 	info_column: INTEGER = 5
+	position_column: INTEGER = 6
+	time_column: INTEGER = 7
 
 	successful_color: EV_COLOR
 			-- Background color for successful rows
@@ -535,6 +550,12 @@ feature {NONE} -- Constants
 			-- Background color for successful rows
 		once
 			create Result.make_with_rgb (1.0, 1.0, 0.9)
+		end
+
+	ep_names: !EP_NAMES
+			-- Shared access to interface names
+		once
+			create Result
 		end
 
 indexing

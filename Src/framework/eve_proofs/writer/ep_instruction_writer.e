@@ -280,14 +280,13 @@ feature -- Processing
 	process_inspect_b (a_node: INSPECT_B)
 			-- Process `a_node'.
 		local
-			l_error: EP_GENERAL_ERROR
+			l_skip_exception: EP_SKIP_EXCEPTION
 		do
-			ep_context.set_line_number (a_node.line_number)
-			output.put_comment_line ("Inspect statement: ignored")
+			create l_skip_exception.make ("Inspect statement not supported")
+			l_skip_exception.raise
+
 				-- TODO: implement
-			create l_error.make ("Inspect statement ignored")
-			l_error.set_from_context
-			warnings.extend (l_error)
+			check false end
 		end
 
 	process_instr_call_b (a_node: INSTR_CALL_B)
@@ -419,22 +418,25 @@ feature -- Processing
 	process_retry_b (a_node: RETRY_B)
 			-- Process `a_node'.
 		local
-			l_error: EP_GENERAL_ERROR
+			l_skip_exception: EP_SKIP_EXCEPTION
 		do
-			ep_context.set_line_number (a_node.line_number)
-			output.put_comment_line ("Retry instruction: ignored")
-			create l_error.make ("Retry instruction ignored")
-			l_error.set_from_context
-			warnings.extend (l_error)
+			create l_skip_exception.make ("Retry not supported")
+			l_skip_exception.raise
+
+				-- TODO: implement
+			check false end
 		end
 
 	process_reverse_b (a_node: REVERSE_B)
 			-- Process `a_node'.
+		local
+			l_skip_exception: EP_SKIP_EXCEPTION
 		do
-			ep_context.set_line_number (a_node.line_number)
-			output.put_comment_line ("Reverse assignment: treated as normal assignment!")
-			process_assign_b (a_node)
+			create l_skip_exception.make ("Reverse assignment not supported")
+			l_skip_exception.raise
+
 				-- TODO: implement
+			check false end
 		end
 
 feature {NONE} -- Implementation

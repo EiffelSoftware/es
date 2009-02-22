@@ -24,6 +24,7 @@
 			<cluster name="mccarthy" location="..\mccarthy\"/>
 			<cluster name="simple" location="..\simple\"/>
 <!--			<cluster name="test" location="..\test\"/>-->
+			<cluster name="unsupported" location="..\unsupported\"/>
 		</cluster>
 	</target>
 </system>

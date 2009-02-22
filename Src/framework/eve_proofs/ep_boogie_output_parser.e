@@ -156,17 +156,22 @@ feature {NONE} -- Implementation
 
 	handle_verified (a_time, a_result: STRING)
 			-- Handle verified information.
+		local
+			l_milliseconds: NATURAL
 		do
+			if a_time.is_real then
+				l_milliseconds := (a_time.to_real * 1000.0).truncated_to_integer.to_natural_32
+			end
 			if a_result.is_equal ("error") or a_result.is_equal ("errors") then
 				check last_error /= Void end
 				text_output.add_error (last_error, names.message_failed)
 
-				event_handler.add_proof_failed_event (current_class, current_feature, last_error)
+				event_handler.add_proof_failed_event (current_class, current_feature, last_error, l_milliseconds)
 			else
 				check a_result.is_equal ("verified") end
 				text_output.add (names.message_successful)
 
-				event_handler.add_proof_successful_event (current_class, current_feature, a_time)
+				event_handler.add_proof_successful_event (current_class, current_feature, l_milliseconds)
 			end
 			text_output.add_new_line
 			last_error := Void

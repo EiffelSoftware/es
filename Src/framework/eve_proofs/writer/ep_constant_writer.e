@@ -13,6 +13,22 @@ inherit
 	SHARED_EP_ENVIRONMENT
 		export {NONE} all end
 
+create
+	make
+
+feature {NONE} -- Initialization
+
+	make
+			-- Initialize writer.
+		do
+			create output.make
+		end
+
+feature -- Access
+
+	output: !EP_OUTPUT_BUFFER
+			-- TODO
+
 feature -- Basic operations
 
 	write_constant (a_feature: !FEATURE_I)
@@ -24,15 +40,17 @@ feature -- Basic operations
 			l_constant: CONSTANT_I
 			l_error: EP_GENERAL_ERROR
 		do
+			output.reset
+
 			l_constant ?= a_feature
 			check l_constant /= Void end
 
 			l_functional_name := name_generator.functional_feature_name (a_feature)
 			l_type := type_mapper.boogie_type_for_type (a_feature.type)
 
-			put_comment_line ("Functional represenation of constant")
-			put_line ("function " + l_functional_name + "(heap: HeapType, current: ref) returns (" + l_type + ");")
-			put_new_line
+			output.put_comment_line ("Functional represenation of constant")
+			output.put_line ("function " + l_functional_name + "(heap: HeapType, current: ref) returns (" + l_type + ");")
+			output.put_new_line
 
 			if l_constant.value.is_boolean then
 				l_value := boolean_value (l_constant.value)
@@ -50,13 +68,13 @@ feature -- Basic operations
 			end
 
 			if l_value = Void then
-				put_comment_line ("Unsupported type, no axiom generated")
+				output.put_comment_line ("Unsupported type, no axiom generated")
 			else
-				put_comment_line ("Axiomatic mapping of function to constant value")
-				put_line ("axiom (forall heap: HeapType, current: ref ::")
-				put_line ("            { " + l_functional_name + "(heap, current) } // Trigger");
-				put_line ("        IsHeap(heap) ==> (" + l_functional_name + "(heap, current) == " + l_value + "));")
-				put_new_line
+				output.put_comment_line ("Axiomatic mapping of function to constant value")
+				output.put_line ("axiom (forall heap: HeapType, current: ref ::")
+				output.put_line ("            { " + l_functional_name + "(heap, current) } // Trigger");
+				output.put_line ("        IsHeap(heap) ==> (" + l_functional_name + "(heap, current) == " + l_value + "));")
+				output.put_new_line
 			end
 		end
 

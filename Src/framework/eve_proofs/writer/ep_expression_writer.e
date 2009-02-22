@@ -562,35 +562,32 @@ feature {BYTE_NODE} -- Visitors
 	process_object_test_b (a_node: OBJECT_TEST_B)
 			-- Process `a_node'.
 		local
-			l_position: INTEGER
-			l_name, l_type: STRING
+			l_exception: EP_SKIP_EXCEPTION
 		do
-			-- TODO: ignore expression, add warning
+				-- TODO: implement
 
 			if is_processing_contract then
+					-- TODO: add warning
 				expression.put ("false")
 			else
-				l_position := context.object_test_local_position (a_node.target)
-				l_name := name_generator.local_name (l_position)
-				l_type := type_mapper.boogie_type_for_type (a_node.target.type)
-				locals.extend ([l_name, l_type])
-					-- TODO: generate code for object test
-				expression.put ("false")
+				create l_exception.make ("Object test not supported")
+				l_exception.raise
 			end
 		end
 
 	process_object_test_local_b (a_node: OBJECT_TEST_LOCAL_B)
 			-- Process `a_node'.
 		local
-			l_position: INTEGER
+			l_exception: EP_SKIP_EXCEPTION
 		do
-			-- TODO: ignore expression, add warning
+				-- TODO: implement
 
 			if is_processing_contract then
+					-- TODO: add warning
 				expression.put ("Void")
 			else
-				l_position := context.object_test_local_position (a_node)
-				expression.put (name_generator.local_name (l_position))
+				create l_exception.make ("Object test not supported")
+				l_exception.raise
 			end
 		end
 
@@ -719,10 +716,6 @@ feature {BYTE_NODE} -- Visitors
 			side_effect.put_line ("assume (forall heap: HeapType" + l_typed_arguments + " :: ")
 			side_effect.put_line ("            { routine.precondition_" + l_open_argument_count.out + "(heap" + l_arguments + ") } // Trigger")
 			side_effect.put_line ("        routine.precondition_" + l_open_argument_count.out + "(heap" + l_arguments + ") <==> " + l_contract_writer.full_precondition + ");")
--- TODO: fix for demo
---			side_effect.put_line ("assume (forall $o: ref, $f: name :: ")
---			side_effect.put_line ("            { agent.modifies(" + l_agent_variable + ", $o, $f) } // Trigger")
---			side_effect.put_line ("        agent.modifies(" + l_agent_variable + ", $o, $f) <==> ($o == arg.a_paragraph));")
 			side_effect.put_line ("assume (forall<alpha> $o: ref, $f: Field alpha :: ")
 			side_effect.put_line ("            { agent.modifies(" + l_agent_variable + ", $o, $f) } // Trigger")
 			side_effect.put_line ("        agent.modifies(" + l_agent_variable + ", $o, $f) <==> " + l_frame_extractor.last_frame_condition + ");")

@@ -325,4 +325,60 @@ feature -- Access: Command strings
 			Result := locale.formatted_string (locale.translation ("Proof library $1"), [a_cluster])
 		end
 
+feature -- Access: Proof tool strings
+
+	tool_header_class: STRING_32
+			-- Header for class column
+		do
+			Result := locale.translation ("Class")
+		end
+
+	tool_header_feature: STRING_32
+			-- Header for feature column
+		do
+			Result := locale.translation ("Feature")
+		end
+
+	tool_header_information: STRING_32
+			-- Header for information column
+		do
+			Result := locale.translation ("Information")
+		end
+
+	tool_header_position: STRING_32
+			-- Header for position column
+		do
+			Result := locale.translation ("Position")
+		end
+
+	tool_header_time: STRING_32
+			-- Header for time column
+		do
+			Result := locale.translation ("Time [ms]")
+		end
+
+	tool_button_successful: STRING_32
+			-- Button text for successful button
+		do
+			Result := locale.translation ("Successful")
+		end
+
+	tool_button_failed: STRING_32
+			-- Button text for failed button
+		do
+			Result := locale.translation ("Failed")
+		end
+
+	tool_button_skipped: STRING_32
+			-- Button text for skipped button
+		do
+			Result := locale.translation ("Skipped")
+		end
+
+	tool_text_filter: STRING_32
+			-- Text for filter label
+		do
+			Result := locale.translation ("Filter")
+		end
+
 end

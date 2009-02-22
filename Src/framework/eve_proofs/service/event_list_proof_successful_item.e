@@ -1,5 +1,8 @@
 indexing
-	description: "TODO"
+	description:
+		"[
+			Event for a successful proof.
+		]"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -15,11 +18,17 @@ create
 feature {NONE} -- Initialization
 
 	make (a_class: CLASS_C; a_feature: FEATURE_I)
-			-- TODO
+			-- Initialize event item.
+		require
+			a_class_not_void: a_class /= Void
+			a_feature_not_void: a_feature /= Void
 		do
 			initialize (a_class, a_feature)
 			data := Void
 			description := "Successful"
+		ensure
+			context_class_set: context_class = a_class
+			context_feature_set: context_feature = a_feature
 		end
 
 feature -- Access

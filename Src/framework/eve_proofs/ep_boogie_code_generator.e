@@ -16,6 +16,9 @@ inherit
 	SHARED_EP_CONTEXT
 		export {NONE} all end
 
+	EXCEPTION_MANAGER_FACTORY
+		export {NONE} all end
+
 create
 	make
 
@@ -24,11 +27,11 @@ feature {NONE} -- Initialization
 	make
 			-- Initialize generator.
 		do
-			create output_buffer.make
+			create output.make
 			is_generating_implementation := True
 
-			create attribute_writer
-			create constant_writer
+			create attribute_writer.make
+			create constant_writer.make
 			create signature_writer.make
 			create function_writer.make
 			create implementation_writer.make
@@ -36,7 +39,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	output_buffer: !EP_OUTPUT_BUFFER
+	output: !EP_OUTPUT_BUFFER
 			-- Output buffer to store generated code
 
 feature -- Status report
@@ -67,8 +70,7 @@ feature -- Basic operations
 	reset
 			-- Reset code generator.
 		do
-			output_buffer.reset
-			environment.set_output_buffer (output_buffer)
+			output.reset
 		end
 
 	process_class (a_class: !CLASS_C)
@@ -95,40 +97,44 @@ feature -- Basic operations
 			ep_context.set_current_feature (a_feature)
 			ep_context.set_location (a_feature.body.start_location)
 
-			put_comment_line ("Feature " + a_feature.feature_name + " from class " + a_feature.written_class.name_in_upper)
-			put_comment_line ("--------------------------------------")
-			put_new_line
+			output.put_comment_line ("Feature " + a_feature.feature_name + " from class " + a_feature.written_class.name_in_upper)
+			output.put_comment_line ("--------------------------------------")
+			output.put_new_line
 
 			if a_feature.is_attribute then
 					-- Generate field name
 				attribute_writer.write_attribute (a_feature)
+				output.put (attribute_writer.output.string)
 
 			elseif a_feature.is_constant then
 					-- Generate function and axiom
 				constant_writer.write_constant (a_feature)
+				output.put (constant_writer.output.string)
 
 			else
 				if a_feature.has_return_value and then feature_list.is_pure (a_feature) then
 						-- It's a pure function, so generate functional representation
 					function_writer.write_functional_representation (a_feature)
+					output.put (function_writer.output.string)
 				end
 
 					-- Generate signature
 				signature_writer.write_feature_signature (a_feature)
+				output.put (signature_writer.output.string)
 
 					-- Generate implementation
 				if is_generating_implementation then
 					if feature_list.is_creation_routine_already_generated (a_feature) then
-						put_comment_line ("Implementation already done for feature as creation routine")
+						output.put_comment_line ("Implementation already done for feature as creation routine")
 					elseif is_feature_proof_done (a_feature) then
-						implementation_writer.write_feature_implementation (a_feature, False)
+						try_generate_implementation (a_feature, False)
 					else
-						event_handler.add_proof_skipped_event (a_feature.written_class, a_feature)
-						put_comment_line ("Implementation ignored (proof skipped)")
+						event_handler.add_proof_skipped_event (a_feature.written_class, a_feature, "indexing value")
+						output.put_comment_line ("Implementation ignored (proof skipped)")
 					end
 				end
 			end
-			put_new_line
+			output.put_new_line
 
 			feature_list.mark_feature_generated (a_feature)
 		ensure
@@ -143,24 +149,25 @@ feature -- Basic operations
 			ep_context.set_current_feature (a_feature)
 			ep_context.set_location (a_feature.body.start_location)
 
-			put_comment_line ("Creation routine " + a_feature.feature_name + " from class " + a_feature.written_class.name_in_upper)
-			put_comment_line ("--------------------------------------")
-			put_new_line
+			output.put_comment_line ("Creation routine " + a_feature.feature_name + " from class " + a_feature.written_class.name_in_upper)
+			output.put_comment_line ("--------------------------------------")
+			output.put_new_line
 
 				-- Generate signature
 			signature_writer.write_creation_routine_signature (a_feature)
+			output.put (signature_writer.output.string)
 
 				-- Generate implementation
 			if is_generating_implementation then
 				if is_feature_proof_done (a_feature) then
-					implementation_writer.write_feature_implementation (a_feature, True)
+					try_generate_implementation (a_feature, True)
 				else
-					event_handler.add_proof_skipped_event (a_feature.written_class, a_feature)
-					put_comment_line ("Implementation ignored (proof skipped)")
+					event_handler.add_proof_skipped_event (a_feature.written_class, a_feature, "indexing value")
+					output.put_comment_line ("Implementation ignored (proof skipped)")
 				end
 			end
 
-			put_new_line
+			output.put_new_line
 
 			feature_list.mark_creation_routine_as_generated (a_feature)
 		ensure
@@ -235,12 +242,30 @@ feature {NONE} -- Implementation
 					-- Only write features which are written in that class
 				if l_feature.written_in = a_class.class_id then
 					process_feature (l_attached_feature)
-				else
-					-- commented out as this gives to much unnecessary output
-					--put_comment_line ("ignored " + l_feature.feature_name)
 				end
 
 				a_class.feature_table.forth
+			end
+		end
+
+	try_generate_implementation (a_feature: !FEATURE_I; a_is_creation_routine: BOOLEAN)
+			-- TODO
+		local
+			l_skip: BOOLEAN
+			l_skip_reason: STRING
+		do
+			if l_skip then
+				event_handler.add_proof_skipped_event (a_feature.written_class, a_feature, l_skip_reason)
+				output.put_comment_line ("Implementation ignored (proof skipped due to exception)")
+			else
+				implementation_writer.write_feature_implementation (a_feature, a_is_creation_routine)
+				output.put (implementation_writer.output.string)
+			end
+		rescue
+			if {l_exception: EP_SKIP_EXCEPTION} exception_manager.last_exception then
+				l_skip_reason := l_exception.message
+				l_skip := True
+				retry
 			end
 		end
 

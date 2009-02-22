@@ -1,5 +1,5 @@
 indexing
-	description: "Shared access to an EP_ENVIRONMENT"
+	description: "Shared access to EP_ENVIRONMENT"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -13,12 +13,6 @@ feature -- Access
 
 	eve_proofs: EVE_PROOFS
 			-- Shared EVE Proofs
-		once
-			create Result.make
-		end
-
-	environment: EP_ENVIRONMENT
-			-- Shared Eve Proofs environement
 		once
 			create Result.make
 		end
@@ -166,36 +160,6 @@ feature -- Convenience
 					a_indexing_clause.forth
 				end
 			end
-		end
-
-	put_indentation
-			-- Put indentation to output buffer.
-		do
-			environment.output_buffer.put_indentation
-		end
-
-	put (a_string: STRING)
-			-- Put `a_string' to output buffer.
-		do
-			environment.output_buffer.put (a_string)
-		end
-
-	put_line (a_line: STRING)
-			-- Put `a_line' to output buffer and append a new line.
-		do
-			environment.output_buffer.put_line (a_line)
-		end
-
-	put_comment_line (a_line: STRING)
-			-- Put `a_line' to output buffer as a comment and append a new line.
-		do
-			environment.output_buffer.put_comment_line (a_line)
-		end
-
-	put_new_line
-			-- Put a new line to output buffer.
-		do
-			environment.output_buffer.put_new_line
 		end
 
 end

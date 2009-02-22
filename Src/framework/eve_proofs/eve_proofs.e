@@ -91,7 +91,7 @@ feature -- Basic operations
 					show_messages (
 						names.message_generating_boogie_class_ignored (l_current_class.name_in_upper),
 						names.window_message_generating_boogie_code_for_class (l_current_class.name_in_upper))
-					event_handler.add_proof_skipped_event (l_current_class, Void)
+					event_handler.add_proof_skipped_event (l_current_class, Void, "indexing value")
 				end
 
 				classes_to_verify.forth
@@ -159,7 +159,7 @@ feature {NONE} -- Implementation
 
 			l_name := "Class: "
 			l_name.append (a_class.name_in_upper)
-			verifier.add_buffer_content (boogie_generator.output_buffer, l_name)
+			verifier.add_buffer_content (boogie_generator.output, l_name)
 		end
 
 	generate_code_for_referenced_features
@@ -194,7 +194,7 @@ feature {NONE} -- Implementation
 				boogie_generator.process_feature (l_list.first)
 			end
 
-			verifier.add_buffer_content (boogie_generator.output_buffer, "Referenced features")
+			verifier.add_buffer_content (boogie_generator.output, "Referenced features")
 		end
 
 

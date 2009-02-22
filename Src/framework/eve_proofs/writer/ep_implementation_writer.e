@@ -31,7 +31,13 @@ feature {NONE} -- Initialization
 			-- Initialize implementation writer.
 		do
 			create instruction_writer.make
+			create output.make
 		end
+
+feature -- Access
+
+	output: !EP_OUTPUT_BUFFER
+			-- Buffer to store output
 
 feature -- Basic operations
 
@@ -43,18 +49,21 @@ feature -- Basic operations
 			l_argument_type: TYPE_A
 			l_byte_code: BYTE_CODE
 			l_has_locals: BOOLEAN
+			l_skip_exception: EP_SKIP_EXCEPTION
 		do
+			output.reset
+
 			if is_creation_routine then
 				l_procedure_name := creation_routine_name (a_feature)
 			else
 				l_procedure_name := procedural_feature_name (a_feature)
 			end
 
-			put_comment_line ("Implementation")
+			output.put_comment_line ("Implementation")
 
 			-- TODO: code reuse with signature writer => inherit from signature writer?
 
-			put ("implementation " + l_procedure_name + "(Current: ref")
+			output.put ("implementation " + l_procedure_name + "(Current: ref")
 			from
 				i := 1
 			until
@@ -62,20 +71,20 @@ feature -- Basic operations
 			loop
 				l_argument_name := name_generator.argument_name (a_feature.arguments.item_name (i))
 				l_argument_type := a_feature.arguments.i_th (i)
-				put (", " + l_argument_name + ": " + type_mapper.boogie_type_for_type (l_argument_type))
+				output.put (", " + l_argument_name + ": " + type_mapper.boogie_type_for_type (l_argument_type))
 				i := i + 1
 			end
-			put (")")
+			output.put (")")
 			if not a_feature.type.is_void then
-				put (" returns (Result: " + type_mapper.boogie_type_for_type (a_feature.type) + ")")
+				output.put (" returns (Result: " + type_mapper.boogie_type_for_type (a_feature.type) + ")")
 			end
-			put ("%N")
+			output.put ("%N")
 
 			instruction_writer.reset
 			instruction_writer.set_current_feature (a_feature)
 
-			put_line ("{")
-			environment.output_buffer.set_indentation ("    ")
+			output.put_line ("{")
+			output.set_indentation ("    ")
 
 			if byte_server.has (a_feature.body_index) then
 				l_byte_code := byte_server.item (a_feature.body_index)
@@ -88,6 +97,13 @@ feature -- Basic operations
 				Context.set_byte_code (l_byte_code)
 				l_byte_code.setup_local_variables (False)
 
+					-- Features with rescue clauses are skipped
+					-- TODO: implement rescue clauses
+				if l_byte_code.rescue_clause /= Void and then not l_byte_code.rescue_clause.is_empty then
+					create l_skip_exception.make ("Rescue clause not supported")
+					l_skip_exception.raise
+				end
+
 				if l_byte_code.compound /= Void and then not l_byte_code.compound.is_empty then
 					l_byte_code.compound.process (instruction_writer)
 				end
@@ -99,27 +115,27 @@ feature -- Basic operations
 			end
 			write_temproary_locals
 
-			put ("  entry:%N")
+			output.put ("  entry:%N")
 
 				-- Initialize local variables
 			if l_has_locals then
-				put_comment_line ("Initialization of locals")
+				output.put_comment_line ("Initialization of locals")
 				write_locals_initialization (l_byte_code)
 			end
 
 				-- Initialize result
 			if not a_feature.type.is_void then
-				put_comment_line ("Initialization of result")
-				put_line ("Result := " + default_value (a_feature.type) + ";")
+				output.put_comment_line ("Initialization of result")
+				output.put_line ("Result := " + default_value (a_feature.type) + ";")
 			end
 
 				-- Feature body
-			put (instruction_writer.output.string)
+			output.put (instruction_writer.output.string)
 
-			put_line ("return;")
+			output.put_line ("return;")
 
-			environment.output_buffer.set_indentation ("")
-			put_line ("}")
+			output.set_indentation ("")
+			output.put_line ("}")
 		end
 
 feature {NONE} -- Implementation
@@ -138,15 +154,15 @@ feature {NONE} -- Implementation
 				i > a_byte_code.local_count
 			loop
 				if i = 1 then
-					put ("  var ")
+					output.put ("  var ")
 				else
-					put (", ")
+					output.put (", ")
 				end
-				put (name_generator.local_name (i) + ": ")
-				put (type_mapper.boogie_type_for_type (a_byte_code.locals.item (i).actual_type))
+				output.put (name_generator.local_name (i) + ": ")
+				output.put (type_mapper.boogie_type_for_type (a_byte_code.locals.item (i).actual_type))
 				i := i + 1
 				if i > a_byte_code.local_count then
-					put (";%N")
+					output.put (";%N")
 				end
 			end
 		end
@@ -160,18 +176,18 @@ feature {NONE} -- Implementation
 				instruction_writer.locals.after
 			loop
 				if instruction_writer.locals.index = 1 then
-					put ("  var ")
+					output.put ("  var ")
 				else
-					put (", ")
+					output.put (", ")
 				end
-				put (instruction_writer.locals.item.name + ": ")
-				put (instruction_writer.locals.item.type)
+				output.put (instruction_writer.locals.item.name + ": ")
+				output.put (instruction_writer.locals.item.type)
 				instruction_writer.locals.forth
 				if instruction_writer.locals.after then
-					put (";%N")
+					output.put (";%N")
 				end
 			end
-			put_new_line
+			output.put_new_line
 		end
 
 	write_locals_initialization (a_byte_code: BYTE_CODE)
@@ -187,9 +203,9 @@ feature {NONE} -- Implementation
 			loop
 				l_type := a_byte_code.locals.item (i).actual_type
 				if l_type.is_attached and not l_type.is_expanded then
-					put_line ("assume IsAllocatedAndNotVoid(Heap, " + name_generator.local_name (i) + ");")
+					output.put_line ("assume IsAllocatedAndNotVoid(Heap, " + name_generator.local_name (i) + ");")
 				else
-					put_line (name_generator.local_name (i) + " := " + default_value (a_byte_code.locals.item (i)) + ";")
+					output.put_line (name_generator.local_name (i) + " := " + default_value (a_byte_code.locals.item (i)) + ";")
 				end
 				i := i + 1
 			end
