@@ -48,6 +48,7 @@ feature -- Basic operations
 			value := value + other.value
 		ensure
 			added: value = old (value + other.value)
+--			frame: other.value = old (other.value)
 		end
 
 end

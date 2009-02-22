@@ -46,6 +46,13 @@ feature -- Element change
 			a_class_added: classes_to_verify.has (a_class)
 		end
 
+	register_message_callbacks (a_output, a_window: PROCEDURE [ANY, TUPLE [STRING]])
+			-- Register callback functions to receive messages.
+		do
+			output_callback := a_output
+			window_callback := a_window
+		end
+
 feature -- Basic operations
 
 	reset
@@ -63,7 +70,8 @@ feature -- Basic operations
 		local
 			l_current_class: !CLASS_C
 		do
-			show_messages (names.message_eve_proofs_started, names.window_message_eve_proofs_started)
+			put_output_message (names.message_eve_proofs_started)
+			put_window_message (names.message_eve_proofs_started)
 
 				-- Prepare environment for new verification
 			set_up_environment
@@ -72,7 +80,7 @@ feature -- Basic operations
 			verifier.add_file_content (background_theory_file_name)
 
 				-- Generate Boogie code for classes
-			show_messages (names.message_generating_boogie_code, names.window_message_eve_proofs_started)
+			put_output_message (names.message_generating_boogie_code)
 			from
 				classes_to_verify.start
 			until
@@ -82,15 +90,10 @@ feature -- Basic operations
 
 					-- Generate Boogie code of class
 					-- First check if class is ignored due to an indexing clause
+				put_window_message (names.message_generating_boogie_code_for_class (l_current_class.name_in_upper))
 				if is_class_proof_done (l_current_class) then
-					show_messages (
-						names.message_generating_boogie_code_for_class (l_current_class.name_in_upper),
-						names.window_message_generating_boogie_code_for_class (l_current_class.name_in_upper))
 					generate_boogie_code (l_current_class)
 				else
-					show_messages (
-						names.message_generating_boogie_class_ignored (l_current_class.name_in_upper),
-						names.window_message_generating_boogie_code_for_class (l_current_class.name_in_upper))
 					event_handler.add_proof_skipped_event (l_current_class, Void, "indexing value")
 				end
 
@@ -98,16 +101,35 @@ feature -- Basic operations
 			end
 
 				-- Generate Boogie code for referenced features
-			show_messages (names.message_generating_referenced_features, names.window_message_generating_referenced_features)
+			put_window_message (names.message_generating_referenced_features)
 			generate_code_for_referenced_features
 
 			if errors.is_empty then
 					-- Start Boogie
-				show_messages(names.message_starting_verifier, names.message_verifier_running)
+				put_output_message (names.message_boogie_running)
+				put_window_message (names.message_boogie_running)
 				verifier.verify
-				show_messages (names.message_verification_finished, names.message_verification_finished)
 			else
-				show_messages (names.message_code_generation_failed, names.message_code_generation_failed)
+				put_output_message (names.message_code_generation_failed)
+				put_window_message (names.message_code_generation_failed)
+			end
+			put_output_message (names.message_eve_proofs_finished)
+			put_window_message (names.message_eve_proofs_finished)
+		end
+
+	put_output_message (a_string: STRING)
+			-- Put `a_string' to output.
+		do
+			if output_callback /= Void then
+				output_callback.call ([a_string])
+			end
+		end
+
+	put_window_message (a_string: STRING)
+			-- Put `a_string' to status bar.
+		do
+			if window_callback /= Void then
+				window_callback.call ([a_string])
 			end
 		end
 
@@ -122,17 +144,11 @@ feature {NONE} -- Implementation
 	pure_marker: !EP_PURE_MARKER
 			-- Marker to preprocess classes and find pure features
 
-	show_messages (l_output_line, l_status_bar: STRING)
-			-- Show `l_output_line' in output window and `l_status_bar' in status bar.
-		do
-			text_output.add_string (l_output_line)
-			text_output.add_new_line
--- TODO: the feedback system is not nice...
--- TODO: maybe add an agent to register for feedback, let EB_PROOF_COMMAND register one and handle the rest
---			output_manager.end_processing
---			window_manager.display_message (l_status_bar)
---			ev_application.process_events
-		end
+	output_callback: PROCEDURE [ANY, TUPLE [STRING]]
+			-- Callback function for output panel
+
+	window_callback: PROCEDURE [ANY, TUPLE [STRING]]
+			-- Callback function for status bar
 
 	set_up_environment
 			-- Set up environment for a new verification session.

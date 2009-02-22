@@ -380,7 +380,7 @@ feature -- Command
 			develop_window.commands.set_edit_contracts_command (l_edit_contracts_command)
 
 				-- EVE Proofs command
-			create l_proof_command.make_with_window (develop_window)
+			create l_proof_command.make
 			develop_window.commands.set_proof_command (l_proof_command)
 
 				-- Add history commands to toolbarable_commands.

@@ -185,7 +185,7 @@ feature -- Access: Error strings
 
 feature -- Access: Message strings
 
-	message_eve_proofs_started, window_message_eve_proofs_started: STRING_32
+	message_eve_proofs_started: STRING_32
 			-- Message that EVE Proofs started
 		do
 			Result := locale.translation ("EVE Proofs started")
@@ -200,49 +200,25 @@ feature -- Access: Message strings
 	message_generating_boogie_code_for_class (a_class: STRING_GENERAL): STRING_32
 			-- Message that Boogie code is generated for `a_class'
 		do
-			Result := locale.formatted_string (locale.translation (" - Class $1"), [a_class])
-		end
-
-	message_generating_boogie_class_ignored (a_class: STRING_GENERAL): STRING_32
-			-- Message that Boogie code is generated for `a_class'
-		do
-			Result := locale.formatted_string (locale.translation (" - Class $1 ignored due to indexing clause"), [a_class])
+			Result := locale.formatted_string (locale.translation ("Generating Boogie code: $1"), [a_class])
 		end
 
 	message_generating_referenced_features: STRING_32
 			-- Message that Boogie code is generated for referenced features
 		do
-			Result := locale.translation (" - Referenced features")
-		end
-
-	window_message_generating_boogie_code_for_class (a_class: STRING_GENERAL): STRING_32
-			-- Message that Boogie code is generated for `a_class'
-		do
-			Result := locale.formatted_string (locale.translation ("Generating Boogie code: $1"), [a_class])
-		end
-
-	window_message_generating_referenced_features: STRING_32
-			-- Message that Boogie code is generated for referenced features
-		do
 			Result := locale.translation ("Generating Boogie code: Referenced features")
 		end
 
-	message_starting_verifier: STRING_32
-			-- Message that verifier is being started
-		do
-			Result := locale.translation ("Starting verifier")
-		end
-
-	message_verifier_running: STRING_32
+	message_boogie_running: STRING_32
 			-- Message that verifier is running
 		do
-			Result := locale.translation ("Verifier running")
+			Result := locale.translation ("Boogie running")
 		end
 
-	message_verification_finished: STRING_32
-			-- Message that verification was successful
+	message_eve_proofs_finished: STRING_32
+			-- Message that EVE Proofs finished
 		do
-			Result := locale.translation ("Verification finished")
+			Result := locale.translation ("EVE Proofs finished")
 		end
 
 	message_code_generation_failed: STRING_32
@@ -261,24 +237,6 @@ feature -- Access: Message strings
 			-- Message that Boogie has finished
 		do
 			Result := locale.formatted_string (locale.translation ("Boogie finished ($1 verified, $2 errors)"), [a_verified, a_errors])
-		end
-
-	message_verifying: STRING_32
-			-- Message that Boogie is verifying
-		do
-			Result := locale.translation ("Veryfing")
-		end
-
-	message_failed: STRING_32
-			-- Message that Boogie verification failed
-		do
-			Result := locale.translation ("failed")
-		end
-
-	message_successful: STRING_32
-			-- Message that Boogie verification was successful
-		do
-			Result := locale.translation ("successful")
 		end
 
 feature -- Access: Command strings

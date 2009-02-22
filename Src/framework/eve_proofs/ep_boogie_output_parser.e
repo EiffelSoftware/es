@@ -83,6 +83,12 @@ feature -- Basic operations
 							syntax_error_regexp.captured_substring (2),
 							syntax_error_regexp.captured_substring (3),
 							syntax_error_regexp.captured_substring (4))
+					elseif semantic_error_regexp.matches (l_line) then
+						handle_syntax_error (
+							semantic_error_regexp.captured_substring (1),
+							semantic_error_regexp.captured_substring (2),
+							semantic_error_regexp.captured_substring (3),
+							semantic_error_regexp.captured_substring (4))
 					else
 						-- Ignored line
 					end
@@ -114,15 +120,13 @@ feature {NONE} -- Implementation
 	handle_version (a_version: STRING)
 			-- Handle version information.
 		do
-			text_output.add (names.message_boogie_version (a_version))
-			text_output.add_new_line
+			eve_proofs.put_output_message (names.message_boogie_version (a_version))
 		end
 
 	handle_finished (a_verified, a_errors: STRING)
 			-- Handle verification finished information.
 		do
-			text_output.add (names.message_boogie_finished (a_verified, a_errors))
-			text_output.add_new_line
+			eve_proofs.put_output_message (names.message_boogie_finished (a_verified, a_errors))
 		end
 
 	handle_verifying (a_type, a_class, a_feature: STRING)
@@ -142,13 +146,13 @@ feature {NONE} -- Implementation
 			end
 
 			l_feature := l_class.compiled_class.feature_with_name (l_feature_name)
-			text_output.add (names.message_verifying)
-			text_output.add_space
-			text_output.add ("{")
-			text_output.add_class (l_class)
-			text_output.add ("}.")
-			text_output.add_feature (l_feature, l_feature_name)
-			text_output.add (": ")
+--			text_output.add (names.message_verifying)
+--			text_output.add_space
+--			text_output.add ("{")
+--			text_output.add_class (l_class)
+--			text_output.add ("}.")
+--			text_output.add_feature (l_feature, l_feature_name)
+--			text_output.add (": ")
 
 			current_class := l_class.compiled_class
 			current_feature := current_class.feature_named (l_feature_name)
@@ -164,16 +168,16 @@ feature {NONE} -- Implementation
 			end
 			if a_result.is_equal ("error") or a_result.is_equal ("errors") then
 				check last_error /= Void end
-				text_output.add_error (last_error, names.message_failed)
+--				text_output.add_error (last_error, names.message_failed)
 
 				event_handler.add_proof_failed_event (current_class, current_feature, last_error, l_milliseconds)
 			else
 				check a_result.is_equal ("verified") end
-				text_output.add (names.message_successful)
+--				text_output.add (names.message_successful)
 
 				event_handler.add_proof_successful_event (current_class, current_feature, l_milliseconds)
 			end
-			text_output.add_new_line
+--			text_output.add_new_line
 			last_error := Void
 		end
 
@@ -433,6 +437,13 @@ feature {NONE} -- Regular expressions
 		once
 			create Result.make
 			Result.compile ("^(.*)\(([0-9]*),([0-9]*)\): syntax error: (.*)$")
+		end
+
+	semantic_error_regexp: RX_PCRE_REGULAR_EXPRESSION
+			-- Regular expression for error line.
+		once
+			create Result.make
+			Result.compile ("^(.*)\(([0-9]*),([0-9]*)\): Error: (.*)$")
 		end
 
 	assert_regexp: RX_PCRE_REGULAR_EXPRESSION

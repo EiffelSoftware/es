@@ -37,8 +37,7 @@ inherit
 		export {NONE} all end
 
 create
-	make,
-	make_with_window
+	make
 
 feature {NONE} -- Initialization
 
@@ -46,18 +45,7 @@ feature {NONE} -- Initialization
 			-- Creation method.
 		do
 			enable_sensitive
-			text_output_cell.put (output_manager)
-		end
-
-	make_with_window (a_window: EB_DEVELOPMENT_WINDOW)
-			-- Creation method.
-		require
-			a_window /= Void
-		do
-			window := a_window
-			make
-		ensure
-			window_set: window = a_window
+			eve_proofs.register_message_callbacks (agent put_output_message, agent put_window_message)
 		end
 
 feature -- Execution
@@ -67,12 +55,8 @@ feature -- Execution
 		local
 			l_window: EB_DEVELOPMENT_WINDOW
 		do
-			if window /= Void then
-				l_window := window
-			else
-				l_window := window_manager.last_focused_development_window
-			end
-			if l_window /= Void and then droppable (l_window.stone) then
+			l_window := window_manager.last_focused_development_window
+			if droppable (l_window.stone) then
 				execute_with_stone (l_window.stone)
 			end
 		end
@@ -193,13 +177,6 @@ feature -- Basic operations
 			error_handler.error_list.finish
 			error_handler.trace
 
-
-
---			if not errors.is_empty then
---				error_handler.error_displayer.force_display
---			else
---				output_manager.force_display
---			end
 			show_proof_tool
 		end
 
@@ -209,10 +186,7 @@ feature -- Basic operations
 			l_tool: ES_TOOL [EB_TOOL]
 			l_window: EB_DEVELOPMENT_WINDOW
 		do
-			l_window := window
-			if l_window = Void then
-				l_window := window_manager.last_focused_development_window
-			end
+			l_window := window_manager.last_focused_development_window
 			if not l_window.is_recycled and then l_window.is_visible and then l_window = window_manager.last_focused_development_window then
 				l_tool := l_window.shell_tools.tool ({ES_PROOF_TOOL})
 				if l_tool /= Void and then not l_tool.is_recycled then
@@ -330,7 +304,7 @@ feature -- Context menu
 			end
 		end
 
-feature -- TODO
+feature -- Status report
 
 	droppable (a_pebble: ANY): BOOLEAN is
 			-- Can user drop `a_pebble' on `Current'?
@@ -390,11 +364,7 @@ feature {NONE} -- Implementation
 			l_class_stone: CLASSC_STONE
 			l_cluster_stone: CLUSTER_STONE
 		do
-			if window /= Void then
-				l_window := window
-			else
-				l_window := window_manager.last_focused_development_window
-			end
+			l_window := window_manager.last_focused_development_window
 			l_class_stone ?= l_window.stone
 			l_cluster_stone ?= l_window.stone
 			if l_class_stone /= Void then
@@ -412,6 +382,20 @@ feature {NONE} -- Implementation
 			-- Proof whole system (excluding libraries).
 		do
 			execute_with_stone (Void)
+		end
+
+	put_output_message (a_string: STRING)
+			-- Put `a_string' to output panel.
+		do
+			output_manager.add_string (a_string)
+			output_manager.add_new_line
+			output_manager.end_processing
+		end
+
+	put_window_message (a_string: STRING)
+			-- Put `a_string' to window status bar.
+		do
+			window_manager.display_message (a_string)
 		end
 
 feature {NONE} -- Implementation

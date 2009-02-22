@@ -16,6 +16,7 @@ inherit
 			process_agent_call_b,
 			process_attribute_b,
 			process_argument_b,
+			process_array_const_b,
 			process_bin_and_b,
 			process_bin_and_then_b,
 			process_bin_div_b,
@@ -164,6 +165,15 @@ feature {BYTE_NODE} -- Visitors
 			-- Process `a_node'.
 		do
 			expression.put (name_mapper.argument_name (a_node))
+		end
+
+	process_array_const_b (a_node: ARRAY_CONST_B)
+			-- Process `a_node'.
+		do
+			if not is_processing_contract then
+				raise_skip_exception ("Array constants not supported")
+			end
+			-- TODO: handle case if in contract
 		end
 
 	process_attribute_b (a_node: ATTRIBUTE_B)
@@ -388,7 +398,10 @@ feature {BYTE_NODE} -- Visitors
 	process_bit_const_b (a_node: BIT_CONST_B)
 			-- Process `a_node'.
 		do
-			-- TODO: add error
+			if not is_processing_contract then
+				raise_skip_exception ("Bit constants not supported")
+			end
+			-- TODO: handle case in contracts
 		end
 
 	process_bool_const_b (a_node: BOOL_CONST_B)
@@ -561,8 +574,6 @@ feature {BYTE_NODE} -- Visitors
 
 	process_object_test_b (a_node: OBJECT_TEST_B)
 			-- Process `a_node'.
-		local
-			l_exception: EP_SKIP_EXCEPTION
 		do
 				-- TODO: implement
 
@@ -570,15 +581,12 @@ feature {BYTE_NODE} -- Visitors
 					-- TODO: add warning
 				expression.put ("false")
 			else
-				create l_exception.make ("Object test not supported")
-				l_exception.raise
+				raise_skip_exception ("Object test not supported")
 			end
 		end
 
 	process_object_test_local_b (a_node: OBJECT_TEST_LOCAL_B)
 			-- Process `a_node'.
-		local
-			l_exception: EP_SKIP_EXCEPTION
 		do
 				-- TODO: implement
 
@@ -586,8 +594,7 @@ feature {BYTE_NODE} -- Visitors
 					-- TODO: add warning
 				expression.put ("Void")
 			else
-				create l_exception.make ("Object test not supported")
-				l_exception.raise
+				raise_skip_exception ("Object test local not supported")
 			end
 		end
 
@@ -628,6 +635,11 @@ feature {BYTE_NODE} -- Visitors
 			l_temp_expression: STRING
 			i, j, k: INTEGER
 		do
+			if a_node.is_inline_agent and not is_processing_contract then
+				raise_skip_exception ("Inline agent not supported")
+				-- TODO: handle case in contracts
+			end
+
 			l_agent_class := system.class_of_id (a_node.origin_class_id)
 			l_agent_feature := l_agent_class.feature_of_feature_id (a_node.feature_id)
 			check l_agent_feature /= Void end
@@ -736,10 +748,14 @@ feature {BYTE_NODE} -- Visitors
 	process_string_b (a_node: STRING_B)
 			-- Process `a_node'.
 		do
-			create_new_reference_local
-			side_effect.put_line ("havoc " + last_local + ";")
-			side_effect.put_line ("assume " + last_local + " != Void && Heap[" + last_local + ", $allocated];")
-			expression.put (last_local)
+			if is_processing_contract then
+				expression.put ("Void")
+			else
+				create_new_reference_local
+				side_effect.put_line ("havoc " + last_local + ";")
+				side_effect.put_line ("assume " + last_local + " != Void && Heap[" + last_local + ", $allocated];")
+				expression.put (last_local)
+			end
 		end
 
 	process_un_free_b (a_node: UN_FREE_B)
@@ -993,6 +1009,15 @@ feature {NONE} -- Implementation
 		do
 			l_class := a_feature.written_class.name_in_upper
 			Result := l_class.is_equal ("ROUTINE") or l_class.is_equal ("FUNCTION") or l_class.is_equal ("PROCEDURE")
+		end
+
+	raise_skip_exception (a_reason: STRING)
+			-- Raise an exception.
+		local
+			l_exception: EP_SKIP_EXCEPTION
+		do
+			create l_exception.make (a_reason)
+			l_exception.raise
 		end
 
 end

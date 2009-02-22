@@ -47,7 +47,22 @@ feature
 		local
 			a: ANY
 		do
-			--a := agent do end
+			a := agent do end
+		end
+
+	manifest_arrays
+		local
+			a: ANY
+		do
+			a := << "a", "b" >>
+		end
+
+	string
+		local
+			a: ANY
+		do
+			a := "abc"
+			a.do_nothing
 		end
 
 	-- TODO: add expanded types example

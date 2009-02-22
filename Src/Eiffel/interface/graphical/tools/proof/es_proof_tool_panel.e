@@ -55,7 +55,6 @@ feature {NONE} -- Initialization
 
 				-- "toggle successful" button
 			create successful_button.make
-			successful_button.set_text (ep_names.tool_button_successful)
 			successful_button.set_pixmap (stock_pixmaps.general_check_document_icon)
 			successful_button.set_pixel_buffer (stock_pixmaps.general_check_document_icon_buffer)
 			successful_button.enable_select
@@ -63,7 +62,6 @@ feature {NONE} -- Initialization
 
 				-- "toggle failed" button
 			create failed_button.make
-			failed_button.set_text (ep_names.tool_button_failed)
 			failed_button.set_pixmap (stock_pixmaps.debug_exception_handling_icon)
 			failed_button.set_pixel_buffer (stock_pixmaps.debug_exception_handling_icon_buffer)
 			failed_button.enable_select
@@ -71,11 +69,12 @@ feature {NONE} -- Initialization
 
 				-- "toggle skipped" button
 			create skipped_button.make
-			skipped_button.set_text (ep_names.tool_button_skipped)
 			skipped_button.set_pixmap (stock_pixmaps.general_warning_icon)
 			skipped_button.set_pixel_buffer (stock_pixmaps.general_warning_icon_buffer)
 			skipped_button.enable_select
 			skipped_button.select_actions.extend (agent on_update_visiblity)
+
+			update_button_titles
 
 			Result.put_last (develop_window.commands.proof_command.new_sd_toolbar_item (True))
 			Result.put_last (create {SD_TOOL_BAR_SEPARATOR}.make)
@@ -215,7 +214,8 @@ feature -- Status report
 						if
 							not l_item.context_class.name.as_lower.has_substring (l_text) and
 							(l_item.context_feature = Void or else
-							 not l_item.context_feature.feature_name.as_lower.has_substring (l_text))
+							 not l_item.context_feature.feature_name.as_lower.has_substring (l_text)) and
+							not l_item.description.as_lower.has_substring (l_text)
 						then
 							Result := False
 						end
@@ -225,8 +225,7 @@ feature -- Status report
 		end
 
 	frozen surpress_synchronization: BOOLEAN
-			-- State to indicate if synchonization with the event list service should be suppressed
-			-- when initializing.
+			-- <Precursor>
 
 	frozen scroll_list_automatically: BOOLEAN
 			-- <Precursor>
@@ -259,16 +258,21 @@ feature {NONE} -- Events
 				surpress_synchronization := True
 				initialize
 			end
+			if l_applicable then
+				if is_successful_event (a_event_item) then
+					successful_count := successful_count + 1
+				elseif is_failed_event (a_event_item) then
+					failed_count := failed_count + 1
+				elseif is_skipped_event (a_event_item) then
+					skipped_count := skipped_count + 1
+				else
+					check false end
+				end
 
-			if is_successful_event (a_event_item) then
-				successful_count := successful_count + 1
-			elseif is_failed_event (a_event_item) then
-				failed_count := failed_count + 1
-			elseif is_failed_event (a_event_item) then
-				skipped_count := skipped_count + 1
+				update_button_titles
+
+				Precursor {ES_CLICKABLE_EVENT_LIST_TOOL_PANEL_BASE} (a_service, a_event_item)
 			end
-
-			Precursor {ES_CLICKABLE_EVENT_LIST_TOOL_PANEL_BASE} (a_service, a_event_item)
 		ensure then
 			is_initialized: is_appliable_event (a_event_item) implies is_initialized
 		end
@@ -285,16 +289,21 @@ feature {NONE} -- Events
 				surpress_synchronization := True
 				initialize
 			end
+			if l_applicable then
+				if is_successful_event (a_event_item) then
+					successful_count := successful_count - 1
+				elseif is_failed_event (a_event_item) then
+					failed_count := failed_count - 1
+				elseif is_skipped_event (a_event_item) then
+					skipped_count := skipped_count - 1
+				else
+					check false end
+				end
 
-			if is_successful_event (a_event_item) then
-				successful_count := successful_count - 1
-			elseif is_failed_event (a_event_item) then
-				failed_count := failed_count - 1
-			elseif is_failed_event (a_event_item) then
-				skipped_count := skipped_count - 1
+				update_button_titles
+
+				Precursor {ES_CLICKABLE_EVENT_LIST_TOOL_PANEL_BASE} (a_service, a_event_item)
 			end
-
-			Precursor {ES_CLICKABLE_EVENT_LIST_TOOL_PANEL_BASE} (a_service, a_event_item)
 		ensure then
 			is_initialized: is_appliable_event (a_event_item) implies is_initialized
 		end
@@ -401,6 +410,7 @@ feature {NONE} -- Basic operations
 			l_label: EV_GRID_LABEL_ITEM
 			l_error: EP_ERROR
 			l_row: EV_GRID_ROW
+
 		do
 			l_proof_event_item ?= a_event_item
 			check l_proof_event_item /= Void end
@@ -502,6 +512,14 @@ feature {NONE} -- Basic operations
 			if not is_visible (a_row) then
 				a_row.hide
 			end
+		end
+
+	update_button_titles
+			-- Update button titles with number of events.
+		do
+			successful_button.set_text (successful_count.out + " " + ep_names.tool_button_successful)
+			failed_button.set_text (failed_count.out + " " + ep_names.tool_button_failed)
+			skipped_button.set_text (skipped_count.out + " " + ep_names.tool_button_skipped)
 		end
 
 feature {NONE} -- Clean up
