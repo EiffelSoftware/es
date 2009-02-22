@@ -109,4 +109,10 @@ feature -- Output
 			a_text_formatter.add (message)
 		end
 
+	trace_single_line_message (a_text_formatter: TEXT_FORMATTER) is
+			-- Display single line message in `a_text_formatter'.
+		do
+			a_text_formatter.add (message)
+		end
+
 end

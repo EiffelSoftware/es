@@ -14,15 +14,17 @@ inherit
 			internal_recycle,
 			create_right_tool_bar_items,
 			surpress_synchronization,
+			scroll_list_automatically,
 			is_appliable_event,
 			on_event_item_added,
 			on_event_item_removed
 		end
 
 	SESSION_EVENT_OBSERVER
-		export
-			{NONE} all
-		end
+		export {NONE} all end
+
+	SHARED_ERROR_TRACER
+		export {NONE} all end
 
 create {ES_PROOF_TOOL}
 	make
@@ -39,6 +41,8 @@ feature {NONE} -- Initialization
 			if session_manager.is_service_available then
 				session_data.connect_events (Current)
 			end
+
+			scroll_list_automatically := False
 
 			Precursor
 		end
@@ -110,13 +114,10 @@ feature {NONE} -- Initialization
 						on_update_visiblity
 					end
 				)
---			l_box.extend (l_button)
-
 
 			Result.put_last (create {SD_TOOL_BAR_RESIZABLE_ITEM}.make (l_box))
 			Result.put_last (l_button)
 		end
-
 
 	 build_tool_interface (a_widget: ES_GRID) is
 			-- Builds the tools user interface elements.
@@ -131,25 +132,40 @@ feature {NONE} -- Initialization
 
 				-- Create columns
 				-- TODO: internationalization
+			l_col := a_widget.column (1)
+			l_col.set_width (20)
 			l_col := a_widget.column (icon_column)
 			l_col.set_width (20)
 			l_col := a_widget.column (class_column)
 			l_col.set_title ("Class")
-			l_col.set_width (150)
+			l_col.set_width (100)
 			l_col := a_widget.column (feature_column)
 			l_col.set_title ("Feature")
-			l_col.set_width (150)
+			l_col.set_width (120)
 			l_col := a_widget.column (info_column)
 			l_col.set_title ("Info")
 			l_col.set_width (300)
 
-			a_widget.enable_last_column_use_all_width
+			a_widget.enable_tree
+			a_widget.disable_row_height_fixed
+			a_widget.enable_auto_size_best_fit_column (info_column)
 
 				-- Enable sorting
 			enable_sorting_on_columns (<<a_widget.column (icon_column),
 				a_widget.column (class_column),
 				a_widget.column (feature_column)>>)
 		end
+
+feature -- Access
+
+	successful_count: INTEGER
+			-- Number of successful events
+
+	failed_count: INTEGER
+			-- Number of successful events
+
+	skipped_count: INTEGER
+			-- Number of successful events
 
 feature -- Status report
 
@@ -205,6 +221,9 @@ feature -- Status report
 			-- State to indicate if synchonization with the event list service should be suppressed
 			-- when initializing.
 
+	frozen scroll_list_automatically: BOOLEAN
+			-- <Precursor>
+
 feature {NONE} -- User interface items
 
 	successful_button: SD_TOOL_BAR_TOGGLE_BUTTON
@@ -234,6 +253,14 @@ feature {NONE} -- Events
 				initialize
 			end
 
+			if is_successful_event (a_event_item) then
+				successful_count := successful_count + 1
+			elseif is_failed_event (a_event_item) then
+				failed_count := failed_count + 1
+			elseif is_failed_event (a_event_item) then
+				skipped_count := skipped_count + 1
+			end
+
 			Precursor {ES_CLICKABLE_EVENT_LIST_TOOL_PANEL_BASE} (a_service, a_event_item)
 		ensure then
 			is_initialized: is_appliable_event (a_event_item) implies is_initialized
@@ -250,6 +277,14 @@ feature {NONE} -- Events
 					-- Synchronization with the event list service is surpress to prevent duplication of event items being added.
 				surpress_synchronization := True
 				initialize
+			end
+
+			if is_successful_event (a_event_item) then
+				successful_count := successful_count - 1
+			elseif is_failed_event (a_event_item) then
+				failed_count := failed_count - 1
+			elseif is_failed_event (a_event_item) then
+				skipped_count := skipped_count - 1
 			end
 
 			Precursor {ES_CLICKABLE_EVENT_LIST_TOOL_PANEL_BASE} (a_service, a_event_item)
@@ -319,8 +354,30 @@ feature {NONE} -- Basic operations
 
 	do_default_action (a_row: EV_GRID_ROW)
 			-- <Precursor>
+		local
+			l_event_item: EVENT_LIST_PROOF_ITEM_I
+			l_stone: STONE
 		do
-			-- TODO
+			l_event_item ?= a_row.data
+			if l_event_item /= Void then
+				if is_failed_event (l_event_item) then
+						-- TODO: check if a line position is available
+					if l_event_item.context_feature /= Void then
+						create {FEATURE_STONE} l_stone.make (l_event_item.context_feature.api_feature (l_event_item.context_class.class_id))
+					else
+						create {CLASSC_STONE} l_stone.make (l_event_item.context_class)
+					end
+				else
+					if l_event_item.context_feature /= Void then
+						create {FEATURE_STONE} l_stone.make (l_event_item.context_feature.api_feature (l_event_item.context_class.class_id))
+					else
+						create {CLASSC_STONE} l_stone.make (l_event_item.context_class)
+					end
+				end
+				if l_stone /= Void and then l_stone.is_valid then
+					(create {EB_CONTROL_PICK_HANDLER}).launch_stone (l_stone)
+				end
+			end
 		end
 
 	populate_event_grid_row_items (a_event_item: EVENT_LIST_ITEM_I; a_row: EV_GRID_ROW)
@@ -331,8 +388,12 @@ feature {NONE} -- Basic operations
 		local
 			l_editor_item: EB_GRID_EDITOR_TOKEN_ITEM
 			l_gen: EB_EDITOR_TOKEN_GENERATOR
+			l_lines: LIST [EIFFEL_EDITOR_LINE]
+			l_tip: EB_EDITOR_TOKEN_TOOLTIP
 			l_proof_event_item: EVENT_LIST_PROOF_ITEM_I
 			l_label: EV_GRID_LABEL_ITEM
+			l_error: EP_ERROR
+			l_row: EV_GRID_ROW
 		do
 			l_proof_event_item ?= a_event_item
 			check l_proof_event_item /= Void end
@@ -364,9 +425,7 @@ feature {NONE} -- Basic operations
 
 					-- Display
 				a_row.set_background_color (successful_color)
-				if not show_successful then
-					a_row.hide
-				end
+
 			elseif is_failed_event (a_event_item) then
 					-- Icon
 				create l_label
@@ -376,13 +435,40 @@ feature {NONE} -- Basic operations
 				a_row.set_item (icon_column, l_label)
 
 					-- Info
-				a_row.set_item (info_column, create {EV_GRID_LABEL_ITEM}.make_with_text (l_proof_event_item.description))
+				l_error ?= a_event_item.data
+				check l_error /= Void end
+				create l_gen.make
+				l_error.trace_single_line_message (l_gen)
+				l_editor_item := create_clickable_grid_item (l_gen.last_line)
+				a_row.set_item (info_column, l_editor_item)
 
 					-- Display
 				a_row.set_background_color (failed_color)
-				if not show_failed then
-					a_row.hide
+
+					-- Build full error text
+				create l_gen.make
+				l_gen.enable_multiline
+				tracer.trace (l_gen, l_error, {ERROR_TRACER}.normal)
+				l_lines := l_gen.lines
+				if not l_lines.is_empty then
+					l_tip := create_clickable_tooltip (l_lines, l_editor_item, a_row)
+					a_row.select_actions.extend (agent l_tip.restart_tooltip_timer)
+
+						-- Sub row full error
+					a_row.insert_subrow (1)
+					l_row := a_row.subrow (1)
+					l_row.set_background_color (failed_sub_color)
+
+					l_row.set_item (icon_column, create {EV_GRID_LABEL_ITEM})
+					l_row.set_item (class_column, create {EV_GRID_LABEL_ITEM})
+					l_row.set_item (feature_column, create {EV_GRID_LABEL_ITEM})
+
+					l_editor_item := create_multiline_clickable_grid_item (l_lines, False)
+					l_row.set_height (l_tip.required_tooltip_height)
+					l_row.set_item (info_column, l_editor_item)
 				end
+
+
 			elseif is_skipped_event (a_event_item) then
 					-- Icon
 				create l_label
@@ -396,13 +482,13 @@ feature {NONE} -- Basic operations
 
 					-- Display
 				a_row.set_background_color (skipped_color)
-				if not show_skipped then
-					a_row.hide
-				end
 			else
 				check false end
 			end
 
+			if not is_visible (a_row) then
+				a_row.hide
+			end
 		end
 
 feature {NONE} -- Clean up
@@ -422,10 +508,10 @@ feature {NONE} -- Clean up
 
 feature {NONE} -- Constants
 
-	icon_column: INTEGER = 1
-	class_column: INTEGER = 2
-	feature_column: INTEGER = 3
-	info_column: INTEGER = 4
+	icon_column: INTEGER = 2
+	class_column: INTEGER = 3
+	feature_column: INTEGER = 4
+	info_column: INTEGER = 5
 
 	successful_color: EV_COLOR
 			-- Background color for successful rows
@@ -437,6 +523,12 @@ feature {NONE} -- Constants
 			-- Background color for successful rows
 		once
 			create Result.make_with_rgb (1.0, 0.9, 0.9)
+		end
+
+	failed_sub_color: EV_COLOR
+			-- Background color for successful rows
+		once
+			create Result.make_with_rgb (1.0, 0.95, 0.95)
 		end
 
 	skipped_color: EV_COLOR

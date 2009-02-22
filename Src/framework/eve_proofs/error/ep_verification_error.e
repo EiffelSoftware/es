@@ -13,7 +13,8 @@ inherit
 	EP_ERROR
 		redefine
 			build_explain,
-			trace_single_line
+			trace_single_line,
+			trace_single_line_message
 		end
 
 create
@@ -90,6 +91,19 @@ feature -- Output
 
 	trace_single_line (a_text_formatter: TEXT_FORMATTER) is
 			-- Display short error, single line message in `a_text_formatter'.
+		do
+			Precursor {EP_ERROR} (a_text_formatter)
+			if tag /= Void then
+				a_text_formatter.add_space
+				a_text_formatter.add ("(")
+				a_text_formatter.add ("tag: ")
+				a_text_formatter.add (tag)
+				a_text_formatter.add (")")
+			end
+		end
+
+	trace_single_line_message (a_text_formatter: TEXT_FORMATTER) is
+			-- <Precursor>
 		do
 			Precursor {EP_ERROR} (a_text_formatter)
 			if tag /= Void then

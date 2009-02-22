@@ -165,6 +165,8 @@ feature -- Processing
 		local
 			l_keys: STRING
 		do
+			ep_context.set_line_number (a_node.line_number)
+			output.put_comment_line ("Debug clause --- " + file_location(a_node))
 			from
 				create l_keys.make_empty
 				a_node.keys.start
@@ -179,7 +181,7 @@ feature -- Processing
 					l_keys.append (", ")
 				end
 			end
-			output.put_comment_line ("Debug (" + l_keys + ") ignored --- " + file_location(a_node))
+			output.put_comment_line ("Debug (" + l_keys + ") ignored")
 		end
 
 	process_if_b (a_node: IF_B)
