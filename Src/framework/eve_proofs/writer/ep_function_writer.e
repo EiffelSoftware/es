@@ -88,9 +88,15 @@ feature -- Basic operations
 			contract_writer.set_expression_writer (expression_writer)
 			contract_writer.generate_contracts
 
-			output.put_line ("axiom (forall " + l_arguments + " ::")
-			output.put_line ("             { " + l_full_function + " } // Trigger")
-			output.put_line ("        (" + contract_writer.full_precondition + ") ==> (" + contract_writer.full_postcondition + "));")
+			if contract_writer.is_generation_failed then
+					-- TODO: improve message
+				event_handler.add_proof_skipped_event (a_feature.written_class, a_feature, "(function axiom) " + contract_writer.fail_reason)
+				output.put_comment_line ("Axiom ignored (skipped due to exception)")
+			else
+				output.put_line ("axiom (forall " + l_arguments + " ::")
+				output.put_line ("             { " + l_full_function + " } // Trigger")
+				output.put_line ("        (" + contract_writer.full_precondition + ") ==> (" + contract_writer.full_postcondition + "));")
+			end
 
 			output.put_new_line
 		end

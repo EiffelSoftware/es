@@ -17,12 +17,11 @@ feature -- Processing
 	process_un_old_b (a_node: UN_OLD_B)
 			-- Process `a_node'.
 		local
-			l_error: EP_GENERAL_ERROR
+			l_exception: EP_SKIP_EXCEPTION
 		do
-			create l_error.make (names.error_old_expression_not_allowed)
-			l_error.set_description (names.description_old_expression_not_allowed)
-			l_error.set_from_context
-			errors.extend (l_error)
+				-- TODO: better message
+			create l_exception.make ("Old expression not allowed")
+			l_exception.raise
 		end
 
 end

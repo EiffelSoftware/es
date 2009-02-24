@@ -16,6 +16,9 @@ inherit
 	SHARED_BYTE_CONTEXT
 		export {NONE} all end
 
+	EXCEPTION_MANAGER_FACTORY
+		export {NONE} all end
+
 create
 	make
 
@@ -56,10 +59,16 @@ feature -- Access
 	expression_writer: EP_EXPRESSION_WRITER
 			-- Writer used to generate contracts
 
+	fail_reason: STRING
+			-- Reason generation of contracts failed
+
 feature -- Status report
 
 	has_weakened_preconditions: BOOLEAN
 			-- Does feature have weakened its precondition?
+
+	is_generation_failed: BOOLEAN
+			-- Is generation of contracts failed?
 
 feature -- Element change
 
@@ -97,6 +106,8 @@ feature -- Basic operations
 			create full_precondition.make_empty
 			create full_postcondition.make_empty
 			has_weakened_preconditions := False
+			is_generation_failed := False
+			fail_reason := Void
 		ensure
 			current_feature_void: current_feature = Void
 			preconditions_reset: preconditions.is_empty
@@ -159,6 +170,8 @@ feature -- Basic operations
 				Context.set_byte_code (l_previous_byte_code)
 				l_previous_byte_code.setup_local_variables (False)
 			end
+		ensure
+			reason_set: is_generation_failed implies fail_reason /= Void
 		end
 
 feature {NONE} -- Implementation
@@ -173,22 +186,31 @@ feature {NONE} -- Implementation
 			valid_class_id: a_class_id > 0
 		local
 			l_assert: ASSERT_B
+			l_failed: BOOLEAN
 		do
-			from
-				a_assertion.start
-			until
-				a_assertion.after
-			loop
-				l_assert ?= a_assertion.item_for_iteration
-				check l_assert /= Void end
-				expression_writer.reset
-				expression_writer.set_processing_contract
-				l_assert.expr.process (expression_writer)
-				expression_writer.set_not_processing_contract
+			if not is_generation_failed then
+				from
+					a_assertion.start
+				until
+					a_assertion.after
+				loop
+					l_assert ?= a_assertion.item_for_iteration
+					check l_assert /= Void end
+					expression_writer.reset
+					expression_writer.set_processing_contract
+					l_assert.expr.process (expression_writer)
+					expression_writer.set_not_processing_contract
 
-				a_list.extend ([l_assert.tag, expression_writer.expression.string, a_class_id, l_assert.line_number])
+					a_list.extend ([l_assert.tag, expression_writer.expression.string, a_class_id, l_assert.line_number])
 
-				a_assertion.forth
+					a_assertion.forth
+				end
+			end
+		rescue
+			if {l_exception: EP_SKIP_EXCEPTION} exception_manager.last_exception then
+				is_generation_failed := True
+				fail_reason := l_exception.message
+				retry
 			end
 		end
 
@@ -327,7 +349,7 @@ feature {NONE} -- Implementation
 			l_list: BYTE_LIST [BYTE_NODE]
 			l_assert: ASSERT_B
 		do
-			if inv_byte_server.has (a_class.class_id) then
+			if not is_generation_failed and inv_byte_server.has (a_class.class_id) then
 				from
 					l_list := inv_byte_server.item (a_class.class_id).byte_list
 					l_list.start
@@ -345,6 +367,12 @@ feature {NONE} -- Implementation
 
 					l_list.forth
 				end
+			end
+		rescue
+			if {l_exception: EP_SKIP_EXCEPTION} exception_manager.last_exception then
+				is_generation_failed := True
+				fail_reason := l_exception.message
+				retry
 			end
 		end
 

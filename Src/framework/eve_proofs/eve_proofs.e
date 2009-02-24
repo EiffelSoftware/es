@@ -14,6 +14,9 @@ inherit
 	SHARED_EP_ENVIRONMENT
 		export {NONE} all end
 
+	EIFFEL_LAYOUT
+		export {NONE} all end
+
 create
 	make
 
@@ -219,11 +222,27 @@ feature {NONE} -- Implementation
 	background_theory_file_name: !STRING is
 			-- File to include for the background theory
 		local
+			l_path: DIRECTORY_NAME
+			l_file_name: FILE_NAME
+			l_file: RAW_FILE
 			ee: EXECUTION_ENVIRONMENT
 		once
-			create ee
-			if {l_result: STRING} (ee.get("EIFFEL_SRC") + "/framework/eve_proofs/eve_proofs_theory.bpl") then
-				Result := l_result
+			l_path := eiffel_layout.shared_application_path
+			l_path.extend ("tools")
+			l_path.extend ("eve_proofs")
+			create l_file_name.make
+			l_file_name.set_directory (l_path.string)
+			l_file_name.set_file_name ("eve_proofs_theory.bpl")
+			create l_file.make (l_file_name.string)
+			if l_file.exists then
+				if {l_result: STRING} l_file_name.string then
+					Result := l_result
+				end
+			else
+				create ee
+				if {l_result2: STRING} (ee.get("EIFFEL_SRC") + "/framework/eve_proofs/eve_proofs_theory.bpl") then
+					Result := l_result2
+				end
 			end
 		end
 

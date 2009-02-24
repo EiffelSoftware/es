@@ -16,6 +16,9 @@ inherit
 	SHARED_WORKBENCH
 		export {NONE} all end
 
+	EIFFEL_LAYOUT
+		export {NONE} all end
+
 create
 	make
 
@@ -162,6 +165,9 @@ feature {NONE} -- Implementation
 			l_registry_value: WEL_REGISTRY_KEY_VALUE
 			l_executable: STRING
 			l_error: EP_GENERAL_ERROR
+			l_path: DIRECTORY_NAME
+			l_file_name: FILE_NAME
+			l_file: RAW_FILE
 		do
 				-- Prepare command line arguments
 			create l_arguments.make
@@ -175,7 +181,17 @@ feature {NONE} -- Implementation
 
 				-- 2. Look in deliversy
 			if l_executable.is_empty then
-				-- TODO: add Boogie to delivery
+				l_path := eiffel_layout.shared_application_path
+				l_path.extend ("tools")
+				l_path.extend ("boogie")
+				l_path.extend ("bin")
+				create l_file_name.make
+				l_file_name.set_directory (l_path.string)
+				l_file_name.set_file_name ("Boogie.exe")
+				create l_file.make (l_file_name.string)
+				if l_file.exists then
+					l_executable := l_file_name.string
+				end
 			end
 
 				-- 3. Windows only: Look in registry
@@ -255,7 +271,11 @@ feature {NONE} -- Implementation
 			Result := l_output_path
 
 				-- TODO: remove this to use the EIFGENs directory
-			Result := "C:\Temp\output.bpl"
+			if {PLATFORM}.is_windows then
+				Result := "C:\Temp\output.bpl"
+			elseif {PLATFORM}.is_unix then
+				Result := "/var/tmp/output.bpl"
+			end
 		end
 
 	try_open_file (a_file: PLAIN_TEXT_FILE)

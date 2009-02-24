@@ -255,7 +255,8 @@ feature {NONE} -- Implementation
 			l_skip_reason: STRING
 		do
 			if l_skip then
-				event_handler.add_proof_skipped_event (a_feature.written_class, a_feature, l_skip_reason)
+					-- TODO: improve message
+				event_handler.add_proof_skipped_event (a_feature.written_class, a_feature, "(implementation) " + l_skip_reason)
 				output.put_comment_line ("Implementation ignored (proof skipped due to exception)")
 			else
 				implementation_writer.write_feature_implementation (a_feature, a_is_creation_routine)

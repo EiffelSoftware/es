@@ -52,12 +52,12 @@ feature -- Basic operations
 			if a_feature.type.is_natural then
 				output.put_comment_line ("Axiom for type NATURAL")
 				output.put_line ("axiom (forall heap: HeapType, $o: ref ::");
-				output.put_line ("            { heap[$o, " + l_field_name + "] }");
-				output.put_line ("        IsHeap(heap) ==> heap[$o, " + l_field_name + "] >= 0);");
+				output.put_line ("            { heap[$o, " + l_field_name + "] } // Trigger");
+				output.put_line ("        IsHeap(heap) && IsAllocatedAndNotVoid(heap, $o) ==> heap[$o, " + l_field_name + "] >= 0);");
 			elseif a_feature.type.is_attached and not a_feature.type.is_expanded then
-				output.put_comment_line ("Axiom for type NATURAL")
+				output.put_comment_line ("Axiom for attached types")
 				output.put_line ("axiom (forall heap: HeapType, $o: ref ::");
-				output.put_line ("            { heap[$o, " + l_field_name + "] }");
+				output.put_line ("            { heap[$o, " + l_field_name + "] } // Trigger");
 				output.put_line ("        IsHeap(heap) && IsAllocatedAndNotVoid(heap, $o) ==> IsAllocatedAndNotVoid(heap, heap[$o, " + l_field_name + "]));");
 			end
 		end

@@ -430,10 +430,8 @@ feature {NONE} -- Basic operations
 			end
 
 				-- Time information
-			if l_proof_event_item.milliseconds_used > 0 then
-				create l_label.make_with_text (l_proof_event_item.milliseconds_used.out)
-				a_row.set_item (time_column, l_label)
-			end
+			create l_label.make_with_text (l_proof_event_item.milliseconds_used.out)
+			a_row.set_item (time_column, l_label)
 
 			if is_successful_event (a_event_item) then
 					-- Icon

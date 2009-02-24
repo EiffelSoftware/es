@@ -81,7 +81,6 @@ feature -- Basic operations
 
 			output.put_comment_line ("Frame condition")
 
-			-- TODO: Generate real frame condition
 			output.put_line ("modifies Heap;")
 			frame_extractor.build_frame_condition (a_feature)
 			output.put_line ("ensures " + frame_extractor.last_frame_condition + "; // frame " + a_feature.written_class.name_in_upper + ":" + a_feature.feature_name)
@@ -159,23 +158,29 @@ feature {NONE} -- Implementation
 			contract_writer.set_feature (a_feature)
 			contract_writer.generate_contracts
 
-			if not contract_writer.preconditions.is_empty then
-				write_preconditions
-			end
-			if not contract_writer.postconditions.is_empty then
-				write_postconditions
-			end
+			if contract_writer.is_generation_failed then
+					-- TODO: improve message
+				event_handler.add_proof_skipped_event (a_feature.written_class, a_feature, "(signature) " + contract_writer.fail_reason)
+				output.put_comment_line ("Contract ignored (skipped due to exception)")
+			else
+				if not contract_writer.preconditions.is_empty then
+					write_preconditions
+				end
+				if not contract_writer.postconditions.is_empty then
+					write_postconditions
+				end
 
-				-- Invariants are generated for creation routines and public features,
-				-- i.e. features exported to more than the current class
-				-- TODO: this check won't work for half-public features, i.e features
-				-- exported to multiple classes: {A, B, C} in class A should be considered public
-			if
-				a_is_creation_routine or else
-				a_feature.export_status.is_all
-			then
-				if not contract_writer.invariants.is_empty then
-					write_invariants (a_is_creation_routine)
+					-- Invariants are generated for creation routines and public features,
+					-- i.e. features exported to more than the current class
+					-- TODO: this check won't work for half-public features, i.e features
+					-- exported to multiple classes: {A, B, C} in class A should be considered public
+				if
+					a_is_creation_routine or else
+					a_feature.export_status.is_all
+				then
+					if not contract_writer.invariants.is_empty then
+						write_invariants (a_is_creation_routine)
+					end
 				end
 			end
 

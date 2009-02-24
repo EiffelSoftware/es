@@ -170,10 +170,8 @@ feature {BYTE_NODE} -- Visitors
 	process_array_const_b (a_node: ARRAY_CONST_B)
 			-- Process `a_node'.
 		do
-			if not is_processing_contract then
-				raise_skip_exception ("Array constants not supported")
-			end
-			-- TODO: handle case if in contract
+				-- TODO: implement
+			raise_skip_exception ("Array constants not supported")
 		end
 
 	process_attribute_b (a_node: ATTRIBUTE_B)
@@ -398,10 +396,8 @@ feature {BYTE_NODE} -- Visitors
 	process_bit_const_b (a_node: BIT_CONST_B)
 			-- Process `a_node'.
 		do
-			if not is_processing_contract then
-				raise_skip_exception ("Bit constants not supported")
-			end
-			-- TODO: handle case in contracts
+				-- TODO: implement
+			raise_skip_exception ("Array constants not supported")
 		end
 
 	process_bool_const_b (a_node: BOOL_CONST_B)
@@ -576,26 +572,14 @@ feature {BYTE_NODE} -- Visitors
 			-- Process `a_node'.
 		do
 				-- TODO: implement
-
-			if is_processing_contract then
-					-- TODO: add warning
-				expression.put ("false")
-			else
-				raise_skip_exception ("Object test not supported")
-			end
+			raise_skip_exception ("Object test not supported")
 		end
 
 	process_object_test_local_b (a_node: OBJECT_TEST_LOCAL_B)
 			-- Process `a_node'.
 		do
 				-- TODO: implement
-
-			if is_processing_contract then
-					-- TODO: add warning
-				expression.put ("Void")
-			else
-				raise_skip_exception ("Object test local not supported")
-			end
+			raise_skip_exception ("Object test local not supported")
 		end
 
 	process_paran_b (a_node: PARAN_B)
@@ -635,9 +619,9 @@ feature {BYTE_NODE} -- Visitors
 			l_temp_expression: STRING
 			i, j, k: INTEGER
 		do
-			if a_node.is_inline_agent and not is_processing_contract then
+			if a_node.is_inline_agent then
+					-- TODO: implement
 				raise_skip_exception ("Inline agent not supported")
-				-- TODO: handle case in contracts
 			end
 
 			l_agent_class := system.class_of_id (a_node.origin_class_id)
