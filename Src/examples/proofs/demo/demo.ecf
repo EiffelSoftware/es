@@ -14,7 +14,6 @@
 			</file_rule>
 			<cluster name="account" location="..\account\"/>
 			<cluster name="archiver" location="..\archiver\"/>
-<!--			<cluster name="arrayed_stack" location="..\arrayed_stack\"/>-->
 			<cluster name="cell" location="..\cell\"/>
 			<cluster name="counter" location="..\counter\"/>
 			<cluster name="errors" location="..\errors\"/>
@@ -23,8 +22,8 @@
 			<cluster name="marriage" location="..\marriage\"/>
 			<cluster name="mccarthy" location="..\mccarthy\"/>
 			<cluster name="simple" location="..\simple\"/>
-<!--			<cluster name="test" location="..\test\"/>-->
 			<cluster name="unsupported" location="..\unsupported\"/>
+			<cluster name="generics" location="C:\eve\Src\examples\proofs\generics\"/>
 		</cluster>
 	</target>
 </system>

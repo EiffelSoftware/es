@@ -146,6 +146,7 @@ feature {NONE} -- Visitors
 			l_byte_code: BYTE_CODE
 			l_previous_byte_code: BYTE_CODE
 			l_previous_feature: FEATURE_I
+			l_previous_class_type: CLASS_TYPE
 			l_list: LIST [ASSERTION_BYTE_CODE]
 		do
 			current_feature := a_feature
@@ -156,11 +157,13 @@ feature {NONE} -- Visitors
 					-- Save byte context
 				l_previous_byte_code := Context.byte_code
 				l_previous_feature := Context.current_feature
+				l_previous_class_type := Context.class_type
 					-- Set up byte context
 				Context.clear_feature_data
 				Context.clear_class_type_data
--- TODO: types can be empty
-				Context.init (a_feature.written_class.types.first)
+				if not current_feature.written_class.is_generic then
+					Context.init (a_feature.written_class.types.first)
+				end
 				Context.set_current_feature (a_feature)
 				Context.set_byte_code (l_byte_code)
 
@@ -187,8 +190,10 @@ feature {NONE} -- Visitors
 					-- Restore byte context
 				Context.clear_feature_data
 				Context.clear_class_type_data
+				if l_previous_class_type /= Void then
+					Context.init (l_previous_class_type)
+				end
 				if l_previous_feature /= Void then
-					Context.init (l_previous_feature.written_class.types.first)
 					Context.set_current_feature (l_previous_feature)
 				end
 				if l_previous_byte_code /= Void then
