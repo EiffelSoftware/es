@@ -263,7 +263,12 @@ feature{NONE} -- Test case generation and execution
 --				error_handler.report_manual_testing
 --				execute_manual_tests
 --			end
-			if is_automatic_testing_enabled then
+
+ 			-- Execute evolutionary testing
+			if is_evolution_enabled then
+				error_handler.report_evolved_testing
+				execute_evolved_tests
+			elseif is_automatic_testing_enabled then
 				error_handler.report_random_testing
 				execute_random_tests
 			end
@@ -275,38 +280,31 @@ feature{NONE} -- Test case generation and execution
 			end
 		end
 
---	build_manual_test_cases is
---			-- Create and populate `manual_test_cases' with those
---			-- manual unit test cases that are clients of any class
---			-- under test.
---		require
---			universe_not_empty: universe /= Void
---			classes_under_test_not_void: classes_under_test /= Void
---			no_class_under_test_void: not classes_under_test.has (Void)
---		local
---			test_case_locator: AUT_MANUAL_TEST_CASE_LOCATOR
---		do
---			create test_case_locator.make (universe)
---			test_case_locator.locate (classes_under_test, is_deep_relevancy_enabled)
---			manual_unit_tests := test_case_locator.relevant_test_case_classes
---		ensure
---			manual_unit_tests_not_void: manual_unit_tests /= Void
---			no_manual_unit_test_void: not manual_unit_tests.has (Void)
---		end
 
---	execute_manual_tests is
---			-- Execute manually written tests.
---		require
---			universe_not_empty: universe /= Void
---			interpreter_not_void: interpreter /= Void
---			manual_unit_tests_not_void: manual_unit_tests /= Void
---			no_manual_unit_test_void: not manual_unit_tests.has (Void)
---		local
---			strategy: AUT_MANUAL_STRATEGY
---		do
---			create strategy.make (manual_unit_tests, universe, interpreter, error_handler)
---			execute_task_until_time_out (strategy)
---		end
+	execute_evolved_tests is
+		-- Execute evolved tests
+		require
+			system_not_empty: system /= Void
+			interpreter_not_void: interpreter /= Void
+			types_under_test_not_void: types_under_test /= Void
+			no_type_under_test_void: not types_under_test.has (Void)
+		local
+			cs: DS_LINEAR_CURSOR [CL_TYPE_A]
+			strategy: AUT_EVOLVE_STRATEGY
+		do
+			interpreter.set_is_in_replay_mode (False)
+			create strategy.make (system, interpreter, error_handler)
+			from
+				cs := types_under_test.new_cursor
+				cs.start
+			until
+				cs.off
+			loop
+				strategy.queue.set_static_priority_of_type (cs.item, 10)
+				cs.forth
+			end
+			execute_task_until_time_out (strategy)
+		end
 
 	execute_random_tests is
 			-- Execute random tests.
