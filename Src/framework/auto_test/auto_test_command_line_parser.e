@@ -15,7 +15,10 @@ inherit
 
 	AUT_SHARED_RANDOM
 
+	AUT_SHARED_PARAMETER_LOADER
+
 	KL_SHARED_EXCEPTIONS
+
 	KL_SHARED_ARGUMENTS
 
 feature -- Status report
@@ -71,6 +74,9 @@ feature -- Status report
 	is_ddmin_enabled: BOOLEAN
 			-- Should test cases be minimized via ddmin?
 
+    is_evolution_enabled: BOOLEAN
+			-- Should test cases be minimized via ddmin?
+
 	proxy_time_out: INTEGER
 			-- Proxy time out in second
 
@@ -107,6 +113,7 @@ feature -- Parsing
 			disable_minimize_option: AP_FLAG
 			minimize_option: AP_STRING_OPTION
 			finalize_option: AP_FLAG
+			evolution_option: AP_FLAG
 			output_dir_option: AP_STRING_OPTION
 			time_out_option: AP_INTEGER_OPTION
 			seed_option: AP_INTEGER_OPTION
@@ -120,6 +127,10 @@ feature -- Parsing
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
 			parser.set_parameters_description ("class-name+")
+
+			create evolution_option.make ('E', "evolve")
+			evolution_option.set_description ("Evolve test cases using evolve.conf file")
+			parser.options.force_last (evolution_option)
 
 			create version_option.make ('V', "version")
 			version_option.set_description ("Output version information and exit")
@@ -194,6 +205,15 @@ feature -- Parsing
 			parser.options.force_last (l_help_option)
 
 			parser.parse_list (a_arguments)
+
+
+			if evolution_option.was_found then
+				is_evolution_enabled := true
+				parameter_loader.set_folder_location (output_dirname)
+				parameter_loader.load_parameters
+			else
+				is_evolution_enabled := false
+			end
 
 			if version_option.was_found then
 				error_handler.enable_verbose
