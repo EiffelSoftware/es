@@ -70,10 +70,12 @@ feature -- Execution
 	start is
 		do
 			Precursor
+			queue.set_feature_table
 			assign_void
 			if queue.highest_dynamic_priority > 0 then
 				select_new_sub_task
 			end
+
 		end
 
 	cancel is
@@ -116,6 +118,7 @@ feature {NONE} -- Implementation
 			caller: AUT_DETERMINISTIC_FEATURE_CALLER
 		do
 			queue.select_next
+
 			selected_feature := queue.last_feature
 			create caller.make (system, interpreter, queue, error_handler, feature_table)
 			caller.set_feature_and_type (selected_feature.feature_, selected_feature.type)

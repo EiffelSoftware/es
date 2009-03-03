@@ -104,6 +104,7 @@ feature -- Execution
 		local
 			i: INTEGER
 			receiver: ITP_VARIABLE
+			r,p:REAL
 		do
 			if object_creator /= Void then
 				object_creator.step
@@ -117,11 +118,17 @@ feature -- Execution
 				end
 			elseif receivers.count < types.count then
 
+				random.forth
+
+
 				if parameter_loader.is_evolving_creation_probability then
-					random.forth
-					if ((random.item  \\ 100) / 100) > parameter_loader.get_next_creation_probability then
+					r := (random.item  \\ 100) / 100
+					p := parameter_loader.get_next_creation_probability
+					if r > p then
 						i := 0
 					end
+				else
+					i := (random.item  \\ 5)
 				end
 
 

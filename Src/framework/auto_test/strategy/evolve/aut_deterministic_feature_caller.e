@@ -127,16 +127,30 @@ feature -- Execution
 		end
 
 	step is
+		local
+		r,p:REAL
+
 		do
+			
 			if type = Void then
 				-- 1st step in diversify mode
-				create_input_creator_diversify
+				random.forth
+				r := (random.item  \\ 100) / 100
+				p := parameter_loader.get_next_diversity_probability
+				io.put_string ("rand = " + r.out + " probability = " + p.out + "\n/n ")
+
+				if parameter_loader.is_evolving_diversification_probability and r > p then
+					io.putstring ("Diversify")
+					io.new_line
+					create_input_creator_diversify
+				else
+					io.putstring ("NOT Diversify")
+					io.new_line
+				end
+
 			elseif input_creator = Void then
 				-- 1st step in non-diversify mode
 				create_input_creator
-				-- the following two lines are commented out in order to disable diversification (uncomment them to re-enable it)
-				--create feature_caller.make (system, interpreter, queue, error_handler, feature_table)
-				--feature_caller.start
 			elseif input_creator.has_next_step then
 				input_creator.step
 			elseif feature_caller /= Void and then feature_caller.has_next_step then

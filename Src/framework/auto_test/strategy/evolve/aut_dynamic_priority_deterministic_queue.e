@@ -34,12 +34,11 @@ feature {NONE} -- Initialization
 			tester: AUT_FEATURE_OF_TYPE_EQUALITY_TESTER
 		do
 			current_selected := 1
-    		used_times := 0
-		    used_limit := 0
 			system := a_system
 			create feature_list_table.make_map_default
 			create priority_table.make_default
 			create tester.make
+			create static_feature_list.make
 			priority_table.set_key_equality_tester (tester)
 		ensure
 			system_set: system = a_system
@@ -157,11 +156,27 @@ feature -- Changing Priority
 			end
 		end
 
+	set_feature_table() is
+			--
+		local
+			feat: AUT_FEATURE_OF_TYPE
+			list: DS_LINKED_LIST [AUT_FEATURE_OF_TYPE]
+		do
+
+			feature_list_table.search (highest_dynamic_priority)
+			list := feature_list_table.found_item
+			static_feature_list := list.cloned_object
+		--	from list.start
+		--	until
+		--		list.after
+		--	loop
+		--		static_feature_list.put_last (list.item_for_iteration)
+		--		list.forth
+		--	end
+		end
+
 feature -- Basic routines
 
-	current_selected : INTEGER
-    used_times :INTEGER
-    used_limit : INTEGER
 
 	select_next is
 			-- Select a feature to test and make it available via
@@ -176,33 +191,20 @@ feature -- Basic routines
 			check
 				found: feature_list_table.found
 			end
-
 			list := feature_list_table.found_item
 
-			if parameter_loader.is_sequential_method_invocation then
-				if (current_selected >= list.count) then
-					current_selected := 1
-					used_times := 0
-				end
 
-				if used_times = used_limit then
-					used_times := 0
-					if (current_selected = list.count) then
-						current_selected := 1
-					else
-						current_selected := current_selected + 1
-					end
-				else
-					used_times := used_times + 1
+			if parameter_loader.is_sequential_method_invocation then
+				if (current_selected >= static_feature_list.count) then
+					current_selected := 1
 				end
+				last_feature := static_feature_list.item (current_selected)
+				current_selected := current_selected + 1
 			else
 				random.forth
 				i := (random.item  \\ list.count) + 1
 				last_feature := list.item (i)
 			end
-
-		ensure
-			last_feature_has_highest_priority: dynamic_priority (last_feature) = highest_dynamic_priority
 		end
 
 	mark (a_feature: AUT_FEATURE_OF_TYPE) is
@@ -250,11 +252,25 @@ feature -- Basic routines
 
 feature {NONE} -- Implementation
 
+	current_selected : INTEGER
+			-- Keep track of the last feature  that was called
+
+	static_feature_list : DS_LINKED_LIST [AUT_FEATURE_OF_TYPE]
+			-- Static list of all features to call
+
 	feature_list_table: DS_HASH_TABLE [DS_LINKED_LIST [AUT_FEATURE_OF_TYPE], INTEGER]
 			-- Table that maps dynamic priorities to lists of features
 
 	priority_table: DS_HASH_TABLE [DS_PAIR [INTEGER, INTEGER], AUT_FEATURE_OF_TYPE]
 			-- Table that maps features to their priorities (static, dynamic)
+
+	is_feature_good(name : STRING) is
+			-- remove all the features inherited from any and features we don't want to test
+		do
+
+
+		end
+
 
 	reset_dynamic_priorities is
 			-- Reset the dynamic priorities of all
