@@ -196,6 +196,7 @@ feature {NONE} -- Steps
 		local
 			class_: CLASS_C
 		do
+			io.putstring ("Choosing primitive at random")
 			class_ := type.associated_class
 			if string_equality_tester.test (class_.name_in_upper, "BOOLEAN") then
 				choose_boolean_constant

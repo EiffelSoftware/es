@@ -52,7 +52,7 @@ feature -- Load
 		end
 
 feature -- Parameters
-	is_sequential_method_invocation :BOOLEAN 
+	is_sequential_method_invocation :BOOLEAN
 	is_evolving_primitive :BOOLEAN
 	is_evolving_sed :BOOLEAN
 	is_evolving_creation_probability :BOOLEAN
@@ -368,7 +368,7 @@ feature {NONE } -- Implementation
 	natural_16_file_name:   STRING is "natural_16.txt"
 	natural_32_file_name:   STRING is "natural_32.txt"
 	natural_64_file_name:   STRING is "natural_64.txt"
-	sed_file_name:          STRING is "sed.txt"
+	sed_file_name:          STRING is "seed.txt"
 	creation_probability_file_name:  STRING is "creation_probability.txt"
 	diversity_probability_file_name: STRING is "diversity_probability.txt"
 	method_call_sequence_file_name:  STRING is "method_call_sequence.txt"
@@ -523,8 +523,8 @@ load_configuration is
 			until
 				file.after
 			loop
-				file.read_integer_8
-			    integer_8_list.put_last (file.last_integer_8)
+				file.read_double
+			    integer_8_list.put_last (file.last_double.truncated_to_integer_64.to_integer_8)
 			end
 			file.close
 			io.putstring ("Integer_8 list created with " + integer_8_list.count.out)
@@ -537,8 +537,8 @@ load_configuration is
 			until
 				file.after
 			loop
-				file.read_integer_16
-			    integer_16_list.put_last (file.last_integer_16)
+				file.read_double
+			    integer_16_list.put_last (file.last_double.truncated_to_integer_64.to_integer_16)
 			end
 			file.close
 			io.putstring ("Integer_16 list created with " + integer_16_list.count.out)
@@ -551,8 +551,8 @@ load_configuration is
 			until
 				file.after
 			loop
-				file.read_integer_32
-			    integer_32_list.put_last (file.last_integer_32)
+				file.read_double
+			    integer_32_list.put_last (file.last_double.truncated_to_integer)
 			end
 			file.close
 			io.putstring ("Integer_32 list created with " + integer_32_list.count.out)
@@ -565,8 +565,8 @@ load_configuration is
 			until
 				file.after
 			loop
-				file.read_integer_16
-			    integer_64_list.put_last (file.last_integer_64)
+				file.read_double
+			    integer_64_list.put_last (file.last_double.truncated_to_integer_64)
 			end
 			file.close
 			io.putstring ("Integer_64 list created with " + integer_64_list.count.out)
@@ -579,11 +579,11 @@ load_configuration is
 			until
 				file.after
 			loop
-				file.read_natural_8
-			    natural_8_list.put_last (file.last_natural_8)
+				file.read_double
+			    natural_8_list.put_last (file.last_double.truncated_to_integer.to_natural_8)
 			end
 			file.close
-			io.putstring ("Neutral_8 list created with " + natural_8_list.count.out )
+			io.putstring ("Natural_8 list created with " + natural_8_list.count.out )
 			io.put_new_line
 
 
@@ -593,8 +593,8 @@ load_configuration is
 			until
 				file.after
 			loop
-				file.read_natural_16
-			    natural_16_list.put_last (file.last_natural_16)
+				file.read_double
+			    natural_16_list.put_last (file.last_double.truncated_to_integer.to_natural_16)
 			end
 			file.close
 			io.putstring ("Neutral_16 list created with " + natural_16_list.count.out )
@@ -607,8 +607,8 @@ load_configuration is
 			until
 				file.after
 			loop
-				file.read_natural_32
-			    natural_32_list.put_last (file.last_natural_32)
+				file.read_double
+			    natural_32_list.put_last (file.last_double.truncated_to_integer.to_natural_32)
 			end
 			file.close
 			io.putstring ("Neutral_32 list created with " + natural_32_list.count.out )
@@ -621,21 +621,18 @@ load_configuration is
 			until
 				file.after
 			loop
-				file.read_natural_64
-			    natural_64_list.put_last (file.last_natural_64)
+				file.read_double
+			    natural_64_list.put_last (file.last_double.truncated_to_integer.to_natural_64)
 			end
 			file.close
 			io.putstring ("Neutral_64 list created with " + natural_64_list.count.out )
 			io.put_new_line
-
 
 			create file.make_open_read (folder_location + sed_file_name)
 			load_integer_from_file(file, sed_list)
 			file.close
 			io.putstring ("sed_list list created with " + sed_list.count.out )
 			io.put_new_line
-
-
 
 			create file.make_open_read (folder_location + creation_probability_file_name)
 			load_double_from_file(file, creation_probability_list)
@@ -655,6 +652,73 @@ load_configuration is
 			file.close
 			io.putstring ("method_sequence_list list created with " + method_sequence_list.count.out )
 			io.put_new_line
+
+			--Add some default values
+			integer_8_list.put_last(-1)
+			integer_8_list.put_last(0)
+			integer_8_list.put_last(1)
+			integer_8_list.put_last ({INTEGER_8}.max_value)
+			integer_8_list.put_last ({INTEGER_8}.min_value)
+
+			integer_16_list.put_last(-1)
+			integer_16_list.put_last(0)
+			integer_16_list.put_last(1)
+			integer_16_list.put_last ({INTEGER_16}.max_value)
+			integer_16_list.put_last ({INTEGER_16}.min_value)
+
+			integer_32_list.put_last(-1)
+			integer_32_list.put_last(0)
+			integer_32_list.put_last(1)
+			integer_32_list.put_last ({INTEGER_32}.max_value)
+			integer_32_list.put_last ({INTEGER_32}.min_value)
+
+			integer_64_list.put_last(-1)
+			integer_64_list.put_last(0)
+			integer_64_list.put_last(1)
+			integer_64_list.put_last ({INTEGER_64}.max_value)
+			integer_64_list.put_last ({INTEGER_64}.min_value)
+
+			natural_8_list.put_last (0)
+			natural_8_list.put_last (1)
+			natural_8_list.put_last (2)
+			natural_8_list.put_last ({NATURAL_8}.max_value)
+			natural_8_list.put_last ({NATURAL_8}.min_value)
+
+			natural_16_list.put_last (0)
+			natural_16_list.put_last (1)
+			natural_16_list.put_last (2)
+			natural_16_list.put_last ({NATURAL_16}.max_value)
+			natural_16_list.put_last ({NATURAL_16}.min_value)
+
+			natural_32_list.put_last (0)
+			natural_32_list.put_last (1)
+			natural_32_list.put_last (2)
+			natural_32_list.put_last ({NATURAL_32}.max_value)
+			natural_32_list.put_last ({NATURAL_32}.min_value)
+
+			natural_64_list.put_last (0)
+			natural_64_list.put_last (1)
+			natural_64_list.put_last (2)
+			natural_64_list.put_last ({NATURAL_64}.max_value)
+			natural_64_list.put_last ({NATURAL_64}.min_value)
+
+			real_32_list.put_last (-1.0)
+			real_32_list.put_last (0)
+			real_32_list.put_last (1)
+			real_32_list.put_last (-2)
+			real_32_list.put_last (2)
+		    real_32_list.put_last((1.17549e-38).truncated_to_real)
+			real_32_list.put_last((1.19209e-07).truncated_to_real)
+
+			real_64_list.put_last (-1.0)
+			real_64_list.put_last (0)
+			real_64_list.put_last (1)
+			real_64_list.put_last (-2)
+			real_64_list.put_last (2)
+			real_64_list.put_last (2)
+			real_64_list.put_last (2)
+		    real_64_list.put_last(1.7976931348623157e+308)
+			real_64_list.put_last(2.2204460492503131e-16)
 
 		end
 
