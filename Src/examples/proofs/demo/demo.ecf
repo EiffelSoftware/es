@@ -18,12 +18,13 @@
 			<cluster name="counter" location="..\counter\"/>
 			<cluster name="errors" location="..\errors\"/>
 			<cluster name="formatter" location="..\formatter\"/>
+			<cluster name="inheritance" location="..\inheritance\"/>
 			<cluster name="invalid_frames" location="..\invalid_frames\"/>
 			<cluster name="marriage" location="..\marriage\"/>
 			<cluster name="mccarthy" location="..\mccarthy\"/>
 			<cluster name="simple" location="..\simple\"/>
 			<cluster name="unsupported" location="..\unsupported\"/>
-			<cluster name="generics" location="C:\eve\Src\examples\proofs\generics\"/>
+			<cluster name="generics" location="..\generics\"/>
 		</cluster>
 	</target>
 </system>

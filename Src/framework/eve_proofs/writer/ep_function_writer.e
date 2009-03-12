@@ -101,6 +101,81 @@ feature -- Basic operations
 			output.put_new_line
 		end
 
+	write_postcondition_predicate (a_feature: !FEATURE_I)
+			-- TODO: move someplace else
+		local
+			l_predicate_name, l_arguments, l_type: STRING
+			l_argument_name, l_full_function: STRING
+			i: INTEGER
+			l_old_handler: EP_OLD_HEAP_HANDLER
+			l_expression_writer: EP_EXPRESSION_WRITER
+		do
+			output.reset
+
+			create l_old_handler.make ("old_heap")
+			create l_expression_writer.make (name_mapper, l_old_handler)
+
+			l_predicate_name := name_generator.postcondition_predicate_name (a_feature)
+			l_full_function := l_predicate_name.twin
+			l_arguments := "heap: HeapType, old_heap: HeapType, current: ref"
+			l_full_function.append ("(heap, old_heap, current")
+			from
+				i := 1
+			until
+				i > a_feature.argument_count
+			loop
+				l_argument_name := name_generator.argument_name (a_feature.arguments.item_name (i))
+				l_arguments.append (", ")
+				l_arguments.append (l_argument_name)
+				l_arguments.append (": ")
+				l_arguments.append (type_mapper.boogie_type_for_type (a_feature.arguments.i_th (i)))
+
+				l_full_function.append (", ")
+				l_full_function.append (l_argument_name)
+
+				i := i + 1
+			end
+
+			if a_feature.has_return_value then
+				l_arguments.append (", result")
+				l_arguments.append (": ")
+				l_arguments.append (type_mapper.boogie_type_for_type (a_feature.type))
+
+				l_full_function.append (", ")
+				l_full_function.append ("result")
+			end
+
+			l_full_function.append (")")
+
+			output.put_comment_line ("Postcondition predicate")
+			output.put_line ("function " + l_predicate_name + "(" + l_arguments + ") returns (bool);")
+
+			name_mapper.set_current_feature (a_feature)
+			name_mapper.set_current_name ("current")
+			name_mapper.set_target_name ("current")
+			name_mapper.set_heap_name ("heap")
+			name_mapper.set_result_name ("result")
+
+			expression_writer.reset
+
+			contract_writer.reset
+			contract_writer.set_feature (a_feature)
+			contract_writer.set_expression_writer (l_expression_writer)
+			contract_writer.generate_contracts
+
+			if contract_writer.is_generation_failed then
+					-- TODO: improve message
+				event_handler.add_proof_skipped_event (a_feature.written_class, a_feature, "(postcondition predicate axiom) " + contract_writer.fail_reason)
+				output.put_comment_line ("Axiom ignored (skipped due to exception)")
+			else
+				output.put_line ("axiom (forall " + l_arguments + " ::")
+				output.put_line ("             { " + l_full_function + " } // Trigger")
+				output.put_line ("        (" + l_full_function + ") <==> (" + contract_writer.full_postcondition + "));")
+			end
+
+			output.put_new_line
+		end
+
 feature {NONE} -- Implementation
 
 	name_mapper: !EP_NORMAL_NAME_MAPPER

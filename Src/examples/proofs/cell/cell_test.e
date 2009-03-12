@@ -37,8 +37,6 @@ feature {NONE} -- Initialization
 		end
 
 	make_agent_test
-		indexing
-			proof: False
 		local
 			c1, c2: INTEGER_CELL
 		do

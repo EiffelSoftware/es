@@ -220,6 +220,8 @@ feature {NONE} -- Implementation
 				Result := "0"
 			elseif a_type.is_boolean then
 				Result := "false"
+			elseif a_type.is_expanded then
+				Result := "Unknown"
 			else
 				Result := "Void"
 			end

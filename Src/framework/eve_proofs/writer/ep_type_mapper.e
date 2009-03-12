@@ -29,7 +29,7 @@ feature -- Access
 				Result := "int"
 			elseif l_type.is_expanded then
 					-- TODO: this type doesn't exist anymore in Boogie 2
-				Result := "any"
+				Result := "unknown"
 			else
 				Result := "ref"
 			end

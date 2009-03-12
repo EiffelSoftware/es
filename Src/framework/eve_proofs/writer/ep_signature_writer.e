@@ -61,6 +61,8 @@ feature -- Basic operations
 			frame_extractor.build_frame_condition (a_feature)
 			output.put_line ("ensures " + frame_extractor.last_frame_condition + "; // frame " + a_feature.written_class.name_in_upper + ":" + a_feature.feature_name)
 
+--			write_postcondition_predicate (a_feature)
+
 			output.set_indentation ("")
 			output.put_new_line
 		end
@@ -299,6 +301,36 @@ feature {NONE} -- Implementation
 				Result.append (" tag:")
 				Result.append (a_item.tag)
 			end
+		end
+
+	write_postcondition_predicate (a_feature: !FEATURE_I)
+			-- TODO
+		local
+			l_predicate_name, l_argument_name, l_argument_type: STRING
+			i: INTEGER
+		do
+			output.put_comment_line ("Postcondition predicate")
+
+			output.put_indentation
+			output.put ("free ensures ");
+			l_predicate_name := name_generator.postcondition_predicate_name (a_feature);
+			output.put (l_predicate_name + "(Heap, old(Heap), Current")
+
+			-- TODO: code reuse with implementation writer => inherit from signature writer?
+			from
+				i := 1
+			until
+				i > a_feature.argument_count
+			loop
+				l_argument_name := name_generator.argument_name (a_feature.arguments.item_name (i))
+				output.put (", " + l_argument_name)
+				i := i + 1
+			end
+			if not a_feature.type.is_void then
+				output.put (", Result")
+			end
+			output.put (");")
+			output.put_new_line
 		end
 
 end

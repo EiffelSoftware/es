@@ -37,25 +37,25 @@ feature -- Access
 	heap_name: STRING
 			-- Name of heap in Boogie code
 		do
-			Result := internal_heap_name
+			Result := internal_heap_name.twin
 		end
 
 	current_name: STRING
 			-- Name of current reference in Boogie code
 		do
-			Result := internal_current_name
+			Result := internal_current_name.twin
 		end
 
 	target_name: STRING
 			-- Name of current reference in Boogie code
 		do
-			Result := internal_target_name
+			Result := internal_target_name.twin
 		end
 
 	result_name: STRING
 			-- Name of result reference in Boogie code
 		do
-			Result := internal_result_name
+			Result := internal_result_name.twin
 		end
 
 	argument_name (a_node: ARGUMENT_B): STRING

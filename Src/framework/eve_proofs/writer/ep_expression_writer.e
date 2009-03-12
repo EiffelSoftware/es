@@ -186,13 +186,15 @@ feature {BYTE_NODE} -- Visitors
 			check l_feature /= Void end
 			l_attached_feature := l_feature
 
-			feature_list.record_feature_needed (l_attached_feature)
-			if is_processing_contract then
-				feature_list.record_feature_used_in_contract (l_attached_feature)
-			end
+			process_feature_call (l_attached_feature, a_node.parameters)
 
-			l_field_name := name_generator.attribute_name (l_feature)
-			expression.put (name_mapper.heap_name + "[" + name_mapper.target_name + ", " + l_field_name + "]")
+--			feature_list.record_feature_needed (l_attached_feature)
+--			if is_processing_contract then
+--				feature_list.record_feature_used_in_contract (l_attached_feature)
+--			end
+
+--			l_field_name := name_generator.attribute_name (l_feature)
+--			expression.put (name_mapper.heap_name + "[" + name_mapper.target_name + ", " + l_field_name + "]")
 		end
 
 	process_bin_and_b (a_node: BIN_AND_B)
@@ -463,6 +465,7 @@ feature {BYTE_NODE} -- Visitors
 			side_effect.put_comment_line ("Object creation")
 			side_effect.put_line ("havoc " + l_local_name + ";")
 			side_effect.put_line ("assume !" + name_mapper.heap_name + "[" + l_local_name + ", $allocated] && " + l_local_name + " != Void;")
+			side_effect.put_line ("assume " + name_mapper.heap_name + "[" + l_local_name + ", $type] == " + name_generator.type_name (a_node.type) + ";")
 			side_effect.put_line ("call " + l_creation_routine_name + "(" + l_arguments + ");")
 
 			expression.put (l_local_name)
@@ -912,7 +915,7 @@ feature {NONE} -- Implementation
 	process_normal_feature_call (a_feature: !FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B])
 			-- Process feature call of feature `a_feature' with parameters `a_parameters'.
 		local
-			l_function_name, l_procedure_name: STRING
+			l_function_name, l_procedure_name, l_field_name: STRING
 			l_temp_expression, l_arguments: STRING
 		do
 			feature_list.record_feature_needed (a_feature)
@@ -920,32 +923,37 @@ feature {NONE} -- Implementation
 				feature_list.record_feature_used_in_contract (a_feature)
 			end
 
-			l_function_name := name_generator.functional_feature_name (a_feature)
-			l_procedure_name := name_generator.procedural_feature_name (a_feature)
-
-				-- Store expression
-			l_temp_expression := expression.string
-				-- Evaluate parameters with fresh expression
-			expression.reset
-			expression.put (name_mapper.target_name)
-			safe_process (a_parameters)
-			l_arguments := expression.string
-				-- Restore original expression
-			expression.reset
-			expression.put (l_temp_expression)
-
-			if a_feature.has_return_value then
-				create_new_local (a_feature.type)
-				side_effect.put_line ("call " + last_local + " := " + l_procedure_name + "(" + l_arguments + ");")
+			if a_feature.is_attribute then
+				l_field_name := name_generator.attribute_name (a_feature)
+				expression.put (name_mapper.heap_name + "[" + name_mapper.target_name + ", " + l_field_name + "]")
 			else
-				side_effect.put_line ("call " + l_procedure_name + "(" + l_arguments + ");")
-			end
+				l_function_name := name_generator.functional_feature_name (a_feature)
+				l_procedure_name := name_generator.procedural_feature_name (a_feature)
 
-			if feature_list.is_pure (a_feature) or not a_feature.has_return_value then
-				expression.put (l_function_name + "(" + name_mapper.heap_name + ", " + l_arguments + ")")
-			else
-				check not is_processing_contract end
-				expression.put (last_local)
+					-- Store expression
+				l_temp_expression := expression.string
+					-- Evaluate parameters with fresh expression
+				expression.reset
+				expression.put (name_mapper.target_name)
+				safe_process (a_parameters)
+				l_arguments := expression.string
+					-- Restore original expression
+				expression.reset
+				expression.put (l_temp_expression)
+
+				if a_feature.has_return_value then
+					create_new_local (a_feature.type)
+					side_effect.put_line ("call " + last_local + " := " + l_procedure_name + "(" + l_arguments + ");")
+				else
+					side_effect.put_line ("call " + l_procedure_name + "(" + l_arguments + ");")
+				end
+
+				if feature_list.is_pure (a_feature) or not a_feature.has_return_value then
+					expression.put (l_function_name + "(" + name_mapper.heap_name + ", " + l_arguments + ")")
+				else
+					check not is_processing_contract end
+					expression.put (last_local)
+				end
 			end
 		end
 

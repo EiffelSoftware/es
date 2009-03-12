@@ -77,7 +77,7 @@ feature -- Basic operations
 			-- Generate code for `a_class'.
 		do
 				-- Inheritance relation
-			-- TODO
+			process_inheritance (a_class)
 
 				-- Creation routines
 			if a_class.creators /= Void then
@@ -118,6 +118,10 @@ feature -- Basic operations
 					output.put (function_writer.output.string)
 				end
 
+					-- Generate postcondition predicate
+--				function_writer.write_postcondition_predicate (a_feature)
+--				output.put (function_writer.output.string)
+
 					-- Generate signature
 				signature_writer.write_feature_signature (a_feature)
 				output.put (signature_writer.output.string)
@@ -126,6 +130,12 @@ feature -- Basic operations
 				if is_generating_implementation then
 					if feature_list.is_creation_routine_already_generated (a_feature) then
 						output.put_comment_line ("Implementation already done for feature as creation routine")
+					elseif a_feature.is_deferred then
+							-- TODO: internationalization
+						event_handler.add_proof_skipped_event (a_feature.written_class, a_feature, "feature is deferred")
+					elseif a_feature.is_external then
+							-- TODO: internationalization
+						event_handler.add_proof_skipped_event (a_feature.written_class, a_feature, "feature is external")
 					elseif is_feature_proof_done (a_feature) then
 						try_generate_implementation (a_feature, False)
 					else
@@ -133,6 +143,7 @@ feature -- Basic operations
 						output.put_comment_line ("Implementation ignored (proof skipped)")
 					end
 				end
+
 			end
 			output.put_new_line
 
@@ -160,8 +171,17 @@ feature -- Basic operations
 				-- Generate implementation
 			if is_generating_implementation then
 				if is_feature_proof_done (a_feature) then
-					try_generate_implementation (a_feature, True)
+					if a_feature.is_deferred then
+							-- TODO: internationalization
+						event_handler.add_proof_skipped_event (a_feature.written_class, a_feature, "feature is deferred")
+					elseif a_feature.is_external then
+							-- TODO: internationalization
+						event_handler.add_proof_skipped_event (a_feature.written_class, a_feature, "feature is external")
+					else
+						try_generate_implementation (a_feature, True)
+					end
 				else
+						-- TODO: internationalization
 					event_handler.add_proof_skipped_event (a_feature.written_class, a_feature, "indexing value")
 					output.put_comment_line ("Implementation ignored (proof skipped)")
 				end
@@ -191,6 +211,33 @@ feature {NONE} -- Implementation
 
 	implementation_writer: !EP_IMPLEMENTATION_WRITER
 			-- Writer to procduce feature implementations
+
+	process_inheritance (a_class: !CLASS_C)
+			-- Process inheritance relation of `a_class'.
+		local
+			l_name, l_parent: STRING
+		do
+			l_name := name_generator.type_name (a_class.actual_type)
+
+			output.put_comment_line ("Type constant")
+			output.put_line ("const unique " + l_name + ": Type;")
+			output.put_new_line
+
+			output.put_comment_line ("Inheritance relations")
+			from
+				a_class.conforming_parents.start
+			until
+				a_class.conforming_parents.after
+			loop
+				l_parent := name_generator.type_name (a_class.conforming_parents.item_for_iteration)
+				output.put_line ("axiom " + l_name + " <: " + l_parent + ";")
+				a_class.conforming_parents.forth
+			end
+
+			output.put_new_line
+
+			-- TODO: add "complete" and "unique" depending on frozen classes
+		end
 
 	process_creation_routines (a_class: !CLASS_C)
 			-- Process creation routines of class `a_class'.

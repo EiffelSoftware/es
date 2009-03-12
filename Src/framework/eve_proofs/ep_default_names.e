@@ -85,6 +85,48 @@ feature -- Access
 			end
 		end
 
+	type_name (a_type: TYPE_A): STRING
+			-- Name for type `a_type'
+		local
+			l_type: TYPE_A
+			i: INTEGER
+			l_type_name: STRING
+		do
+			l_type := a_type.actual_type
+			check not l_type.is_like end
+
+			if {l_formal: FORMAL_A} l_type then
+				Result := "G" + l_formal.position.out
+			elseif {l_gen_type: GEN_TYPE_A} l_type then
+				Result := l_gen_type.associated_class.name_in_upper.twin
+				Result.append ("^")
+				from
+					i := l_gen_type.generics.lower
+				until
+					i > l_gen_type.generics.upper
+				loop
+					l_type_name := type_name (l_gen_type.generics.item (i))
+					Result.append (l_type_name)
+					if i < l_gen_type.generics.upper then
+						Result.append ("#")
+					end
+					i := i + 1
+				end
+				Result.append ("^")
+			else
+				Result := l_type.associated_class.name_in_upper.twin
+			end
+		end
+
+	postcondition_predicate_name (a_feature: !FEATURE_I): STRING
+			-- Postcondition predicate name of `a_feature' as used in Boogie code
+		local
+			l_class_name: STRING
+		do
+			l_class_name := a_feature.written_class.name_in_upper
+			Result := "postcondition." + l_class_name + "." + mangled_feature_name (a_feature)
+		end
+
 feature {NONE} -- Implementation
 
 	mangled_feature_name (a_feature: !FEATURE_I): STRING
