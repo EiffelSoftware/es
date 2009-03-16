@@ -87,8 +87,9 @@ feature -- Basic operations
 			frame_extractor.build_frame_condition (a_feature)
 			output.put_line ("ensures " + frame_extractor.last_frame_condition + "; // frame " + a_feature.written_class.name_in_upper + ":" + a_feature.feature_name)
 
-			output.put_comment_line ("Creation routine condition")
-			output.put_line ("free ensures Heap[Current, $allocated];")
+-- TODO: not necessary anymore?
+--			output.put_comment_line ("Creation routine condition")
+--			output.put_line ("free ensures Heap[Current, $allocated];")
 
 			output.set_indentation ("")
 			output.put_new_line
@@ -112,18 +113,19 @@ feature {NONE} -- Implementation
 			-- Write procedure definition of feature `a_feature_name'
 			-- using `a_procedure_name' for the Boogie name.
 		local
-			l_argument_name: STRING
+			l_argument_name, l_type_name: STRING
 			i: INTEGER
 			l_argument_type: TYPE_A
 		do
 			output.put_comment_line ("Signature")
 
 			output.put ("procedure " + a_procedure_name + "(")
+			l_type_name := name_generator.type_name (a_feature.written_class.actual_type)
 			if a_feature.argument_count = 0 then
-				output.put ("Current: ref where Current != Void && Heap[Current, $allocated]")
+				output.put ("Current: ref where IsAttachedType(Heap, Current, " + l_type_name + ")")
 			else
 				output.put ("%N")
-				output.put ("            Current: ref where Current != Void && Heap[Current, $allocated]")
+				output.put ("            Current: ref where IsAttachedType(Heap, Current, " + l_type_name + ")")
 
 				from
 					i := 1
@@ -132,15 +134,29 @@ feature {NONE} -- Implementation
 				loop
 					l_argument_name :=  name_generator.argument_name (a_feature.arguments.item_name (i))
 					l_argument_type := a_feature.arguments.i_th (i)
+					l_type_name := name_generator.type_name (l_argument_type)
+						-- TODO: fix this hack
+					if {l_temp: GEN_TYPE_A} l_argument_type or l_type_name.is_equal ("STRING_8") then
+						l_type_name := "ANY"
+					end
 
 					output.put (",%N")
 					output.put ("            " + l_argument_name + ": " + type_mapper.boogie_type_for_type (l_argument_type))
-					if not l_argument_type.is_expanded then
-						if l_argument_type.is_attached then
-							output.put (" where IsAllocatedAndNotVoid(Heap, " + l_argument_name + ")")
-						else
-							output.put (" where IsAllocatedIfNotVoid(Heap, " + l_argument_name + ")")
-						end
+
+						-- Add type based conditions
+						-- TODO: make more generic
+					if l_argument_type.is_natural then
+						output.put (" where IsNatural(" + l_argument_name +")")
+					elseif l_argument_type.is_expanded then
+							-- TODO
+					elseif l_argument_type.is_formal then
+							-- TODO: constrained generics?
+					elseif l_argument_type.is_attached then
+						output.put (" where IsAttachedType(Heap, " + l_argument_name + ", " + l_type_name + ")")
+					elseif l_argument_type.is_reference then
+						output.put (" where IsDetachedType(Heap, " + l_argument_name + ", " + l_type_name + ")")
+					else
+						check false end
 					end
 
 					i := i + 1
@@ -183,6 +199,29 @@ feature {NONE} -- Implementation
 					if not contract_writer.invariants.is_empty then
 						write_invariants (a_is_creation_routine)
 					end
+				end
+			end
+
+				-- Add type based conditions
+				-- TODO: make more generic
+			if a_feature.has_return_value then
+				if a_feature.type.is_natural then
+					output.put_comment_line ("Result type constraint")
+					output.put_line ("free ensures IsNatural(Result);")
+				elseif a_feature.type.is_expanded then
+						-- TODO
+				elseif a_feature.type.is_formal then
+						-- TODO: constrained generics?
+				elseif a_feature.type.is_attached then
+					l_type_name := name_generator.type_name (a_feature.type)
+					output.put_comment_line ("Result type constraint")
+					output.put_line ("free ensures IsAttachedType(Heap, Result, " + l_type_name + ");")
+				elseif a_feature.type.is_reference then
+					l_type_name := name_generator.type_name (a_feature.type)
+					output.put_comment_line ("Result type constraint")
+					output.put_line ("free ensures IsDetachedType(Heap, Result, " + l_type_name + ");")
+				else
+					check false end
 				end
 			end
 

@@ -67,21 +67,40 @@ type Type;
 const unique $type: Field Type;
 
 // Function to define type of references
-function IsOfType(o: ref, t: Type) returns (bool);
+//function IsOfType(o: ref, t: Type) returns (bool);
 
 // Basic types
 const unique ANY: Type;
 
 // Void is of any type
-axiom (forall t: Type ::
-			{ IsOfType(Void, t) }
-		IsOfType(Void, t));
+//axiom (forall t: Type ::
+//			{ IsOfType(Void, t) }
+//		IsOfType(Void, t));
 
 function StaticType(o: ref) returns (Type);
 function DynamicType(o: ref) returns (Type);
 		
 // TODO: what functions do we need for typing?
 //function DeclaredType(field: name) returns (class: name);
+
+
+// TODO: name section, write comments
+function IsAttachedType(heap: HeapType, o: ref, t: Type) returns (bool);
+function IsDetachedType(heap: HeapType, o: ref, t: Type) returns (bool);
+function IsNatural(i: int) returns (bool);
+
+axiom (forall heap: HeapType, $o: ref, $t: Type ::
+			{ IsAttachedType(heap, $o, $t) } // Trigger
+		IsAttachedType(heap, $o, $t) ==> ($o != Void && IsAllocated(heap, $o) && heap[$o, $type] <: $t));
+axiom (forall heap: HeapType, $o: ref, $t: Type ::
+			{ IsDetachedType(heap, $o, $t) } // Trigger
+		IsDetachedType(heap, $o, $t) ==> ($o != Void ==> (IsAllocated(heap, $o) && heap[$o, $type] <: $t)));
+axiom (forall $i: int ::
+			{ IsNatural($i) } // Trigger
+		IsNatural($i) ==> $i >= 0);
+
+function DeclaredType(heap: HeapType, $f: Field ref, $t: Type) returns (bool);
+
 
 // ----------------------------------------------------------------------
 // Real types (not yet used)

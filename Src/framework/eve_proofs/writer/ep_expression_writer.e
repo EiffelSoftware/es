@@ -439,6 +439,10 @@ feature {BYTE_NODE} -- Visitors
 			l_temp_expression, l_arguments: STRING
 			l_type: CL_TYPE_A
 		do
+			if is_processing_contract then
+				raise_skip_exception ("Creation expression in contract not supported")
+			end
+
 			l_type ?= a_node.type
 			l_feature := system.class_of_id (l_type.class_id).feature_of_feature_id (a_node.call.feature_id)
 			check l_feature /= Void end
@@ -464,8 +468,9 @@ feature {BYTE_NODE} -- Visitors
 
 			side_effect.put_comment_line ("Object creation")
 			side_effect.put_line ("havoc " + l_local_name + ";")
-			side_effect.put_line ("assume !" + name_mapper.heap_name + "[" + l_local_name + ", $allocated] && " + l_local_name + " != Void;")
-			side_effect.put_line ("assume " + name_mapper.heap_name + "[" + l_local_name + ", $type] == " + name_generator.type_name (a_node.type) + ";")
+			side_effect.put_line ("assume (" + l_local_name + " != Void) && (!" + name_mapper.heap_name + "[" + l_local_name + ", $allocated]);")
+			side_effect.put_line (name_mapper.heap_name + "[" + l_local_name + ", $allocated] := true;")
+			side_effect.put_line (name_mapper.heap_name + "[" + l_local_name + ", $type] := " + name_generator.type_name (a_node.type) + ";")
 			side_effect.put_line ("call " + l_creation_routine_name + "(" + l_arguments + ");")
 
 			expression.put (l_local_name)
