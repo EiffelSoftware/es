@@ -59,6 +59,8 @@ inherit
 
 	AUT_SHARED_CONSTANTS
 
+	AUT_OBJECT_STATE_REQUEST_UTILITY
+
 create
 	make
 
@@ -117,6 +119,7 @@ feature {NONE} -- Initialization
 			set_is_logging_enabled (True)
 			set_is_speed_logging_enabled (True)
 			set_is_test_case_index_logging_enabled (True)
+			is_object_state_retrieval_enabled := True
 		ensure
 			executable_file_name_set: executable_file_name = an_executable_file_name
 			system_set: system = a_system
@@ -396,6 +399,11 @@ feature -- Execution
 			end
 			stop_process_on_problems (last_response)
 			log_speed
+
+				-- Retrieve state of the created object.
+			if is_running and then variable_table.is_variable_defined (a_receiver) then
+				retrieve_object_state (a_receiver)
+			end
 		ensure
 			last_request_not_void: last_request /= Void
 		end
@@ -417,9 +425,12 @@ feature -- Execution
 			l_invoke_request: AUT_INVOKE_FEATURE_REQUEST
 			l_feature: FEATURE_I
 			l_target_type: TYPE_A
+			l_objects: DS_LINEAR [ITP_EXPRESSION]
 		do
 			log_time_stamp ("exec")
 			l_target_type := variable_table.variable_type (a_target)
+			retrieve_object_state (a_target)
+			retrieve_objects_state (an_argument_list)
 			l_feature := l_target_type.associated_class.feature_of_rout_id (a_feature.rout_id_set.first)
 
 				-- Adjust feature according to the actual type of `a_target'.
@@ -442,6 +453,10 @@ feature -- Execution
 			end
 			stop_process_on_problems (last_response)
 			log_speed
+
+			if is_running then
+				retrieve_object_state (a_target)
+			end
 		ensure
 			last_request_not_void: last_request /= Void
 		end
@@ -466,6 +481,8 @@ feature -- Execution
 			l_invoke_request: AUT_INVOKE_FEATURE_REQUEST
 		do
 			log_time_stamp ("exec")
+			retrieve_object_state (a_target)
+			retrieve_objects_state (an_argument_list)
 			create l_invoke_request.make_assign (system, a_receiver, a_query.feature_name, a_target, an_argument_list)
 			l_invoke_request.set_target_type (a_type)
 			last_request := l_invoke_request
@@ -496,6 +513,13 @@ feature -- Execution
 				end
 			end
 			log_speed
+
+			if is_running then
+				retrieve_object_state (a_target)
+				if variable_table.is_variable_defined (a_receiver) then
+					retrieve_object_state (a_receiver)
+				end
+			end
 		ensure
 			last_request_not_void: last_request /= Void
 		end
@@ -565,6 +589,114 @@ feature -- Execution
 		ensure
 			last_request_not_void: last_request /= Void
 		end
+
+	retrieve_object_state (a_variable: ITP_VARIABLE) is
+			-- Retrieve the state of variable `a_variable'.
+		local
+			l_type: TYPE_A
+			l_request: AUT_OBJECT_STATE_REQUEST
+		do
+			if is_object_state_retrieval_enabled then
+				l_type := variable_table.variable_type (a_variable)
+				if l_type /= none_type and then not l_type.is_basic then
+						-- We only try to retrieve state of attached objects.
+					create l_request.make (system, a_variable)
+					l_request.set_queries (features_of_type (l_type, anded_feature_agents (<<ored_feature_agents (<<agent is_boolean_query, agent is_integer_query>>), agent is_argumentless_query>>)))
+					last_request := l_request
+					last_request.process (request_printer)
+					flush_process
+					parse_object_state_response
+					last_request.set_response (last_response)
+					if not last_response.is_bad then
+
+					else
+						is_ready  := False
+					end
+					stop_process_on_problems (last_response)
+				end
+			end
+		ensure
+--			last_request_attached: is_object_state_retrieval_enabled implies last_request /= Void
+		end
+
+	retrieve_objects_state (a_expressions: DS_LINEAR [ITP_EXPRESSION]) is
+			-- Retrieve states of variables in `a_expressions'.
+		require
+			a_expressions_attached: a_expressions /= Void
+		local
+			l_cursor: DS_LINEAR_CURSOR [ITP_EXPRESSION]
+		do
+			if is_object_state_retrieval_enabled then
+				from
+					l_cursor := a_expressions.new_cursor
+					l_cursor.start
+				until
+					l_cursor.after or not is_running
+				loop
+					if attached {ITP_VARIABLE} l_cursor.item as l_variable then
+						retrieve_object_state (l_variable)
+					end
+					l_cursor.forth
+				end
+			end
+		end
+
+	parse_object_state_response is
+			-- Parse response from the last object state request.
+		local
+			l_response: AUT_OBJECT_STATE_RESPONSE
+			l_features: LIST [STRING]
+			l_table: HASH_TABLE [detachable STRING, STRING]
+		do
+			if attached {AUT_OBJECT_STATE_REQUEST} last_request as l_request then
+				retrieve_object_state_response
+				l_features := l_request.query_names
+				create l_table.make (l_features.count)
+				l_features.do_all (agent l_table.force (Void, ?))
+				if is_logging_enabled then
+					last_response.process (response_printer)
+				end
+			end
+		end
+
+	retrieve_object_state_response
+			-- Retrieve response from the interpreter,
+			-- store it in `last_raw_response'.
+		local
+			l_data: TUPLE [values: detachable LINKED_LIST [detachable STRING]; status: detachable LINKED_LIST [BOOLEAN]; output: detachable STRING; error: detachable STRING]
+			l_retried: BOOLEAN
+			l_socket: like socket
+			l_response_flag: NATURAL_32
+			l_response: AUT_OBJECT_STATE_RESPONSE
+		do
+			if not l_retried then
+				l_socket := socket
+				l_socket.read_natural_32
+				l_response_flag := l_socket.last_natural_32
+				l_data ?= l_socket.retrieved
+				process.set_timeout (0)
+				if l_data /= Void and then attached {AUT_OBJECT_STATE_REQUEST} last_request as l_request then
+					create last_raw_response.make (l_data.output, l_data.error, l_response_flag)
+						-- Fixme: This is a walk around for the issue that we cannot launch a process
+						-- only with standard input redirected. Remove the following line when fixed,
+						-- because everything that the interpreter output should come from `l_data.output'.
+						-- Jason 2008.10.22
+					replace_output_from_socket_by_pipe_data
+					create l_response.make (l_request.query_names, l_data.values, l_data.status)
+					last_response := l_response
+				else
+					last_raw_response := Void
+				end
+			end
+		rescue
+			is_ready := False
+			l_retried := True
+			last_raw_response := Void
+			retry
+		end
+
+	is_object_state_retrieval_enabled: BOOLEAN
+			-- is object state retrieval enabled?
 
 feature -- Response parsing
 
@@ -682,7 +814,7 @@ feature{NONE} -- Process scheduling
 				if process.input_direction = {PROCESS_REDIRECTION_CONSTANTS}.to_stream then
 					log (log_stream.string)
 					request_count := request_count + 1
-					process.set_timeout (timeout)
+					process.set_timeout (timeout+100000)
 					if socket /= Void and then socket.is_open_write and socket.extendible then
 						l_last_request := socket_data_printer.last_request
 						socket.put_natural_32 (l_last_request.flag)

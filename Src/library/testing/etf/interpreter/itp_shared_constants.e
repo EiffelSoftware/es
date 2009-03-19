@@ -23,6 +23,9 @@ feature -- AutoTest socket request flags
 	type_request_flag: NATURAL_8 = 4
 			-- Flag for "type" request
 
+	object_state_request_flag: NATURAL_8 = 5
+			-- Flag for "state" request
+
 feature -- AutoTest socket reponse flags
 
 	normal_response_flag: NATURAL_8 = 1

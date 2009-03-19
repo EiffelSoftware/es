@@ -1,0 +1,161 @@
+note
+	description: "Summary description for {AUT_OBJECT_STATE_REQUEST_UTILITY}."
+	author: ""
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	AUT_OBJECT_STATE_REQUEST_UTILITY
+
+inherit
+	SHARED_TYPES
+		export {ANY} all end
+
+feature -- Access
+
+	features_of_type (a_type: TYPE_A; a_criterion: detachable FUNCTION [ANY, TUPLE [FEATURE_I], BOOLEAN]): LIST [FEATURE_I] is
+			-- List of features satisfying `a_criterion' from `a_type'.
+			-- `a_criterion' is a filter function used to selected wanted features: all the features causing
+			-- `a_criterion' to return true are kept in the result.
+			-- If `a_criterion' is Void, all features are returned.
+			-- If there is no satisfying feature, an empty list will be returned.
+		require
+			a_type_attached: a_type /= Void
+			a_type_valid: a_type = none_type and then a_type.has_associated_class
+		local
+			l_class: CLASS_C
+			l_feat_table: FEATURE_TABLE
+			l_feature: FEATURE_I
+			l_list: DS_ARRAYED_LIST [FEATURE_I]
+			l_tester: AGENT_BASED_EQUALITY_TESTER [FEATURE_I]
+			l_sorter: DS_QUICK_SORTER [FEATURE_I]
+		do
+			l_feat_table := a_type.associated_class.feature_table
+			create {LINKED_LIST [FEATURE_I]} Result.make
+			create l_list.make (10)
+			from
+				l_feat_table.start
+			until
+				l_feat_table.after
+			loop
+				l_feature := l_feat_table.item_for_iteration
+				if a_criterion.item ([l_feature]) then
+					l_list.force_last (l_feature)
+				end
+				l_feat_table.forth
+			end
+			create l_tester.make (agent (a, b: FEATURE_I):  BOOLEAN do Result := a.feature_name < b.feature_name end)
+			create l_sorter.make (l_tester)
+			l_sorter.sort (l_list)
+			l_list.do_all (agent Result.extend)
+		ensure
+			result_attached: Result /= Void
+		end
+
+feature -- Feature criteria
+
+	is_boolean_query (a_feature: FEATURE_I): BOOLEAN is
+			-- Is `a_feature' a boolean query?
+		require
+			a_feature_attached: a_feature /= Void
+		do
+			Result := a_feature.type /= Void and then a_feature.type.is_boolean
+		end
+
+	is_integer_query (a_feature: FEATURE_I): BOOLEAN is
+			-- Is `a_feature' an integer query?
+		require
+			a_feature_attached: a_feature /= Void
+		do
+			Result := a_feature.type /= Void and then a_feature.type.is_integer
+		end
+
+	is_argumentless_query (a_feature: FEATURE_I): BOOLEAN is
+			-- Is `a_feature' an argumentless query?
+		require
+			a_feature_attached: a_feature /= Void
+		do
+			Result := a_feature.type /= Void and then a_feature.argument_count = 0
+		end
+
+	ored_feature_agents (a_agents: ARRAY [FUNCTION [ANY, TUPLE [FEATURE_I], BOOLEAN]]): FUNCTION [ANY, TUPLE [FEATURE_I], BOOLEAN] is
+			-- Agent to ored result of agents in `a_agents'
+		require
+			a_agents_attached: a_agents /= Void
+		do
+			Result := agent (a_feat: FEATURE_I; a_agts: ARRAY [FUNCTION [ANY, TUPLE [FEATURE_I], BOOLEAN]]): BOOLEAN
+				local
+					i: INTEGER
+				do
+					from
+						i := a_agts.lower
+					until
+						i > a_agts.upper or else Result
+					loop
+						Result := a_agts.item (i).item ([a_feat])
+						i := i + 1
+					end
+
+				end
+				(?, a_agents)
+		ensure
+			result_attached: Result /= Void
+		end
+
+	anded_feature_agents (a_agents: ARRAY [FUNCTION [ANY, TUPLE [FEATURE_I], BOOLEAN]]): FUNCTION [ANY, TUPLE [FEATURE_I], BOOLEAN] is
+			-- Agent to anded result of agents in `a_agents'
+		require
+			a_agents_attached: a_agents /= Void
+		do
+			Result := agent (a_feat: FEATURE_I; a_agts: ARRAY [FUNCTION [ANY, TUPLE [FEATURE_I], BOOLEAN]]): BOOLEAN
+				local
+					i: INTEGER
+				do
+					Result := True
+					from
+						i := a_agts.lower
+					until
+						i > a_agts.upper or not Result
+					loop
+						Result := a_agts.item (i).item ([a_feat])
+						i := i + 1
+					end
+
+				end
+				(?, a_agents)
+		ensure
+			result_attached: Result /= Void
+		end
+
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
+end

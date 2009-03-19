@@ -124,6 +124,13 @@ feature {AUT_REQUEST} -- Processing
 			output_stream.put_line (a_request.variable.name (variable_name_prefix))
 		end
 
+	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
+			-- Process `a_request'.
+		do
+			output_stream.put_string (":state ")
+			output_stream.put_line (a_request.variable.name (variable_name_prefix))
+		end
+
 feature {NONE} -- Printing
 
 	print_argument_list (an_argument_list: DS_LINEAR [ITP_EXPRESSION])

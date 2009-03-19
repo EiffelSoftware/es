@@ -188,6 +188,12 @@ feature {AUT_REQUEST} -- Processing
 			a_request.set_response (interpreter.last_request.response)
 		end
 
+	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
+			-- Process `a_request'.
+		do
+			to_implement ("Implement")
+		end
+
 feature {NONE} -- Implementation
 
 	request_list_cursor: DS_LINEAR_CURSOR [AUT_REQUEST]
@@ -225,10 +231,10 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

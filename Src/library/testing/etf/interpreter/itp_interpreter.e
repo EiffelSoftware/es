@@ -61,6 +61,10 @@ feature {NONE} -- Initialization
 				-- Create object pool
 			create store.make
 
+				-- Create storage for object state retrieval.
+			create query_values.make
+			create query_status.make
+
 				-- Create log file.
 			create log_file.make_open_append (l_log_filename)
 			if not log_file.is_open_write then
@@ -125,6 +129,7 @@ feature -- Status report
 				a_type = start_request_flag or else
 				a_type = quit_request_flag or else
 				a_type = execute_request_flag or else
+				a_type = object_state_request_flag or else
 				a_type = type_request_flag
 		end
 
@@ -242,7 +247,9 @@ feature {NONE} -- Error Reporting
 			a_reason_not_empty: not a_reason.is_empty
 		do
 			error_buffer.append ("error: " + a_reason + "%N")
+			last_response_flag := internal_error_respones_flag
 			has_error := True
+			log_message (error_buffer)
 		ensure
 			has_error: has_error
 		end
@@ -480,12 +487,15 @@ feature {NONE} -- Parsing
 					when start_request_flag then
 						report_start_request
 
+					when object_state_request_flag then
+						report_object_state_request
+
 					when quit_request_flag then
 						report_quit_request
 					end
 				end
 			else
-				report_error (invalid_request_type_error)
+				report_error (invalid_request_type_error +" Type code: " + last_request_type.out)
 			end
 		end
 
@@ -627,6 +637,213 @@ feature{NONE} -- Invariant checking
 			end
 		rescue
 			is_last_invariant_violated := True
+		end
+
+feature{NONE} -- Object state checking
+
+	report_object_state_request is
+			-- Report an object state request.
+		local
+			o: detachable ANY
+			l_retried: BOOLEAN
+			l_bcode: STRING
+		do
+			if not l_retried then
+				output_buffer.wipe_out
+				error_buffer.wipe_out
+				if attached {TUPLE [l_byte_code: STRING; l_object_index: STRING]} last_request as l_request then
+						-- Load byte-code.
+					l_bcode := l_request.l_byte_code
+					if l_bcode.count = 0 then
+						report_error (byte_code_length_error)
+					else
+							-- We first check if the invariant of the object is violated,
+							-- if so, we don't need to retrieve any state, instead,
+							-- an exception will be rasied, and an error message is sent back
+							-- to the interpreter.
+						o := variable_at_index (l_request.l_object_index.to_integer)
+						if o = Void then
+							refresh_last_response_flag
+							last_response := [Void, Void, output_buffer, error_buffer]
+							send_response_to_socket
+						else
+							check_invariant (o)
+
+								-- If `o' is OK, we start checking the states of it.
+							log_message ("report_object_state_request start%N")
+								-- Inject received byte-code into byte-code array of Current process.
+							eif_override_byte_code_of_body (
+								byte_code_feature_body_id,
+								byte_code_feature_pattern_id,
+								pointer_for_byte_code (l_bcode),
+								l_bcode.count)
+
+							if query_values = Void then
+								create query_values.make
+							else
+								query_values.wipe_out
+							end
+
+							if query_status = Void then
+								create query_status.make
+							else
+								query_status.wipe_out
+							end
+
+								-- Run the feature with newly injected byte-code.
+--							execute_protected
+							execute_protected_for_query_recording (o)
+							log_message ("report_object_state_request end%N")
+							last_response := [query_values, query_status, output_buffer, error_buffer]
+							send_response_to_socket
+						end
+					end
+				else
+					report_error (invalid_object_state_request)
+					last_response := [Void, Void, output_buffer, error_buffer]
+					refresh_last_response_flag
+					send_response_to_socket
+				end
+			end
+		rescue
+			l_retried := True
+			last_response := [Void, Void, output_buffer, error_buffer]
+			refresh_last_response_flag
+			send_response_to_socket
+			retry
+		end
+
+	invalid_object_state_request: STRING = "Invalid object state request."
+			-- Error message for invalid object state request
+
+	query_values: LINKED_LIST [detachable STRING]
+			-- List to store string representation of query values
+
+	query_status: LINKED_LIST [BOOLEAN]
+			-- List to store if query value is retrievable.
+			-- An item at position `i' is False means that there was
+			-- an exception when that feature is being evaluated, so
+			-- the value is not retrievable.
+
+	reference_type_output_format: INTEGER
+			-- String representation format for reference type.
+
+	record_query (a_query: FUNCTION [ANY, TUPLE, detachable ANY]) is
+			-- Execute `a_query' and extend the string representation of the result into `query_values'.
+			-- If the query execution succeeded, a True value will be extended to `query_status',
+			-- otherwise, a False value will be extended to `query_status'.
+		require
+			a_query_attached: a_query /= Void
+		local
+			l_retried: BOOLEAN
+			l_result: detachable ANY
+			l_str_result: detachable STRING
+--			l_file: PLAIN_TEXT_FILE
+		do
+			if not l_retried then
+				l_result := a_query.item (Void)
+				if l_result = Void then
+					l_str_result := Void
+				else
+					if reference_type_output_format = value_as_string then
+						l_str_result := l_result.out
+					elseif reference_type_output_format = value_as_address then
+						l_str_result := ($l_result).out
+					end
+				end
+				query_values.extend (l_str_result)
+				query_status.extend (True)
+			end
+		rescue
+			query_values.extend (Void)
+			query_status.extend (False)
+			l_retried := True
+--			create l_file.make_open_read_write ("e:\jasonw\temp\state.txt")
+--			l_file.put_string ("Failed%N")
+--			l_file.close
+			retry
+		end
+
+	value_as_string: INTEGER = 0
+			-- Flag to indicate that the string representation of the query value is retrieved by calling `out' on that value.
+
+	value_as_address: INTEGER = 1
+			-- Flag to indicate that the string repsrsentation of the query value is its memory address.
+
+	record_queries (o: ANY) is
+			-- Record queries for `o'.
+			-- Note: This is a walkaround for the issue that the interpreter
+			-- cannot deal with exceptions in melted code correctly.
+			-- Remove this feature when that issue is fixed. 19.03.2009 Jason
+		require
+			o_attached: o /= Void
+		local
+			l_type: STRING
+			l_space_index: INTEGER
+		do
+				-- Get base type name.
+			l_type := o.generating_type
+			l_space_index := l_type.index_of (' ', 1)
+			if l_space_index > 0 then
+				l_type := l_type.substring (1, l_space_index - 1)
+			end
+
+			if attached {LINKED_LIST [?ANY]} o as l_list then
+				record_query_linked_list (l_list)
+			end
+		end
+
+		record_query_linked_list (o: LINKED_LIST [?ANY]) is
+				-- Record queries from `o'.
+				-- Note: This is a walkaround for the issue that the interpreter
+				-- cannot deal with exceptions in melted code correctly.
+				-- Remove this feature when that issue is fixed. 19.03.2009 Jason
+			require
+				o_attached: o /= Void
+			do
+					-- Please only add argument-less queries of return type BOOLEAN or INTEGER_32.
+					-- The queries should be added in the name ascending order.
+				record_query (agent o.after)
+				record_query (agent o.before)
+				record_query (agent o.changeable_comparison_criterion)
+				record_query (agent o.count)
+				record_query (agent o.empty)
+				record_query (agent o.exhausted)
+				record_query (agent o.Extendible)
+				record_query (agent o.Full)
+				record_query (agent o.index)
+				record_query (agent o.is_empty)
+				record_query (agent o.isfirst)
+				record_query (agent o.islast)
+				record_query (agent o.object_comparison)
+				record_query (agent o.off)
+				record_query (agent o.prunable)
+				record_query (agent o.readable)
+				record_query (agent o.writable)
+			end
+
+	execute_protected_for_query_recording (o: ANY)
+			-- Execute `procedure' in a protected way.
+			-- Note: This is a walkaround for the issue that the interpreter
+			-- cannot deal with exceptions in melted code correctly.
+			-- Remove this feature when that issue is fixed. 19.03.2009 Jason
+		local
+			failed: BOOLEAN
+		do
+			is_last_protected_execution_successfull := False
+			if not failed then
+				record_queries (o)
+				is_last_protected_execution_successfull := True
+			end
+		rescue
+			failed := True
+			report_trace
+			if exception = Class_invariant then
+					-- A class invariant cannot be recovered from since we
+					-- don't know how many and what objects are now invalid
+				should_quit := True
+			end
+			retry
 		end
 
 invariant

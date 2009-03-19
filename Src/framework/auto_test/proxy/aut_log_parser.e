@@ -262,6 +262,29 @@ feature {NONE} -- Processsing
 			a_request.set_response (l_last_response)
 		end
 
+	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
+			-- Process `a_request'.
+		local
+			l_last_response: AUT_RESPONSE
+			l_response_stream: KL_STRING_INPUT_STREAM
+		do
+			if last_response_text.is_empty then
+				create {AUT_NORMAL_RESPONSE} l_last_response.make ("")
+			else
+				create l_response_stream.make (last_response_text)
+				response_parser.set_input_stream (l_response_stream)
+				response_parser.parse_invoke_response
+				l_last_response := response_parser.last_response
+				if
+					attached {AUT_NORMAL_RESPONSE} l_last_response as l_normal_response and then
+					l_normal_response.is_normal
+				then
+					create {AUT_OBJECT_STATE_RESPONSE} l_last_response.make_from_normal_response (l_normal_response)
+				end
+			end
+			a_request.set_response (l_last_response)
+		end
+
 feature{NONE} -- Implementation
 
 	found_request_count: INTEGER
@@ -305,4 +328,35 @@ invariant
 --	last_start_index_large_enough: last_start_index >= 1 -- TODO: reenable and fix bug! (inv does not hold before processing and after start request)
 --	last_start_index_small_enough: last_start_index <= request_history.count -- TODO: reenable and fix bug! (inv does not hold before processing and after start request)
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

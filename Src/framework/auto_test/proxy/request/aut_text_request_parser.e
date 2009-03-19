@@ -110,6 +110,7 @@ feature -- Parsing
 			quit_keyword_count: INTEGER
 			type_keyword_count: INTEGER
 			execute_keyword_count: INTEGER
+			state_keyword_count: INTEGER
 		do
 			if end_of_input then
 				report_and_set_error_at_position ("Expected something, not end of input. Don't be so stingy!", position)
@@ -121,6 +122,7 @@ feature -- Parsing
 					quit_keyword_count := quit_keyword.count
 					type_keyword_count := type_keyword.count
 					execute_keyword_count := execute_keyword.count
+					state_keyword_count := state_keyword.count
 					if
 							-- Process ":quit" request.
 						input.count - 1 = quit_keyword_count and then
@@ -149,6 +151,21 @@ feature -- Parsing
 							parse_identifier
 							if not has_error then
 								report_type_request (last_string.twin)
+							end
+						end
+					elseif
+							-- Process ":state" request.
+						input.count > state_keyword_count and then
+						substring (2, 1 + state_keyword_count).is_case_insensitive_equal (state_keyword)
+					then
+						position := position + state_keyword_count
+						skip_whitespace
+						if end_of_input then
+							report_and_set_error_at_position ("Expected variable name, not end of input.", position)
+						else
+							parse_identifier
+							if not has_error then
+								report_object_state_request (last_string.twin)
 							end
 						end
 					else
@@ -235,6 +252,14 @@ feature {NONE} -- Handlers
 
 	report_start_request
 			-- Report a "start" request.
+		deferred
+		end
+
+	report_object_state_request (a_variable_name: STRING)
+			-- Report state request for variable named `a_variable_name'.
+		require
+			a_variable_name_not_void: a_variable_name /= Void
+			a_variable_name_valid: is_valid_entity_name (a_variable_name)
 		deferred
 		end
 
@@ -1225,6 +1250,9 @@ feature {NONE} -- Implementation
 	comment_prefix: STRING = "--"
 			-- Line comment prefix
 
+	state_keyword: STRING = "state"
+			-- 'state' keyword
+
 invariant
 
 	valid_position: input /= Void implies (position >= 0 and position <= input.count + 1)
@@ -1232,4 +1260,35 @@ invariant
 	last_argument_list_not_void: last_argument_list /= Void
 
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

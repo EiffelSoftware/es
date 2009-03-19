@@ -434,6 +434,12 @@ feature {AUT_REQUEST} -- Processing
 			-- Do nothing.
 		end
 
+	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
+			-- Process `a_request'.
+		do
+			-- Do nothing.
+		end
+
 feature {NONE} -- Printing
 
 	print_routine_header

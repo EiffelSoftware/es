@@ -159,6 +159,12 @@ feature{AUT_REQUEST} -- Processing
 			end
 		end
 
+	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
+			-- Process `a_request'.
+		do
+			-- Do nothing.
+		end
+
 invariant
 
 	variables_not_void: variables /= Void

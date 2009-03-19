@@ -55,6 +55,7 @@ feature {NONE} -- Initialization
 			load_object_feature := interpreter_root_class.feature_named (load_object_feature_name)
 			store_object_feature := interpreter_root_class.feature_named (store_object_feature_name)
 			check_object_invariant_feature := interpreter_root_class.feature_named (check_object_invariant_feature_name)
+			record_query_feature := interpreter_class.feature_named (record_query_feature_name)
 
 			create expression_type_visitor.make (system, variable_table)
 			create expression_b_visitor.make (system, load_object_feature)
@@ -136,7 +137,7 @@ feature {AUT_REQUEST} -- Processing
 			l_compound.extend (new_store_variable_byte_code (1, a_request.target.index))
 
 				-- Print request into `output_stream'.
-			print_execute_request (l_compound)
+			print_execute_request (l_compound, execute_request_flag, Void)
 		end
 
 	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)
@@ -222,7 +223,7 @@ feature {AUT_REQUEST} -- Processing
 			end
 
 				-- Dump request into `output_stream'.
-			print_execute_request (l_compound)
+			print_execute_request (l_compound, execute_request_flag, Void)
 		end
 
 	process_assign_expression_request (a_request: AUT_ASSIGN_EXPRESSION_REQUEST)
@@ -241,7 +242,7 @@ feature {AUT_REQUEST} -- Processing
 			l_compound.extend (new_store_variable_byte_code (1, a_request.receiver.index))
 
 				-- Print request into `output_stream'.
-			print_execute_request (l_compound)
+			print_execute_request (l_compound, execute_request_flag, Void)
 		end
 
 	process_type_request (a_request: AUT_TYPE_REQUEST)
@@ -250,6 +251,57 @@ feature {AUT_REQUEST} -- Processing
 				-- [type_request_flag: NATURAL_8; variable_index: STRING]
 				-- `variable_index' is the index of the object whose type is asked.
 			last_request := [type_request_flag, a_request.variable.index.out]
+		end
+
+	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
+			-- Process `a_request'.
+		local
+			l_locals: ARRAYED_LIST [TYPE_A]
+			l_feature: FEATURE_I
+			l_compound: BYTE_LIST [BYTE_NODE]
+			l_target: DS_LINKED_LIST [ITP_EXPRESSION]
+			l_compound_count: INTEGER
+			l_target_index: INTEGER
+			l_local_count: INTEGER
+			l_record_feature: FEATURE_I
+			l_query_names: LIST [STRING]
+		do
+			if attached {CL_TYPE_A} expression_type_visitor.type (a_request.variable) as l_target_type then
+				l_query_names := a_request.query_names
+				l_compound_count := 2 + l_query_names.count
+				l_local_count := 1
+
+				create l_compound.make (l_compound_count)
+				create l_locals.make (l_local_count)
+
+					-- Setup locals: The only local we need is the the target object
+					-- whose state is to be recorded.
+				l_locals.extend (l_target_type)
+
+					-- Setup context for byte-node generation.
+				setup_byte_code_in_context (l_locals)
+
+					-- Create nodes to load target into local.
+				create l_target.make
+				l_target.force_last (a_request.variable)
+				l_compound.append (new_load_local_nodes (l_target, 1))
+
+					-- Create a node for "record_query" for each query that we are interested in.
+				from
+					l_query_names.start
+				until
+					l_query_names.after
+				loop
+					l_feature := l_target_type.associated_class.feature_named (l_query_names.item)
+					if l_feature.feature_name.is_equal ("foo") then
+						l_compound.extend (new_record_query_feature_call (new_argumentless_agent (l_target_type, l_feature, new_local_b (1))))
+					end
+					l_query_names.forth
+				end
+
+					-- Dump request into `output_stream'.
+				print_execute_request (l_compound, object_state_request_flag, a_request.variable.index.out)
+			end
 		end
 
 feature {NONE} -- Byte code generation
@@ -276,6 +328,35 @@ feature {NONE} -- Byte code generation
 
 			l_parameters.extend (l_local_index_param)
 			Result := new_feature_b (check_object_invariant_feature, void_type, l_parameters)
+		ensure
+			result_attached: Result /= Void
+		end
+
+	record_query_feature: FEATURE_I
+			-- Feature to record query value
+
+	record_query_feature_name: STRING = "record_query"
+			-- Name of the feature used to record value of a query
+
+	new_record_query_feature_call (a_agent_argument: ROUTINE_CREATION_B): BYTE_NODE is
+			-- New FEATURE_B instance to record a feature's value. That feature is wrapped
+			-- in `a_agent_argument'.
+		require
+			a_agent_argument_attached: a_agent_argument /= Void
+		local
+			l_param: PARAMETER_B
+			l_object_pool_index_param: PARAMETER_B
+			l_parameters: BYTE_LIST [PARAMETER_B]
+			l_local: LOCAL_B
+		do
+			create l_parameters.make (1)
+
+			create l_param
+			l_param.set_expression (a_agent_argument)
+			l_param.set_attachment_type (record_query_feature.arguments.i_th (1).actual_type)
+
+			l_parameters.extend (l_param)
+			Result := new_instr_call_b (new_feature_b (record_query_feature, void_type, l_parameters))
 		ensure
 			result_attached: Result /= Void
 		end
@@ -411,8 +492,8 @@ feature {NONE} -- Byte code generation
 	last_byte_code: STD_BYTE_CODE
 			-- Last generated byte-code
 
-	print_execute_request (a_compound: BYTE_LIST [BYTE_NODE])
-			-- Print execute request to `output_stream'.
+	print_execute_request (a_compound: BYTE_LIST [BYTE_NODE]; a_request_flag: NATURAL_8; a_extra_data: detachable ANY)
+			-- Print request indicated by `a_request_flag' to `output_stream'.
 			-- The execute request contains the byte code defined by `a_locals' and `a_compound'.
 		require
 			a_compound_attached: a_compound /= Void
@@ -421,6 +502,8 @@ feature {NONE} -- Byte code generation
 			l_feature: like feature_for_byte_code_injection
 			l_byte_array: BYTE_ARRAY
 			l_byte_code_data: STRING
+			l_file: RAW_FILE
+			l_extra: STRING
 		do
 			l_feature := feature_for_byte_code_injection
 
@@ -439,7 +522,18 @@ feature {NONE} -- Byte code generation
 				-- [execute_request_flag: NATURAL_8, [byte_code: ?STRING, extra_data: ?ANY]]
 				-- `byte_code' is the byte code to execute, `extra_data' stores some
 				-- additional data, which may be used in the future.
-			last_request := [execute_request_flag, [l_byte_code_data, ""]]
+			if a_extra_data = Void then
+				l_extra := ""
+			else
+				l_extra := a_extra_data.out
+			end
+			last_request := [a_request_flag, [l_byte_code_data, l_extra]]
+
+			if a_request_flag = {AUT_SHARED_CONSTANTS}.object_state_request_flag then
+				create l_file.make_create_read_write ("e:\jasonw\temp\bt.txt")
+				l_file.put_string (l_byte_code_data)
+				l_file.close
+			end
 		end
 
 feature{NONE} -- Implementation

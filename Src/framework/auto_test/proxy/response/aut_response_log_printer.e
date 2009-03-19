@@ -94,6 +94,38 @@ feature -- Process
 			print_lines_with_prefix (a_response.text,  <<response_prefix>>)
 		end
 
+	process_object_state_response (a_response: AUT_OBJECT_STATE_RESPONSE)
+			-- Process `a_response'.
+		local
+			l_results: HASH_TABLE [STRING, STRING]
+			l_void: STRING
+			l_value: STRING
+		do
+			l_void := object_state_void_value
+			print_line (multi_line_value_start_tag)
+			l_results := a_response.query_results
+			from
+				l_results.start
+			until
+				l_results.after
+			loop
+					-- Print out query name in a line.
+				print_lines_with_prefix (l_results.key_for_iteration + "%N", <<response_prefix, object_state_query_prefix>>)
+
+					-- Print out query value (possibly in multiple lines).
+				if l_results.item_for_iteration = Void then
+					l_value := l_void
+				else
+					l_value := l_results.item_for_iteration
+				end
+				print_lines_with_prefix (l_value + "%N", <<response_prefix, object_state_value_prefix>>)
+				l_results.forth
+			end
+			print_line (multi_line_value_end_tag)
+			print_line (interpreter_success_message)
+			print_line (interpreter_done_message)
+		end
+
 feature{NONE} -- Implementation
 
 	lines_with_prefixes (a_text: STRING; a_prefixes: ARRAY [STRING]): LIST [STRING]
