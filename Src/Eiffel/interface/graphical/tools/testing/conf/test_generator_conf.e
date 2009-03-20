@@ -76,6 +76,14 @@ feature -- Access
 			result_equals_cache: Result = seed_cache
 		end
 
+	log_file_path: detachable STRING
+			-- Path for the log file to load
+		do
+			Result := log_file_path_cache
+		ensure then
+			result_set: Result = log_file_path_cache
+		end
+
 feature -- Access: cache
 
 	types_cache: attached DS_HASH_SET [attached STRING]
@@ -98,6 +106,12 @@ feature -- Access: cache
 
 	is_html_output_cache: like is_html_output assign set_html_output
 			-- Cache for `is_html_output'
+
+	is_random_testing_enabled_cache: like is_random_testing_enabled assign set_is_random_testing_enabled
+			-- Cache for `is_random_testing_enabled'
+
+	log_file_path_cache: like log_file_path assign set_load_file_path
+			-- Cache for `log_file_path'
 
 feature -- Status report
 
@@ -129,6 +143,20 @@ feature -- Status report
 			Result := is_html_output_cache
 		ensure then
 			result_equals_cache: Result = is_html_output
+		end
+
+	is_load_log_enabled: BOOLEAN is
+			-- Should a specified load file be loaded?
+		do
+			Result := log_file_path /= Void
+		end
+
+	is_random_testing_enabled: BOOLEAN
+			-- Is random testing enabled?
+		do
+			Result := is_random_testing_enabled_cache
+		ensure then
+			result_set: Result = is_random_testing_enabled_cache
 		end
 
 feature -- Status setting
@@ -181,6 +209,21 @@ feature -- Status setting
 			proxy_time_out_set: proxy_time_out_cache = a_proxy_time_out
 		end
 
+	set_load_file_path (a_path: like log_file_path) is
+			-- Set `log_file_path' with `a_path'.
+		do
+			log_file_path_cache := a_path
+		ensure
+			log_file_path_set: log_file_path = a_path
+		end
+
+	set_is_random_testing_enabled (b: BOOLEAN) is
+			-- Set `is_random_testing_enabled' with `b'.
+		do
+			is_random_testing_enabled_cache := b
+		ensure
+			is_random_testing_enabled_set: is_random_testing_enabled = b
+		end
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
@@ -207,10 +250,10 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

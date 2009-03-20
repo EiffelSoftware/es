@@ -48,6 +48,13 @@ feature -- Access
 		deferred
 		end
 
+	log_file_path: detachable STRING
+			-- Path for the log file to load
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
 feature -- Status report
 
 	is_slicing_enabled: BOOLEAN
@@ -66,6 +73,20 @@ feature -- Status report
 
 	is_html_output: BOOLEAN
 			-- Output statistics as html?
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	is_load_log_enabled: BOOLEAN is
+			-- Should a specified load file be loaded?
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	is_random_testing_enabled: BOOLEAN
+			-- Is random testing enabled?
 		require
 			usable: is_interface_usable
 		deferred

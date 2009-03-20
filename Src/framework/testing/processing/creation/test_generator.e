@@ -132,6 +132,13 @@ feature -- Status report
 			Result := status = statistic_status_code
 		end
 
+	is_loading_log: BOOLEAN
+			-- <Precursor>
+		do
+			Result := status = load_log_code
+		end
+
+
 feature {NONE} -- Status report
 
 	is_creating_new_class: BOOLEAN
@@ -198,7 +205,7 @@ feature {NONE} -- Basic operations
 				prepare
 				status := execute_status_code
 			elseif is_executing then
-				if current_task = Void then
+				if current_task = Void and then is_automatic_testing_enabled then
 					error_handler.report_random_testing
 					if time_out.minute > 99 then
 						error_handler.set_counter (time_out.minute.to_natural_32)
@@ -208,6 +215,8 @@ feature {NONE} -- Basic operations
 					current_task := Void
 					if is_replay_enabled then
 						status := replay_status_code
+					elseif is_load_log_enabled then
+						status := load_log_code
 					else
 						status := minimize_status_code
 					end
@@ -256,6 +265,9 @@ feature {NONE} -- Basic operations
 					end
 					is_finished := True
 				end
+			elseif is_loading_log then
+				load_log (log_file_path)
+				is_finished := True
 			end
 
 			if is_finished then
@@ -361,6 +373,10 @@ feature {NONE} -- Implementation
 			proxy_time_out := configuration.proxy_time_out.as_integer_32
 
 			create {DS_ARRAYED_LIST [attached STRING]} class_names.make_from_linear (configuration.types)
+			is_load_log_enabled := configuration.is_load_log_enabled
+
+			log_file_path := configuration.log_file_path
+			is_automatic_testing_enabled := configuration.is_random_testing_enabled
 		end
 
 	prepare_witness_minimization
@@ -476,71 +492,73 @@ feature{NONE} -- Test case generation and execution
 		do
 			create types_under_test.make (class_names.count)
 			create classes_under_test.make (class_names.count)
-			create tester.make
-			classes_under_test.set_equality_tester (tester)
+			if is_automatic_testing_enabled then
+				create tester.make
+				classes_under_test.set_equality_tester (tester)
 
-				-- Get list of type names which are to be tested
-				-- For generic classes, the actual generic parameter can be given or not.
-				-- If actual generic parameter is given, that particular generic derivation is testes,
-				-- otherwise, the default generic parameter constraint is used to get a valid generic derivation.
-			create l_class_name_set.make (50)
-			l_class_name_set.set_equality_tester (create {KL_STRING_EQUALITY_TESTER_A [attached STRING]})
-			if class_names.count > 0 then
-					-- If type names are given explicitly (either from command line or from compiler,
-					-- we only test those classes, of course their supplier classes will also be tested in passing.
-				class_names.do_all (agent l_class_name_set.force_last)
-			else
-					-- If no type name is given explictly, we test all compiled classes in the system.
-				l_class_set := system.universe.all_classes.twin
-				from
-					l_class_cur := l_class_set.new_cursor
-					l_class_cur.start
-				until
-					l_class_cur.after
-				loop
-					l_name := l_class_cur.item.name
-					check l_name /= Void end
-					l_class_name_set.force_last (l_name)
-					l_class_cur.forth
+					-- Get list of type names which are to be tested
+					-- For generic classes, the actual generic parameter can be given or not.
+					-- If actual generic parameter is given, that particular generic derivation is testes,
+					-- otherwise, the default generic parameter constraint is used to get a valid generic derivation.
+				create l_class_name_set.make (50)
+				l_class_name_set.set_equality_tester (create {KL_STRING_EQUALITY_TESTER_A [attached STRING]})
+				if class_names.count > 0 then
+						-- If type names are given explicitly (either from command line or from compiler,
+						-- we only test those classes, of course their supplier classes will also be tested in passing.
+					class_names.do_all (agent l_class_name_set.force_last)
+				else
+						-- If no type name is given explictly, we test all compiled classes in the system.
+					l_class_set := system.universe.all_classes.twin
+					from
+						l_class_cur := l_class_set.new_cursor
+						l_class_cur.start
+					until
+						l_class_cur.after
+					loop
+						l_name := l_class_cur.item.name
+						check l_name /= Void end
+						l_class_name_set.force_last (l_name)
+						l_class_cur.forth
+					end
 				end
-			end
 
-			if not l_class_name_set.is_empty then
-				from
-					l_name_cur := l_class_name_set.new_cursor
-					l_name_cur.start
-				until
-					l_name_cur.after
-				loop
-					l_type := base_type (l_name_cur.item)
-					if l_type /= Void then
-						if l_type.associated_class.is_generic then
-							if not attached {GEN_TYPE_A} l_type as l_gen_type then
-								if attached {GEN_TYPE_A} l_type.associated_class.actual_type as l_gen_type2 then
-									l_type := generic_derivation_of_type (l_gen_type2, l_gen_type2.associated_class)
-								else
-									check
-										dead_end: False
+				if not l_class_name_set.is_empty then
+					from
+						l_name_cur := l_class_name_set.new_cursor
+						l_name_cur.start
+					until
+						l_name_cur.after
+					loop
+						l_type := base_type (l_name_cur.item)
+						if l_type /= Void then
+							if l_type.associated_class.is_generic then
+								if not attached {GEN_TYPE_A} l_type as l_gen_type then
+									if attached {GEN_TYPE_A} l_type.associated_class.actual_type as l_gen_type2 then
+										l_type := generic_derivation_of_type (l_gen_type2, l_gen_type2.associated_class)
+									else
+										check
+											dead_end: False
+										end
 									end
 								end
 							end
-						end
-						if attached {CL_TYPE_A} l_type as l_class_type then
-								-- Only compiled classes are taken into consideration.
-							if l_class_type.associated_class /= Void then
-								if not interpreter_related_classes.has (l_class_type.name) then
-									types_under_test.force_last (l_class_type)
+							if attached {CL_TYPE_A} l_type as l_class_type then
+									-- Only compiled classes are taken into consideration.
+								if l_class_type.associated_class /= Void then
+									if not interpreter_related_classes.has (l_class_type.name) then
+										types_under_test.force_last (l_class_type)
+									end
+								end
+							else
+								check
+									dead_end: False
 								end
 							end
-						else
-							check
-								dead_end: False
-							end
 						end
+						l_name_cur.forth
 					end
-					l_name_cur.forth
+					l_class_name_set.start
 				end
-				l_class_name_set.start
 			end
 		end
 
@@ -805,6 +823,15 @@ feature{NONE} -- Test result analyizing
 			results_decreased: current_results.count < old current_results.count
 		end
 
+	load_log (a_log_file: STRING)
+			-- Load log in `a_log_file'.
+		local
+			l_replay_strategy: AUT_REQUEST_PLAYER
+			l_requests: DS_LINEAR [AUT_REQUEST]
+		do
+			l_requests := requests_from_file (a_log_file, create {AUT_LOG_PARSER}.make (system, error_handler))
+		end
+
 feature {NONE} -- Implementation
 
 	system: SYSTEM_I
@@ -845,6 +872,7 @@ feature {NONE} -- Constants
 	replay_status_code: NATURAL = 2
 	minimize_status_code: NATURAL = 3
 	statistic_status_code: NATURAL = 4
+	load_log_code: NATURAL = 20
 
 	max_tests_per_class: NATURAL = 9
 			-- Maximal number of test routines in a single class

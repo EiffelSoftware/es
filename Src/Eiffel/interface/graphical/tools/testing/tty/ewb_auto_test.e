@@ -109,6 +109,12 @@ feature -- Execution
 				l_conf.set_html_output (l_ap.is_html_statistics_format_enabled)
 				l_root_group := l_project.system.system.root_creators.first.cluster
 
+					-- Log file loading
+				l_conf.set_load_file_path (l_ap.log_file_path)
+
+					-- Should automatic testing be enabled?
+				l_conf.set_is_random_testing_enabled (l_ap.is_automatic_testing_enabled)
+
 				if l_root_group.is_cluster then
 					if attached {CONF_CLUSTER} l_root_group as l_cluster then
 						l_conf.set_cluster (l_cluster)
@@ -216,10 +222,10 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

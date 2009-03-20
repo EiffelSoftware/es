@@ -85,6 +85,12 @@ feature -- Status report
 			-- Help message for command line arguments
 			-- This value is only set if help option presents.
 
+	log_file_path: detachable STRING
+			-- Full path of the log file to be loaded.
+
+	is_load_log_enabled: BOOLEAN
+			-- Is log load enabled?
+
 feature -- Element change
 
 	set_error_handler (a_error_handler: like error_handler)
@@ -122,6 +128,7 @@ feature -- Parsing
 			l_log_to_replay: AP_STRING_OPTION
 			l_help_option: AP_FLAG
 			l_help_flag: AP_DISPLAY_HELP_FLAG
+			l_load_log_option: AP_STRING_OPTION
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -198,6 +205,10 @@ feature -- Parsing
 			create l_help_option.make ('h', "help")
 			l_help_option.set_description ("Display this help message.")
 			parser.options.force_last (l_help_option)
+
+			create l_load_log_option.make_with_long_form ("load-log")
+			l_load_log_option.set_description ("Load the log file specified as the following parameter.")
+			parser.options.force_last (l_load_log_option)
 
 			parser.parse_list (a_arguments)
 
@@ -299,6 +310,17 @@ feature -- Parsing
 				end
 
 			end
+
+			if not error_handler.has_error then
+				if l_load_log_option.was_found then
+					is_load_log_enabled := True
+					log_file_path := l_load_log_option.parameter
+
+						-- When we are in load log mode, we disable
+						-- automatic testing.
+					is_automatic_testing_enabled := False
+				end
+			end
 --			if parser.parameters.count = 0 then
 --				error_handler.report_missing_ecf_filename_error
 --				-- TODO: Display usage_instruction (currently not exported, find better way to do it.)
@@ -351,10 +373,10 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end
