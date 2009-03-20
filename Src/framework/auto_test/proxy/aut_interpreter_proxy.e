@@ -372,6 +372,7 @@ feature -- Execution
 		do
 			log_time_stamp ("exec")
 			l_arg_list := an_argument_list
+			retrieve_objects_state (an_argument_list)
 			if l_arg_list = Void then
 				create {DS_LINKED_LIST [ITP_EXPRESSION]} l_arg_list.make
 			end
