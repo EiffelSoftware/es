@@ -61,7 +61,7 @@ feature -- Basic operations
 			frame_extractor.build_frame_condition (a_feature)
 			output.put_line ("ensures " + frame_extractor.last_frame_condition + "; // frame " + a_feature.written_class.name_in_upper + ":" + a_feature.feature_name)
 
---			write_postcondition_predicate (a_feature)
+			write_postcondition_predicate (a_feature)
 
 			output.set_indentation ("")
 			output.put_new_line

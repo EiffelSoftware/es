@@ -103,12 +103,15 @@ feature -- Basic operations
 
 	write_postcondition_predicate (a_feature: !FEATURE_I)
 			-- TODO: move someplace else
+			-- TODO: REFACTOR!
 		local
 			l_predicate_name, l_arguments, l_type: STRING
-			l_argument_name, l_full_function: STRING
+			l_argument_name, l_full_function, l_full_arguments: STRING
 			i: INTEGER
 			l_old_handler: EP_OLD_HEAP_HANDLER
 			l_expression_writer: EP_EXPRESSION_WRITER
+			l_parent_feature: FEATURE_I
+			l_assert_info: INH_ASSERT_INFO
 		do
 			output.reset
 
@@ -116,9 +119,8 @@ feature -- Basic operations
 			create l_expression_writer.make (name_mapper, l_old_handler)
 
 			l_predicate_name := name_generator.postcondition_predicate_name (a_feature)
-			l_full_function := l_predicate_name.twin
 			l_arguments := "heap: HeapType, old_heap: HeapType, current: ref"
-			l_full_function.append ("(heap, old_heap, current")
+			l_full_arguments := "(heap, old_heap, current"
 			from
 				i := 1
 			until
@@ -130,8 +132,8 @@ feature -- Basic operations
 				l_arguments.append (": ")
 				l_arguments.append (type_mapper.boogie_type_for_type (a_feature.arguments.i_th (i)))
 
-				l_full_function.append (", ")
-				l_full_function.append (l_argument_name)
+				l_full_arguments.append (", ")
+				l_full_arguments.append (l_argument_name)
 
 				i := i + 1
 			end
@@ -141,11 +143,13 @@ feature -- Basic operations
 				l_arguments.append (": ")
 				l_arguments.append (type_mapper.boogie_type_for_type (a_feature.type))
 
-				l_full_function.append (", ")
-				l_full_function.append ("result")
+				l_full_arguments.append (", ")
+				l_full_arguments.append ("result")
 			end
 
-			l_full_function.append (")")
+			l_full_arguments.append (")")
+
+			l_full_function := l_predicate_name.twin + l_full_arguments
 
 			output.put_comment_line ("Postcondition predicate")
 			output.put_line ("function " + l_predicate_name + "(" + l_arguments + ") returns (bool);")
@@ -170,10 +174,42 @@ feature -- Basic operations
 			else
 				output.put_line ("axiom (forall " + l_arguments + " ::")
 				output.put_line ("             { " + l_full_function + " } // Trigger")
-				output.put_line ("        (" + l_full_function + ") <==> (" + contract_writer.full_postcondition + "));")
+				output.put_line ("        (" + l_full_function + ") ==> (" + contract_writer.full_postcondition + "));")
+			end
+			output.put_new_line
+
+			l_type := name_generator.type_name (a_feature.written_class.actual_type)
+
+			if a_feature.assert_id_set /= Void then
+				from
+					i := 1
+				until
+					i > a_feature.assert_id_set.count
+				loop
+					l_assert_info := a_feature.assert_id_set.item (i)
+					l_parent_feature := l_assert_info.written_class.feature_of_body_index (l_assert_info.body_index)
+					check l_parent_feature /= Void end
+					l_predicate_name := name_generator.postcondition_predicate_name (l_parent_feature)
+
+					l_full_function := l_predicate_name + l_full_arguments
+
+					output.put_comment_line ("Inheritance predicate for class " + l_assert_info.written_class.name_in_upper)
+					if contract_writer.is_generation_failed then
+							-- TODO: improve message
+						output.put_comment_line ("Axiom ignored (skipped due to exception)")
+					else
+						output.put_line ("axiom (forall " + l_arguments + " ::")
+						output.put_line ("             { " + l_full_function + " } // Trigger")
+						output.put_line ("        (heap[current, $type]==" + l_type + ") ==> ((" + l_full_function + ") ==> (" + contract_writer.full_postcondition + ")));")
+					end
+
+
+					output.put_new_line
+
+					i := i + 1
+				end
 			end
 
-			output.put_new_line
 		end
 
 feature {NONE} -- Implementation

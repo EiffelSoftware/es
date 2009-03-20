@@ -953,11 +953,14 @@ feature {NONE} -- Implementation
 					side_effect.put_line ("call " + l_procedure_name + "(" + l_arguments + ");")
 				end
 
-				if feature_list.is_pure (a_feature) or not a_feature.has_return_value then
-					expression.put (l_function_name + "(" + name_mapper.heap_name + ", " + l_arguments + ")")
+				if is_processing_contract then
+					check feature_list.is_pure (a_feature) end
 				else
-					check not is_processing_contract end
-					expression.put (last_local)
+					if a_feature.has_return_value then
+						expression.put (last_local)
+					else
+						-- Nothing to do
+					end
 				end
 			end
 		end

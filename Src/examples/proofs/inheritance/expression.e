@@ -10,9 +10,18 @@ deferred class
 feature
 
 	sum: INTEGER
-		indexing
-			pure: True
+--		indexing
+--			pure: True
 		deferred
+		ensure
+			dummy = old dummy
+			Result > 0
 		end
+
+	dummy: BOOLEAN
+
+--	accept
+--		deferred
+--		end
 
 end

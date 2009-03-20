@@ -119,8 +119,8 @@ feature -- Basic operations
 				end
 
 					-- Generate postcondition predicate
---				function_writer.write_postcondition_predicate (a_feature)
---				output.put (function_writer.output.string)
+				function_writer.write_postcondition_predicate (a_feature)
+				output.put (function_writer.output.string)
 
 					-- Generate signature
 				signature_writer.write_feature_signature (a_feature)

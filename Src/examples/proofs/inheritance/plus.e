@@ -17,6 +17,9 @@ create
 feature
 
 	make (a_left, a_right: INTEGER)
+		require
+			a_left > 0
+			a_right > 0
 		do
 			left := a_left
 			right := a_right
@@ -35,13 +38,34 @@ feature
 
 feature
 
+--	top: INTEGER
+
+--	accept
+--		local
+--			l1, l2: INTEGER
+--		do
+--			left.accept
+--			l1 := left.top
+--			right.accept
+--			l2 := right.top
+--			top := l1 + l2
+--		ensure
+--			(agent left.accept).postcondition ([])
+--			(agent right.accept).postcondition ([])
+--			top = left.top + right.top
+--		end
+
 	sum: INTEGER
-		indexing
-			pure: True
+--		indexing
+--			pure: True
 		do
 			Result := left + right
 		ensure then
 			Result = left + right
 		end
+
+invariant
+	left > 0
+	right > 0
 
 end
