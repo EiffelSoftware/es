@@ -85,8 +85,8 @@ feature -- Execution
 
 	step is
 		do
-			if parameter_loader.is_evolving_sed then
-				random.set_seed (parameter_loader.get_next_sed)
+			if parameter_loader.is_evolving_seed then
+				random.set_seed (parameter_loader.get_next_seed)
 			end
 
 			if interpreter.is_running and interpreter.is_ready then
@@ -116,15 +116,17 @@ feature {NONE} -- Implementation
 			positive_priority: queue.highest_dynamic_priority > 0
 		local
 			caller: AUT_DETERMINISTIC_FEATURE_CALLER
+			target: ITP_VARIABLE
+			type: TYPE_A
 		do
 			queue.select_next
-
-			selected_feature := queue.last_feature
+   			selected_feature := queue.last_feature
 			create caller.make (system, interpreter, queue, error_handler, feature_table)
 			caller.set_feature_and_type (selected_feature.feature_, selected_feature.type)
+			error_handler.report_feature_selection (selected_feature.type, selected_feature.feature_)
 			sub_task := caller
 			sub_task.start
-			error_handler.report_feature_selection (selected_feature.type, selected_feature.feature_)
+
 		end
 
 	sub_task: AUT_TASK

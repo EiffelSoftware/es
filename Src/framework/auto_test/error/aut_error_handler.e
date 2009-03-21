@@ -280,6 +280,11 @@ feature -- Reporting messages
 			report_info_message ("Executing automatically generated tests")
 		end
 
+	report_evolved_testing is
+			-- Report that auto_test is now using the ranomd testing strategy.
+		do
+			report_info_message ("Executing evolved tests")
+		end
 feature -- Reporting errors
 
 	report_missing_command_line_parameter_error (a_parameter_name: STRING) is

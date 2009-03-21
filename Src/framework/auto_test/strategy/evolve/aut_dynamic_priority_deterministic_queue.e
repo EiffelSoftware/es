@@ -166,13 +166,6 @@ feature -- Changing Priority
 			feature_list_table.search (highest_dynamic_priority)
 			list := feature_list_table.found_item
 			static_feature_list := list.cloned_object
-		--	from list.start
-		--	until
-		--		list.after
-		--	loop
-		--		static_feature_list.put_last (list.item_for_iteration)
-		--		list.forth
-		--	end
 		end
 
 feature -- Basic routines
@@ -200,6 +193,18 @@ feature -- Basic routines
 				end
 				last_feature := static_feature_list.item (current_selected)
 				current_selected := current_selected + 1
+			elseif parameter_loader.is_evolving_method_call  then
+				--Skip methods with index = 0
+				from
+				  i := (parameter_loader.get_next_method_call \\ static_feature_list.count)
+				until
+				  i > 0
+				loop
+				  i := (parameter_loader.get_next_method_call \\ static_feature_list.count)
+				end
+
+				last_feature := static_feature_list.item (i)
+
 			else
 				random.forth
 				i := (random.item  \\ list.count) + 1

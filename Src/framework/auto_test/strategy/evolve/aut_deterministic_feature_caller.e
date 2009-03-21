@@ -131,26 +131,24 @@ feature -- Execution
 		r,p:REAL
 
 		do
-			
+
 			if type = Void then
 				-- 1st step in diversify mode
-				random.forth
-				r := (random.item  \\ 100) / 100
-				p := parameter_loader.get_next_diversity_probability
-				io.put_string ("rand = " + r.out + " probability = " + p.out + "\n/n ")
-
-				if parameter_loader.is_evolving_diversification_probability and r > p then
-					io.putstring ("Diversify")
-					io.new_line
-					create_input_creator_diversify
-				else
-					io.putstring ("NOT Diversify")
-					io.new_line
-				end
-
+				create_input_creator_diversify
 			elseif input_creator = Void then
 				-- 1st step in non-diversify mode
 				create_input_creator
+				--if parameter_loader.is_evolving_diversification_probability and
+				--   parameter_loader.get_next_diversity_probability then
+				 --  	create feature_caller.make (system, interpreter, queue, error_handler, feature_table)
+			--		feature_caller.start
+			--		io.putstring ("Diversify")
+			--		io.new_line
+			--	else
+			--		io.putstring ("NOT Diversify")
+			--		io.new_line
+			--	end
+
 			elseif input_creator.has_next_step then
 				input_creator.step
 			elseif feature_caller /= Void and then feature_caller.has_next_step then
@@ -178,13 +176,15 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Steps
 
+
 	create_input_creator_diversify is
 			-- Create `input_creator' for use in diversify mode.
 		do
 			target := interpreter.variable_table.random_variable
 			if target /= Void  then
 				type := interpreter.variable_table.variable_type (target)
-				if not type.is_none and then not type.is_expanded then
+				if not type.is_none then
+				--if not type.is_none and then not type.is_expanded then
 					choose_feature
 					if feature_to_call /= Void then
 						create input_creator.make (system, interpreter, feature_table)
@@ -338,7 +338,7 @@ invariant
 
 	system_not_void: system /= Void
 	interpreter_not_void: interpreter /= Void
-	type_and_feature_valid: (type /= Void) = (feature_to_call /= Void)
+--	type_and_feature_valid: (type /= Void) = (feature_to_call /= Void)
 	queue_not_void: queue /= Void
 	class_has_feature: (type /= Void) implies has_feature (type.associated_class, feature_to_call)
 	error_handler_not_void: error_handler /= Void

@@ -102,9 +102,11 @@ feature -- Execution
 
 	step is
 		local
-			i: INTEGER
+			index, i: INTEGER
 			receiver: ITP_VARIABLE
 			r,p:REAL
+			list : DS_LIST [ITP_VARIABLE]
+
 		do
 			if object_creator /= Void then
 				object_creator.step
@@ -118,15 +120,9 @@ feature -- Execution
 				end
 			elseif receivers.count < types.count then
 
-				random.forth
-
-
-				if parameter_loader.is_evolving_creation_probability then
-					r := (random.item  \\ 100) / 100
-					p := parameter_loader.get_next_creation_probability
-					if r > p then
-						i := 0
-					end
+				if parameter_loader.is_evolving_creation_probability and
+				   parameter_loader.get_next_creation_probability then
+				    i := 0
 				else
 					i := (random.item  \\ 5)
 				end
@@ -135,7 +131,13 @@ feature -- Execution
 				if i = 0 or types.item (receivers.count + 1).is_expanded then
 					create_object_creator
 				else
-					receiver := interpreter.variable_table.random_conforming_variable (types.item (receivers.count + 1))
+					if parameter_loader.is_evolving_method_call then
+                        list :=  interpreter.variable_table.conforming_variables (types.item (receivers.count + 1))
+						index := (parameter_loader.get_next_method_call \\ list.count) + 1
+					    receiver := list.item (index)
+					else
+					    receiver := interpreter.variable_table.random_conforming_variable (types.item (receivers.count + 1))
+					end
 					if receiver /= Void then
 						receivers.force_last (receiver)
 					else
@@ -162,6 +164,8 @@ feature {NONE} -- Steps
 		local
 			type: TYPE_A
 			receiver: ITP_VARIABLE
+			list : DS_LIST [ITP_VARIABLE]
+			index : INTEGER
 		do
 			type := types.item (receivers.count + 1)
 			if not type.is_expanded then
@@ -172,7 +176,14 @@ feature {NONE} -- Steps
 			end
 			if type = Void then
 					-- No creatable descendant exists
-				receiver := interpreter.variable_table.random_conforming_variable (types.item (receivers.count + 1))
+				if parameter_loader.is_evolving_method_call then
+                    list :=  interpreter.variable_table.conforming_variables (types.item (receivers.count + 1))
+					index := (parameter_loader.get_next_method_call \\ list.count) + 1
+				    receiver := list.item (index)
+				else
+				    receiver := interpreter.variable_table.random_conforming_variable (types.item (receivers.count + 1))
+				end
+
 				if receiver /= Void then
 					receivers.force_last (receiver)
 				else

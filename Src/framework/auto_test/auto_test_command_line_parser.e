@@ -75,7 +75,10 @@ feature -- Status report
 			-- Should test cases be minimized via ddmin?
 
     is_evolution_enabled: BOOLEAN
-			-- Should test cases be minimized via ddmin?
+			-- Should use evolutionary algorithm
+
+	is_generate_alleles: BOOLEAN
+			-- Generate alleles for a given set of classes for the evolutionary algorithm 			
 
 	proxy_time_out: INTEGER
 			-- Proxy time out in second
@@ -114,6 +117,7 @@ feature -- Parsing
 			minimize_option: AP_STRING_OPTION
 			finalize_option: AP_FLAG
 			evolution_option: AP_FLAG
+			alleles_option: AP_FLAG
 			output_dir_option: AP_STRING_OPTION
 			time_out_option: AP_INTEGER_OPTION
 			seed_option: AP_INTEGER_OPTION
@@ -131,6 +135,10 @@ feature -- Parsing
 			create evolution_option.make ('E', "evolve")
 			evolution_option.set_description ("Evolve test cases using evolve.conf file")
 			parser.options.force_last (evolution_option)
+
+			create alleles_option.make ('A', "alleles")
+			alleles_option.set_description ("Generate alleles for a set of classes")
+			parser.options.force_last (alleles_option)
 
 			create version_option.make ('V', "version")
 			version_option.set_description ("Output version information and exit")

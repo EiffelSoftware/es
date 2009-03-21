@@ -179,8 +179,14 @@ feature {NONE} -- Steps
 			class_ := type.associated_class
 			l_exported_creators := exported_creators (class_, system)
 			count := l_exported_creators.count
-			random.forth
-			i := (random.item  \\ count) + 1
+			
+			if (parameter_loader.is_evolving_method_call) then
+				i:= (parameter_loader.get_next_method_call \\ count) + 1
+			else
+			    random.forth
+			    i := (random.item  \\ count) + 1
+			end
+
 			creation_procedure := class_.feature_named (l_exported_creators.i_th (i))
 		ensure
 			has_creation_procedure: creation_procedure /= Void

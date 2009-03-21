@@ -58,7 +58,21 @@ feature -- Execution
 
 	execute (a_project: E_PROJECT; a_arguments: DS_LIST [STRING]; a_project_helper: like project_helper) is
 			-- Start testing.
+		local
+			n: NATURAL_8
+			n1:NATURAL_16
+			n2:NATURAL_32
+			n3:NATURAL_64
+			i:INTEGER_8
+			i1:INTEGER_16
+			i2:INTEGER_32
+			i3:INTEGER_64
+			r1:REAL_32
+			r2:REAL_64
+
+
 		do
+
 			project_helper := a_project_helper
 			system := a_project.system.system
 				-- Setup environment.

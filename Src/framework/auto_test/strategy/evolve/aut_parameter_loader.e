@@ -7,6 +7,9 @@ indexing
 class
 	AUT_PARAMETER_LOADER
 
+inherit
+	AUT_SHARED_RANDOM
+		export {NONE} all end
 create
 	make
 
@@ -53,10 +56,19 @@ feature -- Load
 
 feature -- Parameters
 	is_sequential_method_invocation :BOOLEAN
+		-- Use sequential method invocation
+
 	is_evolving_primitive :BOOLEAN
-	is_evolving_sed :BOOLEAN
+		-- Use evolved primitive values
+
+	is_evolving_seed :BOOLEAN
+	   -- use the seed evolved
+
 	is_evolving_creation_probability :BOOLEAN
-	is_evolving_diversification_probability :BOOLEAN is true
+
+	is_evolving_diversification_probability :BOOLEAN
+
+	is_evolving_method_call :BOOLEAN
 
 feature -- State
 
@@ -129,35 +141,59 @@ feature -- Get
 			end
 		end
 
-	get_next_creation_probability: REAL_32 is
+	get_next_creation_probability: BOOLEAN is
 			--
+		local
+		  r :REAL
 		do
 			if creation_probability_list.count > 0 then
 				if creation_probability_list.off then
 			   		creation_probability_list.start
 				end
-				result := creation_probability_list.item_for_iteration
+				r := creation_probability_list.item_for_iteration
 				creation_probability_list.forth
 			else
 				--Default value
-				result := 0
+				r := 0.25
+			end
+			random.forth
+		    result := (r >= (random.item  \\ 100) / 100)
+
+		end
+
+	    get_next_method_call: INTEGER is
+			--
+		do
+			if  method_sequence_list.count > 0 then
+				if method_sequence_list.off then
+			   		method_sequence_list.start
+				end
+				result := method_sequence_list.item_for_iteration
+				method_sequence_list.forth
+			else
+				--Default value
+				result := 1
 			end
 
 		end
 
-		get_next_diversity_probability: REAL_32 is
+		get_next_diversity_probability: BOOLEAN is
 			--
+	    local
+	    	r:REAL
 		do
 			if  diversity_probability_list.count > 0 then
 				if diversity_probability_list.off then
 			   		diversity_probability_list.start
 				end
-				result := diversity_probability_list.item_for_iteration
+				r := diversity_probability_list.item_for_iteration
 				diversity_probability_list.forth
 			else
 				--Default value
-				result := 0
+				r := 0.25
 			end
+			random.forth
+		    result := (r >= (random.item  \\ 100) / 100)
 
 		end
 
@@ -208,7 +244,7 @@ feature -- Get
 			end
 		end
 
-		get_next_sed :INTEGER is
+		get_next_seed :INTEGER is
 			--
 		do
 			if  sed_list.count > 0 then
@@ -409,9 +445,9 @@ load_configuration is
 					if str.has_substring ("true") then
 						io.putstring ("Evolving sed")
 						io.put_new_line
-						is_evolving_sed := true
+						is_evolving_seed := true
 					elseif  str.has_substring ("false")  then
-						is_evolving_sed := false
+						is_evolving_seed := false
 					end
 
 				elseif str.has_substring ("is_evolving_creation_probability")  then
@@ -423,12 +459,29 @@ load_configuration is
 						is_evolving_creation_probability := false
 					end
 
+				elseif str.has_substring ("is_evolving_diversify_probability")  then
+					if str.has_substring ("true") then
+						io.putstring ("Evolving diversify probability")
+						io.put_new_line
+						is_evolving_diversification_probability := true
+					elseif  str.has_substring ("false")  then
+						is_evolving_diversification_probability := false
+					end
+
 				elseif str.has_substring ("is_sequential_method_invocation")  then
 					if str.has_substring ("true") then
 						is_sequential_method_invocation := true
 					elseif  str.has_substring ("false")  then
 						is_sequential_method_invocation := false
 					end
+
+				elseif str.has_substring ("is_evolving_method_call")  then
+					if str.has_substring ("true") then
+						is_evolving_method_call := true
+					elseif  str.has_substring ("false")  then
+						is_evolving_method_call := false
+					end
+
 				end
 
 			end
