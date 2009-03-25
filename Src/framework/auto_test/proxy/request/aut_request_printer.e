@@ -502,7 +502,6 @@ feature {NONE} -- Byte code generation
 			l_feature: like feature_for_byte_code_injection
 			l_byte_array: BYTE_ARRAY
 			l_byte_code_data: STRING
-			l_file: RAW_FILE
 			l_extra: STRING
 		do
 			l_feature := feature_for_byte_code_injection
@@ -528,12 +527,6 @@ feature {NONE} -- Byte code generation
 				l_extra := a_extra_data.out
 			end
 			last_request := [a_request_flag, [l_byte_code_data, l_extra]]
-
-			if a_request_flag = {AUT_SHARED_CONSTANTS}.object_state_request_flag then
-				create l_file.make_create_read_write ("e:\jasonw\temp\bt.txt")
-				l_file.put_string (l_byte_code_data)
-				l_file.close
-			end
 		end
 
 feature{NONE} -- Implementation
