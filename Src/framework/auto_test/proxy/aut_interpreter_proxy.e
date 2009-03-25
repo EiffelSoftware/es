@@ -119,7 +119,7 @@ feature {NONE} -- Initialization
 			set_is_logging_enabled (True)
 			set_is_speed_logging_enabled (True)
 			set_is_test_case_index_logging_enabled (True)
-			is_object_state_retrieval_enabled := True
+			is_target_object_state_retrieval_enabled := True
 		ensure
 			executable_file_name_set: executable_file_name = an_executable_file_name
 			system_set: system = a_system
@@ -372,7 +372,7 @@ feature -- Execution
 		do
 			log_time_stamp ("exec")
 			l_arg_list := an_argument_list
-			retrieve_objects_state (an_argument_list)
+			retrieve_argument_objects_state (an_argument_list)
 			if l_arg_list = Void then
 				create {DS_LINKED_LIST [ITP_EXPRESSION]} l_arg_list.make
 			end
@@ -403,7 +403,8 @@ feature -- Execution
 
 				-- Retrieve state of the created object.
 			if is_running and then variable_table.is_variable_defined (a_receiver) then
-				retrieve_object_state (a_receiver)
+				retrieve_target_object_state (a_receiver)
+				retrieve_argument_objects_state (an_argument_list)
 			end
 		ensure
 			last_request_not_void: last_request /= Void
@@ -430,8 +431,8 @@ feature -- Execution
 		do
 			log_time_stamp ("exec")
 			l_target_type := variable_table.variable_type (a_target)
-			retrieve_object_state (a_target)
-			retrieve_objects_state (an_argument_list)
+			retrieve_target_object_state (a_target)
+			retrieve_argument_objects_state (an_argument_list)
 			l_feature := l_target_type.associated_class.feature_of_rout_id (a_feature.rout_id_set.first)
 
 				-- Adjust feature according to the actual type of `a_target'.
@@ -456,7 +457,8 @@ feature -- Execution
 			log_speed
 
 			if is_running then
-				retrieve_object_state (a_target)
+				retrieve_target_object_state (a_target)
+				retrieve_argument_objects_state (an_argument_list)
 			end
 		ensure
 			last_request_not_void: last_request /= Void
@@ -482,8 +484,8 @@ feature -- Execution
 			l_invoke_request: AUT_INVOKE_FEATURE_REQUEST
 		do
 			log_time_stamp ("exec")
-			retrieve_object_state (a_target)
-			retrieve_objects_state (an_argument_list)
+			retrieve_target_object_state (a_target)
+			retrieve_argument_objects_state (an_argument_list)
 			create l_invoke_request.make_assign (system, a_receiver, a_query.feature_name, a_target, an_argument_list)
 			l_invoke_request.set_target_type (a_type)
 			last_request := l_invoke_request
@@ -516,9 +518,10 @@ feature -- Execution
 			log_speed
 
 			if is_running then
-				retrieve_object_state (a_target)
+				retrieve_target_object_state (a_target)
+				retrieve_argument_objects_state (an_argument_list)
 				if variable_table.is_variable_defined (a_receiver) then
-					retrieve_object_state (a_receiver)
+					retrieve_query_result_object_state (a_receiver)
 				end
 			end
 		ensure
@@ -597,37 +600,35 @@ feature -- Execution
 			l_type: TYPE_A
 			l_request: AUT_OBJECT_STATE_REQUEST
 		do
-			if is_object_state_retrieval_enabled then
-				l_type := variable_table.variable_type (a_variable)
-				if l_type /= none_type and then not l_type.is_basic then
-						-- We only try to retrieve state of attached objects.
-					create l_request.make (system, a_variable)
-					l_request.set_queries (features_of_type (l_type, anded_feature_agents (<<ored_feature_agents (<<agent is_boolean_query, agent is_integer_query>>), agent is_argumentless_query>>)))
-					last_request := l_request
-					last_request.process (request_printer)
-					flush_process
-					parse_object_state_response
-					last_request.set_response (last_response)
-					if not last_response.is_bad then
+			l_type := variable_table.variable_type (a_variable)
+			if l_type /= none_type and then not l_type.is_basic then
+					-- We only try to retrieve state of attached objects.
+				create l_request.make (system, a_variable)
+				l_request.set_queries (features_of_type (l_type, anded_feature_agents (<<ored_feature_agents (<<agent is_boolean_query, agent is_integer_query>>), agent is_argumentless_query>>)))
+				last_request := l_request
+				last_request.process (request_printer)
+				flush_process
+				parse_object_state_response
+				last_request.set_response (last_response)
+				if not last_response.is_bad then
 
-					else
-						is_ready  := False
-					end
-					stop_process_on_problems (last_response)
+				else
+					is_ready  := False
 				end
+				stop_process_on_problems (last_response)
 			end
 		ensure
 --			last_request_attached: is_object_state_retrieval_enabled implies last_request /= Void
 		end
 
-	retrieve_objects_state (a_expressions: DS_LINEAR [ITP_EXPRESSION]) is
+	retrieve_argument_objects_state (a_expressions: DS_LINEAR [ITP_EXPRESSION]) is
 			-- Retrieve states of variables in `a_expressions'.
 		require
 			a_expressions_attached: a_expressions /= Void
 		local
 			l_cursor: DS_LINEAR_CURSOR [ITP_EXPRESSION]
 		do
-			if is_object_state_retrieval_enabled then
+			if is_argument_object_state_retrieval_enabled then
 				from
 					l_cursor := a_expressions.new_cursor
 					l_cursor.start
@@ -639,6 +640,22 @@ feature -- Execution
 					end
 					l_cursor.forth
 				end
+			end
+		end
+
+	retrieve_target_object_state (a_variable: ITP_VARIABLE) is
+			-- Record state of `a_variable' as a target of a feature call.
+		do
+			if is_target_object_state_retrieval_enabled then
+				retrieve_object_state (a_variable)
+			end
+		end
+
+	retrieve_query_result_object_state (a_variable: ITP_VARIABLE) is
+			-- Record state of `a_variable' as a return value of a query.
+		do
+			if is_query_result_object_state_retrieval_enabled then
+				retrieve_object_state (a_variable)
 			end
 		end
 
@@ -696,8 +713,14 @@ feature -- Execution
 			retry
 		end
 
-	is_object_state_retrieval_enabled: BOOLEAN
-			-- is object state retrieval enabled?
+	is_target_object_state_retrieval_enabled: BOOLEAN
+			-- Is object state retrieval enabled?
+
+	is_argument_object_state_retrieval_enabled: BOOLEAN
+			-- Should state of argument object be retrieved?
+
+	is_query_result_object_state_retrieval_enabled: BOOLEAN
+			-- Should state of object returned by a query be retrieved?
 
 feature -- Response parsing
 
