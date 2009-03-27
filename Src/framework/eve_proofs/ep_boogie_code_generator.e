@@ -118,6 +118,10 @@ feature -- Basic operations
 					output.put (function_writer.output.string)
 				end
 
+					-- Generate precondition predicate
+				function_writer.write_precondition_predicate (a_feature)
+				output.put (function_writer.output.string)
+
 					-- Generate postcondition predicate
 				function_writer.write_postcondition_predicate (a_feature)
 				output.put (function_writer.output.string)

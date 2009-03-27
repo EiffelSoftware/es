@@ -127,6 +127,15 @@ feature -- Access
 			Result := "postcondition." + l_class_name + "." + mangled_feature_name (a_feature)
 		end
 
+	precondition_predicate_name (a_feature: !FEATURE_I): STRING
+			-- Postcondition predicate name of `a_feature' as used in Boogie code
+		local
+			l_class_name: STRING
+		do
+			l_class_name := a_feature.written_class.name_in_upper
+			Result := "precondition." + l_class_name + "." + mangled_feature_name (a_feature)
+		end
+
 feature {NONE} -- Implementation
 
 	mangled_feature_name (a_feature: !FEATURE_I): STRING

@@ -12,15 +12,15 @@ create
 
 feature
 
-	foo (a: !EXPRESSION)
-		local
-			i: INTEGER
-		do
-			i := a.sum
-			check
-				i > 0
-			end
-		end
+--	foo (a: !EXPRESSION)
+--		local
+--			i: INTEGER
+--		do
+--			i := a.sum
+--			check
+--				i > 0
+--			end
+--		end
 
 	make
 		local
@@ -29,9 +29,15 @@ feature
 			p: PLUS
 		do
 			create c.make (7)
-			create p.make (2, 3)
+--			create p.make (2, 3)
 
---			create p.make (create {CONSTANT}.make (4), create {CONSTANT}.make (5))
+			create p.make (create {CONSTANT}.make (2), create {CONSTANT}.make (3))
+
+			check
+				p.left.sum = 2
+				p.right.sum = 3
+			end
+
 
 			e := c
 			check
@@ -51,7 +57,8 @@ feature
 			e4: EXPRESSION
 		do
 			create {CONSTANT}e1.make (4)
-			create {PLUS}e2.make (1, 2)
+--			create {PLUS}e2.make (1, 2)
+			create {PLUS}e2.make (create {CONSTANT}.make (1), create {CONSTANT}.make (2))
 			create {CONSTANT}e3.make (6)
 
 			create stack
@@ -70,6 +77,32 @@ feature
 			check
 				e4.sum = 4
 			end
+
+		end
+
+	g
+		local
+			x, y: INTEGER
+			e: EXPRESSION
+		do
+			create {CONSTANT}e.make (1)
+			e.accept
+			x := e.top
+			e.accept
+			y := e.top
+			check
+				x = y
+			end
+		end
+
+	h
+		local
+			e: EXPRESSION
+			i: INTEGER
+		do
+			create {CONSTANT}e.make (1)
+
+
 
 		end
 

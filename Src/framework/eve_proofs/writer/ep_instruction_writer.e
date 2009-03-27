@@ -136,27 +136,29 @@ feature -- Processing
 		do
 			ep_context.set_line_number (a_node.line_number)
 			output.put_comment_line ("Check instruction --- " + file_location(a_node))
-			from
-				a_node.check_list.start
-			until
-				a_node.check_list.after
-			loop
-				l_assert ?= a_node.check_list.item
-				check l_assert /= Void end
+			if a_node.check_list /= Void then
+				from
+					a_node.check_list.start
+				until
+					a_node.check_list.after
+				loop
+					l_assert ?= a_node.check_list.item
+					check l_assert /= Void end
 
-				expression_writer.reset
-				l_assert.expr.process (expression_writer)
-				locals.append (expression_writer.locals)
+					expression_writer.reset
+					l_assert.expr.process (expression_writer)
+					locals.append (expression_writer.locals)
 
-				output.put (expression_writer.side_effect.string)
-				output.put (output.indentation)
-				output.put ("assert (")
-				output.put (expression_writer.expression.string)
-				output.put ("); // ")
-				output.put (assert_location ("check", l_assert))
+					output.put (expression_writer.side_effect.string)
+					output.put (output.indentation)
+					output.put ("assert (")
+					output.put (expression_writer.expression.string)
+					output.put ("); // ")
+					output.put (assert_location ("check", l_assert))
 
-				output.put_new_line
-				a_node.check_list.forth
+					output.put_new_line
+					a_node.check_list.forth
+				end
 			end
 		end
 

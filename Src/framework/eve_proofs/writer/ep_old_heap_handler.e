@@ -20,7 +20,7 @@ feature {NONE} -- Initialization
 	make (a_old_heap_name: STRING)
 			-- Initialize old handler with name of old heap as `a_old_heap_name'.
 		do
-			old_heap_name := a_old_heap_name
+			internal_old_heap_name := a_old_heap_name.twin
 		ensure
 			old_heap_name_set: old_heap_name.is_equal (a_old_heap_name)
 		end
@@ -29,6 +29,9 @@ feature -- Access
 
 	old_heap_name: STRING
 			-- Name of old heap
+		do
+			create Result.make_from_string (internal_old_heap_name)
+		end
 
 feature -- Processing
 
@@ -44,5 +47,10 @@ feature -- Processing
 			a_node.expr.process (expression_writer)
 			expression_writer.name_mapper.set_heap_name (l_temp_heap)
 		end
+
+feature {NONE} -- Implementation
+
+	internal_old_heap_name: STRING
+			-- Internal old heap name
 
 end

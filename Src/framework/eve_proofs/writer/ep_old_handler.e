@@ -21,6 +21,11 @@ feature -- Access
 	expression_writer: EP_EXPRESSION_WRITER
 			-- Expression writer used to process old expressions
 
+	old_heap_name: STRING
+			-- Name of old heap
+		deferred
+		end
+
 feature -- Element change
 
 	set_expression_writer (a_expression_writer: EP_EXPRESSION_WRITER)

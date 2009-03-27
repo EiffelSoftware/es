@@ -631,6 +631,9 @@ feature {BYTE_NODE} -- Visitors
 					-- TODO: implement
 				raise_skip_exception ("Inline agent not supported")
 			end
+			if is_processing_contract then
+				raise_skip_exception ("Agent creation in contract not supported")
+			end
 
 			l_agent_class := system.class_of_id (a_node.origin_class_id)
 			l_agent_feature := l_agent_class.feature_of_feature_id (a_node.feature_id)
@@ -649,7 +652,9 @@ feature {BYTE_NODE} -- Visitors
 				-- Create arguments
 			create l_name_mapper.make
 
-			l_open_argument_count := a_node.omap.count
+			if a_node.omap /= Void then
+				l_open_argument_count := a_node.omap.count
+			end
 			l_closed_argument_count := a_node.arguments.expressions.count
 			check l_attached_feature.argument_count + 1 = l_open_argument_count + l_closed_argument_count end
 
@@ -664,7 +669,7 @@ feature {BYTE_NODE} -- Visitors
 			until
 				i > l_attached_feature.argument_count + 1
 			loop
-				if j <= a_node.omap.count and then a_node.omap.i_th (j) = i then
+				if j <= l_open_argument_count and then a_node.omap.i_th (j) = i then
 						-- Next is an open argument
 					check j <= a_node.omap.count end
 					if i = 1 then
@@ -835,6 +840,7 @@ feature {NONE} -- Implementation
 			l_open_argument_count: INTEGER
 			l_is_function: BOOLEAN
 			l_return_local: BOOLEAN
+			l_heap, l_old_heap: STRING
 		do
 			l_feature_name := a_feature.feature_name
 
@@ -846,14 +852,25 @@ feature {NONE} -- Implementation
 			l_tuple_content := l_tuple_argument.expressions
 			l_open_argument_count := l_tuple_content.count
 
+			l_heap := name_mapper.heap_name.twin
+-- For some reason, the call to old_hea_name corrupts some strings at other places...
+--			create l_old_heap.make_from_string (old_handler.old_heap_name)
+			if {l_wtf1: EP_OLD_KEYWORD_HANDLER} old_handler then
+				l_old_heap := "old(Heap)"
+			elseif {l_wtf2: EP_OLD_HEAP_HANDLER} old_handler then
+				l_old_heap := "old_heap"
+			else
+				check false end
+			end
+
 				-- Construct arguments
 			l_arguments := ""
 			if l_feature_name.is_equal ("precondition") then
-				l_arguments := "Heap, "
+				l_arguments.append (l_heap + ", ")
 				l_arguments_suffix := ""
 				l_boogie_function := "routine.precondition_" + l_open_argument_count.out
 			elseif l_feature_name.is_equal ("postcondition") then
-				l_arguments := "Heap, old(Heap), "
+				l_arguments.append (l_heap + ", " + l_old_heap + ", ")
 				if l_is_function then
 					l_arguments_suffix := ", Result"
 					l_boogie_function := "function.postcondition_" + l_open_argument_count.out
@@ -862,11 +879,9 @@ feature {NONE} -- Implementation
 					l_boogie_function := "routine.postcondition_" + l_open_argument_count.out
 				end
 			elseif l_feature_name.is_equal ("call") then
-				l_arguments := ""
 				l_arguments_suffix := ""
 				l_boogie_function := "routine.call_" + l_open_argument_count.out
 			elseif l_feature_name.is_equal ("item") then
-				l_arguments := ""
 				l_arguments_suffix := ""
 				l_boogie_function := "function.item_" + l_open_argument_count.out
 				l_return_local := True
@@ -955,6 +970,7 @@ feature {NONE} -- Implementation
 
 				if is_processing_contract then
 					check feature_list.is_pure (a_feature) end
+					expression.put (l_function_name + "(" + name_mapper.heap_name + ", " + l_arguments + ")")
 				else
 					if a_feature.has_return_value then
 						expression.put (last_local)

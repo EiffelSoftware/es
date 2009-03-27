@@ -61,7 +61,12 @@ feature -- Basic operations
 			frame_extractor.build_frame_condition (a_feature)
 			output.put_line ("ensures " + frame_extractor.last_frame_condition + "; // frame " + a_feature.written_class.name_in_upper + ":" + a_feature.feature_name)
 
+			write_precondition_predicate (a_feature)
 			write_postcondition_predicate (a_feature)
+-- TODO: refactor
+			if feature_list.is_pure (a_feature) and a_feature.has_return_value then
+				write_functional_predicate (a_feature)
+			end
 
 			output.set_indentation ("")
 			output.put_new_line
@@ -246,7 +251,8 @@ feature {NONE} -- Implementation
 				loop
 					l_item := contract_writer.preconditions.item
 					output.put_indentation
-					output.put ("requires ")
+					-- TODO: remove "free" when predicate testing is done
+					output.put ("free requires ")
 					output.put (l_item.expression)
 					output.put ("; // ")
 					output.put (assert_location ("pre", l_item))
@@ -367,6 +373,60 @@ feature {NONE} -- Implementation
 			end
 			if not a_feature.type.is_void then
 				output.put (", Result")
+			end
+			output.put (");")
+			output.put_new_line
+		end
+
+	write_precondition_predicate (a_feature: !FEATURE_I)
+			-- TODO
+		local
+			l_predicate_name, l_argument_name, l_argument_type: STRING
+			i: INTEGER
+		do
+			output.put_comment_line ("Precondition predicate")
+
+			output.put_indentation
+			output.put ("requires ");
+			l_predicate_name := name_generator.precondition_predicate_name (a_feature);
+			output.put (l_predicate_name + "(Heap, Current")
+
+			-- TODO: code reuse with implementation writer => inherit from signature writer?
+			from
+				i := 1
+			until
+				i > a_feature.argument_count
+			loop
+				l_argument_name := name_generator.argument_name (a_feature.arguments.item_name (i))
+				output.put (", " + l_argument_name)
+				i := i + 1
+			end
+			output.put ("); // pre DUMMY:combined")
+			output.put_new_line
+		end
+
+	write_functional_predicate (a_feature: !FEATURE_I)
+			-- TODO
+		local
+			l_predicate_name, l_argument_name, l_argument_type: STRING
+			i: INTEGER
+		do
+			output.put_comment_line ("Functional predicate")
+
+			output.put_indentation
+			output.put ("free ensures Result == ");
+			l_predicate_name := name_generator.functional_feature_name (a_feature);
+			output.put (l_predicate_name + "(Heap, Current")
+
+			-- TODO: code reuse with implementation writer => inherit from signature writer?
+			from
+				i := 1
+			until
+				i > a_feature.argument_count
+			loop
+				l_argument_name := name_generator.argument_name (a_feature.arguments.item_name (i))
+				output.put (", " + l_argument_name)
+				i := i + 1
 			end
 			output.put (");")
 			output.put_new_line

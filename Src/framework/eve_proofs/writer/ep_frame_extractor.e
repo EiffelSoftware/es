@@ -75,7 +75,8 @@ feature -- Basic operations
 				target := name_mapper.current_name
 				process_feature_postcondition (a_feature)
 				if modified_attributes.is_empty then
-					last_frame_condition := "true"
+						-- No contracts, we assume no side-effects on existing objects
+					last_frame_condition := "(forall<alpha> $o: ref, $f: Field alpha :: { Heap[$o, $f] } $o != Void && IsAllocated(old(Heap), $o) ==> (old(Heap)[$o, $f] == Heap[$o, $f]))"
 				else
 					last_frame_condition := "(forall<alpha> $o: ref, $f: Field alpha :: { Heap[$o, $f] } $o != Void && IsAllocated(old(Heap), $o)"
 					from
@@ -114,7 +115,8 @@ feature -- Basic operations
 				target := name_mapper.target_name
 				process_feature_postcondition (a_feature)
 				if modified_attributes.is_empty then
-					last_frame_condition := "(true"
+						-- No contracts, we assume a side-effect free function
+					last_frame_condition := "(false"
 				else
 					last_frame_condition := "(false"
 				end

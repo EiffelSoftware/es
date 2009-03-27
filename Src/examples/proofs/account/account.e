@@ -24,6 +24,8 @@ feature -- Access
 	balance: INTEGER
 			-- Balance of account
 
+	a: INTEGER
+
 feature -- Element change
 
 	deposit (amount: INTEGER)

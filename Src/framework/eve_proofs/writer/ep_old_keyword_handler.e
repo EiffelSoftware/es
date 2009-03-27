@@ -12,6 +12,16 @@ inherit
 
 	EP_OLD_HANDLER
 
+feature -- Access
+
+	old_heap_name: STRING
+			-- <Precursor>
+		do
+			Result := "old(Heap)"
+--			Result.append (expression_writer.name_mapper.heap_name)
+--			Result.append (")")
+		end
+
 feature -- Processing
 
 	process_un_old_b (a_node: UN_OLD_B)

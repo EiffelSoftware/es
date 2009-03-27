@@ -18,7 +18,7 @@ feature
 
 	make (a_value: INTEGER)
 		require
-			a_value > 0
+--			a_value > 0
 		do
 			value := a_value
 		ensure
@@ -33,8 +33,8 @@ feature
 feature
 
 	sum: INTEGER
---		indexing
---			pure: True
+		indexing
+			pure: True
 		do
 			Result := value
 		ensure then
@@ -43,14 +43,15 @@ feature
 
 --	top: INTEGER
 
---	accept
---		do
---			top := value
---		ensure
---			top = value
---		end
+	accept
+		do
+			top := value
+		ensure then
+			top = value
+		end
 
 invariant
-	value > 0
+	true
+--	value > 0
 
 end

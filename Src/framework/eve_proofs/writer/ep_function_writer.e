@@ -200,7 +200,109 @@ feature -- Basic operations
 					else
 						output.put_line ("axiom (forall " + l_arguments + " ::")
 						output.put_line ("             { " + l_full_function + " } // Trigger")
-						output.put_line ("        (heap[current, $type]==" + l_type + ") ==> ((" + l_full_function + ") ==> (" + contract_writer.full_postcondition + ")));")
+						output.put_line ("        (heap[current, $type] <: " + l_type + ") ==> ((" + l_full_function + ") ==> (" + contract_writer.full_postcondition + ")));")
+					end
+
+
+					output.put_new_line
+
+					i := i + 1
+				end
+			end
+
+		end
+
+	write_precondition_predicate (a_feature: !FEATURE_I)
+			-- TODO: move someplace else
+			-- TODO: REFACTOR!
+		local
+			l_predicate_name, l_arguments, l_type: STRING
+			l_argument_name, l_full_function, l_full_arguments: STRING
+			i: INTEGER
+			l_old_handler: EP_OLD_HEAP_HANDLER
+			l_expression_writer: EP_EXPRESSION_WRITER
+			l_parent_feature: FEATURE_I
+			l_assert_info: INH_ASSERT_INFO
+		do
+			output.reset
+
+			create l_old_handler.make ("old_heap")
+			create l_expression_writer.make (name_mapper, l_old_handler)
+
+			l_predicate_name := name_generator.precondition_predicate_name (a_feature)
+			l_arguments := "heap: HeapType, current: ref"
+			l_full_arguments := "(heap, current"
+			from
+				i := 1
+			until
+				i > a_feature.argument_count
+			loop
+				l_argument_name := name_generator.argument_name (a_feature.arguments.item_name (i))
+				l_arguments.append (", ")
+				l_arguments.append (l_argument_name)
+				l_arguments.append (": ")
+				l_arguments.append (type_mapper.boogie_type_for_type (a_feature.arguments.i_th (i)))
+
+				l_full_arguments.append (", ")
+				l_full_arguments.append (l_argument_name)
+
+				i := i + 1
+			end
+
+			l_full_arguments.append (")")
+
+			l_full_function := l_predicate_name.twin + l_full_arguments
+
+			output.put_comment_line ("Precondition predicate")
+			output.put_line ("function " + l_predicate_name + "(" + l_arguments + ") returns (bool);")
+
+			name_mapper.set_current_feature (a_feature)
+			name_mapper.set_current_name ("current")
+			name_mapper.set_target_name ("current")
+			name_mapper.set_heap_name ("heap")
+			name_mapper.set_result_name ("result")
+
+			expression_writer.reset
+
+			contract_writer.reset
+			contract_writer.set_feature (a_feature)
+			contract_writer.set_expression_writer (l_expression_writer)
+			contract_writer.generate_contracts
+
+			if contract_writer.is_generation_failed then
+					-- TODO: improve message
+				event_handler.add_proof_skipped_event (a_feature.written_class, a_feature, "(precondition predicate axiom) " + contract_writer.fail_reason)
+				output.put_comment_line ("Axiom ignored (skipped due to exception)")
+			else
+				output.put_line ("axiom (forall " + l_arguments + " ::")
+				output.put_line ("             { " + l_full_function + " } // Trigger")
+				output.put_line ("        (" + contract_writer.full_precondition + ") ==> (" + l_full_function + "));")
+			end
+			output.put_new_line
+
+			l_type := name_generator.type_name (a_feature.written_class.actual_type)
+
+			if a_feature.assert_id_set /= Void then
+				from
+					i := 1
+				until
+					i > a_feature.assert_id_set.count
+				loop
+					l_assert_info := a_feature.assert_id_set.item (i)
+					l_parent_feature := l_assert_info.written_class.feature_of_body_index (l_assert_info.body_index)
+					check l_parent_feature /= Void end
+					l_predicate_name := name_generator.precondition_predicate_name (l_parent_feature)
+
+					l_full_function := l_predicate_name + l_full_arguments
+
+					output.put_comment_line ("Inheritance predicate for class " + l_assert_info.written_class.name_in_upper)
+					if contract_writer.is_generation_failed then
+							-- TODO: improve message
+						output.put_comment_line ("Axiom ignored (skipped due to exception)")
+					else
+						output.put_line ("axiom (forall " + l_arguments + " ::")
+						output.put_line ("             { " + l_full_function + " } // Trigger")
+						output.put_line ("        (heap[current, $type] <: " + l_type + ") ==> ((" + contract_writer.full_precondition + ") ==> (" + l_full_function + ")));")
 					end
 
 
