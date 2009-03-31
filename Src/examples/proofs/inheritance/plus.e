@@ -20,6 +20,7 @@ feature
 		require
 --			a_left > 0
 --			a_right > 0
+			a_left /= a_right
 		do
 			left := a_left
 			right := a_right
@@ -50,9 +51,9 @@ feature
 			l2 := right.top
 			top := l1 + l2
 		ensure then
-			(agent left.accept).postcondition ([])
-			(agent right.accept).postcondition ([])
-			top = left.top + right.top
+			left: (agent left.accept).postcondition ([])
+			right: (agent right.accept).postcondition ([])
+			top: top = left.top + right.top
 		end
 
 	sum: INTEGER
@@ -64,8 +65,17 @@ feature
 			Result = left.sum + right.sum
 		end
 
+	eval_left
+		local
+		do
+			left.accept
+		ensure
+			(agent left.accept).postcondition ([])
+			left.top = left.top	-- modifies left.top
+		end
+
 invariant
-	true
+	left /= right
 --	left > 0
 --	right > 0
 

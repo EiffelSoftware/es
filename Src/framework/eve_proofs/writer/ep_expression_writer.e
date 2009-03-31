@@ -444,6 +444,7 @@ feature {BYTE_NODE} -- Visitors
 			end
 
 			l_type ?= a_node.type
+			check l_type /= Void end
 			l_feature := system.class_of_id (l_type.class_id).feature_of_feature_id (a_node.call.feature_id)
 			check l_feature /= Void end
 			l_attached_feature := l_feature
@@ -472,6 +473,8 @@ feature {BYTE_NODE} -- Visitors
 			side_effect.put_line (name_mapper.heap_name + "[" + l_local_name + ", $allocated] := true;")
 			side_effect.put_line (name_mapper.heap_name + "[" + l_local_name + ", $type] := " + name_generator.type_name (a_node.type) + ";")
 			side_effect.put_line ("call " + l_creation_routine_name + "(" + l_arguments + ");")
+
+			type_list.record_type_needed (a_node.type)
 
 			expression.put (l_local_name)
 		end
@@ -552,28 +555,38 @@ feature {BYTE_NODE} -- Visitors
 			l_temp_expression: STRING
 			l_target_name: STRING
 		do
-			last_target_type := a_node.target.type
+			-- TODO: make check nicer and more generic
+			if
+				is_processing_contract and then
+				{l_access_exp: ACCESS_EXPR_B} a_node.target and then
+				{l_agent_creation: ROUTINE_CREATION_B} l_access_exp.expr and then
+				{l_feature_call: FEATURE_B} a_node.message
+			then
+				process_special_postcondition_predicate (l_agent_creation, l_feature_call)
+			else
+				last_target_type := a_node.target.type
 
-				-- Store expression
-			l_temp_expression := expression.string
-				-- Evaluate target with fresh expression
-			expression.reset
-			safe_process (a_node.target)
-				-- Use target as new `Current' reference
-			l_target_name := name_mapper.target_name
-			name_mapper.set_target_name (expression.string)
+					-- Store expression
+				l_temp_expression := expression.string
+					-- Evaluate target with fresh expression
+				expression.reset
+				safe_process (a_node.target)
+					-- Use target as new `Current' reference
+				l_target_name := name_mapper.target_name
+				name_mapper.set_target_name (expression.string)
 
-				-- Test if target is valid
-			side_effect.put_line ("assert IsAllocatedAndNotVoid(" + name_mapper.heap_name + ", " + name_mapper.target_name + "); // " + ep_context.assert_location ("attached"))
+					-- Test if target is valid
+				side_effect.put_line ("assert IsAllocatedAndNotVoid(" + name_mapper.heap_name + ", " + name_mapper.target_name + "); // " + ep_context.assert_location ("attached"))
 
-				-- Evaluate message with original expression
-			expression.reset
-			expression.put (l_temp_expression)
-			safe_process (a_node.message)
-				-- Restore `Current' reference
-			name_mapper.set_target_name (l_target_name)
+					-- Evaluate message with original expression
+				expression.reset
+				expression.put (l_temp_expression)
+				safe_process (a_node.message)
+					-- Restore `Current' reference
+				name_mapper.set_target_name (l_target_name)
 
-			last_target_type := Void
+				last_target_type := Void
+			end
 		end
 
 	process_object_test_b (a_node: OBJECT_TEST_B)
@@ -1034,6 +1047,39 @@ feature {NONE} -- Implementation
 		do
 			create l_exception.make (a_reason)
 			l_exception.raise
+		end
+
+	process_special_postcondition_predicate (a_agent: ROUTINE_CREATION_B; a_call: FEATURE_B)
+			-- TODO
+		local
+			l_agent_class: CLASS_C
+			l_agent_feature: FEATURE_I
+			l_attached_feature: !FEATURE_I
+			l_expression: STRING
+			l_predicate, l_heap, l_old_heap, l_target: STRING
+		do
+			l_agent_class := system.class_of_id (a_agent.origin_class_id)
+			l_agent_feature := l_agent_class.feature_of_feature_id (a_agent.feature_id)
+			check l_agent_feature /= Void end
+			l_attached_feature := l_agent_feature
+
+			feature_list.record_feature_needed (l_attached_feature)
+
+				-- Target object
+			l_expression := expression.string
+			expression.reset
+
+			a_agent.arguments.expressions.first.process (Current)
+			l_target := expression.string
+
+			expression.reset
+			expression.put (l_expression)
+
+			l_predicate := name_generator.postcondition_predicate_name (l_attached_feature)
+			l_heap := name_mapper.heap_name
+			l_old_heap := old_handler.old_heap_name
+
+			expression.put(l_predicate + "(" + l_heap + ", " + l_old_heap + ", " + l_target + ")")
 		end
 
 end

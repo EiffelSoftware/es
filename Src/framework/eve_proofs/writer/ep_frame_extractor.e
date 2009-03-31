@@ -284,15 +284,24 @@ feature {NONE} -- Visitors
 			l_feature: FEATURE_I
 			l_attached_feature: !FEATURE_I
 		do
-			create l_last_target.make_from_string (target)
+				-- TODO: make check more generic, see also EP_EXPRESSION_WRITER.process_nested
+			if
+				{l_access_exp: ACCESS_EXPR_B} a_node.target and then
+				{l_agent_creation: ROUTINE_CREATION_B} l_access_exp.expr and then
+				{l_feature_call: FEATURE_B} a_node.message
+			then
+					-- Ignore
+			else
+				create l_last_target.make_from_string (target)
 
-			in_target := True
-			a_node.target.process (Current)
-			in_target := False
+				in_target := True
+				a_node.target.process (Current)
+				in_target := False
 
-			a_node.message.process (Current)
+				a_node.message.process (Current)
 
-			target := l_last_target
+				target := l_last_target
+			end
 		end
 
 	process_result_b (a_node: RESULT_B)

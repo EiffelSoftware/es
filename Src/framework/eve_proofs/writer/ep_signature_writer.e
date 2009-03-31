@@ -126,6 +126,7 @@ feature {NONE} -- Implementation
 
 			output.put ("procedure " + a_procedure_name + "(")
 			l_type_name := name_generator.type_name (a_feature.written_class.actual_type)
+			type_list.record_type_needed (a_feature.written_class.actual_type)
 			if a_feature.argument_count = 0 then
 				output.put ("Current: ref where IsAttachedType(Heap, Current, " + l_type_name + ")")
 			else
@@ -140,10 +141,11 @@ feature {NONE} -- Implementation
 					l_argument_name :=  name_generator.argument_name (a_feature.arguments.item_name (i))
 					l_argument_type := a_feature.arguments.i_th (i)
 					l_type_name := name_generator.type_name (l_argument_type)
+					type_list.record_type_needed (l_argument_type)
 						-- TODO: fix this hack
-					if {l_temp: GEN_TYPE_A} l_argument_type or l_type_name.is_equal ("STRING_8") then
-						l_type_name := "ANY"
-					end
+--					if {l_temp: GEN_TYPE_A} l_argument_type or l_type_name.is_equal ("STRING_8") then
+--						l_type_name := "ANY"
+--					end
 
 					output.put (",%N")
 					output.put ("            " + l_argument_name + ": " + type_mapper.boogie_type_for_type (l_argument_type))
@@ -172,6 +174,7 @@ feature {NONE} -- Implementation
 			output.put (")")
 			if a_feature.has_return_value then
 				output.put (" returns (Result: " + type_mapper.boogie_type_for_type (a_feature.type) + ")")
+				type_list.record_type_needed (a_feature.type)
 			end
 			output.put (";%N")
 

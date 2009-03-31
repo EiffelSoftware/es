@@ -106,6 +106,7 @@ feature -- Basic operations
 				-- Generate Boogie code for referenced features
 			put_window_message (names.message_generating_referenced_features)
 			generate_code_for_referenced_features
+			generate_code_for_referenced_types
 
 			if errors.is_empty then
 					-- Start Boogie
@@ -160,6 +161,7 @@ feature {NONE} -- Implementation
 			warnings.wipe_out
 			event_handler.clear_events
 			feature_list.reset
+			type_list.reset
 			boogie_generator.reset
 			verifier.reset
 		end
@@ -216,6 +218,25 @@ feature {NONE} -- Implementation
 			verifier.add_buffer_content (boogie_generator.output, "Referenced features")
 		end
 
+
+	generate_code_for_referenced_types
+			-- Generate Boogie code for all referenced features.
+		local
+			l_list: !LIST [TYPE_A]
+		do
+			boogie_generator.reset
+
+				-- Generate code for creation routines
+			from
+				l_list := type_list.types_needed
+			until
+				l_list.is_empty
+			loop
+				boogie_generator.process_type (l_list.first)
+			end
+
+			verifier.add_buffer_content (boogie_generator.output, "Referenced types")
+		end
 
 -- TODO: move file someplace else
 -- TODO: this should go into the Delivery somewhere...

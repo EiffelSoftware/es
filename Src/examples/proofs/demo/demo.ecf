@@ -25,8 +25,8 @@
 			<cluster name="simple" location="..\simple\"/>
 			<cluster name="unsupported" location="..\unsupported\"/>
 			<cluster name="generics" location="..\generics\"/>
-			<cluster name="sequence" location="c:\eve\src\examples\proofs\demo\sequence\"/>
-			<cluster name="precondition_inheritance_test" location="c:\eve\src\examples\proofs\demo\precondition_inheritance_test\"/>
+			<cluster name="sequence" location="sequence\"/>
+			<cluster name="precondition_inheritance_test" location="precondition_inheritance_test\"/>
 		</cluster>
 	</target>
 </system>

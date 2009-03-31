@@ -23,6 +23,12 @@ feature -- Access
 			create Result.make
 		end
 
+	type_list: !EP_TYPE_LIST
+			-- Shared list of processed features
+		once
+			create Result.make
+		end
+
 	name_generator: !EP_DEFAULT_NAMES
 			-- Shared name generator
 		once

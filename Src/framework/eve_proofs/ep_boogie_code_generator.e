@@ -35,6 +35,7 @@ feature {NONE} -- Initialization
 			create signature_writer.make
 			create function_writer.make
 			create implementation_writer.make
+			create type_writer.make
 		end
 
 feature -- Access
@@ -77,7 +78,7 @@ feature -- Basic operations
 			-- Generate code for `a_class'.
 		do
 				-- Inheritance relation
-			process_inheritance (a_class)
+			process_type (a_class.actual_type)
 
 				-- Creation routines
 			if a_class.creators /= Void then
@@ -88,6 +89,13 @@ feature -- Basic operations
 			if a_class.has_feature_table then
 				process_features (a_class)
 			end
+		end
+
+	process_type (a_type: TYPE_A)
+			-- Generate code for `a_class'.
+		do
+			type_writer.process_type (a_type)
+			output.put (type_writer.output.string)
 		end
 
 	process_feature (a_feature: !FEATURE_I)
@@ -213,35 +221,11 @@ feature {NONE} -- Implementation
 	function_writer: !EP_FUNCTION_WRITER
 			-- Writer to produce functional feature representation
 
+	type_writer: !EP_TYPE_WRITER
+			-- Writer to produce types
+
 	implementation_writer: !EP_IMPLEMENTATION_WRITER
 			-- Writer to procduce feature implementations
-
-	process_inheritance (a_class: !CLASS_C)
-			-- Process inheritance relation of `a_class'.
-		local
-			l_name, l_parent: STRING
-		do
-			l_name := name_generator.type_name (a_class.actual_type)
-
-			output.put_comment_line ("Type constant")
-			output.put_line ("const unique " + l_name + ": Type;")
-			output.put_new_line
-
-			output.put_comment_line ("Inheritance relations")
-			from
-				a_class.conforming_parents.start
-			until
-				a_class.conforming_parents.after
-			loop
-				l_parent := name_generator.type_name (a_class.conforming_parents.item_for_iteration)
-				output.put_line ("axiom " + l_name + " <: " + l_parent + ";")
-				a_class.conforming_parents.forth
-			end
-
-			output.put_new_line
-
-			-- TODO: add "complete" and "unique" depending on frozen classes
-		end
 
 	process_creation_routines (a_class: !CLASS_C)
 			-- Process creation routines of class `a_class'.

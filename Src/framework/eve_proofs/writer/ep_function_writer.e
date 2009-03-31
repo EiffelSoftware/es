@@ -179,6 +179,7 @@ feature -- Basic operations
 			output.put_new_line
 
 			l_type := name_generator.type_name (a_feature.written_class.actual_type)
+			type_list.record_type_needed (a_feature.written_class.actual_type)
 
 			if a_feature.assert_id_set /= Void then
 				from
@@ -190,6 +191,7 @@ feature -- Basic operations
 					l_parent_feature := l_assert_info.written_class.feature_of_body_index (l_assert_info.body_index)
 					check l_parent_feature /= Void end
 					l_predicate_name := name_generator.postcondition_predicate_name (l_parent_feature)
+					feature_list.record_feature_needed (l_parent_feature)
 
 					l_full_function := l_predicate_name + l_full_arguments
 
@@ -281,6 +283,7 @@ feature -- Basic operations
 			output.put_new_line
 
 			l_type := name_generator.type_name (a_feature.written_class.actual_type)
+			type_list.record_type_needed (a_feature.written_class.actual_type)
 
 			if a_feature.assert_id_set /= Void then
 				from
@@ -292,6 +295,7 @@ feature -- Basic operations
 					l_parent_feature := l_assert_info.written_class.feature_of_body_index (l_assert_info.body_index)
 					check l_parent_feature /= Void end
 					l_predicate_name := name_generator.precondition_predicate_name (l_parent_feature)
+					feature_list.record_feature_needed (l_parent_feature)
 
 					l_full_function := l_predicate_name + l_full_arguments
 

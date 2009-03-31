@@ -104,6 +104,7 @@ feature -- Basic operations
 			else
 				check false end
 			end
+			type_list.mark_type_as_generated (system.any_type)
 		ensure
 			is_reset: is_reset
 		end
