@@ -828,8 +828,59 @@ feature{NONE} -- Test result analyizing
 		local
 			l_replay_strategy: AUT_REQUEST_PLAYER
 			l_requests: DS_LINEAR [AUT_REQUEST]
+			l_object_state: AUT_OBJECT_STATE
+			l_object_states: DS_LINKED_LIST [AUT_OBJECT_STATE]
+			l_break: BOOLEAN
+			l_count_duplicates: INTEGER
 		do
 			l_requests := requests_from_file (a_log_file, create {AUT_LOG_PARSER}.make (system, error_handler))
+			create l_object_states.make
+
+			from
+				l_requests.start
+				l_count_duplicates := 0
+			until
+				l_requests.after
+			loop
+				if attached {AUT_OBJECT_STATE_REQUEST} l_requests.item_for_iteration as l_object_state_request then
+					if attached {AUT_OBJECT_STATE_RESPONSE} l_object_state_request.response as l_object_state_response then
+						create l_object_state.make (l_object_state_response)
+
+						from
+							l_object_states.start
+							l_break := False
+						until
+							l_object_states.after or l_break
+						loop
+							if l_object_states.item_for_iteration.is_equal (l_object_state) then
+								l_break := True
+								l_count_duplicates := l_count_duplicates + 1
+								io.put_string ("+")
+							end
+							l_object_states.forth
+						end
+
+						if not l_break then
+							l_object_states.put_last (l_object_state)
+
+							io.put_new_line
+							io.put_string ("New state: ")
+							io.put_string (l_object_state.textual_vector_representation)
+							io.put_new_line
+						end
+						
+					end
+				end
+
+				l_requests.forth
+			end
+
+			io.put_new_line
+			io.put_string ("Found ")
+			io.put_integer (l_object_states.count)
+			io.put_string (" distinct states (")
+			io.put_integer (l_count_duplicates)
+			io.put_string (" duplicates).%N")
 		end
 
 feature {NONE} -- Implementation
