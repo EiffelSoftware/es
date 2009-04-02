@@ -120,6 +120,85 @@ feature
 				p.top = 10
 			end
 
+			check
+--				fail: false
+			end
+
+			c1.accept	-- mentioned, so it is referenced
+		end
+
+	k
+		local
+			c1, c2: !CONSTANT
+			p1: !PLUS
+			v: !EXP_VISITOR
+			e: !EXPRESSION
+			s: !SUM_VISITOR
+		do
+			create c1.make (1)
+			create c2.make (2)
+			create s.make
+
+			v := s
+			e := c1
+
+			check
+				a: s.sum = 0
+				b: c1.value = 1
+				c: c2.value = 2
+			end
+
+			e.visit (v)
+
+			check
+				d: s.sum = 1
+			end
+
+			check
+				fail: false
+			end
+
+				-- referencing
+			c1.visit (s)
+			s.process_constant (c1)
+			s.process_plus (p1)
+		end
+
+	l
+		local
+			c1, c2: !CONSTANT
+			m: !MINUS
+			v: !EXP_VISITOR
+			e: !EXPRESSION
+			inc: !INCREASE_VISITOR
+		do
+			create c1.make (1)
+			create c2.make (2)
+			create m.make (c1)
+			create inc.make
+
+			v := inc
+			e := c1
+
+			check
+				b: c1.value = 1
+				c: c2.value = 2
+			end
+
+			c1.visit (inc)
+
+			check
+				d: c1.value = 2
+			end
+
+			check
+				fail: false
+			end
+
+				-- referencing
+			c1.visit (inc)
+			inc.process_constant (c1)
+			inc.process_minus (m)
 		end
 
 end

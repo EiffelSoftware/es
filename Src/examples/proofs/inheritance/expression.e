@@ -28,4 +28,17 @@ feature
 
 	top: INTEGER
 
+	set_top (a_value: INTEGER)
+		do
+			top := a_value
+		ensure
+			top = a_value
+		end
+
+	visit (a: !EXP_VISITOR)
+		deferred
+		ensure
+			a.sum = a.sum
+		end
+
 end

@@ -47,7 +47,7 @@ feature -- Status report
 	has_feature_used_in_contract (a_feature: !FEATURE_I): BOOLEAN
 			-- Is `a_feature' used in a contract?
 		do
-			Result := features_used_in_contracts.there_exists (agent has_routine_id (?, a_feature.rout_id_set.first))
+			Result := features_used_in_contracts.there_exists (agent is_same_feature (?, a_feature))
 		end
 
 -- TODO: move someplace else and improve
@@ -86,7 +86,7 @@ feature -- Status report
 	is_creation_routine_already_generated (a_feature: !FEATURE_I): BOOLEAN
 			-- Is `a_feature' already generated as a creation routine?
 		do
-			Result := creation_routines_generated.there_exists (agent has_routine_id (?, a_feature.rout_id_set.first))
+			Result := creation_routines_generated.there_exists (agent is_same_feature (?, a_feature))
 		end
 
 
@@ -94,13 +94,10 @@ feature -- Element change
 
 	record_creation_routine_needed (a_feature: !FEATURE_I)
 			-- Record that `a_feature' is needed as a creation routine.
-		local
-			l_routine_id: INTEGER
 		do
-			l_routine_id := a_feature.rout_id_set.first
 			if
-				not creation_routines_needed.there_exists (agent has_routine_id (?, l_routine_id)) and then
-				not creation_routines_generated.there_exists (agent has_routine_id (?, l_routine_id))
+				not creation_routines_needed.there_exists (agent is_same_feature (?, a_feature)) and then
+				not creation_routines_generated.there_exists (agent is_same_feature (?, a_feature))
 			then
 				creation_routines_needed.extend (a_feature)
 			end
@@ -111,13 +108,10 @@ feature -- Element change
 
 	record_feature_needed (a_feature: !FEATURE_I)
 			-- Record that `a_feature' is needed either in a contract or an implementation.
-		local
-			l_routine_id: INTEGER
 		do
-			l_routine_id := a_feature.rout_id_set.first
 			if
-				not features_needed.there_exists (agent has_routine_id (?, l_routine_id)) and then
-				not features_generated.there_exists (agent has_routine_id (?, l_routine_id))
+				not features_needed.there_exists (agent is_same_feature (?, a_feature)) and then
+				not features_generated.there_exists (agent is_same_feature (?, a_feature))
 			then
 				features_needed.extend (a_feature)
 			end
@@ -132,8 +126,7 @@ feature -- Element change
 		local
 			l_routine_id: INTEGER
 		do
-			l_routine_id := a_feature.rout_id_set.first
-			if not features_used_in_contracts.there_exists (agent has_routine_id (?, l_routine_id)) then
+			if not features_used_in_contracts.there_exists (agent is_same_feature (?, a_feature)) then
 				features_used_in_contracts.extend (a_feature)
 			end
 		ensure
@@ -175,10 +168,10 @@ feature -- Basic operations
 
 feature {NONE} -- Implementation
 
-	has_routine_id (a_feature: !FEATURE_I; a_routine_id: INTEGER): BOOLEAN
+	is_same_feature (a_feature: !FEATURE_I; a_other_feature: !FEATURE_I): BOOLEAN
 			-- Has `a_feature' routine id `a_routine_id'?
 		do
-			Result := a_feature.rout_id_set.first = a_routine_id
+			Result := a_feature.rout_id_set.first = a_other_feature.rout_id_set.first and then a_feature.written_in = a_other_feature.written_in
 		end
 
 end

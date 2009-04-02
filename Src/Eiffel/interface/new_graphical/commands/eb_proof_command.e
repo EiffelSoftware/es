@@ -45,6 +45,7 @@ feature {NONE} -- Initialization
 			-- Creation method.
 		do
 			enable_sensitive
+			last_execution := agent execute_proof_current_item
 			eve_proofs.register_message_callbacks (agent put_output_message, agent put_window_message)
 		end
 
@@ -52,13 +53,8 @@ feature -- Execution
 
 	execute is
 			-- Execute menu command.
-		local
-			l_window: EB_DEVELOPMENT_WINDOW
 		do
-			l_window := window_manager.last_focused_development_window
-			if droppable (l_window.stone) then
-				execute_with_stone (l_window.stone)
-			end
+			execute_proof_current_item
 		end
 
 	execute_with_stone (a_stone: STONE)
@@ -265,7 +261,7 @@ feature -- Items
 		do
 			create Result.make (Current)
 			initialize_sd_toolbar_item (Result, display_text)
-			Result.select_actions.extend (agent execute)
+			Result.select_actions.extend (agent execute_last_action)
 
 			Result.drop_actions.extend (agent execute_with_stone)
 			Result.drop_actions.set_veto_pebble_function (agent droppable)
@@ -347,7 +343,7 @@ feature {NONE} -- Implementation
 		do
 			create Result
 				-- TODO: internationalization
-			create l_item.make_with_text_and_action ("Proof current item", agent execute)
+			create l_item.make_with_text_and_action ("Proof current item", agent execute_proof_current_item)
 			Result.extend (l_item)
 			create l_item.make_with_text_and_action ("Proof parent cluster of current item", agent execute_proof_parent_cluster)
 			Result.extend (l_item)
@@ -357,6 +353,18 @@ feature {NONE} -- Implementation
 			not_void: Result /= Void
 		end
 
+	execute_proof_current_item
+			-- Proof current item
+		local
+			l_window: EB_DEVELOPMENT_WINDOW
+		do
+			last_execution := agent execute_proof_current_item
+			l_window := window_manager.last_focused_development_window
+			if droppable (l_window.stone) then
+				execute_with_stone (l_window.stone)
+			end
+		end
+
 	execute_proof_parent_cluster is
 			-- Proof parent cluster of window item.
 		local
@@ -364,6 +372,7 @@ feature {NONE} -- Implementation
 			l_class_stone: CLASSC_STONE
 			l_cluster_stone: CLUSTER_STONE
 		do
+			last_execution := agent execute_proof_parent_cluster
 			l_window := window_manager.last_focused_development_window
 			l_class_stone ?= l_window.stone
 			l_cluster_stone ?= l_window.stone
@@ -381,7 +390,14 @@ feature {NONE} -- Implementation
 	execute_proof_system is
 			-- Proof whole system (excluding libraries).
 		do
+			last_execution := agent execute_proof_system
 			execute_with_stone (Void)
+		end
+
+	execute_last_action
+			-- Execute same action as last time.
+		do
+			last_execution.call ([])
 		end
 
 	put_output_message (a_string: STRING)
@@ -399,6 +415,9 @@ feature {NONE} -- Implementation
 		end
 
 feature {NONE} -- Implementation
+
+	last_execution: PROCEDURE [ANY, TUPLE []]
+			-- Last executed actions
 
 	menu_name: STRING_GENERAL
 			-- Name as it appears in the menu (with & symbol).

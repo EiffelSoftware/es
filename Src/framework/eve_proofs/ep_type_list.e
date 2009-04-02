@@ -36,16 +36,14 @@ feature -- Element change
 			l_routine_id: INTEGER
 			l_type: TYPE_A
 		do
-			l_type := a_type.as_attachment_mark_free
+			l_type := a_type.actual_type.as_attachment_mark_free
 			if
 				not l_type.is_expanded and then
-				not types_generated.there_exists (agent l_type.is_safe_equivalent (?)) and then
-				not types_needed.there_exists (agent l_type.is_safe_equivalent (?))
+				not types_generated.there_exists (agent is_same_type (?, l_type)) and then
+				not types_needed.there_exists (agent is_same_type (?, l_type))
 			then
 				types_needed.extend (l_type)
 			end
-		ensure
---			not a_type.is_expanded and not types_generated.there_exists (agent a_type.is_safe_equivalent) implies types_needed.has (a_type)
 		end
 
 feature -- Basic operations
@@ -58,7 +56,7 @@ feature -- Basic operations
 			until
 				types_needed.after
 			loop
-				if types_needed.item_for_iteration.is_safe_equivalent (a_type) then
+				if is_same_type (a_type, types_needed.item_for_iteration) then
 					types_needed.remove
 				end
 				types_needed.forth
@@ -74,6 +72,14 @@ feature -- Basic operations
 		do
 			types_needed.wipe_out
 			types_generated.wipe_out
+		end
+
+feature {NONE} -- Implementation
+
+	is_same_type (a_type: TYPE_A; a_other_type: TYPE_A): BOOLEAN
+			-- Is `a_type' and `a_other_type' same type?
+		do
+			Result := a_type.is_conformant_to (a_other_type) and then a_other_type.is_conformant_to (a_type)
 		end
 
 end

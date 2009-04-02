@@ -290,7 +290,9 @@ feature {NONE} -- Visitors
 				{l_agent_creation: ROUTINE_CREATION_B} l_access_exp.expr and then
 				{l_feature_call: FEATURE_B} a_node.message
 			then
-					-- Ignore
+				create l_last_target.make_from_string (target)
+					-- TODO: build frame condition of called agent, use it here
+				target := l_last_target
 			else
 				create l_last_target.make_from_string (target)
 

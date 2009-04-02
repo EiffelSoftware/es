@@ -182,7 +182,7 @@ feature {NONE} -- Implementation
 
 				-- 2. Look in deliversy
 			if l_executable.is_empty then
-				l_path := eiffel_layout.shared_application_path
+				l_path := eiffel_layout.shared_application_path.twin
 				l_path.extend ("tools")
 				l_path.extend ("boogie")
 				l_path.extend ("bin")

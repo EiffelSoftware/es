@@ -653,6 +653,8 @@ feature {BYTE_NODE} -- Visitors
 			check l_agent_feature /= Void end
 			l_attached_feature := l_agent_feature
 
+			feature_list.record_feature_needed (l_attached_feature)
+
 			create_new_reference_local
 			l_agent_variable := last_local
 
@@ -854,6 +856,7 @@ feature {NONE} -- Implementation
 			l_is_function: BOOLEAN
 			l_return_local: BOOLEAN
 			l_heap, l_old_heap: STRING
+			l_temp_current, l_temp_target: STRING
 		do
 			l_feature_name := a_feature.feature_name
 
@@ -866,7 +869,7 @@ feature {NONE} -- Implementation
 			l_open_argument_count := l_tuple_content.count
 
 			l_heap := name_mapper.heap_name.twin
--- For some reason, the call to old_hea_name corrupts some strings at other places...
+-- TODO: For some reason, the call to old_hea_name corrupts some strings at other places...
 --			create l_old_heap.make_from_string (old_handler.old_heap_name)
 			if {l_wtf1: EP_OLD_KEYWORD_HANDLER} old_handler then
 				l_old_heap := "old(Heap)"
@@ -904,6 +907,8 @@ feature {NONE} -- Implementation
 
 				-- Store expression
 			l_temp_expression := expression.string
+			l_temp_target := name_mapper.target_name
+			l_temp_current := name_mapper.current_name
 				-- Evaluate parameters with fresh expression
 			expression.reset
 			expression.put (l_arguments)
@@ -915,6 +920,10 @@ feature {NONE} -- Implementation
 				l_tuple_content.after
 			loop
 				expression.put (", ")
+
+					-- Set up fresh target for each argument
+				name_mapper.set_target_name (l_temp_current)
+
 				safe_process (l_tuple_content.item_for_iteration)
 
 				l_tuple_content.forth
@@ -924,6 +933,8 @@ feature {NONE} -- Implementation
 				-- Restore original expression
 			expression.reset
 			expression.put (l_temp_expression)
+			name_mapper.set_target_name (l_temp_target)
+			name_mapper.set_current_name (l_temp_current)
 
 				-- TODO: this is not correct!
 
@@ -1056,7 +1067,9 @@ feature {NONE} -- Implementation
 			l_agent_feature: FEATURE_I
 			l_attached_feature: !FEATURE_I
 			l_expression: STRING
-			l_predicate, l_heap, l_old_heap, l_target: STRING
+			l_predicate, l_heap, l_old_heap, l_arguments: STRING
+			l_tuple_argument: TUPLE_CONST_B
+			l_tuple_content: BYTE_LIST [BYTE_NODE]
 		do
 			l_agent_class := system.class_of_id (a_agent.origin_class_id)
 			l_agent_feature := l_agent_class.feature_of_feature_id (a_agent.feature_id)
@@ -1065,13 +1078,34 @@ feature {NONE} -- Implementation
 
 			feature_list.record_feature_needed (l_attached_feature)
 
+
+			check a_call.parameters.count = 1 end
+			l_tuple_argument ?= a_call.parameters [1].expression
+			check l_tuple_argument /= Void end
+			l_tuple_content := l_tuple_argument.expressions
+
+				-- Arguments
+
 				-- Target object
 			l_expression := expression.string
 			expression.reset
 
 			a_agent.arguments.expressions.first.process (Current)
-			l_target := expression.string
 
+			from
+				l_tuple_content.start
+			until
+				l_tuple_content.after
+			loop
+				expression.put (", ")
+				safe_process (l_tuple_content.item_for_iteration)
+
+				l_tuple_content.forth
+			end
+
+			l_arguments := expression.string
+
+				-- Restore expression
 			expression.reset
 			expression.put (l_expression)
 
@@ -1079,7 +1113,7 @@ feature {NONE} -- Implementation
 			l_heap := name_mapper.heap_name
 			l_old_heap := old_handler.old_heap_name
 
-			expression.put(l_predicate + "(" + l_heap + ", " + l_old_heap + ", " + l_target + ")")
+			expression.put(l_predicate + "(" + l_heap + ", " + l_old_heap + ", " + l_arguments + ")")
 		end
 
 end

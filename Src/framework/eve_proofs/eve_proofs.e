@@ -248,7 +248,7 @@ feature {NONE} -- Implementation
 			l_file: RAW_FILE
 			ee: EXECUTION_ENVIRONMENT
 		once
-			l_path := eiffel_layout.shared_application_path
+			l_path := eiffel_layout.shared_application_path.twin
 			l_path.extend ("tools")
 			l_path.extend ("eve_proofs")
 			create l_file_name.make

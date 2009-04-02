@@ -30,6 +30,14 @@ feature
 	value: INTEGER
 			-- Value of constant
 
+	set_value (a_value: INTEGER)
+		do
+			value := a_value
+		ensure
+			value = a_value
+		end
+
+
 feature
 
 	sum: INTEGER
@@ -48,6 +56,15 @@ feature
 			top := value
 		ensure then
 			top = value
+		end
+
+	visit (v: !EXP_VISITOR)
+		do
+			v.process_constant (Current)
+		ensure then
+			(agent v.process_constant).postcondition([Current])
+
+			value = value
 		end
 
 invariant
