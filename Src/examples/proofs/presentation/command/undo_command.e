@@ -26,18 +26,18 @@ feature
 			argument = a_arg
 		end
 
-	undo_action: PROCEDURE [ANY, TUPLE [INTEGER]]
+	undo_action: !PROCEDURE [ANY, TUPLE [INTEGER]]
 
-	execute_undo
+	execute_undo (a_arg: INTEGER)
 		require
-			undo_action.precondition ([argument])
+			undo_action.precondition ([a_arg])
 		do
-			undo_action.call ([argument])
+			undo_action.call ([a_arg])
 		ensure
-			undo_action.postcondition ([argument])
+			undo_action.postcondition ([a_arg])
 
 			undo_action = old undo_action -- remove from modifies
-			argument = old argument -- remove from modifies
+--			argument = old argument -- remove from modifies
 		end
 
 end

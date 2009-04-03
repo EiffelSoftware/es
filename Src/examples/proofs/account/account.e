@@ -24,8 +24,6 @@ feature -- Access
 	balance: INTEGER
 			-- Balance of account
 
-	a: INTEGER
-
 feature -- Element change
 
 	deposit (amount: INTEGER)
@@ -62,8 +60,5 @@ feature -- Element change
 			balance_decreased: balance = old balance - amount
 			other_balance_increased: other.balance = old other.balance + amount
 		end
-
-invariant
-	balance_not_negative: balance >= 0
 
 end

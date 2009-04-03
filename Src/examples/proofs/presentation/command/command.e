@@ -25,16 +25,16 @@ feature
 
 	argument: INTEGER
 
-	execute
+	execute (a_arg: INTEGER)
 		require
-			action.precondition ([argument])
+			action.precondition ([a_arg])
 		do
-			action.call ([argument])
+			action.call ([a_arg])
 		ensure
-			action.postcondition ([argument])
+			action.postcondition ([a_arg])
 
 			action = old action -- remove from modifies
-			argument = old argument -- remove from modifies
+			--argument = old argument -- remove from modifies
 		end
 
 end

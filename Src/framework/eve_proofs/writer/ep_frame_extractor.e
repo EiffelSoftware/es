@@ -88,7 +88,7 @@ feature -- Basic operations
 
 							-- TODO: refactor
 						if l_item.field.is_equal ("$agent$") then
-							last_frame_condition.append (" && (!agent.modifies(" + l_item.target + ", $o, $f))")
+							last_frame_condition.append (" && (!agent.modifies(Heap, old(Heap), " + l_item.target + ", $o, $f))")
 						else
 							last_frame_condition.append (" && (!($o == " + l_item.target + " && $f == " + l_item.field + "))")
 						end

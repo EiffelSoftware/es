@@ -149,7 +149,16 @@ feature -- Basic operations
 	mark_feature_generated (a_feature: !FEATURE_I)
 			-- Mark that `a_feature' has been generated as a normal feature.
 		do
-			features_needed.prune_all (a_feature)
+			from
+				features_needed.start
+			until
+				features_needed.after
+			loop
+				if is_same_feature (features_needed.item_for_iteration, a_feature) then
+					features_needed.remove
+				end
+				features_needed.forth
+			end
 			features_generated.extend (a_feature)
 		ensure
 			a_feature_not_needed: not features_needed.has (a_feature)

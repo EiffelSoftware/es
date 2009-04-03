@@ -36,8 +36,9 @@ feature -- Element change
 			l_routine_id: INTEGER
 			l_type: TYPE_A
 		do
-			l_type := a_type.actual_type.as_attachment_mark_free
+			l_type := a_type.deep_actual_type.as_attachment_mark_free
 			if
+				not l_type.is_like and then
 				not l_type.is_expanded and then
 				not types_generated.there_exists (agent is_same_type (?, l_type)) and then
 				not types_needed.there_exists (agent is_same_type (?, l_type))

@@ -14,27 +14,29 @@ feature
 			c1, c2: COMMAND
 			u1: UNDO_COMMAND
 			b: ACCOUNT
+			ca: CREDIT_ACCOUNT
 		do
 			create b.make
-			create u1.make_undo (agent b.deposit, agent b.withdraw, 50)
+			create ca.make (200)
+
+			create u1.make_undo (agent ca.deposit, agent ca.withdraw, 50)
 			create c1.make (agent b.withdraw, 10)
 
 			check
-				b.balance = 0
+				ca.balance = 0
 			end
 
-			u1.execute
+			u1.execute_undo (50)
 
 			check
-				b.balance = 50
+				ca.balance = -50
+				ca.credit_limit = 200
 			end
 
-			c1.execute
-
-			u1.execute_undo
+			u1.execute_undo (50)
 
 			check
-				b.balance = 0
+				ca.balance = -100
 			end
 
 
