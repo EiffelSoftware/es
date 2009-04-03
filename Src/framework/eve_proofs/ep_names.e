@@ -185,6 +185,12 @@ feature -- Access: Error strings
 
 feature -- Access: Message strings
 
+	message_no_classes_to_proof: STRING_32
+			-- Message that no classes were added to proof
+		do
+			Result := locale.translation ("No classes to proof")
+		end
+
 	message_eve_proofs_started: STRING_32
 			-- Message that EVE Proofs started
 		do
@@ -281,6 +287,48 @@ feature -- Access: Command strings
 			-- Menu name to verify class
 		do
 			Result := locale.formatted_string (locale.translation ("Proof library $1"), [a_cluster])
+		end
+
+	proof_current_item: STRING_32
+			-- Menu item name to proof current item.
+		do
+			Result := locale.translation ("Proof current item")
+		end
+
+	proof_parent_item: STRING_32
+			-- Menu item name to proof parent of current item
+		do
+			Result := locale.translation ("Proof parent cluster of current item")
+		end
+
+	proof_system: STRING_32
+			-- Menu item name to proof system
+		do
+			Result := locale.translation ("Proof system")
+		end
+
+	command_menu_name: STRING_32
+			-- Menu name of command
+		do
+			Result := locale.translation ("Proof Current Item")
+		end
+
+	command_tooltip: STRING_32
+			-- Tooltip of command
+		do
+			Result := locale.translation ("Proof class or cluster")
+		end
+
+	command_tooltext: STRING_32
+			-- Text of command button
+		do
+			Result := locale.translation ("Proof")
+		end
+
+	command_description: STRING_32
+			-- Description of command button
+		do
+			Result := locale.translation ("Proof class or cluster")
 		end
 
 feature -- Access: Proof tool strings

@@ -45,7 +45,7 @@ feature {NONE} -- Initialization
 			-- Creation method.
 		do
 			enable_sensitive
-			last_execution := agent execute_proof_current_item
+			set_up_menu_items
 			eve_proofs.register_message_callbacks (agent put_output_message, agent put_window_message)
 		end
 
@@ -83,7 +83,7 @@ feature -- Execution
 			end
 		end
 
-feature -- Basic operations
+feature {NONE} -- Basic operations
 
 	save_compile_and_verify (a_stone: STONE)
 			-- Save modified windows, compile project and start verification.
@@ -158,8 +158,7 @@ feature -- Basic operations
 				-- Do verification
 			output_manager.clear
 			if eve_proofs.classes_to_verify.is_empty then
-					-- TODO: internationalization
-				output_manager.add ("No classes to verify")
+				output_manager.add (names.message_no_classes_to_proof)
 				output_manager.add_new_line
 			else
 				eve_proofs.execute_verification
@@ -336,29 +335,16 @@ feature {NONE} -- Implementation
 			Result := pixmaps.icon_pixmaps.general_tick_icon_buffer
 		end
 
-	drop_down_menu: EV_MENU is
-			-- Drop down menu for `new_sd_toolbar_item'.
-		local
-			l_item: EV_MENU_ITEM
-		do
-			create Result
-				-- TODO: internationalization
-			create l_item.make_with_text_and_action ("Proof current item", agent execute_proof_current_item)
-			Result.extend (l_item)
-			create l_item.make_with_text_and_action ("Proof parent cluster of current item", agent execute_proof_parent_cluster)
-			Result.extend (l_item)
-			create l_item.make_with_text_and_action ("Proof system", agent execute_proof_system)
-			Result.extend (l_item)
-		ensure
-			not_void: Result /= Void
-		end
-
 	execute_proof_current_item
 			-- Proof current item
 		local
 			l_window: EB_DEVELOPMENT_WINDOW
 		do
 			last_execution := agent execute_proof_current_item
+			proof_current_item_item.enable_select
+			proof_parent_item_item.disable_select
+			proof_system_item.disable_select
+
 			l_window := window_manager.last_focused_development_window
 			if droppable (l_window.stone) then
 				execute_with_stone (l_window.stone)
@@ -373,6 +359,10 @@ feature {NONE} -- Implementation
 			l_cluster_stone: CLUSTER_STONE
 		do
 			last_execution := agent execute_proof_parent_cluster
+			proof_current_item_item.disable_select
+			proof_parent_item_item.enable_select
+			proof_system_item.disable_select
+
 			l_window := window_manager.last_focused_development_window
 			l_class_stone ?= l_window.stone
 			l_cluster_stone ?= l_window.stone
@@ -391,6 +381,10 @@ feature {NONE} -- Implementation
 			-- Proof whole system (excluding libraries).
 		do
 			last_execution := agent execute_proof_system
+			proof_current_item_item.disable_select
+			proof_parent_item_item.disable_select
+			proof_system_item.enable_select
+
 			execute_with_stone (Void)
 		end
 
@@ -416,35 +410,63 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation
 
+	set_up_menu_items
+			-- Set up menu items of proof button
+		do
+			last_execution := agent execute_proof_current_item
+			create proof_current_item_item.make_with_text_and_action (names.proof_current_item, agent execute_proof_current_item)
+			proof_current_item_item.toggle
+			create proof_parent_item_item.make_with_text_and_action (names.proof_parent_item, agent execute_proof_parent_cluster)
+			create proof_system_item.make_with_text_and_action (names.proof_system, agent execute_proof_system)
+		end
+
+	drop_down_menu: EV_MENU is
+			-- Drop down menu for `new_sd_toolbar_item'.
+		local
+			l_item: EV_CHECK_MENU_ITEM
+		once
+			create Result
+			Result.extend (proof_current_item_item)
+			Result.extend (proof_parent_item_item)
+			Result.extend (proof_system_item)
+		ensure
+			not_void: Result /= Void
+		end
+
 	last_execution: PROCEDURE [ANY, TUPLE []]
 			-- Last executed actions
+
+	proof_current_item_item: EV_CHECK_MENU_ITEM
+			-- Menu item to proof current item
+
+	proof_parent_item_item: EV_CHECK_MENU_ITEM
+			-- Menu item to proof parent item
+
+	proof_system_item: EV_CHECK_MENU_ITEM
+			-- Menu item to proof system
 
 	menu_name: STRING_GENERAL
 			-- Name as it appears in the menu (with & symbol).
 		do
-			-- TODO: internationalization
-			Result := "Proof Current Item"
+			Result := names.command_menu_name
 		end
 
 	tooltip: STRING_GENERAL
 			-- Tooltip for the toolbar button.
 		do
-			-- TODO: internationalization
-			Result := "Proof class or cluster"
+			Result := names.command_tooltip
 		end
 
 	tooltext: STRING_GENERAL
 			-- Text for the toolbar button.
 		do
-			-- TODO: internationalization
-			Result := "Proof"
+			Result := names.command_tooltext
 		end
 
 	description: STRING_GENERAL
 			-- Description for this command.
 		do
-			-- TODO: internationalization
-			Result := "Proof class or cluster"
+			Result := names.command_description
 		end
 
 	name: STRING_GENERAL

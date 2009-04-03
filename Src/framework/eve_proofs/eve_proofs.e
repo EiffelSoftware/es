@@ -2,7 +2,6 @@ indexing
 	description:
 		"[
 			Interface to use the verification system.
-			TODO: store the outcome of the verification, so others can access it (e.g. for testing integration)
 		]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -248,8 +247,7 @@ feature {NONE} -- Implementation
 			l_file: RAW_FILE
 			ee: EXECUTION_ENVIRONMENT
 		once
-			l_path := eiffel_layout.shared_application_path.twin
-			l_path.extend ("tools")
+			l_path := eiffel_layout.tools_path.twin
 			l_path.extend ("eve_proofs")
 			create l_file_name.make
 			l_file_name.set_directory (l_path.string)

@@ -12,11 +12,13 @@
 				<exclude>/.svn$</exclude>
 				<exclude>/CVS$</exclude>
 			</file_rule>
-			<cluster name="command" location="command"/>
-			<cluster name="account" location="../account"/>
-			<cluster name="sequence" location="sequence"/>
-			<cluster name="formatter" location="../formatter"/>
-			<cluster name="archiver" location="../archiver"/>
+			<cluster name="command" location="command\"/>
+			<cluster name="account" location="..\account\"/>
+			<cluster name="sequence" location="sequence\"/>
+			<cluster name="formatter" location="..\formatter\"/>
+			<cluster name="archiver" location="..\archiver\"/>
+			<cluster name="visitor" location="visitor\"/>
+			<cluster name="strategy" location="strategy\"/>
 		</cluster>
 	</target>
 </system>

@@ -26,6 +26,16 @@ feature -- Access
 
 feature -- Element change
 
+	deposit2 (amount: INTEGER)
+			-- Deposit `amount' on account.
+		require
+			amount_not_negative: amount >= 0
+		do
+			balance := balance + amount
+		ensure
+			balance_increased: balance = old balance + amount
+		end
+
 	deposit (amount: INTEGER)
 			-- Deposit `amount' on account.
 		require

@@ -740,9 +740,9 @@ feature {BYTE_NODE} -- Visitors
 			side_effect.put_line ("assume (forall heap: HeapType" + l_typed_arguments + " :: ")
 			side_effect.put_line ("            { routine.precondition_" + l_open_argument_count.out + "(heap" + l_arguments + ") } // Trigger")
 			side_effect.put_line ("        routine.precondition_" + l_open_argument_count.out + "(heap" + l_arguments + ") <==> " + l_contract_writer.full_precondition + ");")
-			side_effect.put_line ("assume (forall<alpha> heap: HeapType, old_heap: HeapType, $o: ref, $f: Field alpha :: ")
-			side_effect.put_line ("            { agent.modifies(heap, old_heap, " + l_agent_variable + ", $o, $f) } // Trigger")
-			side_effect.put_line ("        agent.modifies(heap, old_heap, " + l_agent_variable + ", $o, $f) <==> " + l_frame_extractor.last_frame_condition + ");")
+			side_effect.put_line ("assume (forall<alpha> heap: HeapType, old_heap: HeapType" + l_typed_arguments + ", $o: ref, $f: Field alpha :: ")
+			side_effect.put_line ("            { agent.modifies_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ", $o, $f) } // Trigger")
+			side_effect.put_line ("        agent.modifies_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ", $o, $f) <==> " + l_frame_extractor.last_frame_condition + ");")
 			if l_attached_feature.has_return_value then
 				side_effect.put_line ("assume (forall heap: HeapType, old_heap: HeapType" + l_typed_arguments + ", result:" + type_mapper.boogie_type_for_type (l_attached_feature.type) + " :: ")
 				side_effect.put_line ("            { function.postcondition_" + l_open_argument_count.out + "(heap, old_heap" + l_arguments + ", result) } // Trigger")

@@ -66,6 +66,8 @@ feature -- Basic operations
 			-- Build frame condition for feature `a_feature'.
 		local
 			l_item: TUPLE [target: STRING; field: STRING]
+			l_count: INTEGER
+			l_arguments: STRING
 		do
 			if feature_list.is_pure (a_feature) then
 				last_frame_condition := "Heap == old(Heap)"
@@ -87,8 +89,10 @@ feature -- Basic operations
 						l_item := modified_attributes.item_for_iteration
 
 							-- TODO: refactor
-						if l_item.field.is_equal ("$agent$") then
-							last_frame_condition.append (" && (!agent.modifies(Heap, old(Heap), " + l_item.target + ", $o, $f))")
+						if l_item.field.starts_with ("$agent$") then
+							l_count := l_item.field.substring (8, 8).to_integer
+							l_arguments := l_item.field.substring (10, l_item.field.count)
+							last_frame_condition.append (" && (!agent.modifies_" + l_count.out + "(Heap, old(Heap), " + l_item.target + l_arguments + ", $o, $f))")
 						else
 							last_frame_condition.append (" && (!($o == " + l_item.target + " && $f == " + l_item.field + "))")
 						end
@@ -128,7 +132,7 @@ feature -- Basic operations
 					l_item := modified_attributes.item_for_iteration
 
 						-- TODO: refactor
-					if l_item.field.is_equal ("$agent$") then
+					if l_item.field.starts_with ("$agent$") then
 							-- TODO: what to do here?
 					else
 						last_frame_condition.append (" || ($o == " + l_item.target + " && $f == " + l_item.field + ")")
@@ -249,12 +253,37 @@ feature {NONE} -- Visitors
 			l_feature: FEATURE_I
 			l_attached_feature: !FEATURE_I
 			l_current_feature: !FEATURE_I
+			l_temp_target: STRING
+			l_arguments: STRING
+			l_argument_count: INTEGER
 		do
 				-- TODO: make this nice
 			if a_node.feature_name.is_equal ("postcondition") then
 					-- Add agent frame condition
+				l_arguments := ""
 
-				modified_attributes.extend ([target, "$agent$"])
+				if {l_tuple: TUPLE_CONST_B} a_node.parameters [1].expression then
+					l_temp_target := target
+					l_argument_count := l_tuple.expressions.count
+					from
+						l_tuple.expressions.start
+					until
+						l_tuple.expressions.after
+					loop
+							-- TODO: nested calls won't work
+						target := name_mapper.current_name
+						in_target := True
+						l_tuple.expressions.item.process (Current)
+						in_target := False
+						l_arguments.append (", " + target)
+
+						l_tuple.expressions.forth
+					end
+					target := l_temp_target
+				end
+
+					-- TODO: do this with an object instead of formatted string
+				modified_attributes.extend ([target, "$agent$" + l_argument_count.out + "$" + l_arguments])
 
 				Precursor {EP_VISITOR} (a_node)
 			else
