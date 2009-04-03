@@ -12,7 +12,7 @@ inherit
 
 	EVENT_LIST_PROOF_ITEM_I
 		rename
-			data as error
+			data as error_list
 		end
 
 create
@@ -20,25 +20,26 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_class: CLASS_C; a_feature: FEATURE_I; a_error: EP_ERROR)
+	make (a_class: CLASS_C; a_feature: FEATURE_I; a_error_list: LIST [EP_ERROR])
 			-- Initialize item.
 		require
 			a_class_not_void: a_class /= Void
 			a_feature_not_void: a_feature /= Void
-			a_error_not_void: a_error /= Void
+			a_error_list_not_void: a_error_list /= Void
+			a_error_list_not_empty: not a_error_list.is_empty
 		do
 			initialize (a_class, a_feature)
-			error := a_error
-			description := a_error.description
+			error_list := a_error_list
+			description := a_error_list.first.description
 		ensure
 			context_class_set: context_class = a_class
 			context_feature_set: context_feature = a_feature
-			error_set: error = a_error
+			error_set: error_list = a_error_list
 		end
 
 feature -- Access
 
-	error: EP_ERROR
+	error_list: LIST [EP_ERROR]
 			-- <Precursor>
 
 	description: STRING_32

@@ -70,7 +70,7 @@ feature {NONE} -- Initialization
 --			a.deposit (100)
 			call_agent (agent a.withdraw, 10)
 			check
-				b.foo = 10
+				a: b.foo = 10
 			end
 		end
 

@@ -115,6 +115,9 @@ feature {NONE} -- Implementation
 	current_feature: FEATURE_I
 			-- Current feature
 
+	current_feature_errors: LIST [EP_ERROR]
+			-- List of errors of current feature	
+
 feature {NONE} -- Implementation
 
 	handle_version (a_version: STRING)
@@ -146,16 +149,10 @@ feature {NONE} -- Implementation
 			end
 
 			l_feature := l_class.compiled_class.feature_with_name (l_feature_name)
---			text_output.add (names.message_verifying)
---			text_output.add_space
---			text_output.add ("{")
---			text_output.add_class (l_class)
---			text_output.add ("}.")
---			text_output.add_feature (l_feature, l_feature_name)
---			text_output.add (": ")
 
 			current_class := l_class.compiled_class
 			current_feature := current_class.feature_named (l_feature_name)
+			create {LINKED_LIST [EP_ERROR]}current_feature_errors.make
 		end
 
 	handle_verified (a_time, a_result: STRING)
@@ -167,17 +164,14 @@ feature {NONE} -- Implementation
 				l_milliseconds := (a_time.to_real * 1000.0).truncated_to_integer.to_natural_32
 			end
 			if a_result.is_equal ("error") or a_result.is_equal ("errors") then
-				check last_error /= Void end
---				text_output.add_error (last_error, names.message_failed)
+				check not current_feature_errors.is_empty end
 
-				event_handler.add_proof_failed_event (current_class, current_feature, last_error, l_milliseconds)
+				event_handler.add_proof_failed_event (current_class, current_feature, current_feature_errors, l_milliseconds)
 			else
 				check a_result.is_equal ("verified") end
---				text_output.add (names.message_successful)
 
 				event_handler.add_proof_successful_event (current_class, current_feature, l_milliseconds)
 			end
---			text_output.add_new_line
 			last_error := Void
 		end
 
@@ -236,6 +230,7 @@ feature {NONE} -- Implementation
 					l_verification_error.set_tag (assert_regexp.captured_substring (6))
 				end
 				last_error := l_verification_error
+				current_feature_errors.extend (l_verification_error)
 			else
 				check false end
 			end
@@ -251,6 +246,7 @@ feature {NONE} -- Implementation
 			last_error.set_class (current_class)
 			last_error.set_feature (current_feature)
 			last_error.set_position (instruction_line_position (a_source_line_number), 0)
+			current_feature_errors.extend (last_error)
 			errors.extend (last_error)
 		end
 
@@ -301,6 +297,7 @@ feature {NONE} -- Implementation
 					if l_tag /= Void then
 						l_verification_error.set_tag (l_tag)
 					end
+					current_feature_errors.extend (l_verification_error)
 					errors.extend (l_verification_error)
 					last_error := l_verification_error
 				elseif l_type.is_equal ("inv") then
@@ -312,12 +309,14 @@ feature {NONE} -- Implementation
 					if l_tag /= Void then
 						l_verification_error.set_tag (l_tag)
 					end
+					current_feature_errors.extend (l_verification_error)
 					errors.extend (l_verification_error)
 					last_error := l_verification_error
 				elseif l_type.is_equal ("frame") then
 					create {EP_FRAME_ERROR} last_error.make
 					last_error.set_class (current_class)
 					last_error.set_feature (current_feature)
+					current_feature_errors.extend (last_error)
 					errors.extend (last_error)
 				else
 					check false end

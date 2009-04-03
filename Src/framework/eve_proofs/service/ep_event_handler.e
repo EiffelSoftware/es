@@ -37,12 +37,12 @@ feature -- Basic operations
 			service.put_event_item (event_context, l_event)
 		end
 
-	add_proof_failed_event (a_class: CLASS_C; a_feature: FEATURE_I; a_error: EP_ERROR; a_milliseconds: NATURAL)
+	add_proof_failed_event (a_class: CLASS_C; a_feature: FEATURE_I; a_error_list: LIST [EP_ERROR]; a_milliseconds: NATURAL)
 			-- Add a failed proof event.
 		local
 			l_event: EVENT_LIST_PROOF_FAILED_ITEM
 		do
-			create l_event.make (a_class, a_feature, a_error)
+			create l_event.make (a_class, a_feature, a_error_list)
 			l_event.set_milliseconds_used (a_milliseconds)
 			service.put_event_item (event_context, l_event)
 		end
