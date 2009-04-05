@@ -52,6 +52,23 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
+	final_feature (a_feature_name: STRING; a_written_class: CLASS_C; a_context_class: CLASS_C): FEATURE_I is
+			-- Final feature name for `a_feature_name' (which is written in `a_written_class') in `a_context_class'
+			-- A Void return value means that the feature doesn't exist in `a_context_class'.
+		require
+			a_feature_name_attached: a_feature_name /= Void
+			a_written_class_attached: a_written_class /= Void
+			a_context_class_attached: a_context_class /= Void
+			a_feature_exists: a_written_class.feature_named (a_feature_name) /= Void
+		local
+			l_feature: FEATURE_I
+		do
+			l_feature := a_written_class.feature_named (a_feature_name)
+			if l_feature /= Void then
+				Result := a_context_class.feature_of_rout_id (l_feature.rout_id_set.first)
+			end
+		end
+
 feature -- Feature criteria
 
 	is_boolean_query (a_feature: FEATURE_I): BOOLEAN is

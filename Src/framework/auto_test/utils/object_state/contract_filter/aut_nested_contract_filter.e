@@ -17,23 +17,22 @@ inherit
 
 feature -- Status report
 
-	is_assertion_satisfied (a_tag: TAGGED_AS; a_written_class: CLASS_C; a_context_class: CLASS_C): BOOLEAN is
-			-- Is `a_tag' written in `a_written_class' a valid tag in `a_context_class'?
+	is_assertion_satisfied (a_assertion: AUT_ASSERTION; a_context_class: CLASS_C): BOOLEAN is
+			-- Is `a_assertion' valid in `a_context_class'?
 			-- An assertion is valid if is suitable to generate proof obligation from it.
 		do
 			is_last_assertion_satisfied := False
-			a_tag.process (Current)
+			a_assertion.tag.process (Current)
 			Result := is_last_assertion_satisfied
 			if Result and then on_simple_assertion_found_agent /= Void then
-				on_simple_assertion_found_agent.call ([a_tag, a_written_class])
+				on_simple_assertion_found_agent.call ([a_assertion])
 			end
 		end
 
 feature -- Access
 
-	on_simple_assertion_found_agent: PROCEDURE [ANY, TUPLE [a_tag: TAGGED_AS; a_written_class: CLASS_C]]
+	on_simple_assertion_found_agent: PROCEDURE [ANY, TUPLE [AUT_ASSERTION]]
 			-- Agent to be performed if an assertion satisfying the criterion defined in Current is found.
-			-- `a_tag' is the AST node for that assertion, `a_written_class' is the class where `a_tag' is written.
 
 feature -- Setting
 

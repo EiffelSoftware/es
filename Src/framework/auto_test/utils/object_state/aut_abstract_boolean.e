@@ -1,48 +1,38 @@
 note
-	description: "Summary description for {AUT_CONTRACT_FILTER}."
+	description: "Summary description for {AUT_ABSTRACT_BOOLEAN}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
-	AUT_CONTRACT_FILTER
+class
+	AUT_ABSTRACT_BOOLEAN
 
 inherit
-	SHARED_WORKBENCH
+	AUT_ABSTRACT_VALUE
 
-feature -- Status report
+create
+	make
 
-	is_assertion_satisfied (a_assertion: AUT_ASSERTION; a_context_class: CLASS_C): BOOLEAN is
-			-- Is `a_assertion' valid from `a_context_class'?
-			-- An assertion is valid if is suitable to generate proof obligation from it.
-		require
-			a_assertion_attached: a_assertion /= Void
-			a_context_class_attached: a_context_class /= Void
-		deferred
+feature{NONE} -- Initialization
+
+	make (a_value: like value) is
+			-- Set `value' with `a_value'.
+		do
+			value := a_value
+		ensure
+			value_set: value = a_value
 		end
 
-feature -- Basic operations
+feature -- Access
 
-	drop (a_assertions: LIST [AUT_ASSERTION]; a_context_class: CLASS_C) is
-			-- Delete elements in `a_assertions' which satisfy criterion defined in Current.
-			-- `a_context_class' is where assertions in `a_assertions' viewed, it has impacts
-			-- in case of feature renaming.
-			-- The cursor in `a_contracts' may change after the filtering.
-		require
-			a_assertions_attached: a_assertions /= Void
-			a_context_class_attached: a_context_class /= Void
+	value: BOOLEAN
+			-- Value of Current abstract value
+
+	out: STRING
+			-- New string containing terse printable representation
+			-- of current object
 		do
-			from
-				a_assertions.start
-			until
-				a_assertions.after
-			loop
-				if is_assertion_satisfied (a_assertions.item, a_context_class) then
-					a_assertions.remove
-				else
-					a_assertions.forth
-				end
-			end
+			Result := value.out.as_lower
 		end
 
 note

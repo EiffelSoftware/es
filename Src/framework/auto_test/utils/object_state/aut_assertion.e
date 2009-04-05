@@ -1,49 +1,72 @@
 note
-	description: "Summary description for {AUT_CONTRACT_FILTER}."
+	description: "Summary description for {AUT_ASSERTION}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
-	AUT_CONTRACT_FILTER
+class
+	AUT_ASSERTION
 
-inherit
-	SHARED_WORKBENCH
+create
+	make
 
-feature -- Status report
+feature{NONE} -- Initialization
 
-	is_assertion_satisfied (a_assertion: AUT_ASSERTION; a_context_class: CLASS_C): BOOLEAN is
-			-- Is `a_assertion' valid from `a_context_class'?
-			-- An assertion is valid if is suitable to generate proof obligation from it.
+	make (a_tag: like tag; a_written_class: like written_class) is
+			-- Set `tag' with `a_tag' and `written_class' with `a_written_class'.
 		require
-			a_assertion_attached: a_assertion /= Void
-			a_context_class_attached: a_context_class /= Void
-		deferred
-		end
-
-feature -- Basic operations
-
-	drop (a_assertions: LIST [AUT_ASSERTION]; a_context_class: CLASS_C) is
-			-- Delete elements in `a_assertions' which satisfy criterion defined in Current.
-			-- `a_context_class' is where assertions in `a_assertions' viewed, it has impacts
-			-- in case of feature renaming.
-			-- The cursor in `a_contracts' may change after the filtering.
-		require
-			a_assertions_attached: a_assertions /= Void
-			a_context_class_attached: a_context_class /= Void
+			a_tag_attached: a_tag /= Void
+			a_written_class_attached: a_written_class /= Void
 		do
-			from
-				a_assertions.start
-			until
-				a_assertions.after
-			loop
-				if is_assertion_satisfied (a_assertions.item, a_context_class) then
-					a_assertions.remove
-				else
-					a_assertions.forth
-				end
-			end
+			set_tag (a_tag)
+			set_written_class (a_written_class)
 		end
+
+feature -- Access
+
+	tag: TAGGED_AS
+			-- Assertion tag AST node
+
+	written_class: CLASS_C
+			-- Class where `tag' is written
+
+	tag_name: STRING is
+			-- Name of `tag'
+		do
+			if tag.tag /= Void then
+				Result := tag.tag.name.twin
+			else
+				create Result.make_empty
+			end
+		ensure
+			result_attached: Result /= Void
+		end
+
+feature -- Setting
+
+	set_tag (a_tag: like tag) is
+			-- Set `tag' with `a_tag'.
+		require
+			a_tag_attached: a_tag /= Void
+		do
+			tag := a_tag
+		ensure
+			tag_set: tag = a_tag
+		end
+
+	set_written_class (a_written_class: like written_class) is
+			-- Set `written_class' with `a_written_class'.
+		require
+			a_written_class_attached: a_written_class /= Void
+		do
+			written_class := a_written_class
+		ensure
+			written_class_set: written_class = a_written_class
+		end
+
+invariant
+	tag_attached: tag /= Void
+	written_class_attached: written_class /= Void
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

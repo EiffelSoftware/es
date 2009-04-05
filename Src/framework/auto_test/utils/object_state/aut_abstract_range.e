@@ -1,49 +1,51 @@
 note
-	description: "Summary description for {AUT_CONTRACT_FILTER}."
+	description: "Summary description for {AUT_ABSTRACT_RANGE}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
-	AUT_CONTRACT_FILTER
+class
+	AUT_ABSTRACT_RANGE [G -> AUT_ABSTRACT_VALUE]
 
 inherit
-	SHARED_WORKBENCH
+	ARRAYED_LIST [G]
 
-feature -- Status report
+create
+	make,
+	make_with_values
 
-	is_assertion_satisfied (a_assertion: AUT_ASSERTION; a_context_class: CLASS_C): BOOLEAN is
-			-- Is `a_assertion' valid from `a_context_class'?
-			-- An assertion is valid if is suitable to generate proof obligation from it.
+feature{NONE} -- Initialization
+
+	make_with_values (a_name: like name; a_values: ARRAY [G]) is
+			-- Extend `a_values' into Current.
+			-- Set name of current range with `a_name'.
 		require
-			a_assertion_attached: a_assertion /= Void
-			a_context_class_attached: a_context_class /= Void
-		deferred
-		end
-
-feature -- Basic operations
-
-	drop (a_assertions: LIST [AUT_ASSERTION]; a_context_class: CLASS_C) is
-			-- Delete elements in `a_assertions' which satisfy criterion defined in Current.
-			-- `a_context_class' is where assertions in `a_assertions' viewed, it has impacts
-			-- in case of feature renaming.
-			-- The cursor in `a_contracts' may change after the filtering.
-		require
-			a_assertions_attached: a_assertions /= Void
-			a_context_class_attached: a_context_class /= Void
+			a_name_attached: a_name /= Void
+			a_values_attached: a_values /= Void
 		do
-			from
-				a_assertions.start
-			until
-				a_assertions.after
-			loop
-				if is_assertion_satisfied (a_assertions.item, a_context_class) then
-					a_assertions.remove
-				else
-					a_assertions.forth
-				end
-			end
+			make (a_values.count)
+			name_internal := a_name.twin
+			a_values.do_all (agent extend)
 		end
+
+feature -- Access
+
+	name: STRING is
+			-- Name of current value
+		do
+			if name_internal = Void then
+				Result := ""
+			else
+				Result := name_internal
+			end
+		ensure
+			result_attached: Result /= Void
+		end
+
+feature{NONE} -- Implementation
+
+	name_internal: like name;
+			-- Implementation of `name'
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

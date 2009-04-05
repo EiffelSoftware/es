@@ -24,17 +24,17 @@ inherit
 
 feature -- Status report
 
-	is_assertion_satisfied (a_tag: TAGGED_AS; a_written_class: CLASS_C; a_context_class: CLASS_C): BOOLEAN is
-			-- Is `a_tag' written in `a_written_class' a valid tag in `a_context_class'?
+	is_assertion_satisfied (a_assertion: AUT_ASSERTION; a_context_class: CLASS_C): BOOLEAN is
+			-- Is `a_assertion' valid in `a_context_class'?
 			-- An assertion is valid if is suitable to generate proof obligation from it.
 		do
-			written_class := a_written_class
+			written_class := a_assertion.written_class
 			context_class := a_context_class
 			initialize
-			a_tag.process (Current)
+			a_assertion.tag.process (Current)
 			Result := is_last_contract_satisfied
 			if Result and then on_simple_assertion_found_agent /= Void then
-				on_simple_assertion_found_agent.call ([a_tag, a_written_class, query_name, is_negation])
+				on_simple_assertion_found_agent.call ([a_assertion, query_name, is_negation])
 			end
 		end
 
@@ -49,9 +49,8 @@ feature -- Access
 	is_last_contract_satisfied: BOOLEAN
 			-- Is last analyzed contract satisfied?
 
-	on_simple_assertion_found_agent: PROCEDURE [ANY, TUPLE [a_tag: TAGGED_AS; a_written_class: CLASS_C; a_query_name: STRING; a_negation: BOOLEAN]]
+	on_simple_assertion_found_agent: PROCEDURE [ANY, TUPLE [a_assertion: AUT_ASSERTION; a_query_name: STRING; a_negation: BOOLEAN]]
 			-- Agent to be performed if an assertion satisfying the criterion defined in Current is found.
-			-- `a_tag' is the AST node for that assertion, `a_written_class' is the class where `a_tag' is written.
 			-- `a_query_name' is the name of the query mentioned in the assertion,
 			-- `a_negation' is true indicates that the assertion is in the form of "not query_name", otherwise,
 			-- the assertion is in the form of `query_name'
@@ -109,7 +108,7 @@ feature{NONE} -- Process
 			if is_last_contract_satisfied then
 				id_count := id_count + 1
 				if id_count < 2 then
-					l_feature := final_feature (l_as.access_name.as_lower)
+					l_feature := final_feature (l_as.access_name.as_lower, written_class, context_class)
 					if
 						l_feature /= Void and then
 						l_feature.argument_count = 0 and then
@@ -144,21 +143,6 @@ feature{NONE} -- Process
 	process_void_as (l_as: VOID_AS)
 		do
 			is_last_contract_satisfied := False
-		end
-
-	final_feature (a_feature_name: STRING): FEATURE_I is
-			-- Final feature name for `a_feature_name' (which is written in `written_class') in `context_class'
-			-- A Void return value means that the feature doesn't exist in `context_class'.
-		require
-			a_feature_name_attached: a_feature_name /= Void
-			a_feature_exists: written_class.feature_named (a_feature_name) /= Void
-		local
-			l_feature: FEATURE_I
-		do
-			l_feature := written_class.feature_named (a_feature_name)
-			if l_feature /= Void then
-				Result := context_class.feature_of_rout_id (l_feature.rout_id_set.first)
-			end
 		end
 
 note

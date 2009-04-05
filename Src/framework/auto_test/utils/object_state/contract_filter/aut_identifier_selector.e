@@ -1,49 +1,72 @@
 note
-	description: "Summary description for {AUT_CONTRACT_FILTER}."
+	description: "Summary description for {AUT_IDENTIFIER_SELECTOR}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
-	AUT_CONTRACT_FILTER
+class
+	AUT_IDENTIFIER_SELECTOR
 
 inherit
-	SHARED_WORKBENCH
+	AUT_CONTRACT_FILTER
+
+	AST_ITERATOR
+			redefine
+				process_access_feat_as
+			end
+
+	AUT_OBJECT_STATE_REQUEST_UTILITY
 
 feature -- Status report
 
 	is_assertion_satisfied (a_assertion: AUT_ASSERTION; a_context_class: CLASS_C): BOOLEAN is
 			-- Is `a_assertion' valid from `a_context_class'?
 			-- An assertion is valid if is suitable to generate proof obligation from it.
-		require
-			a_assertion_attached: a_assertion /= Void
-			a_context_class_attached: a_context_class /= Void
-		deferred
-		end
-
-feature -- Basic operations
-
-	drop (a_assertions: LIST [AUT_ASSERTION]; a_context_class: CLASS_C) is
-			-- Delete elements in `a_assertions' which satisfy criterion defined in Current.
-			-- `a_context_class' is where assertions in `a_assertions' viewed, it has impacts
-			-- in case of feature renaming.
-			-- The cursor in `a_contracts' may change after the filtering.
-		require
-			a_assertions_attached: a_assertions /= Void
-			a_context_class_attached: a_context_class /= Void
 		do
-			from
-				a_assertions.start
-			until
-				a_assertions.after
-			loop
-				if is_assertion_satisfied (a_assertions.item, a_context_class) then
-					a_assertions.remove
-				else
-					a_assertions.forth
-				end
-			end
+			assertion := a_assertion
+			current_written_class := a_assertion.written_class
+			context_class := a_context_class
+			a_assertion.tag.process (Current)
 		end
+
+feature -- Access
+
+	on_found_agent: PROCEDURE [ANY, TUPLE [a_assertion: AUT_ASSERTION; a_id: STRING]]
+			-- Action to be performed when `a_id' is found in `a_assertion'
+
+feature -- Setting
+
+	set_on_found_agent (a_agent: like on_found_agent) is
+			-- Set `on_found_agent' with `a_agent'.
+		do
+			on_found_agent := a_agent
+		ensure
+			on_found_agent_set: on_found_agent = a_agent
+		end
+
+feature{NONE} -- Process
+
+	process_access_feat_as (l_as: ACCESS_FEAT_AS)
+		local
+			l_feature: FEATURE_I
+		do
+			l_feature := final_feature (l_as.access_name.as_lower, current_written_class, context_class)
+			if on_found_agent /= Void then
+				on_found_agent.call ([assertion, l_feature.feature_name.as_lower])
+			end
+			safe_process (l_as.internal_parameters)
+		end
+
+feature{NONE} -- Implementation
+
+	assertion: AUT_ASSERTION
+			-- Currently analyzed assertion
+
+	context_class: CLASS_C
+			-- Class where currently analyzed assertion is viewed
+
+	current_written_class: CLASS_C;
+			-- Class where currently analyzed assertion is written
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

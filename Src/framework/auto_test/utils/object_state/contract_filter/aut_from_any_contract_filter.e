@@ -12,13 +12,13 @@ inherit
 
 feature -- Status report
 
-	is_assertion_satisfied (a_tag: TAGGED_AS; a_written_class: CLASS_C; a_context_class: CLASS_C): BOOLEAN is
-			-- Is `a_tag' written in `a_written_class' a valid tag in `a_context_class'?
+	is_assertion_satisfied (a_assertion: AUT_ASSERTION; a_context_class: CLASS_C): BOOLEAN is
+			-- Is `a_assertion' valid tag in `a_context_class'?
 			-- An assertion is valid if is suitable to generate proof obligation from it.
 		do
-			Result := a_written_class /= system.any_class.compiled_class
+			Result := a_assertion.written_class = system.any_class.compiled_class
 		ensure then
-			good_result: result = a_written_class /= system.any_class.compiled_class
+			good_result: result = a_assertion.written_class = system.any_class.compiled_class
 		end
 
 note

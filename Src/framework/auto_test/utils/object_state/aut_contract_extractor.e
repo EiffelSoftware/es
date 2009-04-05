@@ -9,7 +9,7 @@ class
 
 feature -- Access
 
-	invariant_of_class (a_class: CLASS_C): LINKED_LIST [TUPLE [tag: TAGGED_AS; written_class: CLASS_C]] is
+	invariant_of_class (a_class: CLASS_C): LINKED_LIST [AUT_ASSERTION] is
 			-- List of invariant clauses of `a_class'.
 			-- `tag' is the TAGGED_AS for an invariant clause, and `written_class' is the class
 			-- where that invariant clause is written.
@@ -80,7 +80,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	tags (a_written_class: CLASS_C; a_asserts: LIST [TAGGED_AS]): LINKED_LIST [TUPLE [tag: TAGGED_AS; written_class: CLASS_C]] is
+	tags (a_written_class: CLASS_C; a_asserts: LIST [TAGGED_AS]): LINKED_LIST [AUT_ASSERTION] is
 			-- List of tuples of assert clauses, each associated with its `a_written_class'
 		require
 			a_written_class_attached: a_written_class /= Void
@@ -95,7 +95,7 @@ feature{NONE} -- Implementation
 			until
 				a_asserts.after
 			loop
-				Result.extend([a_asserts.item, a_written_class])
+				Result.extend(create {AUT_ASSERTION}.make (a_asserts.item, a_written_class))
 				a_asserts.forth
 			end
 			a_asserts.go_to (l_cursor)
