@@ -10,10 +10,10 @@ class
 
 feature -- Access
 
-	get_servlet: detachable SERVLET
+	get_stateful_servlet: detachable SERVLET
 			-- Returns the current servlet. Might be not available.
 		do
-
+				-- TODO
 		end
 
 note

@@ -22,12 +22,11 @@ feature {NONE} -- Initialization
 	make
 			-- Create XB_XML_PARSER_CALLBACKS.
 		do
-		--	create {LINKED_LIST [OUTPUT_ELEMENT]}elements.make
-			create root_tag.make
-			root_tag.set_name ("ROOT_TAG")
-			create tag_stack.make (1)
-		--	create tag_buf.make
+			create root_tag.make ("html", Html_tag_name)
+			create tag_stack.make (10)
 			create html_buf.make_empty
+			create {ARRAYED_LIST [STRING]} controller_calls.make (2)
+			create {ARRAYED_LIST [STRING]} controller_calls_with_result.make (2)
 		end
 
 feature -- Constants
@@ -35,26 +34,47 @@ feature -- Constants
 	Tag_keyword: STRING = "xeb"
 		-- temp
 
+	Html_tag_name: STRING = "XEB_HTML_TAG"
+
+	Reading_html: INTEGER = 0
+	Reading_tag: INTEGER = 1
+
 feature -- Access
 
 	state: INTEGER
-		-- 0 reading html
-		-- 1 reading a tag
+		-- 0 Reading_html
+		-- 1 Reading_tag
 
 	html_buf: STRING
 		-- Stores html text until a tag is created from it
 
-	root_tag : XB_TAG
+	root_tag: TAG_ELEMENT
 		-- Represents the root of the XB_TAG tree
 
-	tag_stack: ARRAYED_STACK [XB_TAG]
+	tag_stack: ARRAYED_STACK [TAG_ELEMENT]
 		-- The stack is used to generate the tree
+
+	taglib: TAG_LIBRARY
+			-- Tag library which should be used
+
+	controller_calls: LIST [STRING]
+			-- All the calls on procedures which should be available for a servlet to be called
+
+	controller_calls_with_result: LIST [STRING]
+			-- All the calls on functions which should be available for a servlet to be called
+
+	put_taglib (a_taglib: TAG_LIBRARY)
+			-- Adds a taglib to the parser
+		do
+			taglib := a_taglib
+		end
 
 feature -- Document
 
 	on_start
 			-- Called when parsing starts.
 		do
+			tag_stack.wipe_out
 			tag_stack.put (root_tag)
 		ensure then
 			only_root_on_stack: tag_stack.count = 1
@@ -63,9 +83,12 @@ feature -- Document
 	on_finish
 			-- Called when parsing finished.
 		do
-
+			if not html_buf.is_empty then
+				create_html_tag_put
+			end
 		ensure then
 			only_root_on_stack: tag_stack.count = 1
+			buffer_is_empty: html_buf.is_empty
 		end
 
 	on_xml_declaration (a_version: STRING; an_encoding: STRING; a_standalone: BOOLEAN)
@@ -97,7 +120,11 @@ feature -- Meta
 			-- Atomic: single comment produces single event
 			-- Warning: strings may be polymorphic, see XM_STRING_MODE.
 		do
-			create_html_tag_with_text ("<!--" + a_content + "-->")
+				-- We don't need to output comments
+			if state = Reading_tag then
+				state := Reading_html
+			end
+			html_buf.append ("<!--" + a_content + "-->")
 		end
 
 feature -- Tag
@@ -109,19 +136,23 @@ feature -- Tag
 		--	l_namespace: STRING
 			l_prefix: STRING
 			l_local_part: STRING
-			l_tmp_tag: XB_TAG
+			l_tmp_tag: TAG_ELEMENT
+			l_class_name: STRING
 		do
 			if attached a_prefix then
 				if a_prefix.is_equal (Tag_keyword) then
-					state := 1
+					if state = Reading_html then
+						create_html_tag_put
+					end
+					state := Reading_tag
 				else
-					state := 0
+					state := Reading_html
 				end
 
 				l_prefix := a_prefix + ":"
 			else
 				l_prefix := ""
-				state := 0
+				state := Reading_html
 			end
 
 			if attached a_local_part then
@@ -130,17 +161,22 @@ feature -- Tag
 				l_local_part := ""
 			end
 
-			if state = 1 then
-				create l_tmp_tag.make
+			if state = Reading_tag then
+				l_class_name := taglib.get_class_for_name (l_local_part.as_upper)
+				if  l_class_name.is_empty then
+					l_class_name := Html_tag_name
+				end
+				create l_tmp_tag.make (a_local_part, l_class_name)
 				tag_stack.item.put_subtag (l_tmp_tag)
 				tag_stack.put (l_tmp_tag)
-				tag_stack.item.set_name (l_prefix  + l_local_part)
-			elseif state = 0 then
-				html_buf := ""
+				if not taglib.contains (l_local_part) then
+					error_manager.add_warning (create {ERROR_UNDEFINED_TAG}.make ([l_local_part]))
+				end
+			elseif state = Reading_html then
 				html_buf.append ("<" + l_prefix +  l_local_part)
 			end
 		ensure then
-			stack_bigger_or_html_tag: (tag_stack.count = old tag_stack.count) implies state = 0
+			stack_bigger_or_html_tag: (tag_stack.count = old tag_stack.count) implies state = Reading_html
 		end
 
 	on_attribute (a_namespace: STRING; a_prefix: STRING; a_local_part: STRING; a_value: STRING)
@@ -173,27 +209,50 @@ feature -- Tag
 				l_value := ""
 			end
 
-			if state = 1 then
-				tag_stack.item.put_attribute (l_namespace, l_prefix, l_local_part, l_value)
+				-- all variables initialized
 
-			elseif state = 0 then
+			if state = Reading_tag then -- Probably better to wrap the state in to classes (Cyclomatic Complexity!)
+				if not taglib.contains (tag_stack.item.id) then
+					l_value := "undefined tag: '" + tag_stack.item.id + "'"
+					l_local_part := "text"
+				elseif taglib.argument_belongs_to_tag (l_local_part, tag_stack.item.id) then
+					if l_value.starts_with ("%%=") and l_value.ends_with ("%%") then
+						process_dynamic_tag_attribute (l_local_part, l_value)
+					else
+						if tag_stack.item.has_attribute (l_local_part) then
+							error_manager.add_warning (create {ERROR_UNEXPECTED_ATTRIBUTE}.make (["<"+tag_stack.item.id + " " + l_local_part + "=%"" + l_value + "%">"  ]))
+						else
+							tag_stack.item.put_attribute (l_local_part, l_value)
+							if taglib.is_call_feature (tag_stack.item.id, l_local_part) then
+								controller_calls.extend (l_value)
+							elseif taglib.is_call_with_result_feature (tag_stack.item.id, l_local_part) then
+								controller_calls_with_result.extend (l_value)
+							end
+						end
+					end
+				else
+					error_manager.add_warning (create {ERROR_UNEXPECTED_ATTRIBUTE}.make (["<"+tag_stack.item.id + " " + l_local_part + "=%"" + l_value + "%">"  ]))
+				end
+			elseif state = Reading_html then
 				if not l_prefix.is_empty then
 					l_prefix := l_prefix + ":"
 				end
-				html_buf.append ( " " + l_prefix  + l_local_part + "=%"" +  l_value + "%"")
+				if l_value.starts_with ("%%=") and l_value.ends_with ("%%") then
+					process_dynamic_html_attribute (l_local_part, l_value)
+				else
+					html_buf.append ( " " + l_prefix  + l_local_part + "=%"" +  l_value + "%"")
+				end
 			end
+		ensure then
+			stack_does_not_change: tag_stack.count = old tag_stack.count
 		end
 
 	on_start_tag_finish
 			-- End of start tag.
 		do
-			if state = 1 then
-			elseif state = 0 then
+			if state = Reading_html then
 				html_buf.append (">")
-				create_html_tag_put
 			end
-		ensure then
-			html_tag_increase_stack: state = 0 implies tag_stack.count > old tag_stack.count
 		end
 
 	on_end_tag (a_namespace: STRING; a_prefix: STRING; a_local_part: STRING)
@@ -216,17 +275,17 @@ feature -- Tag
 				l_local_part := ""
 			end
 
-			tag_stack.remove
+				-- All variables initialized
 
 			if not l_prefix.is_equal (Tag_keyword) then
 				if not l_prefix.is_empty then
 					l_prefix := l_prefix + ":"
 				end
-				create_html_tag_with_text ("</" + l_prefix  + l_local_part + ">")
+				html_buf.append ("</" + l_prefix  + l_local_part + ">")
+			else
+				create_html_tag_put
+				tag_stack.remove
 			end
-
-		ensure then
-			stack_smaller: tag_stack.count < old tag_stack.count
 		end
 
 feature -- Content
@@ -237,7 +296,8 @@ feature -- Content
 			-- without a markup event in between.
 			-- Warning: strings may be polymorphic, see XM_STRING_MODE.
 		do
-			create_html_tag_with_text (a_content)
+			--create_html_tag_with_text (a_content)
+			html_buf.append (a_content)
 		end
 
 feature {NONE} -- Implementation
@@ -245,12 +305,10 @@ feature {NONE} -- Implementation
 	create_html_tag_with_text (s: STRING)
 			-- Creates a XB_TAG from s and adds it to top element on stack.
 		local
-			l_tag: XB_TAG
+			l_tag: TAG_ELEMENT
 		do
 			if not s.is_empty then
-				create l_tag.make
-				l_tag.set_name ("HTML")
-				l_tag.put_attribute ("", "","code", s.twin)
+				create l_tag.make ("html", Html_tag_name)
 				tag_stack.item.put_subtag (l_tag)
 			end
 		end
@@ -258,22 +316,49 @@ feature {NONE} -- Implementation
 	create_html_tag_with_text_put (s: STRING)
 			-- Creates a XB_TAG from s and adds it to top element on stack and then pushes it onto the stack.
 		local
-			l_tag: XB_TAG
+			l_tag: TAG_ELEMENT
 		do
 			if not s.is_empty then
-				create l_tag.make
-				l_tag.set_name ("HTML")
-				l_tag.put_attribute ("", "","code", s.twin)
+				create l_tag.make ("html", Html_tag_name)
+				l_tag.put_attribute ("text", s)
+				l_tag.multiline_argument := True
 				tag_stack.item.put_subtag (l_tag)
-				tag_stack.put (l_tag)
 			end
 		end
 
 	create_html_tag_put
 			-- Creates a XB_TAG from html_buf and adds it to top element on stack then pushes it onto the stack.
 		do
-			create_html_tag_with_text_put (html_buf)
+			create_html_tag_with_text_put (html_buf.out)
+				-- Don't use html_buf (instead of html_buf.out), since it will be wiped_out in the html_tag as well
 			html_buf.wipe_out
+		end
+
+	process_dynamic_html_attribute (local_part, value: STRING)
+			-- Extracts the name of the feature from the value
+			-- Generates an html tag element and an output call
+		local
+			l_tag: TAG_ELEMENT
+			feature_name: STRING
+		do
+			html_buf.append (" " + local_part + "=%"")
+			create_html_tag_put
+			create l_tag.make ("output", "XEB_OUTPUT_CALL_TAG")
+			feature_name := value.substring (3, value.count-1)
+			l_tag.put_dynamic_attribute ("value", feature_name)
+			tag_stack.item.put_subtag (l_tag)
+			controller_calls_with_result.extend (feature_name)
+				-- Don't put it on the stack
+			html_buf.append ("%"")
+		end
+
+	process_dynamic_tag_attribute (local_part, value: STRING)
+		local
+			feature_name: STRING
+		do
+			feature_name := value.substring (3, value.count - 1)
+			controller_calls_with_result.extend (feature_name)
+			tag_stack.item.put_dynamic_attribute (local_part, feature_name)
 		end
 
 note

@@ -126,6 +126,8 @@ feature -- Type checking
 			a_feature.record_suppliers (context.supplier_ids)
 			current_feature := a_feature
 			reset
+				-- Initialize structures to record attribute scopes.
+			context.init_attribute_scopes
 			is_byte_node_enabled := False
 			break_point_slot_count := 0
 			if a_is_safe_to_check_inherited then
@@ -160,6 +162,8 @@ feature -- Type checking
 			a_feature.record_suppliers (context.supplier_ids)
 			current_feature := a_feature
 			reset
+				-- Initialize structures to record attribute scopes.
+			context.init_attribute_scopes
 			if a_is_safe_to_check_inherited then
 				is_byte_node_enabled := False
 				break_point_slot_count := 0
@@ -213,6 +217,10 @@ feature -- Type checking
 			is_byte_node_enabled := a_generate_code
 			current_feature := a_feature
 			reset
+				-- Initialize structures to record attribute scopes.
+			context.init_attribute_scopes
+				-- There are no locals, but we need to initialize the structures that are used for scope tests.
+			context.init_local_scopes
 			a_clause.process (Current)
 			if a_generate_code then
 				l_list ?= last_byte_node
@@ -236,6 +244,8 @@ feature -- Type checking
 			is_byte_node_enabled := True
 			current_feature := a_feature
 			reset
+				-- Initialize structures to record attribute scopes.
+			context.init_attribute_scopes
 			a_cas.process (Current)
 		end
 
@@ -915,7 +925,7 @@ feature -- Roundtrip
 			end
 
 			context.set_current_feature (l_feature)
-
+			context.init_attribute_scopes
 			create l_feature_checker
 			l_feature_checker.init (context)
 			context.set_current_inline_agent_body (l_as.body)
@@ -3060,10 +3070,9 @@ feature -- Implementation
 				check_locals (l_as)
 				l_has_invalid_locals := error_level /= l_error_level
 			end
-				-- Initialize structures to record variable scopes.
-				-- This should be done before checking precondition that may reference attributes,
-				-- but after checking locals that sets their count.
-			context.init_variable_scopes
+				-- Initialize structures to record local scopes.
+				-- This should be done after checking locals that sets their count.
+			context.init_local_scopes
 
 				-- Check preconditions
 			if l_as.precondition /= Void then
@@ -3134,7 +3143,7 @@ feature -- Implementation
 				elseif not l_has_invalid_locals then
 						-- Set mark of context
 					is_in_rescue := True
-					context.init_variable_scopes
+					context.init_local_scopes
 					process_compound (l_as.rescue_clause)
 					if l_needs_byte_node and then error_level = l_error_level then
 						l_list ?= last_byte_node
@@ -3152,7 +3161,8 @@ feature -- Implementation
 			if
 				not l_has_invalid_locals and then
 				l_as.locals /= Void and then error_level = l_error_level and then
-				context.current_class.is_warning_enabled (w_unused_local)
+				context.current_class.is_warning_enabled (w_unused_local) and then
+				not is_inherited
 			then
 				check_unused_locals (context.locals)
 			end
@@ -6420,7 +6430,11 @@ feature -- Implementation
 			end
 			if l_as.invariant_part /= Void then
 					-- Type check the invariant loop
-				l_as.invariant_part.process (Current)
+				context.enter_realm
+				s := context.scope
+				process_eiffel_list_with_matcher (l_as.invariant_part, create {AST_SCOPE_ASSERTION}.make (context), Void)
+				context.set_scope (s)
+				context.leave_optional_realm
 				if l_needs_byte_node then
 					l_list ?= last_byte_node
 					l_loop.set_invariant_part (l_list)
@@ -6690,6 +6704,8 @@ feature -- Implementation
 		end
 
 	process_invariant_as (l_as: INVARIANT_AS)
+		local
+			s: INTEGER
 		do
 			break_point_slot_count := 0
 			context.inline_agent_counter.reset
@@ -6697,7 +6713,11 @@ feature -- Implementation
 			if l_as.assertion_list /= Void then
 				reset_for_unqualified_call_checking
 				set_is_checking_invariant (True)
-				l_as.assertion_list.process (Current)
+				context.enter_realm
+				s := context.scope
+				process_eiffel_list_with_matcher (l_as.assertion_list, create {AST_SCOPE_ASSERTION}.make (context), Void)
+				context.set_scope (s)
+				context.leave_optional_realm
 				set_is_checking_invariant (False)
 			else
 				last_byte_node := Void
@@ -6908,6 +6928,7 @@ feature -- Implementation
 			a: EIFFEL_LIST [TAGGED_AS]
 			b: ASSERTION_BYTE_CODE
 			i: INTEGER
+			s: INTEGER
 		do
 			a := l_as.assertions
 			if a /= Void then
@@ -6915,7 +6936,11 @@ feature -- Implementation
 					create b.make (a.count)
 					i := context.next_object_test_local_position
 				end
-				process_eiffel_list_with_matcher (a, Void, b)
+				context.enter_realm
+				s := context.scope
+				process_eiffel_list_with_matcher (a, create {AST_SCOPE_ASSERTION}.make (context), b)
+				context.set_scope (s)
+				context.leave_optional_realm
 				if b /= Void then
 					if b.is_empty then
 						b := Void
@@ -6932,6 +6957,7 @@ feature -- Implementation
 			a: EIFFEL_LIST [TAGGED_AS]
 			b: ASSERTION_BYTE_CODE
 			i: INTEGER
+			s: INTEGER
 		do
 			a := l_as.assertions
 			if a /= Void then
@@ -6939,7 +6965,11 @@ feature -- Implementation
 					create b.make (a.count)
 					i := context.next_object_test_local_position
 				end
-				process_eiffel_list_with_matcher (a, Void, b)
+				context.enter_realm
+				s := context.scope
+				process_eiffel_list_with_matcher (a, create {AST_SCOPE_ASSERTION}.make (context), b)
+				context.set_scope (s)
+				context.leave_optional_realm
 				if b /= Void then
 					if b.is_empty then
 						b := Void
@@ -6983,6 +7013,7 @@ feature -- Implementation
 			a: EIFFEL_LIST [TAGGED_AS]
 			b: ASSERTION_BYTE_CODE
 			i: INTEGER
+			s: INTEGER
 		do
 			a := l_as.assertions
 			if a /= Void then
@@ -6990,7 +7021,11 @@ feature -- Implementation
 					create b.make (a.count)
 					i := context.next_object_test_local_position
 				end
-				process_eiffel_list_with_matcher (a, Void, b)
+				context.enter_realm
+				s := context.scope
+				process_eiffel_list_with_matcher (a, create {AST_SCOPE_ASSERTION}.make (context), b)
+				context.set_scope (s)
+				context.leave_optional_realm
 				if b /= Void then
 					if b.is_empty then
 						b := Void

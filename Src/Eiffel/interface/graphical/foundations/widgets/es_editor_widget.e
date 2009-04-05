@@ -59,6 +59,14 @@ feature {NONE} -- Clean up
 
 feature -- Access
 
+	text: STRING_32
+			-- Editor text
+		do
+			Result := editor.wide_text
+		ensure
+			result_attached: Result /= Void
+		end
+
 	editor: attached EB_CLICKABLE_EDITOR
 			-- Actual editor
 		local
@@ -80,6 +88,41 @@ feature {NONE} -- Status report
 
 	is_tool_bar_separated: BOOLEAN = True
 			-- <Precursor>
+
+feature -- Basic operations
+
+	clear
+			-- Clears the editor.
+		require
+			is_interface_usable: is_interface_usable
+		do
+			editor.clear_window
+		ensure
+			editor_is_empty: editor.is_empty
+		end
+
+	scroll_editor_to_end (a_force: BOOLEAN)
+			-- Scrolls the editor to the end, if the caret is placed at the end of the text.
+			--
+			-- `a_force': True to force the editor to scroll regardless of the caret position.
+		require
+			is_interface_usable: is_interface_usable
+		local
+			l_editor: like editor
+			l_text: CLICKABLE_TEXT
+		do
+			l_editor := editor
+			if l_editor.is_interface_usable then
+				if l_editor.text_is_fully_loaded then
+					l_text := l_editor.text_displayed
+					if a_force or else l_text.last_line = l_text.current_line then
+						l_editor.scroll_to_end_when_ready
+					end
+				elseif a_force then
+					l_editor.scroll_to_end_when_ready
+				end
+			end
+		end
 
 feature {NONE} -- Factory
 

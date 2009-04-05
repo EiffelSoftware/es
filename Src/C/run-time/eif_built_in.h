@@ -41,6 +41,7 @@
 #include "eif_misc.h"
 #include "eif_argv.h"
 #include "eif_internal.h"
+#include "eif_object_id.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -65,8 +66,12 @@ extern "C" {
 #define eif_builtin_ARGUMENTS_argument(some,i)			arg_option(i)
 #define eif_builtin_ARGUMENTS_argument_count(some)		(arg_number() - 1)
 
-/* EXCEPTION_MANAGER */
+/* EXCEPTION_MANAGER class */
 #define eif_builtin_ISE_EXCEPTION_MANAGER_developer_raise(object, code, meaning, message)			draise(code, meaning, message)
+
+/* IDENTIFIED_ROUTINES class */
+#define eif_builtin_IDENTIFIED_ROUTINES_eif_current_object_id(object)	eif_reference_id(object)
+#define eif_builtin_IDENTIFIED_ROUTINES_eif_is_object_id_of_current(object,id) EIF_TEST(eif_id_object(id) == object)
 
 /* INTERNAL class */
 #define eif_builtin_INTERNAL_c_is_instance_of(dftype,obj)	RTRA(dftype,obj)
@@ -128,6 +133,7 @@ extern "C" {
 #define eif_builtin_PLATFORM_is_windows 				EIF_IS_WINDOWS
 #define eif_builtin_PLATFORM_is_unix 					EIF_TEST(!(EIF_IS_VMS || EIF_IS_WINDOWS))
 #define eif_builtin_PLATFORM_is_mac						EIF_OS==EIF_OS_DARWIN
+#define eif_builtin_PLATFORM_is_vxworks					EIF_OS==EIF_OS_VXWORKS
 #ifdef EIF_IL_DLL
 #define eif_builtin_PLATFORM_is_dotnet					EIF_TRUE
 #else

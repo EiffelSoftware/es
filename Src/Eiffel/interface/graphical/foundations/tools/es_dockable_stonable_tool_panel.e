@@ -25,6 +25,14 @@ inherit
 			set_stone
 		end
 
+	ES_STONABLE_SYNCHRONIZED_I
+		export
+			{ES_STONABLE_I, ES_TOOL} all
+		redefine
+			set_stone,
+			synchronize
+		end
+
 feature {NONE} -- Clean up
 
 	internal_recycle
@@ -70,28 +78,11 @@ feature {ES_STONABLE_I, ES_TOOL} -- Element change
 			end
 
 			if is_initialized and not has_performed_stone_change_notification then
-				internal_on_stone_changed (tool_descriptor.previous_stone)
+				on_stone_changed_internal (tool_descriptor.previous_stone)
 			end
 		end
 
 feature {NONE} -- Status report
-
-	is_in_stone_synchronization: BOOLEAN
-			-- Indicates if a stone synchronization is taking place instead of a simple change of stone
-
-	is_stone_sychronization_required (a_old_stone: detachable STONE; a_new_stone: detachable STONE): BOOLEAN
-			-- Determines if stone synchronization is required given two stones.
-			--|Note: Redefine to better determine if a stone is applicable for synchronization, rather than
-			--|      redefine `synchronize'.
-			--
-			-- `a_old_stone': The current "old" stone.
-			-- `a_new_stone': The stone to be set if synchronization is required.
-			-- `Result': True if the panel should be synchronized with the new stone.
-		require
-			is_interface_usable: is_interface_usable
-		do
-			Result := a_old_stone /~ a_new_stone
-		end
 
 	has_performed_stone_change_notification: BOOLEAN
 			-- Status flag to ensure stone change notifications are performed.
@@ -100,10 +91,28 @@ feature {NONE} -- Status report
 			--       as ESF dictates that no interaction should be perform with the panel (Current) but
 			--       the tool descritor (`tool_descriptor').
 
-	internal_is_stone_usable (a_stone: attached like stone): BOOLEAN
+	is_stone_usable_internal (a_stone: attached like stone): BOOLEAN
 			-- <Precursor>
 		do
 			Result := tool_descriptor.is_stone_usable (a_stone)
+		end
+
+feature {NONE} -- Helpers
+
+	stone_sychronizer: ES_STONE_SYNCHRONIZER
+			-- A stone synchronizer, using Current as the primary stonable object.
+		require
+			is_interface_usable: is_interface_usable
+		do
+			if attached internal_stone_sychronizer as l_result then
+				Result := l_result
+			else
+				create Result.make (Current)
+				internal_stone_sychronizer := Result
+				auto_recycle (Result)
+			end
+		ensure
+			result_consistent: Result = stone_sychronizer
 		end
 
 feature {NONE} -- Basic opertations
@@ -156,35 +165,17 @@ feature {NONE} -- Basic opertations
 				end, Void)
         end
 
-feature {ES_STONABLE_I, ES_TOOL} -- Synchronization
+feature -- Actions
 
-	frozen synchronize
-			-- Synchronizes any new data (compiled or other wise).
-			--|Note: Redefine `is_stone_sychronization_required' instead of `synchornize' to prevent or
-			--|      force stone synchronization.
-		local
-			l_stone: STONE
-			l_new_stone: STONE
+	stone_changed_actions: EV_LITE_ACTION_SEQUENCE [TUPLE [sender: ES_STONABLE_I; old_stone: detachable STONE]]
+			-- <Precursor>
 		do
-			if is_initialized then
-				l_stone := stone
-				if l_stone /= Void then
-					l_new_stone := l_stone.synchronized_stone
-				end
-				if is_stone_sychronization_required (l_stone, l_new_stone) then
-						-- Force recomputation.
-					has_performed_stone_change_notification := False
-					is_in_stone_synchronization := True
-					if l_new_stone /= Void and then is_stone_usable (l_new_stone) then
-						set_stone (l_new_stone)
-					else
-						set_stone (Void)
-					end
-					is_in_stone_synchronization := False
-				end
+			if attached internal_stone_changed_actions as l_result then
+				Result := l_result
+			else
+				create Result
+				internal_stone_changed_actions := Result
 			end
-		rescue
-			is_in_stone_synchronization := False
 		end
 
 feature {NONE} -- Action handlers
@@ -222,7 +213,7 @@ feature {NONE} -- Action handlers
 			not_stone_change_notified: not has_performed_stone_change_notification
 		end
 
-	frozen internal_on_stone_changed (a_old_stone: detachable like stone)
+	frozen on_stone_changed_internal (a_old_stone: detachable like stone)
 			-- Called when the set stone changes.
 			-- Note: This routine can be called when `stone' if Void.
 		require
@@ -239,6 +230,45 @@ feature {NONE} -- Action handlers
 		rescue
 			has_performed_stone_change_notification := True
 		end
+
+feature {ES_STONABLE_I} -- Synchronization
+
+	synchronize
+			-- <Precursor>
+		local
+			l_stone: STONE
+			l_new_stone: STONE
+		do
+			if is_initialized then
+				l_stone := stone
+				if l_stone /= Void then
+					l_new_stone := l_stone.synchronized_stone
+				end
+				if is_stone_sychronization_required (l_stone, l_new_stone) then
+						-- Force recomputation.
+					has_performed_stone_change_notification := False
+					is_in_stone_synchronization := True
+					if l_new_stone /= Void and then is_stone_usable (l_new_stone) then
+						set_stone (l_new_stone)
+					else
+						set_stone (Void)
+					end
+					is_in_stone_synchronization := False
+				end
+			end
+		rescue
+			is_in_stone_synchronization := False
+		end
+
+feature {NONE} -- Implementation: Internal cache
+
+	internal_stone_changed_actions: like stone_changed_actions
+			-- Cache version of `stone_changed_actions'
+			-- Note: Do not use directly!
+
+	internal_stone_sychronizer: like stone_sychronizer
+			-- Cache version of `stone_sychronizer'
+			-- Note: Do not use directly!
 
 invariant
 	tool_descriptor_is_stonable: is_interface_usable implies (({ES_STONABLE_I}) #? tool_descriptor) /= Void

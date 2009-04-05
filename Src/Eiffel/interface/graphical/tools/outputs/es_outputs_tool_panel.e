@@ -64,12 +64,12 @@ feature {NONE} -- User interface initialization
 			-- <Precursor>
 		do
 			Precursor
-
 			create modified_outputs.make_default
 		end
 
 	on_after_initialized
 			-- <Precursor>
+			-- test {ES_OUTPUTS_TOOL_PANEL}.on_before_initialize
 		local
 			l_output_manager: like output_manager
 			l_active_outputs: attached DS_LINEAR [OUTPUT_I]
@@ -99,7 +99,7 @@ feature {NONE} -- User interface initialization
 				else
 						-- The general output is not a EiffelStudio output pane, use the first output
 						-- instead.
-					check l_first_output_attached: l_first_output /= Void end
+					check l_first_output_attached: attached l_first_output end
 					set_output (l_first_output)
 				end
 			else
@@ -168,10 +168,12 @@ feature {ES_OUTPUTS_COMMANDER_I} -- Element change
 			l_actions_running: BOOLEAN
 			l_locked: BOOLEAN
 			l_old_output: like output
+			l_widget: ES_WIDGET [EV_WIDGET]
+			l_window: EB_DEVELOPMENT_WINDOW
 		do
 			if output /= a_output then
 				l_old_output := output
-				if l_old_output /= Void then
+				if attached l_old_output then
 						-- Clean up the old output
 					l_locked := l_old_output.is_locked
 					if l_old_output.lockable_connection.is_connected (Current) then
@@ -186,12 +188,30 @@ feature {ES_OUTPUTS_COMMANDER_I} -- Element change
 					l_combo.change_actions.block
 				end
 
+					-- Change label in the combo box.
 				l_combo.set_text (a_output.name.as_string_32)
-				output := a_output
-				a_output.widget_for_window (develop_window.as_attached).widget.show
 
 				if l_actions_running then
 					l_combo.change_actions.resume
+				end
+
+				l_window := develop_window.as_attached
+				if attached l_old_output then
+					l_widget := l_old_output.widget_from_window (l_window)
+					if l_widget.is_interface_usable then
+						l_widget.widget.hide
+					end
+				end
+
+				last_output := output
+				output := a_output
+
+				l_widget := a_output.widget_from_window (l_window)
+				if l_widget.is_interface_usable then
+					l_widget.widget.show
+				else
+						-- Why is the new widget not usable?
+					check False end
 				end
 
 					-- Connect to lock events
@@ -206,6 +226,8 @@ feature {ES_OUTPUTS_COMMANDER_I} -- Element change
 						on_output_locked (a_output)
 					end
 				end
+
+				on_output_shown (a_output)
 			end
 		ensure then
 --			a_editor_parented: a_editor.widget.widget.parent = user_widget
@@ -287,6 +309,15 @@ feature {NONE} -- Basic operations
 				l_item.set_pixmap (a_editor.icon_pixmap)
 				l_item.set_data (a_editor)
 				register_kamikaze_action (l_item.select_actions, agent inject_output_widget (a_editor))
+				register_action (a_editor.text_changed_actions, agent (ia_sender: ES_NOTIFIER_OUTPUT_WINDOW; ia_output: ES_OUTPUT_PANE_I)
+					require
+						ia_sender_attached: ia_sender /= Void
+						ia_output_attached: ia_output /= Void
+					do
+						if is_interface_usable then
+							on_output_modified (ia_output)
+						end
+					end (?, a_editor))
 
 				l_combo.extend (l_item)
 			end
@@ -312,15 +343,14 @@ feature {NONE} -- Basic operations
 			l_ev_widget: EV_WIDGET
 		do
 			l_items := selection_combo
-			if l_items /= Void then
-
+			if attached l_items then
 				l_item := l_items.item_for_iteration
 			end
 
 				-- Fetch the widget from the output pane interface
 			l_window := develop_window
 			check l_window_attached: l_window /= Void end
-			l_widget := a_output.widget_for_window (l_window)
+			l_widget := a_output.widget_from_window (l_window)
 			remove_auto_recycle (l_widget)
 
 				-- Fetch the EiffelVision2 widget and hide it, because it is not activated yet.
@@ -343,14 +373,10 @@ feature {NONE} -- Basic operations
 			l_widget: ES_WIDGET [EV_WIDGET]
 			l_ev_widget: EV_WIDGET
 		do
-			a_output.output_window.start_processing (False)
-			a_output.output_window.add (a_output.name.as_string_8)
-			a_output.output_window.end_processing
-
 				-- Fetch the widget from the output pane interface
 			l_window := develop_window
-			check l_window_attached: l_window /= Void end
-			l_widget := a_output.widget_for_window (l_window)
+			check l_window_attached: attached l_window end
+			l_widget := a_output.widget_from_window (l_window)
 			check not_has_parent: not l_widget.widget.has_parent end
 			auto_recycle (l_widget)
 
@@ -375,7 +401,7 @@ feature {NONE} -- Basic operations
 			l_text: STRING_32
 		do
 			create l_file.make_open_write (a_file_path)
-			l_text := a_output.text_for_window (develop_window.as_attached)
+			l_text := a_output.text_from_window (develop_window.as_attached)
 			l_file.put_string (l_text)
 			l_file.flush
 			l_file.close
@@ -394,30 +420,11 @@ feature {NONE} -- Action handlers
 			is_initialized: is_initialized
 		local
 			l_item: EV_LIST_ITEM
-			l_widget: ES_WIDGET [EV_WIDGET]
-			l_window: EB_DEVELOPMENT_WINDOW
 		do
 			l_item := selection_combo.selected_item
 			check l_item_attached: l_item /= Void end
 			if attached {like output} l_item.data as l_active_output then
-				l_window := develop_window.as_attached
-				if attached output as l_old_output then
-					l_widget := l_old_output.widget_for_window (l_window)
-					if l_widget.is_interface_usable then
-						l_widget.widget.hide
-					end
-				end
-
-				last_output := output
-				output := l_active_output
-
-				l_widget := l_active_output.widget_for_window (l_window)
-				if l_widget.is_interface_usable then
-					l_widget.widget.show
-				else
-						-- Why is the new widget not available?
-					check False end
-				end
+				set_output (l_active_output)
 			else
 				check no_data: False end
 			end
@@ -434,7 +441,6 @@ feature {NONE} -- Action handlers
 			l_dialog: ES_STANDARD_SAVE_DIALOG
 		do
 			on_output_modified (output.as_attached)
-
 
 				-- Create output file name.
 			create l_file_name.make_from_string (output.name.as_string_8)
@@ -459,7 +465,7 @@ feature {NONE} -- Action handlers
 			l_output_pane: like output
 		do
 			l_output_pane := output
-			if l_output_pane /= Void then
+			if attached l_output_pane then
 				l_output_pane.clear
 			end
 		end
@@ -526,42 +532,38 @@ feature {NONE} -- Events handlers
 			l_main_tool_bar: like tool_bar_widget
 			l_name: attached IMMUTABLE_STRING_32
 			l_button: SD_TOOL_BAR_BUTTON
-			l_output_window: OUTPUT_WINDOW
 		do
-			l_outputs := modified_outputs
-			l_name := a_output.name
-			if not l_outputs.has (l_name) then
-				l_tool_bar := modified_outputs_tool_bar
-				l_main_tool_bar := tool_bar_widget
-				check
-					l_tool_bar_attached: l_tool_bar /= Void
-					l_main_tool_bar_attached: l_main_tool_bar /= Void
-				end
+			if a_output /= last_output then
+				l_outputs := modified_outputs
+				l_name := a_output.name
+				if not l_outputs.has (l_name) then
+					l_tool_bar := modified_outputs_tool_bar
+					l_main_tool_bar := tool_bar_widget
+					check
+						l_tool_bar_attached: attached l_tool_bar
+						l_main_tool_bar_attached: attached l_main_tool_bar
+					end
 
-					-- Add the output to the table of modified outputs.
-				create l_button.make
-				l_button.set_pixel_buffer (stock_pixmaps.icon_buffer_with_overlay (a_output.icon, stock_pixmaps.overlay_warning_icon_buffer, 0, 0))
-				l_button.set_pixmap (stock_pixmaps.icon_with_overlay (a_output.icon_pixmap, stock_pixmaps.overlay_warning_icon_buffer, 0, 0))
-				l_button.set_tooltip (locale_formatter.formatted_translation (tt_show_modified_output_1, [l_name]))
-				l_tool_bar.extend (l_button)
-				l_tool_bar.compute_minimum_size
-				l_tool_bar.update_size
-				l_main_tool_bar.compute_minimum_size
-				l_main_tool_bar.update_size
-				if l_outputs.is_empty then
-					l_tool_bar.show
+						-- Add the output to the table of modified outputs.
+					create l_button.make
+					l_button.set_pixel_buffer (stock_pixmaps.icon_buffer_with_overlay (a_output.icon, stock_pixmaps.overlay_warning_icon_buffer, 0, 0))
+					l_button.set_pixmap (stock_pixmaps.icon_with_overlay (a_output.icon_pixmap, stock_pixmaps.overlay_warning_icon_buffer, 0, 0))
+					l_button.set_tooltip (locale_formatter.formatted_translation (tt_show_modified_output_1, [l_name]))
+					register_action (l_button.select_actions, agent set_output (a_output))
+					l_tool_bar.extend (l_button)
+					l_tool_bar.compute_minimum_size
+					l_tool_bar.update_size
+					l_main_tool_bar.compute_minimum_size
+					l_main_tool_bar.update_size
+					if l_outputs.is_empty then
+						l_tool_bar.show
+					end
+					l_outputs.force_last ([a_output, l_button], l_name)
 				end
-				l_outputs.force_last ([a_output, l_button], l_name)
 			end
-
-			l_output_window := a_output.output_window
-			l_output_window.start_processing (True)
-			l_output_window.add ("This is a big tests!")
-			l_output_window.add_new_line
-			l_output_window.end_processing
 		ensure
-			modified_outputs_has_a_output: modified_outputs.has (a_output.name)
-			modified_outputs_tool_bar_is_displayed: is_shown implies modified_outputs_tool_bar.is_displayed
+			modified_outputs_has_a_output: (a_output /= last_output) implies modified_outputs.has (a_output.name)
+			modified_outputs_tool_bar_is_displayed: (a_output /= last_output and is_shown) implies modified_outputs_tool_bar.is_displayed
 		end
 
 	on_output_shown (a_output: attached ES_OUTPUT_PANE_I)
@@ -582,15 +584,17 @@ feature {NONE} -- Events handlers
 				l_tool_bar := modified_outputs_tool_bar
 				l_main_tool_bar := tool_bar_widget
 				check
-					l_tool_bar_attached: l_tool_bar /= Void
-					l_main_tool_bar_attached: l_main_tool_bar /= Void
+					l_tool_bar_attached: attached l_tool_bar
+					l_main_tool_bar_attached: attached l_main_tool_bar
 				end
 
 					-- Need to remove the tool bar button
 				l_item := l_outputs.item (a_output.name)
-				check l_item_attached: l_item /= Void end
-				l_tool_bar.prune (l_item.button)
+				check l_item_attached: attached l_item end
+				unregister_action (l_item.button.select_actions, agent set_output (a_output))
+					-- Remove from the modified list and the button from the toolbar.
 				l_outputs.remove (a_output.name)
+				l_tool_bar.prune (l_item.button)
 
 				if l_outputs.is_empty then
 						-- No more outputs, hide the tool bar.
@@ -601,7 +605,15 @@ feature {NONE} -- Events handlers
 				l_main_tool_bar.compute_minimum_size
 				l_main_tool_bar.update_size
 			end
+
+				-- Ensure the last output is set.
+			last_output := a_output
+
+				-- Set the tab icons.
+			content.set_pixel_buffer (a_output.icon)
+			content.set_pixmap (a_output.icon_pixmap)
 		ensure
+			last_output_set: last_output = a_output
 			not_modified_outputs_has_a_output: not modified_outputs.has (a_output.name)
 			not_modified_outputs_tool_bar_is_displayed: modified_outputs.is_empty implies not modified_outputs_tool_bar.is_displayed
 		end
@@ -631,7 +643,7 @@ feature {NONE} -- Factory
 			l_box.set_padding ({ES_UI_CONSTANTS}.horizontal_padding)
 
 				-- Output Label
-			create l_label.make_with_text (locale_formatter.translation (l_output) + ":")
+			create l_label.make_with_text (locale_formatter.translation (lb_output) + ":")
 			l_box.extend (l_label)
 			l_box.disable_item_expand (l_label)
 
@@ -683,13 +695,11 @@ feature {NONE} -- Internationalization
 
 	t_save_1: STRING = "Save $1 Output"
 
-	l_output: STRING = "Output"
+	lb_output: STRING = "Output"
 
 	tt_save_output: STRING = "Save current output to disk"
 	tt_clear_output: STRING = "Clear current output"
 	tt_show_modified_output_1: STRING = "Show the modified $1 output"
-
-
 
 ;note
 	copyright:	"Copyright (c) 1984-2009, Eiffel Software"

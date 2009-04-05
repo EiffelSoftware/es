@@ -11,8 +11,13 @@ deferred class
 inherit
 	AST_NULL_VISITOR
 		redefine
+			process_bin_and_as,
+			process_bin_and_then_as,
 			process_bin_eq_as,
+			process_bin_implies_as,
 			process_bin_ne_as,
+			process_bin_or_as,
+			process_bin_or_else_as,
 			process_object_test_as,
 			process_converted_expr_as,
 			process_paran_as,
@@ -31,11 +36,74 @@ feature {NONE} -- Initialization
 			c_attached: c /= Void
 		do
 			context := c
+			is_nested := True
 		ensure
 			context_set: context = c
 		end
 
-feature {AST_EIFFEL} -- Visitor pattern
+feature {AST_EIFFEL} -- Visitor pattern: boolean logic
+
+	process_bin_and_as (l_as: BIN_AND_AS)
+		do
+			if is_negated = is_negation_expected then
+				if is_nested then
+					l_as.left.process (Current)
+				end
+				l_as.right.process (Current)
+			end
+		end
+
+	process_bin_and_then_as (l_as: BIN_AND_THEN_AS)
+		do
+			if is_negated = is_negation_expected then
+				l_as.left.process (Current)
+				l_as.right.process (Current)
+			end
+		end
+
+	process_bin_implies_as (l_as: BIN_IMPLIES_AS)
+		local
+			old_is_nested: BOOLEAN
+		do
+			if is_negated /= is_negation_expected then
+				old_is_nested := is_nested
+				is_nested := True
+				is_negated := not is_negated
+				l_as.left.process (Current)
+				is_negated := not is_negated
+				l_as.right.process (Current)
+				is_nested := old_is_nested
+			end
+		end
+
+	process_bin_or_as (l_as: BIN_OR_AS)
+		do
+			if is_negated /= is_negation_expected then
+				if is_nested then
+					l_as.left.process (Current)
+				end
+				l_as.right.process (Current)
+			end
+		end
+
+	process_bin_or_else_as (l_as: BIN_OR_ELSE_AS)
+		do
+			if is_negated /= is_negation_expected then
+				l_as.left.process (Current)
+				l_as.right.process (Current)
+			end
+		end
+
+	process_un_not_as (l_as: UN_NOT_AS)
+		do
+				-- Boolean expression is negated
+			is_negated := not is_negated
+			l_as.expr.process (Current)
+				-- Revert original status in case there are other voidness tests
+			is_negated := not is_negated
+		end
+
+feature {AST_EIFFEL} -- Visitor pattern: content
 
 	process_bin_eq_as (l_as: BIN_EQ_AS)
 		do
@@ -51,6 +119,23 @@ feature {AST_EIFFEL} -- Visitor pattern
 			process_equality_as (l_as)
 		end
 
+	process_converted_expr_as (l_as: CONVERTED_EXPR_AS)
+		do
+			l_as.expr.process (Current)
+		end
+
+	process_paran_as (l_as: PARAN_AS)
+		local
+			old_is_nested: BOOLEAN
+		do
+			old_is_nested := is_nested
+			is_nested := True
+			l_as.expr.process (Current)
+			is_nested := old_is_nested
+		end
+
+feature {NONE} -- Check for void test
+
 	process_object_test_as (l_as: OBJECT_TEST_AS)
 		local
 			expr: EXPR_AS
@@ -58,48 +143,24 @@ feature {AST_EIFFEL} -- Visitor pattern
 			if is_negated = is_negation_expected then
 				if l_as.name /= Void then
 					add_object_test_scope (l_as.name)
-				else
-						-- Remove parentheses surrounding expression
-					from
-						expr := l_as.expression
-					until
-						not attached {PARAN_AS} expr as left_paran_as
-					loop
-						expr := left_paran_as.expr
-					end
-					if attached {EXPR_CALL_AS} expr as expr_call_as then
-						if attached {ACCESS_ID_AS} expr_call_as.call as access_id_as then
-							add_access_scope (access_id_as)
-						elseif attached {ACCESS_ASSERT_AS} expr_call_as.call as access_assert_as then
-							add_access_scope (access_assert_as)
-						elseif attached {RESULT_AS} expr_call_as.call as result_as then
-							add_result_scope
-						end
+				end
+					-- Remove parentheses surrounding expression
+				from
+					expr := l_as.expression
+				until
+					not attached {PARAN_AS} expr as paran_as
+				loop
+					expr := paran_as.expr
+				end
+				if attached {EXPR_CALL_AS} expr as expr_call_as then
+					if attached {ACCESS_INV_AS} expr_call_as.call as access_inv_as then
+						add_access_scope (access_inv_as)
+					elseif attached {RESULT_AS} expr_call_as.call as result_as then
+						add_result_scope
 					end
 				end
 			end
 		end
-
-	process_converted_expr_as (l_as: CONVERTED_EXPR_AS)
-		do
-			l_as.expr.process (Current)
-		end
-
-	process_paran_as (l_as: PARAN_AS)
-		do
-			l_as.expr.process (Current)
-		end
-
-	process_un_not_as (l_as: UN_NOT_AS)
-		do
-				-- Boolean expression is negated
-			is_negated := not is_negated
-			l_as.expr.process (Current)
-				-- Revert original status in case there are other voidness tests
-			is_negated := not is_negated
-		end
-
-feature {NONE} -- Check for void test
 
 	process_equality_as (equality_as: BINARY_AS)
 		require
@@ -133,10 +194,8 @@ feature {NONE} -- Check for void test
 					e := left
 				end
 				if attached {EXPR_CALL_AS} e as expr_call_as then
-					if attached {ACCESS_ID_AS} expr_call_as.call as access_id_as then
-						add_access_scope (access_id_as)
-					elseif attached {ACCESS_ASSERT_AS} expr_call_as.call as access_assert_as then
-						add_access_scope (access_assert_as)
+					if attached {ACCESS_INV_AS} expr_call_as.call as access_inv_as then
+						add_access_scope (access_inv_as)
 					elseif attached {RESULT_AS} expr_call_as.call as result_as then
 						add_result_scope
 					end
@@ -206,7 +265,12 @@ feature {NONE} -- Context
 			context.add_result_instruction_scope
 		end
 
-feature {NONE} -- Status
+feature {NONE} -- Status report
+
+	is_nested: BOOLEAN
+			-- Is current expression nested, so that associativity rules
+			-- should not be taken into account that is important for
+			-- strict operators?
 
 	is_negated: BOOLEAN
 			-- Is last boolean expression negated?

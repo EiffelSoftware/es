@@ -208,6 +208,7 @@ test	obsolete-inline-agent		syntax053 tcf fail syntax
 test	invalid-manifest-type-char-constant	syntax054 tcf fail syntax
 test	note-syntax				syntax055 tcf pass syntax
 test	attached-syntax				syntax056 tcf pass syntax attached
+test	external-with-invalid-use	syntax057 tcf pass syntax
 
 
 -- Validity tests
@@ -824,6 +825,7 @@ test	remove-convert-clause-bogus-vncp	incr318	tcf fail incrementality
 test	execution-failure-after-vevi		incr319	tcf fail incrementality
 test	switch-to-conforming-inheritance	incr320	tcf fail incrementality
 test	eif-gen-conf-init-crash			incr321	tcf fail incrementality
+test	function-to-attribute-refinalize	incr322	tcf fail incrementality
 
 
 -- Melting
@@ -1031,6 +1033,7 @@ test	finalize-invariant-wrong-class-name	final073 tcf fail finalizing
 test	finalize-bogus-invariant-violation	final074 tcf fail finalizing
 test	finalize-external-creation-procedure	final075 tcf fail finalizing
 test	finalize-inline-attribute-body	final076 tcf fail finalizing
+test	finalize-creation-expression-corruption	final077 tcf pass finalizing
 
 -- Runtime
 test	gc-tracking-001					runtime001	tcf pass runtime
@@ -1054,6 +1057,8 @@ test	memory-leak-in-eif-thr-wait	thread003	tcf pass multithreaded
 test	creating-string-runtime-panic	thread004	tcf pass multithreaded
 test	mem-info-update-crash-after-threads	thread005	tcf pass multitheaded
 test	panic-when-too-many-allocation	thread006	tcf pass multitheaded
+test	join-with-no-children-leaks	thread007	tcf pass multitheaded
+test	memory-referers-not-thread-safe	thread008	tcf pass multitheaded
 
 -- Execution
 
@@ -1366,6 +1371,7 @@ test	expanded-generic-call-on-void-target	exec306 tcf fail execution
 test	bogus-catcall-on-basic-type-agent	exec307 tcf fail execution catcall
 test	conversion-from-basic-through-any	exec308 tcf fail execution
 test	expanded-object-test-creates-objects	exec309 tcf fail execution
+test	out-on-long-attribute-buffer-overflow	exec310 tcf fail execution
 
 
 -- Compiler termination (exception trace, panic, etc.)
@@ -1720,6 +1726,9 @@ test	ptf-file-forth-2		lib026	 tcf pass library file
 test	ptf-read-number-routines	lib027	 tcf pass library file 	
 test	es-encoding-conversion		lib028	 tcf pass library encoding
 test	ptf-read-number-routines-2	lib029	 tcf pass library file
+test	file-type-queries-wrong		lib030	 tcf pass library file
+test	file-append-not-thread-safe	lib031	 tcf pass library file
+
 
 
 -- TUPLE tests
@@ -2149,6 +2158,8 @@ test	bogus-vevi-when-inherit-expanded				attach055 tcf fail void_safe attached_t
 test	stable-attribute-redeclaration					attach056 tcf pass stable attribute redeclaration validity
 test	stable-attribute-caps							attach057 tcf pass stable attribute attached_types
 test	void-safety-level								attach058 tcf pass void_safe validity dotnet attached_types
+test	voidness-cap-in-assertion						attach059 tcf pass void_safe scope
+test	like-current-void-safety						attach060 tcf pass void_safe anchored_types
 
 -- Tests for conformance in general
 test	basic-conformance		conform001 tcf pass conformance
@@ -2278,4 +2289,4 @@ test dotnet-polymorphism			dotnet110 tcf pass dotnet
 if DOTNET test assigner-name-incrementality	dotnet111 tcf pass dotnet
 test dotnet-special-handling-crash	dotnet112 tcf pass dotnet
 if DOTNET test  dotnet-object-test-basic-type	dotnet113 tcf pass dotnet attached_types
-
+if DOTNET test  dotnet-array-data-copy	dotnet114 tcf pass dotnet

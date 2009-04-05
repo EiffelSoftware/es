@@ -3898,6 +3898,7 @@ Src/tools/eiffel_make/emake.lic -text
 Src/tools/eiffel_matrix_code_generator/emcgen.lic -text
 Src/tools/eiffel_matrix_code_generator/frames/tool.e.frame -text
 Src/tools/es_cleaner/escln.lic -text
+Src/tools/es_twitter/es_twitter.lic -text
 Src/tools/espawn/espawn.lic -text
 Src/tools/estudio/config/estudio.ico -text
 Src/tools/estudio/config/estudio.lic -text
@@ -4072,6 +4073,8 @@ eweasel/tests/dotnet090/a.dll -text
 eweasel/tests/dotnet091/a.dll -text
 eweasel/tests/dotnet102/a.dll -text
 eweasel/tests/dotnet108/Ace -text
+eweasel/tests/dotnet114/dotnet_excep_trace -text
+eweasel/tests/except036/dotnet_output -text
 eweasel/tests/exec002/notes -text
 eweasel/tests/exec003/notes -text
 eweasel/tests/exec004/notes -text

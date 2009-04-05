@@ -17,6 +17,9 @@ inherit
 		end
 
 	ES_OUTPUT_PANE_I
+		redefine
+			activate
+		end
 
 	ES_RECYCLABLE
 		redefine
@@ -35,13 +38,19 @@ inherit
 
 feature {NONE} -- Initialization
 
+	make
+			-- Initializes the output pane
+		do
+			create notifier_formatter.make
+		end
+
 	build_interface (a_widget: attached G)
 			-- Builds the interface for the widget.
 			--
 			-- `a_widget': The widget to build/initialize.
 		require
 			is_interface_usable: is_interface_usable
-			not_a_widget_is_interface_usable: not a_widget.is_interface_usable
+			a_widget_is_interface_usable: a_widget.is_interface_usable
 		deferred
 		end
 
@@ -69,23 +78,36 @@ feature {NONE} -- Clean up
 
 feature -- Access
 
-	output_window: attached ES_MULTI_OUTPUT_WINDOW
+	text: STRING_32
 			-- <Precursor>
-		local
-			l_result: like internal_output_window
 		do
-			l_result := internal_output_window
-			if l_result = Void then
-				create {ES_MULTI_OUTPUT_WINDOW} Result.make
-				internal_output_window := Result
-			else
-				Result := l_result
-			end
+			Result := notifier_formatter.string
 		end
+
+	formatter: ES_MULTI_OUTPUT_WINDOW
+			-- <Precursor>
+		do
+			if attached internal_formatter as l_result then
+				Result := l_result
+			else
+				create {ES_MULTI_OUTPUT_WINDOW} Result.make
+					-- Add the notifier window to ensure clients have access to the cached
+					-- string contents and actions.
+				Result.extend (notifier_formatter)
+				internal_formatter := Result
+			end
+		ensure then
+			result_has_notifier_formatter: Result.had_formatter (notifier_formatter)
+		end
+
+feature {NONE} -- Access
+
+	notifier_formatter: ES_NOTIFIER_OUTPUT_WINDOW
+			-- Ouptut window use to notify clients of changes.
 
 feature {NONE} -- Access: User interface
 
-	widget_table: detachable DS_HASH_TABLE [attached G, NATURAL]
+	widget_table: detachable DS_HASH_TABLE [G, NATURAL]
 			-- Table of requested widgets, indexed by a window ID.
 			--
 			-- Key: Window ID
@@ -103,36 +125,22 @@ feature -- Status report
 			-- <Precursor>
 		local
 			l_table: like widget_table
-			l_cursor: DS_HASH_TABLE_CURSOR [attached G, NATURAL]
+			l_cursor: DS_HASH_TABLE_CURSOR [G, NATURAL]
 		do
 			l_table := widget_table
 			if not l_table.is_empty then
 				l_cursor := l_table.new_cursor
-				from l_cursor.start until l_cursor.after loop
+				from l_cursor.start until l_cursor.after or Result loop
+					Result := l_cursor.item.is_shown
 					l_cursor.forth
 				end
 				l_cursor.finish
 			end
 		end
 
-feature {NONE} -- Query
+feature -- Query: User interface
 
-	widget_output_window (a_widget: attached G; a_window: attached SHELL_WINDOW_I): attached OUTPUT_WINDOW
-			-- Retrieves an output window from a created widget.
-			--
-			-- `a_widget': The widget to fetch the output window from.
-			-- `a_window': The window where there widget is displayed.
-			-- `Result': A resulting output window.
-		require
-			is_interface_usable: is_interface_usable
-			a_widget_is_interface_usable: a_widget.is_interface_usable
-			a_window_is_interface_usable: a_window.is_interface_usable
-		deferred
-		end
-
-feature -- Query: User interface elements
-
-	widget_for_window (a_window: attached SHELL_WINDOW_I): attached G
+	widget_from_window (a_window: SHELL_WINDOW_I): attached G
 			-- <Precursor>
 		local
 			l_table: like widget_table
@@ -144,6 +152,7 @@ feature -- Query: User interface elements
 				Result := l_table.item (l_id)
 			else
 				Result := new_widget (a_window)
+				build_interface (Result)
 				if l_table = Void then
 					create l_table.make_default
 					widget_table := l_table
@@ -152,32 +161,66 @@ feature -- Query: User interface elements
 
 					-- The widget has been requested so we can made the output window
 					-- available for use but adding it to the `output_window' object.
-				output_window.extend (widget_output_window (Result, a_window))
+				formatter.extend (formatter_from_widget (Result))
 			end
 		ensure then
 			widget_table_attached: widget_table /= Void
 			widget_table_has_a_window: widget_table.has (a_window.window_id)
 			widget_table_contains_result: widget_table.item (a_window.window_id) = Result
-			result_consistent: Result = widget_for_window (a_window)
+			result_consistent: Result = widget_from_window (a_window)
 		end
 
---feature -- Basic operations
+feature -- Basic operations
 
---	activate
---			-- <Precursor>
---		do
---			check not_implemented: False end
---		end
+	clear
+			-- <Precursor>
+		do
+			notifier_formatter.reset
+		ensure then
+			notifier_formatter_string_is_empty: notifier_formatter.string.is_empty
+		end
+
+	activate
+			-- <Precursor>
+		do
+			if attached window_manager.last_focused_development_window as l_window then
+				if l_window.is_interface_usable then
+						-- Show the output pane on the active window.
+					if attached {ES_OUTPUTS_TOOL} l_window.shell_tools.tool ({ES_OUTPUTS_TOOL}) as l_tool then
+							-- Set the output and show the tool.
+						l_tool.set_output (Current)
+						l_tool.show (False)
+					else
+						check tool_removed: False end
+					end
+				end
+			end
+		end
+
+feature -- Actions
+
+	new_line_actions: ACTION_SEQUENCE [TUPLE [sender: ES_NOTIFIER_OUTPUT_WINDOW; lines: NATURAL]]
+			-- <Precursor>
+		do
+			Result := notifier_formatter.new_line_actions
+		end
+
+	text_changed_actions: ACTION_SEQUENCE [TUPLE [sender: ES_NOTIFIER_OUTPUT_WINDOW]]
+			-- <Precursor>
+		do
+			Result := notifier_formatter.text_changed_actions
+		end
 
 feature {NONE} -- Factory
 
-	new_widget (a_window: attached SHELL_WINDOW_I): attached G
+	new_widget (a_window: SHELL_WINDOW_I): attached G
 			-- Creates a new widget for the output pane.
 			--
 			-- `a_window': The window where the widget will be displayed.
 			-- `Result': A new widget for the output pane.
 		require
 			is_interface_usable: is_interface_usable
+			a_window_attached: a_window /= Void
 			a_window_is_interface_usable: a_window.is_interface_usable
 		deferred
 		ensure
@@ -186,9 +229,12 @@ feature {NONE} -- Factory
 
 feature {NONE} -- Implementation: Internal cache
 
-	internal_output_window: detachable like output_window
-			-- Cached version of `output_window'.
+	internal_formatter: detachable like formatter
+			-- Cached version of `formatter'.
 			-- Note: Do not use directly!
+
+invariant
+	notifier_formatter_attached: notifier_formatter /= Void
 
 ;note
 	copyright:	"Copyright (c) 1984-2009, Eiffel Software"

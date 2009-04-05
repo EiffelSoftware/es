@@ -1,6 +1,6 @@
 note
 	description: "[
-		Handler of the connection with the XEbra-server. Delegates all incoming
+		Handler of the connection with the XEbraServer. Delegates all incoming
 		requests to the appropriate servlet. Caching of sessions and session objects
 		handled as well.
 		A specific handler which inherits from this class is generated to accomodate
@@ -12,9 +12,15 @@ note
 deferred class
 	REQUEST_HANDLER
 
+feature -- Constants
+
+	Server_port: INTEGER = 3491
+
+	Max_queue: INTEGER = 5
+
 feature -- Access
 
-	request_pool: THREAD_POOL_MANAGER [SERVLET_HANDLER]
+	request_pool: DATA_THREAD_POOL [SERVLET_HANDLER]
 			-- A thread pool for the incoming requests from the xebra server
 
 	stateless_servlets: TABLE [STATELESS_SERVLET, STRING]
@@ -24,82 +30,42 @@ feature -- Access
 	session_map: TABLE [SESSION, STRING]
 			-- A table which maps a session id on a session
 
+
+feature -- Implementation
+
 	run
 			-- Starts the web application.
             -- Accept communication with client and exchange messages.
         local
             server_socket: NETWORK_STREAM_SOCKET
         do
-            create server_socket.make_server_by_port (3491)
+            create server_socket.make_server_by_port (Server_port)
             from
-                server_socket.listen (5)
+                server_socket.listen (Max_queue)
             until
                 false
             loop
-                process (server_socket) -- See below
+                process_request (server_socket) -- See below
             end
             server_socket.cleanup
         end
 
-    process (server_socket: NETWORK_STREAM_SOCKET)
-            -- Receive a message, handle it, and send it back
-        local
-            request: REQUEST
+	servlet_handler_spawner: SERVLET_HANDLER
+			-- Spawns {SERVLET_HANDLER}s for the `request_pool'
+		do
+			create Result.make
+		end
+
+    process_request (server_socket: NETWORK_STREAM_SOCKET)
+            -- Receive a request, handle it, and send it back
         do
             server_socket.accept
             if attached {NETWORK_STREAM_SOCKET} server_socket.accepted as thread_socket then
-	            if attached {STRING} thread_socket.retrieved as message then
-	            	request := build_request (message)
-	            	thread_socket.independent_store (handle_request(request))
+	            if attached {REQUEST} thread_socket.retrieved as l_request then
+	            	request_pool.add_work (agent {SERVLET_HANDLER}.process_servlet (l_request, thread_socket, Current))
 	            end
-            	thread_socket.close
             end
         end
-
-feature -- Processing
-
-	build_request (message: STRING): REQUEST
-			-- Transforms a plain text message into a {REQUEST} object
-			-- for further use in he servlet.
-			-- Session is retrieved and set
-		do
-			-- TODO: Proper session creation, management etc.
-			create Result.make (extract_web_app_name (message).as_upper + "_SERVLET", create {SESSION})
-		end
-
-	extract_web_app_name (message: STRING): STRING
-			-- Extracts the webapp name from the get-parameter.
-		do
-			Result := message.substring (16, message.count)
-			Result := Result.substring (1, Result.substring_index (" ", 1)-1)
-		end
-
-	handle_request (request: REQUEST): RESPONSE
-			-- Routes the request to the appropriate controller
-		local
-			servlet: detachable SERVLET
-		do
-			servlet := find_servlet (request)
-			if attached servlet then
-				Result := servlet.handle_request (request)
-			else
-				create Result.make
-				Result.text := "Application not found: %"" + request.file_identifier + "%""
-			end
-		end
-
-	find_servlet (request: REQUEST): detachable SERVLET
-			-- Searches for the servlet requested by `request'
-			-- 1. Stateless servlet?
-			-- 2. Servlet in session?
-			-- 3. If not found := Void
-		do
-			if attached {STATELESS_SERVLET} stateless_servlets [request.file_identifier] as servlet then
-				Result := servlet
-			else
-				Result := request.session.get_servlet
-			end
-		end
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

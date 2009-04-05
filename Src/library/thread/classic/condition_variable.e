@@ -100,17 +100,17 @@ feature {NONE} -- Externals
 
 	eif_thr_cond_create: POINTER
 		external
-			"C | %"eif_threads.h%""
+			"C use %"eif_threads.h%""
 		end
 
 	eif_thr_cond_broadcast (a_cond_ptr: POINTER)
 		external
-			"C | %"eif_threads.h%""
+			"C use %"eif_threads.h%""
 		end
 
 	eif_thr_cond_signal (a_cond_ptr: POINTER)
 		external
-			"C | %"eif_threads.h%""
+			"C use %"eif_threads.h%""
 		end
 
 	eif_thr_cond_wait (a_cond_ptr: POINTER; a_mutex_ptr: POINTER)
@@ -123,24 +123,24 @@ feature {NONE} -- Externals
 			"[
 				C blocking
 				signature (EIF_POINTER, EIF_POINTER, EIF_INTEGER): EIF_INTEGER
-				use %"eif_threads.h%"
+				use "eif_threads.h"
 			]"
 		end
 
 	eif_thr_cond_destroy (a_mutex_ptr: POINTER)
 		external
-			"C | %"eif_threads.h%""
+			"C use %"eif_threads.h%""
 		end
 
 note
-	copyright: "Copyright (c) 1984-2008, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

@@ -16,12 +16,15 @@ create
 
 feature --Initialization
 
-	make_with_elements  (a_name: STRING; a_controller_name: STRING; is_stateful: BOOLEAN; some_elements: LIST[OUTPUT_ELEMENT])
+	make_with_elements  (a_name: STRING; a_controller_name: STRING; is_stateful: BOOLEAN; a_root_tag: like root_tag; some_elements: LIST[OUTPUT_ELEMENT])
 			-- `a_name': The name of the servlet
 			-- `a_controller_name': The name of the controller class
 			-- `some_elements': The elements which should be executed and written to the page
+		require
+			a_name_is_not_emtpy: not a_name.is_empty
+			a_controller_is_not_empty: not a_controller_name.is_empty
 		do
-			make (a_name, a_controller_name, stateful)
+			make (a_name, a_controller_name, stateful, a_root_tag)
 			from
 				some_elements.start
 			until
@@ -32,18 +35,20 @@ feature --Initialization
 			end
 		end
 
-	make (a_name: STRING; a_controller_name: STRING; is_stateful: BOOLEAN)
+	make (a_name: STRING; a_controller_name: STRING; is_stateful: BOOLEAN; a_root_tag: like root_tag)
 			-- `a_name': The name of the servlet
 			-- `a_controller_name': The name of the controller class
 		require
 			name_is_valid: not a_name.is_empty
 			controller_name_is_valid: not a_controller_name.is_empty
 		do
-			name := a_name + "_SERVLET"
+			name := a_name
 			stateful := is_stateful
 			controller_name := a_controller_name
 			create {LINKED_LIST [OUTPUT_ELEMENT]} xhtml_elements.make
 			create controller_variable.make (controller_var, a_controller_name)
+			create {LINKED_LIST [STRING]}controller_calls.make
+			root_tag := a_root_tag
 		end
 
 feature -- Access
@@ -64,6 +69,15 @@ feature -- Access
 	stateful: BOOLEAN
 			-- Is the controller of the servlet stateful?
 
+	root_tag: TAG_ELEMENT assign set_tag
+			-- All tags which represent the page
+
+	controller_calls: LIST [STRING] assign set_controller_calls
+			-- All calls which should be available to the servlets
+
+	controller_calls_with_result: LIST [STRING] assign set_controller_calls_with_result
+			-- All calls which return something which should be available to the servlets
+
 feature -- Element change
 
 	put_xhtml_elements (element: OUTPUT_ELEMENT)
@@ -77,12 +91,30 @@ feature -- Element change
 
 feature -- Implementation
 
+	set_tag (root: TAG_ELEMENT)
+			-- Sets the tag, which renders the page
+		do
+			root_tag := root
+		end
+
+	set_controller_calls (a_calls: LIST [STRING])
+			-- Sets the caller functions
+		do
+			controller_calls := a_calls
+		end
+
+	set_controller_calls_with_result (a_calls: LIST [STRING])
+			-- Sets the caller functions with result
+		do
+			controller_calls_with_result := a_calls
+		end
+
 	serialize (buf: INDENDATION_STREAM)
 			-- <Precursor>		
 		local
 			servlet: CLASS_ELEMENT
 		do
-			create servlet.make (name.as_upper)
+			create servlet.make (name.as_upper + "_SERVLET")
 			if stateful then
 				servlet.set_inherit (stateful_servlet_class)
 			else
@@ -92,32 +124,50 @@ feature -- Implementation
 			servlet.add_feature (build_constructor_feature)
 			servlet.add_feature (build_request_feature)
 			servlet.add_variable (controller_variable)
+			servlet.add_variable (create {VARIABLE_ELEMENT}.make ("root_tag", "TAG_SERIALIZER"))
 			servlet.serialize (buf)
-		end
-
-	build_constructor_feature: FEATURE_ELEMENT
-			-- Serializes the make feature of the {SERVLET}
-		local
-			make_code: PLAIN_CODE_ELEMENT
-			code_list: LIST [PLAIN_CODE_ELEMENT]
-		do
-			create make_code.make ("create " + controller_var + "." + constructor_name)
-			create {LINKED_LIST [PLAIN_CODE_ELEMENT]} code_list.make
-			code_list.extend (make_code)
-			create Result.make ("make", code_list)
 		end
 
 	build_request_feature: FEATURE_ELEMENT
 			-- Serializes the request feature of the {SERVLET}
-		local
-			feature_elements: LIST [SERVLET_ELEMENT]
 		do
-			create {LINKED_LIST [SERVLET_ELEMENT]} feature_elements.make
-			feature_elements.extend (create {PLAIN_CODE_ELEMENT}.make ("create Result." + constructor_name))
-			feature_elements.append (xhtml_elements)
-
-			create Result.make (request_name, feature_elements)
+			create Result.make (request_name)
+			Result.append_expression ("create Result." + constructor_name)
+			Result.append_expression ("root_tag.output (Current, Result.text)")
 		end
+
+	build_constructor_feature: FEATURE_ELEMENT
+				-- Serializes the make feature of the {SERVLET}
+			do
+				create Result.make ("make")
+				Result.append_expression ("create " + controller_var + "." + constructor_name)
+				Result.append_expression ("create stack.make (10)")
+				Result.append_local ("temp", "TAG_SERIALIZER")
+				Result.append_local ("stack", "ARRAYED_STACK [TAG_SERIALIZER]")
+				root_tag.build_tag_tree (Result)
+
+				Result.append_expression ("create {HASH_TABLE [PROCEDURE [ANY, TUPLE], STRING]} controller_features.make (10)")
+				from
+					controller_calls.start
+				until
+					controller_calls.after
+				loop
+					Result.append_expression ("controller_features.put (agent "
+						+ "controller." + controller_calls.item + ", %"" + controller_calls.item + "%")")
+					controller_calls.forth
+				end
+
+				Result.append_expression ("create {HASH_TABLE [FUNCTION [ANY, TUPLE, STRING], STRING]} controller_features_with_result.make (10)")
+				from
+					controller_calls_with_result.start
+				until
+					controller_calls_with_result.after
+				loop
+					Result.append_expression ("controller_features_with_result.put (agent "
+						+ "controller." + controller_calls_with_result.item + ", %"" + controller_calls_with_result.item + "%")")
+					controller_calls_with_result.forth
+				end
+			end
 
 feature {NONE} -- Access
 
@@ -162,3 +212,4 @@ note
 			Customer support http://support.eiffel.com
 		]"
 end
+
