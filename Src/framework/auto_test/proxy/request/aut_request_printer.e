@@ -293,9 +293,7 @@ feature {AUT_REQUEST} -- Processing
 					l_query_names.after
 				loop
 					l_feature := l_target_type.associated_class.feature_named (l_query_names.item)
-					if l_feature.feature_name.is_equal ("foo") then
-						l_compound.extend (new_record_query_feature_call (new_argumentless_agent (l_target_type, l_feature, new_local_b (1))))
-					end
+					l_compound.extend (new_record_query_feature_call (new_argumentless_agent (l_target_type, l_feature, new_local_b (1))))
 					l_query_names.forth
 				end
 
@@ -503,6 +501,7 @@ feature {NONE} -- Byte code generation
 			l_byte_array: BYTE_ARRAY
 			l_byte_code_data: STRING
 			l_extra: STRING
+			l_file: RAW_FILE
 		do
 			l_feature := feature_for_byte_code_injection
 
@@ -527,6 +526,10 @@ feature {NONE} -- Byte code generation
 				l_extra := a_extra_data.out
 			end
 			last_request := [a_request_flag, [l_byte_code_data, l_extra]]
+
+			create l_file.make_create_read_write ("e:\jasonw\temp\bt.txt")
+			l_file.put_string (l_byte_array.melted_feature.string_representation)
+			l_file.close
 		end
 
 feature{NONE} -- Implementation

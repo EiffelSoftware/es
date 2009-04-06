@@ -274,7 +274,6 @@ feature -- Execution
 				launch_process
 
 				if is_running then
-
 						-- Get socket to communicate with interpreter.
 --					l_socket.accept
 --					fixme ("If interpreter process dies now, current thread will be blocked forever.")
@@ -604,7 +603,7 @@ feature -- Execution
 			if l_type /= none_type and then not l_type.is_basic then
 					-- We only try to retrieve state of attached objects.
 				create l_request.make (system, a_variable)
-				l_request.set_queries (features_of_type (l_type, anded_feature_agents (<<ored_feature_agents (<<agent is_boolean_query, agent is_integer_query>>), agent is_argumentless_query>>)))
+				l_request.set_queries (features_of_type (l_type, anded_feature_agents (<<ored_feature_agents (<<agent is_boolean_query, agent is_integer_query>>), agent is_argumentless_query, agent is_exported_to_any>>)))
 				last_request := l_request
 				last_request.process (request_printer)
 				flush_process

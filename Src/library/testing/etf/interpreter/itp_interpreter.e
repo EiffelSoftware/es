@@ -738,7 +738,6 @@ feature{NONE} -- Object state checking
 			l_retried: BOOLEAN
 			l_result: detachable ANY
 			l_str_result: detachable STRING
---			l_file: PLAIN_TEXT_FILE
 		do
 			if not l_retried then
 				l_result := a_query.item (Void)
@@ -758,9 +757,6 @@ feature{NONE} -- Object state checking
 			query_values.extend (Void)
 			query_status.extend (False)
 			l_retried := True
---			create l_file.make_open_read_write ("e:\jasonw\temp\state.txt")
---			l_file.put_string ("Failed%N")
---			l_file.close
 			retry
 		end
 
@@ -790,6 +786,8 @@ feature{NONE} -- Object state checking
 
 			if attached {LINKED_LIST [?ANY]} o as l_list then
 				record_query_linked_list (l_list)
+			elseif attached {ARRAYED_LIST [detachable ANY]} o as l_arrayed_list then
+				record_query_arrayed_list (l_arrayed_list)
 			end
 		end
 
@@ -811,6 +809,36 @@ feature{NONE} -- Object state checking
 				record_query (agent o.exhausted)
 				record_query (agent o.Extendible)
 				record_query (agent o.Full)
+				record_query (agent o.index)
+				record_query (agent o.is_empty)
+				record_query (agent o.isfirst)
+				record_query (agent o.islast)
+				record_query (agent o.object_comparison)
+				record_query (agent o.off)
+				record_query (agent o.prunable)
+				record_query (agent o.readable)
+				record_query (agent o.writable)
+			end
+
+		record_query_arrayed_list (o: ARRAYED_LIST [detachable ANY]) is
+				-- Record queries from `o'.
+				-- Note: This is a walkaround for the issue that the interpreter
+				-- cannot deal with exceptions in melted code correctly.
+				-- Remove this feature when that issue is fixed. 19.03.2009 Jason
+			require
+				o_attached: o /= Void
+			do
+					-- Please only add argument-less queries of return type BOOLEAN or INTEGER_32.
+					-- The queries should be added in the name ascending order.
+				record_query (agent o.after)
+				record_query (agent o.before)
+				record_query (agent o.capacity)
+				record_query (agent o.changeable_comparison_criterion)
+				record_query (agent o.count)
+				record_query (agent o.empty)
+				record_query (agent o.exhausted)
+				record_query (agent o.Extendible)
+				record_query (agent o.full)
 				record_query (agent o.index)
 				record_query (agent o.is_empty)
 				record_query (agent o.isfirst)

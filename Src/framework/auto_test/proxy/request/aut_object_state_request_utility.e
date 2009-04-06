@@ -4,12 +4,17 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	AUT_OBJECT_STATE_REQUEST_UTILITY
 
 inherit
 	SHARED_TYPES
 		export {ANY} all end
+
+	SHARED_WORKBENCH
+		undefine
+			system
+		end
 
 feature -- Access
 
@@ -93,6 +98,14 @@ feature -- Feature criteria
 			a_feature_attached: a_feature /= Void
 		do
 			Result := a_feature.type /= Void and then a_feature.argument_count = 0
+		end
+
+	is_exported_to_any (a_feature: FEATURE_I): BOOLEAN is
+			-- Is `a_feature' exported to {ANY}?
+		require
+			a_feature_attached: a_feature /= Void
+		do
+			Result := a_feature.export_status.is_exported_to (system.any_class.compiled_class)
 		end
 
 	ored_feature_agents (a_agents: ARRAY [FUNCTION [ANY, TUPLE [FEATURE_I], BOOLEAN]]): FUNCTION [ANY, TUPLE [FEATURE_I], BOOLEAN] is
