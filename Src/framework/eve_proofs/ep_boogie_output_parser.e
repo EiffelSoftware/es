@@ -281,6 +281,9 @@ feature {NONE} -- Implementation
 						l_verification_error.set_associated_feature (feature_at_position (a_line.to_integer))
 							-- TODO: internationalization + better description
 						l_tag := "weakend precondition"
+					elseif assert_regexp.captured_substring (4).is_equal ("predicate") then
+							-- It's the precondition predicate
+						l_verification_error.set_associated_feature (feature_at_position (a_line.to_integer))
 					else
 							-- Assertion has feature name of precondition (it's part of the theory)
 						l_verification_error.set_associated_feature (feature_with_name (assert_regexp.captured_substring (3), assert_regexp.captured_substring (4)))

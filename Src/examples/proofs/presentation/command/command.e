@@ -10,22 +10,25 @@ class
 create
 	make
 
-feature
+feature {NONE} -- Initialization
 
-	make (a_action: like action; a_arg: INTEGER)
+	make (a_action: like action)
+			-- Initialize command.
 		do
 			action := a_action
-			argument := a_arg
 		ensure
 			action = a_action
-			argument = a_arg
 		end
 
-	action: !PROCEDURE [ANY, TUPLE [INTEGER]]
+feature -- Access
 
-	argument: INTEGER
+	action: !PROCEDURE [ANY, TUPLE [INTEGER]]
+			-- Action being executed
+
+feature -- Basic operations
 
 	execute (a_arg: INTEGER)
+			-- Execute `action' with the argument `a_arg'.
 		require
 			action.precondition ([a_arg])
 		do
@@ -34,7 +37,6 @@ feature
 			action.postcondition ([a_arg])
 
 			action = old action -- remove from modifies
-			--argument = old argument -- remove from modifies
 		end
 
 end

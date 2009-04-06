@@ -15,15 +15,13 @@ create
 
 feature
 
-	make_undo (a_action: like action; a_undo_action: like undo_action; a_arg: INTEGER)
+	make_undo (a_action: like action; a_undo_action: like undo_action)
 		do
 			action := a_action
 			undo_action := a_undo_action
-			argument := a_arg
 		ensure
 			action = a_action
 			undo_action = a_undo_action
-			argument = a_arg
 		end
 
 	undo_action: !PROCEDURE [ANY, TUPLE [INTEGER]]
@@ -37,7 +35,6 @@ feature
 			undo_action.postcondition ([a_arg])
 
 			undo_action = old undo_action -- remove from modifies
---			argument = old argument -- remove from modifies
 		end
 
 end

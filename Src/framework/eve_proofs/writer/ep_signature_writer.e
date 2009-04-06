@@ -404,7 +404,7 @@ feature {NONE} -- Implementation
 				output.put (", " + l_argument_name)
 				i := i + 1
 			end
-			output.put ("); // pre DUMMY:combined")
+			output.put ("); // pre DUMMY:predicate")
 			output.put_new_line
 		end
 

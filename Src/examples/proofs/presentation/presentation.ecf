@@ -13,7 +13,7 @@
 				<exclude>/CVS$</exclude>
 			</file_rule>
 			<cluster name="command" location="command\"/>
-			<cluster name="account" location="..\account\"/>
+			<cluster name="account" location="account\"/>
 			<cluster name="sequence" location="sequence\"/>
 			<cluster name="formatter" location="..\formatter\"/>
 			<cluster name="archiver" location="..\archiver\"/>
