@@ -84,6 +84,9 @@ feature -- Access
 			result_set: Result = log_file_path_cache
 		end
 
+	object_state_config: detachable AUT_OBJECT_STATE_CONFIG
+			-- Configuration related to object states retrieval
+
 feature -- Access: cache
 
 	types_cache: attached DS_HASH_SET [attached STRING]
@@ -159,6 +162,18 @@ feature -- Status report
 			result_set: Result = is_random_testing_enabled_cache
 		end
 
+	is_target_state_retrieved: BOOLEAN is
+			-- Should states of target objects be retrieved?
+		do
+			Result := object_state_config /= Void and then object_state_config.is_target_object_state_retrieval_enabled
+		end
+
+	is_argument_state_retrieved: BOOLEAN is
+			-- Should states of argument objects be retrieved?
+		do
+			Result := object_state_config /= Void and then object_state_config.is_argument_object_state_retrieval_enabled
+		end
+
 feature -- Status setting
 
 	set_ddmin_enabled (a_is_ddmin_enabled: like is_ddmin_enabled)
@@ -224,6 +239,15 @@ feature -- Status setting
 		ensure
 			is_random_testing_enabled_set: is_random_testing_enabled = b
 		end
+
+	set_object_state_config (a_config: like object_state_config) is
+			-- Set `object_state_config' with `a_config'.
+		do
+			object_state_config := a_config
+		ensure
+			object_state_config_set: object_state_config = a_config
+		end
+
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

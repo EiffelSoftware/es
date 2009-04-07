@@ -92,4 +92,18 @@ feature -- Status report
 		deferred
 		end
 
+	is_target_state_retrieved: BOOLEAN is
+			-- Should states of target objects be retrieved?
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	is_argument_state_retrieved: BOOLEAN is
+			-- Should states of argument objects be retrieved?
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
 end

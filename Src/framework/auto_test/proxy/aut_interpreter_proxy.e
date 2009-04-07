@@ -119,7 +119,6 @@ feature {NONE} -- Initialization
 			set_is_logging_enabled (True)
 			set_is_speed_logging_enabled (True)
 			set_is_test_case_index_logging_enabled (True)
-			is_target_object_state_retrieval_enabled := True
 		ensure
 			executable_file_name_set: executable_file_name = an_executable_file_name
 			system_set: system = a_system
@@ -235,6 +234,22 @@ feature -- Settings
 			is_test_case_index_logging_enabled := b
 		ensure
 			is_test_case_index_logging_enabled_set: is_test_case_index_logging_enabled = b
+		end
+
+	set_is_target_object_state_retrieval_enabled (b: BOOLEAN) is
+			-- Set `is_target_object_state_retrieval_enabled' with `b'.
+		do
+			is_target_object_state_retrieval_enabled := b
+		ensure
+			is_target_object_state_retrieval_enabled_set: is_target_object_state_retrieval_enabled = b
+		end
+
+	set_is_argument_object_state_retrieval_enabled (b: BOOLEAN) is
+			-- Set `is_argument_object_state_retrieval_enabled' with `b'.
+		do
+			is_argument_object_state_retrieval_enabled := b
+		ensure
+			is_argument_object_state_retrieval_enabled_set: is_argument_object_state_retrieval_enabled = b
 		end
 
 feature -- Execution

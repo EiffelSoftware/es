@@ -193,6 +193,13 @@ feature {NONE} -- Basic operations
 					else
 						l_cancel := error_handler.remaining_time.second_count <= 0
 					end
+
+						-- NOTE: This is a walkaround for the problem that command line AutoTest cannot
+						-- terminate properly. We simply let it run forever and rely on terminating
+						-- AutoTest to finish the testing process. Remove the following line when this issue
+						-- is fixed. 4.7.2009 Jason
+					fixme ("Remove the following line.")
+					l_cancel := False
 				end
 
 				if l_cancel then
@@ -422,6 +429,8 @@ feature {NONE} -- Interpreter generation
 				interpreter := factory.last_interpreter
 				if interpreter /= Void and then proxy_time_out > 0 then
 					interpreter.set_timeout (proxy_time_out)
+					interpreter.set_is_target_object_state_retrieval_enabled (configuration.is_target_state_retrieved)
+					interpreter.set_is_argument_object_state_retrieval_enabled (configuration.is_argument_state_retrieved)
 				end
 			else
 				is_finished := True
@@ -868,7 +877,7 @@ feature{NONE} -- Test result analyizing
 							io.put_string (l_object_state.textual_vector_representation)
 							io.put_new_line
 						end
-						
+
 					end
 				end
 

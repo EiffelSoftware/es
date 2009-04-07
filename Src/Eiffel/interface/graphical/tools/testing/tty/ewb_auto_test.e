@@ -67,6 +67,7 @@ feature -- Execution
 			l_type: STRING
 			l_root_group: CONF_GROUP
 			l_project: E_PROJECT
+			l_state_config: AUT_OBJECT_STATE_CONFIG
 		do
 			l_args := auto_test_arguments
 			if l_args /= Void then
@@ -111,6 +112,9 @@ feature -- Execution
 
 					-- Log file loading
 				l_conf.set_load_file_path (l_ap.log_file_path)
+
+					-- Object state retrieval config
+				l_conf.set_object_state_config (l_ap.object_state_config)
 
 					-- Should automatic testing be enabled?
 				l_conf.set_is_random_testing_enabled (l_ap.is_automatic_testing_enabled)
