@@ -178,9 +178,9 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Constants
 
-	min_port: INTEGER = 491577
+	min_port: INTEGER = 49157
 	max_port: INTEGER = 65535
-	max_attempts: NATURAL = 20
+	max_attempts: NATURAL = 50
 
 invariant
 	current_port_not_negative: current_port >= 0

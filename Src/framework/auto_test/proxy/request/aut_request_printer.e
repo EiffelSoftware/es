@@ -287,15 +287,15 @@ feature {AUT_REQUEST} -- Processing
 				l_compound.append (new_load_local_nodes (l_target, 1))
 
 					-- Create a node for "record_query" for each query that we are interested in.
-				from
-					l_query_names.start
-				until
-					l_query_names.after
-				loop
-					l_feature := l_target_type.associated_class.feature_named (l_query_names.item)
-					l_compound.extend (new_record_query_feature_call (new_argumentless_agent (l_target_type, l_feature, new_local_b (1))))
-					l_query_names.forth
-				end
+--				from
+--					l_query_names.start
+--				until
+--					l_query_names.after
+--				loop
+--					l_feature := l_target_type.associated_class.feature_named (l_query_names.item)
+--					l_compound.extend (new_record_query_feature_call (new_argumentless_agent (l_target_type, l_feature, new_local_b (1))))
+--					l_query_names.forth
+--				end
 
 					-- Dump request into `output_stream'.
 				print_execute_request (l_compound, object_state_request_flag, a_request.variable.index.out)
@@ -500,8 +500,7 @@ feature {NONE} -- Byte code generation
 			l_feature: like feature_for_byte_code_injection
 			l_byte_array: BYTE_ARRAY
 			l_byte_code_data: STRING
-			l_extra: STRING
-			l_file: RAW_FILE
+			l_extra: STRING			l_file: RAW_FILE
 		do
 			l_feature := feature_for_byte_code_injection
 
@@ -526,10 +525,6 @@ feature {NONE} -- Byte code generation
 				l_extra := a_extra_data.out
 			end
 			last_request := [a_request_flag, [l_byte_code_data, l_extra]]
-
-			create l_file.make_create_read_write ("e:\jasonw\temp\bt.txt")
-			l_file.put_string (l_byte_array.melted_feature.string_representation)
-			l_file.close
 		end
 
 feature{NONE} -- Implementation
