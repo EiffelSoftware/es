@@ -26,7 +26,7 @@ feature -- Access
 			-- If there is no satisfying feature, an empty list will be returned.
 		require
 			a_type_attached: a_type /= Void
-			a_type_valid: a_type = none_type and then a_type.has_associated_class
+			a_type_valid: a_type /= none_type and then a_type.has_associated_class
 		local
 			l_class: CLASS_C
 			l_feat_table: FEATURE_TABLE
