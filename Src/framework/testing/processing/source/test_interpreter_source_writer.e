@@ -30,6 +30,13 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_WORKBENCH
+
+	AUT_OBJECT_STATE_REQUEST_UTILITY
+		export
+			{NONE} all
+		end
+
 feature -- Access
 
 	class_name: attached STRING = "ITP_INTERPRETER_ROOT"
@@ -77,11 +84,179 @@ feature -- Basic operations
 				end
 			end
 
+				-- Generate routines for object state retrieval
+			put_object_state_routines (a_type_list)
+
 			put_class_footer
 			stream := Void
 		end
 
+	is_object_state_retrieval_enabled: BOOLEAN
+			-- Should object state retrieval be enabled?
+
+feature -- Setting
+
+	set_is_object_state_retrieval_enabled (b: BOOLEAN) is
+			-- Set `is_object_state_retrieval_enabled' with `b'.
+		do
+			is_object_state_retrieval_enabled := b
+		ensure
+			is_object_state_retrieval_enabled_set: is_object_state_retrieval_enabled = b
+		end
+
 feature {NONE} -- Implementation
+
+	put_object_state_routines (a_types: attached DS_LINEAR [STRING]) is
+			-- Generate routines to support object state retrieval.
+			-- Note: If the recording from byte-code works, this feature should be removed.
+			-- This is a walkaround for the moment. 4.10.2009 Jasonw
+		local
+			l_class_info: LINKED_LIST [TUPLE [a_class_name: STRING; a_type: TYPE_A; a_type_name: STRING]]
+			l_class: CLASS_C
+			l_classi: LIST [CLASS_I]
+			l_class_name: STRING
+			l_type: TYPE_A
+		do
+			if is_object_state_retrieval_enabled then
+					-- Get class information.
+				create l_class_info.make
+				from
+					a_types.start
+				until
+					a_types.after
+				loop
+					l_classi := universe.classes_with_name (a_types.item_for_iteration.as_upper)
+					if not l_classi.is_empty then
+						l_class := l_classi.first.compiled_representation
+						l_class_name := l_class.name
+						l_type := l_class.actual_type
+						l_class_info.extend ([l_class_name, l_type, full_type_name (a_types.item_for_iteration)])
+					end
+					a_types.forth
+				end
+
+				if is_object_state_retrieval_enabled then
+					put_record_queries_routine (l_class_info)
+				end
+
+				from
+					l_class_info.start
+				until
+					l_class_info.after
+				loop
+					put_record_query_routine (l_class_info.item.a_class_name, l_class_info.item.a_type, l_class_info.item.a_type_name)
+					l_class_info.forth
+				end
+			else
+				put_empty_record_queries_routine
+			end
+		end
+
+	put_record_queries_routine (a_classes: LIST [TUPLE [a_class_name: STRING; a_type: TYPE_A; a_type_name: STRING]]) is
+			-- Generate `record_queries' routine for record argumentless queries
+			-- of type BOOLEAN and INTEGER.
+			-- Note: If the recording from byte-code works, this feature should be removed.
+			-- This is a walkaround for the moment. 4.10.2009 Jasonw
+		local
+			l_class: CLASS_C
+			l_classi: LIST [CLASS_I]
+			l_class_name: STRING
+			l_local_name: STRING
+			i: INTEGER
+		do
+			stream.indent
+			stream.put_line ("record_queries (o: ANY)")
+			stream.indent
+			STREAM.put_line ("do")
+			stream.indent
+			from
+				type_a_checker.init_for_checking (root_feature, root_class, Void, Void)
+				a_classes.start
+				i := 1
+			until
+				a_classes.after
+			loop
+				l_class_name := a_classes.item.a_class_name
+				l_local_name := "l_" + l_class_name.as_lower
+				if i = 1 then
+					stream.put_string ("if ")
+				else
+					stream.put_string ("elseif ")
+				end
+				stream.put_string ("attached {")
+				stream.put_string (a_classes.item.a_type_name)
+				stream.put_string ("} o as ")
+				stream.put_string (l_local_name)
+				stream.put_line (" then")
+
+				stream.indent
+				stream.put_string ("record_query_")
+				stream.put_string (l_class_name)
+				stream.put_string (" (")
+				stream.put_string (l_local_name)
+				stream.put_line (")")
+				stream.dedent
+				i := i + 1
+				a_classes.forth
+			end
+			stream.put_line ("end")
+			stream.dedent
+			stream.put_line ("end")
+			stream.dedent
+			stream.dedent
+			stream.put_line ("")
+		end
+
+	put_empty_record_queries_routine is
+			-- Generate an empty `record_queires' feature.
+			-- Note: If the recording from byte-code works, this feature should be removed.
+			-- This is a walkaround for the moment. 4.10.2009 Jasonw
+		do
+			stream.indent
+			stream.put_line ("record_queries (o: ANY)")
+			stream.indent
+			STREAM.put_line ("do")
+			stream.put_line ("end")
+			stream.dedent
+			stream.dedent
+			stream.put_line ("")
+		end
+
+	put_record_query_routine (a_class_name: STRING; a_type: TYPE_A; a_full_type_name: STRING) is
+			-- Put routine to record queries for `a_type'.
+		require
+			a_class_name_attached: a_class_name /= Void
+			a_type_attached: a_full_type_name /= Void
+		local
+			l_features: LIST [FEATURE_I]
+		do
+			l_features := features_of_type (a_type, anded_feature_agents (<<ored_feature_agents (<<agent is_boolean_query, agent is_integer_query>>), agent is_argumentless_query, agent is_exported_to_any>>))
+			stream.indent
+			stream.put_string ("record_query_")
+			stream.put_string (a_class_name)
+			stream.put_string (" (o: ")
+			stream.put_string (a_full_type_name)
+			stream.put_line (")")
+			stream.indent
+			stream.put_line ("do")
+			stream.indent
+			from
+				l_features.start
+			until
+				l_features.after
+			loop
+				stream.put_string ("record_query (agent o.")
+				stream.put_string (l_features.item.feature_name.as_lower)
+				stream.put_line (")")
+				l_features.forth
+			end
+
+			stream.dedent
+			stream.put_line ("end")
+			stream.dedent
+			stream.dedent
+			stream.put_line ("")
+		end
 
 	put_anchor_routine (a_types: attached DS_LINEAR [STRING])
 			--
@@ -139,6 +314,58 @@ feature {NONE} -- Implementation
 			l_type: detachable STRING
 			i: INTEGER
 		do
+--			type_parser.parse_from_string ("type " + a_type, root_class)
+--			error_handler.wipe_out
+--			if attached {CLASS_TYPE_AS} type_parser.type_node as l_type_as then
+--				l_type_a := type_a_generator.evaluate_type_if_possible (l_type_as, root_class)
+--				if l_type_a /= Void then
+--					create l_type.make (20)
+--					l_type.append (l_type_a.name)
+--					if l_type_a.generics = Void then
+--						l_class := l_type_a.associated_class
+--						check l_class /= Void end
+--						if l_class.is_generic then
+--								-- In this case we try to insert constrains to receive a valid type
+--							l_type.append (" [")
+--							from
+--								i := 1
+--							until
+--								not l_class.is_valid_formal_position (i)
+--							loop
+--								if i > 1 then
+--									l_type.append (", ")
+--								end
+--								if l_class.generics [i].is_multi_constrained (l_class.generics) then
+--									l_type.append ("NONE")
+--								else
+--									l_gtype := l_class.constrained_type (i)
+--									append_type (l_type, l_gtype)
+--								end
+--								i := i + 1
+--							end
+--							l_type.append ("]")
+--						end
+--					end
+					stream.put_string ("l_type := {")
+					stream.put_string (full_type_name (a_type))
+					stream.put_line ("}")
+--				end
+--			end
+		end
+
+	full_type_name (a_type: STRING): STRING
+			-- Full type name of `a_type'
+		require
+			a_type_not_void: a_type /= Void
+			root_group_attached: root_group /= Void
+			root_class_attached: root_class /= Void
+			root_feature_attached: root_feature /= Void
+		local
+			l_type_a, l_gtype: TYPE_A
+			l_class: CLASS_C
+			l_type: detachable STRING
+			i: INTEGER
+		do
 			type_parser.parse_from_string ("type " + a_type, root_class)
 			error_handler.wipe_out
 			if attached {CLASS_TYPE_AS} type_parser.type_node as l_type_as then
@@ -171,9 +398,7 @@ feature {NONE} -- Implementation
 							l_type.append ("]")
 						end
 					end
-					stream.put_string ("l_type := {")
-					stream.put_string (l_type)
-					stream.put_line ("}")
+					Result := l_type
 				end
 			end
 		end
