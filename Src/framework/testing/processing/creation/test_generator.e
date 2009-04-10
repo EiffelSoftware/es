@@ -462,6 +462,9 @@ feature {NONE} -- Interpreter generation
 			l_types := class_names
 			create l_source_writer
 			if l_file.is_open_write and l_types /= Void then
+				if configuration.is_target_state_retrieved then
+					l_source_writer.set_is_object_state_retrieval_enabled (True)
+				end
 				l_source_writer.write_class (l_file, l_types, l_system)
 				l_file.flush
 				l_file.close

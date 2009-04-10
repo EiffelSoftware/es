@@ -74,7 +74,6 @@ feature {AUT_REQUEST} -- Processing
 
 	process_create_object_request (a_request: AUT_CREATE_OBJECT_REQUEST)
 		do
-			print_test_case_index (a_request)
 			output_stream.put_string (execute_request_header)
 			output_stream.put_string ("create {")
 			output_stream.put_string (type_name (a_request.target_type, a_request.creation_procedure))
@@ -90,7 +89,6 @@ feature {AUT_REQUEST} -- Processing
 
 	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)
 		do
-			print_test_case_index (a_request)
 			output_stream.put_string (execute_request_header)
 			if a_request.is_feature_query then
 				output_stream.put_string (a_request.receiver.name (variable_name_prefix))
@@ -158,17 +156,6 @@ feature {NONE} -- Printing
 					end
 				end
 				output_stream.put_character  (')')
-			end
-		end
-
-	print_test_case_index (a_request: AUT_REQUEST) is
-			-- Print test case index from `a_request'.
-		require
-			a_request_attached: a_request /= Void
-		do
-			if a_request.test_case_index > 0 then
-				output_stream.put_string ("-- test case No." + a_request.test_case_index.out)
-				output_stream.put_new_line
 			end
 		end
 

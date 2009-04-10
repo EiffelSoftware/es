@@ -500,7 +500,7 @@ feature {NONE} -- Byte code generation
 			l_feature: like feature_for_byte_code_injection
 			l_byte_array: BYTE_ARRAY
 			l_byte_code_data: STRING
-			l_extra: STRING			l_file: RAW_FILE
+			l_extra: STRING
 		do
 			l_feature := feature_for_byte_code_injection
 

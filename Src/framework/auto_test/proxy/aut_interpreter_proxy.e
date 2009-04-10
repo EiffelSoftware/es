@@ -386,14 +386,14 @@ feature -- Execution
 		do
 			log_time_stamp ("exec")
 			l_arg_list := an_argument_list
-			retrieve_argument_objects_state (an_argument_list)
 			if l_arg_list = Void then
 				create {DS_LINKED_LIST [ITP_EXPRESSION]} l_arg_list.make
 			end
 			create l_request.make (system, a_receiver, a_type, a_procedure, l_arg_list)
 
+			log_test_case_index (l_request)
+			retrieve_argument_objects_state (an_argument_list)
 			last_request := l_request
-			log_test_case_index (last_request)
 			last_request.process (request_printer)
 			flush_process
 			parse_invoke_response
@@ -445,8 +445,6 @@ feature -- Execution
 		do
 			log_time_stamp ("exec")
 			l_target_type := variable_table.variable_type (a_target)
-			retrieve_target_object_state (a_target)
-			retrieve_argument_objects_state (an_argument_list)
 			l_feature := l_target_type.associated_class.feature_of_rout_id (a_feature.rout_id_set.first)
 
 				-- Adjust feature according to the actual type of `a_target'.
@@ -456,8 +454,10 @@ feature -- Execution
 			create l_invoke_request.make (system, l_feature.feature_name, a_target, an_argument_list)
 			l_invoke_request.set_target_type (l_target_type)
 
+			log_test_case_index (l_invoke_request)
+			retrieve_target_object_state (a_target)
+			retrieve_argument_objects_state (an_argument_list)
 			last_request := l_invoke_request
-			log_test_case_index (last_request)
 			last_request.process (request_printer)
 			flush_process
 			parse_invoke_response
@@ -498,12 +498,12 @@ feature -- Execution
 			l_invoke_request: AUT_INVOKE_FEATURE_REQUEST
 		do
 			log_time_stamp ("exec")
-			retrieve_target_object_state (a_target)
-			retrieve_argument_objects_state (an_argument_list)
 			create l_invoke_request.make_assign (system, a_receiver, a_query.feature_name, a_target, an_argument_list)
 			l_invoke_request.set_target_type (a_type)
+			log_test_case_index (l_invoke_request)
+			retrieve_target_object_state (a_target)
+			retrieve_argument_objects_state (an_argument_list)
 			last_request := l_invoke_request
-			log_test_case_index (last_request)
 			last_request.process (request_printer)
 			flush_process
 			parse_invoke_response
@@ -954,15 +954,20 @@ feature -- Socket IPC
 			-- store it in `last_raw_response'.
 		local
 			l_data: TUPLE [output: STRING; error: STRING]
+			l_ddd: TUPLE [LINKED_LIST [STRING_8], LINKED_LIST [BOOLEAN], STRING_8, STRING_8]
 			l_retried: BOOLEAN
 			l_socket: like socket
 			l_response_flag: NATURAL_32
+			l_any: detachable ANY
 		do
 			if not l_retried then
 				l_socket := socket
 				l_socket.read_natural_32
 				l_response_flag := l_socket.last_natural_32
-				l_data ?= l_socket.retrieved
+--				l_data ?= l_socket.retrieved
+				l_any ?= l_socket.retrieved
+				l_data ?= l_any
+				l_ddd ?= l_any
 				process.set_timeout (0)
 				if l_data /= Void then
 					create last_raw_response.make (l_data.output, l_data.error, l_response_flag)
@@ -1059,6 +1064,7 @@ feature {NONE} -- Logging
 	            test_case_count := test_case_count + 1
 	            last_request.set_test_case_index (test_case_count)
 			end
+			log_line ("-- test case No." + test_case_count.out)
 		ensure
 			test_case_logged:
 				is_test_case_index_logging_enabled implies (
