@@ -186,9 +186,9 @@ feature -- Access: Error strings
 feature -- Access: Message strings
 
 	message_no_classes_to_proof: STRING_32
-			-- Message that no classes were added to proof
+			-- Message that no classes were added to prove
 		do
-			Result := locale.translation ("No classes to proof")
+			Result := locale.translation ("No classes to prove")
 		end
 
 	message_eve_proofs_started: STRING_32
@@ -250,85 +250,85 @@ feature -- Access: Command strings
 	verify_class_menu_name: STRING_32
 			-- Menu name to verify class
 		do
-			Result := locale.translation ("Proof class")
+			Result := locale.translation ("Prove class")
 		end
 
 	verify_class_menu_description: STRING_32
 			-- Menu name to verify class
 		do
-			Result := locale.translation ("Statically verify class using EVE Proofs")
+			Result := locale.translation ("Statically prove class using EVE Proofs")
 		end
 
 	verify_class_context_menu_name (a_class: STRING_GENERAL): STRING_32
 			-- Menu name to verify class
 		do
-			Result := locale.formatted_string (locale.translation ("Proof class $1"), [a_class])
+			Result := locale.formatted_string (locale.translation ("Prove class $1"), [a_class])
 		end
 
 	verify_cluster_menu_name: STRING_32
 			-- Menu name to verify class
 		do
-			Result := locale.translation ("Proof cluster")
+			Result := locale.translation ("Prove cluster")
 		end
 
 	verify_cluster_menu_description: STRING_32
 			-- Menu name to verify class
 		do
-			Result := locale.translation ("Statically proof cluster using EVE Proofs")
+			Result := locale.translation ("Statically prove cluster using EVE Proofs")
 		end
 
 	verify_cluster_context_menu_name (a_cluster: STRING_GENERAL): STRING_32
 			-- Menu name to verify class
 		do
-			Result := locale.formatted_string (locale.translation ("Proof cluster $1"), [a_cluster])
+			Result := locale.formatted_string (locale.translation ("Prove cluster $1"), [a_cluster])
 		end
 
 	verify_library_context_menu_name (a_cluster: STRING_GENERAL): STRING_32
 			-- Menu name to verify class
 		do
-			Result := locale.formatted_string (locale.translation ("Proof library $1"), [a_cluster])
+			Result := locale.formatted_string (locale.translation ("Prove library $1"), [a_cluster])
 		end
 
 	proof_current_item: STRING_32
 			-- Menu item name to proof current item.
 		do
-			Result := locale.translation ("Proof current item")
+			Result := locale.translation ("Prove current item")
 		end
 
 	proof_parent_item: STRING_32
 			-- Menu item name to proof parent of current item
 		do
-			Result := locale.translation ("Proof parent cluster of current item")
+			Result := locale.translation ("Prove parent cluster of current item")
 		end
 
 	proof_system: STRING_32
 			-- Menu item name to proof system
 		do
-			Result := locale.translation ("Proof system")
+			Result := locale.translation ("Prove system")
 		end
 
 	command_menu_name: STRING_32
 			-- Menu name of command
 		do
-			Result := locale.translation ("Proof Current Item")
+			Result := locale.translation ("Prove Current Item")
 		end
 
 	command_tooltip: STRING_32
 			-- Tooltip of command
 		do
-			Result := locale.translation ("Proof class or cluster")
+			Result := locale.translation ("Prove class or cluster")
 		end
 
 	command_tooltext: STRING_32
 			-- Text of command button
 		do
-			Result := locale.translation ("Proof")
+			Result := locale.translation ("Prove")
 		end
 
 	command_description: STRING_32
 			-- Description of command button
 		do
-			Result := locale.translation ("Proof class or cluster")
+			Result := locale.translation ("Prove class or cluster")
 		end
 
 feature -- Access: Proof tool strings
