@@ -199,7 +199,9 @@ feature {NONE} -- Implementation
 				i := i + 1
 				a_classes.forth
 			end
-			stream.put_line ("end")
+			if not a_classes.is_empty then
+				stream.put_line ("end")
+			end
 			stream.dedent
 			stream.put_line ("end")
 			stream.dedent
@@ -215,7 +217,7 @@ feature {NONE} -- Implementation
 			stream.indent
 			stream.put_line ("record_queries (o: ANY)")
 			stream.indent
-			STREAM.put_line ("do")
+			stream.put_line ("do")
 			stream.put_line ("end")
 			stream.dedent
 			stream.dedent
