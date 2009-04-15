@@ -109,6 +109,7 @@ feature -- Changing Priority
 					list.force_last (a_feature)
 				else
 					create list.make_equal
+					list.set_equality_tester (create {AUT_FEATURE_OF_TYPE_EQUALITY_TESTER}.make)
 					list.force_last (a_feature)
 					feature_list_table.force (list, a_priority)
 				end
@@ -214,6 +215,7 @@ feature -- Basic routines
 					feature_list_table.found_item.force_last (a_feature)
 				else
 					create list.make_equal
+					list.set_equality_tester (create {AUT_FEATURE_OF_TYPE_EQUALITY_TESTER}.make)
 					list.force_last (a_feature)
 					feature_list_table.force (list, new_priority)
 				end
@@ -265,6 +267,7 @@ feature {NONE} -- Implementation
 					feature_list_table.found_item.force_last (feature_)
 				else
 					create list.make_equal
+					list.set_equality_tester (create {AUT_FEATURE_OF_TYPE_EQUALITY_TESTER}.make)
 					list.force_last (feature_)
 					feature_list_table.force (list, new_priority)
 				end
