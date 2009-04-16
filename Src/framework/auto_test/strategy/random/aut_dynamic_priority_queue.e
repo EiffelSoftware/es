@@ -129,10 +129,13 @@ feature -- Changing Priority
 			feature_i: FEATURE_I
 			l_feat_table: FEATURE_TABLE
 			l_any_class: CLASS_C
+			l_added: INTEGER
+			l_exported_creators: LINKED_LIST [FEATURE_I]
 		do
 			l_any_class := system.any_class.compiled_class
 			class_ := a_type.associated_class
 			l_feat_table := class_.feature_table
+			create l_exported_creators.make
 			from
 				l_feat_table.start
 			until
@@ -143,18 +146,22 @@ feature -- Changing Priority
 						-- Normal exported features.
 					if feature_i.export_status.is_exported_to (l_any_class) then
 						register_feature (feature_i, a_type, False, a_priority)
+						if feature_i.written_class /= l_any_class then
+							l_added := l_added + 1
+						end
 					end
 
-						-- For creators: If current feature is an exported creator, we add it.
-						-- It is possible that a feature can be used as both normal feature and creator.
-						-- In such cases, there will be two entries in `priority_table' and `feature_list_table',
-						-- one as normal feature and one as creator.
-						-- This way, classes with a single feature, which is a creator can be tested.
 					if is_exported_creator (feature_i, a_type) then
-						register_feature (feature_i, a_type, True, a_priority)
+						l_exported_creators.extend (feature_i)
 					end
 				end
 				l_feat_table.forth
+			end
+
+				-- We added exported features as candidate feature under test when there is
+				-- no non-creator feature (except those from ANY) to test in `a_type'.
+			if l_added = 0 and then not l_exported_creators.is_empty then
+				l_exported_creators.do_all (agent register_feature (?, a_type, True, a_priority))
 			end
 		end
 
@@ -225,14 +232,6 @@ feature -- Basic routines
 			end
 		end
 
-feature {NONE} -- Implementation
-
-	feature_list_table: DS_HASH_TABLE [DS_LINKED_LIST [AUT_FEATURE_OF_TYPE], INTEGER]
-			-- Table that maps dynamic priorities to lists of features
-
-	priority_table: DS_HASH_TABLE [DS_PAIR [INTEGER, INTEGER], AUT_FEATURE_OF_TYPE]
-			-- Table that maps features to their priorities (static, dynamic)
-
 	reset_dynamic_priorities
 			-- Reset the dynamic priorities of all
 			-- features to their static value.
@@ -275,6 +274,14 @@ feature {NONE} -- Implementation
 			end
 			set_highest_priority
 		end
+
+feature {NONE} -- Implementation
+
+	feature_list_table: DS_HASH_TABLE [DS_LINKED_LIST [AUT_FEATURE_OF_TYPE], INTEGER]
+			-- Table that maps dynamic priorities to lists of features
+
+	priority_table: DS_HASH_TABLE [DS_PAIR [INTEGER, INTEGER], AUT_FEATURE_OF_TYPE]
+			-- Table that maps features to their priorities (static, dynamic)
 
 	set_highest_priority
 			-- Set `highest_dynamic_priority' to the highest priority value
