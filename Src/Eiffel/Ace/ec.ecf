@@ -72,6 +72,7 @@
 				<platform excluded_value="windows"/>
 			</condition>
 		</library>
+		<library name="serializer" location="$ISE_LIBRARY\library\schema_evolution\serializer_lib\serializer.ecf"/>		
 		<cluster name="compiler_api_profiler" location="$EIFFEL_SRC\Eiffel\API\profiler\" recursive="true"/>
 		<cluster name="compiler_api_ql" location="$EIFFEL_SRC\Eiffel\API\query_language\" recursive="true"/>
 		<cluster name="compiler_api_queries" location="$EIFFEL_SRC\Eiffel\API\queries\" recursive="true"/>
