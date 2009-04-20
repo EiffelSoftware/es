@@ -48,6 +48,10 @@ feature -- Access
 
 	object_state_void_value: STRING = "<void>"
 
+	object_state_invariant_violation: STRING is "invariant_violation"
+
+	object_is_void: STRING is "object_is_void"
+
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

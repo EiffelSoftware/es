@@ -39,6 +39,9 @@ feature -- AutoTest socket reponse flags
 			-- Flag to indicate that there is an internal error
 			-- in the interpreter.
 
+	object_is_void_flag: NATURAL_8 = 4
+			-- Flag to indicate that the object involed in state query is void
+
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

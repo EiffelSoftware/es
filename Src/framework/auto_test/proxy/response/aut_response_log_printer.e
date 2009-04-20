@@ -104,25 +104,33 @@ feature -- Process
 			l_void := object_state_void_value
 			print_line (multi_line_value_start_tag)
 			l_results := a_response.query_results
-			from
-				l_results.start
-			until
-				l_results.after
-			loop
-					-- Print out query name in a line.
-				print_lines_with_prefix (l_results.key_for_iteration + "%N", <<response_prefix, object_state_query_prefix>>)
+			if not a_response.is_void and then not a_response.is_class_invariant_violated then
+				from
+					l_results.start
+				until
+					l_results.after
+				loop
+						-- Print out query name in a line.
+					print_lines_with_prefix (l_results.key_for_iteration + "%N", <<response_prefix, object_state_query_prefix>>)
 
-					-- Print out query value (possibly in multiple lines).
-				if l_results.item_for_iteration = Void then
-					l_value := l_void
-				else
-					l_value := l_results.item_for_iteration
+						-- Print out query value (possibly in multiple lines).
+					if l_results.item_for_iteration = Void then
+						l_value := l_void
+					else
+						l_value := l_results.item_for_iteration
+					end
+					print_lines_with_prefix (l_value + "%N", <<response_prefix, object_state_value_prefix>>)
+					l_results.forth
 				end
-				print_lines_with_prefix (l_value + "%N", <<response_prefix, object_state_value_prefix>>)
-				l_results.forth
 			end
 			print_line (multi_line_value_end_tag)
-			print_line (interpreter_success_message)
+			if a_response.is_class_invariant_violated then
+				print_line (object_state_invariant_violation)
+			elseif a_response.is_void then
+				print_line (object_is_void)
+			else
+				print_line (interpreter_success_message)
+			end
 			print_line (interpreter_done_message)
 		end
 

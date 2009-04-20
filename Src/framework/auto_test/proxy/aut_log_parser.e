@@ -273,7 +273,7 @@ feature {NONE} -- Processsing
 			else
 				create l_response_stream.make (last_response_text)
 				response_parser.set_input_stream (l_response_stream)
-				response_parser.parse_invoke_response
+				response_parser.parse_object_state_response
 				l_last_response := response_parser.last_response
 				if
 					attached {AUT_NORMAL_RESPONSE} l_last_response as l_normal_response and then

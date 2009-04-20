@@ -19,7 +19,9 @@ inherit
 
 create
 	make,
-	make_from_normal_response
+	make_from_normal_response,
+	make_with_void,
+	make_with_class_invariant_violation
 
 feature{NONE} -- Initialization
 
@@ -87,30 +89,55 @@ feature{NONE} -- Initialization
 				l_lines.after
 			loop
 				l_line := l_lines.item
-				check l_line.count >= l_query_name_prefix.count end
-				l_prefix := l_line.substring (1, l_prefix_count)
-				l_va := l_line.substring (l_prefix_count + 1, l_line.count)
+				if not l_line.is_empty then
+					l_prefix := l_line.substring (1, l_prefix_count)
+					l_va := l_line.substring (l_prefix_count + 1, l_line.count)
 
-				if l_prefix.is_equal (l_query_name_prefix) then
-						-- We find a query name, store that.
-					create l_query.make_from_string (l_va)
-					create l_value.make (16)
-					l_query_results.force (l_value, l_query)
+					if l_prefix.is_equal (l_query_name_prefix) then
+							-- We find a query name, store that.
+						create l_query.make_from_string (l_va)
+						create l_value.make (16)
+						l_query_results.force (l_value, l_query)
 
-				elseif l_prefix.is_equal (l_query_value_prefix) then
-						-- We find part of a value for the query.
-					if l_va.is_case_insensitive_equal (object_state_query_prefix) then
-						l_query_results.force (Void, l_query)
+					elseif l_prefix.is_equal (l_query_value_prefix) then
+							-- We find part of a value for the query.
+						if l_va.is_case_insensitive_equal (object_state_query_prefix) then
+							l_query_results.force (Void, l_query)
+						else
+							l_value.append (l_va)
+							l_value.extend ('%N')
+						end
 					else
-						l_value.append (l_va)
-						l_value.extend ('%N')
+						check False end
 					end
-				else
-					check False end
 				end
 				l_lines.forth
 			end
 		end
+
+	make_with_void is
+			-- Initialize current response for Void.
+		do
+			create query_results.make (0)
+			is_void := True
+		end
+
+	make_with_class_invariant_violation
+			-- Initialize current response for an object which violates its invariants.
+		do
+			create query_results.make (0)
+			set_is_class_invariant_violated (True)
+		end
+
+
+feature -- State report
+
+	is_class_invariant_violated: BOOLEAN
+			-- Is the object in an invariant violation
+			-- state when its state is requested?
+
+	is_void: BOOLEAN
+			-- Does current state response represent an Void object?
 
 feature -- Access
 
@@ -119,6 +146,16 @@ feature -- Access
 			-- The attached result is stored as string representation, otherwise, Void is stored.
 			-- This table only stores achievable results, if there is an exception when trying to
 			-- evaluate a query, that result is not stored.
+
+feature -- Setting
+
+	set_is_class_invariant_violated (b: BOOLEAN) is
+			-- Set `is_class_invariant_violated' with `b'.
+		do
+			is_class_invariant_violated := b
+		ensure
+			is_class_invariant_violated_set: is_class_invariant_violated = b
+		end
 
 feature -- Process
 

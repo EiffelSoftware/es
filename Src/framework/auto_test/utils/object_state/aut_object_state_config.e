@@ -62,6 +62,9 @@ feature -- Access
 	is_argument_object_state_retrieval_enabled: BOOLEAN
 			-- Should state of argument object be retrieved?
 
+	is_query_result_object_state_retrieval_enabled: BOOLEAN
+			-- Should state of object returned as feature call be retrieved?
+
 feature -- Setting
 
 	set_is_target_object_state_retrieval_enabled (b: BOOLEAN) is
@@ -78,6 +81,14 @@ feature -- Setting
 			is_argument_object_state_retrieval_enabled := b
 		ensure
 			is_argument_object_state_retrieval_enabled_set: is_argument_object_state_retrieval_enabled = b
+		end
+
+	set_is_query_result_object_state_retrieval_enabled (b: BOOLEAN) is
+			-- Set `is_query_result_object_state_retrieval_enabled' with `b'.
+		do
+			is_query_result_object_state_retrieval_enabled := b
+		ensure
+			is_query_result_object_state_retrieval_enabled_set: is_query_result_object_state_retrieval_enabled = b
 		end
 
 feature{NONE} -- Config setting
@@ -98,6 +109,14 @@ feature{NONE} -- Config setting
 			end
 		end
 
+	set_query_result_object_state_retrieval_property (a_value: STRING) is
+			-- Set `is_query_result_object_state_retrieval_enabled' according to `a_value'.
+		do
+			if a_value.is_boolean then
+				set_is_query_result_object_state_retrieval_enabled (a_value.to_boolean)
+			end
+		end
+
 	property_setting_table: HASH_TABLE [PROCEDURE [ANY, TUPLE [STRING]], STRING];
 			-- Table for agents to set properties
 			-- `[agent to set property, property name]
@@ -108,6 +127,7 @@ feature{NONE} -- Config setting
 			create property_setting_table.make (2)
 			property_setting_table.put (agent set_target_object_state_retrieval_property, "target")
 			property_setting_table.put (agent set_argument_object_state_retrieval_property, "argument")
+			property_setting_table.put (agent set_query_result_object_state_retrieval_property, "result")
 		ensure
 			property_setting_table_attached: property_setting_table /= Void
 		end

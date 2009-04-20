@@ -116,9 +116,15 @@ feature {NONE} -- Implementation
 			l_classi: LIST [CLASS_I]
 			l_class_name: STRING
 			l_type: TYPE_A
+			l_processed: DS_HASH_SET [CLASS_C]
+			l_list: LIST [CLASS_C]
 		do
 			if is_object_state_retrieval_enabled then
 					-- Get class information.
+				create l_processed.make (50)
+				l_processed.set_equality_tester (create {AGENT_BASED_EQUALITY_TESTER [CLASS_C]}.make (
+					agent (a, b: CLASS_C): BOOLEAN do Result := a.class_id = b.class_id end))
+
 				create l_class_info.make
 				from
 					a_types.start
@@ -126,12 +132,31 @@ feature {NONE} -- Implementation
 					a_types.after
 				loop
 					l_classi := universe.classes_with_name (a_types.item_for_iteration.as_upper)
-					if not l_classi.is_empty then
+					if not l_classi.is_empty  then
 						l_class := l_classi.first.compiled_representation
-						l_class_name := l_class.name
-						l_type := l_class.actual_type
-						l_class_info.extend ([l_class_name, l_type, full_type_name (a_types.item_for_iteration)])
+						l_list := l_class.suppliers.classes.twin
+						l_list.extend (l_class)
+						from
+							l_list.start
+						until
+							l_list.after
+						loop
+							if not l_processed.has (l_list.item_for_iteration) then
+								l_processed.force_last (l_list.item_for_iteration)
+								l_class_name := l_list.item_for_iteration.name_in_upper
+								l_type := l_list.item_for_iteration.actual_type
+								l_class_info.extend ([l_class_name, l_type, full_type_name (l_class_name)])
+							end
+							l_list.forth
+						end
 					end
+
+--					if not l_classi.is_empty then
+--						l_class := l_classi.first.compiled_representation
+--						l_class_name := l_class.name
+--						l_type := l_class.actual_type
+--						l_class_info.extend ([l_class_name, l_type, full_type_name (a_types.item_for_iteration)])
+--					end
 					a_types.forth
 				end
 
@@ -147,6 +172,8 @@ feature {NONE} -- Implementation
 					put_record_query_routine (l_class_info.item.a_class_name, l_class_info.item.a_type, l_class_info.item.a_type_name)
 					l_class_info.forth
 				end
+				put_record_query_default
+				put_record_query_for_void
 			else
 				put_empty_record_queries_routine
 			end
@@ -165,7 +192,7 @@ feature {NONE} -- Implementation
 			i: INTEGER
 		do
 			stream.indent
-			stream.put_line ("record_queries (o: ANY)")
+			stream.put_line ("record_queries (o: detachable ANY)")
 			stream.indent
 			STREAM.put_line ("do")
 			stream.indent
@@ -199,11 +226,27 @@ feature {NONE} -- Implementation
 				i := i + 1
 				a_classes.forth
 			end
-			if not a_classes.is_empty then
-				stream.put_line ("end")
+
+			if a_classes.is_empty then
+				stream.put_string ("if ")
+			else
+				stream.put_string ("elseif ")
 			end
+			stream.put_line ("attached {ANY} o as l_obj_of_any then")
+			stream.indent
+			stream.put_line ("record_query_default_for_any (l_obj_of_any)")
+			stream.dedent
+
+			stream.put_line ("else")
+			stream.indent
+			stream.put_line ("record_query_for_void")
+
 			stream.dedent
 			stream.put_line ("end")
+
+			stream.dedent
+			stream.put_line ("end")
+
 			stream.dedent
 			stream.dedent
 			stream.put_line ("")
@@ -232,7 +275,7 @@ feature {NONE} -- Implementation
 		local
 			l_features: LIST [FEATURE_I]
 		do
-			l_features := features_of_type (a_type, anded_feature_agents (<<ored_feature_agents (<<agent is_boolean_query, agent is_integer_query>>), agent is_argumentless_query, agent is_exported_to_any>>))
+
 			stream.indent
 			stream.put_string ("record_query_")
 			stream.put_string (a_class_name)
@@ -242,17 +285,59 @@ feature {NONE} -- Implementation
 			stream.indent
 			stream.put_line ("do")
 			stream.indent
-			from
-				l_features.start
-			until
-				l_features.after
-			loop
-				stream.put_string ("record_query (agent o.")
-				stream.put_string (l_features.item.feature_name.as_lower)
-				stream.put_line (")")
-				l_features.forth
+
+			if
+				a_type.is_integer or else
+				a_type.is_natural or else
+				a_type.is_real_32 or else
+				a_type.is_real_64 or else
+				a_type.is_character or else
+				a_type.is_boolean or else
+				a_type.is_character_32
+			then
+				stream.put_line ("record_object_state_basic (o)")
+			else
+				l_features := supported_queries_of_type (a_type)
+				from
+					l_features.start
+				until
+					l_features.after
+				loop
+					stream.put_string ("record_query (agent o.")
+					stream.put_string (l_features.item.feature_name.as_lower)
+					stream.put_line (")")
+					l_features.forth
+				end
 			end
 
+			stream.dedent
+			stream.put_line ("end")
+			stream.dedent
+			stream.dedent
+			stream.put_line ("")
+		end
+
+	put_record_query_default is
+			-- Put "record_query_default_for_any" into stream.
+		do
+			stream.indent
+			stream.put_line ("record_query_default_for_any (a_obj: ANY)")
+			stream.indent
+			stream.put_line ("do end")
+			stream.dedent
+			stream.dedent
+			stream.put_line ("")
+		end
+
+	put_record_query_for_void is
+			-- Put "record_query_default_for_any" into stream.
+		do
+			stream.indent
+			stream.put_line ("record_query_for_void")
+			stream.indent
+			stream.put_line ("do")
+			stream.indent
+			 stream.put_line ("record_query (agent: STRING do Result := %"Void%" end)")
 			stream.dedent
 			stream.put_line ("end")
 			stream.dedent

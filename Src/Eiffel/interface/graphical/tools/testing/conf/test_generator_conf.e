@@ -174,6 +174,12 @@ feature -- Status report
 			Result := object_state_config /= Void and then object_state_config.is_argument_object_state_retrieval_enabled
 		end
 
+	is_query_result_state_retrieved: BOOLEAN is
+			-- Should states of objects returned as query results be retrieved?
+		do
+			Result := object_state_config /= Void and then object_state_config.is_query_result_object_state_retrieval_enabled
+		end
+
 feature -- Status setting
 
 	set_ddmin_enabled (a_is_ddmin_enabled: like is_ddmin_enabled)

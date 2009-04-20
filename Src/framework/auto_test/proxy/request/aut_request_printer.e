@@ -265,28 +265,34 @@ feature {AUT_REQUEST} -- Processing
 			l_local_count: INTEGER
 			l_record_feature: FEATURE_I
 			l_query_names: LIST [STRING]
+			l_target_type: CL_TYPE_A
 		do
-			if attached {CL_TYPE_A} expression_type_visitor.type (a_request.variable) as l_target_type then
-				l_query_names := a_request.query_names
-				l_compound_count := 2 + l_query_names.count
-				l_local_count := 1
+			if attached {CL_TYPE_A} expression_type_visitor.type (a_request.variable) as l_type then
+				l_target_type := l_type
+			else
+				l_target_type := system.any_type
+			end
 
-				create l_compound.make (l_compound_count)
-				create l_locals.make (l_local_count)
+			l_query_names := a_request.query_names
+			l_compound_count := 2 + l_query_names.count
+			l_local_count := 1
 
-					-- Setup locals: The only local we need is the the target object
-					-- whose state is to be recorded.
-				l_locals.extend (l_target_type)
+			create l_compound.make (l_compound_count)
+			create l_locals.make (l_local_count)
 
-					-- Setup context for byte-node generation.
-				setup_byte_code_in_context (l_locals)
+				-- Setup locals: The only local we need is the the target object
+				-- whose state is to be recorded.
+			l_locals.extend (l_target_type)
 
-					-- Create nodes to load target into local.
-				create l_target.make
-				l_target.force_last (a_request.variable)
-				l_compound.append (new_load_local_nodes (l_target, 1))
+				-- Setup context for byte-node generation.
+			setup_byte_code_in_context (l_locals)
 
-					-- Create a node for "record_query" for each query that we are interested in.
+				-- Create nodes to load target into local.
+			create l_target.make
+			l_target.force_last (a_request.variable)
+			l_compound.append (new_load_local_nodes (l_target, 1))
+
+				-- Create a node for "record_query" for each query that we are interested in.
 --				from
 --					l_query_names.start
 --				until
@@ -297,9 +303,8 @@ feature {AUT_REQUEST} -- Processing
 --					l_query_names.forth
 --				end
 
-					-- Dump request into `output_stream'.
-				print_execute_request (l_compound, object_state_request_flag, a_request.variable.index.out)
-			end
+				-- Dump request into `output_stream'.
+			print_execute_request (l_compound, object_state_request_flag, a_request.variable.index.out)
 		end
 
 feature {NONE} -- Byte code generation

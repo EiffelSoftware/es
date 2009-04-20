@@ -431,6 +431,7 @@ feature {NONE} -- Interpreter generation
 					interpreter.set_timeout (proxy_time_out)
 					interpreter.set_is_target_object_state_retrieval_enabled (configuration.is_target_state_retrieved)
 					interpreter.set_is_argument_object_state_retrieval_enabled (configuration.is_argument_state_retrieved)
+					interpreter.set_is_query_result_object_state_retrieval_enabled (configuration.is_query_result_state_retrieved)
 				end
 			else
 				is_finished := True
@@ -462,7 +463,11 @@ feature {NONE} -- Interpreter generation
 			l_types := class_names
 			create l_source_writer
 			if l_file.is_open_write and l_types /= Void then
-				if configuration.is_target_state_retrieved then
+				if
+					configuration.is_target_state_retrieved or else
+					configuration.is_argument_state_retrieved or else
+					configuration.is_query_result_state_retrieved
+				then
 					l_source_writer.set_is_object_state_retrieval_enabled (True)
 				end
 				l_source_writer.write_class (l_file, l_types, l_system)

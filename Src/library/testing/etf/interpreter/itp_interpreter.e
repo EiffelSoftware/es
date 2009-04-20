@@ -664,6 +664,7 @@ feature{NONE} -- Object state checking
 						o := variable_at_index (l_request.l_object_index.to_integer)
 						if o = Void then
 							refresh_last_response_flag
+							last_response_flag := object_is_void_flag
 							last_response := [Void, Void, output_buffer, error_buffer]
 							send_response_to_socket
 						else
@@ -695,6 +696,7 @@ feature{NONE} -- Object state checking
 							execute_protected_for_query_recording (o)
 							log_message ("report_object_state_request end%N")
 							last_response := [query_values, query_status, output_buffer, error_buffer]
+							refresh_last_response_flag
 							send_response_to_socket
 						end
 					end
@@ -741,6 +743,34 @@ feature{NONE} -- Object state checking
 		do
 			if not l_retried then
 				l_result := a_query.item (Void)
+				if l_result = Void then
+					l_str_result := Void
+				else
+					if reference_type_output_format = value_as_string then
+						l_str_result := l_result.out
+					elseif reference_type_output_format = value_as_address then
+						l_str_result := ($l_result).out
+					end
+				end
+				query_values.extend (l_str_result)
+				query_status.extend (True)
+			end
+		rescue
+			query_values.extend (Void)
+			query_status.extend (False)
+			l_retried := True
+			retry
+		end
+
+	record_object_state_basic (a_any: ANY) is
+			-- Record the query "out" of `a_any'.
+		local
+			l_retried: BOOLEAN
+			l_result: detachable ANY
+			l_str_result: detachable STRING
+		do
+			if not l_retried then
+				l_result := a_any.out
 				if l_result = Void then
 					l_str_result := Void
 				else

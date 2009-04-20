@@ -106,4 +106,11 @@ feature -- Status report
 		deferred
 		end
 
+	is_query_result_state_retrieved: BOOLEAN is
+			-- Should states of object returned as query results be retrieved?
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
 end

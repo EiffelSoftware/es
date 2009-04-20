@@ -18,6 +18,25 @@ inherit
 
 feature -- Access
 
+	supported_queries_of_type (a_type: TYPE_A): LIST [FEATURE_I] is
+			-- Support queries to define an object state from `a_type'
+		do
+			create {LINKED_LIST [FEATURE_I]} Result.make
+			if
+				a_type.is_integer or else
+				a_type.is_natural or else
+				a_type.is_real_32 or else
+				a_type.is_real_64 or else
+				a_type.is_character or else
+				a_type.is_character_32 or else
+				a_type.is_boolean
+			then
+				Result.extend (a_type.associated_class.feature_named ("item"))
+			else
+				Result := features_of_type (a_type, anded_feature_agents (<<ored_feature_agents (<<agent is_boolean_query, agent is_integer_query>>), agent is_argumentless_query, agent is_exported_to_any>>))
+			end
+		end
+
 	features_of_type (a_type: TYPE_A; a_criterion: detachable FUNCTION [ANY, TUPLE [FEATURE_I], BOOLEAN]): LIST [FEATURE_I] is
 			-- List of features satisfying `a_criterion' from `a_type'.
 			-- `a_criterion' is a filter function used to selected wanted features: all the features causing
