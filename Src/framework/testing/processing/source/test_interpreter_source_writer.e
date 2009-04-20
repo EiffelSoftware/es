@@ -118,14 +118,15 @@ feature {NONE} -- Implementation
 			l_type: TYPE_A
 			l_processed: DS_HASH_SET [CLASS_C]
 			l_list: LIST [CLASS_C]
+			l_sorter: DS_TOPOLOGICAL_SORTER [CLASS_C]
+			l_sorted_classes: DS_ARRAYED_LIST [CLASS_C]
 		do
 			if is_object_state_retrieval_enabled then
-					-- Get class information.
+
+					-- Get the list of classes whose state should be recorded.
 				create l_processed.make (50)
 				l_processed.set_equality_tester (create {AGENT_BASED_EQUALITY_TESTER [CLASS_C]}.make (
 					agent (a, b: CLASS_C): BOOLEAN do Result := a.class_id = b.class_id end))
-
-				create l_class_info.make
 				from
 					a_types.start
 				until
@@ -145,25 +146,30 @@ feature {NONE} -- Implementation
 								l_processed.force_last (l_list.item_for_iteration)
 								l_class_name := l_list.item_for_iteration.name_in_upper
 								l_type := l_list.item_for_iteration.actual_type
-								l_class_info.extend ([l_class_name, l_type, full_type_name (l_class_name)])
 							end
 							l_list.forth
 						end
 					end
-
---					if not l_classi.is_empty then
---						l_class := l_classi.first.compiled_representation
---						l_class_name := l_class.name
---						l_type := l_class.actual_type
---						l_class_info.extend ([l_class_name, l_type, full_type_name (a_types.item_for_iteration)])
---					end
 					a_types.forth
 				end
 
-				if is_object_state_retrieval_enabled then
-					put_record_queries_routine (l_class_info)
+					-- Topologically sort classes, so more specific classes
+					-- appear first.
+				create l_class_info.make
+				l_sorted_classes := topologically_sorted_classes (l_processed)
+				from
+					l_sorted_classes.start
+				until
+					l_sorted_classes.after
+				loop
+					l_class_name := l_sorted_classes.item_for_iteration.name_in_upper
+					l_type := l_sorted_classes.item_for_iteration.actual_type
+					l_class_info.extend ([l_class_name, l_type, full_type_name (l_class_name)])
+					l_sorted_classes.forth
 				end
 
+					-- Generate routines to record states.
+				put_record_queries_routine (l_class_info)
 				from
 					l_class_info.start
 				until
@@ -177,6 +183,49 @@ feature {NONE} -- Implementation
 			else
 				put_empty_record_queries_routine
 			end
+		end
+
+	topologically_sorted_classes (a_classes: DS_HASH_SET [CLASS_C]): DS_ARRAYED_LIST [CLASS_C] is
+			-- Topologically sorted classes from `a_classes'
+			-- The most specific class appears at the first position in the sorted
+			-- result
+		local
+			l_sorter: DS_TOPOLOGICAL_SORTER [CLASS_C]
+			l_list: LINKED_LIST [CLASS_C]
+			l_type1, l_type2: TYPE_A
+			l_class1, l_class2: CLASS_C
+		do
+			create l_sorter.make (a_classes.count)
+			create l_list.make
+			from
+				a_classes.start
+			until
+				a_classes.after
+			loop
+				l_class1 := a_classes.item_for_iteration
+				l_type1 := l_class1.actual_type
+
+				l_sorter.force (a_classes.item_for_iteration)
+				from
+					l_list.start
+				until
+					l_list.after
+				loop
+					l_class2 := l_list.item_for_iteration
+
+					l_type2 := l_class2.actual_type
+					if l_type1.is_conformant_to (root_class, l_type2) then
+						l_sorter.put_relation (l_class1, l_class2)
+					elseif l_type2.is_conformant_to (root_class, l_type1) then
+						l_sorter.put_relation (l_class2, l_class1)
+					end
+					l_list.forth
+				end
+				l_list.extend (a_classes.item_for_iteration)
+				a_classes.forth
+			end
+			l_sorter.sort
+			Result := l_sorter.sorted_items
 		end
 
 	put_record_queries_routine (a_classes: LIST [TUPLE [a_class_name: STRING; a_type: TYPE_A; a_type_name: STRING]]) is
