@@ -11,11 +11,15 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (a_credit_limit: INTEGER)
 			-- Initialize empty bank account.
+		require
+			a_credit_limit_not_negative: a_credit_limit >= 0
 		do
+			credit_limit := a_credit_limit
 			balance := 0
 		ensure
+			credit_limit_set: credit_limit = a_credit_limit
 			balance_set: balance = 0
 		end
 
@@ -24,19 +28,10 @@ feature -- Access
 	balance: INTEGER
 			-- Balance of account
 
-	a: INTEGER
+	credit_limit: INTEGER
+			-- Credit limit of account
 
 feature -- Element change
-
-	deposit2 (amount: INTEGER)
-			-- Deposit `amount' on account.
-		require
-			amount_not_negative: amount >= 0
-		do
-			balance := balance + amount
-		ensure
-			balance_increased: balance = old balance + amount
-		end
 
 	deposit (amount: INTEGER)
 			-- Deposit `amount' on account.
@@ -51,26 +46,14 @@ feature -- Element change
 	withdraw (amount: INTEGER)
 			-- Withdraw `amount' from account.
 		require
-			amount_not_too_large: amount <= balance
+			amount_not_too_large: amount <= balance + credit_limit
 		do
 			balance := balance - amount
 		ensure
 			balance_decreased: balance = old balance - amount
 		end
 
-	transfer (amount: INTEGER; other: ACCOUNT) is
-			-- Transfer `amount' from `Current' to `other'.
-		require
-			other_not_void: other /= Void
-			other_not_current: other /= Current
-			amount_not_negative: amount >= 0
-			amount_not_too_large: amount <= balance
-		do
-			withdraw (amount)
-			other.deposit (amount)
-		ensure
-			balance_decreased: balance = old balance - amount
-			other_balance_increased: other.balance = old other.balance + amount
-		end
+invariant
+	balance_not_lower_than_credit: balance + credit_limit >= 0
 
 end

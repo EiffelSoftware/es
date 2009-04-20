@@ -8,6 +8,15 @@ class
 
 feature
 
+	multiple_errors: INTEGER
+		indexing
+			pure: True
+		do
+			field := 1
+		ensure
+			negative: Result < 0
+		end
+
 	target_not_attached
 		local
 			a: ANY
@@ -41,10 +50,10 @@ feature
 			check positive: a > 0 end
 		end
 
-	invariant_violation
-		do
-			invariant_field := 1
-		end
+--	invariant_violation
+--		do
+--			invariant_field := 1
+--		end
 
 	loop_invariant_violation
 		local
