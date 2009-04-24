@@ -1,39 +1,24 @@
 indexing
 	component:   "openEHR Reusable Libraries"
-      description: "Std file input/output stream"
-	keywords:    "test"
+	description: "shared access to LOCALE object"
+	keywords:    "locale"
 
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
-	license:     "See notice at bottom of class"
+	support:     "openEHR support <support@OceanInformatics.biz>"
+	copyright:   "Copyright (c) 2005 Ocean Informatics"
+	licence:     "The openEHR Open Source Licence"
 
-	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/libraries/common_libs/src/utility/testing/std_test_stream.e $"
+	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/libraries/common_libs/src/utility/locale/shared_locale.e $"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class STD_TEST_STREAM
+class SHARED_LOCALE_EHR
 
-inherit
-	TEST_STREAM
+feature -- Shared Access
 
-feature -- Access
-
-	put_string (a_text: STRING) is
-		do
-			io.put_string (a_text)
-		end
-
-	search (str: STRING; start: INTEGER): INTEGER is
-			-- Position of first occurrence of `str' at or after `start';
-			-- 0 if none.
-		do
-			Result := 0
-		end
-
-	new_line is
-		do
-			io.new_line
+	locale: LOCALE is
+		once
+			create Result.make
 		end
 
 end
@@ -52,7 +37,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is ev_test_stream.e.
+--| The Original Code is shared_locale.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

@@ -25,7 +25,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_LOCALE
+	SHARED_LOCALE_EHR
 		export 
 			{NONE} all
 		end
