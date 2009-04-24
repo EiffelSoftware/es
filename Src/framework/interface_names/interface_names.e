@@ -2431,6 +2431,8 @@ feature -- Titles translation needless (Title Original) for preference strings.
 	to_Project_toolbar: STRING is				"Project Bar"
 	to_Refactory_toolbar: STRING is				"Refactoring Bar"
 
+	to_Ebbro_tool:STRING is 					"Ebbro"
+
 feature -- Description texts
 
 	e_Add_exported_feature: STRING_32 is	do Result := locale.translation("Add a new feature to this dynamic library definition")	end
