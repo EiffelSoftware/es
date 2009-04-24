@@ -30,8 +30,6 @@ feature -- basic operations
 		local
 			l_obj: ANY
 			l_dadl_dec: DADL_DECODED
-			l_dec: BINARY_DECODED
-			l_generic_type: INTEGER
 			l_internal: INTERNAL
 		do
 			create l_internal

@@ -672,7 +672,6 @@ feature {NONE} -- implementation
 			not_void: an_item /= void and an_obj /= void
 		local
 			l_gen_type:STRING
-			l_pix:EV_PIXMAP
 			l_pointer:POINTER_REF
 		do
 			l_gen_type := an_obj.generating_type
