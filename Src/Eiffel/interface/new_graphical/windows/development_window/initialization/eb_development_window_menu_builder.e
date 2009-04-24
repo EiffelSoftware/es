@@ -1141,6 +1141,10 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			insert_show_tool_menu_item (Result, {ES_SEARCH_TOOL})
 			insert_show_tool_menu_item (Result, {ES_SEARCH_REPORT_TOOL})
 			Result.extend (create {EV_MENU_SEPARATOR})
+
+			insert_show_tool_menu_item(Result, {ES_EBBRO_TOOL})
+
+			Result.extend (create {EV_MENU_SEPARATOR})
 			insert_show_tool_menu_item (Result, {ES_PROPERTIES_TOOL})
 			insert_show_tool_menu_item (Result, {ES_DIAGRAM_TOOL})
 			insert_show_tool_menu_item (Result, {ES_METRICS_TOOL})
