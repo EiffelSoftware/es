@@ -304,6 +304,8 @@ Delivery/studio/tools/boogie/bin/Z3.exe -text
 Delivery/studio/tools/boogie/bin/Z3.pdb -text
 Delivery/studio/tools/boogie/bin/ssc.exe -text
 Delivery/studio/tools/boogie/readme.txt -text
+Delivery/studio/tools/ebbro/icons.ini -text
+Delivery/studio/tools/ebbro/icons.png -text
 Delivery/studio/tools/testing/auto_test/image/class_bad_response.gif -text
 Delivery/studio/tools/testing/auto_test/image/class_bad_response.svg -text
 Delivery/studio/tools/testing/auto_test/image/class_fail.gif -text
