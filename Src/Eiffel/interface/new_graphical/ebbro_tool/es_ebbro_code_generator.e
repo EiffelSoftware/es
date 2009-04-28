@@ -35,7 +35,7 @@ feature -- Basic Operations
 
 			create Result.make_from_string (t_tab)
 			Result.append (feature_start_name_string)
-			Result.append (l_name)
+			Result.append (l_name+" ")
 			Result.append (feature_argument_string)
 			Result.append (" is"+t_newline)
 			Result.append (t_tab+t_tab+t_tab+"-- ")
@@ -43,7 +43,7 @@ feature -- Basic Operations
 			Result.append (t_tab+t_tab+"require"+t_newline)
 			Result.append (t_tab+t_tab+t_tab+feature_precondition_string+t_newline)
 			Result.append (t_tab+t_tab+"local"+t_newline)
-			Result.append (t_tab+t_tab+t_tab+feature_locals_string+":"+feature_locals_type+t_newline)
+			Result.append (t_tab+t_tab+t_tab+feature_locals_string+": "+feature_locals_type+t_newline)
 			Result.append (t_tab+t_tab+"do"+t_newline)
 			Result.append (t_tab+t_tab+t_tab+"create "+feature_locals_string+".make(1,"+a_list.count.out+")"+t_newline)
 			from

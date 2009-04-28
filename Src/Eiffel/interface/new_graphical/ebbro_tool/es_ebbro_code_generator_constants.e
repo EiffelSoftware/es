@@ -23,7 +23,7 @@ feature -- header strings
 
 	feature_start_name_string:STRING is "create_custom_form_for_"
 
-	feature_argument_string:STRING is "(a_form:SERIALIZED_FORM)"
+	feature_argument_string:STRING is "(a_form: SERIALIZED_FORM)"
 
 	feature_precondition_string:STRING is "not_void: a_form /= void"
 

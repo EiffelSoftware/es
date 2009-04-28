@@ -13,11 +13,11 @@ inherit
 	ES_DOCKABLE_TOOL_PANEL [EV_HORIZONTAL_SPLIT_AREA]
 		redefine
 			on_after_initialized,
-			--internal_recycle
+			internal_recycle,
 			create_tool_bar_items,
 			create_right_tool_bar_items,
-			create_mini_tool_bar_items
-			--show
+			create_mini_tool_bar_items,
+			show
 		end
 
 	ES_TOOL_ICONS_PROVIDER_I [ES_EBBRO_TOOL_ICONS]
@@ -79,13 +79,9 @@ feature {NONE} -- User interface initialization
 			-- init prefs
 			if not preferences.ebbro_tool_data.is_split_screen_enabled then
 				right_grid_view.hide
-				--move_right_button.disable_sensitive
-				--move_left_button.disable_sensitive
 			else
 				right_grid_view.toggle_is_split_screen
 				left_grid_view.toggle_is_split_screen
-				--move_right_button.enable_sensitive
-				--move_left_button.enable_sensitive
 			end
 
 			if preferences.ebbro_tool_data.is_addr_column_shown then
@@ -215,6 +211,11 @@ feature {NONE} -- User interface initialization
 
 feature {NONE} -- Clean up
 
+	 internal_recycle
+            -- <Precursor>
+        do
+            Precursor
+        end
 
 
 feature -- Access
@@ -304,6 +305,18 @@ feature {NONE} -- Controller connection
 
 feature -- Basic operations
 
+	show
+            -- Show the tool, if possible
+        local
+			l_split_pos:INTEGER
+        do
+        	Precursor
+			l_split_pos := preferences.ebbro_tool_data.split_position
+			if l_split_pos >= main_container.minimum_split_position and l_split_pos <= main_container.maximum_split_position then
+				main_container.set_split_position (l_split_pos)
+			end
+        end
+
 	set_active_filter_text (a_filter_id:INTEGER) is
 			-- sets the correct filter text for filtered objects
 		local
@@ -367,7 +380,6 @@ feature -- Basic operations
 
 
 feature {ES_EBBRO_GRID} -- Action handlers
-
 
 	request_open_file is
 			-- on opening an object
