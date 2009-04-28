@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <system xmlns="http://www.eiffel.com/developers/xml/configuration-1-4-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-4-0 http://www.eiffel.com/developers/xml/configuration-1-4-0.xsd" name="dadle" uuid="0B87C211-AD4E-4063-B57B-383C7AB67459" library_target="dadle">
 	<target name="dadle">
-		<description>EiffelTime: Date/Time abstractions and computations.
-	      Copyright (c) 1984-2006, Eiffel Software and others.
-	      Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt).</description>
+		<description>Library to serialize/deserialize objects in the dADL format.</description>
 		<root all_classes="true"/>
 		<option namespace="EiffelSoftware.Library">
 		</option>
