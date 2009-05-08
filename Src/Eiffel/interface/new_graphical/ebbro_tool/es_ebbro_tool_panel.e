@@ -469,8 +469,14 @@ feature {ES_EBBRO_GRID} -- Action handlers
 
 					file_saved(a_displayable,dadl_format_id,l_filename, dialog.file_path)
 				else
-					create l_filename.make_from_string (dialog.file_name)
-					file_saved(a_displayable,binary_format_id,l_filename, dialog.file_path)
+					-- if binary filter was selected, but file has ".adls" at end -> still store in dadl format!
+					if dialog.file_name.ends_with (dadl_file_ending) then
+						create l_filename.make_from_string (dialog.file_name)
+						file_saved(a_displayable,dadl_format_id,l_filename, dialog.file_path)
+					else
+						create l_filename.make_from_string (dialog.file_name)
+						file_saved(a_displayable,binary_format_id,l_filename, dialog.file_path)
+					end
 				end
 			end
 		end
