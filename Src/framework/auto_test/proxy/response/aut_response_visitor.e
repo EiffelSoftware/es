@@ -37,6 +37,13 @@ feature -- Process
 		deferred
 		end
 
+	process_precondition_evaluation_response (a_response: AUT_PRECONDITION_EVALUATION_RESPONSE)
+			-- Process `a_response'.
+		require
+			a_response_attached: a_response /= Void
+		deferred
+		end
+
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

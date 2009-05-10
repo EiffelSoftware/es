@@ -307,6 +307,34 @@ feature {AUT_REQUEST} -- Processing
 			print_execute_request (l_compound, object_state_request_flag, a_request.variable.index.out)
 		end
 
+	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		local
+			l_feature_identifier: STRING
+			l_object_ids: ARRAY [INTEGER]
+			l_variables: DS_LIST [ITP_VARIABLE]
+			i: INTEGER
+		do
+			create l_feature_identifier.make (48)
+			l_feature_identifier.append (a_request.feature_.associated_class.name_in_upper)
+			l_feature_identifier.append ("__")
+			l_feature_identifier.append (a_request.feature_.feature_.feature_name.as_lower)
+
+			l_variables := a_request.variables
+			create l_object_ids.make (1, l_variables.count)
+			from
+				i := 1
+				l_variables.start
+			until
+				l_variables.after
+			loop
+				l_object_ids.put (l_variables.item_for_iteration.index, i)
+				i := i + 1
+				l_variables.forth
+			end
+			last_request := [precondition_evaluation_request_flag, [l_feature_identifier, l_object_ids]]
+		end
+
 feature {NONE} -- Byte code generation
 
 	new_check_invariant_feature_call (a_local_index: INTEGER; a_local_type: TYPE_A): CALL_ACCESS_B is

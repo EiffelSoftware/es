@@ -285,6 +285,12 @@ feature {NONE} -- Processsing
 			a_request.set_response (l_last_response)
 		end
 
+	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		do
+			-- Do nothing.
+		end
+
 feature{NONE} -- Implementation
 
 	found_request_count: INTEGER

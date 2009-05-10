@@ -7,6 +7,9 @@ note
 class
 	AUT_CONTRACT_EXTRACTOR
 
+inherit
+	REFACTORING_HELPER
+
 feature -- Access
 
 	invariant_of_class (a_class: CLASS_C): LINKED_LIST [AUT_ASSERTION] is
@@ -43,9 +46,54 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
+	precondition_of_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): LINKED_LIST [AUT_ASSERTION] is
+			-- List of preconditions of `a_feature' in `a_context_class'
+		local
+			l_ancestors: LINKED_LIST [CLASS_C]
+			l_feat: FEATURE_I
+			l_class: CLASS_C
+			l_routine: ROUTINE_AS
+			l_asserts: EIFFEL_LIST [TAGGED_AS]
+		do
+			create Result.make
+			if a_feature.is_routine then
+				create l_ancestors.make
+				record_ancestors_of_class (a_context_class, l_ancestors, Void)
+				from
+					l_ancestors.start
+				until
+					l_ancestors.after
+				loop
+					l_class := l_ancestors.item_for_iteration
+					l_feat := l_class.feature_of_rout_id_set (a_feature.rout_id_set)
+					if
+						l_feat /= Void and then
+						l_feat.is_routine and then
+						l_feat.written_class = l_class and then
+						l_feat.has_precondition and then
+						not l_feat.is_require_else -- We ignore "require else" for the moment.
+					then
+						fixme ("We ignore require else for the moment.")
+						l_routine := l_feat.body.body.as_routine
+						check l_routine.precondition /= Void end
+						l_asserts := l_routine.precondition.assertions
+						from
+							l_asserts.start
+						until
+							l_asserts.after
+						loop
+							Result.extend (create {AUT_ASSERTION}.make (l_asserts.item_for_iteration, l_class))
+							l_asserts.forth
+						end
+					end
+					l_ancestors.forth
+				end
+			end
+		end
+
 feature{NONE} -- Implementation
 
-	record_ancestors_of_class (a_class: CLASS_C; a_ancestors: LIST [CLASS_C]; a_processed: SEARCH_TABLE [INTEGER])
+	record_ancestors_of_class (a_class: CLASS_C; a_ancestors: LIST [CLASS_C]; a_processed: detachable SEARCH_TABLE [INTEGER])
 			-- Record all ancestores of `a_class' in `a_ancestors'.
 			-- Add processed class to `a_processed' if not Void.
 		require

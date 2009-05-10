@@ -1,74 +1,53 @@
 note
-	description: "AutoTest request processor"
+	description: "Summary description for {AUT_PREDICATE_OF_FEATURE}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AUT_REQUEST_PROCESSORS
-
-inherit
-	AUT_REQUEST_PROCESSOR
-		undefine
-			is_equal,
-			copy
-		end
-
-	LINKED_LIST [AUT_REQUEST_PROCESSOR]
+	AUT_PREDICATE_OF_FEATURE
 
 create
 	make
 
-feature {AUT_REQUEST} -- Processing
+feature{NONE} -- Initialization
 
-	process_start_request (a_request: AUT_START_REQUEST)
-			-- Process `a_request'.
+	make (a_feature: like feature_; a_predicate: like predicate; a_access_pattern: like access_pattern) is
+			-- Initialize current.
 		do
-			do_all (agent a_request.process (?))
+			feature_ := a_feature
+			predicate := a_predicate
+			access_pattern := a_access_pattern
+		ensure
+			feature_set: feature_ = a_feature
+			predicate_set: predicate = a_predicate
+			access_pattern_set: access_pattern = a_access_pattern
 		end
 
-	process_stop_request (a_request: AUT_STOP_REQUEST)
-			-- Process `a_request'.
+feature -- Access
+
+	feature_: AUT_FEATURE_OF_TYPE
+			-- Feature whose predicates are represented in Current
+
+	context_class: CLASS_C is
+			-- Class associated with `feature_'
 		do
-			do_all (agent a_request.process (?))
+			Result := feature_.associated_class
+		ensure
+			good_result: Result = feature_.associated_class
 		end
 
-	process_create_object_request (a_request: AUT_CREATE_OBJECT_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
+	predicate: AUT_PREDICATE
+			-- Predicate associated with `feature_'
 
-	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
+	access_pattern: DS_HASH_TABLE [INTEGER, INTEGER]
+			-- Access patterns for the predicates associated with current feature.
+			-- [call variable index, predicate argument index]
+			-- Key is the variable index in actual feature call (0 is the index for target).
+			-- Value is the argument position in the assoicated `predicate'.
 
-	process_assign_expression_request (a_request: AUT_ASSIGN_EXPRESSION_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
-
-	process_type_request (a_request: AUT_TYPE_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
-
-	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
-
-	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
-
+invariant
+		access_pattern_valid: access_pattern.count = predicate.narity
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

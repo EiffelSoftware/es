@@ -37,6 +37,29 @@ inherit
 			{NONE} all
 		end
 
+	AUT_SHARED_TYPE_FORMATTER
+		rename
+			type_output_strategy as old_type_output_strategy
+		end
+
+	ERL_G_TYPE_ROUTINES
+		undefine
+			type_a_generator
+		end
+
+create
+	make
+
+feature{NONE} -- Initialization
+
+	make (a_config: like configuration) is
+			-- Initialize `configuration' with `a_config'.
+		do
+			configuration := a_config
+		ensure
+			configuration_set: configuration = a_config
+		end
+
 feature -- Access
 
 	class_name: attached STRING = "ITP_INTERPRETER_ROOT"
@@ -50,6 +73,9 @@ feature -- Access
 		do
 			Result := << "ITP_INTERPRETER" >>
 		end
+
+	configuration: TEST_GENERATOR_CONF_I
+			-- Configuration associated with current AutoTest run
 
 feature {NONE} -- Access
 
@@ -87,24 +113,190 @@ feature -- Basic operations
 				-- Generate routines for object state retrieval
 			put_object_state_routines (a_type_list)
 
+				-- Generate routines to check preconditions
+			put_precondition_checking_routines
+
 			put_class_footer
 			stream := Void
 		end
 
-	is_object_state_retrieval_enabled: BOOLEAN
-			-- Should object state retrieval be enabled?
+feature {NONE} -- Implementation
 
-feature -- Setting
-
-	set_is_object_state_retrieval_enabled (b: BOOLEAN) is
-			-- Set `is_object_state_retrieval_enabled' with `b'.
+	put_anchor_routine (a_types: attached DS_LINEAR [STRING])
+			--
+		require
+			stream_valid: is_writing
+			root_group_attached: root_group /= Void
+			root_class_attached: root_class /= Void
+			root_feature_attached: root_feature /= Void
+		local
+			l_type: STRING
 		do
-			is_object_state_retrieval_enabled := b
-		ensure
-			is_object_state_retrieval_enabled_set: is_object_state_retrieval_enabled = b
+			stream.indent
+			stream.put_line ("type_anchors")
+			stream.indent
+			stream.put_line ("local")
+			stream.indent
+			stream.put_line ("l_type: TYPE [ANY]")
+			stream.dedent
+			stream.put_line ("do")
+			stream.indent
+			stream.indent
+			stream.put_line ("-- One assignment to avoid warnings")
+			stream.dedent
+			stream.put_line ("l_type := {ANY}")
+			stream.put_line ("")
+
+			from
+				a_types.start
+				type_a_checker.init_for_checking (root_feature, root_class, Void, Void)
+			until
+				a_types.after
+			loop
+				l_type := a_types.item_for_iteration
+				put_type_assignment (l_type)
+				a_types.forth
+			end
+
+			stream.dedent
+			stream.put_line ("end")
+			stream.dedent
+			stream.dedent
+			stream.put_line ("")
 		end
 
-feature {NONE} -- Implementation
+	put_type_assignment (a_type: STRING)
+			-- Print valid assignment for `a_type'.
+		require
+			a_type_not_void: a_type /= Void
+			root_group_attached: root_group /= Void
+			root_class_attached: root_class /= Void
+			root_feature_attached: root_feature /= Void
+		local
+			l_type_a, l_gtype: TYPE_A
+			l_class: CLASS_C
+			l_type: detachable STRING
+			i: INTEGER
+		do
+			type_parser.parse_from_string ("type " + a_type, root_class)
+			error_handler.wipe_out
+			if attached {CLASS_TYPE_AS} type_parser.type_node as l_type_as then
+				l_type_a := type_a_generator.evaluate_type_if_possible (l_type_as, root_class)
+				if l_type_a /= Void then
+					create l_type.make (20)
+					l_type.append (l_type_a.name)
+					if l_type_a.generics = Void then
+						l_class := l_type_a.associated_class
+						check l_class /= Void end
+						if l_class.is_generic then
+								-- In this case we try to insert constrains to receive a valid type
+							l_type.append (" [")
+							from
+								i := 1
+							until
+								not l_class.is_valid_formal_position (i)
+							loop
+								if i > 1 then
+									l_type.append (", ")
+								end
+								if l_class.generics [i].is_multi_constrained (l_class.generics) then
+									l_type.append ("NONE")
+								else
+									l_gtype := l_class.constrained_type (i)
+									append_type (l_type, l_gtype)
+								end
+								i := i + 1
+							end
+							l_type.append ("]")
+						end
+					end
+					stream.put_string ("l_type := {")
+					stream.put_string (l_type)
+					stream.put_line ("}")
+				end
+			end
+		end
+
+	full_type_name (a_type: STRING): STRING
+			-- Full type name of `a_type'
+			-- Note: Code copied from `put_type_assignment'. `put_type_assignment'
+			-- can be simplified using current feature. 05.06.2009 Jasonw
+		require
+			a_type_not_void: a_type /= Void
+			root_group_attached: root_group /= Void
+			root_class_attached: root_class /= Void
+			root_feature_attached: root_feature /= Void
+		local
+			l_type_a, l_gtype: TYPE_A
+			l_class: CLASS_C
+			l_type: detachable STRING
+			i: INTEGER
+		do
+			type_parser.parse_from_string ("type " + a_type, root_class)
+			error_handler.wipe_out
+			if attached {CLASS_TYPE_AS} type_parser.type_node as l_type_as then
+				l_type_a := type_a_generator.evaluate_type_if_possible (l_type_as, root_class)
+				if l_type_a /= Void then
+					create l_type.make (20)
+					l_type.append (l_type_a.name)
+					if l_type_a.generics = Void then
+						l_class := l_type_a.associated_class
+						check l_class /= Void end
+						if l_class.is_generic then
+								-- In this case we try to insert constrains to receive a valid type
+							l_type.append (" [")
+							from
+								i := 1
+							until
+								not l_class.is_valid_formal_position (i)
+							loop
+								if i > 1 then
+									l_type.append (", ")
+								end
+								if l_class.generics [i].is_multi_constrained (l_class.generics) then
+									l_type.append ("NONE")
+								else
+									l_gtype := l_class.constrained_type (i)
+									append_type (l_type, l_gtype)
+								end
+								i := i + 1
+							end
+							l_type.append ("]")
+						end
+					end
+					Result := l_type
+				end
+			end
+		end
+
+	append_type (a_string: attached STRING; a_type: TYPE_A)
+			-- Append type name for `a_type' to `a_string' without formal parameters.
+		local
+			i: INTEGER
+		do
+			if not a_type.is_formal and attached {CL_TYPE_A} a_type as l_class_type then
+				a_string.append (l_class_type.associated_class.name)
+				if l_class_type.has_generics then
+					a_string.append (" [")
+					from
+						i := l_class_type.generics.lower
+					until
+						i > l_class_type.generics.upper
+					loop
+						if i > l_class_type.generics.lower then
+							a_string.append (", ")
+						end
+						append_type (a_string, l_class_type.generics.item (i))
+						i := i + 1
+					end
+					a_string.append ("]")
+				end
+			else
+				a_string.append ("NONE")
+			end
+		end
+
+feature -- Object state retrieval
 
 	put_object_state_routines (a_types: attached DS_LINEAR [STRING]) is
 			-- Generate routines to support object state retrieval.
@@ -121,8 +313,7 @@ feature {NONE} -- Implementation
 			l_sorter: DS_TOPOLOGICAL_SORTER [CLASS_C]
 			l_sorted_classes: DS_ARRAYED_LIST [CLASS_C]
 		do
-			if is_object_state_retrieval_enabled then
-
+			if configuration.is_object_state_retrieval_enabled then
 					-- Get the list of classes whose state should be recorded.
 				create l_processed.make (50)
 				l_processed.set_equality_tester (create {AGENT_BASED_EQUALITY_TESTER [CLASS_C]}.make (
@@ -394,177 +585,329 @@ feature {NONE} -- Implementation
 			stream.put_line ("")
 		end
 
-	put_anchor_routine (a_types: attached DS_LINEAR [STRING])
-			--
-		require
-			stream_valid: is_writing
-			root_group_attached: root_group /= Void
-			root_class_attached: root_class /= Void
-			root_feature_attached: root_feature /= Void
-		local
-			l_type: STRING
+feature -- Precondition satisfaction
+
+	types_under_test: DS_ARRAYED_LIST [CL_TYPE_A]
+			-- Types under test
+
+	set_types_under_test (a_types: like types_under_test) is
+			-- Set `types_under_test' with `a_types'.
 		do
+			fixme ("`types_under_test' is similar to `a_type_list' in `write_class', refactoring is needed.")
+			types_under_test := a_types
+		ensure
+			types_under_test_set: types_under_test = a_types
+		end
+
+	resolved_type_from_name (a_type_name: STRING; a_context: CLASS_C): detachable TYPE_A is
+			-- Note: Code taken from `build_types_and_classes_under_test'
+		local
+			l_type: TYPE_A
+			l_name: STRING
+		do
+			fixme ("Note: Code taken from `build_types_and_classes_under_test'. Refactoring is needed.")
+			l_type := base_type_with_context (a_type_name, a_context) --system.root_type.associated_class)
+			if l_type /= Void then
+				if l_type.associated_class.is_generic then
+					if not attached {GEN_TYPE_A} l_type as l_gen_type then
+						if attached {GEN_TYPE_A} l_type.associated_class.actual_type as l_gen_type2 then
+							l_type := generic_derivation_of_type (l_gen_type2, l_gen_type2.associated_class)
+						else
+							check
+								dead_end: False
+							end
+						end
+					end
+				end
+				if attached {CL_TYPE_A} l_type as l_class_type then
+						-- Only compiled classes are taken into consideration.
+					if l_class_type.associated_class /= Void then
+						if not interpreter_related_classes.has (l_class_type.name) then
+							Result := l_class_type
+						end
+					end
+				else
+					check
+						dead_end: False
+					end
+				end
+			end
+		end
+
+	base_type_with_context (a_name: STRING; a_context_class: CLASS_C): TYPE_A
+			-- Type parsed from `a_name'
+			-- If `a_name' is "NONE", return {NONE_A}.
+			-- If `a_name' is an unknown type, return Void.
+			-- The result is resolved in `a_context_class'.
+		require
+			a_name_not_void: a_name /= Void
+		local
+			l_type_as: TYPE_AS
+		do
+			fixme ("Code is similar to ERL_G_TYPE_ROUTINES.base_type. Refactoring is needed.")
+			if a_name.is_case_insensitive_equal ("NONE") then
+				Result := none_type
+			else
+					-- Parse `a_name' into a type AST node.
+				type_parser.parse_from_string ("type " + a_name, a_context_class)
+				l_type_as := type_parser.type_node
+
+					-- Generate TYPE_A object from type AST node.
+				if l_type_as /= Void and then attached {CLASS_C} a_context_class as l_context_class then
+					Result := type_a_generator.evaluate_type_if_possible (l_type_as, l_context_class)
+				end
+			end
+		end
+
+	generate_precondition_checker (a_feature: AUT_FEATURE_OF_TYPE; a_preconditions: DS_LIST [AUT_PREDICATE_OF_FEATURE]) is
+			-- Generate precondition checker for `a_feature' whose preconditions are `a_preconditions'.
+		local
+			l_feat_name: STRING
+			l_feat: FEATURE_I
+			i: INTEGER
+			l_arg_count: INTEGER
+			l_arg_types: LIST [TYPE_A]
+			l_text: STRING
+		do
+			l_feat := a_feature.feature_
+			create l_feat_name.make (64)
+			l_feat_name.append (precondition_evaluator_name (a_feature))
 			stream.indent
-			stream.put_line ("type_anchors")
+
+				-- Generate feature signature.
+			stream.put_string (l_feat_name)
+			stream.put_string (" (")
+			append_type_dec (0, resolved_type_from_name (a_feature.associated_class.name, system.root_type.associated_class), l_feat)
+			if l_feat.argument_count > 0 then
+				l_arg_types := feature_argument_types (l_feat, resolved_type_from_name (a_feature.associated_class.name, a_feature.associated_class))
+				from
+					i := 1
+					l_arg_types.start
+				until
+					l_arg_types.after
+				loop
+					stream.put_string ("; ")
+					append_type_dec (i, l_arg_types.item_for_iteration, l_feat)
+					i := i + 1
+					l_arg_types.forth
+				end
+			end
+			stream.put_line ("): TUPLE")
 			stream.indent
 			stream.put_line ("local")
 			stream.indent
-			stream.put_line ("l_type: TYPE [ANY]")
+			stream.put_line ("l_satisfied: BOOLEAN")
 			stream.dedent
 			stream.put_line ("do")
 			stream.indent
-			stream.indent
-			stream.put_line ("-- One assignment to avoid warnings")
-			stream.dedent
-			stream.put_line ("l_type := {ANY}")
-			stream.put_line ("")
 
+				-- Generate code to check preconditions.
 			from
-				a_types.start
-				type_a_checker.init_for_checking (root_feature, root_class, Void, Void)
+				i := 1
+				a_preconditions.start
 			until
-				a_types.after
+				a_preconditions.after
 			loop
-				l_type := a_types.item_for_iteration
-				put_type_assignment (l_type)
-				a_types.forth
+				if i > 1 then
+					stream.put_line ("if l_satisfied then")
+					stream.indent
+				end
+				stream.put_string ("l_satisfied := ")
+				l_text := predicate_text (a_preconditions.item_for_iteration)
+				stream.put_line (l_text)
+
+				if i > 1 then
+					stream.dedent
+					stream.put_line ("end")
+				end
+				i := i + 1
+				a_preconditions.forth
 			end
+
+				-- Generate return value.
+			stream.put_line ("if l_satisfied then")
+			stream.indent
+			stream.put_string ("Result := [")
+			from
+				i := 0
+				l_arg_count := l_feat.argument_count
+			until
+				i > l_arg_count
+			loop
+				stream.put_string (argument_name (i))
+				if i < l_arg_count then
+					stream.put_string (", ")
+				end
+				i := i + 1
+			end
+			stream.put_line ("]")
+			stream.dedent
+			stream.put_line ("end")
 
 			stream.dedent
 			stream.put_line ("end")
 			stream.dedent
-			stream.dedent
 			stream.put_line ("")
+			stream.dedent
 		end
 
-	put_type_assignment (a_type: STRING)
-			-- Print valid assignment for `a_type'.
-		require
-			a_type_not_void: a_type /= Void
-			root_group_attached: root_group /= Void
-			root_class_attached: root_class /= Void
-			root_feature_attached: root_feature /= Void
+	predicate_text (a_predicate: AUT_PREDICATE_OF_FEATURE): STRING is
+			--
 		local
-			l_type_a, l_gtype: TYPE_A
-			l_class: CLASS_C
-			l_type: detachable STRING
+			l_arg_count: INTEGER
 			i: INTEGER
+			j: INTEGER
+			l_text: STRING
 		do
---			type_parser.parse_from_string ("type " + a_type, root_class)
---			error_handler.wipe_out
---			if attached {CLASS_TYPE_AS} type_parser.type_node as l_type_as then
---				l_type_a := type_a_generator.evaluate_type_if_possible (l_type_as, root_class)
---				if l_type_a /= Void then
---					create l_type.make (20)
---					l_type.append (l_type_a.name)
---					if l_type_a.generics = Void then
---						l_class := l_type_a.associated_class
---						check l_class /= Void end
---						if l_class.is_generic then
---								-- In this case we try to insert constrains to receive a valid type
---							l_type.append (" [")
---							from
---								i := 1
---							until
---								not l_class.is_valid_formal_position (i)
---							loop
---								if i > 1 then
---									l_type.append (", ")
---								end
---								if l_class.generics [i].is_multi_constrained (l_class.generics) then
---									l_type.append ("NONE")
---								else
---									l_gtype := l_class.constrained_type (i)
---									append_type (l_type, l_gtype)
---								end
---								i := i + 1
---							end
---							l_type.append ("]")
---						end
---					end
-					stream.put_string ("l_type := {")
-					stream.put_string (full_type_name (a_type))
-					stream.put_line ("}")
---				end
---			end
-		end
-
-	full_type_name (a_type: STRING): STRING
-			-- Full type name of `a_type'
-		require
-			a_type_not_void: a_type /= Void
-			root_group_attached: root_group /= Void
-			root_class_attached: root_class /= Void
-			root_feature_attached: root_feature /= Void
-		local
-			l_type_a, l_gtype: TYPE_A
-			l_class: CLASS_C
-			l_type: detachable STRING
-			i: INTEGER
-		do
-			type_parser.parse_from_string ("type " + a_type, root_class)
-			error_handler.wipe_out
-			if attached {CLASS_TYPE_AS} type_parser.type_node as l_type_as then
-				l_type_a := type_a_generator.evaluate_type_if_possible (l_type_as, root_class)
-				if l_type_a /= Void then
-					create l_type.make (20)
-					l_type.append (l_type_a.name)
-					if l_type_a.generics = Void then
-						l_class := l_type_a.associated_class
-						check l_class /= Void end
-						if l_class.is_generic then
-								-- In this case we try to insert constrains to receive a valid type
-							l_type.append (" [")
-							from
-								i := 1
-							until
-								not l_class.is_valid_formal_position (i)
-							loop
-								if i > 1 then
-									l_type.append (", ")
-								end
-								if l_class.generics [i].is_multi_constrained (l_class.generics) then
-									l_type.append ("NONE")
-								else
-									l_gtype := l_class.constrained_type (i)
-									append_type (l_type, l_gtype)
-								end
-								i := i + 1
-							end
-							l_type.append ("]")
-						end
-					end
-					Result := l_type
+			l_arg_count := a_predicate.feature_.feature_.argument_count
+			l_text := a_predicate.predicate.text.twin
+			from
+				i := 0
+			until
+				i > l_arg_count
+			loop
+				if a_predicate.access_pattern.has (i) then
+					j := a_predicate.access_pattern.item (i)
+					l_text.replace_substring_all ("{" + j.out + "}", argument_name (i))
 				end
+				i := i + 1
+			end
+			Result := l_text
+		end
+
+	argument_name (a_index: INTEGER): STRING is
+			--
+		do
+			Result := "l_arg" + a_index.out
+		end
+
+	append_type_dec (a_argument_index: INTEGER; a_type: TYPE_A; a_feature: FEATURE_I) is
+			-- Append a type declaration in `stream'.
+		do
+			stream.put_string (argument_name (a_argument_index))
+			stream.put_string (": ")
+			stream.put_string (type_name (a_type, a_feature))
+		end
+
+	put_precondition_checking_routine (a_feature: AUT_FEATURE_OF_TYPE) is
+			-- Generate routine to evaluate the precondition of `a_feature'.
+		local
+			l_visitor: AUT_PRECONDITION_ANALYZER
+		do
+			create l_visitor.make
+			l_visitor.generate_precondition_predicates (a_feature)
+
+			if not l_visitor.last_predicates.is_empty then
+				generate_precondition_checker (a_feature, l_visitor.last_feature_access_pattern)
+				features_with_precondition.force_last (a_feature)
 			end
 		end
 
-	append_type (a_string: attached STRING; a_type: TYPE_A)
-			-- Append type name for `a_type' to `a_string' without formal parameters.
+	features_with_precondition: DS_LINKED_LIST [AUT_FEATURE_OF_TYPE]
+			-- features under test that has precondition
+
+	put_precondition_checking_routines is
+			-- Generate routines to evaluate the preconditions of exported features
+			-- in `types_under_test'.
 		local
-			i: INTEGER
+			l_classi: LIST [CLASS_I]
+			l_classc: CLASS_C
+			l_feat_table: FEATURE_TABLE
+			l_feati: FEATURE_I
+			l_any_class: CLASS_C
+			l_feature: AUT_FEATURE_OF_TYPE
+			l_type: TYPE_A
 		do
-			if not a_type.is_formal and attached {CL_TYPE_A} a_type as l_class_type then
-				a_string.append (l_class_type.associated_class.name)
-				if l_class_type.has_generics then
-					a_string.append (" [")
+			fixme ("This feature is similar to AUT_DYNAMIC_PRIORITY_QUEUE.set_static_priority_of_type. Refactoring is needed.")
+			create features_with_precondition.make
+			if configuration.is_precondition_checking_enabled then
+				l_any_class := system.any_class.compiled_class
+				from
+					types_under_test.start
+				until
+					types_under_test.after
+				loop
+					l_type := types_under_test.item_for_iteration
+					l_classc := l_type.associated_class
+					l_feat_table := l_classc.feature_table
 					from
-						i := l_class_type.generics.lower
+						l_feat_table.start
 					until
-						i > l_class_type.generics.upper
+						l_feat_table.after
 					loop
-						if i > l_class_type.generics.lower then
-							a_string.append (", ")
+						l_feati := l_feat_table.item_for_iteration
+
+						if not l_feati.is_prefix and then not l_feati.is_infix then
+							if
+								l_feati.export_status.is_exported_to (l_any_class) or else
+								is_exported_creator (l_feati, l_type)
+							then
+								create l_feature.make (l_feati, l_type)
+								put_precondition_checking_routine (l_feature)
+							end
 						end
-						append_type (a_string, l_class_type.generics.item (i))
-						i := i + 1
+						l_feat_table.forth
 					end
-					a_string.append ("]")
+
+					types_under_test.forth
 				end
-			else
-				a_string.append ("NONE")
 			end
+			put_initialize_precondition_table_routine (features_with_precondition)
 		end
+
+	feature_identifier (a_feature: AUT_FEATURE_OF_TYPE): STRING is
+			-- Identifier of `a_feature'
+		do
+			create Result.make (30)
+			Result.append (a_feature.associated_class.name_in_upper)
+			Result.append ("__")
+			Result.append (a_feature.feature_.feature_name.as_lower)
+		end
+
+	precondition_evaluator_name (a_feature: AUT_FEATURE_OF_TYPE): STRING is
+			-- Name of the precondition evaluator for `a_feature's
+		do
+			create Result.make (48)
+			Result.append ("satisfied_objects__")
+			Result.append (feature_identifier (a_feature))
+		end
+
+	put_initialize_precondition_table_routine (a_features: DS_LIST [AUT_FEATURE_OF_TYPE]) is
+			-- Generate routine to initialize precondition checking agent table.
+		do
+			stream.indent
+			stream.put_line ("initialize_precondition_table is")
+			stream.indent
+			stream.put_line ("do")
+			if configuration.is_precondition_checking_enabled then
+				stream.indent
+				stream.put_string ("create precondition_table.make (")
+				stream.put_string (a_features.count.out)
+				stream.put_line (")")
+				stream.put_line ("precondition_table.compare_objects")
+
+				from
+					a_features.start
+				until
+					a_features.after
+				loop
+					stream.put_string ("precondition_table.put (agent ")
+					stream.put_string (precondition_evaluator_name (a_features.item_for_iteration))
+					stream.put_string (", %"")
+					stream.put_string (feature_identifier (a_features.item_for_iteration))
+					stream.put_line ("%")")
+					a_features.forth
+				end
+				stream.dedent
+
+			end
+
+			stream.put_line ("end")
+			stream.put_line ("")
+			stream.dedent
+			stream.dedent
+		end
+
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

@@ -68,6 +68,14 @@ feature -- Access
 			Result := feature_.feature_name_id
 		end
 
+	associated_class: CLASS_C is
+			-- Class from which current feature is viewed
+		do
+			Result := type.associated_class
+		ensure
+			good_result: Result = type.associated_class
+		end
+
 feature -- Status report
 
 	is_creator: BOOLEAN

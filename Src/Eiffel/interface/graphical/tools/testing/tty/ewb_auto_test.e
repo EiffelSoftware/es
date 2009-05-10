@@ -119,6 +119,9 @@ feature -- Execution
 					-- Should automatic testing be enabled?
 				l_conf.set_is_random_testing_enabled (l_ap.is_automatic_testing_enabled)
 
+					-- Should precondition checking be enabled?
+				l_conf.set_is_precondition_evaluation_enabled (l_ap.is_precondition_checking_enabled)
+
 				if l_root_group.is_cluster then
 					if attached {CONF_CLUSTER} l_root_group as l_cluster then
 						l_conf.set_cluster (l_cluster)

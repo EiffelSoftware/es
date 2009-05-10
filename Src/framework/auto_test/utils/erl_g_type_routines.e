@@ -122,6 +122,36 @@ feature -- Access
 				(a_type.has_associated_class implies Result = exported_creators (a_type.associated_class, a_system).count)
 		end
 
+	is_exported_creator (a_feature: FEATURE_I; a_type: TYPE_A): BOOLEAN is
+			-- Is `a_feature' declared in `a_type' a creator which is exported to all classes?
+		require
+			a_feature_attached: a_feature /= Void
+			a_type_attached: a_type /= Void
+		local
+			l_class: CLASS_C
+		do
+			if
+				a_type.has_associated_class and then
+				a_type.associated_class.creators /= Void and then
+				a_type.associated_class.creators.has (a_feature.feature_name)
+			then
+				Result := a_type.associated_class.creators.item (a_feature.feature_name).is_all
+			end
+
+			if a_type.has_associated_class then
+				l_class := a_type.associated_class
+
+				if l_class.creators /= Void and then l_class.creators.has (a_feature.feature_name) then
+						-- For normal creators.
+					Result := l_class.creators.item (a_feature.feature_name).is_all
+
+				elseif l_class.allows_default_creation and then l_class.default_create_feature.feature_name.is_equal (a_feature.feature_name) then
+						-- For default creators.
+					Result := True
+				end
+			end
+		end
+
 feature {NONE} -- Parsing class types
 
 	type_a_generator: AST_TYPE_A_GENERATOR

@@ -347,11 +347,12 @@ feature {NONE} -- Implementation
 				is_finished := True
 			else
 
+				build_types_and_classes_under_test
 				generate_interpreter
 
 				if not is_finished and interpreter /= Void then
 							-- Generate and run test cases.
-					build_types_and_classes_under_test
+
 					error_handler.set_start_time (system_clock.date_time_now)
 				else
 					test_suite.propagate_error ("Unable to use workbench executable for interpreter", [], Current)
@@ -425,13 +426,15 @@ feature {NONE} -- Interpreter generation
 				system.make_update (False)
 
 					-- Generate interpreter.
-				factory.create_interpreter (interpreter_base_dirname, log_dirname, error_handler)
+				factory.create_interpreter (interpreter_base_dirname, log_dirname, error_handler, configuration)
 				interpreter := factory.last_interpreter
 				if interpreter /= Void and then proxy_time_out > 0 then
 					interpreter.set_timeout (proxy_time_out)
-					interpreter.set_is_target_object_state_retrieval_enabled (configuration.is_target_state_retrieved)
-					interpreter.set_is_argument_object_state_retrieval_enabled (configuration.is_argument_state_retrieved)
-					interpreter.set_is_query_result_object_state_retrieval_enabled (configuration.is_query_result_state_retrieved)
+				end
+
+					-- Generate typed object pool for precondition evaluation.
+				if configuration.is_precondition_checking_enabled then
+					interpreter.generate_typed_object_pool (types_under_test)
 				end
 			else
 				is_finished := True
@@ -461,15 +464,9 @@ feature {NONE} -- Interpreter generation
 			end
 			l_file.recursive_open_write
 			l_types := class_names
-			create l_source_writer
+			create l_source_writer.make (configuration)
 			if l_file.is_open_write and l_types /= Void then
-				if
-					configuration.is_target_state_retrieved or else
-					configuration.is_argument_state_retrieved or else
-					configuration.is_query_result_state_retrieved
-				then
-					l_source_writer.set_is_object_state_retrieval_enabled (True)
-				end
+				l_source_writer.set_types_under_test (types_under_test)
 				l_source_writer.write_class (l_file, l_types, l_system)
 				l_file.flush
 				l_file.close
@@ -507,6 +504,7 @@ feature{NONE} -- Test case generation and execution
 			l_name_cur: DS_HASH_SET_CURSOR [STRING]
 			l_name: STRING
 		do
+			interpreter_root_class_cell.put (system.root_type.associated_class)
 			create types_under_test.make (class_names.count)
 			create classes_under_test.make (class_names.count)
 			if is_automatic_testing_enabled then

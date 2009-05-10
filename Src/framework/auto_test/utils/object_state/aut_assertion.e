@@ -7,6 +7,11 @@ note
 class
 	AUT_ASSERTION
 
+inherit
+	SHARED_WORKBENCH
+
+	SHARED_SERVER
+
 create
 	make
 
@@ -40,6 +45,28 @@ feature -- Access
 			end
 		ensure
 			result_attached: Result /= Void
+		end
+
+	text: STRING is
+			-- Text of Current assertion
+		do
+			Result := tag.text (match_list_server.item (written_class.class_id))
+		end
+
+	expression_text: STRING is
+			-- Text of the expression part of Current assertion
+		do
+			if tag.expr /= Void then
+				Result := tag.expr.text (match_list_server.item (written_class.class_id))
+			else
+				create Result.make_empty
+			end
+		end
+
+	line_number: INTEGER is
+			-- Line number of the assertion
+		do
+			Result := tag.expr.first_token (match_list_server.item (written_class.class_id)).line
 		end
 
 feature -- Setting

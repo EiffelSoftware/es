@@ -204,6 +204,9 @@ feature -- Element change
 			a_type_attached: a_type /= Void
 		do
 			variable_type_table.force (a_type, a_variable)
+			if defining_variable_action /= Void then
+				defining_variable_action.call ([a_variable, a_type])
+			end
 		ensure
 			variable_defined: is_variable_defined (a_variable)
 			variable_has_valid_type: variable_type (a_variable) = a_type
@@ -226,6 +229,17 @@ feature -- Removal
 	variable_type_table: DS_HASH_TABLE [TYPE_A, ITP_VARIABLE]
 			-- Table mapping interprteter variables to their type
 
+feature -- Actions
+
+	defining_variable_action: PROCEDURE [ANY, TUPLE [ITP_VARIABLE, TYPE_A]]
+			-- Action to be called if a new variable is defined
+
+	set_defining_variable_action (a_action: like defining_variable_action) is
+			-- Set `defining_variable_action' with `a_action'.
+		do
+			defining_variable_action := a_action
+		end
+
 invariant
 
 	system_not_void: system /= Void
@@ -234,7 +248,7 @@ invariant
 	all_variables_have_type: not variable_type_table.has (Void)
 
 note
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -258,10 +272,10 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

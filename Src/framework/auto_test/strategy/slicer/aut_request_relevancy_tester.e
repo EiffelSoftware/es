@@ -81,6 +81,13 @@ feature {AUT_REQUEST} -- Processing
 			is_relevant := False
 		end
 
+	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		do
+			is_relevant := False
+		end
+
+
 invariant
 
 	variables_not_void: variables /= Void

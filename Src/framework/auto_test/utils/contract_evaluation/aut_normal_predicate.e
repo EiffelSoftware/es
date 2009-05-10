@@ -1,74 +1,57 @@
 note
-	description: "AutoTest request processor"
+	description: "Summary description for {AUT_NORMAL_PREDICATE}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AUT_REQUEST_PROCESSORS
+	AUT_NORMAL_PREDICATE
 
 inherit
-	AUT_REQUEST_PROCESSOR
-		undefine
-			is_equal,
-			copy
-		end
-
-	LINKED_LIST [AUT_REQUEST_PROCESSOR]
+	AUT_PREDICATE
 
 create
 	make
 
-feature {AUT_REQUEST} -- Processing
+feature{NONE} -- Initializaiton
 
-	process_start_request (a_request: AUT_START_REQUEST)
-			-- Process `a_request'.
+	make (a_types: DS_LIST [TYPE_A]; a_text: STRING; a_context_class: like context_class; a_assertion: like assertion) is
+			-- Initialize current.
 		do
-			do_all (agent a_request.process (?))
+			create types.make
+			a_types.do_all (agent types.force_last)
+			text_internal := a_text.twin
+			context_class := a_context_class
+			assertion := a_assertion
 		end
 
-	process_stop_request (a_request: AUT_STOP_REQUEST)
-			-- Process `a_request'.
+feature -- Access
+
+	text: STRING is
+			-- Text of Current predicate
+			-- The arguments in of the predicates are replaced by "{1}", "{2}"
+			-- in the text. For example: "{1}.valid_cursor ({2})"
 		do
-			do_all (agent a_request.process (?))
+			Result := text_internal
 		end
 
-	process_create_object_request (a_request: AUT_CREATE_OBJECT_REQUEST)
-			-- Process `a_request'.
+	assertion: AUT_ASSERTION
+			-- Assertion associated with current predicates
+
+feature -- Status report
+
+	is_linear_solvable: BOOLEAN is
+			-- Is current predicate linearly solvable?
 		do
-			do_all (agent a_request.process (?))
+			Result := False
+		ensure then
+			good_result: Result = False
 		end
 
-	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
+feature{NONE} -- Implementation
 
-	process_assign_expression_request (a_request: AUT_ASSIGN_EXPRESSION_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
-
-	process_type_request (a_request: AUT_TYPE_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
-
-	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
-
-	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
-
+	text_internal: like text;
+			-- Implementation of `text'
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

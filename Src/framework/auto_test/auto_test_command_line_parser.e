@@ -94,6 +94,9 @@ feature -- Status report
 	object_state_config: AUT_OBJECT_STATE_CONFIG
 			-- Configuration related object state retrieval
 
+	is_precondition_checking_enabled: BOOLEAN
+			-- Should precondition evaluation be enabled?
+
 feature -- Element change
 
 	set_error_handler (a_error_handler: like error_handler)
@@ -133,6 +136,7 @@ feature -- Parsing
 			l_help_flag: AP_DISPLAY_HELP_FLAG
 			l_load_log_option: AP_STRING_OPTION
 			l_state_option: AP_STRING_OPTION
+			l_precondition_option: AP_FLAG
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -217,6 +221,10 @@ feature -- Parsing
 			create l_state_option.make_with_long_form ("state")
 			l_state_option.set_description ("Parameters to enable object state monitoring. The format is comma separated name-value pairs. The supported parameters are target=true/false,argument=true/false")
 			parser.options.force_last (l_state_option)
+
+			create l_precondition_option.make ('p', "precondition")
+			l_precondition_option.set_description ("Enable precondition evaluation before feature call.")
+			parser.options.force_last (l_precondition_option)
 
 			parser.parse_list (a_arguments)
 
@@ -333,6 +341,12 @@ feature -- Parsing
 			if not error_handler.has_error then
 				if l_state_option.was_found then
 					create object_state_config.make_with_string (l_state_option.parameter)
+				end
+			end
+
+			if not error_handler.has_error then
+				if l_precondition_option.was_found then
+					is_precondition_checking_enabled := True
 				end
 			end
 

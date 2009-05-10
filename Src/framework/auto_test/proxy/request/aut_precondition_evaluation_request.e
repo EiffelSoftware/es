@@ -1,74 +1,48 @@
 note
-	description: "AutoTest request processor"
+	description: "Summary description for {AUT_PRECONDITION_EVALUATION_REQUEST}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AUT_REQUEST_PROCESSORS
+	AUT_PRECONDITION_EVALUATION_REQUEST
 
 inherit
-	AUT_REQUEST_PROCESSOR
-		undefine
-			is_equal,
-			copy
+	AUT_REQUEST
+		rename
+			make as old_make
 		end
-
-	LINKED_LIST [AUT_REQUEST_PROCESSOR]
 
 create
 	make
 
-feature {AUT_REQUEST} -- Processing
+feature{NONE} -- Initialization
 
-	process_start_request (a_request: AUT_START_REQUEST)
-			-- Process `a_request'.
+	make (a_system: like system; a_feature: like feature_; a_variables: DS_LIST [ITP_VARIABLE]) is
+			-- Initialize Current.
 		do
-			do_all (agent a_request.process (?))
+			old_make (a_system)
+			variables := a_variables
+			feature_ := a_feature
 		end
 
-	process_stop_request (a_request: AUT_STOP_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
+feature -- Access
 
-	process_create_object_request (a_request: AUT_CREATE_OBJECT_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
+	feature_: AUT_FEATURE_OF_TYPE
+			-- Feature whose precondition is to be evaluated
 
-	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
+	variables: DS_LIST [ITP_VARIABLE]
+			-- Variables used for precondition evaluation
+			-- The first item in the list is the target object for the
+			-- call to `feature_', the rest items are (possibly) arguments.
 
-	process_assign_expression_request (a_request: AUT_ASSIGN_EXPRESSION_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
+feature -- Processing
 
-	process_type_request (a_request: AUT_TYPE_REQUEST)
-			-- Process `a_request'.
+	process (a_processor: AUT_REQUEST_PROCESSOR)
+			-- Process current request.
 		do
-			do_all (agent a_request.process (?))
+			a_processor.process_precodition_evaluation_request (Current)
 		end
-
-	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
-
-	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
-
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

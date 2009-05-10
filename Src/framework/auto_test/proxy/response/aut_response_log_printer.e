@@ -100,26 +100,33 @@ feature -- Process
 			l_results: HASH_TABLE [STRING, STRING]
 			l_void: STRING
 			l_value: STRING
+			l_state: STRING
 		do
 			l_void := object_state_void_value
 			print_line (multi_line_value_start_tag)
 			l_results := a_response.query_results
 			if not a_response.is_void and then not a_response.is_class_invariant_violated then
+				create l_state.make (64)
 				from
 					l_results.start
 				until
 					l_results.after
 				loop
 						-- Print out query name in a line.
-					print_lines_with_prefix (l_results.key_for_iteration + "%N", <<response_prefix, object_state_query_prefix>>)
+					l_state.append (l_results.key_for_iteration)
+					l_state.append_character (':')
 
 						-- Print out query value (possibly in multiple lines).
 					if l_results.item_for_iteration = Void then
 						l_value := l_void
 					else
 						l_value := l_results.item_for_iteration
+						l_value.replace_substring_all ("%N", "%%N")
 					end
-					print_lines_with_prefix (l_value + "%N", <<response_prefix, object_state_value_prefix>>)
+					l_state.append (l_value)
+					l_state.append_character ('%N')
+
+					print_lines_with_prefix (l_state, <<response_prefix, object_state_query_prefix>>)
 					l_results.forth
 				end
 			end
@@ -132,6 +139,12 @@ feature -- Process
 				print_line (interpreter_success_message)
 			end
 			print_line (interpreter_done_message)
+		end
+
+	process_precondition_evaluation_response (a_response: AUT_PRECONDITION_EVALUATION_RESPONSE)
+			-- Process `a_response'.
+		do
+			-- To implement
 		end
 
 feature{NONE} -- Implementation

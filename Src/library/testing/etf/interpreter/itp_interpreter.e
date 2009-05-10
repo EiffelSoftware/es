@@ -72,6 +72,9 @@ feature {NONE} -- Initialization
 				die (1)
 			end
 
+				-- Initialize precondition table.
+			initialize_precondition_table
+
 			start (l_port, l_server_url)
 
 				-- Close log file.
@@ -130,7 +133,8 @@ feature -- Status report
 				a_type = quit_request_flag or else
 				a_type = execute_request_flag or else
 				a_type = object_state_request_flag or else
-				a_type = type_request_flag
+				a_type = type_request_flag or else
+				a_type = precondition_evaluation_request_flag
 		end
 
 feature {NONE} -- Handlers
@@ -490,6 +494,9 @@ feature {NONE} -- Parsing
 					when object_state_request_flag then
 						report_object_state_request
 
+					when precondition_evaluation_request_flag then
+						report_precondition_evaluation_request
+
 					when quit_request_flag then
 						report_quit_request
 					end
@@ -641,6 +648,31 @@ feature{NONE} -- Invariant checking
 
 feature{NONE} -- Object state checking
 
+	report_precondition_evaluation_request is
+			-- Report and precondition evaluation request.
+		local
+			l_result: detachable TUPLE
+		do
+			output_buffer.wipe_out
+			error_buffer.wipe_out
+			if attached {TUPLE [l_feature_name: STRING; l_arguments: ARRAY [INTEGER]]} last_request as l_request then
+				l_result := objects_satisfying_precondition (l_request.l_feature_name, l_request.l_arguments)
+				if l_result /= Void then
+					last_response := [l_request.l_arguments, output_buffer, error_buffer]
+				else
+					last_response := [Void, output_buffer, error_buffer]
+				end
+				log_message ("Pre: " + (l_result /= Void).out + "%N")
+				refresh_last_response_flag
+				send_response_to_socket
+			else
+				report_error (invalid_precondition_evaluation_request)
+				last_response := [Void, output_buffer, error_buffer]
+				refresh_last_response_flag
+				send_response_to_socket
+			end
+		end
+
 	report_object_state_request is
 			-- Report an object state request.
 		local
@@ -717,6 +749,8 @@ feature{NONE} -- Object state checking
 
 	invalid_object_state_request: STRING = "Invalid object state request."
 			-- Error message for invalid object state request
+
+	invalid_precondition_evaluation_request: STRING = "Invalid precondition evaluation request."
 
 	query_values: LINKED_LIST [detachable STRING]
 			-- List to store string representation of query values
@@ -823,6 +857,92 @@ feature{NONE} -- Object state checking
 			end
 			retry
 		end
+
+feature -- Precondition satisfaction
+
+	safe_satisfied_objects (a_agent: FUNCTION [ANY, TUPLE, TUPLE]; a_args: TUPLE): detachable TUPLE is
+			-- Evaluate precondition wrapped in `a_agent' using arguments `a_args'.
+			-- If the precondition is satisfied, return the set of objects that satisfy
+			-- the precondition. In most of the cases, the original objects in `a_args' will be returned
+			-- In the case when linear constrain solving is needed, the returned satisfied integers may
+			-- be different from the original.
+			-- If there is an exception during precondition evaluation, return Void.
+		local
+			l_retried: BOOLEAN
+			l_checking: BOOLEAN
+		do
+			if not l_retried then
+				l_checking := {ISE_RUNTIME}.check_assert (False)
+				Result := a_agent.item (a_args)
+				l_checking := {ISE_RUNTIME}.check_assert (l_checking)
+			else
+				Result := Void
+			end
+		rescue
+			l_retried := True
+			retry
+		end
+
+	precondition_table: HASH_TABLE [FUNCTION [ANY, TUPLE, TUPLE], STRING]
+			-- Table for precondition evaluation agents for features under test
+			-- [agent, feature_identifier]
+			-- Key is the feature identifier in the form of "CLASS_NAME.feature_name".
+			-- Value is the agent used to evaluate precondition of that feature.
+
+	initialize_precondition_table is
+			-- Initialize `precondition_table'.
+		deferred
+		end
+
+	objects_satisfying_precondition (a_feature: STRING; a_args: ARRAY [INTEGER]): detachable TUPLE is
+			--
+		local
+			l_count: INTEGER
+			l_agent: FUNCTION [ANY, TUPLE, TUPLE]
+			l_args: ARRAYED_LIST [detachable ANY]
+			i: INTEGER
+			l_arg_tuple: TUPLE
+		do
+			l_agent := precondition_table.item (a_feature)
+
+				-- Load arguments from object pool.
+			l_count := a_args.count
+			create l_args.make (l_count)
+			from
+				i := 1
+			until
+				i > l_count
+			loop
+				l_args.extend (variable_at_index (a_args.item (i)))
+				i := i + 1
+			end
+
+				-- Generate tuple for agent call.
+			inspect
+				l_count
+			when 1 then
+				l_arg_tuple := [l_args.i_th (1)]
+			when 2 then
+				l_arg_tuple := [l_args.i_th (1), l_args.i_th (2)]
+			when 3 then
+				l_arg_tuple := [l_args.i_th (1), l_args.i_th (2), l_args.i_th (3)]
+			when 4 then
+				l_arg_tuple := [l_args.i_th (1), l_args.i_th (2), l_args.i_th (3), l_args.i_th (4)]
+			when 5 then
+				l_arg_tuple := [l_args.i_th (1), l_args.i_th (2), l_args.i_th (3), l_args.i_th (4), l_args.i_th (5)]
+			when 6 then
+				l_arg_tuple := [l_args.i_th (1), l_args.i_th (2), l_args.i_th (3), l_args.i_th (4), l_args.i_th (5), l_args.i_th (6)]
+			when 7 then
+				l_arg_tuple := [l_args.i_th (1), l_args.i_th (2), l_args.i_th (3), l_args.i_th (4), l_args.i_th (5), l_args.i_th (6), l_args.i_th (7)]
+			when 8 then
+				l_arg_tuple := [l_args.i_th (1), l_args.i_th (2), l_args.i_th (3), l_args.i_th (4), l_args.i_th (5), l_args.i_th (6), l_args.i_th (7), l_args.i_th (8)]
+			when 9 then
+				l_arg_tuple := [l_args.i_th (1), l_args.i_th (2), l_args.i_th (3), l_args.i_th (4), l_args.i_th (5), l_args.i_th (6), l_args.i_th (7), l_args.i_th (8), l_args.i_th (9)]
+			end
+
+			Result := safe_satisfied_objects (l_agent, l_arg_tuple)
+		end
+
 
 invariant
 	log_file_open_write: log_file.is_open_write

@@ -194,6 +194,13 @@ feature {AUT_REQUEST} -- Processing
 			to_implement ("Implement")
 		end
 
+	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		do
+			to_implement ("Implement")
+		end
+
+
 feature {NONE} -- Implementation
 
 	request_list_cursor: DS_LINEAR_CURSOR [AUT_REQUEST]

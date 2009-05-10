@@ -1,74 +1,34 @@
 note
-	description: "AutoTest request processor"
+	description: "Summary description for {AUT_LINEAR_SOLVABLE_PREDICATE}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
-	AUT_REQUEST_PROCESSORS
+deferred class
+	AUT_LINEAR_SOLVABLE_PREDICATE
 
 inherit
-	AUT_REQUEST_PROCESSOR
-		undefine
-			is_equal,
-			copy
-		end
+	AUT_PREDICATE
 
-	LINKED_LIST [AUT_REQUEST_PROCESSOR]
+feature -- Status report
 
-create
-	make
-
-feature {AUT_REQUEST} -- Processing
-
-	process_start_request (a_request: AUT_START_REQUEST)
-			-- Process `a_request'.
+	is_linear_solvable: BOOLEAN is
+			-- Is current predicate linearly solvable?
 		do
-			do_all (agent a_request.process (?))
+			Result := True
+		ensure then
+			good_result: Result
 		end
 
-	process_stop_request (a_request: AUT_STOP_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
+feature -- Access
 
-	process_create_object_request (a_request: AUT_CREATE_OBJECT_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
+	constrained_arguments: DS_HASH_TABLE [STRING, INTEGER]
+			-- Table of constrained arguments of the predicate
+			-- [argument name, 1-based argument index for the predicate]
 
-	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
-
-	process_assign_expression_request (a_request: AUT_ASSIGN_EXPRESSION_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
-
-	process_type_request (a_request: AUT_TYPE_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
-
-	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
-
-	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
-
+	constraining_queries: DS_HASH_SET [STRING];
+			-- List of queries that constrains the arguments
+			-- in `constrained_arguments'.
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

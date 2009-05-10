@@ -70,7 +70,8 @@ feature {NONE} -- Initialization
 			a_system: like system;
 			an_interpreter_log_filename: STRING;
 			a_proxy_log_filename: STRING;
-			a_error_handler: like error_handler)
+			a_error_handler: like error_handler;
+			a_config: like configuration)
 			-- Create a new proxy for the interpreter found at `an_executable_file_name'.
 		require
 			an_executable_file_name_not_void: an_executable_file_name /= Void
@@ -119,6 +120,7 @@ feature {NONE} -- Initialization
 			set_is_logging_enabled (True)
 			set_is_speed_logging_enabled (True)
 			set_is_test_case_index_logging_enabled (True)
+			configuration := a_config
 		ensure
 			executable_file_name_set: executable_file_name = an_executable_file_name
 			system_set: system = a_system
@@ -126,6 +128,7 @@ feature {NONE} -- Initialization
 			error_handler_set: error_handler = a_error_handler
 			timeout_set: timeout = default_timeout
 			is_logging_enabled: is_logging_enabled
+			configuration_set: configuration = a_config
 		end
 
 feature -- Status
@@ -187,6 +190,9 @@ feature -- Access
 			valid_filename: Result.is_equal (proxy_log_file.name)
 		end
 
+	configuration: TEST_GENERATOR_CONF_I
+			-- Configuration associated with current AutoTest run
+
 feature -- Settings
 
 	set_timeout (a_timeout: INTEGER)
@@ -234,30 +240,6 @@ feature -- Settings
 			is_test_case_index_logging_enabled := b
 		ensure
 			is_test_case_index_logging_enabled_set: is_test_case_index_logging_enabled = b
-		end
-
-	set_is_target_object_state_retrieval_enabled (b: BOOLEAN) is
-			-- Set `is_target_object_state_retrieval_enabled' with `b'.
-		do
-			is_target_object_state_retrieval_enabled := b
-		ensure
-			is_target_object_state_retrieval_enabled_set: is_target_object_state_retrieval_enabled = b
-		end
-
-	set_is_argument_object_state_retrieval_enabled (b: BOOLEAN) is
-			-- Set `is_argument_object_state_retrieval_enabled' with `b'.
-		do
-			is_argument_object_state_retrieval_enabled := b
-		ensure
-			is_argument_object_state_retrieval_enabled_set: is_argument_object_state_retrieval_enabled = b
-		end
-
-	set_is_query_result_object_state_retrieval_enabled (b: BOOLEAN) is
-			-- Set `is_query_result_object_state_retrieval_enabled' with `b'.
-		do
-			is_query_result_object_state_retrieval_enabled := b
-		ensure
-			is_query_result_object_state_retrieval_enabled_set: is_query_result_object_state_retrieval_enabled = b
 		end
 
 feature -- Execution
@@ -674,7 +656,7 @@ feature -- Execution
 		local
 			l_cursor: DS_LINEAR_CURSOR [ITP_EXPRESSION]
 		do
-			if is_argument_object_state_retrieval_enabled then
+			if configuration.is_argument_state_retrieved then
 				from
 					l_cursor := a_expressions.new_cursor
 					l_cursor.start
@@ -694,7 +676,7 @@ feature -- Execution
 	retrieve_target_object_state (a_variable: ITP_VARIABLE; a_variable_set: DS_HASH_SET [ITP_VARIABLE]) is
 			-- Record state of `a_variable' as a target of a feature call.			
 		do
-			if is_target_object_state_retrieval_enabled and then not a_variable_set.has (a_variable) then
+			if configuration.is_target_state_retrieved and then not a_variable_set.has (a_variable) then
 				a_variable_set.force_last (a_variable)
 			end
 		end
@@ -702,7 +684,7 @@ feature -- Execution
 	retrieve_query_result_object_state (a_variable: ITP_VARIABLE; a_variable_set: DS_HASH_SET [ITP_VARIABLE]) is
 			-- Record state of `a_variable' as a return value of a query.
 		do
-			if is_query_result_object_state_retrieval_enabled and then not a_variable_set.has (a_variable) then
+			if configuration.is_query_result_state_retrieved and then not a_variable_set.has (a_variable) then
 				a_variable_set.force_last (a_variable)
 			end
 		end
@@ -800,10 +782,9 @@ feature -- Execution
 	is_state_recording_enabled: BOOLEAN is
 			-- Is object state recording enabled?
 		do
-			Result :=
-				is_argument_object_state_retrieval_enabled or else
-				is_target_object_state_retrieval_enabled or else
-				is_query_result_object_state_retrieval_enabled
+			Result := configuration.is_object_state_retrieval_enabled
+		ensure
+			good_result: Result = configuration.is_object_state_retrieval_enabled
 		end
 
 feature -- Response parsing
@@ -1228,6 +1209,76 @@ feature{NONE} -- Speed logging
 					last_speed_check_time := l_time_now
 				end
 			end
+		end
+
+feature -- Precondition satisfaction
+
+	typed_object_pool: AUT_TYPED_OBJECT_POOL
+			-- Typed object pool
+
+	generate_typed_object_pool (a_types: DS_LIST [TYPE_A]) is
+			-- Generate `typed_object_pool' and
+			-- initialize it with `a_types'.
+		do
+			create typed_object_pool.make (system, a_types)
+			variable_table.set_defining_variable_action (agent typed_object_pool.put_variable)
+		end
+
+	is_precondition_satisfied (a_feature: AUT_FEATURE_OF_TYPE; a_variables: DS_LIST [ITP_VARIABLE]): BOOLEAN is
+			-- Can the precondition of `a_feature' be satisfied by `a_variables'?
+		local
+			l_request: AUT_PRECONDITION_EVALUATION_REQUEST
+		do
+			create l_request.make (system, a_feature, a_variables)
+			last_request := l_request
+			last_request.process (request_printer)
+			flush_process
+			parse_precondition_evaluation_response
+			last_request.set_response (last_response)
+			Result := attached {AUT_PRECONDITION_EVALUATION_RESPONSE} last_response as l_response and then l_response.is_satisfied
+			stop_process_on_problems (last_response)
+		end
+
+	parse_precondition_evaluation_response is
+			-- Parse the response of the last precondition evaluation request.
+		do
+			if attached {AUT_PRECONDITION_EVALUATION_REQUEST} last_request as l_request then
+				retrieve_precondition_evaluation_response
+				if is_logging_enabled then
+					last_response.process (response_printer)
+				end
+			end
+		end
+
+	retrieve_precondition_evaluation_response is
+			-- Retrieve response of the last precondition evaluation request.
+		local
+			l_data: TUPLE [object_index: detachable ARRAY [INTEGER]; output: detachable STRING; error: detachable STRING]
+			l_retried: BOOLEAN
+			l_socket: like socket
+			l_response_flag: NATURAL_32
+			l_response: AUT_PRECONDITION_EVALUATION_RESPONSE
+			l_any: detachable ANY
+		do
+			if not l_retried then
+				l_socket := socket
+				l_socket.read_natural_32
+				l_response_flag := l_socket.last_natural_32
+				l_any ?= l_socket.retrieved
+				l_data ?= l_any
+				process.set_timeout (0)
+				if l_data /= Void then
+					create l_response.make (l_data.object_index /= Void)
+					last_response := l_response
+				else
+					last_raw_response := Void
+				end
+			end
+		rescue
+			is_ready := False
+			l_retried := True
+			last_raw_response := Void
+			retry
 		end
 
 invariant

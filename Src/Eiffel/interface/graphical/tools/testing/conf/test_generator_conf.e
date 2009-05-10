@@ -116,6 +116,9 @@ feature -- Access: cache
 	log_file_path_cache: like log_file_path assign set_load_file_path
 			-- Cache for `log_file_path'
 
+	precondition_evaluation_cache: like is_precondition_checking_enabled
+			-- Cache for `is_precondition_checking_enabled'
+
 feature -- Status report
 
 	is_new_class: BOOLEAN = True
@@ -162,6 +165,8 @@ feature -- Status report
 			result_set: Result = is_random_testing_enabled_cache
 		end
 
+feature -- Object state retrieval
+
 	is_target_state_retrieved: BOOLEAN is
 			-- Should states of target objects be retrieved?
 		do
@@ -178,6 +183,16 @@ feature -- Status report
 			-- Should states of objects returned as query results be retrieved?
 		do
 			Result := object_state_config /= Void and then object_state_config.is_query_result_object_state_retrieval_enabled
+		end
+
+feature -- Precondition satisfaction
+
+	is_precondition_checking_enabled: BOOLEAN is
+			-- Is precondition checking before feature call enabled?
+		do
+			Result := precondition_evaluation_cache
+		ensure then
+			good_result: Result = precondition_evaluation_cache
 		end
 
 feature -- Status setting
@@ -254,6 +269,13 @@ feature -- Status setting
 			object_state_config_set: object_state_config = a_config
 		end
 
+	set_is_precondition_evaluation_enabled (b: BOOLEAN) is
+			-- Set `is_precondition_checking_enabled' with `b'.
+		do
+			precondition_evaluation_cache := b
+		ensure
+			is_precondition_checking_enabled_set: is_precondition_checking_enabled = b
+		end
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

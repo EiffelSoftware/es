@@ -26,6 +26,9 @@ feature -- AutoTest socket request flags
 	object_state_request_flag: NATURAL_8 = 5
 			-- Flag for "state" request
 
+	precondition_evaluation_request_flag: NATURAL_8 = 6
+			-- Flag for "precondition" request
+
 feature -- AutoTest socket reponse flags
 
 	normal_response_flag: NATURAL_8 = 1

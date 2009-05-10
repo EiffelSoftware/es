@@ -23,6 +23,8 @@ inherit
 
 	ERL_G_TYPE_ROUTINES
 
+	AUT_CONTRACT_EXTRACTOR
+
 create
 
 	make
@@ -63,6 +65,9 @@ feature -- Status
 			Result := interpreter.is_running and interpreter.is_ready and not steps_completed
 		end
 
+	has_precondition: BOOLEAN
+			-- Does `feature_to_call' have precondition?
+
 feature -- Access
 
 	feature_to_call: FEATURE_I
@@ -97,6 +102,9 @@ feature -- Access
 	error_handler: AUT_ERROR_HANDLER
 			-- Error handler
 
+	arguments: DS_LIST [ITP_EXPRESSION]
+			-- List of expressions used as arguments to the feature call
+
 feature -- Change
 
 	set_feature_and_type (a_feature: like feature_to_call; a_type: like type)
@@ -108,6 +116,7 @@ feature -- Change
 			class_has_feature: has_feature (a_type.associated_class, a_feature)
 		do
 			feature_to_call := a_feature
+			has_precondition := not precondition_of_feature (feature_to_call, feature_to_call.written_class).is_empty
 			type := a_type
 		ensure
 			feature_set: feature_to_call = a_feature
@@ -133,6 +142,8 @@ feature -- Execution
 		end
 
 	step
+		local
+			l_call: BOOLEAN
 		do
 			if type = Void then
 				-- 1st step in diversify mode
@@ -158,9 +169,32 @@ feature -- Execution
 				argument_creator.step
 			elseif feature_caller /= Void and then feature_caller.has_next_step then
 				feature_caller.step
+			elseif has_precondition and then precondition_evaluator = Void then
+					create_precondition_evaluator
+			elseif has_precondition and then precondition_evaluator /= Void and then precondition_evaluator.has_next_step then
+				precondition_evaluator.step
 			else
 				if not target_creator.has_error then
-					invoke
+					if not has_precondition then
+						if argument_creator /= Void and then argument_creator.receivers /= Void then
+							arguments := argument_creator.receivers
+						else
+							create {DS_LINKED_LIST [ITP_EXPRESSION]} arguments.make
+						end
+						l_call := True
+					elseif precondition_evaluator.is_precondition_satisfied then
+						create {DS_LINKED_LIST [ITP_EXPRESSION]} arguments.make_from_array (precondition_evaluator.variables)
+						target ?= arguments.first
+						arguments.start
+						arguments.remove_at
+						l_call := True
+					end
+					if l_call then
+						invoke
+					else
+						queue.mark (create {AUT_FEATURE_OF_TYPE}.make (feature_to_call, interpreter.variable_table.variable_type (target)))
+						cancel
+					end
 				end
 				steps_completed := True
 			end
@@ -243,13 +277,13 @@ feature {NONE} -- Steps
 			list: DS_LIST [ITP_EXPRESSION]
 			normal_response: AUT_NORMAL_RESPONSE
 		do
-			if argument_creator /= Void and then not argument_creator.receivers.is_empty then
-				list := argument_creator.receivers
-			else
-				create {DS_LINKED_LIST [ITP_EXPRESSION]} list.make
-			end
-
-			if target /= Void then
+--			if argument_creator /= Void and then not argument_creator.receivers.is_empty then
+--				list := argument_creator.receivers
+--			else
+--				create {DS_LINKED_LIST [ITP_EXPRESSION]} list.make
+--			end
+			list := arguments
+			if target /= Void and then not interpreter.variable_table.variable_type (target).is_none then
 				if feature_to_call.type /= void_type then
 					receiver := interpreter.variable_table.new_variable
 					interpreter.invoke_and_assign_feature (receiver, type, feature_to_call, target, list)
@@ -292,6 +326,7 @@ feature {NONE} -- Implementation
 			if count > 0 then
 				i := (random.item  \\ count) + 1
 				feature_to_call := l_feature_table.item (class_).item (i)
+				has_precondition := not precondition_of_feature (feature_to_call, feature_to_call.written_class).is_empty
 			else
 				steps_completed := True
 			end
@@ -368,6 +403,26 @@ feature {NONE} -- Implementation
 				cancel
 			end
 		end
+
+feature -- Precondition evaluation
+
+	precondition_evaluator: AUT_PRECONDITION_EVALUATION_TASK
+			-- Precondition evaluator
+
+	create_precondition_evaluator is
+			-- Create `precondition_evaluator'.
+		local
+			l_vars: DS_LINKED_LIST [ITP_VARIABLE]
+		do
+			create l_vars.make
+			l_vars.force_last (target)
+			if argument_creator /= Void and then argument_creator.receivers /= Void then
+				l_vars.append_last (argument_creator.receivers)
+			end
+			create precondition_evaluator.make (create {AUT_FEATURE_OF_TYPE}.make (feature_to_call, type), l_vars, interpreter)
+			precondition_evaluator.start
+		end
+
 
 invariant
 

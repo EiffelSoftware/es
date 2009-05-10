@@ -92,6 +92,8 @@ feature -- Status report
 		deferred
 		end
 
+feature -- Object state retrieval
+
 	is_target_state_retrieved: BOOLEAN is
 			-- Should states of target objects be retrieved?
 		require
@@ -110,6 +112,28 @@ feature -- Status report
 			-- Should states of object returned as query results be retrieved?
 		require
 			usable: is_interface_usable
+		deferred
+		end
+
+	is_object_state_retrieval_enabled: BOOLEAN is
+			-- Should object state be retrieved?
+		do
+			Result :=
+				is_target_state_retrieved or else
+				is_argument_state_retrieved or else
+				is_query_result_state_retrieved
+		ensure
+			good_result:
+				Result =
+					is_target_state_retrieved or else
+					is_argument_state_retrieved or else
+					is_query_result_state_retrieved
+		end
+
+feature -- Precondition satisfaction
+
+	is_precondition_checking_enabled: BOOLEAN is
+			-- Is precondition checking before feature call enabled?
 		deferred
 		end
 

@@ -1,76 +1,47 @@
 note
-	description: "AutoTest request processor"
+	description: "Summary description for {AUT_PRECONDITION_EVALUATION_RESPONSE}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AUT_REQUEST_PROCESSORS
+	AUT_PRECONDITION_EVALUATION_RESPONSE
 
 inherit
-	AUT_REQUEST_PROCESSOR
-		undefine
-			is_equal,
-			copy
+	AUT_NORMAL_RESPONSE
+		rename
+			make as old_make
+		redefine
+			process
 		end
 
-	LINKED_LIST [AUT_REQUEST_PROCESSOR]
+	AUT_SHARED_CONSTANTS
 
 create
 	make
 
-feature {AUT_REQUEST} -- Processing
+feature{NONE} -- Initialization
 
-	process_start_request (a_request: AUT_START_REQUEST)
-			-- Process `a_request'.
+	make (a_satisfied: BOOLEAN) is
+			--
 		do
-			do_all (agent a_request.process (?))
+			is_satisfied := a_satisfied
 		end
 
-	process_stop_request (a_request: AUT_STOP_REQUEST)
-			-- Process `a_request'.
+feature -- Access
+
+	is_satisfied: BOOLEAN
+			-- Is the precondition of the last evaluated satisfied?
+
+feature -- Process
+
+	process (a_visitor: AUT_RESPONSE_VISITOR)
+			-- Process `Current' using `a_visitor'.
 		do
-			do_all (agent a_request.process (?))
+			a_visitor.process_precondition_evaluation_response (Current)
 		end
 
-	process_create_object_request (a_request: AUT_CREATE_OBJECT_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
-
-	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
-
-	process_assign_expression_request (a_request: AUT_ASSIGN_EXPRESSION_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
-
-	process_type_request (a_request: AUT_TYPE_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
-
-	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
-
-	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)
-			-- Process `a_request'.
-		do
-			do_all (agent a_request.process (?))
-		end
-
-
-note
+;note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

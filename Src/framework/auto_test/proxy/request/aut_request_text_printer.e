@@ -129,6 +129,12 @@ feature {AUT_REQUEST} -- Processing
 			output_stream.put_line (a_request.variable.name (variable_name_prefix))
 		end
 
+	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		do
+			-- Do nothing.
+		end
+
 feature {NONE} -- Printing
 
 	print_argument_list (an_argument_list: DS_LINEAR [ITP_EXPRESSION])

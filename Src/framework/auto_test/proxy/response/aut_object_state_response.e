@@ -69,16 +69,15 @@ feature{NONE} -- Initialization
 			l_value: STRING
 			l_line: STRING
 			l_query_name_prefix: STRING
-			l_query_value_prefix: STRING
 			l_prefix_count: INTEGER
 			l_prefix: STRING
 			l_query_results: like query_results
 			l_va: STRING
+			l_pair: LIST [STRING]
 		do
 			raw_text := ""
 			l_lines := a_response.text.split ('%N')
 			l_query_name_prefix := object_state_query_prefix
-			l_query_value_prefix := object_state_value_prefix
 			l_prefix_count := l_query_name_prefix.count
 
 			create query_results.make (10)
@@ -95,18 +94,14 @@ feature{NONE} -- Initialization
 
 					if l_prefix.is_equal (l_query_name_prefix) then
 							-- We find a query name, store that.
-						create l_query.make_from_string (l_va)
-						create l_value.make (16)
-						l_query_results.force (l_value, l_query)
+						l_pair := l_va.split (':')
+						check l_pair.count = 2 end
 
-					elseif l_prefix.is_equal (l_query_value_prefix) then
-							-- We find part of a value for the query.
-						if l_va.is_case_insensitive_equal (object_state_query_prefix) then
-							l_query_results.force (Void, l_query)
-						else
-							l_value.append (l_va)
-							l_value.extend ('%N')
-						end
+						create l_query.make_from_string (l_pair.first)
+						l_query := l_pair.first
+						l_value := l_pair.last
+						l_value.replace_substring_all ("%%N", "%N")
+						l_query_results.force (l_value, l_query)
 					else
 						check False end
 					end
