@@ -92,6 +92,8 @@ feature -- Parsing
 						if line.same_string (proxy_has_started_and_connected_message) then
 							-- We are in the "start" request.
 							report_request_line (line)
+						else
+							report_comment_line (line)
 						end
 					else
 						if line.count >= interpreter_log_prefix.count and then line.substring (1, interpreter_log_prefix.count).same_string (interpreter_log_prefix) then
@@ -159,6 +161,11 @@ feature {NONE} -- Reporting
 			request_history.force_last (request_parser.last_request)
 			request_parser.last_request.process (Current)
 			reported_request_count := reported_request_count + 1
+		end
+
+	report_comment_line (a_line: STRING) is
+			-- Report comment line `a_line'.
+		do
 		end
 
 feature {NONE} -- Processsing

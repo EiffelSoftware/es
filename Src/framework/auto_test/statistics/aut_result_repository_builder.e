@@ -15,7 +15,8 @@ inherit
 		redefine
 			process_start_request,
 			process_create_object_request,
-			process_invoke_feature_request
+			process_invoke_feature_request,
+			report_comment_line
 		end
 
 create
@@ -54,14 +55,30 @@ feature{NONE} -- Processing
 
 	process_create_object_request (a_request: AUT_CREATE_OBJECT_REQUEST)
 		do
+			if last_test_case_request /= Void then
+				last_test_case_request.set_end_time (last_time_stamp)
+			end
+			a_request.set_start_time (last_time_stamp)
 			Precursor (a_request)
 			update_result_reposotory
 		end
 
 	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)
 		do
+			if last_test_case_request /= Void then
+				last_test_case_request.set_end_time (last_time_stamp)
+			end
+			a_request.set_start_time (last_time_stamp)
 			Precursor (a_request)
 			update_result_reposotory
+		end
+
+	report_comment_line (a_line: STRING) is
+			-- Report comment line `a_line'.
+		do
+			if a_line.substring (1, 14).is_equal (time_stamp_header) then
+				analyze_time_stamp (a_line)
+			end
 		end
 
 feature {NONE} -- Implementation
@@ -81,7 +98,33 @@ feature {NONE} -- Implementation
 		do
 			create witness.make (request_history, last_start_index, request_history.count)
 			last_result_repository.add_witness (witness)
+			last_test_case_request := witness.item (witness.count)
 		end
+
+feature -- Time measurement
+
+	last_time_stamp: INTEGER
+			-- Last met time stamp in millisecond
+
+	time_stamp_header: STRING is "-- time stamp:"
+			-- Header for time stamp
+
+	analyze_time_stamp (a_line: STRING) is
+			-- Analyze time stamp in `a_line'.
+		local
+			l_parts: LIST [STRING]
+			l_time: INTEGER
+			l_request_history: like request_history
+		do
+			l_parts := a_line.split (';')
+			check l_parts.count = 3 end
+			l_time := l_parts.last.to_integer
+			l_request_history := request_history
+			last_time_stamp := l_time
+		end
+
+	last_test_case_request: detachable AUT_REQUEST;
+			-- Request of the last met test case
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
