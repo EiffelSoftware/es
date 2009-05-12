@@ -152,9 +152,10 @@ feature -- Execution
 				else
 					random.forth
 					l_ran := (random.item_for_iteration \\ l_count) + 1
-					l_variable := l_pool.variable_table.item (types.item (current_level)).item (l_ran)
+					l_variable := l_pool.variable_table.item (types.item (current_level)).item (l_indexes.item (l_ran))
+
 					l_variables.put (l_variable, current_level)
-					l_available_indexes.item (current_level).swap (l_count, l_ran)
+					l_indexes.swap (l_count, l_ran)
 					l_available_count.put (l_count - 1, current_level)
 					if current_level = level_count then
 						l_done := True
