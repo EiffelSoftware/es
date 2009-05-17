@@ -110,6 +110,8 @@ feature -- Execution
 					cancel
 				end
 			else
+					-- If precondition evaluation is disabled, we
+					-- assume the preconditions is satisfied.
 				is_precondition_satisfied := True
 				steps_completed := True
 			end
@@ -126,25 +128,26 @@ feature -- Execution
 			l_list: DS_ARRAYED_LIST [ITP_VARIABLE]
 			l_variable: ITP_VARIABLE
 			l_pool: like object_pool
-			l_available_count: like available_count
-			l_available_indexes: like available_indexes
+			l_available_count: like candicate_object_count
+			l_available_indexes: like candidate_object_indexes
 			l_variables: like variables
 		do
 			l_pool := object_pool
-			l_available_count := available_count
-			l_available_indexes := available_indexes
+			l_available_count := candicate_object_count
+			l_available_indexes := candidate_object_indexes
 			l_variables := variables
 				-- Iterate to a new object combination.
 			from
-				l_indexes := l_available_indexes.item (current_level)
-				l_count := l_available_count.item (current_level)
+				l_indexes := l_available_indexes.item (current_argument_index)
+				l_count := l_available_count.item (current_argument_index)
 			until
 				l_done
 			loop
+					-- If there is no candidate object for current argument, backtrack.
 				if l_count = 0 then
-					l_available_count.put (l_indexes.count, current_level)
-					current_level := current_level - 1
-					if current_level = 0 then
+					l_available_count.put (l_indexes.count, current_argument_index)
+					current_argument_index := current_argument_index - 1
+					if current_argument_index = 0 then
 							-- We have exhausted all possibilities.
 						steps_completed := True
 						l_done := True
@@ -152,25 +155,29 @@ feature -- Execution
 				else
 					random.forth
 					l_ran := (random.item_for_iteration \\ l_count) + 1
-					l_variable := l_pool.variable_table.item (types.item (current_level)).item (l_indexes.item (l_ran))
+					l_variable := l_pool.variable_table.item (types.item (current_argument_index)).item (l_indexes.item (l_ran))
 
-					l_variables.put (l_variable, current_level)
+					l_variables.put (l_variable, current_argument_index)
 					l_indexes.swap (l_count, l_ran)
-					l_available_count.put (l_count - 1, current_level)
-					if current_level = level_count then
+					l_available_count.put (l_count - 1, current_argument_index)
+
+						-- If there are some arguments that are not chosen yet,
+						-- continue search for them, otherwise, finish current search
+						-- for one object combination.
+					if current_argument_index = argument_count then
 						l_done := True
 					else
-						current_level := current_level + 1
+						current_argument_index := current_argument_index + 1
 					end
 				end
 
 				if not l_done then
-					l_indexes := l_available_indexes.item (current_level)
-					l_count := l_available_count.item (current_level)
+					l_indexes := l_available_indexes.item (current_argument_index)
+					l_count := l_available_count.item (current_argument_index)
 				end
 			end
 
-				-- Evaluate current `variables'.
+				-- Evaluate current preconditions on selected objects in `variables'.
 			if has_next_step then
 				create l_list.make (variables.count)
 				l_variables.do_all (agent l_list.force_last)
@@ -199,14 +206,14 @@ feature{NONE} -- Implementation
 		end
 
 	setup_indexes is
-			--
+			-- Setup `candidate_object_indexes' and `candidate_object_count'.
 		local
 			l_type: TYPE_A
 			l_objects: DS_LIST [ITP_VARIABLE]
 		do
 			types := types_of_feature (feature_)
-			create available_indexes.make (types.count)
-			create available_count.make (1, types.count)
+			create candidate_object_indexes.make (types.count)
+			create candicate_object_count.make (1, types.count)
 
 			from
 				types.start
@@ -215,29 +222,30 @@ feature{NONE} -- Implementation
 			loop
 				l_type := types.item_for_iteration
 				l_objects := object_pool.variable_table.item (l_type)
-				available_indexes.force_last (index_interval (l_objects.count))
-				available_count.put (l_objects.count, types.index)
+				candidate_object_indexes.force_last (index_interval (l_objects.count))
+				candicate_object_count.put (l_objects.count, types.index)
 				types.forth
 			end
 
-			current_level := 1
-			level_count := types.count
+			current_argument_index := 1
+			argument_count := types.count
 		end
 
-	available_indexes: DS_ARRAYED_LIST [DS_ARRAYED_LIST [INTEGER]]
-			-- List of object indexes
+	candidate_object_indexes: DS_ARRAYED_LIST [DS_ARRAYED_LIST [INTEGER]]
+			-- List of indexes for objects in object pool for each argument for current predicate.
 
-	available_count: ARRAY [INTEGER]
-			-- List of counts
+	candicate_object_count: ARRAY [INTEGER]
+			-- Number of objects which are to be searched yet
+			-- Array index is the index for arguments.
 
-	current_level: INTEGER
-			-- Current level
+	current_argument_index: INTEGER
+			-- Index of currently searched argument
 
-	level_count: INTEGER
-			-- Number of levels
+	argument_count: INTEGER
+			-- Number of argument of current precondition.
 
 	index_interval (a_count: INTEGER): DS_ARRAYED_LIST [INTEGER] is
-			--
+			-- List of integers from 1 to `a_count'
 		local
 			l_interval: INTEGER_INTERVAL
 		do
