@@ -377,7 +377,7 @@ feature{NONE} -- Implementation
 					 l_tuple_main.pass_time +    l_tuple.pass_time,
 					 l_tuple_main.fail_time +    l_tuple.fail_time,
 					 l_tuple_main.invalid_time + l_tuple.invalid_time,
-					 l_tuple_main.bad_time +     l_tuple.invalid_time
+					 l_tuple_main.bad_time +     l_tuple.bad_time
 					], l_feature)
 
 				a_statistics.forth
