@@ -27,7 +27,13 @@ inherit
 			process_unary_as,
 			process_binary_as,
 			process_bracket_as,
-			process_object_test_as
+			process_object_test_as,
+			process_class_type_as,
+			process_static_access_as,
+			process_symbol_stub_as,
+			process_like_id_as,
+			process_like_cur_as,
+			process_keyword_stub_as
 		end
 
 	AUT_OBJECT_STATE_REQUEST_UTILITY
@@ -35,6 +41,12 @@ inherit
 	SHARED_WORKBENCH
 
 	SHARED_SERVER
+
+	ERL_G_TYPE_ROUTINES
+
+	AUT_SHARED_TYPE_FORMATTER
+
+	SHARED_ERROR_HANDLER
 
 create
 	make
@@ -51,6 +63,7 @@ feature{NONE} -- Initialization
 			create accessed_variables.make (2)
 			create last_predicates.make
 			create last_feature_access_pattern.make
+			create type_checker
 
 			integer_arguments.set_key_equality_tester (string_equal_tester)
 			arguments.set_key_equality_tester (string_equal_tester)
@@ -164,10 +177,22 @@ feature{NONE} -- Process
 			text.append_character (' ')
 		end
 
+	process_keyword_stub_as (l_as: KEYWORD_STUB_AS)
+			-- Process `l_as'.
+		do
+			text.append_string (text_of_ast (l_as))
+		end
+
 	process_symbol_as (l_as: SYMBOL_AS)
 			-- Process `l_as'.
 		do
 			text.append_string (text_of_ast (l_as))
+		end
+
+	process_symbol_stub_as (l_as: SYMBOL_STUB_AS)
+			-- Process `l_as'.
+		do
+			text.append_string (l_as.text (current_match_list))
 		end
 
 	process_bool_as (l_as: BOOL_AS)
@@ -177,7 +202,11 @@ feature{NONE} -- Process
 
 	process_char_as (l_as: CHAR_AS)
 		do
-			text.append_string (text_of_ast (l_as))
+			fixme ("Have problem of output precondition for HIGH_BUILDER.build_dollar_p. The index in LEAF_AS is not correct.")
+--			text.append_string (text_of_ast (l_as))
+			text.append_character ('%'')
+			text.append (l_as.value.to_character_8.out)
+			text.append_character ('%'')
 		end
 
 	process_typed_char_as (l_as: TYPED_CHAR_AS)
@@ -247,11 +276,16 @@ feature{NONE} -- Process
 	process_object_test_as (l_as: OBJECT_TEST_AS)
 		do
 			if l_as.is_attached_keyword then
-				text.append (" attached {")
-
-				safe_process (l_as.type)
-				text.append_character ('}')
+				safe_process (l_as.attached_keyword (current_match_list))
+				text.append_character (' ')
+				if l_as.type /= Void then
+					safe_process (l_as.type)
+					text.append_character (' ')
+				end
 				l_as.expression.process (Current)
+				text.append_character (' ')
+				safe_process (l_as.as_keyword (current_match_list))
+				text.append_character (' ')
 				safe_process (l_as.name)
 			else
 				l_as.name.process (Current)
@@ -260,11 +294,58 @@ feature{NONE} -- Process
 			end
 		end
 
+	process_class_type_as (l_as: CLASS_TYPE_AS)
+		do
+			safe_process (l_as.lcurly_symbol (current_match_list))
+			text.append (full_type_name (l_as.class_name.text (current_match_list), current_assertion.written_class))
+			safe_process (l_as.rcurly_symbol (current_match_list))
+		end
+
+	process_static_access_as (l_as: STATIC_ACCESS_AS)
+		local
+			l_stack: DS_LINKED_STACK [BOOLEAN]
+		do
+			l_as.class_type.process (Current)
+			l_stack := nested_list.last
+			l_stack.force (False)
+			safe_process (l_as.dot_symbol (current_match_list))
+			process_access_feat_as (l_as)
+			l_stack.remove
+		end
+
+	process_like_id_as (l_as: LIKE_ID_AS)
+		do
+			process_anchored_type (l_as)
+		end
+
+	process_anchored_type (l_as: TYPE_AS) is
+			-- Process `l_as'.
+		local
+			l_type: TYPE_A
+			l_type2: TYPE_A
+			l_like_feat: LIKE_FEATURE
+			l_type_checker: TYPE_A_CHECKER
+		do
+				-- Resolve type in `l_as'.
+			l_type := type_a_generator.evaluate_type_if_possible (l_as, current_assertion.written_class)
+			l_type_checker := type_checker
+			l_type_checker.init_for_checking (current_feature.feature_, current_written_class, Void, error_handler)
+			l_type2 := l_type_checker.check_and_solved (l_type, l_as).actual_type.deep_actual_type
+
+			safe_process (l_as.lcurly_symbol (current_match_list))
+			text.append (type_name_with_context (l_type2, current_assertion.written_class, current_feature.feature_))
+			safe_process (l_as.rcurly_symbol (current_match_list))
+		end
+
+	process_like_cur_as (l_as: LIKE_CUR_AS)
+		do
+			process_anchored_type (l_as)
+		end
 
 	text_of_ast (a_ast: AST_EIFFEL): STRING is
 			-- Text of `a_ast' in lower case
 		do
-			Result := a_ast.text (current_match_list).as_lower
+			Result := a_ast.text (current_match_list)
 		end
 
 	nested_list: DS_LINKED_LIST [DS_LINKED_STACK [BOOLEAN]]
@@ -309,38 +390,15 @@ feature{NONE} -- Process
 					text.append (place_holder (l_arg_index))
 				else
 					l_feat := final_feature (a_name, current_assertion.written_class, current_feature.type.associated_class)
-					accessed_variables.force_last (current_feature.type, 0)
-					text.append (place_holder (0))
-					text.append_character ('.')
-
-					text.append (l_feat.feature_name)
+					if l_feat /= Void then
+						accessed_variables.force_last (current_feature.type, 0)
+						text.append (place_holder (0))
+						text.append_character ('.')
+						text.append (l_feat.feature_name)
+					else
+						text.append (a_name)
+					end
 				end
-
---				if arguments.has (a_name) then
---					l_arg_index := arguments.item (a_name)
---					accessed_variables.force_last (current_feature.feature_.arguments.i_th (l_arg_index), l_arg_index)
---					text.append (place_holder (l_arg_index))
---				else
---					i := final_argument_index (a_name, current_assertion, current_feature.feature_)
---					if i > 0 then
-
---					else
---						l_feat := final_feature (a_name, current_assertion.written_class, current_feature.type.associated_class)
---						accessed_variables.force_last (current_feature.type, 0)
---						text.append (place_holder (0))
---						text.append_character ('.')
-
---						text.append (l_feat.feature_name)
---					end
-
---				else
---					l_feat := final_feature (a_name, current_assertion.written_class, current_feature.type.associated_class)
---					accessed_variables.force_last (current_feature.type, 0)
---					text.append (place_holder (0))
---					text.append_character ('.')
-
---					text.append (l_feat.feature_name)
---				end
 			else
 				text.append (a_name)
 			end
@@ -374,6 +432,18 @@ feature{NONE} -- Implementation
 
 	current_feature: detachable AUT_FEATURE_OF_TYPE
 			-- Feature where `current_assertion' is written
+
+	current_context_class: CLASS_C is
+			-- Context class where `current_feature' is viewed
+		do
+			Result := current_feature.associated_class
+		end
+
+	current_written_class: CLASS_C is
+			-- Class where `current_feature' is written
+		do
+			Result := current_feature.feature_.written_class
+		end
 
 	current_match_list: LEAF_AS_LIST is
 			-- Match list of the class where `current_assertion' is written
@@ -624,6 +694,9 @@ feature{NONE} -- Implmentation
 
 	text: STRING
 			-- Text of the last process assertion.
+
+	type_checker: TYPE_A_CHECKER
+			-- Type checker			
 
 	sorted_keys (a_table: DS_HASH_TABLE [ANY, INTEGER]): DS_LIST [INTEGER] is
 			-- ascendingly sorted list of keys in `a_table'

@@ -38,7 +38,7 @@ feature -- Access
 				l_current_class := l_ancestors.item
 				l_inv := l_current_class.invariant_ast
 				if l_inv /= Void then
-					Result.append (tags (l_current_class, l_inv.assertion_list))
+					Result.append (tags (l_current_class, a_class, l_inv.assertion_list))
 				end
 				l_ancestors.forth
 			end
@@ -82,7 +82,7 @@ feature -- Access
 						until
 							l_asserts.after
 						loop
-							Result.extend (create {AUT_ASSERTION}.make (l_asserts.item_for_iteration, l_class))
+							Result.extend (create {AUT_ASSERTION}.make (l_asserts.item_for_iteration, l_class, a_context_class))
 							l_asserts.forth
 						end
 					end
@@ -128,7 +128,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	tags (a_written_class: CLASS_C; a_asserts: LIST [TAGGED_AS]): LINKED_LIST [AUT_ASSERTION] is
+	tags (a_written_class: CLASS_C; a_context_class: CLASS_C; a_asserts: LIST [TAGGED_AS]): LINKED_LIST [AUT_ASSERTION] is
 			-- List of tuples of assert clauses, each associated with its `a_written_class'
 		require
 			a_written_class_attached: a_written_class /= Void
@@ -143,7 +143,7 @@ feature{NONE} -- Implementation
 			until
 				a_asserts.after
 			loop
-				Result.extend(create {AUT_ASSERTION}.make (a_asserts.item, a_written_class))
+				Result.extend(create {AUT_ASSERTION}.make (a_asserts.item, a_written_class, a_context_class))
 				a_asserts.forth
 			end
 			a_asserts.go_to (l_cursor)

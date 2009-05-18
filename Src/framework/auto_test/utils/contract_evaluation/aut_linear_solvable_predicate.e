@@ -25,6 +25,10 @@ feature -- Access
 	constrained_arguments: DS_HASH_TABLE [STRING, INTEGER]
 			-- Table of constrained arguments of the predicate
 			-- [argument name, 1-based argument index for the predicate]
+			-- Because for the moment, we don't consider the case that
+			-- target is an integer class, so the constrained argument cannot
+			-- be the target, so the argument index (used as hash table key) here
+			-- only can start from 1.
 
 	constraining_queries: DS_HASH_SET [STRING];
 			-- List of queries that constrains the arguments

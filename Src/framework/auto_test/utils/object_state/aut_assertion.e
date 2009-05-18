@@ -17,14 +17,16 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_tag: like tag; a_written_class: like written_class) is
+	make (a_tag: like tag; a_written_class: like written_class; a_context_class: like context_class) is
 			-- Set `tag' with `a_tag' and `written_class' with `a_written_class'.
 		require
 			a_tag_attached: a_tag /= Void
 			a_written_class_attached: a_written_class /= Void
+			a_context_class_attached: a_context_class /= Void
 		do
 			set_tag (a_tag)
 			set_written_class (a_written_class)
+			set_context_class (a_context_class)
 		end
 
 feature -- Access
@@ -34,6 +36,9 @@ feature -- Access
 
 	written_class: CLASS_C
 			-- Class where `tag' is written
+
+	context_class: CLASS_C
+			-- Class where `tag' is viewed
 
 	tag_name: STRING is
 			-- Name of `tag'
@@ -89,6 +94,16 @@ feature -- Setting
 			written_class := a_written_class
 		ensure
 			written_class_set: written_class = a_written_class
+		end
+
+	set_context_class (a_context_class: like context_class) is
+			-- Set `context_class' with `a_context_class'.
+		require
+			a_context_class_attached: a_context_class /= Void
+		do
+			context_class := a_context_class
+		ensure
+			context_class_set: context_class = a_context_class
 		end
 
 invariant
