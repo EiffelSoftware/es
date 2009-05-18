@@ -74,6 +74,10 @@ feature -- Access
 			Result := tag.expr.first_token (match_list_server.item (written_class.class_id)).line
 		end
 
+	index: INTEGER
+			-- Index number indicating the order when current assertion appears
+			-- A small number means that the assertion appear earlier.
+
 feature -- Setting
 
 	set_tag (a_tag: like tag) is
@@ -104,6 +108,14 @@ feature -- Setting
 			context_class := a_context_class
 		ensure
 			context_class_set: context_class = a_context_class
+		end
+
+	set_index (a_index: INTEGER) is
+			-- Set `index' with `a_index'.
+		do
+			index := a_index
+		ensure
+			index_set: index = a_index
 		end
 
 invariant

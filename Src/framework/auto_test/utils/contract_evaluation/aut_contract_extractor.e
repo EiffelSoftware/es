@@ -22,6 +22,8 @@ feature -- Access
 			l_inv: INVARIANT_AS
 			l_ancestors: LINKED_LIST [CLASS_C]
 			l_current_class: CLASS_C
+			l_index: INTEGER
+			l_list: LINKED_LIST [AUT_ASSERTION]
 		do
 			create Result.make
 
@@ -30,6 +32,7 @@ feature -- Access
 			record_ancestors_of_class (a_class, l_ancestors, Void)
 
 				-- Get all invariant asts from `a_class' as well as its ancestors.
+			l_index := 1
 			from
 				l_ancestors.start
 			until
@@ -38,7 +41,17 @@ feature -- Access
 				l_current_class := l_ancestors.item
 				l_inv := l_current_class.invariant_ast
 				if l_inv /= Void then
-					Result.append (tags (l_current_class, a_class, l_inv.assertion_list))
+					l_list := tags (l_current_class, a_class, l_inv.assertion_list)
+					from
+						l_list.start
+					until
+						l_list.after
+					loop
+						l_list.item.set_index (l_index)
+						l_list.forth
+						l_index := l_index + 1
+					end
+					Result.append (l_list)
 				end
 				l_ancestors.forth
 			end
@@ -54,10 +67,13 @@ feature -- Access
 			l_class: CLASS_C
 			l_routine: ROUTINE_AS
 			l_asserts: EIFFEL_LIST [TAGGED_AS]
+			l_assertion: AUT_ASSERTION
+			l_index: INTEGER
 		do
 			create Result.make
 			if a_feature.is_routine then
 				create l_ancestors.make
+				l_index := 1
 				record_ancestors_of_class (a_context_class, l_ancestors, Void)
 				from
 					l_ancestors.start
@@ -82,8 +98,11 @@ feature -- Access
 						until
 							l_asserts.after
 						loop
-							Result.extend (create {AUT_ASSERTION}.make (l_asserts.item_for_iteration, l_class, a_context_class))
+							create l_assertion.make (l_asserts.item_for_iteration, l_class, a_context_class)
+							l_assertion.set_index (l_index)
+							Result.extend (l_assertion)
 							l_asserts.forth
+							l_index := l_index + 1
 						end
 					end
 					l_ancestors.forth

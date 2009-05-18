@@ -35,17 +35,6 @@ feature -- Access
 			good_result: Result = types.count
 		end
 
---	reference_types: DS_LINKED_LIST [TYPE_A]
---			-- Reference types in `types'
-
---	reference_narity: INTEGER
---			-- Number of reference arguments in `reference_types'
---		do
---			Result := reference_types.count
---		ensure
---			good_result: Result = reference_types.count
---		end
-
 	text: STRING is
 			-- Text of Current predicate
 			-- The arguments in of the predicates are replaced by "$1$", "$2$"
@@ -74,8 +63,7 @@ feature -- Equality
 				-- 3. Text of these two predicates are equal.
 
 				-- Check if both predicates come from the same class.
-			Result := context_class = other.context_class
-
+			Result := same_type (other) and then (context_class = other.context_class)
 			if Result then
 					-- Check type equivalence of corresponding arguments.
 				Result := types.count = other.types.count

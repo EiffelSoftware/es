@@ -435,6 +435,7 @@ feature {NONE} -- Interpreter generation
 					-- Generate typed object pool for precondition evaluation.
 				if configuration.is_precondition_checking_enabled then
 					interpreter.generate_typed_object_pool (types_under_test)
+					interpreter.set_predicate_pattern_by_feature (predicate_pattern_by_feature)
 				end
 			else
 				is_finished := True
@@ -468,6 +469,7 @@ feature {NONE} -- Interpreter generation
 			if l_file.is_open_write and l_types /= Void then
 				l_source_writer.set_types_under_test (types_under_test)
 				l_source_writer.write_class (l_file, l_types, l_system)
+				predicate_pattern_by_feature := l_source_writer.predicate_pattern_by_feature
 				l_file.flush
 				l_file.close
 			end
@@ -942,6 +944,11 @@ feature {NONE} -- Constants
 
 	max_tests_per_class: NATURAL = 9
 			-- Maximal number of test routines in a single class
+
+feature -- Precondition satisfaction
+
+	predicate_pattern_by_feature: DS_HASH_TABLE [DS_LINKED_LIST [AUT_PREDICATE_OF_FEATURE], AUT_FEATURE_OF_TYPE]
+			-- Predicate access patterns for features.
 
 invariant
 	not_running_implies_status_compiling: not is_running implies (status = compile_status_code)

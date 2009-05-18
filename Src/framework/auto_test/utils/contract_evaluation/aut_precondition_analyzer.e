@@ -112,7 +112,6 @@ feature -- Basic operation
 			loop
 				l_assertion := l_asserts.item_for_iteration
 				check_assertion (l_assertion, a_feature)
-				analyze_predicate
 				l_asserts.forth
 			end
 		end
@@ -620,6 +619,7 @@ feature{NONE} -- Implementation
 				l_predicate := l_normal_pred
 			end
 			create l_predicate_of_feat.make (current_feature, l_predicate, l_access_pattern)
+			l_predicate_of_feat.set_index (current_assertion.index)
 			last_predicates.force_last (l_predicate)
 			last_feature_access_pattern.force_last (l_predicate_of_feat)
 		end
@@ -648,6 +648,9 @@ feature{NONE} -- Implementation
 			find_integer_arguments
 			current_assertion.tag.expr.process (Current)
 			is_linear_solvable := is_linear_solvable and then is_integer_argument_mentioned
+
+				-- Analyze just created predicate.
+			analyze_predicate
 		end
 
 feature{NONE} -- Equality tester

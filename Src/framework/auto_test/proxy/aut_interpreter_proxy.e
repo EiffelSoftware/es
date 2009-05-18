@@ -1281,6 +1281,17 @@ feature -- Precondition satisfaction
 			retry
 		end
 
+	predicate_pattern_by_feature: DS_HASH_TABLE [DS_LIST [AUT_PREDICATE_OF_FEATURE], AUT_FEATURE_OF_TYPE]
+			-- Predicate access patterns for features
+
+	set_predicate_pattern_by_feature (a_pattern: like predicate_pattern_by_feature) is
+			-- Set `predicate_pattern_by_feature' with `a_pattern'.
+		do
+			predicate_pattern_by_feature := a_pattern
+		ensure
+			predicate_pattern_by_feature_set: predicate_pattern_by_feature = a_pattern
+		end
+
 invariant
 	is_running_implies_reader: is_running implies (stdout_reader /= Void)
 	request_printer_not_void: request_printer /= Void

@@ -47,6 +47,8 @@ inherit
 			type_a_generator
 		end
 
+	AUT_PREDICATE_UTILITY
+
 create
 	make
 
@@ -535,6 +537,12 @@ feature -- Object state retrieval
 
 feature -- Precondition satisfaction
 
+	predicates: DS_HASH_SET [AUT_PREDICATE]
+			-- Set of predicates that are to be checked
+
+	predicate_pattern_by_feature: DS_HASH_TABLE [DS_LINKED_LIST [AUT_PREDICATE_OF_FEATURE], AUT_FEATURE_OF_TYPE]
+			-- Table of predicate access patterns associated with each feature
+
 	types_under_test: DS_ARRAYED_LIST [CL_TYPE_A]
 			-- Types under test
 
@@ -547,7 +555,7 @@ feature -- Precondition satisfaction
 			types_under_test_set: types_under_test = a_types
 		end
 
-	generate_precondition_checker (a_feature: AUT_FEATURE_OF_TYPE; a_preconditions: DS_LIST [AUT_PREDICATE_OF_FEATURE]) is
+	generate_precondition_checker (a_feature: AUT_FEATURE_OF_TYPE; a_preconditions: DS_ARRAYED_LIST [AUT_PREDICATE_OF_FEATURE]) is
 			-- Generate precondition checker for `a_feature' whose preconditions are `a_preconditions'.
 		local
 			l_feat_name: STRING
@@ -556,7 +564,11 @@ feature -- Precondition satisfaction
 			l_arg_count: INTEGER
 			l_arg_types: LIST [TYPE_A]
 			l_text: STRING
+			l_sorter: DS_QUICK_SORTER [AUT_PREDICATE_OF_FEATURE]
 		do
+			create l_sorter.make (create {AGENT_BASED_EQUALITY_TESTER [AUT_PREDICATE_OF_FEATURE]}.make (agent (a, b: AUT_PREDICATE_OF_FEATURE): BOOLEAN do Result := a.index < b.index end))
+			l_sorter.sort (a_preconditions)
+
 			l_feat := a_feature.feature_
 			create l_feat_name.make (64)
 			l_feat_name.append (precondition_evaluator_name (a_feature))
@@ -585,9 +597,11 @@ feature -- Precondition satisfaction
 			stream.put_line ("local")
 			stream.indent
 			stream.put_line ("l_satisfied: BOOLEAN")
+			stream.put_line ("l_failing_predicate_index: INTEGER")
 			stream.dedent
 			stream.put_line ("do")
 			stream.indent
+			stream.put_line ("l_failing_predicate_index := 1")
 
 				-- Generate code to check preconditions.
 			from
@@ -599,7 +613,9 @@ feature -- Precondition satisfaction
 				if i > 1 then
 					stream.put_line ("if l_satisfied then")
 					stream.indent
+					stream.put_line ("l_failing_predicate_index := " + i.out)
 				end
+
 				stream.put_string ("l_satisfied := ")
 				l_text := predicate_text (a_preconditions.item_for_iteration)
 				stream.put_line (l_text)
@@ -608,6 +624,8 @@ feature -- Precondition satisfaction
 					stream.dedent
 					stream.put_line ("end")
 				end
+
+				predicates.force_last (a_preconditions.item_for_iteration.predicate)
 				i := i + 1
 				a_preconditions.forth
 			end
@@ -681,13 +699,30 @@ feature -- Precondition satisfaction
 			-- Generate routine to evaluate the precondition of `a_feature'.
 		local
 			l_visitor: AUT_PRECONDITION_ANALYZER
+			l_predicates: DS_ARRAYED_LIST [AUT_PREDICATE_OF_FEATURE]
+			l_patterns: DS_LINKED_LIST [AUT_PREDICATE_OF_FEATURE]
 		do
 			create l_visitor.make
 			l_visitor.generate_precondition_predicates (a_feature)
 
 			if not l_visitor.last_predicates.is_empty then
-				generate_precondition_checker (a_feature, l_visitor.last_feature_access_pattern)
+					-- Extract precondition predicates.
+				create l_predicates.make_from_linear (l_visitor.last_feature_access_pattern)
+
+					-- Generate routine to check precondition of `a_feature'.
+				generate_precondition_checker (a_feature, l_predicates)
+
+
+					-- Setup precondition information.
 				features_with_precondition.force_last (a_feature)
+
+				if predicate_pattern_by_feature.has (a_feature) then
+					l_patterns := predicate_pattern_by_feature.item (a_feature)
+				else
+					create l_patterns.make
+					predicate_pattern_by_feature.force_last (l_patterns, a_feature)
+				end
+				l_patterns.extend_last (l_predicates)
 			end
 		end
 
@@ -708,6 +743,13 @@ feature -- Precondition satisfaction
 		do
 			fixme ("This feature is similar to AUT_DYNAMIC_PRIORITY_QUEUE.set_static_priority_of_type. Refactoring is needed.")
 			create features_with_precondition.make
+
+			create predicates.make (100)
+			predicates.set_equality_tester (predicate_equality_tester)
+
+			create predicate_pattern_by_feature.make (100)
+			predicate_pattern_by_feature.set_key_equality_tester (feature_of_type_equality_tester)
+
 			if configuration.is_precondition_checking_enabled then
 				l_any_class := system.any_class.compiled_class
 				from

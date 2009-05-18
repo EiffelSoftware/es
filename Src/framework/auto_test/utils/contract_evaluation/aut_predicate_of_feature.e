@@ -46,6 +46,20 @@ feature -- Access
 			-- Key is the variable index in actual feature call (0 is the index for target).
 			-- Value is the argument position in the assoicated `predicate'.
 
+	index: INTEGER
+			-- Index to indicate the order of where `predicate' appears
+			-- A smaller number means that `predicate' appear earlier.
+
+feature -- Setting
+
+	set_index (a_index: INTEGER) is
+			-- Set `index' with `a_index'.
+		do
+			index := a_index
+		ensure
+			index_set: index = a_index
+		end
+
 invariant
 		access_pattern_valid: access_pattern.count = predicate.narity
 

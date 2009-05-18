@@ -25,6 +25,9 @@ feature{NONE} -- Initialization
 			i: INTEGER
 		do
 			feature_ := a_feature
+			interpreter := a_interpreter
+			object_pool := interpreter.typed_object_pool
+
 			create variables.make (1, a_vars.count)
 			from
 				i := 1
@@ -36,8 +39,8 @@ feature{NONE} -- Initialization
 				i := i + 1
 				a_vars.forth
 			end
-			interpreter := a_interpreter
-			object_pool := interpreter.typed_object_pool
+
+			setup_mentioned_argument_indexes
 		end
 
 feature -- Access
@@ -131,11 +134,14 @@ feature -- Execution
 			l_available_count: like candicate_object_count
 			l_available_indexes: like candidate_object_indexes
 			l_variables: like variables
+			l_real_index: like real_argument_indexes
+			l_real_ind: INTEGER
 		do
 			l_pool := object_pool
 			l_available_count := candicate_object_count
 			l_available_indexes := candidate_object_indexes
 			l_variables := variables
+			l_real_index := real_argument_indexes
 				-- Iterate to a new object combination.
 			from
 				l_indexes := l_available_indexes.item (current_argument_index)
@@ -153,11 +159,12 @@ feature -- Execution
 						l_done := True
 					end
 				else
+					l_real_ind := l_real_index.item (current_argument_index)
 					random.forth
 					l_ran := (random.item_for_iteration \\ l_count) + 1
-					l_variable := l_pool.variable_table.item (types.item (current_argument_index)).item (l_indexes.item (l_ran))
+					l_variable := l_pool.variable_table.item (types.item (l_real_ind)).item (l_indexes.item (l_ran))
 
-					l_variables.put (l_variable, current_argument_index)
+					l_variables.put (l_variable, l_real_ind)
 					l_indexes.swap (l_count, l_ran)
 					l_available_count.put (l_count - 1, current_argument_index)
 
@@ -210,25 +217,31 @@ feature{NONE} -- Implementation
 		local
 			l_type: TYPE_A
 			l_objects: DS_LIST [ITP_VARIABLE]
+			i: INTEGER
 		do
 			types := types_of_feature (feature_)
 			create candidate_object_indexes.make (types.count)
 			create candicate_object_count.make (1, types.count)
-
+			create real_argument_indexes.make (types.count)
 			from
 				types.start
+				i := 1
 			until
 				types.after
 			loop
-				l_type := types.item_for_iteration
-				l_objects := object_pool.variable_table.item (l_type)
-				candidate_object_indexes.force_last (index_interval (l_objects.count))
-				candicate_object_count.put (l_objects.count, types.index)
+				if mentioned_argument_indexes.has (types.index) then
+					l_type := types.item_for_iteration
+					l_objects := object_pool.variable_table.item (l_type)
+					candidate_object_indexes.force_last (index_interval (l_objects.count))
+					candicate_object_count.put (l_objects.count, i)
+					real_argument_indexes.force_last (types.index)
+					i := i + 1
+				end
 				types.forth
 			end
 
 			current_argument_index := 1
-			argument_count := types.count
+			argument_count := real_argument_indexes.count
 		end
 
 	candidate_object_indexes: DS_ARRAYED_LIST [DS_ARRAYED_LIST [INTEGER]]
@@ -242,7 +255,9 @@ feature{NONE} -- Implementation
 			-- Index of currently searched argument
 
 	argument_count: INTEGER
-			-- Number of argument of current precondition.
+			-- Number of argument that needs to be searched
+			-- argument (including call target) that are not mentioned in the precondition
+			-- are not to be searched.
 
 	index_interval (a_count: INTEGER): DS_ARRAYED_LIST [INTEGER] is
 			-- List of integers from 1 to `a_count'
@@ -252,6 +267,44 @@ feature{NONE} -- Implementation
 			create Result.make (a_count)
 			create l_interval.make (1, a_count)
 			l_interval.do_all (agent (i: INTEGER; l: DS_ARRAYED_LIST [INTEGER]) do l.force_last (i) end (?, Result))
+		end
+
+	real_argument_indexes: DS_ARRAYED_LIST [INTEGER]
+			-- Real argument indexes
+			-- Index of this array is 1-based, and represents the i-th argument to search
+			-- value in this array is the real argument index for the predicate.
+
+	mentioned_argument_indexes: DS_HASH_SET [INTEGER]
+			-- 1-based indexes of arguments that are mentioned in preconditions
+			-- of current feature.
+			-- The argument with index 1 is the target object
+			-- The argument with index 2 is the first argument of the feature to call
+
+	setup_mentioned_argument_indexes is
+			-- Setup `mentioned_argument_indexes'.
+		local
+			l_patterns: DS_LINEAR [AUT_PREDICATE_OF_FEATURE]
+			l_access_pattern: DS_HASH_TABLE [INTEGER, INTEGER]
+		do
+			create mentioned_argument_indexes.make (variables.count)
+			check interpreter.predicate_pattern_by_feature.has (feature_) end
+			l_patterns := interpreter.predicate_pattern_by_feature.item (feature_)
+			from
+				l_patterns.start
+			until
+				l_patterns.after
+			loop
+				l_access_pattern := l_patterns.item_for_iteration.access_pattern
+				from
+					l_access_pattern.start
+				until
+					l_access_pattern.after
+				loop
+					mentioned_argument_indexes.force_last (l_access_pattern.key_for_iteration + 1)
+					l_access_pattern.forth
+				end
+				l_patterns.forth
+			end
 		end
 
 ;note
