@@ -1,5 +1,5 @@
 indexing
-	description: "Summary description for {ES_EBBRO_CODE_GENERATOR}."
+	description: "Generatos Code for Custom Serialized Form Feature. In the future could be used to generate other code as well."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -16,15 +16,14 @@ create
 feature -- init
 
 	make is
-			--
+			-- currently not used
 		do
-
 		end
 
 
 feature -- Basic Operations
 
-	custom_form_feature(a_list:ARRAYED_LIST[STRING_8];a_class_name:STRING):STRING is
+	custom_form_feature (a_list:ARRAYED_LIST[STRING_8];a_class_name:STRING):STRING is
 			-- generates the custom serialization "add" feature
 			-- for a given list of attribute names
 		local

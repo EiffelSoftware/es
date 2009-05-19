@@ -1,5 +1,5 @@
 indexing
-	description: "Summary description for {ES_EBBRO_COMPARE_OBJECTS_DIALOG}."
+	description: "Dialog to let user select two object files."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

@@ -1,5 +1,5 @@
 indexing
-	description: "Summary description for {ES_EBBRO_DIALOG_FACTORY}."
+	description: "Dialog Factory for Ebbro Tools. Provides common Dialogs."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -16,7 +16,7 @@ inherit
 
 feature -- open dialog
 
-	open_object_dialog:EB_FILE_OPEN_DIALOG is
+	open_object_dialog: EB_FILE_OPEN_DIALOG is
 			-- a common open file dialog, used in ebbro
 		local
 			l_pref: STRING_PREFERENCE

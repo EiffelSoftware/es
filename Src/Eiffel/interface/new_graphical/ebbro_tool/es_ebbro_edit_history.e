@@ -13,7 +13,7 @@ create
 feature -- init
 
 	make is
-			--
+			-- init
 		do
 			create history.make
 		end
@@ -21,7 +21,7 @@ feature -- init
 
 feature -- Access
 
-	history_item:TUPLE[EV_GRID_EDITABLE_ITEM,STRING,STRING] is
+	history_item: TUPLE[EV_GRID_EDITABLE_ITEM,STRING,STRING] is
 			-- current history item
 			--[editable_grid_item,old_value,new_value]
 		do
@@ -30,13 +30,13 @@ feature -- Access
 
 feature -- Status report
 
-	is_undo_possible:BOOLEAN is
+	is_undo_possible: BOOLEAN is
 			--
 		do
 			Result := not (history.before or history.is_empty)
 		end
 
-	is_redo_possible:BOOLEAN is
+	is_redo_possible: BOOLEAN is
 			--
 		do
 			Result := not (history.islast or history.is_empty or history.after)
@@ -44,7 +44,7 @@ feature -- Status report
 
 feature -- Basic operations
 
-	add_item(an_edit_item:EV_GRID_EDITABLE_ITEM;an_old_value,a_new_value:STRING) is
+	add_item (an_edit_item:EV_GRID_EDITABLE_ITEM;an_old_value,a_new_value:STRING) is
 			-- add item to history
 			-- [editable_grid_item,old_value,new_value]
 		require
@@ -122,9 +122,9 @@ feature -- Basic operations
 
 feature {NONE} -- Implementation
 
-	history:LINKED_LIST[like history_item]
+	history: LINKED_LIST[like history_item]
 
-	ensure_item_visible(an_edit_item:EV_GRID_EDITABLE_ITEM) is
+	ensure_item_visible (an_edit_item:EV_GRID_EDITABLE_ITEM) is
 			-- ensures that the item is visible
 		require
 			valid_item:an_edit_item /= void

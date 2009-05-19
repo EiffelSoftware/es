@@ -1,5 +1,5 @@
 indexing
-	description: "Summary description for {ES_EBBRO_CODE_GENERATOR_CONSTANTS}."
+	description: "Constants for Code Generator"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

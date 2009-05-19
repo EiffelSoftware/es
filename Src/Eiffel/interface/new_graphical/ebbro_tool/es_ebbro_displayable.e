@@ -12,7 +12,7 @@ create
 
 feature -- creation
 
-	make(a_class_name:STRING; a_decoded:GENERAL_DECODED) is
+	make (a_class_name:STRING; a_decoded:GENERAL_DECODED) is
 			-- init
 		require
 			class_name_not_void: a_class_name /= void
@@ -24,7 +24,7 @@ feature -- creation
 			create history.make
 		end
 
-	make_wrapping(a_class_name:STRING) is
+	make_wrapping (a_class_name:STRING) is
 			-- wrap a base type
 		require
 			class_name_not_void: a_class_name /= void

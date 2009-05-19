@@ -1,5 +1,5 @@
 indexing
-	description: "Summary description for {ES_EBBRO_CUSTOM_SERIALIZATION_OUTPUT_DIALOG}."
+	description: "Dialog which outputs the generated code for the custom serialization feature."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -18,7 +18,7 @@ create
 
 feature --init
 
-	make_with_attributes(an_attribute_list: ARRAYED_LIST [STRING_8];a_class_name:STRING) is
+	make_with_attributes (an_attribute_list: ARRAYED_LIST [STRING_8];a_class_name:STRING) is
 			-- init - provide attribute list and class name
 		require
 			valid_attributes:an_attribute_list /= void and then not an_attribute_list.is_empty
@@ -138,10 +138,10 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	attribute_list:ARRAYED_LIST[STRING]
+	attribute_list: ARRAYED_LIST[STRING]
 			-- attributes which were selected
 
-	class_name:STRING
+	class_name: STRING
 			-- the class name for which the custom serialization is outputed
 
 

@@ -1,11 +1,11 @@
 indexing
-	description: "Summary description for {PERSISTENCE_CONSTANTS}."
+	description: "Persistence constants used in Ebbro."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 deferred class
-	
+
 	ES_EBBRO_PERSISTENCE_CONSTANTS
 
 feature -- serialization / deserialization
@@ -20,7 +20,7 @@ feature -- serialization / deserialization
 
 feature -- dialog filters
 
-	dadl_filter:TUPLE [filter: STRING_GENERAL; text: STRING_GENERAL] is
+	dadl_filter: TUPLE [filter: STRING_GENERAL; text: STRING_GENERAL] is
 			-- filter for dadl files
 		once
 			create result
@@ -28,7 +28,7 @@ feature -- dialog filters
 			result.put ("dadl Files ("+result.item (1).out+")", 2)
 		end
 
-	binary_filter:TUPLE [filter: STRING_GENERAL; text: STRING_GENERAL] is
+	binary_filter: TUPLE [filter: STRING_GENERAL; text: STRING_GENERAL] is
 			-- filter for binary files
 		once
 			create result
@@ -36,7 +36,7 @@ feature -- dialog filters
 			result.put ("Binary Files ("+result.item (1).out+")", 2)
 		end
 
-	all_filter:TUPLE [filter: STRING_GENERAL; text: STRING_GENERAL] is
+	all_filter: TUPLE [filter: STRING_GENERAL; text: STRING_GENERAL] is
 			-- filter for binary files
 		once
 			create result

@@ -1,5 +1,5 @@
 indexing
-	description: "Summary description for {ES_EBBRO_CUSTOM_SERIALIZATION_DIALOG}."
+	description: "Dialog to let user select attributes for custom serialized form feature."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -101,7 +101,6 @@ feature {NONE} -- Initialization
 			create controls_box
 			controls_box.set_padding ({ES_UI_CONSTANTS}.vertical_padding)
 			controls_box.set_border_width ({ES_UI_CONSTANTS}.dialog_border)
---			controls_box.extend (class_name_entry)
 
 
 			create l_name.make_with_text (class_name)
@@ -154,7 +153,7 @@ feature -- Access
 	attribute_list:ARRAYED_LIST[STRING]
 			-- attributes which were selected
 
-	is_valid:BOOLEAN is
+	is_valid: BOOLEAN is
 			-- checks whether the selection can be generated or not
 		do
 			Result := get_class_i.compiled_class /= void
@@ -200,7 +199,7 @@ feature {NONE} -- Implementation
 
 		end
 
-	get_class_i:CLASS_I is
+	get_class_i: CLASS_I is
 			-- Find the corresponding class_i, depending on the name.
 		local
 			loc_list: LIST [CLASS_I]
@@ -215,7 +214,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	generate_item_tooltip(a_type_str:STRING;a_signature:STRING):STRING is
+	generate_item_tooltip (a_type_str:STRING;a_signature:STRING): STRING is
 			-- creates the tooltip for a ev_item -> which is holding an attribtue
 		do
 			create Result.make_empty
@@ -233,7 +232,7 @@ feature {NONE} -- actions
 			feature_check_list.do_all (agent select_item(?))
 		end
 
-	select_item(a_item:EV_LIST_ITEM) is
+	select_item (a_item:EV_LIST_ITEM) is
 			--
 		do
 			feature_check_list.check_item (a_item)
@@ -245,7 +244,7 @@ feature {NONE} -- actions
 			feature_check_list.do_all (agent unselect_item(?))
 		end
 
-	unselect_item(a_item:EV_LIST_ITEM) is
+	unselect_item (a_item:EV_LIST_ITEM) is
 			--
 		do
 			feature_check_list.uncheck_item (a_item)
@@ -257,7 +256,7 @@ feature {NONE} -- actions
 			feature_check_list.do_all (agent invert_item(?))
 		end
 
-	invert_item(a_item:EV_LIST_ITEM) is
+	invert_item (a_item:EV_LIST_ITEM) is
 			--
 		do
 			if feature_check_list.is_item_checked (a_item) then
