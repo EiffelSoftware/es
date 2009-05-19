@@ -40,7 +40,9 @@ feature{NONE} -- Initialization
 				a_vars.forth
 			end
 
-			setup_mentioned_argument_indexes
+			if is_evaluation_enabled then
+				setup_mentioned_argument_indexes
+			end
 		end
 
 feature -- Access
