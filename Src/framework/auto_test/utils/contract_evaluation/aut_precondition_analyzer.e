@@ -632,7 +632,7 @@ feature{NONE} -- Implementation
 			-- contrains `constrained_variables' into `constraining_queries'.
 			-- Also, put every accessed variables into `accessed_variables'.
 		do
-			is_linear_solvable := False
+			is_linear_solvable := True
 			is_integer_argument_mentioned := False
 			constrained_variables.wipe_out
 			arguments.wipe_out

@@ -84,8 +84,6 @@ feature {NONE} -- Initialization
 			l_itp_class: like interpreter_class
 		do
 			l_itp_class := interpreter_class
-
-
 			create variable_table.make (a_system)
 			create raw_response_analyzer
 			make_response_parser (a_system)
@@ -1290,6 +1288,23 @@ feature -- Precondition satisfaction
 			predicate_pattern_by_feature := a_pattern
 		ensure
 			predicate_pattern_by_feature_set: predicate_pattern_by_feature = a_pattern
+		end
+
+	object_state (a_variable: ITP_VARIABLE): HASH_TABLE [detachable STRING, STRING] is
+			-- State of `a_variable'
+			-- Value is in the form [query value, query name].
+		do
+			retrieve_object_state (a_variable)
+
+			if is_ready then
+				if attached {AUT_OBJECT_STATE_RESPONSE} last_response as l_response then
+					Result := l_response.query_results
+				end
+			end
+			if Result = Void then
+				create Result.make (0)
+				Result.compare_objects
+			end
 		end
 
 invariant

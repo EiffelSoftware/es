@@ -122,6 +122,12 @@ feature -- Execution
 					-- Should precondition checking be enabled?
 				l_conf.set_is_precondition_evaluation_enabled (l_ap.is_precondition_checking_enabled)
 
+					-- Should linear constraint solving be enabled?
+				l_conf.set_is_linear_solving_enabled (l_ap.is_linear_constraint_solving_enabled)
+
+					-- Should object state exploration be enabled?
+				l_conf.set_is_object_state_exploration_enabled (l_ap.is_object_state_exploration_enabled)
+
 				if l_root_group.is_cluster then
 					if attached {CONF_CLUSTER} l_root_group as l_cluster then
 						l_conf.set_cluster (l_cluster)

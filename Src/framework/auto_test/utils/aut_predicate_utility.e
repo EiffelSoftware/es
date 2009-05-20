@@ -21,6 +21,13 @@ feature -- Access
 			create Result.make
 		end
 
+	string_equality_tester: AGENT_BASED_EQUALITY_TESTER [STRING] is
+			-- Equality test for string
+		do
+			create Result.make (agent (a, b: STRING): BOOLEAN do Result := a.is_equal (b) end)
+		end
+
+
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

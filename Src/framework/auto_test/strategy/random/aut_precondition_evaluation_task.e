@@ -14,6 +14,13 @@ inherit
 
 	AUT_SHARED_RANDOM
 
+	SHARED_WORKBENCH
+		undefine
+			system
+		end
+
+	AUT_PREDICATE_UTILITY
+
 create
 	make
 
@@ -38,6 +45,10 @@ feature{NONE} -- Initialization
 				variables.put (a_vars.item_for_iteration, i)
 				i := i + 1
 				a_vars.forth
+			end
+
+			if is_linear_constraint_solving_enabled then
+				setup_linear_solvable_arguments
 			end
 
 			if is_evaluation_enabled then
@@ -94,6 +105,18 @@ feature -- Status
 			Result := interpreter.configuration.is_precondition_checking_enabled
 		end
 
+	is_linear_constraint_solving_enabled: BOOLEAN is
+			-- Is linear constraint solving for integers enabled?
+		do
+			Result := interpreter.configuration.is_linear_constraint_solving_enabled
+		end
+
+	has_linear_constrained_arguments: BOOLEAN is
+			-- Is there any linearly constrained arguments?
+		do
+			Result := linear_solvable_arguments /= Void and then linear_solvable_arguments.count > 0
+		end
+
 feature -- Execution
 
 	start
@@ -109,6 +132,7 @@ feature -- Execution
 					steps_completed := is_precondition_satisfied
 
 					if has_next_step then
+						tried_count := 0
 						setup_indexes
 					end
 				else
@@ -138,6 +162,7 @@ feature -- Execution
 			l_variables: like variables
 			l_real_index: like real_argument_indexes
 			l_real_ind: INTEGER
+			l_should_continue: BOOLEAN
 		do
 			l_pool := object_pool
 			l_available_count := candicate_object_count
@@ -168,19 +193,46 @@ feature -- Execution
 
 					l_variables.put (l_variable, l_real_ind)
 					l_indexes.swap (l_count, l_ran)
-					l_available_count.put (l_count - 1, current_argument_index)
+					l_count := l_count - 1
+					l_available_count.put (l_count, current_argument_index)
 
-						-- If there are some arguments that are not chosen yet,
-						-- continue search for them, otherwise, finish current search
-						-- for one object combination.
-					if current_argument_index = argument_count then
-						l_done := True
+
+					if current_argument_index = 1 and then interpreter.variable_table.variable_type (l_variable).is_none then
+							-- A Void object is selected as the target object.
+							-- Do nothing here, make the search to select another object for the target object.
+						l_should_continue := False
 					else
-						current_argument_index := current_argument_index + 1
+							-- If a new target object is selected, the linear constraint solving (if enabled)
+							-- needs to be done again.
+						if
+							current_argument_index = 1 and then
+							is_linear_constraint_solving_enabled and then
+							has_linear_constrained_arguments
+						then
+							choose_constraint_arguments
+							if has_constraint_model then
+								l_should_continue := True
+							else
+								l_should_continue := False
+							end
+						else
+							l_should_continue := True
+						end
+
+							-- If there are some arguments that are not chosen yet,
+							-- continue search for them, otherwise, finish current search
+							-- for one object combination.
+						if l_should_continue then
+							if current_argument_index = argument_count then
+								l_done := True
+							else
+								current_argument_index := current_argument_index + 1
+							end
+						end
 					end
 				end
 
-				if not l_done then
+				if not l_done and then l_should_continue then
 					l_indexes := l_available_indexes.item (current_argument_index)
 					l_count := l_available_count.item (current_argument_index)
 				end
@@ -192,8 +244,72 @@ feature -- Execution
 				l_variables.do_all (agent l_list.force_last)
 				is_precondition_satisfied := interpreter.is_precondition_satisfied (feature_, l_list)
 				steps_completed := is_precondition_satisfied
+
+				tried_count := tried_count + 1
+				if tried_count > max_tries then
+					cancel
+				end
 			end
 		end
+
+	choose_constraint_arguments is
+			-- Choose values for constraint arguments.
+			-- Set those arguments directly in `variables'.
+			-- If there is no model for the constraint arguments,
+			-- set `has_constraint_model' to True, other set it to False.
+		local
+			l_state: HASH_TABLE [STRING, STRING]
+			l_smt_generator: AUT_CONSTRAINT_SOLVER_GENERATOR
+			l_proof_obligation: STRING
+			l_constraining_queries: DS_HASH_SET [STRING]
+			l_new_query_name: STRING
+			l_query_name: detachable STRING
+		do
+				-- Ask for states of the target object.
+				-- the value of constraining queries are in the retrieved states.
+			l_state := interpreter.object_state (variables.item (1))
+			has_constraint_model := not l_state.is_empty
+
+				-- Generate linear constraint solving proof obligation.
+			if has_constraint_model then
+				create l_smt_generator
+				l_smt_generator.generate_smtlib (feature_, interpreter.predicate_pattern_by_feature.item (feature_))
+				check l_smt_generator.has_linear_constraints end
+				l_proof_obligation := l_smt_generator.last_smtlib.twin
+
+					-- Replace constraining queires by their actual value.
+				from
+					l_constraining_queries := l_smt_generator.constraining_queries
+					l_constraining_queries.start
+				until
+					l_constraining_queries.after or else not has_constraint_model
+				loop
+					l_query_name := l_state.item (l_constraining_queries.item_for_iteration)
+					if l_query_name = Void then
+							-- If the value of some constraining query cannot be retrieved,
+							-- the model for constrained arguments doesn't exist.
+						has_constraint_model := False
+					else
+						l_new_query_name := "$" + l_constraining_queries.item_for_iteration + "$"
+						l_proof_obligation.replace_substring_all (l_new_query_name, l_query_name)
+					end
+					l_constraining_queries.forth
+				end
+			end
+
+				-- Launch constraint solver to solve constrained arguments.
+			if has_constraint_model then
+				generate_smtlib_file (l_proof_obligation)
+				solve_arguments
+			end
+
+			if has_constraint_model then
+				insert_integers_in_pool
+			end
+		end
+
+	has_constraint_model: BOOLEAN
+			-- It there is model for constraint arguments?
 
 	cancel
 			-- Cancel task.
@@ -231,7 +347,10 @@ feature{NONE} -- Implementation
 			until
 				types.after
 			loop
-				if mentioned_argument_indexes.has (types.index) then
+				if
+					mentioned_argument_indexes.has (types.index) and then
+					(is_linear_constraint_solving_enabled implies not linear_solvable_arguments.has (types.index))
+				then
 					l_type := types.item_for_iteration
 					l_objects := object_pool.variable_table.item (l_type)
 					candidate_object_indexes.force_last (index_interval (l_objects.count))
@@ -282,6 +401,15 @@ feature{NONE} -- Implementation
 			-- The argument with index 1 is the target object
 			-- The argument with index 2 is the first argument of the feature to call
 
+	linear_solvable_arguments: DS_HASH_SET [INTEGER]
+			-- Indexes of arguments that are linearly solvable
+
+	linear_solvable_argument_names: DS_HASH_SET [STRING]
+			-- Names of linearly solvable arguments
+
+	has_linear_constraint_argument: BOOLEAN
+			-- Is there any argument that can be linearly solved?
+
 	setup_mentioned_argument_indexes is
 			-- Setup `mentioned_argument_indexes'.
 		local
@@ -308,6 +436,167 @@ feature{NONE} -- Implementation
 				l_patterns.forth
 			end
 		end
+
+	setup_linear_solvable_arguments is
+			-- Check if current feature to call has any linearly constraint solvable
+			-- arguments, set `linear_solvable_arguments' and `has_linear_constraint_argument'
+			-- accordingly.
+		local
+			l_patterns: DS_LIST [AUT_PREDICATE_OF_FEATURE]
+			l_set: like linear_solvable_arguments
+		do
+			l_patterns := interpreter.predicate_pattern_by_feature.item (feature_)
+			if l_patterns /= Void then
+				create linear_solvable_arguments.make (2)
+				create linear_solvable_argument_names.make (2)
+				linear_solvable_argument_names.set_equality_tester (string_equality_tester)
+				from
+					l_patterns.start
+				until
+					l_patterns.after
+				loop
+					if attached {AUT_NORMAL_LINEAR_SOLVABLE_PREDICATE} l_patterns.item_for_iteration.predicate as l_linear_pred then
+						has_linear_constraint_argument := True
+						l_set := l_linear_pred.constrained_argument_indexes (feature_)
+						l_set.do_all (agent linear_solvable_arguments.force_last)
+					end
+					l_patterns.forth
+				end
+				from
+					linear_solvable_arguments.start
+				until
+					linear_solvable_arguments.after
+				loop
+					linear_solvable_argument_names.force_last (feature_.feature_.arguments.item_name (linear_solvable_arguments.item_for_iteration))
+					linear_solvable_arguments.forth
+				end
+			end
+		end
+
+	max_tries: INTEGER is 10
+
+	tried_count: INTEGER
+
+	smtlib_file_path: FILE_NAME is
+			-- Full path for the generated SMT-LIB file
+		do
+			create Result.make_from_string (universe.project_location.workbench_path)
+			Result.set_file_name ("linear.smt")
+		end
+
+	generate_smtlib_file (a_content: STRING) is
+			-- Generate SMT-LIB file with `a_content'
+			-- at location `smtlib_file_path'.
+		local
+			l_file: PLAIN_TEXT_FILE
+		do
+			create l_file.make_create_read_write (smtlib_file_path)
+			l_file.put_string (a_content)
+			l_file.close
+		end
+
+	solve_arguments is
+			-- Solve linear constraints for constrained argument.
+			-- Store result in `last_solver_output'.
+		local
+			l_prc_factory: PROCESS_FACTORY
+			l_prc: PROCESS
+			l_model_loader: AUT_SOLVED_LINEAR_MODEL_LOADER
+			l_stream: KL_STRING_INPUT_STREAM
+			l_arg_table: like argument_table
+			l_valuation: HASH_TABLE [INTEGER, STRING]
+		do
+			create l_prc_factory
+			create last_solver_output.make (1024)
+			l_prc := l_prc_factory.process_launcher_with_command_line ("z3 /m /smt " + smtlib_file_path, Void)
+			l_prc.redirect_output_to_agent (agent append_solver_output)
+			l_prc.redirect_error_to_same_as_output
+			l_prc.launch
+			if l_prc.launched then
+				l_prc.wait_for_exit
+				last_solver_output.replace_substring_all ("%R", "")
+				create l_stream.make (last_solver_output)
+				create l_model_loader.make (l_stream, linear_solvable_argument_names)
+				l_model_loader.load_model
+				has_constraint_model := l_model_loader.has_model
+
+					-- We found a model for the constrained arguments.
+					-- Store that model in `last_solved_arguments'.
+				if has_constraint_model then
+
+					l_arg_table := argument_table (feature_)
+					l_valuation := l_model_loader.valuation
+					create last_solved_arguments.make (l_valuation.count)
+					from
+						l_valuation.start
+					until
+						l_valuation.after
+					loop
+						last_solved_arguments.force (l_valuation.item_for_iteration, l_arg_table.item (l_valuation.key_for_iteration))
+						l_valuation.forth
+					end
+				end
+			else
+				has_constraint_model := False
+			end
+		end
+
+	argument_table (a_feature: AUT_FEATURE_OF_TYPE): HASH_TABLE [INTEGER, STRING] is
+			-- Table of arguments of `a_feature'.
+			-- [1-based argument index, argument name]
+		local
+			l_feat: FEATURE_I
+			i: INTEGER
+			l_arg_count: INTEGER
+		do
+			l_feat := a_feature.feature_
+			l_arg_count := l_feat.argument_count
+			create Result.make (l_arg_count)
+			Result.compare_objects
+			from
+				i := 1
+			until
+				i > l_arg_count
+			loop
+				Result.force (i, l_feat.arguments.item_name (i))
+				i := i + 1
+			end
+		end
+
+	insert_integers_in_pool is
+			-- Insert model in `last_solved_arguments' in object pool.
+			-- Update arguments in `variables' accordingly.
+		local
+			l_constant: ITP_CONSTANT
+			l_variable: ITP_VARIABLE
+		do
+			from
+				last_solved_arguments.start
+			until
+				last_solved_arguments.after
+			loop
+				create l_constant.make (last_solved_arguments.item_for_iteration)
+				l_variable := interpreter.variable_table.new_variable
+				interpreter.assign_expression (l_variable, l_constant)
+				variables.put (l_variable, last_solved_arguments.key_for_iteration + 1)
+
+				last_solved_arguments.forth
+			end
+		end
+
+	last_solver_output: STRING
+			-- Output from last launched solver
+
+	append_solver_output (a_string: STRING) is
+			-- Append `a_string' at the end of `last_solver_output'.
+		do
+			last_solver_output.append (a_string)
+		end
+
+	last_solved_arguments: HASH_TABLE [INTEGER, INTEGER]
+			-- Table of last linearly sovled arguments
+			-- [argument value, argument index]
+			-- Argument index is 1-based.
 
 ;note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

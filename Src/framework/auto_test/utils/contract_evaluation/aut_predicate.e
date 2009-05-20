@@ -74,7 +74,9 @@ feature -- Equality
 					until
 						types.after or else not Result
 					loop
-						Result := types.item_for_iteration.is_equivalent (other.types.item_for_iteration)
+						Result :=
+							types.item_for_iteration.same_type (other.types.item_for_iteration) and then
+							types.item_for_iteration.is_equivalent (other.types.item_for_iteration)
 						types.forth
 						other.types.forth
 					end

@@ -263,7 +263,7 @@ feature -- Object state retrieval
 			l_sorter: DS_TOPOLOGICAL_SORTER [CLASS_C]
 			l_sorted_classes: DS_ARRAYED_LIST [CLASS_C]
 		do
-			if configuration.is_object_state_retrieval_enabled then
+			if configuration.is_object_state_retrieval_enabled or else configuration.is_linear_constraint_solving_enabled then
 					-- Get the list of classes whose state should be recorded.
 				create l_processed.make (50)
 				l_processed.set_equality_tester (create {AGENT_BASED_EQUALITY_TESTER [CLASS_C]}.make (

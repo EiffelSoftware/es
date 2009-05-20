@@ -97,6 +97,12 @@ feature -- Status report
 	is_precondition_checking_enabled: BOOLEAN
 			-- Should precondition evaluation be enabled?
 
+	is_linear_constraint_solving_enabled: BOOLEAN
+			-- Is linare constraint solving for integers enabled?
+
+	is_object_state_exploration_enabled: BOOLEAN
+			-- Is object state exploration enabled?
+
 feature -- Element change
 
 	set_error_handler (a_error_handler: like error_handler)
@@ -137,6 +143,8 @@ feature -- Parsing
 			l_load_log_option: AP_STRING_OPTION
 			l_state_option: AP_STRING_OPTION
 			l_precondition_option: AP_FLAG
+			l_constraint_solving_option: AP_FLAG
+			l_object_state_exploration: AP_FLAG
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -225,6 +233,14 @@ feature -- Parsing
 			create l_precondition_option.make ('p', "precondition")
 			l_precondition_option.set_description ("Enable precondition evaluation before feature call.")
 			parser.options.force_last (l_precondition_option)
+
+			create l_constraint_solving_option.make_with_long_form ("cs")
+			l_constraint_solving_option.set_description ("Enable linear constraint solving for integers.")
+			parser.options.force_last (l_constraint_solving_option)
+
+			create l_object_state_exploration.make_with_long_form ("state_explore")
+			l_object_state_exploration.set_description ("Enable object state exploration.")
+			parser.options.force_last (l_object_state_exploration)
 
 			parser.parse_list (a_arguments)
 
@@ -345,9 +361,15 @@ feature -- Parsing
 			end
 
 			if not error_handler.has_error then
-				if l_precondition_option.was_found then
-					is_precondition_checking_enabled := True
-				end
+				is_precondition_checking_enabled := l_precondition_option.was_found
+			end
+
+			if not error_handler.has_error then
+				is_linear_constraint_solving_enabled := l_constraint_solving_option.was_found
+			end
+
+			if not error_handler.has_error then
+				is_object_state_exploration_enabled := l_object_state_exploration.was_found
 			end
 
 --			if parser.parameters.count = 0 then

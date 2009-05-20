@@ -119,6 +119,12 @@ feature -- Access: cache
 	precondition_evaluation_cache: like is_precondition_checking_enabled
 			-- Cache for `is_precondition_checking_enabled'
 
+	linear_solving_cache: like is_linear_constraint_solving_enabled
+			-- Cache for `is_linear_constraint_solving_enabled'
+
+	object_state_exploration_cache: like is_object_state_exploration_enabled
+			-- Cache for `is_object_state_exploration_enabled'
+
 feature -- Status report
 
 	is_new_class: BOOLEAN = True
@@ -193,6 +199,24 @@ feature -- Precondition satisfaction
 			Result := precondition_evaluation_cache
 		ensure then
 			good_result: Result = precondition_evaluation_cache
+		end
+
+	is_linear_constraint_solving_enabled: BOOLEAN is
+			-- Is linear constraint solving for integers enabled?
+		do
+			Result := linear_solving_cache
+		ensure then
+			good_result: Result = linear_solving_cache
+		end
+
+feature -- Object State Exploration
+
+	is_object_state_exploration_enabled: BOOLEAN is
+			-- Is object state exploration enabled?
+		do
+			Result := object_state_exploration_cache
+		ensure then
+			good_result: Result = object_state_exploration_cache
 		end
 
 feature -- Status setting
@@ -273,6 +297,22 @@ feature -- Status setting
 			-- Set `is_precondition_checking_enabled' with `b'.
 		do
 			precondition_evaluation_cache := b
+		ensure
+			is_precondition_checking_enabled_set: is_precondition_checking_enabled = b
+		end
+
+	set_is_linear_solving_enabled (b: BOOLEAN) is
+			-- Set `is_precondition_checking_enabled' with `b'.
+		do
+			linear_solving_cache := b
+		ensure
+			is_precondition_checking_enabled_set: is_precondition_checking_enabled = b
+		end
+
+	set_is_object_state_exploration_enabled (b: BOOLEAN) is
+			-- Set `is_precondition_checking_enabled' with `b'.
+		do
+			object_state_exploration_cache := b
 		ensure
 			is_precondition_checking_enabled_set: is_precondition_checking_enabled = b
 		end

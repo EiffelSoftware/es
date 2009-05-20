@@ -76,7 +76,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	final_feature (a_feature_name: STRING; a_written_class: CLASS_C; a_context_class: CLASS_C): FEATURE_I is
+	final_feature (a_feature_name: STRING; a_written_class: CLASS_C; a_context_class: CLASS_C): detachable FEATURE_I is
 			-- Final feature name for `a_feature_name' (which is written in `a_written_class') in `a_context_class'
 			-- A Void return value means that the feature doesn't exist in `a_context_class'.
 		require

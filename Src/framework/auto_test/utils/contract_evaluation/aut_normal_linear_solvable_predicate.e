@@ -51,6 +51,35 @@ feature -- Access
 	assertion: AUT_ASSERTION
 			-- Assertion associated with current predicates
 
+	constrained_argument_indexes (a_feature: AUT_FEATURE_OF_TYPE): DS_HASH_SET [INTEGER] is
+			-- Set of 1-based indexes of arguments that are linearly solvable in `a_feature'
+		local
+			l_feat: FEATURE_I
+			i: INTEGER
+			l_arg_count: INTEGER
+			l_arg_name: STRING
+		do
+			l_feat := assertion.written_class.feature_of_rout_id_set (a_feature.feature_.rout_id_set)
+			check l_feat /= Void end
+			l_arg_count := l_feat.argument_count
+			create Result.make (l_arg_count)
+			from
+				i := 1
+			until
+				i > l_arg_count
+			loop
+				l_arg_name := l_feat.arguments.item_name (i)
+				constrained_arguments.do_all (
+					agent (arg, arg2: STRING; ind: INTEGER; a_set: DS_HASH_SET [INTEGER])
+						do
+							if arg.is_case_insensitive_equal (arg2) then
+								a_set.force_last (ind)
+							end
+						end (?, l_arg_name, i, Result))
+				i := i + 1
+			end
+		end
+
 feature{NONE} -- Implementation
 
 	text_internal: like text;

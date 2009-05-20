@@ -40,6 +40,7 @@ feature{NONE} -- Initialization
 				l_count := a_values.count
 			end
 			create query_results.make (l_count)
+			query_results.compare_objects
 			if l_count > 0 then
 				from
 					a_values.start
@@ -81,6 +82,7 @@ feature{NONE} -- Initialization
 			l_prefix_count := l_query_name_prefix.count
 
 			create query_results.make (10)
+			query_results.compare_objects
 			from
 				l_query_results := query_results
 				l_lines.start

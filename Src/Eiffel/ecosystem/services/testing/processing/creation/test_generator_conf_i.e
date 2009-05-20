@@ -137,4 +137,16 @@ feature -- Precondition satisfaction
 		deferred
 		end
 
+	is_linear_constraint_solving_enabled: BOOLEAN is
+			-- Is linear constraint solving for integers enabled?
+		deferred
+		end
+
+feature -- Object State Exploration
+
+	is_object_state_exploration_enabled: BOOLEAN is
+			-- Is object state exploration enabled?
+		deferred
+		end
+
 end
