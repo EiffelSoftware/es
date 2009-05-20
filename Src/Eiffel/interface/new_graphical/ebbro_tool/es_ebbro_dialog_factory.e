@@ -1,6 +1,6 @@
 indexing
 	description: "Dialog Factory for Ebbro Tools. Provides common Dialogs."
-	author: ""
+	author: "Lucien Hansen"
 	date: "$Date$"
 	revision: "$Revision$"
 

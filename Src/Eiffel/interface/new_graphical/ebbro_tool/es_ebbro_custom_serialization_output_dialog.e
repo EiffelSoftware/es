@@ -1,6 +1,6 @@
 indexing
 	description: "Dialog which outputs the generated code for the custom serialization feature."
-	author: ""
+	author: "Lucien Hansen"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -18,7 +18,7 @@ create
 
 feature --init
 
-	make_with_attributes (an_attribute_list: ARRAYED_LIST [STRING_8];a_class_name:STRING) is
+	make_with_attributes (an_attribute_list: ARRAYED_LIST [STRING_8]; a_class_name: STRING) is
 			-- init - provide attribute list and class name
 		require
 			valid_attributes:an_attribute_list /= void and then not an_attribute_list.is_empty
@@ -86,9 +86,9 @@ feature {NONE} -- Initialization
 			controls_box: EV_VERTICAL_BOX
 			selection_box:EV_HORIZONTAL_BOX
 			l_layouts: EV_LAYOUT_CONSTANTS
-			l_name,l_label:EV_LABEL
-			l_button:EV_BUTTON
-			code_generator:ES_EBBRO_CODE_GENERATOR
+			l_name,l_label: EV_LABEL
+			l_button: EV_BUTTON
+			code_generator: ES_EBBRO_CODE_GENERATOR
 		do
 			create l_layouts
 
@@ -138,7 +138,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	attribute_list: ARRAYED_LIST[STRING]
+	attribute_list: ARRAYED_LIST [STRING]
 			-- attributes which were selected
 
 	class_name: STRING
@@ -175,7 +175,7 @@ feature {NONE} -- Vision2 events
 
 feature {NONE} -- Controls
 
-	output_widget:EV_TEXT
+	output_widget: EV_TEXT
 
 
 invariant

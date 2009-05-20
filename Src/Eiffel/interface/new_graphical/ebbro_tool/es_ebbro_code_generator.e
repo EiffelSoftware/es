@@ -1,6 +1,6 @@
 indexing
-	description: "Generatos Code for Custom Serialized Form Feature. In the future could be used to generate other code as well."
-	author: ""
+	description: "Generate Code for Custom Serialized Form Feature. In the future could be used to generate other code as well."
+	author: "Lucien Hansen"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -23,42 +23,41 @@ feature -- init
 
 feature -- Basic Operations
 
-	custom_form_feature (a_list:ARRAYED_LIST[STRING_8];a_class_name:STRING):STRING is
-			-- generates the custom serialization "add" feature
-			-- for a given list of attribute names
+	custom_form_feature (a_list: ARRAYED_LIST [STRING_8]; a_class_name: STRING): STRING is
+			-- generate the custom serialization "add" feature for a given list of attribute names
 		local
-			l_name:STRING
+			l_name: STRING
 		do
 			create l_name.make_from_string (a_class_name)
 			l_name.to_lower
 
 			create Result.make_from_string (t_tab)
 			Result.append (feature_start_name_string)
-			Result.append (l_name+" ")
+			Result.append (l_name + " ")
 			Result.append (feature_argument_string)
-			Result.append (" is"+t_newline)
-			Result.append (t_tab+t_tab+t_tab+"-- ")
+			Result.append (" is" + t_newline)
+			Result.append (t_tab + t_tab + t_tab + "-- ")
 			Result.append (feature_header_comment+t_newline)
-			Result.append (t_tab+t_tab+"require"+t_newline)
-			Result.append (t_tab+t_tab+t_tab+feature_precondition_string+t_newline)
-			Result.append (t_tab+t_tab+"local"+t_newline)
-			Result.append (t_tab+t_tab+t_tab+feature_locals_string+": "+feature_locals_type+t_newline)
-			Result.append (t_tab+t_tab+"do"+t_newline)
-			Result.append (t_tab+t_tab+t_tab+"create "+feature_locals_string+".make(1,"+a_list.count.out+")"+t_newline)
+			Result.append (t_tab + t_tab + "require" + t_newline)
+			Result.append (t_tab + t_tab + t_tab + feature_precondition_string + t_newline)
+			Result.append (t_tab + t_tab + "local" + t_newline)
+			Result.append (t_tab + t_tab + t_tab + feature_locals_string + ": " + feature_locals_type + t_newline)
+			Result.append (t_tab + t_tab + "do" + t_newline)
+			Result.append (t_tab + t_tab + t_tab + "create " + feature_locals_string + ".make(1," + a_list.count.out + ")" + t_newline)
 			from
 				a_list.start
 			until
 				a_list.after
 			loop
-				Result.append (t_tab+t_tab+t_tab+feature_locals_string+".extend(%""+a_list.item+"%")"+t_newline)
+				Result.append (t_tab + t_tab + t_tab + feature_locals_string + ".extend(%"" + a_list.item + "%")" + t_newline)
 				a_list.forth
 			end
 
-			Result.append (t_tab+t_tab+t_newline)
-			Result.append (t_tab+t_tab+t_tab+"a_form.put_serialized_form("+feature_locals_string+",%""+a_class_name+"%")")
-			Result.append (t_tab+t_tab+t_newline)
-			Result.append (t_tab+t_tab+t_newline)
-			Result.append (t_tab+t_tab+"end"+t_newline)
+			Result.append (t_tab + t_tab + t_newline)
+			Result.append (t_tab + t_tab + t_tab + "a_form.put_serialized_form(" + feature_locals_string + ",%"" + a_class_name + "%")")
+			Result.append (t_tab + t_tab + t_newline)
+			Result.append (t_tab + t_tab + t_newline)
+			Result.append (t_tab + t_tab + "end" + t_newline)
 
 
 		end

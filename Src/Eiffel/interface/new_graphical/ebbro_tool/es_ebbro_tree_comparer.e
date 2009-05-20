@@ -1,6 +1,6 @@
 indexing
 	description: "Compares two root-object tree rows and its children."
-	author: ""
+	author: "Lucien Hansen"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -17,10 +17,10 @@ feature -- Access
 
 feature -- Basic operations
 
-	compare_two_root_objects(root_object_row1,root_object_row2:EV_GRID_ROW) is
+	compare_two_root_objects (root_object_row1, root_object_row2: EV_GRID_ROW) is
 			-- compare two root object rows and subrows
 		local
-			l_default_color:EV_COLOR
+			l_default_color: EV_COLOR
 		do
 			if root_object_row1.subrow_count > 0 and root_object_row2.subrow_count > 0 then
 				l_default_color := root_object_row1.background_color
@@ -38,8 +38,8 @@ feature -- Basic operations
 feature {NONE} -- Implementation
 
 
-	compare_subrows(a_parent_row1,a_parent_row2:EV_GRID_ROW) is
-			-- compares subrows recursively
+	compare_subrows (a_parent_row1, a_parent_row2: EV_GRID_ROW) is
+			-- compare subrows recursively
 		require
 			not_void: a_parent_row1 /= void and a_parent_row2 /= void
 			valid: a_parent_row1.subrow_count > 0 and a_parent_row2.subrow_count > 0
@@ -126,7 +126,7 @@ feature {NONE} -- Implementation
 
 
 
-	find_row_in_subrows(a_row:EV_GRID_ROW;a_parent_of_subrows:EV_GRID_ROW):EV_GRID_ROW is
+	find_row_in_subrows (a_row: EV_GRID_ROW; a_parent_of_subrows: EV_GRID_ROW): EV_GRID_ROW is
 			-- tries to find a_row inside the subrows of a_parent_of_subrows
 			-- if present -> result will be the found subrow
 			-- else -> result := void
@@ -152,8 +152,8 @@ feature {NONE} -- Implementation
 
 
 
-	are_two_rows_identical(a_row1,a_row2:EV_GRID_ROW):BOOLEAN is
-			-- checks whether two rows are identical or not
+	are_two_rows_identical (a_row1, a_row2: EV_GRID_ROW): BOOLEAN is
+			-- check whether two rows are identical or not
 		local
 			l_item1,l_item2:EV_GRID_LABEL_ITEM
 		do
@@ -172,7 +172,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	are_attribute_types_equal(a_row1,a_row2:EV_GRID_ROW):BOOLEAN is
+	are_attribute_types_equal (a_row1, a_row2: EV_GRID_ROW): BOOLEAN is
 			-- two rows: type equality check
 		local
 			l_item1,l_item2:EV_GRID_LABEL_ITEM
@@ -191,10 +191,10 @@ feature {NONE} -- Implementation
 		end
 
 
-	are_attribute_names_equal(a_row1,a_row2:EV_GRID_ROW):BOOLEAN is
+	are_attribute_names_equal (a_row1, a_row2: EV_GRID_ROW): BOOLEAN is
 			-- two rows: name equality check
 		local
-			l_item1,l_item2:EV_GRID_LABEL_ITEM
+			l_item1,l_item2: EV_GRID_LABEL_ITEM
 		do
 			Result := false
 			l_item1 ?= a_row1.item (1)
@@ -204,10 +204,10 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	are_attribute_values_equal(a_row1,a_row2:EV_GRID_ROW):BOOLEAN is
+	are_attribute_values_equal (a_row1, a_row2: EV_GRID_ROW): BOOLEAN is
 			-- two rows: value equality check
 		local
-			l_item1,l_item2:EV_GRID_LABEL_ITEM
+			l_item1,l_item2: EV_GRID_LABEL_ITEM
 		do
 			Result := false
 			l_item1 ?= a_row1.item (2)
@@ -218,7 +218,7 @@ feature {NONE} -- Implementation
 		end
 
 
-	highlight_difference(a_row1,a_row2:EV_GRID_ROW) is
+	highlight_difference (a_row1, a_row2: EV_GRID_ROW) is
 			-- highlights the differences of two rows
 		do
 			a_row1.set_background_color (compare_diff_color)
@@ -227,7 +227,7 @@ feature {NONE} -- Implementation
 			highlight_all_parent_rows(a_row2)
 		end
 
-	highlight_all_parent_rows(a_row1:EV_GRID_ROW) is
+	highlight_all_parent_rows (a_row1: EV_GRID_ROW) is
 			-- highlight all parent rows
 		do
 			if a_row1.parent_row /= void and then a_row1.parent_row.background_color /= compare_diff_parents_color then
@@ -237,7 +237,7 @@ feature {NONE} -- Implementation
 		end
 
 
-	highlight_additional_attribute(a_row1:EV_GRID_ROW;is_on_left:BOOLEAN) is
+	highlight_additional_attribute (a_row1: EV_GRID_ROW; is_on_left: BOOLEAN) is
 			-- additional attribute highlighting
 		do
 			if is_on_left then
@@ -247,7 +247,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	highlight_identical_rows(a_row1,a_row2:EV_GRID_ROW) is
+	highlight_identical_rows (a_row1, a_row2: EV_GRID_ROW) is
 			-- two rows are identical -> used for root-object rows
 		do
 			a_row1.set_background_color (compare_identical_color)

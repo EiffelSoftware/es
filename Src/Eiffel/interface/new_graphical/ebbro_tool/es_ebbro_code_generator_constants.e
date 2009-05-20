@@ -1,6 +1,6 @@
 indexing
-	description: "Constants for Code Generator"
-	author: ""
+	description: "Constants for Code Generator."
+	author: "Lucien Hansen"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -9,9 +9,9 @@ class
 
 feature -- tokens
 
-	t_tab:STRING is "%T"
+	t_tab: STRING is "%T"
 
-	t_newline:STRING is "%N"
+	t_newline: STRING is "%N"
 
 feature -- indents
 
@@ -19,17 +19,17 @@ feature -- indents
 
 feature -- header strings
 
-	feature_header_comment:STRING is "Adds the custom serialization to 'a_form' object"
+	feature_header_comment: STRING is "Adds the custom serialization to 'a_form' object"
 
-	feature_start_name_string:STRING is "create_custom_form_for_"
+	feature_start_name_string: STRING is "create_custom_form_for_"
 
-	feature_argument_string:STRING is "(a_form: SERIALIZED_FORM)"
+	feature_argument_string: STRING is "(a_form: SERIALIZED_FORM)"
 
-	feature_precondition_string:STRING is "not_void: a_form /= void"
+	feature_precondition_string: STRING is "not_void: a_form /= void"
 
-	feature_locals_string:STRING is "l_list"
+	feature_locals_string: STRING is "l_list"
 
-	feature_locals_type:STRING is "ARRAYED_LIST[STRING]"
+	feature_locals_type: STRING is "ARRAYED_LIST [STRING]"
 
 feature -- body strings
 

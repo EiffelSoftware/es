@@ -1,6 +1,6 @@
 indexing
 	description: "Dialog to let user select two object files."
-	author: ""
+	author: "Lucien Hansen"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -137,20 +137,20 @@ feature -- Access
 			-- Has the user selected a class (True) or pushed
 			-- the cancel button (False)?
 
-	object1_file_name:STRING
+	object1_file_name: STRING
 
-	object2_file_name:STRING
+	object2_file_name: STRING
 
 feature {NONE} -- Implementation
 
 
 feature {NONE} -- actions
 
-	browse_object(is_first_object:BOOLEAN) is
+	browse_object (is_first_object: BOOLEAN) is
 			-- open browse for object dialog
 		local
-			l_dialog:EB_FILE_OPEN_DIALOG
-			l_diag_fact:ES_EBBRO_DIALOG_FACTORY
+			l_dialog: EB_FILE_OPEN_DIALOG
+			l_diag_fact: ES_EBBRO_DIALOG_FACTORY
 		do
 			create l_diag_fact
 			l_dialog := l_diag_fact.open_object_dialog
@@ -172,7 +172,7 @@ feature {NONE} -- Vision2 events
 	on_ok is
 			-- Terminate the dialog.
 		local
-			l_file1,l_file2:RAW_FILE
+			l_file1,l_file2: RAW_FILE
 		do
 			selected := true
 
@@ -204,7 +204,7 @@ feature {NONE} -- Controls
 
 	object1_field: EV_TEXT_FIELD
 
-	object2_field:EV_TEXT_FIELD
+	object2_field: EV_TEXT_FIELD
 
 
 invariant

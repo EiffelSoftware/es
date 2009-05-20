@@ -1,6 +1,6 @@
 indexing
 	description: "Persistence constants used in Ebbro."
-	author: ""
+	author: "Lucien Hansen"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -12,11 +12,11 @@ feature -- serialization / deserialization
 
 	dadl_file_ending: STRING is ".adls"
 
-	binary_file_ending:STRING is ".*"
+	binary_file_ending: STRING is ".*"
 
-	dadl_format_id:INTEGER is 1
+	dadl_format_id: INTEGER is 1
 
-	binary_format_id:INTEGER is 2
+	binary_format_id: INTEGER is 2
 
 feature -- dialog filters
 

@@ -1,6 +1,6 @@
 indexing
 	description: "Dialog to let user select attributes for custom serialized form feature."
-	author: ""
+	author: "Lucien Hansen"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -24,8 +24,8 @@ create
 
 feature --init
 
-	make_with_name(a_class_name:STRING) is
-			--
+	make_with_name (a_class_name: STRING) is
+			-- init
 		require
 			valid_name:a_class_name /= void and not a_class_name.is_empty
 		do
@@ -150,7 +150,7 @@ feature -- Access
 			-- Has the user selected a class (True) or pushed
 			-- the cancel button (False)?
 
-	attribute_list:ARRAYED_LIST[STRING]
+	attribute_list: ARRAYED_LIST [STRING]
 			-- attributes which were selected
 
 	is_valid: BOOLEAN is
@@ -166,13 +166,13 @@ feature {NONE} -- Implementation
 			-- name of the class
 
 	fill_feature_check_list is
-			-- fills the feature_check_list control with the attributes from 'class_name'
+			-- fill the feature_check_list control with the attributes from 'class_name'
 		local
-			l_internal:INTERNAL
-			l_class:CLASS_C
-			l_table:COMPUTED_FEATURE_TABLE
-			l_feature:FEATURE_I
-			l_item:EV_LIST_ITEM
+			l_internal: INTERNAL
+			l_class: CLASS_C
+			l_table: COMPUTED_FEATURE_TABLE
+			l_feature: FEATURE_I
+			l_item: EV_LIST_ITEM
 		do
 			create l_internal
 			l_class := get_class_i.compiled_class
@@ -194,7 +194,7 @@ feature {NONE} -- Implementation
 					l_table.forth
 				end
 			else
-				-- class not yet compiled?
+				-- class not yet compiled
 			end
 
 		end
@@ -215,7 +215,7 @@ feature {NONE} -- Implementation
 		end
 
 	generate_item_tooltip (a_type_str:STRING;a_signature:STRING): STRING is
-			-- creates the tooltip for a ev_item -> which is holding an attribtue
+			-- create the tooltip for a ev_item -> which is holding an attribtue
 		do
 			create Result.make_empty
 			Result.append ("Type: "+a_type_str+"%N")
@@ -232,8 +232,8 @@ feature {NONE} -- actions
 			feature_check_list.do_all (agent select_item(?))
 		end
 
-	select_item (a_item:EV_LIST_ITEM) is
-			--
+	select_item (a_item: EV_LIST_ITEM) is
+			-- select item in feature_check_list
 		do
 			feature_check_list.check_item (a_item)
 		end
@@ -244,8 +244,8 @@ feature {NONE} -- actions
 			feature_check_list.do_all (agent unselect_item(?))
 		end
 
-	unselect_item (a_item:EV_LIST_ITEM) is
-			--
+	unselect_item (a_item: EV_LIST_ITEM) is
+			-- unselect selection
 		do
 			feature_check_list.uncheck_item (a_item)
 		end
@@ -256,8 +256,8 @@ feature {NONE} -- actions
 			feature_check_list.do_all (agent invert_item(?))
 		end
 
-	invert_item (a_item:EV_LIST_ITEM) is
-			--
+	invert_item (a_item: EV_LIST_ITEM) is
+			-- invert selection
 		do
 			if feature_check_list.is_item_checked (a_item) then
 				feature_check_list.uncheck_item (a_item)
@@ -273,7 +273,7 @@ feature {NONE} -- Vision2 events
 	on_ok is
 			-- Terminate the dialog.
 		local
-			l_list:DYNAMIC_LIST[EV_LIST_ITEM]
+			l_list: DYNAMIC_LIST [EV_LIST_ITEM]
 		do
 			l_list := feature_check_list.checked_items
 			selected := true
