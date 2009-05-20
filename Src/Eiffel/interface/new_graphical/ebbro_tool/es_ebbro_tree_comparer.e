@@ -1,5 +1,5 @@
 indexing
-	description: "Summary description for {ES_EBBRO_TREE_COMPARER}."
+	description: "Compares two root-object tree rows and its children."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -18,7 +18,7 @@ feature -- Access
 feature -- Basic operations
 
 	compare_two_root_objects(root_object_row1,root_object_row2:EV_GRID_ROW) is
-			--
+			-- compare two root object rows and subrows
 		local
 			l_default_color:EV_COLOR
 		do
@@ -39,7 +39,7 @@ feature {NONE} -- Implementation
 
 
 	compare_subrows(a_parent_row1,a_parent_row2:EV_GRID_ROW) is
-			--
+			-- compares subrows recursively
 		require
 			not_void: a_parent_row1 /= void and a_parent_row2 /= void
 			valid: a_parent_row1.subrow_count > 0 and a_parent_row2.subrow_count > 0
@@ -153,7 +153,7 @@ feature {NONE} -- Implementation
 
 
 	are_two_rows_identical(a_row1,a_row2:EV_GRID_ROW):BOOLEAN is
-			--
+			-- checks whether two rows are identical or not
 		local
 			l_item1,l_item2:EV_GRID_LABEL_ITEM
 		do
@@ -173,7 +173,7 @@ feature {NONE} -- Implementation
 		end
 
 	are_attribute_types_equal(a_row1,a_row2:EV_GRID_ROW):BOOLEAN is
-			--
+			-- two rows: type equality check
 		local
 			l_item1,l_item2:EV_GRID_LABEL_ITEM
 			l_str1,l_str2:STRING
@@ -192,7 +192,7 @@ feature {NONE} -- Implementation
 
 
 	are_attribute_names_equal(a_row1,a_row2:EV_GRID_ROW):BOOLEAN is
-			--
+			-- two rows: name equality check
 		local
 			l_item1,l_item2:EV_GRID_LABEL_ITEM
 		do
@@ -205,7 +205,7 @@ feature {NONE} -- Implementation
 		end
 
 	are_attribute_values_equal(a_row1,a_row2:EV_GRID_ROW):BOOLEAN is
-			--
+			-- two rows: value equality check
 		local
 			l_item1,l_item2:EV_GRID_LABEL_ITEM
 		do
@@ -219,7 +219,7 @@ feature {NONE} -- Implementation
 
 
 	highlight_difference(a_row1,a_row2:EV_GRID_ROW) is
-			--
+			-- highlights the differences of two rows
 		do
 			a_row1.set_background_color (compare_diff_color)
 			a_row2.set_background_color (compare_diff_color)
@@ -228,7 +228,7 @@ feature {NONE} -- Implementation
 		end
 
 	highlight_all_parent_rows(a_row1:EV_GRID_ROW) is
-			--
+			-- highlight all parent rows
 		do
 			if a_row1.parent_row /= void and then a_row1.parent_row.background_color /= compare_diff_parents_color then
 				a_row1.parent_row.set_background_color (compare_diff_parents_color)
@@ -238,7 +238,7 @@ feature {NONE} -- Implementation
 
 
 	highlight_additional_attribute(a_row1:EV_GRID_ROW;is_on_left:BOOLEAN) is
-			--
+			-- additional attribute highlighting
 		do
 			if is_on_left then
 				a_row1.set_background_color (compare_missing_on_left_color)
@@ -248,7 +248,7 @@ feature {NONE} -- Implementation
 		end
 
 	highlight_identical_rows(a_row1,a_row2:EV_GRID_ROW) is
-			--
+			-- two rows are identical -> used for root-object rows
 		do
 			a_row1.set_background_color (compare_identical_color)
 			a_row2.set_background_color (compare_identical_color)
