@@ -104,7 +104,7 @@ feature -- Access
 			elseif l_class_name.is_equal ("NATURAL_8") then
 				attribute_values.i_th (a_position).object := a_new_value.to_natural_8
 			elseif l_class_name.is_equal ("NATURAL_16") then
-				attribute_values.i_th (a_position).object := a_new_value.to_integer_16
+				attribute_values.i_th (a_position).object := a_new_value.to_natural_16
 			elseif l_class_name.is_equal ("NATURAL_32") then
 				attribute_values.i_th (a_position).object := a_new_value.to_natural_32
 			elseif l_class_name.is_equal ("NATURAL_64") then
