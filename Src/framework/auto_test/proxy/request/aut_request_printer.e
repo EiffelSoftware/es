@@ -187,7 +187,8 @@ feature {AUT_REQUEST} -- Processing
 				l_locals.append (l_arguments)
 			end
 
-			l_receiver_type := l_feature.type.actual_type.instantiation_in (l_target_type, l_feature.written_in)
+			l_receiver_type := l_feature.type.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
+--			l_receiver_type := l_feature.type.actual_type.instantiation_in (l_target_type, l_feature.written_in)
 			if a_request.is_feature_query then
 				l_locals.extend (l_receiver_type)
 			end

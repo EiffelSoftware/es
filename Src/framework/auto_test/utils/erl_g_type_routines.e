@@ -220,7 +220,7 @@ feature{NONE} -- Implementation
 				until
 					i > count
 				loop
-					Result.extend (a_feature.arguments.i_th (i).actual_type.instantiation_in (a_context, a_feature.written_in).deep_actual_type)
+					Result.extend (a_feature.arguments.i_th (i).instantiation_in (a_context, a_context.associated_class.class_id).actual_type)
 					i := i + 1
 				end
 			end
