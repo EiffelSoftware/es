@@ -83,6 +83,7 @@ feature {NONE} -- Initialization
 		local
 			l_itp_class: like interpreter_class
 		do
+			configuration := a_config
 			l_itp_class := interpreter_class
 			create variable_table.make (a_system)
 			create raw_response_analyzer
@@ -111,14 +112,15 @@ feature {NONE} -- Initialization
 
 			create response_printer.make_with_prefix (proxy_log_file, interpreter_log_prefix)
 
+			set_is_logging_enabled (True)
+			set_is_speed_logging_enabled (True)
+			set_is_test_case_index_logging_enabled (True)
+
+			log_types_under_test
 			log_line ("-- A new proxy has been created.")
 			proxy_start_time := system_clock.date_time_now
 			error_handler := a_error_handler
 			timeout := default_timeout
-			set_is_logging_enabled (True)
-			set_is_speed_logging_enabled (True)
-			set_is_test_case_index_logging_enabled (True)
-			configuration := a_config
 		ensure
 			executable_file_name_set: executable_file_name = an_executable_file_name
 			system_set: system = a_system
@@ -373,7 +375,7 @@ feature -- Execution
 			l_request: AUT_CREATE_OBJECT_REQUEST
 			l_var_set: like variable_set
 		do
-			log_time_stamp ("exec")
+--			log_time_stamp ("exec")
 			l_arg_list := an_argument_list
 			if l_arg_list = Void then
 				create {DS_LINKED_LIST [ITP_EXPRESSION]} l_arg_list.make
@@ -388,8 +390,10 @@ feature -- Execution
 			end
 			last_request := l_request
 			last_request.process (request_printer)
+			log_time_stamp (test_case_start_tag)
 			flush_process
 			parse_invoke_response
+			log_time_stamp (test_case_end_tag)
 			last_request.set_response (last_response)
 			if not last_response.is_bad then
 --				is_ready := True
@@ -441,7 +445,7 @@ feature -- Execution
 			l_objects: DS_LINEAR [ITP_EXPRESSION]
 			l_var_set: like variable_set
 		do
-			log_time_stamp ("exec")
+--			log_time_stamp ("exec")
 			l_target_type := variable_table.variable_type (a_target)
 			l_feature := l_target_type.associated_class.feature_of_rout_id (a_feature.rout_id_set.first)
 
@@ -461,8 +465,10 @@ feature -- Execution
 			end
 			last_request := l_invoke_request
 			last_request.process (request_printer)
+			log_time_stamp (test_case_start_tag)
 			flush_process
 			parse_invoke_response
+			log_time_stamp (test_case_end_tag)
 			last_request.set_response (last_response)
 			if not last_response.is_bad or last_response.is_error then
 --				is_ready := True
@@ -502,7 +508,7 @@ feature -- Execution
 			l_invoke_request: AUT_INVOKE_FEATURE_REQUEST
 			l_var_set: like variable_set
 		do
-			log_time_stamp ("exec")
+--			log_time_stamp ("exec")
 			create l_invoke_request.make_assign (system, a_receiver, a_query.feature_name, a_target, an_argument_list)
 			l_invoke_request.set_target_type (a_type)
 			log_test_case_index (l_invoke_request)
@@ -514,8 +520,10 @@ feature -- Execution
 			end
 			last_request := l_invoke_request
 			last_request.process (request_printer)
+			log_time_stamp (test_case_start_tag)
 			flush_process
 			parse_invoke_response
+			log_time_stamp (test_case_end_tag)
 			last_request.set_response (last_response)
 			if not last_response.is_bad then
 --				is_ready := True
@@ -1214,11 +1222,11 @@ feature -- Precondition satisfaction
 	typed_object_pool: AUT_TYPED_OBJECT_POOL
 			-- Typed object pool
 
-	generate_typed_object_pool (a_types: DS_LIST [TYPE_A]) is
+	generate_typed_object_pool is
 			-- Generate `typed_object_pool' and
 			-- initialize it with `a_types'.
 		do
-			create typed_object_pool.make (system, a_types)
+			create typed_object_pool.make (system, configuration.types_under_test)
 			variable_table.set_defining_variable_action (agent typed_object_pool.put_variable)
 		end
 
@@ -1305,6 +1313,38 @@ feature -- Precondition satisfaction
 				create Result.make (0)
 				Result.compare_objects
 			end
+		end
+
+	test_case_start_tag: STRING is "TC start"
+			-- Log tag for test case start
+
+	test_case_end_tag: STRING is "TC end"
+			-- Log tag for test case end
+
+	log_types_under_test is
+			-- Log `types_under_test'.
+		local
+			l_types: DS_LINEAR [TYPE_A]
+			i: INTEGER
+			l_count: INTEGER
+		do
+			log ("-- classes under test: ")
+			l_types := configuration.types_under_test
+			from
+				l_types.start
+				l_count := l_types.count
+				i := 1
+			until
+				l_types.after
+			loop
+				log (l_types.item_for_iteration.associated_class.name_in_upper)
+				if i < l_count then
+					log (", ")
+				end
+				i := i + 1
+				l_types.forth
+			end
+			log_line ("")
 		end
 
 invariant

@@ -56,9 +56,9 @@ feature{NONE} -- Processing
 	process_create_object_request (a_request: AUT_CREATE_OBJECT_REQUEST)
 		do
 			if last_test_case_request /= Void then
-				last_test_case_request.set_end_time (last_time_stamp)
+				last_test_case_request.set_end_time (last_test_case_end_time)
 			end
-			a_request.set_start_time (last_time_stamp)
+			a_request.set_start_time (last_test_case_start_time)
 			Precursor (a_request)
 			update_result_reposotory
 		end
@@ -66,18 +66,21 @@ feature{NONE} -- Processing
 	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)
 		do
 			if last_test_case_request /= Void then
-				last_test_case_request.set_end_time (last_time_stamp)
+				last_test_case_request.set_end_time (last_test_case_end_time)
 			end
-			a_request.set_start_time (last_time_stamp)
+			a_request.set_start_time (last_test_case_start_time)
 			Precursor (a_request)
 			update_result_reposotory
 		end
 
 	report_comment_line (a_line: STRING) is
 			-- Report comment line `a_line'.
+		local
+			l_line: STRING
 		do
-			if a_line.substring (1, 14).is_equal (time_stamp_header) then
-				analyze_time_stamp (a_line)
+			if a_line.substring (1, time_stamp_header.count).is_equal (time_stamp_header) then
+				l_line := a_line.substring (time_stamp_header.count + 1, a_line.count)
+				analyze_time_stamp (l_line)
 			end
 		end
 
@@ -103,24 +106,36 @@ feature {NONE} -- Implementation
 
 feature -- Time measurement
 
-	last_time_stamp: INTEGER
-			-- Last met time stamp in millisecond
+	last_test_case_start_time: INTEGER
+			-- Time in millisecond when the last test case started
 
-	time_stamp_header: STRING is "-- time stamp:"
+	last_test_case_end_time: INTEGER
+			-- Time in millisecond when the last test case ended
+
+	time_stamp_header: STRING is "-- time stamp: "
 			-- Header for time stamp
+
+	test_case_start_time_header: STRING is "TC start"
+			-- Test case start time tag
+
+	test_case_end_time_header: STRING is "TC end"
+			-- Test case end time tag	
 
 	analyze_time_stamp (a_line: STRING) is
 			-- Analyze time stamp in `a_line'.
 		local
 			l_parts: LIST [STRING]
 			l_time: INTEGER
-			l_request_history: like request_history
 		do
 			l_parts := a_line.split (';')
 			check l_parts.count = 3 end
 			l_time := l_parts.last.to_integer
-			l_request_history := request_history
-			last_time_stamp := l_time
+
+			if l_parts.first.is_equal (test_case_start_time_header) then
+				last_test_case_start_time := l_time
+			elseif l_parts.first.is_equal (test_case_end_time_header) then
+				last_test_case_end_time := l_time
+			end
 		end
 
 	last_test_case_request: detachable AUT_REQUEST;

@@ -149,4 +149,16 @@ feature -- Object State Exploration
 		deferred
 		end
 
+feature -- Types under test
+
+	types_under_test: DS_ARRAYED_LIST [TYPE_A]
+			-- Types under test
+
+	set_types_under_test (a_types: like types_under_test) is
+			-- Set `types_under_test' with `a_types'.
+		do
+			create types_under_test.make (a_types.count)
+			types_under_test.append_last (a_types)
+		end
+
 end

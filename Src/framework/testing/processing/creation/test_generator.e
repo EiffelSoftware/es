@@ -426,17 +426,19 @@ feature {NONE} -- Interpreter generation
 				system.make_update (False)
 
 					-- Generate interpreter.
+				configuration.set_types_under_test (types_under_test)
 				factory.create_interpreter (interpreter_base_dirname, log_dirname, error_handler, configuration)
 				interpreter := factory.last_interpreter
 				if interpreter /= Void and then proxy_time_out > 0 then
 					interpreter.set_timeout (proxy_time_out)
+
+						-- Generate typed object pool for precondition evaluation.
+					if configuration.is_precondition_checking_enabled then
+						interpreter.generate_typed_object_pool
+						interpreter.set_predicate_pattern_by_feature (predicate_pattern_by_feature)
+					end
 				end
 
-					-- Generate typed object pool for precondition evaluation.
-				if configuration.is_precondition_checking_enabled then
-					interpreter.generate_typed_object_pool (types_under_test)
-					interpreter.set_predicate_pattern_by_feature (predicate_pattern_by_feature)
-				end
 			else
 				is_finished := True
 			end
