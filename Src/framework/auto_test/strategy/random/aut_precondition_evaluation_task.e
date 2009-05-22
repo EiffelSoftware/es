@@ -197,7 +197,10 @@ feature -- Execution
 					l_available_count.put (l_count, current_argument_index)
 
 
-					if current_argument_index = 1 and then interpreter.variable_table.variable_type (l_variable).is_none then
+					if
+						(current_argument_index = 1 and then interpreter.variable_table.variable_type (l_variable).is_none) or else
+						interpreter.variable_table.invalid_objects.has (l_variable.index)
+					then
 							-- A Void object is selected as the target object.
 							-- Do nothing here, make the search to select another object for the target object.
 						l_should_continue := False
@@ -473,7 +476,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	max_tries: INTEGER is 10
+	max_tries: INTEGER is 1000
 
 	tried_count: INTEGER
 

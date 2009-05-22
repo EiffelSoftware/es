@@ -37,6 +37,7 @@ feature {NONE} -- Initialization
 			create variable_type_table.make_default
 			variable_type_table.set_key_equality_tester (tester)
 			system := a_system
+			create invalid_objects.make (default_invalid_objects_size)
 		ensure
 			system_set: system = a_system
 		end
@@ -229,9 +230,42 @@ feature -- Removal
 	variable_type_table: DS_HASH_TABLE [TYPE_A, ITP_VARIABLE]
 			-- Table mapping interprteter variables to their type
 
+feature -- Class invariant violation management
+
+	invalid_objects: DS_HASH_SET [INTEGER]
+			-- Indexes of objects which violate their invariants
+
+	default_invalid_objects_size: INTEGER is 1000
+			-- Default size of `invalid_objects'
+
+	mark_invalid_object (a_index: INTEGER) is
+			-- Mark that object with index `a_index' violates it class invariant.
+		require
+			a_index_positive: a_index > 0
+		do
+			invalid_objects.force_last (a_index)
+			if object_marked_invalid_action /= Void then
+				object_marked_invalid_action.call ([a_index])
+			end
+		ensure
+			object_marked: invalid_objects.has (a_index)
+		end
+
+	object_marked_invalid_action: detachable PROCEDURE [ANY, TUPLE [a_index: INTEGER]]
+			-- Action to be performed when object with index `a_index' is
+			-- marked as class invariant violating
+
+	set_object_marked_invalid_action (a_action: like object_marked_invalid_action) is
+			-- Set `object_marked_invalid_action' with `a_action'.
+		do
+			object_marked_invalid_action := a_action
+		ensure
+			object_marked_invalid_action_set: object_marked_invalid_action = a_action
+		end
+
 feature -- Actions
 
-	defining_variable_action: PROCEDURE [ANY, TUPLE [ITP_VARIABLE, TYPE_A]]
+	defining_variable_action: detachable PROCEDURE [ANY, TUPLE [ITP_VARIABLE, TYPE_A]]
 			-- Action to be called if a new variable is defined
 
 	set_defining_variable_action (a_action: like defining_variable_action) is

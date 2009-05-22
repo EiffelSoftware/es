@@ -949,12 +949,12 @@ feature{NONE} -- Process scheduling
 					check
 						normal_response_not_void: normal_response /= Void
 					end
-					if normal_response.exception /= Void then
-						if normal_response.exception.code = Class_invariant then
-							stop
-							log_line ("-- Proxy has terminated interpreter due to class invariant violation.")
-						end
-					end
+--					if normal_response.exception /= Void then
+--						if normal_response.exception.code = Class_invariant then
+--							stop
+--							log_line ("-- Proxy has terminated interpreter due to class invariant violation.")
+--						end
+--					end
 				end
 			else
 				log_line ("-- Interpreter seems to have quit on its own.")
@@ -1010,21 +1010,16 @@ feature -- Socket IPC
 			-- Retrieve response from the interpreter,
 			-- store it in `last_raw_response'.
 		local
-			l_data: TUPLE [output: STRING; error: STRING]
-			l_ddd: TUPLE [LINKED_LIST [STRING_8], LINKED_LIST [BOOLEAN], STRING_8, STRING_8]
+			l_data: TUPLE [invariant_violating_object_index: INTEGER; output: STRING; error: STRING]
 			l_retried: BOOLEAN
 			l_socket: like socket
 			l_response_flag: NATURAL_32
-			l_any: detachable ANY
 		do
 			if not l_retried then
 				l_socket := socket
 				l_socket.read_natural_32
 				l_response_flag := l_socket.last_natural_32
---				l_data ?= l_socket.retrieved
-				l_any ?= l_socket.retrieved
-				l_data ?= l_any
-				l_ddd ?= l_any
+				l_data ?= l_socket.retrieved
 				process.set_timeout (0)
 				if l_data /= Void then
 					create last_raw_response.make (l_data.output, l_data.error, l_response_flag)
@@ -1033,6 +1028,14 @@ feature -- Socket IPC
 						-- because everything that the interpreter output should come from `l_data.output'.
 						-- Jason 2008.10.22
 					replace_output_from_socket_by_pipe_data
+
+						-- Mark object as invariant violating.
+					if
+						l_response_flag = {AUT_SHARED_CONSTANTS}.invariant_violation_on_entry_response_flag and then
+						l_data.invariant_violating_object_index > 0
+					then
+						variable_table.mark_invalid_object (l_data.invariant_violating_object_index)
+					end
 				else
 					last_raw_response := Void
 				end

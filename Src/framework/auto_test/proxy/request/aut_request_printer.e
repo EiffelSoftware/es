@@ -338,9 +338,9 @@ feature {AUT_REQUEST} -- Processing
 
 feature {NONE} -- Byte code generation
 
-	new_check_invariant_feature_call (a_local_index: INTEGER; a_local_type: TYPE_A): CALL_ACCESS_B is
+	new_check_invariant_feature_call (a_local_index: INTEGER; a_object_index: INTEGER; a_local_type: TYPE_A): CALL_ACCESS_B is
 			-- New FEATURE_B instance to check class invariant of the `a_local_index'-th local variable.
-			-- `a_local_type' is the type of that local variable.
+			-- `a_local_type' is the type of that local variable, whose index in the object pool is `a_object_index'.
 		require
 			a_local_index_positive: a_local_index > 0
 			a_local_type_attached: a_local_type /= Void
@@ -349,9 +349,18 @@ feature {NONE} -- Byte code generation
 			l_object_pool_index_param: PARAMETER_B
 			l_parameters: BYTE_LIST [PARAMETER_B]
 			l_local: LOCAL_B
+			l_integer_expr: INTEGER_CONSTANT
 		do
-			create l_parameters.make (1)
+			create l_parameters.make (2)
 
+				-- Setup argument for object index.
+			create l_object_pool_index_param
+			create l_integer_expr.make_with_value (a_object_index)
+			l_object_pool_index_param.set_expression (l_integer_expr)
+			l_object_pool_index_param.set_attachment_type (l_integer_expr.type)
+			l_parameters.extend (l_object_pool_index_param)
+
+				-- Setup argument for local variable index.
 			create l_local_index_param
 			create l_local
 			l_local.set_position (a_local_index)
@@ -446,7 +455,12 @@ feature {NONE} -- Byte code generation
 				l_cursor.after
 			loop
 				Result.extend (new_reverse_b (new_local_b (i), l_expr_visitor.expression (l_cursor.item)))
-				Result.extend (new_check_invariant_byte_code (i))
+				if attached {ITP_VARIABLE} l_cursor.item as l_variable then
+					fixme ("It will cause a segmentation violation if expanded types are included here. Jasonw 22.05.2009")
+					if not variable_table.variable_type (l_variable).is_expanded then
+						Result.extend (new_check_invariant_byte_code (i, l_variable.index))
+					end
+				end
 				l_cursor.forth
 				i := i + 1
 			end
@@ -470,7 +484,7 @@ feature {NONE} -- Byte code generation
 			result_attached: Result /= Void
 		end
 
-	new_check_invariant_byte_code (a_local_index: INTEGER): BYTE_NODE
+	new_check_invariant_byte_code (a_local_index: INTEGER; a_object_index: INTEGER): BYTE_NODE
 			-- New byte-node to store local at `a_local_index' in object pool at index `a_index'.
 		require
 			a_local_index_positive: a_local_index > 0
@@ -479,6 +493,7 @@ feature {NONE} -- Byte code generation
 				new_instr_call_b (
 					new_check_invariant_feature_call (
 						a_local_index,
+						a_object_index,
 						check_object_invariant_feature.arguments.i_th (1).actual_type))
 		ensure
 			result_attached: Result /= Void

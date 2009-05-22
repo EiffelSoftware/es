@@ -183,7 +183,7 @@ feature {NONE} -- Handlers
 
 				-- Send response to the proxy.
 			refresh_last_response_flag
-			last_response := [output_buffer, error_buffer]
+			last_response := [0, output_buffer, error_buffer]
 			send_response_to_socket
 		end
 
@@ -227,7 +227,7 @@ feature {NONE} -- Handlers
 
 				-- Send response to the proxy.
 			refresh_last_response_flag
-			last_response := [output_buffer, error_buffer]
+			last_response := [invariant_violating_object_index, output_buffer, error_buffer]
 			send_response_to_socket
 		end
 
@@ -532,11 +532,11 @@ feature {NONE} -- Byte code
 		rescue
 			failed := True
 			report_trace
-			if exception = Class_invariant then
-					-- A class invariant cannot be recovered from since we
-					-- don't know how many and what objects are now invalid
-				should_quit := True
-			end
+--			if exception = Class_invariant then
+--					-- A class invariant cannot be recovered from since we
+--					-- don't know how many and what objects are now invalid
+--				should_quit := True
+--			end
 			retry
 		end
 
@@ -632,18 +632,25 @@ feature{NONE} -- Invariant checking
 			-- Is the class invariant violated when `check_invariant' is invoked
 			-- the last time?
 
-	check_invariant (o: detachable ANY) is
-			-- Check if the class invariant `o' is satisfied.
+	invariant_violating_object_index: INTEGER
+			-- Index of the object which violates it class invariant
+
+	check_invariant (a_index: INTEGER; o: detachable ANY) is
+			-- Check if the class invariant `o' with index `a_index' is satisfied.
 			-- If not satisfied, set `is_last_invariant_violated' to True
 			-- and raise the exception.
 			-- If satisfied, set `is_last_invariant_violated' to False.
 			-- if `o' is detached, set `is_last_invariant_violated' to False and do nothing.
+		require
+			a_index_positive: a_index > 0
 		do
 			if attached {ANY} o as l_obj then
 				l_obj.do_nothing
 			end
+			invariant_violating_object_index := 0
 		rescue
 			is_last_invariant_violated := True
+			invariant_violating_object_index := a_index
 		end
 
 feature{NONE} -- Object state checking
@@ -679,6 +686,7 @@ feature{NONE} -- Object state checking
 			o: detachable ANY
 			l_retried: BOOLEAN
 			l_bcode: STRING
+			l_index: INTEGER
 		do
 			if not l_retried then
 				output_buffer.wipe_out
@@ -693,14 +701,15 @@ feature{NONE} -- Object state checking
 							-- if so, we don't need to retrieve any state, instead,
 							-- an exception will be rasied, and an error message is sent back
 							-- to the interpreter.
-						o := variable_at_index (l_request.l_object_index.to_integer)
+						l_index := l_request.l_object_index.to_integer
+						o := variable_at_index (l_index)
 						if o = Void then
 							refresh_last_response_flag
 							last_response_flag := object_is_void_flag
 							last_response := [Void, Void, output_buffer, error_buffer]
 							send_response_to_socket
 						else
-							check_invariant (o)
+							check_invariant (l_index, o)
 
 								-- If `o' is OK, we start checking the states of it.
 							log_message ("report_object_state_request start%N")
