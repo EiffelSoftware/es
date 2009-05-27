@@ -85,6 +85,10 @@ feature -- Access
 			-- Types related to `feature_', including target type and
 			-- argument types.
 
+	tried_count: INTEGER
+			-- Number of object combinations that were tried so far
+			-- to satisfying the precondition of `feature_'
+
 feature -- Status
 
 	steps_completed: BOOLEAN
@@ -249,7 +253,10 @@ feature -- Execution
 				steps_completed := is_precondition_satisfied
 
 				tried_count := tried_count + 1
-				if tried_count > max_tries then
+
+					-- If `max_precondition_search_tries' have already been tried, we give up testing
+					-- current feature, and move to the next feature.
+				if max_precondition_search_tries > 0 and then tried_count > max_precondition_search_tries then
 					cancel
 				end
 			end
@@ -476,10 +483,6 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	max_tries: INTEGER is 1000
-
-	tried_count: INTEGER
-
 	smtlib_file_path: FILE_NAME is
 			-- Full path for the generated SMT-LIB file
 		do
@@ -600,6 +603,14 @@ feature{NONE} -- Implementation
 			-- Table of last linearly sovled arguments
 			-- [argument value, argument index]
 			-- Argument index is 1-based.
+
+	max_precondition_search_tries: INTEGER
+			-- See `interpreter'.`configuration'.`max_precondition_search_tries'.
+		do
+			Result := interpreter.configuration.max_precondition_search_tries
+		ensure
+			good_result: Result = interpreter.configuration.max_precondition_search_tries
+		end
 
 ;note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

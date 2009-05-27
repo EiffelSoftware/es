@@ -183,11 +183,14 @@ feature -- Execution
 						end
 						l_call := True
 					elseif precondition_evaluator.is_precondition_satisfied then
+						interpreter.log_line ("-- Precondition tries: " + precondition_evaluator.tried_count.out + "; " + type.associated_class.name_in_upper + "." + feature_to_call.feature_name)
 						create {DS_LINKED_LIST [ITP_EXPRESSION]} arguments.make_from_array (precondition_evaluator.variables)
 						target ?= arguments.first
 						arguments.start
 						arguments.remove_at
 						l_call := True
+					else
+						interpreter.log_line ("-- Unsatisfiable precondition: " + type.associated_class.name_in_upper + "." + feature_to_call.feature_name)
 					end
 					if l_call then
 						invoke
