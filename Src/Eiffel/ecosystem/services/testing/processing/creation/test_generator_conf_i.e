@@ -55,6 +55,28 @@ feature -- Access
 		deferred
 		end
 
+	log_processor: detachable STRING
+			-- Name of the specified log processor
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	log_processor_output: detachable STRING
+			-- Name of the output file from log processor
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	max_precondition_search_tries: INTEGER
+			-- Max times to search for an object combination satisfying precondition of a feature.
+			-- 0 means search until a satisfying object combination is found.
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
 feature -- Status report
 
 	is_slicing_enabled: BOOLEAN

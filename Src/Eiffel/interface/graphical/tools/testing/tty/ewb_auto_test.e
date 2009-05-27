@@ -128,6 +128,13 @@ feature -- Execution
 					-- Should object state exploration be enabled?
 				l_conf.set_is_object_state_exploration_enabled (l_ap.is_object_state_exploration_enabled)
 
+					-- Set log processor.
+				l_conf.set_log_processor (l_ap.log_processor)
+				l_conf.set_log_processor_output (l_ap.log_processor_output)
+
+					-- Set max tries for precondition search.
+				l_conf.set_max_precondition_search_tries (l_ap.max_precondition_search_tries)
+
 				if l_root_group.is_cluster then
 					if attached {CONF_CLUSTER} l_root_group as l_cluster then
 						l_conf.set_cluster (l_cluster)

@@ -103,6 +103,16 @@ feature -- Status report
 	is_object_state_exploration_enabled: BOOLEAN
 			-- Is object state exploration enabled?
 
+	log_processor: detachable STRING
+			-- Name of the log processor
+
+	log_processor_output: detachable STRING
+			-- Name of the output file from log processor
+
+	max_precondition_search_tries: INTEGER
+			-- Max tries in the search to satisfy precondition of a feature
+			-- 0 means that search until a satisfying object comibination is found.
+
 feature -- Element change
 
 	set_error_handler (a_error_handler: like error_handler)
@@ -145,6 +155,9 @@ feature -- Parsing
 			l_precondition_option: AP_FLAG
 			l_constraint_solving_option: AP_FLAG
 			l_object_state_exploration: AP_FLAG
+			l_log_processor_op: AP_STRING_OPTION
+			l_log_processor_output_op: AP_STRING_OPTION
+			l_max_precondition_tries_op: AP_INTEGER_OPTION
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -222,8 +235,8 @@ feature -- Parsing
 			l_help_option.set_description ("Display this help message.")
 			parser.options.force_last (l_help_option)
 
-			create l_load_log_option.make_with_long_form ("load-log")
-			l_load_log_option.set_description ("Load the log file specified as the following parameter.")
+			create l_load_log_option.make_with_long_form ("log")
+			l_load_log_option.set_description ("Process the log file specified as the following parameter.")
 			parser.options.force_last (l_load_log_option)
 
 			create l_state_option.make_with_long_form ("state")
@@ -241,6 +254,18 @@ feature -- Parsing
 			create l_object_state_exploration.make_with_long_form ("state_explore")
 			l_object_state_exploration.set_description ("Enable object state exploration.")
 			parser.options.force_last (l_object_state_exploration)
+
+			create l_log_processor_op.make_with_long_form ("log_processor")
+			l_log_processor_op.set_description ("Processor for the log file specified with the " + l_load_log_option.name + " option.")
+			parser.options.force_last (l_log_processor_op)
+
+			create l_log_processor_output_op.make_with_long_form ("log_processor_output")
+			l_log_processor_output_op.set_description ("Name of the output file from the log processor specified with the " + l_log_processor_op.name + " option.")
+			parser.options.force_last (l_log_processor_output_op)
+
+			create l_max_precondition_tries_op.make_with_long_form ("--max_precondition_tries")
+			l_max_precondition_tries_op.set_description ("Maximal tries to search for an object combination satisfying precondition of a feature. 0 means that search until an object combination is found.")
+			parser.options.force_last (l_max_precondition_tries_op)
 
 			parser.parse_list (a_arguments)
 
@@ -370,6 +395,24 @@ feature -- Parsing
 
 			if not error_handler.has_error then
 				is_object_state_exploration_enabled := l_object_state_exploration.was_found
+			end
+
+			if not error_handler.has_error then
+				if l_log_processor_op.was_found then
+					log_processor := l_log_processor_op.parameter
+				end
+			end
+
+			if not error_handler.has_error then
+				if l_log_processor_output_op.was_found then
+					log_processor_output := l_log_processor_output_op.parameter
+				end
+			end
+
+			if not error_handler.has_error then
+				if l_max_precondition_tries_op.was_found then
+					max_precondition_search_tries := l_max_precondition_tries_op.parameter
+				end
 			end
 
 --			if parser.parameters.count = 0 then

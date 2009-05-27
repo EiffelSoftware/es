@@ -845,61 +845,18 @@ feature{NONE} -- Test result analyizing
 	load_log (a_log_file: STRING)
 			-- Load log in `a_log_file'.
 		local
-			l_replay_strategy: AUT_REQUEST_PLAYER
-			l_requests: DS_LINEAR [AUT_REQUEST]
-			l_object_state: AUT_OBJECT_STATE
-			l_object_states: DS_LINKED_LIST [AUT_OBJECT_STATE]
-			l_break: BOOLEAN
-			l_count_duplicates: INTEGER
+			l_processor_name: detachable STRING
+			l_processor: AUT_LOG_PROCESSOR
 		do
-			l_requests := requests_from_file (a_log_file, create {AUT_LOG_PARSER}.make (system, error_handler))
-			create l_object_states.make
-
-			from
-				l_requests.start
-				l_count_duplicates := 0
-			until
-				l_requests.after
-			loop
-				if attached {AUT_OBJECT_STATE_REQUEST} l_requests.item_for_iteration as l_object_state_request then
-					if attached {AUT_OBJECT_STATE_RESPONSE} l_object_state_request.response as l_object_state_response then
-						create l_object_state.make (l_object_state_response)
-
-						from
-							l_object_states.start
-							l_break := False
-						until
-							l_object_states.after or l_break
-						loop
-							if l_object_states.item_for_iteration.is_equal (l_object_state) then
-								l_break := True
-								l_count_duplicates := l_count_duplicates + 1
-								io.put_string ("+")
-							end
-							l_object_states.forth
-						end
-
-						if not l_break then
-							l_object_states.put_last (l_object_state)
-
-							io.put_new_line
-							io.put_string ("New state: ")
-							io.put_string (l_object_state.textual_vector_representation)
-							io.put_new_line
-						end
-
-					end
-				end
-
-				l_requests.forth
+			l_processor_name := configuration.log_processor
+			if l_processor_name /= Void then
+				 l_processor_name.to_lower
+				 if log_processors.has (l_processor_name) then
+					l_processor := log_processors.item (l_processor_name)
+					l_processor.set_configuration (configuration)
+					l_processor.process
+				 end
 			end
-
-			io.put_new_line
-			io.put_string ("Found ")
-			io.put_integer (l_object_states.count)
-			io.put_string (" distinct states (")
-			io.put_integer (l_count_duplicates)
-			io.put_string (" duplicates).%N")
 		end
 
 feature {NONE} -- Implementation
@@ -951,6 +908,22 @@ feature -- Precondition satisfaction
 
 	predicate_pattern_by_feature: DS_HASH_TABLE [DS_LINKED_LIST [AUT_PREDICATE_OF_FEATURE], AUT_FEATURE_OF_TYPE]
 			-- Predicate access patterns for features.
+
+feature -- Log processor
+
+	log_processors: HASH_TABLE [AUT_LOG_PROCESSOR, STRING]
+			-- Table of registered log processors
+			-- [Log processor, name of the processor]
+		do
+			if log_processors_internal = Void then
+				create log_processors_internal.make (5)
+				log_processors_internal.compare_objects
+			end
+			Result := log_processors_internal
+		end
+
+	log_processors_internal: like log_processors
+			-- Implementation of `log_processors'
 
 invariant
 	not_running_implies_status_compiling: not is_running implies (status = compile_status_code)

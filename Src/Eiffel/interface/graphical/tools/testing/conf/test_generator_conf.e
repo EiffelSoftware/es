@@ -87,6 +87,31 @@ feature -- Access
 	object_state_config: detachable AUT_OBJECT_STATE_CONFIG
 			-- Configuration related to object states retrieval
 
+	log_processor: detachable STRING
+			-- Name of the specified log processor
+		do
+			Result := log_processor_cache
+		ensure then
+			good_result: Result = log_processor_cache
+		end
+
+	log_processor_output: detachable STRING
+			-- Name of the output file from log processor
+		do
+			Result := log_processor_output_cache
+		ensure then
+			good_result: Result = log_processor_output_cache
+		end
+
+	max_precondition_search_tries: INTEGER
+			-- Max times to search for an object combination satisfying precondition of a feature.
+			-- 0 means search until a satisfying object combination is found.
+		do
+			Result := max_precondition_search_tries_cache
+		ensure then
+			good_result: max_precondition_search_tries = max_precondition_search_tries_cache
+		end
+
 feature -- Access: cache
 
 	types_cache: attached DS_HASH_SET [attached STRING]
@@ -124,6 +149,16 @@ feature -- Access: cache
 
 	object_state_exploration_cache: like is_object_state_exploration_enabled
 			-- Cache for `is_object_state_exploration_enabled'
+
+	log_processor_cache: like log_processor
+			-- Cache for `log_processor'
+
+	log_processor_output_cache: like log_processor_output
+			-- Cache for `log_processor_output'
+
+	max_precondition_search_tries_cache: like max_precondition_search_tries
+			-- Cache for `max_precondition_search_tries'
+
 
 feature -- Status report
 
@@ -315,6 +350,34 @@ feature -- Status setting
 			object_state_exploration_cache := b
 		ensure
 			is_precondition_checking_enabled_set: is_precondition_checking_enabled = b
+		end
+
+	set_log_processor (a_processor: like log_processor) is
+			-- Set `log_processor' with `a_processor'.
+		do
+			if a_processor /= Void then
+				create log_processor_cache.make_from_string (a_processor)
+			else
+				log_processor_cache := Void
+			end
+		end
+
+	set_log_processor_output (a_processor_output: like log_processor_output) is
+			-- Set `log_processor_output' with `a_processor_output'.
+		do
+			if a_processor_output /= Void then
+				create log_processor_output_cache.make_from_string (a_processor_output)
+			else
+				log_processor_output_cache := Void
+			end
+		end
+
+	set_max_precondition_search_tries (a_tries: like max_precondition_search_tries) is
+			-- Set `max_precondition_search_tries' with `a_tries'.
+		do
+			max_precondition_search_tries_cache := a_tries
+		ensure
+			good_result: max_precondition_search_tries = a_tries
 		end
 
 note
