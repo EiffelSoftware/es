@@ -27,6 +27,25 @@ feature -- Access
 			create Result.make (agent (a, b: STRING): BOOLEAN do Result := a.is_equal (b) end)
 		end
 
+	sovled_linear_model_loader: AUT_SOLVED_LINEAR_MODEL_LOADER is
+			-- Loader of a solved linear model
+		do
+			if {PLATFORM}.is_windows then
+				create {AUT_Z3_SOLVED_LINEAR_MODEL_LOADER} Result
+			else
+--				create {AUT_CVC3_SOLVER_LINEAR_MODEL_LOADER} Result
+			end
+		end
+
+	linear_constraint_solver_command (a_smtlib_file_path: STRING): STRING is
+			-- Command to sovle linear constraints, with input file `a_smtlib_file_path'
+		do
+			if {PLATFORM}.is_windows then
+				Result := "z3 /m /smt " + a_smtlib_file_path
+			else
+				Result := "cvc3 +model -lang smt " + a_smtlib_file_path
+			end
+		end
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

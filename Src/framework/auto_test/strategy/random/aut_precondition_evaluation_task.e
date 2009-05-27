@@ -358,8 +358,9 @@ feature{NONE} -- Implementation
 				types.after
 			loop
 				if
-					mentioned_argument_indexes.has (types.index) and then
-					(is_linear_constraint_solving_enabled implies not linear_solvable_arguments.has (types.index))
+					types.index =1 or else
+					(mentioned_argument_indexes.has (types.index) and then
+					(is_linear_constraint_solving_enabled implies not linear_solvable_arguments.has (types.index - 1)))
 				then
 					l_type := types.item_for_iteration
 					l_objects := object_pool.variable_table.item (l_type)
@@ -413,6 +414,7 @@ feature{NONE} -- Implementation
 
 	linear_solvable_arguments: DS_HASH_SET [INTEGER]
 			-- Indexes of arguments that are linearly solvable
+			-- 1 is the first argument (not the target)
 
 	linear_solvable_argument_names: DS_HASH_SET [STRING]
 			-- Names of linearly solvable arguments
@@ -514,7 +516,7 @@ feature{NONE} -- Implementation
 		do
 			create l_prc_factory
 			create last_solver_output.make (1024)
-			l_prc := l_prc_factory.process_launcher_with_command_line ("z3 /m /smt " + smtlib_file_path, Void)
+			l_prc := l_prc_factory.process_launcher_with_command_line (linear_constraint_solver_command (smtlib_file_path), Void)
 			l_prc.redirect_output_to_agent (agent append_solver_output)
 			l_prc.redirect_error_to_same_as_output
 			l_prc.launch
@@ -522,7 +524,9 @@ feature{NONE} -- Implementation
 				l_prc.wait_for_exit
 				last_solver_output.replace_substring_all ("%R", "")
 				create l_stream.make (last_solver_output)
-				create l_model_loader.make (l_stream, linear_solvable_argument_names)
+				l_model_loader := sovled_linear_model_loader
+				l_model_loader.set_constrained_arguments (linear_solvable_argument_names)
+				l_model_loader.set_input_stream (l_stream)
 				l_model_loader.load_model
 				has_constraint_model := l_model_loader.has_model
 

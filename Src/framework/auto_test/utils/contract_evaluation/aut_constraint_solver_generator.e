@@ -127,11 +127,13 @@ feature{NONE} -- Process
 			end
 
 			last_smtlib.append (l_operator)
-			last_smtlib.append (" (")
+			last_smtlib.append (" ")
+--			last_smtlib.append (" (")
 			l_as.left.process (Current)
-			last_smtlib.append (") (")
+--			last_smtlib.append (") (")
+			last_smtlib.append (" ")
 			l_as.right.process (Current)
-			last_smtlib.append_character (')')
+--			last_smtlib.append_character (')')
 			last_smtlib.append_character (')')
 			if l_is_ne then
 				last_smtlib.append_character (')')
@@ -144,9 +146,9 @@ feature{NONE} -- Process
 		do
 			last_smtlib.append_character ('(')
 			last_smtlib.append (normalized_string (l_as.operator (current_match_list).text (current_match_list)))
-			last_smtlib.append (" (")
+			last_smtlib.append (" ")
 			l_as.expr.process (Current)
-			last_smtlib.append ("))")
+			last_smtlib.append (")")
 		end
 
 	process_integer_as (l_as: INTEGER_AS)
@@ -186,12 +188,12 @@ feature{NONE} -- Generation
 			until
 				assertions.after
 			loop
-				last_smtlib.append ("%T(")
+				last_smtlib.append ("%T")
 				current_written_class := assertions.item_for_iteration.written_class
 				current_context_class := assertions.item_for_iteration.context_class
 				current_match_list := match_list_server.item (current_written_class.class_id)
 				assertions.item_for_iteration.tag.process (Current)
-				last_smtlib.append (")%N")
+				last_smtlib.append ("%N")
 				assertions.forth
 			end
 			last_smtlib.append ("%N)))")
@@ -213,7 +215,9 @@ feature{NONE} -- Generation
 			-- Generate the extra functions part of the SMT-LIB.
 		local
 			l_names: LINKED_LIST [STRING]
+			l_is_windows: BOOLEAN
 		do
+			l_is_windows := {PLATFORM}.is_windows
 			create l_names.make
 			constraining_queries.do_all (agent l_names.extend)
 			constrained_arguments.do_all (agent l_names.extend)
@@ -224,9 +228,17 @@ feature{NONE} -- Generation
 			until
 				l_names.after
 			loop
-				last_smtlib.append (":extrafuns ((")
+				last_smtlib.append (":extrafuns (")
+				if l_is_windows then
+					last_smtlib.append ("(")
+				end
 				last_smtlib.append (l_names.item_for_iteration)
-				last_smtlib.append (" Int))%N")
+				last_smtlib.append (" Int)")
+
+				if l_is_windows then
+					last_smtlib.append (")")
+				end
+				last_smtlib.append ("%N")
 				l_names.forth
 			end
 			last_smtlib.append ("%N")
@@ -245,11 +257,11 @@ feature{NONE} -- Generation
 			until
 				l_names.after
 			loop
-				last_smtlib.append (":assumption ((= (")
+				last_smtlib.append (":assumption (= ")
 				last_smtlib.append (l_names.item_for_iteration)
-				last_smtlib.append (") (")
+				last_smtlib.append (" ")
 				last_smtlib.append ("$" + l_names.item_for_iteration + "$")
-				last_smtlib.append (")))%N")
+				last_smtlib.append (")%N")
 				l_names.forth
 			end
 			last_smtlib.append ("%N")
