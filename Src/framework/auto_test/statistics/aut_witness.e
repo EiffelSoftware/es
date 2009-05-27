@@ -101,6 +101,29 @@ feature -- Access
 			end
 		end
 
+	is_same_original_bug (other: AUT_WITNESS): BOOLEAN is
+			-- Is `other' witnessing the same original bug as this witness?
+			-- Note that this is a heuristics that considers class, feature and exception only.
+		require
+			other_not_void: other /= Void
+			witnesses_fail: is_fail and other.is_fail
+		local
+			response: AUT_NORMAL_RESPONSE
+			other_response: AUT_NORMAL_RESPONSE
+		do
+			response ?= item (count).response
+			other_response ?= other.item (other.count).response
+			check
+				response_not_void: response /= Void
+				other_response_not_void: other_response /= Void
+			end
+			Result := response.exception.code = other_response.exception.code and
+						equal (response.exception.class_name, other_response.exception.class_name) and
+						equal (response.exception.recipient_name, other_response.exception.recipient_name) and
+						equal (response.exception.tag_name, other_response.exception.tag_name) and
+						equal (response.exception.break_point_slot, other_response.exception.break_point_slot)
+		end
+
 	set_used_vars (a_used_vars: like used_vars)
 		do
 			used_vars := a_used_vars
