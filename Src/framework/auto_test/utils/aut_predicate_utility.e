@@ -33,7 +33,7 @@ feature -- Access
 			if {PLATFORM}.is_windows then
 				create {AUT_Z3_SOLVED_LINEAR_MODEL_LOADER} Result
 			else
---				create {AUT_CVC3_SOLVER_LINEAR_MODEL_LOADER} Result
+				create {AUT_CVC3_SOLVED_LINEAR_MODEL_LOADER} Result
 			end
 		end
 
@@ -43,7 +43,7 @@ feature -- Access
 			if {PLATFORM}.is_windows then
 				Result := "z3 /m /smt " + a_smtlib_file_path
 			else
-				Result := "cvc3 +model -lang smt " + a_smtlib_file_path
+				Result := "/usr/local/bin/cvc3 +model -lang smt " + a_smtlib_file_path
 			end
 		end
 

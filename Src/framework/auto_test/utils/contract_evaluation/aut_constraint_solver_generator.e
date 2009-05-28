@@ -180,9 +180,9 @@ feature{NONE} -- Generation
 	generate_formula is
 			-- Generate the formula part of the SMT-LIB.
 		do
-			last_smtlib.append ("#Formula%N%N")
+--			last_smtlib.append ("#Formula%N%N")
 			last_smtlib.append (":formula (%N")
-			last_smtlib.append ("(and%N")
+			last_smtlib.append ("and%N")
 			from
 				assertions.start
 			until
@@ -196,7 +196,7 @@ feature{NONE} -- Generation
 				last_smtlib.append ("%N")
 				assertions.forth
 			end
-			last_smtlib.append ("%N)))")
+			last_smtlib.append ("%N))")
 		end
 
 	generate_header is
@@ -222,22 +222,17 @@ feature{NONE} -- Generation
 			constraining_queries.do_all (agent l_names.extend)
 			constrained_arguments.do_all (agent l_names.extend)
 
-			last_smtlib.append ("#Extra functions%N")
+--			last_smtlib.append ("#Extra functions%N")
 			from
 				l_names.start
 			until
 				l_names.after
 			loop
 				last_smtlib.append (":extrafuns (")
-				if l_is_windows then
-					last_smtlib.append ("(")
-				end
+				last_smtlib.append ("(")
 				last_smtlib.append (l_names.item_for_iteration)
 				last_smtlib.append (" Int)")
-
-				if l_is_windows then
-					last_smtlib.append (")")
-				end
+				last_smtlib.append (")")
 				last_smtlib.append ("%N")
 				l_names.forth
 			end
@@ -251,7 +246,7 @@ feature{NONE} -- Generation
 		do
 			create l_names.make
 			constraining_queries.do_all (agent l_names.extend)
-			last_smtlib.append ("#Assumptions%N")
+--			last_smtlib.append ("#Assumptions%N")
 			from
 				l_names.start
 			until

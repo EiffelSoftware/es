@@ -34,7 +34,6 @@ feature -- Basic operations
 			create valuation.make (2)
 			valuation.compare_objects
 			
-			valuation.wipe_out
 			input_stream.read_line
 			l_line := input_stream.last_string
 

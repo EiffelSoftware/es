@@ -7,28 +7,6 @@ note
 deferred class
 	AUT_SOLVED_LINEAR_MODEL_LOADER
 
---feature{NONE} -- Initialization
-
---	make (a_input_stream: like input_stream; a_constrained_arguments: like constrained_arguments) is
---			-- Initialize.
---		do
---			input_stream := a_input_stream
---			create constrained_arguments.make (a_constrained_arguments.count)
---			constrained_arguments.set_equality_tester (create {AGENT_BASED_EQUALITY_TESTER [STRING]}.make (agent (a, b: STRING): BOOLEAN do Result := a.is_equal (b) end))
-
---			create valuation.make (a_constrained_arguments.count)
---			valuation.compare_objects
-
---			from
---				a_constrained_arguments.start
---			until
---				a_constrained_arguments.after
---			loop
---				constrained_arguments.force_last (a_constrained_arguments.item_for_iteration)
---				a_constrained_arguments.forth
---			end
---		end
-
 feature -- Access
 
 	constrained_arguments: DS_HASH_SET [STRING]
