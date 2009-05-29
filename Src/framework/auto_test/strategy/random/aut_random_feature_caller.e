@@ -199,7 +199,14 @@ feature -- Execution
 						cancel
 					end
 				end
-				steps_completed := True
+
+				if interpreter.configuration.is_object_state_exploration_enabled and then
+					interpreter.object_state_table.untried_object_states (feature_to_call, type).count > 0
+				then
+					target_creator := Void
+				else
+					steps_completed := True
+				end
 			end
 		end
 
@@ -250,8 +257,12 @@ feature {NONE} -- Steps
 			type_not_void: type /= Void
 			feature_not_void: feature_to_call /= Void
 		do
-			create target_creator.make (system,interpreter, feature_table)
-			target_creator.add_type (type)
+			if interpreter.configuration.is_object_state_exploration_enabled then
+				target_creator := create {AUT_RANDOM_UNTRIED_SOURCE_OBJECT_STATE_INPUT_CREATOR}.make (system, interpreter, feature_table, feature_to_call, type)
+			else
+				create target_creator.make (system,interpreter, feature_table)
+				target_creator.add_type (type)
+			end
 			target_creator.start
 		end
 
@@ -425,7 +436,6 @@ feature -- Precondition evaluation
 			create precondition_evaluator.make (create {AUT_FEATURE_OF_TYPE}.make (feature_to_call, type), l_vars, interpreter)
 			precondition_evaluator.start
 		end
-
 
 invariant
 

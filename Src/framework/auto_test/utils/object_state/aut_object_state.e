@@ -13,6 +13,11 @@ inherit
 			is_equal
 		end
 
+	HASHABLE
+		undefine
+			is_equal
+		end
+
 create
 	make
 
@@ -60,6 +65,14 @@ feature -- Access
 			-- The attached result is stored as boolean, otherwise Void is stored.
 			-- This table only stores achievable results, if there is an exception when trying to
 			-- evaluate a query, that result is not stored.
+
+	hash_code: INTEGER
+			-- Hash code value
+		do
+			Result := textual_vector_representation.hash_code
+		ensure then
+			good_result: Result = textual_vector_representation.hash_code
+		end
 
 feature -- Measurement
 

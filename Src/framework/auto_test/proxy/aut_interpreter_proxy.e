@@ -121,6 +121,10 @@ feature {NONE} -- Initialization
 			proxy_start_time := system_clock.date_time_now
 			error_handler := a_error_handler
 			timeout := default_timeout
+
+			if configuration.is_object_state_exploration_enabled then
+				create object_state_table.make
+			end
 		ensure
 			executable_file_name_set: executable_file_name = an_executable_file_name
 			system_set: system = a_system
@@ -444,6 +448,7 @@ feature -- Execution
 			l_target_type: TYPE_A
 			l_objects: DS_LINEAR [ITP_EXPRESSION]
 			l_var_set: like variable_set
+			l_object_state: AUT_OBJECT_STATE
 		do
 --			log_time_stamp ("exec")
 			l_target_type := variable_table.variable_type (a_target)
@@ -455,14 +460,28 @@ feature -- Execution
 				-- or the type of argument are not correct.
 			create l_invoke_request.make (system, l_feature.feature_name, a_target, an_argument_list)
 			l_invoke_request.set_target_type (l_target_type)
-
 			log_test_case_index (l_invoke_request)
+
 			if is_state_recording_enabled then
 				l_var_set := variable_set
-				retrieve_target_object_state (a_target, l_var_set)
-				retrieve_argument_objects_state (an_argument_list, l_var_set)
-				record_object_states (l_var_set)
+
+				if configuration.is_target_state_retrieved then
+					l_var_set.wipe_out
+					retrieve_target_object_state (a_target, l_var_set)
+					record_object_states (l_var_set)
+					if configuration.is_object_state_exploration_enabled and then attached {AUT_OBJECT_STATE_RESPONSE} last_response as l_object_state_response then
+						create l_object_state.make (l_object_state_response)
+						object_state_table.put_invoked_source_object_state (l_object_state, a_feature, a_type)
+					end
+				end
+
+				if configuration.is_argument_state_retrieved then
+					l_var_set.wipe_out
+					retrieve_argument_objects_state (an_argument_list, l_var_set)
+					record_object_states (l_var_set)
+				end
 			end
+
 			last_request := l_invoke_request
 			last_request.process (request_printer)
 			log_time_stamp (test_case_start_tag)
@@ -507,17 +526,33 @@ feature -- Execution
 			normal_response: AUT_NORMAL_RESPONSE
 			l_invoke_request: AUT_INVOKE_FEATURE_REQUEST
 			l_var_set: like variable_set
+			l_object_state: AUT_OBJECT_STATE
 		do
 --			log_time_stamp ("exec")
 			create l_invoke_request.make_assign (system, a_receiver, a_query.feature_name, a_target, an_argument_list)
 			l_invoke_request.set_target_type (a_type)
 			log_test_case_index (l_invoke_request)
+
 			if is_state_recording_enabled then
 				l_var_set := variable_set
-				retrieve_target_object_state (a_target, l_var_set)
-				retrieve_argument_objects_state (an_argument_list, l_var_set)
-				record_object_states (l_var_set)
+
+				if configuration.is_target_state_retrieved then
+					l_var_set.wipe_out
+					retrieve_target_object_state (a_target, l_var_set)
+					record_object_states (l_var_set)
+					if configuration.is_object_state_exploration_enabled and then attached {AUT_OBJECT_STATE_RESPONSE} last_response as l_object_state_response then
+						create l_object_state.make (l_object_state_response)
+						object_state_table.put_invoked_source_object_state (l_object_state, a_query, a_type)
+					end
+				end
+
+				if configuration.is_argument_state_retrieved then
+					l_var_set.wipe_out
+					retrieve_argument_objects_state (an_argument_list, l_var_set)
+					record_object_states (l_var_set)
+				end
 			end
+
 			last_request := l_invoke_request
 			last_request.process (request_printer)
 			log_time_stamp (test_case_start_tag)
@@ -645,6 +680,11 @@ feature -- Execution
 			flush_process
 			parse_object_state_response
 			last_request.set_response (last_response)
+
+			if configuration.is_object_state_exploration_enabled and then attached {AUT_OBJECT_STATE_RESPONSE} last_response as l_object_state_response then
+				object_state_table.put_variable (a_variable, create {AUT_OBJECT_STATE}.make (l_object_state_response), l_type)
+			end
+
 			if not last_response.is_bad then
 
 			else
@@ -955,7 +995,7 @@ feature{NONE} -- Process scheduling
 --							log_line ("-- Proxy has terminated interpreter due to class invariant violation.")
 --						end
 --					end
-				end
+						end
 			else
 				log_line ("-- Interpreter seems to have quit on its own.")
 			end
@@ -1349,6 +1389,12 @@ feature -- Precondition satisfaction
 			end
 			log_line ("")
 		end
+
+feature -- Object State Exploration
+
+	object_state_table: AUT_OBJECT_STATE_TABLE
+			-- Table with information about encountered object states
+
 
 invariant
 	is_running_implies_reader: is_running implies (stdout_reader /= Void)
