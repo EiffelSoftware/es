@@ -48,7 +48,7 @@ feature -- Access
 			if {PLATFORM}.is_windows then
 				Result := "z3 /m /smt " + a_smtlib_file_path
 			else
-				Result := "/usr/local/bin/cvc3 +model -lang smt " + a_smtlib_file_path
+				Result := "/bin/sh -c %"cvc3 +model -lang smt " + a_smtlib_file_path + "%""
 			end
 		end
 
