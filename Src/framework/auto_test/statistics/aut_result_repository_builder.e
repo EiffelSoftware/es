@@ -42,6 +42,16 @@ feature -- Access
 	last_result_repository: AUT_TEST_CASE_RESULT_REPOSITORY
 			-- Last result repository built by `build'
 
+	comment_processors: LINKED_LIST [PROCEDURE [ANY, TUPLE [STRING]]] is
+			-- list of processors for comment lines
+		do
+			if comment_processors_internal = Void then
+				create comment_processors_internal.make
+				comment_processors_internal.extend (agent test_case_time_comment_processor)
+			end
+			Result := comment_processors_internal
+		end
+
 feature{NONE} -- Processing
 
 	process_start_request (a_request: AUT_START_REQUEST)
@@ -76,11 +86,16 @@ feature{NONE} -- Processing
 	report_comment_line (a_line: STRING) is
 			-- Report comment line `a_line'.
 		local
-			l_line: STRING
+			l_processors: like comment_processors
 		do
-			if a_line.substring (1, time_stamp_header.count).is_equal (time_stamp_header) then
-				l_line := a_line.substring (time_stamp_header.count + 1, a_line.count)
-				analyze_time_stamp (l_line)
+			from
+				l_processors := comment_processors
+				l_processors.start
+			until
+				l_processors.after
+			loop
+				l_processors.item.call ([a_line])
+				l_processors.forth
 			end
 		end
 
@@ -121,6 +136,17 @@ feature -- Time measurement
 	test_case_end_time_header: STRING is "TC end"
 			-- Test case end time tag	
 
+	test_case_time_comment_processor (a_line: STRING) is
+			-- Process `a_line' if it is a time stamp for test cases start/end.
+		local
+			l_line: STRING
+		do
+			if a_line.substring (1, time_stamp_header.count).is_equal (time_stamp_header) then
+				l_line := a_line.substring (time_stamp_header.count + 1, a_line.count)
+				analyze_time_stamp (l_line)
+			end
+		end
+
 	analyze_time_stamp (a_line: STRING) is
 			-- Analyze time stamp in `a_line'.
 		local
@@ -138,10 +164,13 @@ feature -- Time measurement
 			end
 		end
 
-	last_test_case_request: detachable AUT_REQUEST;
+	last_test_case_request: detachable AUT_REQUEST
 			-- Request of the last met test case
 
-note
+	comment_processors_internal: like comment_processors
+			-- Implementation of `comment_processors'
+
+;note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

@@ -1390,11 +1390,58 @@ feature -- Precondition satisfaction
 			log_line ("")
 		end
 
+	duration_until_now: DT_DATE_TIME_DURATION is
+			-- Duration from the start of current AutoTest run until now
+		local
+			time_now: DT_DATE_TIME
+		do
+			to_implement ("log_time_stamp can be simplified with current feature.")
+			time_now := system_clock.date_time_now
+			Result := time_now.duration (proxy_start_time)
+			Result.set_time_canonical
+		end
+
+	log_precondition_evaluation (a_type: TYPE_A; a_feature: FEATURE_I; a_tried_count: INTEGER; a_worst_case_count: INTEGER; a_start_time: INTEGER; a_end_time: INTEGER; a_succeeded: BOOLEAN) is
+			-- Log precondition evaluation statistics.
+			-- `a_feature' is the feature whose preconditions are evaluated.
+			-- `a_type' is where `a_feature' is from.
+			-- `a_tried_count' is the number of times that different object combinations are tried for that precondition.
+			-- `a_worst_case_count' is the number of object combinations that need to be tried out in the worst case.
+			-- `a_start_time' is the start time in millisecond when the precondition evaluation started.
+			-- `a_end_time' is the end time in millisecond when the precondition evaluation ended.
+			-- `a_succeed' is whether an object combination satisfying `a_feature''s precondition is found.
+		local
+			l_text: STRING
+		do
+			create l_text.make (128)
+			l_text.append ("-- Precondition_eval: ")
+
+			l_text.append (a_tried_count.out)
+			l_text.append ("; ")
+
+			l_text.append (a_worst_case_count.out)
+			l_text.append ("; ")
+
+			l_text.append (a_start_time.out)
+			l_text.append ("; ")
+
+			l_text.append (a_end_time.out)
+			l_text.append ("; ")
+
+			l_text.append (a_succeeded.out)
+			l_text.append ("; ")
+
+			l_text.append (a_type.associated_class.name_in_upper)
+			l_text.append (".")
+			l_text.append (a_feature.feature_name.as_lower)
+
+			log_line (l_text)
+		end
+
 feature -- Object State Exploration
 
 	object_state_table: AUT_OBJECT_STATE_TABLE
 			-- Table with information about encountered object states
-
 
 invariant
 	is_running_implies_reader: is_running implies (stdout_reader /= Void)

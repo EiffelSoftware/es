@@ -918,6 +918,7 @@ feature -- Log processor
 			if log_processors_internal = Void then
 				create log_processors_internal.make (5)
 				log_processors_internal.compare_objects
+				log_processors_internal.extend (create{AUT_RESULT_ANALYZER}.make (system, configuration), "ps")
 			end
 			Result := log_processors_internal
 		end

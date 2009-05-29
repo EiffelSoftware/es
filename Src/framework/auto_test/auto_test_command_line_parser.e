@@ -113,6 +113,13 @@ feature -- Status report
 			-- Max tries in the search to satisfy precondition of a feature
 			-- 0 means that search until a satisfying object comibination is found.
 
+	is_seed_provided: BOOLEAN
+			-- Is seed to the random number generator provided?
+
+	seed: INTEGER
+			-- Provided seed
+			-- Only have effect if `is_seed_provided' is True.
+
 feature -- Element change
 
 	set_error_handler (a_error_handler: like error_handler)
@@ -235,7 +242,7 @@ feature -- Parsing
 			l_help_option.set_description ("Display this help message.")
 			parser.options.force_last (l_help_option)
 
-			create l_load_log_option.make_with_long_form ("log")
+			create l_load_log_option.make_with_long_form ("log-file")
 			l_load_log_option.set_description ("Process the log file specified as the following parameter.")
 			parser.options.force_last (l_load_log_option)
 
@@ -251,15 +258,15 @@ feature -- Parsing
 			l_constraint_solving_option.set_description ("Enable linear constraint solving for integers.")
 			parser.options.force_last (l_constraint_solving_option)
 
-			create l_object_state_exploration.make_with_long_form ("state_explore")
+			create l_object_state_exploration.make_with_long_form ("state-explore")
 			l_object_state_exploration.set_description ("Enable object state exploration.")
 			parser.options.force_last (l_object_state_exploration)
 
-			create l_log_processor_op.make_with_long_form ("log_processor")
+			create l_log_processor_op.make_with_long_form ("log-processor")
 			l_log_processor_op.set_description ("Processor for the log file specified with the " + l_load_log_option.name + " option.")
 			parser.options.force_last (l_log_processor_op)
 
-			create l_log_processor_output_op.make_with_long_form ("log_processor_output")
+			create l_log_processor_output_op.make_with_long_form ("log-processor-output")
 			l_log_processor_output_op.set_description ("Name of the output file from the log processor specified with the " + l_log_processor_op.name + " option.")
 			parser.options.force_last (l_log_processor_output_op)
 
@@ -365,7 +372,6 @@ feature -- Parsing
 					create l_help_flag.make_with_short_form ('h')
 					help_message := l_help_flag.full_help_text (parser)
 				end
-
 			end
 
 			if not error_handler.has_error then
@@ -412,6 +418,13 @@ feature -- Parsing
 			if not error_handler.has_error then
 				if l_max_precondition_tries_op.was_found then
 					max_precondition_search_tries := l_max_precondition_tries_op.parameter
+				end
+			end
+
+			if not error_handler.has_error then
+				is_seed_provided := seed_option.was_found
+				if is_seed_provided then
+					seed := seed_option.parameter
 				end
 			end
 

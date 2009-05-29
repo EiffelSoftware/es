@@ -95,7 +95,7 @@ feature -- Access
 
 feature -- handler
 
-	notify (a_witness: AUT_WITNESS) is
+	process_witness (a_witness: AUT_WITNESS) is
 			-- Handle `a_witness'.
 		local
 			l_feature: AUT_FEATURE_OF_TYPE

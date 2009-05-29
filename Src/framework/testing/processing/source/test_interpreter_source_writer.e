@@ -48,6 +48,9 @@ inherit
 		end
 
 	AUT_PREDICATE_UTILITY
+		undefine
+			type_a_generator
+		end
 
 create
 	make

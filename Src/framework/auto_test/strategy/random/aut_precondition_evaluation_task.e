@@ -14,12 +14,10 @@ inherit
 
 	AUT_SHARED_RANDOM
 
-	SHARED_WORKBENCH
+	AUT_PREDICATE_UTILITY
 		undefine
 			system
 		end
-
-	AUT_PREDICATE_UTILITY
 
 create
 	make
@@ -89,6 +87,16 @@ feature -- Access
 			-- Number of object combinations that were tried so far
 			-- to satisfying the precondition of `feature_'
 
+	worst_case_search_count: INTEGER
+			-- Number of object combinations that need to be
+			-- tried out in the worst case
+
+	start_time: INTEGER
+			-- Start time (in millisecond) when current precondition evaluation starts
+
+	end_time: INTEGER
+			-- End time (in millisecond) when current precondition evauation ends.
+
 feature -- Status
 
 	steps_completed: BOOLEAN
@@ -121,6 +129,40 @@ feature -- Status
 			Result := linear_solvable_arguments /= Void and then linear_solvable_arguments.count > 0
 		end
 
+feature -- Setting
+
+	set_tried_count (a_tried_count: INTEGER) is
+			-- Set `tried_count' with `a_tried_count'.
+		do
+			tried_count := a_tried_count
+		ensure
+			tried_count_set: tried_count = a_tried_count
+		end
+
+	set_worst_case_search_count (a_worst_case_search_count: INTEGER) is
+			-- Set `worst_case_search_count' with `a_worst_case_search_count'.
+		do
+			worst_case_search_count := a_worst_case_search_count
+		ensure
+			worst_case_search_count_set: worst_case_search_count = a_worst_case_search_count
+		end
+
+	set_start_time (a_start_time: INTEGER) is
+			-- Set `start_time' with `a_start_time'.
+		do
+			start_time := a_start_time
+		ensure
+			start_time_set: start_time = a_start_time
+		end
+
+	set_end_time (a_end_time: INTEGER) is
+			-- Set `end_time' with `a_end_time'.
+		do
+			end_time := a_end_time
+		ensure
+			end_time_set: end_time = a_end_time
+		end
+
 feature -- Execution
 
 	start
@@ -129,6 +171,7 @@ feature -- Execution
 			l_list: DS_ARRAYED_LIST [ITP_VARIABLE]
 		do
 			if is_evaluation_enabled then
+				set_start_time (interpreter.duration_until_now.millisecond_count)
 				create l_list.make (variables.count)
 				variables.do_all (agent l_list.force_last)
 				if variables.count = feature_.feature_.argument_count + 1 then
@@ -147,6 +190,9 @@ feature -- Execution
 					-- assume the preconditions is satisfied.
 				is_precondition_satisfied := True
 				steps_completed := True
+			end
+			if steps_completed then
+				set_end_time (interpreter.duration_until_now.millisecond_count)
 			end
 		end
 
@@ -250,15 +296,18 @@ feature -- Execution
 				create l_list.make (variables.count)
 				l_variables.do_all (agent l_list.force_last)
 				is_precondition_satisfied := interpreter.is_precondition_satisfied (feature_, l_list)
-				steps_completed := is_precondition_satisfied
-
 				tried_count := tried_count + 1
+				steps_completed := is_precondition_satisfied
 
 					-- If `max_precondition_search_tries' have already been tried, we give up testing
 					-- current feature, and move to the next feature.
 				if max_precondition_search_tries > 0 and then tried_count > max_precondition_search_tries then
 					cancel
 				end
+			end
+
+			if steps_completed then
+				set_end_time (interpreter.duration_until_now.millisecond_count)
 			end
 		end
 
@@ -325,6 +374,7 @@ feature -- Execution
 			-- Cancel task.
 		do
 			steps_completed := True
+			set_end_time (interpreter.duration_until_now.millisecond_count)
 		end
 
 feature{NONE} -- Implementation
@@ -346,7 +396,9 @@ feature{NONE} -- Implementation
 			l_type: TYPE_A
 			l_objects: DS_LIST [ITP_VARIABLE]
 			i: INTEGER
+			l_worst_count: INTEGER
 		do
+			l_worst_count := 0
 			types := types_of_feature (feature_)
 			create candidate_object_indexes.make (types.count)
 			create candicate_object_count.make (1, types.count)
@@ -367,11 +419,17 @@ feature{NONE} -- Implementation
 					candidate_object_indexes.force_last (index_interval (l_objects.count))
 					candicate_object_count.put (l_objects.count, i)
 					real_argument_indexes.force_last (types.index)
+					if l_worst_count = 0 then
+						l_worst_count := l_objects.count
+					else
+						l_worst_count := l_worst_count * l_objects.count
+					end
 					i := i + 1
 				end
 				types.forth
 			end
 
+			set_worst_case_search_count (l_worst_count)
 			current_argument_index := 1
 			argument_count := real_argument_indexes.count
 		end

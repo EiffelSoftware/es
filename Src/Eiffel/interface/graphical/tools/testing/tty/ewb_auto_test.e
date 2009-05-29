@@ -135,6 +135,10 @@ feature -- Execution
 					-- Set max tries for precondition search.
 				l_conf.set_max_precondition_search_tries (l_ap.max_precondition_search_tries)
 
+					-- Set seed.
+				if l_ap.is_seed_provided then
+					l_conf.set_seed (l_ap.seed.as_natural_32)
+				end
 				if l_root_group.is_cluster then
 					if attached {CONF_CLUSTER} l_root_group as l_cluster then
 						l_conf.set_cluster (l_cluster)

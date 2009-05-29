@@ -46,6 +46,13 @@ feature -- Setting
 			witness_veto_function_set: witness_veto_function = a_function
 		end
 
+	register_witness_observer (a_observer: AUT_WITNESS_OBSERVER) is
+			-- Register `a_observer' into `witness_observers'.
+		do
+			witness_observers.extend (a_observer)
+			comment_processors.extend (agent a_observer.process_comment_line)
+		end
+
 feature -- Basic operation
 
 	build (a_input_stream: KI_TEXT_INPUT_STREAM)
@@ -111,7 +118,7 @@ feature{NONE} -- Implementation
 					l_observers.after
 				loop
 
-					l_observers.item.notify (l_witness)
+					l_observers.item.process_witness (l_witness)
 					l_observers.forth
 				end
 				unprocessed_witnesses.remove

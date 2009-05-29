@@ -1,28 +1,66 @@
 note
-	description: "Summary description for {AUT_WITNESS_OBSERVER}."
+	description: "Summary description for {AUT_FAULT_WITNESS_OBSERVER}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
-	AUT_WITNESS_OBSERVER
+class
+	AUT_FAULT_WITNESS_OBSERVER
 
 inherit
-	AUT_RESULT_ANALYSIS_UTILITY
+	AUT_WITNESS_OBSERVER
+		redefine
+			system
+		end
+
+create
+	make
+
+feature{NONE} -- Initialization
+
+	make (a_system: like system) is
+			-- Initialize.
+		do
+			system := a_system
+			create witnesses.make (50)
+			witnesses.set_equality_tester (faulty_witness_equality_tester)
+		ensure
+			system_set: system = a_system
+		end
+
+feature -- Access
+
+	witnesses: DS_ARRAYED_LIST [AUT_WITNESS]
+			-- Table of witnesses revealing faults
 
 feature -- Process
 
-	process_comment_line (a_line: STRING) is
-			-- Process `a_line'.
-		do
-		end
-
 	process_witness (a_witness: AUT_WITNESS) is
 			-- Handle `a_witness'.
-		deferred
+		do
+			if a_witness.is_fail and then not witnesses.has (a_witness) then
+				witnesses.force_last (a_witness)
+			end
 		end
 
-note
+feature{NONE} -- Implementation
+
+	system: SYSTEM_I;
+			-- Current system
+
+	faulty_witness_equality_tester: AGENT_BASED_EQUALITY_TESTER [AUT_WITNESS] is
+			-- Tester to decide if `a_witness' and `b_witness' reveals the same fault
+		do
+			create Result.make (agent (a_witness, b_witness: AUT_WITNESS): BOOLEAN
+				do
+					Result :=
+						a_witness.is_fail and then
+						b_witness.is_fail and then
+						a_witness.is_same_original_bug (b_witness)
+				end)
+		end
+
+;note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

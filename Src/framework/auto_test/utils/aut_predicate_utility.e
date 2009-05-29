@@ -7,6 +7,11 @@ note
 class
 	AUT_PREDICATE_UTILITY
 
+inherit
+	ERL_G_TYPE_ROUTINES
+
+	SHARED_WORKBENCH
+
 feature -- Access
 
 	predicate_equality_tester: AGENT_BASED_EQUALITY_TESTER [AUT_PREDICATE] is
@@ -44,6 +49,41 @@ feature -- Access
 				Result := "z3 /m /smt " + a_smtlib_file_path
 			else
 				Result := "/usr/local/bin/cvc3 +model -lang smt " + a_smtlib_file_path
+			end
+		end
+
+	testable_features (a_type: TYPE_A; a_system: SYSTEM_I): DS_LINKED_LIST [AUT_FEATURE_OF_TYPE] is
+			-- Features in `a_type' in `a_system' which are testable by AutoTest
+		require
+			a_type_has_class: a_type.has_associated_class
+		local
+			feature_: AUT_FEATURE_OF_TYPE
+			class_: CLASS_C
+			feature_i: FEATURE_I
+			l_feat_table: FEATURE_TABLE
+			l_any_class: CLASS_C
+		do
+			create Result.make
+			l_any_class := a_system.any_class.compiled_class
+			class_ := a_type.associated_class
+
+			l_feat_table := class_.feature_table
+			from
+				l_feat_table.start
+			until
+				l_feat_table.after
+			loop
+				feature_i := l_feat_table.item_for_iteration
+				if not feature_i.is_prefix and then not feature_i.is_infix then
+						-- Normal exported features.
+					if
+						feature_i.export_status.is_exported_to (l_any_class) or else
+						is_exported_creator (feature_i, a_type)
+					then
+						Result.force_last (create {AUT_FEATURE_OF_TYPE}.make (feature_i, a_type))
+					end
+				end
+				l_feat_table.forth
 			end
 		end
 
