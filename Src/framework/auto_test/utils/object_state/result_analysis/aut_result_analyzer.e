@@ -81,6 +81,8 @@ feature -- Process
 			create l_output_file.make (configuration.log_processor_output)
 			l_output_file.open_write
 
+			print_class_under_test (l_output_file)
+			print_last_time_stamp (l_output_file)
 			print_fault_result (l_output_file)
 			print_feature_statistics (l_output_file)
 			print_test_case_generation_speed (l_output_file)
@@ -103,6 +105,29 @@ feature{NONE} -- Implementation
 	precondition_evaluation_observer: AUT_PRECONDITION_EVALUATION_OVERHEAD_OBSERVER
 
 feature -- Result printing
+
+	print_last_time_stamp (a_output_stream: KI_TEXT_OUTPUT_STREAM) is
+			-- Print `last_time_stamp' into `a_output_stream'.
+		do
+			a_output_stream.put_line ("--[Last time stamp]")
+			a_output_stream.put_integer (last_time_stamp // 1000)
+			a_output_stream.put_character ('%N')
+		end
+
+	print_class_under_test (a_output_stream: KI_TEXT_OUTPUT_STREAM) is
+			-- Print classes under test into `a_output_stream'.
+		do
+			a_output_stream.put_line ("--[Class under test]")
+			from
+				class_under_test.start
+			until
+				class_under_test.after
+			loop
+				a_output_stream.put_line (class_under_test.item_for_iteration.name_in_upper)
+				class_under_test.forth
+			end
+			a_output_stream.put_character ('%N')
+		end
 
 	print_fault_result (a_output_file: KI_TEXT_OUTPUT_STREAM) is
 			-- Print simplified information about found faults to `a_output_file'.
@@ -368,9 +393,13 @@ feature -- Process
 			l_count: INTEGER
 			l_class_name: STRING
 			l_class: CLASS_C
+			l_time_stamp_header: STRING
+			l_time_stamp_header_count: INTEGER
 		do
 			l_header := class_under_test_header
 			l_count := l_header.count
+			l_time_stamp_header := {AUT_RESULT_REPOSITORY_BUILDER}.time_stamp_header
+			l_time_stamp_header_count := l_time_stamp_header.count
 
 			if a_line.substring (1, l_count).is_equal (l_header) then
 				l_parts := a_line.substring (l_count + 1, a_line.count).split (',')
@@ -388,6 +417,10 @@ feature -- Process
 					end
 					l_parts.forth
 				end
+			elseif a_line.substring (1, l_time_stamp_header_count).is_equal (l_time_stamp_header) then
+				l_parts := a_line.substring (l_time_stamp_header_count + 1, a_line.count).split (';')
+				check l_parts.count = 3 end
+				last_time_stamp := l_parts.i_th (3).to_integer
 			end
 		end
 
@@ -414,6 +447,9 @@ feature -- Process
 
 	statistics_anchored_type: TUPLE [pass: INTEGER_32; fail: INTEGER_32; invalid: INTEGER_32; bad: INTEGER_32; pass_time: INTEGER_32; fail_time: INTEGER_32; invalid_time: INTEGER_32; bad_time: INTEGER_32; time_of_first_valid_test_case: INTEGER_32]
 			-- Anchored type for feature statistics
+
+	last_time_stamp: INTEGER
+			-- Last time stamp im millisecond appeared in the log file
 
 	print_non_tested_feature (a_feature: AUT_FEATURE_OF_TYPE; a_precondition_violation: HASH_TABLE [INTEGER, STRING]; a_output_stream: KI_TEXT_OUTPUT_STREAM) is
 			-- Print non-tested feature `a_feature'.
