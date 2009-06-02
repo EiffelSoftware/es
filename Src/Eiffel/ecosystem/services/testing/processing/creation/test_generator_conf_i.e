@@ -77,6 +77,14 @@ feature -- Access
 		deferred
 		end
 
+	max_precondition_search_time: INTEGER
+			-- Maximal time (in second) that can be spent in searching for
+			-- objects satisfying precondition of a feature
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
 feature -- Status report
 
 	is_slicing_enabled: BOOLEAN

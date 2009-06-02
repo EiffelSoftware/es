@@ -112,6 +112,14 @@ feature -- Access
 			good_result: max_precondition_search_tries = max_precondition_search_tries_cache
 		end
 
+	max_precondition_search_time: INTEGER
+			-- <Precursor>
+		do
+			Result := max_precondition_search_time_cache
+		ensure then
+			good_result: max_precondition_search_time = max_precondition_search_time_cache
+		end
+
 feature -- Access: cache
 
 	types_cache: attached DS_HASH_SET [attached STRING]
@@ -159,6 +167,8 @@ feature -- Access: cache
 	max_precondition_search_tries_cache: like max_precondition_search_tries
 			-- Cache for `max_precondition_search_tries'
 
+	max_precondition_search_time_cache: like max_precondition_search_time
+			-- Cache for `max_precondition_search_time'
 
 feature -- Status report
 
@@ -378,6 +388,14 @@ feature -- Status setting
 			max_precondition_search_tries_cache := a_tries
 		ensure
 			good_result: max_precondition_search_tries = a_tries
+		end
+
+	set_max_precondition_search_time (a_time: like max_precondition_search_time) is
+			-- Set `max_precondition_search_time' with `a_time'.
+		do
+			max_precondition_search_time_cache := a_time
+		ensure
+			good_result: max_precondition_search_time = a_time
 		end
 
 note

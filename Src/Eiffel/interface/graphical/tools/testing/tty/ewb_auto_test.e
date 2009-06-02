@@ -135,6 +135,9 @@ feature -- Execution
 					-- Set max tries for precondition search.
 				l_conf.set_max_precondition_search_tries (l_ap.max_precondition_search_tries)
 
+					-- Set max time for precondition search.
+				l_conf.set_max_precondition_search_time (l_ap.max_precondition_search_time)
+
 					-- Set seed.
 				if l_ap.is_seed_provided then
 					l_conf.set_seed (l_ap.seed.as_natural_32)

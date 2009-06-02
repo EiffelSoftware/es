@@ -113,6 +113,10 @@ feature -- Status report
 			-- Max tries in the search to satisfy precondition of a feature
 			-- 0 means that search until a satisfying object comibination is found.
 
+	max_precondition_search_time: INTEGER
+			-- Maximal time (in second) that can be spent in searching for
+			-- objects satisfying precondition of a feature
+
 	is_seed_provided: BOOLEAN
 			-- Is seed to the random number generator provided?
 
@@ -165,6 +169,7 @@ feature -- Parsing
 			l_log_processor_op: AP_STRING_OPTION
 			l_log_processor_output_op: AP_STRING_OPTION
 			l_max_precondition_tries_op: AP_INTEGER_OPTION
+			l_max_precondition_time_op: AP_INTEGER_OPTION
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -270,9 +275,13 @@ feature -- Parsing
 			l_log_processor_output_op.set_description ("Name of the output file from the log processor specified with the " + l_log_processor_op.name + " option.")
 			parser.options.force_last (l_log_processor_output_op)
 
-			create l_max_precondition_tries_op.make_with_long_form ("--max_precondition_tries")
+			create l_max_precondition_tries_op.make_with_long_form ("max-precondition-tries")
 			l_max_precondition_tries_op.set_description ("Maximal tries to search for an object combination satisfying precondition of a feature. 0 means that search until an object combination is found.")
 			parser.options.force_last (l_max_precondition_tries_op)
+
+			create l_max_precondition_time_op.make_with_long_form ("max-precondition-time")
+			l_max_precondition_time_op.set_description ("Maximal time that can be spent in searching for an object combination satisfying precondition of a feature. 0 means that search until an object combination is found.")
+			parser.options.force_last (l_max_precondition_time_op)
 
 			parser.parse_list (a_arguments)
 
@@ -425,6 +434,12 @@ feature -- Parsing
 				is_seed_provided := seed_option.was_found
 				if is_seed_provided then
 					seed := seed_option.parameter
+				end
+			end
+
+			if not error_handler.has_error then
+				if l_max_precondition_time_op.was_found then
+					max_precondition_search_time := l_max_precondition_time_op.parameter
 				end
 			end
 

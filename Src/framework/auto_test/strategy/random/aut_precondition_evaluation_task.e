@@ -215,6 +215,7 @@ feature -- Execution
 			l_real_index: like real_argument_indexes
 			l_real_ind: INTEGER
 			l_should_continue: BOOLEAN
+			l_time_now: INTEGER
 		do
 			l_pool := object_pool
 			l_available_count := candicate_object_count
@@ -301,10 +302,18 @@ feature -- Execution
 				tried_count := tried_count + 1
 				steps_completed := is_precondition_satisfied
 
-					-- If `max_precondition_search_tries' have already been tried, we give up testing
-					-- current feature, and move to the next feature.
+					-- Check if object searching should be stopped according to tries or time constraints.
 				if max_precondition_search_tries > 0 and then tried_count > max_precondition_search_tries then
 					cancel
+				end
+
+				if has_next_step then
+					if max_precondition_search_time > 0 then
+						l_time_now := interpreter.duration_until_now.millisecond_count
+						if (l_time_now - start_time) // 1000 > max_precondition_search_time then
+							cancel
+						end
+					end
 				end
 			end
 
@@ -678,6 +687,14 @@ feature{NONE} -- Implementation
 			Result := interpreter.configuration.max_precondition_search_tries
 		ensure
 			good_result: Result = interpreter.configuration.max_precondition_search_tries
+		end
+
+	max_precondition_search_time: INTEGER
+			-- See `interpreter'.`configuration'.`max_precondition_search_time'.
+		do
+			Result := interpreter.configuration.max_precondition_search_time
+		ensure
+			good_result: Result = interpreter.configuration.max_precondition_search_time
 		end
 
 ;note
