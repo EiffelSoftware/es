@@ -19,23 +19,7 @@ feature -- Process
 
 	process_like_feature (a_type: LIKE_FEATURE)
 			-- Process `a_type'.
---		local
---			l_feat: E_FEATURE
 		do
---			if a_type.has_attached_mark then
---				text_formatter.process_keyword_text (ti_attached_keyword, Void)
---				text_formatter.add_space
---			elseif a_type.has_detachable_mark then
---				text_formatter.process_keyword_text (ti_detachable_keyword, Void)
---				text_formatter.add_space
---			end
---			text_formatter.process_keyword_text (ti_like_keyword, Void)
---			text_formatter.add_space
---			l_feat := current_class.feature_with_rout_id (a_type.routine_id)
---			check
---				l_feat_not_void: l_feat /= Void
---			end
---			text_formatter.add_feature (l_feat, l_feat.name)
 			a_type.actual_type.process (Current)
 		end
 
@@ -43,37 +27,12 @@ feature -- Process
 			-- Process `a_type'.
 		do
 			a_type.actual_type.process (Current)
---			if a_type.has_attached_mark then
---				text_formatter.process_keyword_text (ti_attached_keyword, Void)
---				text_formatter.add_space
---			elseif a_type.has_detachable_mark then
---				text_formatter.process_keyword_text (ti_detachable_keyword, Void)
---				text_formatter.add_space
---			end
---			text_formatter.process_keyword_text (ti_like_keyword, Void)
---			text_formatter.add_space
---			text_formatter.process_keyword_text (ti_current, Void)
 		end
 
 	process_like_argument (a_type: LIKE_ARGUMENT)
 			-- Process `a_type'.
 		do
 			a_type.actual_type.process (Current)
---			if a_type.has_attached_mark then
---				text_formatter.process_keyword_text (ti_attached_keyword, Void)
---				text_formatter.add_space
---			elseif a_type.has_detachable_mark then
---				text_formatter.process_keyword_text (ti_detachable_keyword, Void)
---				text_formatter.add_space
---			end
---			text_formatter.process_keyword_text (ti_like_keyword, Void)
---			text_formatter.add_space
---			if current_feature /= Void and then current_feature.argument_count <= a_type.position then
---				text_formatter.process_local_text (current_feature.arguments.item_name (a_type.position))
---			else
---				text_formatter.add (ti_argument_index)
---				text_formatter.add_int (a_type.position)
---			end
 		end
 
 
