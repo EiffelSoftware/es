@@ -62,10 +62,10 @@ feature -- handler
 			end
 
 				-- Store time to first valid test case.
-			if a_witness.is_pass or a_witness.is_fail or a_witness.is_bad_response and then l_data.time_of_first_valid_test_case /= -1 then
+			if (a_witness.is_pass or a_witness.is_fail or a_witness.is_bad_response) and then l_data.time_of_first_valid_test_case = -1 then
 				l_data.put_integer (l_request.start_time, 9)
 			end
-			
+
 			witnesses.force_last (l_data, l_feature)
 		end
 

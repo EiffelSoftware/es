@@ -84,6 +84,7 @@ feature -- Process
 			print_class_under_test (l_output_file)
 			print_last_time_stamp (l_output_file)
 			print_fault_result (l_output_file)
+			print_sorted_fault_result (l_output_file)
 			print_feature_statistics (l_output_file)
 			print_test_case_generation_speed (l_output_file)
 			print_untested_features (l_output_file)
@@ -137,6 +138,15 @@ feature -- Result printing
 		do
 			l_faults := faulty_witness_observer.witnesses
 			a_output_file.put_string ("--[Faults] " + l_faults.count.out + " %N")
+			a_output_file.put_string ("No.%T")
+			a_output_file.put_string ("Class%T")
+			a_output_file.put_string ("Feature%T")
+			a_output_file.put_string ("Code%T")
+			a_output_file.put_string ("Tag%T")
+			a_output_file.put_string ("Bp_slot%T")
+			a_output_file.put_string ("Time%T")
+			a_output_file.put_string ("TC_index%N")
+
 			from
 				i := 1
 				l_faults.start
@@ -150,6 +160,69 @@ feature -- Result printing
 				i := i + 1
 				l_faults.forth
 			end
+			a_output_file.put_string ("%N")
+		end
+
+	print_sorted_fault_result (a_output_file: KI_TEXT_OUTPUT_STREAM) is
+			-- Print sorted simplified information about found faults to `a_output_file'.
+		local
+			l_faults: DS_ARRAYED_LIST [AUT_WITNESS]
+			i: INTEGER
+			l_faults_with_name: DS_ARRAYED_LIST [TUPLE [name: STRING; witness: AUT_WITNESS]]
+			l_name: STRING
+			l_request: AUT_REQUEST
+			l_response: AUT_NORMAL_RESPONSE
+			l_sorter: DS_QUICK_SORTER [TUPLE [name: STRING; witness: AUT_WITNESS]]
+		do
+			l_faults := faulty_witness_observer.witnesses
+			a_output_file.put_string ("--[Sorted faults] " + l_faults.count.out + " %N")
+			a_output_file.put_string ("No.%T")
+			a_output_file.put_string ("Class%T")
+			a_output_file.put_string ("Feature%T")
+			a_output_file.put_string ("Code%T")
+			a_output_file.put_string ("Tag%T")
+			a_output_file.put_string ("Bp_slot%T")
+			a_output_file.put_string ("Time%T")
+			a_output_file.put_string ("TC_index%N")
+
+			create l_faults_with_name.make (l_faults.count)
+			from
+				i := 1
+				l_faults.start
+			until
+				l_faults.after
+			loop
+				l_request := l_faults.item_for_iteration.item (l_faults.item_for_iteration.count)
+				l_response ?= l_request.response
+				l_name := l_response.exception.class_name.to_string_8.as_upper + "." + l_response.exception.recipient_name.to_string_8.as_lower
+
+				l_faults_with_name.force_last ([l_name, l_faults.item_for_iteration])
+				l_faults.forth
+			end
+
+				-- Sort faults.
+			create l_sorter.make (create {AGENT_BASED_EQUALITY_TESTER [TUPLE [name: STRING; witness: AUT_WITNESS]]}.make (
+				agent (a, b: TUPLE [name: STRING; witness: AUT_WITNESS]): BOOLEAN
+					do
+						Result := a.name < b.name
+					end
+			))
+
+			l_sorter.sort (l_faults_with_name)
+			from
+				i := 1
+				l_faults_with_name.start
+			until
+				l_faults_with_name.after
+			loop
+				a_output_file.put_integer (i)
+				a_output_file.put_character ('%T')
+				a_output_file.put_string (fault_signature (l_faults_with_name.item_for_iteration.witness))
+				a_output_file.put_character ('%N')
+				i := i + 1
+				l_faults_with_name.forth
+			end
+
 			a_output_file.put_string ("%N")
 		end
 
@@ -246,7 +319,12 @@ feature -- Result printing
 				a_output_file.put_integer (l_data.bad_time // 1000)
 				a_output_file.put_character ('%T')
 
-				a_output_file.put_integer (l_data.time_of_first_valid_test_case // 1000)
+				if l_data.time_of_first_valid_test_case >= 0 then
+					a_output_file.put_integer (l_data.time_of_first_valid_test_case // 1000)
+				else
+					a_output_file.put_integer (-1)
+				end
+
 				a_output_file.put_character ('%N')
 
 				l_statistics.forth
@@ -283,22 +361,53 @@ feature -- Result printing
 			-- Print information about untested feature into `a_output_stream'.
 		local
 			l_untested_features: DS_HASH_TABLE [HASH_TABLE [INTEGER_32, STRING_8], AUT_FEATURE_OF_TYPE]
-
+			l_sorter: DS_QUICK_SORTER [AUT_FEATURE_OF_TYPE]
+			l_feats: DS_ARRAYED_LIST [AUT_FEATURE_OF_TYPE]
 		do
 			l_untested_features := invalid_witness_observer.failed_assertions
-			a_output_stream.put_line ("--[Untested features]")
+			a_output_stream.put_line ("--[Untested features] " + l_untested_features.count.out)
 			a_output_stream.put_string ("Class%T")
 			a_output_stream.put_string ("Feature%T")
 			a_output_stream.put_string ("Failed_assert")
 			a_output_stream.put_string ("%N")
 
+			create l_feats.make (l_untested_features.count)
 			from
 				l_untested_features.start
 			until
 				l_untested_features.after
 			loop
-				print_non_tested_feature (l_untested_features.key_for_iteration, l_untested_features.item_for_iteration, a_output_stream)
+				l_feats.force_last (l_untested_features.key_for_iteration)
 				l_untested_features.forth
+			end
+
+				-- Sort features by their CLASS_NAME.feature_name.
+			create l_sorter.make (create {AGENT_BASED_EQUALITY_TESTER [AUT_FEATURE_OF_TYPE]}.make (
+				agent (a, b: AUT_FEATURE_OF_TYPE): BOOLEAN
+					local
+						l_class_a: STRING
+						l_class_b: STRING
+					do
+						l_class_a := a.associated_class.name
+						l_class_b := b.associated_class.name
+						if l_class_a < l_class_b then
+							Result := True
+						elseif l_class_a > l_class_b then
+						else
+							Result := a.feature_.feature_name < b.feature_.feature_name
+						end
+					end
+			))
+			l_sorter.sort (l_feats)
+
+				-- Print result.
+			from
+				l_feats.start
+			until
+				l_feats.after
+			loop
+				print_non_tested_feature (l_feats.item_for_iteration, l_untested_features.item (l_feats.item_for_iteration), a_output_stream)
+				l_feats.forth
 			end
 			a_output_stream.put_string ("%N")
 		end
@@ -308,6 +417,8 @@ feature -- Result printing
 		local
 			l_stat: DS_LINKED_LIST [TUPLE [evaluated_times: INTEGER; worst_case_times: INTEGER; start_time: INTEGER; end_time: INTEGER; succeeded: BOOLEAN; class_name: STRING; feature_name: STRING]]
 			l_data: TUPLE [evaluated_times: INTEGER; worst_case_times: INTEGER; start_time: INTEGER; end_time: INTEGER; succeeded: BOOLEAN; class_name: STRING; feature_name: STRING]
+			l_time: INTEGER
+			l_ratio: DOUBLE
 		do
 			a_output_stream.put_line ("--[Precondition evaluation overhead]")
 			a_output_stream.put_string ("Class%T")
@@ -316,6 +427,7 @@ feature -- Result printing
 			a_output_stream.put_string ("#Wrost_case_evaluation%T")
 			a_output_stream.put_string ("Start_time%T")
 			a_output_stream.put_string ("End_time%T")
+			a_output_stream.put_string ("Duration%T")
 			a_output_stream.put_string ("Succeeded%N")
 
 			l_stat := precondition_evaluation_observer.statistics
@@ -344,12 +456,22 @@ feature -- Result printing
 				a_output_stream.put_integer (l_data.end_time // 1000)
 				a_output_stream.put_string ("%T")
 
+				l_time := l_time + (l_data.end_time - l_data.start_time)
+				a_output_stream.put_integer ((l_data.end_time - l_data.start_time) // 1000)
+				a_output_stream.put_string ("%T")
+
 				a_output_stream.put_boolean (l_data.succeeded)
 				a_output_stream.put_string ("%N")
 
 				l_stat.forth
 			end
 			a_output_stream.put_string ("%N")
+
+			a_output_stream.put_line ("--[Precondition evaluation overhead ratio]")
+			l_ratio := l_time.to_double / last_time_stamp.to_double
+			a_output_stream.put_line ((l_time // 1000).out + " / " + (last_time_stamp // 1000).out + " = " + l_ratio.out)
+			a_output_stream.put_string ("%N")
+
 		end
 
 	print_fault_detail (a_output_stream: KI_TEXT_OUTPUT_STREAM) is
@@ -503,6 +625,9 @@ feature -- Process
 			Result.append ("%T")
 
 			Result.append_integer (l_request.start_time // 1000)
+			Result.append ("%T")
+
+			Result.append (l_request.test_case_index.out)
 		end
 
 ;note
