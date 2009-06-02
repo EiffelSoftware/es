@@ -751,7 +751,7 @@ feature -- Precondition satisfaction
 			predicates.set_equality_tester (predicate_equality_tester)
 
 			create predicate_pattern_by_feature.make (100)
-			predicate_pattern_by_feature.set_key_equality_tester (feature_of_type_equality_tester)
+			predicate_pattern_by_feature.set_key_equality_tester (feature_of_type_name_equality_tester (system))
 
 			if configuration.is_precondition_checking_enabled then
 				l_any_class := system.any_class.compiled_class

@@ -368,7 +368,7 @@ feature{NONE} -- Process
 					is_linear_solvable := False
 				else
 					l_feat := final_feature (a_name, current_assertion.written_class, current_feature.type.associated_class)
-					is_linear_solvable := l_feat.argument_count = 0 and then l_feat.type.is_integer
+					is_linear_solvable := l_feat /= Void and then l_feat.argument_count = 0 and then l_feat.type.is_integer
 					if is_linear_solvable then
 						constraining_queries.force_last (l_feat.feature_name.as_lower)
 					end

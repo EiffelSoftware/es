@@ -26,6 +26,13 @@ feature{NONE} -- Initialization
 			l_types := suppliers_of_types (a_types_under_test)
 			sort_types (l_types)
 			sorted_types_cursor := sorted_types.new_cursor
+			create storage.make (1000)
+			storage.set_key_equality_tester (
+				create {AGENT_BASED_EQUALITY_TESTER [ITP_VARIABLE]}.make (
+					agent (a, b: ITP_VARIABLE): BOOLEAN
+						do
+							Result := a.index = b.index
+						end))
 			setup_variable_table
 		end
 
@@ -70,6 +77,49 @@ feature -- Access
 	sorted_types_cursor: DS_ARRAYED_LIST_CURSOR [TYPE_A]
 			-- Cursor to iterate `sorted_types'.
 
+	conforming_variables (a_type: TYPE_A): DS_ARRAYED_LIST [ITP_VARIABLE] is
+			-- List of variables whose type conforms to `a_type'
+		local
+			l_var_table: like variable_table
+			l_type: TYPE_A
+			l_list: DS_ARRAYED_LIST [ITP_VARIABLE]
+			l_storage: like storage
+			l_root_class: CLASS_C
+			l_vlist: DS_ARRAYED_LIST [ITP_VARIABLE]
+		do
+			l_var_table := variable_table
+			if l_var_table.has (a_type) then
+				Result := l_var_table.item (a_type)
+			else
+				l_root_class := system.root_type.associated_class
+				l_storage := storage
+				from
+					l_var_table.start
+				until
+					l_var_table.after
+				loop
+					l_type := l_var_table.key_for_iteration
+					create l_vlist.make (50)
+					if a_type.conform_to (l_root_class, l_type) then
+						l_list := l_var_table.item_for_iteration
+						from
+							l_list.start
+						until
+							l_list.after
+						loop
+							if l_storage.item (l_list.item_for_iteration).conform_to (l_root_class, a_type) then
+								l_vlist.force_last (l_list.item_for_iteration)
+							end
+							l_list.forth
+						end
+					end
+					l_var_table.forth
+				end
+				l_var_table.force_last (l_vlist, a_type)
+				Result := l_vlist
+			end
+		end
+
 feature -- Basic operations
 
 	put_variable (a_variable: ITP_VARIABLE; a_type: TYPE_A) is
@@ -83,6 +133,7 @@ feature -- Basic operations
 			l_root_class := system.root_type.associated_class
 			l_cursor := sorted_types_cursor
 			l_var_tbl := variable_table
+			storage.force_last (a_type, a_variable)
 			from
 				l_cursor.start
 			until
@@ -96,7 +147,26 @@ feature -- Basic operations
 			end
 		end
 
+	wipe_out is
+			-- Wipe out current pool.
+		local
+			l_vtable: like variable_table
+		do
+			l_vtable := variable_table
+			from
+				l_vtable.start
+			until
+				l_vtable.after
+			loop
+				l_vtable.item_for_iteration.wipe_out
+				l_vtable.forth
+			end
+		end
+
 feature{NONE} -- Implementation
+
+	storage: DS_HASH_TABLE [TYPE_A, ITP_VARIABLE]
+			-- Table of all variables along with their type
 
 	sort_types (a_types: DS_LIST [TYPE_A]) is
 			-- Sort types in `a_types' topologically

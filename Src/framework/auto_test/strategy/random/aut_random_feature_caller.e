@@ -187,6 +187,7 @@ feature -- Execution
 						target ?= arguments.first
 						arguments.start
 						arguments.remove_at
+						recheck_type_and_feature
 						l_call := True
 					end
 

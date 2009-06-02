@@ -172,18 +172,20 @@ feature -- Execution
 		do
 			if is_evaluation_enabled then
 				set_start_time (interpreter.duration_until_now.millisecond_count)
-				create l_list.make (variables.count)
-				variables.do_all (agent l_list.force_last)
-				if variables.count = feature_.feature_.argument_count + 1 then
-					is_precondition_satisfied := interpreter.is_precondition_satisfied (feature_, l_list)
-					steps_completed := is_precondition_satisfied
+				if has_next_step then
+					create l_list.make (variables.count)
+					variables.do_all (agent l_list.force_last)
+					if variables.count = feature_.feature_.argument_count + 1 then
+						is_precondition_satisfied := interpreter.is_precondition_satisfied (feature_, l_list)
+						steps_completed := is_precondition_satisfied
 
-					if has_next_step then
-						tried_count := 0
-						setup_indexes
+						if has_next_step then
+							tried_count := 0
+							setup_indexes
+						end
+					else
+						cancel
 					end
-				else
-					cancel
 				end
 			else
 					-- If precondition evaluation is disabled, we
@@ -415,7 +417,7 @@ feature{NONE} -- Implementation
 					(is_linear_constraint_solving_enabled implies not linear_solvable_arguments.has (types.index - 1)))
 				then
 					l_type := types.item_for_iteration
-					l_objects := object_pool.variable_table.item (l_type)
+					l_objects := object_pool.conforming_variables (l_type)
 					candidate_object_indexes.force_last (index_interval (l_objects.count))
 					candicate_object_count.put (l_objects.count, i)
 					real_argument_indexes.force_last (types.index)
@@ -489,21 +491,25 @@ feature{NONE} -- Implementation
 			create mentioned_argument_indexes.make (variables.count)
 			check interpreter.predicate_pattern_by_feature.has (feature_) end
 			l_patterns := interpreter.predicate_pattern_by_feature.item (feature_)
-			from
-				l_patterns.start
-			until
-				l_patterns.after
-			loop
-				l_access_pattern := l_patterns.item_for_iteration.access_pattern
+			if l_patterns /= Void then
 				from
-					l_access_pattern.start
+					l_patterns.start
 				until
-					l_access_pattern.after
+					l_patterns.after
 				loop
-					mentioned_argument_indexes.force_last (l_access_pattern.key_for_iteration + 1)
-					l_access_pattern.forth
+					l_access_pattern := l_patterns.item_for_iteration.access_pattern
+					from
+						l_access_pattern.start
+					until
+						l_access_pattern.after
+					loop
+						mentioned_argument_indexes.force_last (l_access_pattern.key_for_iteration + 1)
+						l_access_pattern.forth
+					end
+					l_patterns.forth
 				end
-				l_patterns.forth
+			else
+				cancel
 			end
 		end
 

@@ -26,6 +26,12 @@ feature -- Access
 			create Result.make
 		end
 
+	feature_of_type_name_equality_tester (a_system: SYSTEM_I): AUT_FEATURE_OF_TYPE_NAME_EQUALITY_TEST is
+			-- Equality test for feature of type based on feature names
+		do
+			create Result.make (a_system)
+		end
+
 	string_equality_tester: AGENT_BASED_EQUALITY_TESTER [STRING] is
 			-- Equality test for string
 		do

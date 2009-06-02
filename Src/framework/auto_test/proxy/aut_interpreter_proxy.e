@@ -1271,6 +1271,7 @@ feature -- Precondition satisfaction
 		do
 			create typed_object_pool.make (system, configuration.types_under_test)
 			variable_table.set_defining_variable_action (agent typed_object_pool.put_variable)
+			variable_table.set_wipe_out_action (agent typed_object_pool.wipe_out)
 		end
 
 	is_precondition_satisfied (a_feature: AUT_FEATURE_OF_TYPE; a_variables: DS_LIST [ITP_VARIABLE]): BOOLEAN is
