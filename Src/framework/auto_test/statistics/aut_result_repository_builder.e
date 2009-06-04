@@ -48,6 +48,7 @@ feature -- Access
 			if comment_processors_internal = Void then
 				create comment_processors_internal.make
 				comment_processors_internal.extend (agent test_case_time_comment_processor)
+				comment_processors_internal.extend (agent test_case_index_comment_processor)
 			end
 			Result := comment_processors_internal
 		end
@@ -113,10 +114,11 @@ feature {NONE} -- Implementation
 			last_request_has_response: request_history.item (request_history.count).response /= Void
 		local
 			witness: AUT_WITNESS
-		do
+		do	
 			create witness.make (request_history, last_start_index, request_history.count)
 			last_result_repository.add_witness (witness)
 			last_test_case_request := witness.item (witness.count)
+			last_test_case_request.set_test_case_index (last_test_case_index)
 		end
 
 feature -- Time measurement
@@ -129,6 +131,9 @@ feature -- Time measurement
 
 	time_stamp_header: STRING is "-- time stamp: "
 			-- Header for time stamp
+
+	test_case_index_header: STRING is "-- test case No."
+			-- Header for test case index comment
 
 	test_case_start_time_header: STRING is "TC start"
 			-- Test case start time tag
@@ -164,11 +169,25 @@ feature -- Time measurement
 			end
 		end
 
+	test_case_index_comment_processor (a_line: STRING) is
+			-- Process `a_line' if it is a test case index comment.
+		local
+			l_line: STRING
+		do
+			if a_line.substring (1, test_case_index_header.count).is_equal (test_case_index_header) then
+				l_line := a_line.substring (test_case_index_header.count + 1, a_line.count)
+				last_test_case_index := l_line.to_integer
+			end
+		end
+
 	last_test_case_request: detachable AUT_REQUEST
 			-- Request of the last met test case
 
 	comment_processors_internal: like comment_processors
 			-- Implementation of `comment_processors'
+
+	last_test_case_index: INTEGER
+			-- Last met test case index
 
 ;note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
