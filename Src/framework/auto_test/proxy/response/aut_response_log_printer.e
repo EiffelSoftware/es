@@ -113,6 +113,7 @@ feature -- Process
 					l_results.after
 				loop
 						-- Print out query name in a line.
+					l_state.wipe_out
 					l_state.append (l_results.key_for_iteration)
 					l_state.append_character (':')
 
