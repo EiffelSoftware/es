@@ -1,5 +1,24 @@
 note
-	description: "Summary description for {AUT_PREDICATE_OF_FEATURE}."
+	description: "[
+			Predicate access pattern from a feature.
+			This classes maintains a two way mapping from
+			entities of a feature (target, argument) to arguments
+			of a predicate.
+			
+			For example:
+			
+			l.put (v: ANY; i: INTEGER)
+				require
+					extendible: l.extendible
+					not_has_v: not has (v)
+					
+			The predicate "extendible" is a one argument predicate, the first
+			argument of the predicate is the target object.
+			
+			The predicate "not_has_v" is a two argument predicate, the first
+			argument of the predicate is the target object, and then second 
+			argument of the predicate is the first argument of the feature call.
+	]"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

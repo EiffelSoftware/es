@@ -1,5 +1,8 @@
 note
-	description: "Summary description for {AUT_NORMAL_PREDICATE}."
+	description: "[
+			Normal predicate used in predicate pool.
+			Normal is in the sense that the predicate is not linearly solvable.
+			]"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

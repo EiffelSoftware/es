@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {AUT_LINEAR_SOLVABLE_PREDICATE}."
+	description: "Linearly solvable predicate used in predicate pool"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -38,7 +38,6 @@ feature{NONE} -- Initializaiton
 
 			fixme ("Consider remove constrained_arguments and constraining_queries if possible.")
 		end
-
 
 feature -- Status report
 
