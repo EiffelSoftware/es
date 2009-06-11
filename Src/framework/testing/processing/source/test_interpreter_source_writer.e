@@ -543,7 +543,7 @@ feature -- Precondition satisfaction
 	predicates: DS_HASH_SET [AUT_PREDICATE]
 			-- Set of predicates that are to be checked
 
-	predicate_pattern_by_feature: DS_HASH_TABLE [DS_LINKED_LIST [AUT_PREDICATE_OF_FEATURE], AUT_FEATURE_OF_TYPE]
+	predicate_pattern_by_feature: DS_HASH_TABLE [DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN], AUT_FEATURE_OF_TYPE]
 			-- Table of predicate access patterns associated with each feature
 
 	types_under_test: DS_ARRAYED_LIST [CL_TYPE_A]
@@ -558,7 +558,7 @@ feature -- Precondition satisfaction
 			types_under_test_set: types_under_test = a_types
 		end
 
-	generate_precondition_checker (a_feature: AUT_FEATURE_OF_TYPE; a_preconditions: DS_ARRAYED_LIST [AUT_PREDICATE_OF_FEATURE]) is
+	generate_precondition_checker (a_feature: AUT_FEATURE_OF_TYPE; a_preconditions: DS_ARRAYED_LIST [AUT_PREDICATE_ACCESS_PATTERN]) is
 			-- Generate precondition checker for `a_feature' whose preconditions are `a_preconditions'.
 		local
 			l_feat_name: STRING
@@ -567,9 +567,9 @@ feature -- Precondition satisfaction
 			l_arg_count: INTEGER
 			l_arg_types: LIST [TYPE_A]
 			l_text: STRING
-			l_sorter: DS_QUICK_SORTER [AUT_PREDICATE_OF_FEATURE]
+			l_sorter: DS_QUICK_SORTER [AUT_PREDICATE_ACCESS_PATTERN]
 		do
-			create l_sorter.make (create {AGENT_BASED_EQUALITY_TESTER [AUT_PREDICATE_OF_FEATURE]}.make (agent (a, b: AUT_PREDICATE_OF_FEATURE): BOOLEAN do Result := a.index < b.index end))
+			create l_sorter.make (create {AGENT_BASED_EQUALITY_TESTER [AUT_PREDICATE_ACCESS_PATTERN]}.make (agent (a, b: AUT_PREDICATE_ACCESS_PATTERN): BOOLEAN do Result := a.break_point_slot < b.break_point_slot end))
 			l_sorter.sort (a_preconditions)
 
 			l_feat := a_feature.feature_
@@ -660,7 +660,7 @@ feature -- Precondition satisfaction
 			stream.dedent
 		end
 
-	predicate_text (a_predicate: AUT_PREDICATE_OF_FEATURE): STRING is
+	predicate_text (a_predicate: AUT_PREDICATE_ACCESS_PATTERN): STRING is
 			--
 		local
 			l_arg_count: INTEGER
@@ -702,8 +702,8 @@ feature -- Precondition satisfaction
 			-- Generate routine to evaluate the precondition of `a_feature'.
 		local
 			l_visitor: AUT_PRECONDITION_ANALYZER
-			l_predicates: DS_ARRAYED_LIST [AUT_PREDICATE_OF_FEATURE]
-			l_patterns: DS_LINKED_LIST [AUT_PREDICATE_OF_FEATURE]
+			l_predicates: DS_ARRAYED_LIST [AUT_PREDICATE_ACCESS_PATTERN]
+			l_patterns: DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN]
 		do
 			create l_visitor.make
 			l_visitor.generate_precondition_predicates (a_feature)

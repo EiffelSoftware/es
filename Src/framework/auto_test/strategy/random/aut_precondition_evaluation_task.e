@@ -494,7 +494,7 @@ feature{NONE} -- Implementation
 	setup_mentioned_argument_indexes is
 			-- Setup `mentioned_argument_indexes'.
 		local
-			l_patterns: DS_LINEAR [AUT_PREDICATE_OF_FEATURE]
+			l_patterns: DS_LINEAR [AUT_PREDICATE_ACCESS_PATTERN]
 			l_access_pattern: DS_HASH_TABLE [INTEGER, INTEGER]
 		do
 			create mentioned_argument_indexes.make (variables.count)
@@ -527,7 +527,7 @@ feature{NONE} -- Implementation
 			-- arguments, set `linear_solvable_arguments' and `has_linear_constraint_argument'
 			-- accordingly.
 		local
-			l_patterns: DS_LIST [AUT_PREDICATE_OF_FEATURE]
+			l_patterns: DS_LIST [AUT_PREDICATE_ACCESS_PATTERN]
 			l_set: like linear_solvable_arguments
 		do
 			l_patterns := interpreter.predicate_pattern_by_feature.item (feature_)
@@ -540,9 +540,9 @@ feature{NONE} -- Implementation
 				until
 					l_patterns.after
 				loop
-					if attached {AUT_NORMAL_LINEAR_SOLVABLE_PREDICATE} l_patterns.item_for_iteration.predicate as l_linear_pred then
+					if attached {AUT_LINEAR_SOLVABLE_PREDICATE} l_patterns.item_for_iteration.predicate as l_linear_pred then
 						has_linear_constraint_argument := True
-						l_set := l_linear_pred.constrained_argument_indexes (feature_)
+						l_set := l_linear_pred.constrained_argument_indexes (l_patterns.item_for_iteration)
 						l_set.do_all (agent linear_solvable_arguments.force_last)
 					end
 					l_patterns.forth
@@ -552,7 +552,7 @@ feature{NONE} -- Implementation
 				until
 					linear_solvable_arguments.after
 				loop
-					linear_solvable_argument_names.force_last (feature_.feature_.arguments.item_name (linear_solvable_arguments.item_for_iteration))
+					linear_solvable_argument_names.force_last (normalized_argument_name (linear_solvable_arguments.item_for_iteration))
 					linear_solvable_arguments.forth
 				end
 			end

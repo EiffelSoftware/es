@@ -4,35 +4,73 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
+class
 	AUT_LINEAR_SOLVABLE_PREDICATE
 
 inherit
 	AUT_PREDICATE
+		rename
+			make as old_make
+		redefine
+			is_linear_solvable
+		end
+
+create
+	make
+
+feature{NONE} -- Initializaiton
+
+	make (a_types: DS_LIST [TYPE_A]; a_text: STRING; a_context_class: like context_class; a_expression: like expression; a_constrained_arguments: like constrained_arguments; a_constraining_queries: like constraining_queries) is
+			-- Initialize current.
+		require
+			a_context_class_valid: a_context_class.class_id = a_expression.context_class.class_id
+		do
+			old_make (a_types, a_text, a_context_class, a_expression)
+
+				-- Setup `constrained_arguments'.
+			create constrained_arguments.make (a_constrained_arguments.count)
+			a_constrained_arguments.do_all (agent constrained_arguments.force_last)
+
+				-- Setup `constraining_queries'.
+			create constraining_queries.make (a_constraining_queries.count)
+			constraining_queries.set_equality_tester (create {AGENT_BASED_EQUALITY_TESTER [STRING]}.make (agent (a, b: STRING): BOOLEAN do Result := a ~ b end))
+			a_constraining_queries.do_all (agent constraining_queries.force_last)
+
+			fixme ("Consider remove constrained_arguments and constraining_queries if possible.")
+		end
+
 
 feature -- Status report
 
-	is_linear_solvable: BOOLEAN is
+	is_linear_solvable: BOOLEAN is True
 			-- Is current predicate linearly solvable?
-		do
-			Result := True
-		ensure then
-			good_result: Result
-		end
 
 feature -- Access
 
-	constrained_arguments: DS_HASH_TABLE [STRING, INTEGER]
-			-- Table of constrained arguments of the predicate
-			-- [argument name, 1-based argument index for the predicate]
-			-- Because for the moment, we don't consider the case that
-			-- target is an integer class, so the constrained argument cannot
-			-- be the target, so the argument index (used as hash table key) here
-			-- only can start from 1.
+	constrained_arguments: DS_HASH_SET [INTEGER]
+			-- Table of 1-based index of constrained arguments of the predicate
 
-	constraining_queries: DS_HASH_SET [STRING];
+	constraining_queries: DS_HASH_SET [STRING]
 			-- List of queries that constrains the arguments
 			-- in `constrained_arguments'.
+			-- Query names are final names (feature renaming has been resolved)
+
+	constrained_argument_indexes (a_pattern: AUT_PREDICATE_ACCESS_PATTERN): DS_HASH_SET [INTEGER] is
+			-- Set of 1-based indexes of arguments that are linearly solvable in `a_pattern'
+		local
+			l_constrained_args: like constrained_arguments
+		do
+			l_constrained_args := constrained_arguments
+			create Result.make (l_constrained_args.count)
+			from
+				l_constrained_args.start
+			until
+				l_constrained_args.after
+			loop
+				Result.force_last (a_pattern.access_pattern.item (l_constrained_args.item_for_iteration))
+				l_constrained_args.forth
+			end
+		end
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

@@ -93,6 +93,15 @@ feature -- Access
 			end
 		end
 
+	normalized_argument_name (a_argument_index: INTEGER): STRING is
+			-- Normalized name for the `a_argument_index'-th argument
+			-- in form of "a_arg_0", "a_arg_1" and so on.
+		require
+			a_argument_index_positive: a_argument_index > 0
+		do
+			Result := "a_arg_" + a_argument_index.out
+		end
+
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

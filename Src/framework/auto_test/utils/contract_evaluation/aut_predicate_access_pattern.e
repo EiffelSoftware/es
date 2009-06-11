@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	AUT_PREDICATE_OF_FEATURE
+	AUT_PREDICATE_ACCESS_PATTERN
 
 create
 	make
@@ -44,20 +44,20 @@ feature -- Access
 			-- Access patterns for the predicates associated with current feature.
 			-- [call variable index, predicate argument index]
 			-- Key is the variable index in actual feature call (0 is the index for target).
-			-- Value is the argument position in the assoicated `predicate'.
+			-- Value is the argument position (which is 1-based) in the assoicated `predicate'.
 
-	index: INTEGER
-			-- Index to indicate the order of where `predicate' appears
-			-- A smaller number means that `predicate' appear earlier.
+	break_point_slot: INTEGER
+			-- Break point slot indicating where current predicate appears in
+			-- `feature_' viewed from `context_class'
 
 feature -- Setting
 
-	set_index (a_index: INTEGER) is
-			-- Set `index' with `a_index'.
+	set_break_point_slot (a_index: INTEGER) is
+			-- Set `break_point_slot' with `a_index'.
 		do
-			index := a_index
+			break_point_slot := a_index
 		ensure
-			index_set: index = a_index
+			index_set: break_point_slot = a_index
 		end
 
 invariant

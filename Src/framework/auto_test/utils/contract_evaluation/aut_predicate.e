@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {AUT_PREDICATE}."
+	description: "Predicate used in predicate pool"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -8,46 +8,79 @@ deferred class
 	AUT_PREDICATE
 
 inherit
-	ANY
-		redefine
-			is_equal
-		end
-
 	HASHABLE
 		undefine
 			is_equal
 		end
 
+	REFACTORING_HELPER
+		undefine
+			is_equal
+		end
+
+feature{NONE} -- Initialization
+
+	make (a_types: DS_LIST [TYPE_A]; a_text: STRING; a_context_class: like context_class; a_expression: like expression) is
+			-- Initialize current.
+		require
+			a_context_class_valid: a_context_class.class_id = a_expression.context_class.class_id
+		do
+			create argument_types.make
+			a_types.do_all (agent argument_types.force_last)
+
+			text := a_text.twin
+			context_class_internal := a_context_class
+			expression := a_expression
+		end
+
 feature -- Access
 
-	context_class: CLASS_C
-			-- Class where current predicate comes
+	id: INTEGER
+			-- 1-based Idendity of current predicate
+			-- Used for fast identification
+			-- Note: this id is not used in equality comparison
 
-	types: DS_LINKED_LIST [TYPE_A]
+	expression: AUT_EXPRESSION
+			-- Assertion associated with current predicates
+
+	context_class: CLASS_C is
+			-- Class where current predicate is viewed
+		do
+			fixme ("To be removed because `context_class' should be accessible through `expression.context_class'.");
+			Result := context_class_internal
+		ensure
+			good_result: Result = context_class_internal
+		end
+
+	argument_types: DS_LINKED_LIST [TYPE_A]
 			-- Type of all arguments of Current predicate
-			-- The order of the types are important
+			-- Arguments are 1-based. The first argument of
+			-- this predicate has index 1 and so on.
 
 	narity: INTEGER
 			-- Number of arguments of Current predicate
+			-- Can be zero for constant predicate, for example,
+			-- "{PLATFORM}.is_windows".
 		do
-			Result := types.count
+			Result := argument_types.count
 		ensure
-			good_result: Result = types.count
+			good_result: Result = argument_types.count
 		end
 
-	text: STRING is
+	text: STRING
 			-- Text of Current predicate
-			-- The arguments in of the predicates are replaced by "$1$", "$2$"
-			-- in the text. For example: "$1$.valid_cursor ($2$)"
-		deferred
-		end
+			-- The arguments in of the predicates are replaced by "{1}", "{2}"
+			-- in the text. For example: "{1}.valid_cursor ({2})"
+			-- All the feature name are final names (feature renaming is resolved).
+			-- And all the calls are changed to qualified.
+			-- "{1}" means the first argument of the predicate.
 
 	hash_code: INTEGER
 			-- Hash code value
 		do
-			Result := text.hash_code
+			Result := id
 		ensure then
-			good_result: Result = text.hash_code
+			good_result: Result = id
 		end
 
 feature -- Equality
@@ -63,28 +96,24 @@ feature -- Equality
 				-- 3. Text of these two predicates are equal.
 
 				-- Check if both predicates come from the same class.
-			Result := same_type (other) and then (context_class = other.context_class)
-			if Result then
+			if
+				context_class.class_id = other.context_class.class_id and then
+				argument_types.count = other.argument_types.count and then
+				text ~ other.text
+			then
 					-- Check type equivalence of corresponding arguments.
-				Result := types.count = other.types.count
-				if Result then
-					from
-						types.start
-						other.types.start
-					until
-						types.after or else not Result
-					loop
-						Result :=
-							types.item_for_iteration.same_type (other.types.item_for_iteration) and then
-							types.item_for_iteration.is_equivalent (other.types.item_for_iteration)
-						types.forth
-						other.types.forth
-					end
-
-						-- Check text equivalence.
-					if Result then
-						Result := text ~ other.text
-					end
+				from
+					Result := True
+					argument_types.start
+					other.argument_types.start
+				until
+					argument_types.after or else not Result
+				loop
+					Result :=
+						argument_types.item_for_iteration.same_type (other.argument_types.item_for_iteration) and then
+						argument_types.item_for_iteration.is_equivalent (other.argument_types.item_for_iteration)
+					argument_types.forth
+					other.argument_types.forth
 				end
 			end
 		end
@@ -95,6 +124,26 @@ feature -- Status report
 			-- Is current predicate linearly solvable?
 		deferred
 		end
+
+feature -- Setting
+
+	set_id (a_id: like id)
+			-- Set `id' with `a_id'.
+		require
+			a_id_positive: a_id > 0
+		do
+			id := a_id
+		ensure
+			id_set: id = a_id
+		end
+
+feature{NONE} -- Implementation
+
+	context_class_internal: like context_class
+			-- Storage for `context_class'
+
+invariant
+	id_positive: id > 0
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

@@ -25,18 +25,18 @@ feature{NONE} -- Initialization
 			-- Initialize.
 		do
 			create preconditions.make (2)
-			create {DS_LINKED_LIST [FUNCTION [ANY, TUPLE [AUT_ASSERTION], BOOLEAN]]} veto_assertion_functions.make
+			create {DS_LINKED_LIST [FUNCTION [ANY, TUPLE [AUT_EXPRESSION], BOOLEAN]]} veto_assertion_functions.make
 
 			veto_assertion_functions.force_last (agent is_assertion_non_trivial)
 		end
 
 feature -- Access
 
-	preconditions: DS_HASH_TABLE [DS_LIST [AUT_ASSERTION], AUT_FEATURE_OF_TYPE]
+	preconditions: DS_HASH_TABLE [DS_LIST [AUT_EXPRESSION], AUT_FEATURE_OF_TYPE]
 			-- Preconditions extracted by last `extract_preconditions'
 			-- Key is feature, value is a list of assertions of that feature.
 
-	veto_assertion_functions: DS_LIST [FUNCTION [ANY, TUPLE [AUT_ASSERTION], BOOLEAN]]
+	veto_assertion_functions: DS_LIST [FUNCTION [ANY, TUPLE [AUT_EXPRESSION], BOOLEAN]]
 			-- Function to veto an assertion from being extracted.
 			-- An assertion will be extracted if all veto functions return True.
 			-- If no function is available, an assertion will always be extracted.
@@ -55,9 +55,9 @@ feature -- Basic operations
 			-- Extract preconditions from `a_feature' and
 			-- store result in `preconditions'.
 		local
-			l_asserts: LIST [AUT_ASSERTION]
-			l_veto: FUNCTION [ANY, TUPLE [AUT_ASSERTION], BOOLEAN]
-			l_assert_list: DS_LINKED_LIST [AUT_ASSERTION]
+			l_asserts: LIST [AUT_EXPRESSION]
+			l_veto: FUNCTION [ANY, TUPLE [AUT_EXPRESSION], BOOLEAN]
+			l_assert_list: DS_LINKED_LIST [AUT_EXPRESSION]
 		do
 			l_veto := agent actual_veto_assertion_function
 			l_asserts := precondition_of_feature (a_feature.feature_, a_feature.type.associated_class)
@@ -84,12 +84,12 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	actual_veto_assertion_function (a_assertion: AUT_ASSERTION): BOOLEAN is
+	actual_veto_assertion_function (a_assertion: AUT_EXPRESSION): BOOLEAN is
 			-- Actual veto assertion function, take all functions in
 			-- `veto_assertion_functions' into consideration.
 		local
 			l_vetos: like veto_assertion_functions
-			l_cursor: DS_LIST_CURSOR [FUNCTION [ANY, TUPLE [AUT_ASSERTION], BOOLEAN]]
+			l_cursor: DS_LIST_CURSOR [FUNCTION [ANY, TUPLE [AUT_EXPRESSION], BOOLEAN]]
 		do
 			l_vetos := veto_assertion_functions
 			Result := True
@@ -106,19 +106,17 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	is_assertion_non_trivial (a_assertion: AUT_ASSERTION): BOOLEAN is
+	is_assertion_non_trivial (a_assertion: AUT_EXPRESSION): BOOLEAN is
 			-- Is `a_assertion' a non-trivial one?
 			-- "True" is considered as a trivial assertion.
 		local
 			l_text: STRING
 		do
-			if a_assertion.tag.expr /= Void then
-				l_text := a_assertion.expression_text
-				l_text.to_lower
-				l_text.left_adjust
-				l_text.right_adjust
-				Result := not l_text.is_equal ("true")
-			end
+			l_text := a_assertion.text
+			l_text.to_lower
+			l_text.left_adjust
+			l_text.right_adjust
+			Result := not l_text.is_equal ("true")
 		end
 
 note

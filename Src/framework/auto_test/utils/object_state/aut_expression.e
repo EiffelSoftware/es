@@ -1,11 +1,15 @@
 note
-	description: "Summary description for {AUT_ASSERTION}."
+	description: "[
+			Boolean expressions from code, candidates for predicates used in AutoTest.
+			For example, these expressions can come from contracts or from conditions in
+			control flow graph of features.
+			]"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AUT_ASSERTION
+	AUT_EXPRESSION
 
 inherit
 	SHARED_WORKBENCH
@@ -17,77 +21,66 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_tag: like tag; a_written_class: like written_class; a_context_class: like context_class) is
-			-- Set `tag' with `a_tag' and `written_class' with `a_written_class'.
-		require
-			a_tag_attached: a_tag /= Void
-			a_written_class_attached: a_written_class /= Void
-			a_context_class_attached: a_context_class /= Void
+	make (a_expr: like ast; a_written_class: like written_class; a_context_class: like context_class) is
+			-- Set `ast' with `a_expr' and `written_class' with `a_written_class'.
 		do
-			set_tag (a_tag)
+			set_expression (a_expr)
 			set_written_class (a_written_class)
 			set_context_class (a_context_class)
 		end
 
 feature -- Access
 
-	tag: TAGGED_AS
-			-- Assertion tag AST node
+	ast: EXPR_AS
+			-- AST node for the predicate expression
+
+	name: STRING is
+			-- Name of the predicate
+			-- If current assertion is from contract, this
+			-- can be the tag of that contract.
+		do
+			if name_internal = Void then
+				Result := ""
+			else
+				Result := name_internal
+			end
+		end
 
 	written_class: CLASS_C
-			-- Class where `tag' is written
+			-- Class where `ast' is written
 
 	context_class: CLASS_C
-			-- Class where `tag' is viewed
-
-	tag_name: STRING is
-			-- Name of `tag'
-		do
-			if tag.tag /= Void then
-				Result := tag.tag.name.twin
-			else
-				create Result.make_empty
-			end
-		ensure
-			result_attached: Result /= Void
-		end
+			-- Class where `ast' is viewed
 
 	text: STRING is
-			-- Text of Current assertion
+			-- Text of `ast' as writtend in the source file
 		do
-			Result := tag.text (match_list_server.item (written_class.class_id))
+			Result := ast.text (match_list_server.item (written_class.class_id))
 		end
 
-	expression_text: STRING is
-			-- Text of the expression part of Current assertion
-		do
-			if tag.expr /= Void then
-				Result := tag.expr.text (match_list_server.item (written_class.class_id))
-			else
-				create Result.make_empty
-			end
-		end
+feature -- Access/Internal
 
 	line_number: INTEGER is
 			-- Line number of the assertion
 		do
-			Result := tag.expr.first_token (match_list_server.item (written_class.class_id)).line
+			Result := ast.first_token (match_list_server.item (written_class.class_id)).line
 		end
 
 	index: INTEGER
 			-- Index number indicating the order when current assertion appears
 			-- A small number means that the assertion appear earlier.
+			-- Note: intended for internal use
 
 feature -- Setting
 
-	set_tag (a_tag: like tag) is
-			-- Set `tag' with `a_tag'.
+	set_expression (a_tag: like ast) is
+			-- Set `ast' with `a_tag'.
 		require
 			a_tag_attached: a_tag /= Void
 		do
-			tag := a_tag
+			ast := a_tag
 		ensure
-			tag_set: tag = a_tag
+			tag_set: ast = a_tag
 		end
 
 	set_written_class (a_written_class: like written_class) is
@@ -118,11 +111,21 @@ feature -- Setting
 			index_set: index = a_index
 		end
 
-invariant
-	tag_attached: tag /= Void
-	written_class_attached: written_class /= Void
+	set_name (a_name: like name) is
+			-- Set `name' with `a_name'.
+			-- Copy content of `a_name' into `name'.
+		do
+			name_internal := a_name.twin
+		ensure
+			name_set: name ~ a_name
+		end
 
-note
+feature{NONE} -- Implementation
+
+	name_internal: detachable like name
+			-- Implementation of `name'
+
+;note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

@@ -1331,7 +1331,7 @@ feature -- Precondition satisfaction
 			retry
 		end
 
-	predicate_pattern_by_feature: DS_HASH_TABLE [DS_LIST [AUT_PREDICATE_OF_FEATURE], AUT_FEATURE_OF_TYPE]
+	predicate_pattern_by_feature: DS_HASH_TABLE [DS_LIST [AUT_PREDICATE_ACCESS_PATTERN], AUT_FEATURE_OF_TYPE]
 			-- Predicate access patterns for features
 
 	set_predicate_pattern_by_feature (a_pattern: like predicate_pattern_by_feature) is

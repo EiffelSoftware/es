@@ -30,7 +30,7 @@ feature -- Access
 	constrained_arguments: DS_HASH_SET [STRING]
 			-- Set of name of constrained arguments
 
-	assertions: LINKED_LIST [AUT_ASSERTION]
+	assertions: LINKED_LIST [AUT_EXPRESSION]
 			-- Assertions of all the linearly solvable preconditions
 
 	last_smtlib: STRING
@@ -65,11 +65,11 @@ feature -- Basic operations
 			until
 				a_patterns.after
 			loop
-				if attached {AUT_NORMAL_LINEAR_SOLVABLE_PREDICATE} a_patterns.item_for_iteration.predicate as l_linear_pred then
+				if attached {AUT_LINEAR_SOLVABLE_PREDICATE} a_patterns.item_for_iteration.predicate as l_linear_pred then
 					has_linear_constraints := True
-					l_linear_pred.constrained_arguments.do_all (agent constrained_arguments.force_last)
+					l_linear_pred.constrained_arguments.do_all (agent (a_index: INTEGER) do constrained_arguments.force_last (normalized_argument_name (a_index)) end)
 					l_linear_pred.constraining_queries.do_all (agent constraining_queries.force_last)
-					assertions.extend (l_linear_pred.assertion)
+					assertions.extend (l_linear_pred.expression)
 				end
 				a_patterns.forth
 			end
@@ -98,7 +98,7 @@ feature{NONE} -- Implementation
 	current_context_class: CLASS_C
 			-- Context class of currently processed assertion
 
-	access_patterns: DS_LINEAR [AUT_PREDICATE_OF_FEATURE]
+	access_patterns: DS_LINEAR [AUT_PREDICATE_ACCESS_PATTERN]
 			-- Access patterns of `current_feature'
 
 	current_name: STRING is "current"
@@ -160,15 +160,16 @@ feature{NONE} -- Process
 		local
 			l_feature: detachable FEATURE_I
 			l_arg_name: detachable STRING
+			i: INTEGER
 		do
 			l_feature := final_feature (l_as.feature_name.name, current_written_class, current_context_class)
 			if l_feature /= Void then
 				last_smtlib.append (normalized_string (l_feature.feature_name))
 			else
 					-- Can be an argument.
-				l_arg_name := final_argument_name (l_as.access_name, current_feature.feature_, current_written_class)
-				if l_arg_name /= Void then
-					last_smtlib.append (normalized_string (l_arg_name))
+				i := final_argument_index (l_as.access_name, current_feature.feature_, current_written_class)
+				if i > 0 then
+					last_smtlib.append (normalized_argument_name (i))
 				else
 					last_smtlib.append (l_as.access_name)
 				end
@@ -192,7 +193,7 @@ feature{NONE} -- Generation
 				current_written_class := assertions.item_for_iteration.written_class
 				current_context_class := assertions.item_for_iteration.context_class
 				current_match_list := match_list_server.item (current_written_class.class_id)
-				assertions.item_for_iteration.tag.process (Current)
+				assertions.item_for_iteration.ast.process (Current)
 				last_smtlib.append ("%N")
 				assertions.forth
 			end
@@ -246,7 +247,6 @@ feature{NONE} -- Generation
 		do
 			create l_names.make
 			constraining_queries.do_all (agent l_names.extend)
---			last_smtlib.append ("#Assumptions%N")
 			from
 				l_names.start
 			until
@@ -265,38 +265,50 @@ feature{NONE} -- Generation
 	final_argument_name (a_name: STRING; a_feature: FEATURE_I; a_written_class: CLASS_C): detachable STRING is
 			-- Final name of the argument `a_name' in `a_feature'
 		local
-			l_arg_count: INTEGER
-			l_feature: FEATURE_I
 			i: INTEGER
 		do
-			l_arg_count := a_feature.argument_count
-			if l_arg_count > 0 then
+			i := final_argument_index (a_name, a_feature, a_written_class)
+			if i > 0 then
+				Result := a_feature.arguments.item_name (i)
+			end
+		end
+
+	final_argument_index (a_name: STRING; a_feature: FEATURE_I; a_written_class: CLASS_C): INTEGER is
+			-- 1-based argument index of an argument `a_name' in feature `a_feature'.
+			-- Resolve `a_name' in case that the argument name changes in inherited features.
+			-- If there is no argument called `a_name' in `a_feature', return 0.
+		local
+			l_round: INTEGER
+			l_arg_count: INTEGER
+			l_feature: detachable FEATURE_I
+			i: INTEGER
+		do
+			from
+				l_round := 1
+				l_feature := a_feature
+				l_arg_count := l_feature.argument_count
+			until
+				l_round <= 2 or else Result > 0
+			loop
 				from
 					i := 1
 				until
-					i > l_arg_count or else Result /= Void
+					Result > 0 or else i > l_arg_count
 				loop
-					if a_feature.arguments.item_name (i).is_case_insensitive_equal (a_name) then
-						Result := a_name
+					if l_feature.arguments.item_name (i).is_case_insensitive_equal (a_name) then
+						Result := i
+					else
+						i := i + 1
 					end
-					i := i + 1
 				end
 
-				if Result = Void then
+				if l_round = 1 then
 					l_feature := a_written_class.feature_of_rout_id_set (a_feature.rout_id_set)
-					if l_feature /= Void then
-						from
-							i := 1
-						until
-							i > l_arg_count or else Result /= Void
-						loop
-							if l_feature.arguments.item_name (i).is_case_insensitive_equal (a_name) then
-								Result := a_feature.arguments.item_name (i)
-							end
-							i := i + 1
-						end
+					if l_feature = Void then
+						l_round := l_round + 1
 					end
 				end
+				l_round := l_round + 1
 			end
 		end
 

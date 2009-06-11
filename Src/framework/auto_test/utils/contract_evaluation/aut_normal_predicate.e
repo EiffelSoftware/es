@@ -9,49 +9,17 @@ class
 
 inherit
 	AUT_PREDICATE
+		redefine
+			is_linear_solvable
+		end
 
 create
 	make
 
-feature{NONE} -- Initializaiton
-
-	make (a_types: DS_LIST [TYPE_A]; a_text: STRING; a_context_class: like context_class; a_assertion: like assertion) is
-			-- Initialize current.
-		do
-			create types.make
-			a_types.do_all (agent types.force_last)
-			text_internal := a_text.twin
-			context_class := a_context_class
-			assertion := a_assertion
-		end
-
-feature -- Access
-
-	text: STRING is
-			-- Text of Current predicate
-			-- The arguments in of the predicates are replaced by "{1}", "{2}"
-			-- in the text. For example: "{1}.valid_cursor ({2})"
-		do
-			Result := text_internal
-		end
-
-	assertion: AUT_ASSERTION
-			-- Assertion associated with current predicates
-
 feature -- Status report
 
-	is_linear_solvable: BOOLEAN is
-			-- Is current predicate linearly solvable?
-		do
-			Result := False
-		ensure then
-			good_result: Result = False
-		end
-
-feature{NONE} -- Implementation
-
-	text_internal: like text;
-			-- Implementation of `text'
+	is_linear_solvable: BOOLEAN is False
+			-- <Precursor>
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

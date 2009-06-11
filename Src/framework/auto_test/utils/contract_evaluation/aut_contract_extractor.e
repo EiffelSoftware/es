@@ -12,9 +12,9 @@ inherit
 
 feature -- Access
 
-	invariant_of_class (a_class: CLASS_C): LINKED_LIST [AUT_ASSERTION] is
+	invariant_of_class (a_class: CLASS_C): LINKED_LIST [AUT_EXPRESSION] is
 			-- List of invariant clauses of `a_class'.
-			-- `tag' is the TAGGED_AS for an invariant clause, and `written_class' is the class
+			-- `ast' is the TAGGED_AS for an invariant clause, and `written_class' is the class
 			-- where that invariant clause is written.
 		require
 			a_class_attached: a_class /= Void
@@ -23,7 +23,7 @@ feature -- Access
 			l_ancestors: LINKED_LIST [CLASS_C]
 			l_current_class: CLASS_C
 			l_index: INTEGER
-			l_list: LINKED_LIST [AUT_ASSERTION]
+			l_list: LINKED_LIST [AUT_EXPRESSION]
 		do
 			create Result.make
 
@@ -59,7 +59,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	precondition_of_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): LINKED_LIST [AUT_ASSERTION] is
+	precondition_of_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): LINKED_LIST [AUT_EXPRESSION] is
 			-- List of preconditions of `a_feature' in `a_context_class'
 		local
 			l_ancestors: LINKED_LIST [CLASS_C]
@@ -67,7 +67,7 @@ feature -- Access
 			l_class: CLASS_C
 			l_routine: ROUTINE_AS
 			l_asserts: EIFFEL_LIST [TAGGED_AS]
-			l_assertion: AUT_ASSERTION
+			l_assertion: AUT_EXPRESSION
 			l_index: INTEGER
 		do
 			create Result.make
@@ -147,7 +147,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	tags (a_written_class: CLASS_C; a_context_class: CLASS_C; a_asserts: LIST [TAGGED_AS]): LINKED_LIST [AUT_ASSERTION] is
+	tags (a_written_class: CLASS_C; a_context_class: CLASS_C; a_asserts: LIST [TAGGED_AS]): LINKED_LIST [AUT_EXPRESSION] is
 			-- List of tuples of assert clauses, each associated with its `a_written_class'
 		require
 			a_written_class_attached: a_written_class /= Void
@@ -162,7 +162,7 @@ feature{NONE} -- Implementation
 			until
 				a_asserts.after
 			loop
-				Result.extend(create {AUT_ASSERTION}.make (a_asserts.item, a_written_class, a_context_class))
+				Result.extend(create {AUT_EXPRESSION}.make (a_asserts.item, a_written_class, a_context_class))
 				a_asserts.forth
 			end
 			a_asserts.go_to (l_cursor)
