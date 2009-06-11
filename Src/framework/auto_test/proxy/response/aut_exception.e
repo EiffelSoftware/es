@@ -54,7 +54,7 @@ feature {NONE} -- Initialization
 			exception_recipient_name_set: recipient_name = an_exception_recipient_name
 			exception_class_name_set: class_name = an_exception_class_name
 			exception_tag_name_set: tag_name = an_exception_tag_name
-			exception_trace_set: trace = an_exception_trace
+--			exception_trace_set: trace = an_exception_trace
 		end
 
 feature -- Access

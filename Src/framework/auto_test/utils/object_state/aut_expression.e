@@ -58,6 +58,11 @@ feature -- Access
 			Result := ast.text (match_list_server.item (written_class.class_id))
 		end
 
+feature -- Status report
+
+	is_require_else: BOOLEAN
+			-- Is current expression from a require else clause?
+
 feature -- Access/Internal
 
 	line_number: INTEGER is
@@ -118,6 +123,14 @@ feature -- Setting
 			name_internal := a_name.twin
 		ensure
 			name_set: name ~ a_name
+		end
+
+	set_is_require_else (b: BOOLEAN) is
+			-- Set `is_require_else' with `b'.
+		do
+			is_require_else := b
+		ensure
+			is_require_else_set: is_require_else = b
 		end
 
 feature{NONE} -- Implementation

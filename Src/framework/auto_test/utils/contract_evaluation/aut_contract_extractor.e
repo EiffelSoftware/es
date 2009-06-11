@@ -10,6 +10,8 @@ class
 inherit
 	REFACTORING_HELPER
 
+	TEST_GENERATOR_ROUTINES
+
 feature -- Access
 
 	invariant_of_class (a_class: CLASS_C): LINKED_LIST [AUT_EXPRESSION] is
@@ -59,54 +61,30 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	precondition_of_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): LINKED_LIST [AUT_EXPRESSION] is
+	precondition_of_feature (a_feature: FEATURE_I; a_context_class: CLASS_C): LINKED_LIST [detachable AUT_EXPRESSION] is
 			-- List of preconditions of `a_feature' in `a_context_class'
 		local
-			l_ancestors: LINKED_LIST [CLASS_C]
-			l_feat: FEATURE_I
-			l_class: CLASS_C
-			l_routine: ROUTINE_AS
-			l_asserts: EIFFEL_LIST [TAGGED_AS]
-			l_assertion: AUT_EXPRESSION
-			l_index: INTEGER
+			l_asserts: LINKED_LIST [TUPLE [precondition: REQUIRE_AS; postcondition: ENSURE_AS; written_in_feature: FEATURE_I]]
+			l_data: TUPLE [precondition: REQUIRE_AS; postcondition: ENSURE_AS; written_in_feature: FEATURE_I]
+			l_assert: AUT_EXPRESSION
+			l_expressions: like predicate_assertions
 		do
 			create Result.make
-			if a_feature.is_routine then
-				create l_ancestors.make
-				l_index := 1
-				record_ancestors_of_class (a_context_class, l_ancestors, Void)
-				from
-					l_ancestors.start
-				until
-					l_ancestors.after
-				loop
-					l_class := l_ancestors.item_for_iteration
-					l_feat := l_class.feature_of_rout_id_set (a_feature.rout_id_set)
-					if
-						l_feat /= Void and then
-						l_feat.is_routine and then
-						l_feat.written_class = l_class and then
-						l_feat.has_precondition and then
-						not l_feat.is_require_else -- We ignore "require else" for the moment.
-					then
-						fixme ("We ignore require else for the moment.")
-						l_routine := l_feat.body.body.as_routine
-						check l_routine.precondition /= Void end
-						l_asserts := l_routine.precondition.assertions
-						from
-							l_asserts.start
-						until
-							l_asserts.after
-						loop
-							create l_assertion.make (l_asserts.item_for_iteration, l_class, a_context_class)
-							l_assertion.set_index (l_index)
-							Result.extend (l_assertion)
-							l_asserts.forth
-							l_index := l_index + 1
-						end
+			l_asserts := contracts_of_feature_action.item ([a_feature, a_feature.body])
+			from
+				l_asserts.start
+			until
+				l_asserts.after
+			loop
+				l_data := l_asserts.item_for_iteration
+				if l_data.precondition /= Void and then l_data.precondition.assertions /= Void then
+					l_expressions := predicate_assertions (l_data.precondition, l_data.written_in_feature.written_class, a_context_class)
+					if l_data.precondition.is_else then
+						l_expressions.do_all (agent (a_expr: AUT_EXPRESSION) do a_expr.set_is_require_else (True) end)
 					end
-					l_ancestors.forth
+					Result.append (l_expressions)
 				end
+				l_asserts.forth
 			end
 		end
 
@@ -169,6 +147,29 @@ feature{NONE} -- Implementation
 
 		ensure
 			result_attached: Result /= Void
+		end
+
+	predicate_assertions (a_assert_list: ASSERT_LIST_AS; a_written_class: CLASS_C; a_context_class: CLASS_C): LINKED_LIST [AUT_EXPRESSION] is
+			-- List of predicate assertions from `a_assert_list'.
+			-- `a_written_class' is where `a_assert_list' is written.
+			-- `a_context_class' is where `a_assert_list' is viewed.
+		local
+			l_tags: EIFFEL_LIST [TAGGED_AS]
+			l_tag: TAGGED_AS
+		do
+			create Result.make
+			l_tags := a_assert_list.assertions
+			if l_tags /= Void then
+				from
+					l_tags.start
+				until
+					l_tags.after
+				loop
+					l_tag := l_tags.item_for_iteration
+					Result.extend (create {AUT_EXPRESSION}.make (l_tag.expr, a_written_class, a_context_class))
+					l_tags.forth
+				end
+			end
 		end
 
 note

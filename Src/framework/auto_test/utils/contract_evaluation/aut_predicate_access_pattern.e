@@ -33,6 +33,10 @@ feature{NONE} -- Initialization
 
 	make (a_feature: like feature_; a_predicate: like predicate; a_access_pattern: like access_pattern) is
 			-- Initialize current.
+		require
+			a_feature_attached: a_feature /= Void
+			a_predicate_attached: a_predicate /= Void
+			a_access_pattern_attached: a_access_pattern /= Void
 		do
 			feature_ := a_feature
 			predicate := a_predicate

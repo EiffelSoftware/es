@@ -88,8 +88,8 @@ feature -- Basic operation
 			-- Store result in `last_predicates' and
 			-- `last_feature_access_pattern'.
 		local
-			l_precondition_extractor: AUT_PRECONDITION_EXTRACTOR
-			l_asserts: DS_LIST [AUT_EXPRESSION]
+			l_precondition_extractor: AUT_CONTRACT_EXTRACTOR
+			l_asserts: LINKED_LIST [AUT_EXPRESSION]
 			l_assertion: AUT_EXPRESSION
 			l_solvables: DS_LINKED_LIST [AUT_PREDICATE]
 			l_unsolvables: DS_LINKED_LIST [AUT_PREDICATE]
@@ -98,21 +98,23 @@ feature -- Basic operation
 			last_feature_access_pattern.wipe_out
 			current_feature := a_feature
 
-				-- Get preconditions of `a_feature'.
-			create l_precondition_extractor.make
-			l_precondition_extractor.extract_precondition (a_feature)
-			l_asserts := l_precondition_extractor.preconditions.item (a_feature)
-
 				-- Generate predicates for each of the precondition assertions.
 			create l_solvables.make
 			create l_unsolvables.make
 			from
+				create l_precondition_extractor
+				l_asserts := l_precondition_extractor.precondition_of_feature (a_feature.feature_, a_feature.associated_class)
 				l_asserts.start
 			until
 				l_asserts.after
 			loop
 				l_assertion := l_asserts.item_for_iteration
-				check_assertion (l_assertion, a_feature)
+					-- We ignore "require else" for the moment.
+				fixme ("Support require else in the future. 2009.6.11 Jasonw")
+				if not l_assertion.is_require_else then
+					current_break_point_slot := l_asserts.index
+					check_assertion (l_assertion, a_feature)
+				end
 				l_asserts.forth
 			end
 		end
@@ -445,6 +447,9 @@ feature{NONE} -- Implementation
 			Result := current_feature.feature_.written_class
 		end
 
+	current_break_point_slot: INTEGER
+			-- Current break point slot
+
 	current_match_list: LEAF_AS_LIST is
 			-- Match list of the class where `current_assertion' is written
 		do
@@ -620,7 +625,7 @@ feature{NONE} -- Implementation
 			end
 
 			create l_predicate_of_feat.make (current_feature, l_predicate, l_access_pattern)
-			l_predicate_of_feat.set_break_point_slot (current_assertion.index)
+			l_predicate_of_feat.set_break_point_slot (current_break_point_slot)
 			last_predicates.force_last (l_predicate)
 			last_feature_access_pattern.force_last (l_predicate_of_feat)
 		end
@@ -661,7 +666,7 @@ feature{NONE} -- Equality tester
 		do
 			Result := a_str ~ b_str
 		ensure
-			good_result: Result = a_str ~ b_str
+			good_result: Result = (a_str ~ b_str)
 		end
 
 feature{NONE} -- Implmentation

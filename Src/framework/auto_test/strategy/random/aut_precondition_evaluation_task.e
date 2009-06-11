@@ -32,6 +32,7 @@ feature{NONE} -- Initialization
 			feature_ := a_feature
 			interpreter := a_interpreter
 			object_pool := interpreter.typed_object_pool
+			steps_completed := True
 
 			create variables.make (1, a_vars.count)
 			from
@@ -170,31 +171,35 @@ feature -- Execution
 		local
 			l_list: DS_ARRAYED_LIST [ITP_VARIABLE]
 		do
-			if is_evaluation_enabled then
-				set_start_time (interpreter.duration_until_now.millisecond_count)
-				if has_next_step then
-					create l_list.make (variables.count)
-					variables.do_all (agent l_list.force_last)
-					if variables.count = feature_.feature_.argument_count + 1 then
-						is_precondition_satisfied := interpreter.is_precondition_satisfied (feature_, l_list)
-						steps_completed := is_precondition_satisfied
-
-						if has_next_step then
-							tried_count := 0
-							setup_indexes
-						end
-					else
-						cancel
-					end
-				end
+			if should_cancel then
+				cancel
 			else
-					-- If precondition evaluation is disabled, we
-					-- assume the preconditions is satisfied.
-				is_precondition_satisfied := True
-				steps_completed := True
-			end
-			if steps_completed then
-				set_end_time (interpreter.duration_until_now.millisecond_count)
+				if is_evaluation_enabled then
+					set_start_time (interpreter.duration_until_now.millisecond_count)
+					if has_next_step then
+						create l_list.make (variables.count)
+						variables.do_all (agent l_list.force_last)
+						if variables.count = feature_.feature_.argument_count + 1 then
+							is_precondition_satisfied := interpreter.is_precondition_satisfied (feature_, l_list)
+							steps_completed := is_precondition_satisfied
+
+							if has_next_step then
+								tried_count := 0
+								setup_indexes
+							end
+						else
+							cancel
+						end
+					end
+				else
+						-- If precondition evaluation is disabled, we
+						-- assume the preconditions is satisfied.
+					is_precondition_satisfied := True
+					steps_completed := True
+				end
+				if steps_completed then
+					set_end_time (interpreter.duration_until_now.millisecond_count)
+				end
 			end
 		end
 
@@ -518,7 +523,7 @@ feature{NONE} -- Implementation
 					l_patterns.forth
 				end
 			else
-				cancel
+				should_cancel := True
 			end
 		end
 
@@ -696,6 +701,9 @@ feature{NONE} -- Implementation
 		ensure
 			good_result: Result = interpreter.configuration.max_precondition_search_time
 		end
+
+	should_cancel: BOOLEAN
+			-- Should current task be canceled?
 
 ;note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

@@ -80,6 +80,7 @@ feature{NONE} -- Implementation
 				a_predicate.set_id (next_predicate_id)
 				predicates.force_last (a_predicate)
 				next_predicate_id := next_predicate_id + 1
+				Result := a_predicate
 			end
 		end
 

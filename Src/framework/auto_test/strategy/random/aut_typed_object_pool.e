@@ -220,7 +220,11 @@ feature{NONE} -- Implementation
 			l_types: LIST [TYPE_A]
 		do
 			create l_type_set.make (50)
-			l_type_set.set_equality_tester (create {AGENT_BASED_EQUALITY_TESTER [TYPE_A]}.make (agent (a, b: TYPE_A): BOOLEAN do Result := a.is_equivalent (b) end))
+			l_type_set.set_equality_tester (
+				create {AGENT_BASED_EQUALITY_TESTER [TYPE_A]}.make (
+					agent (a, b: TYPE_A): BOOLEAN
+						do Result := a.same_type (b) and then a.is_equivalent (b)
+					end))
 			from
 				a_types.start
 			until

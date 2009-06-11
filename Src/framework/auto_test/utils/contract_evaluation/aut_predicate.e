@@ -78,9 +78,9 @@ feature -- Access
 	hash_code: INTEGER
 			-- Hash code value
 		do
-			Result := id
+			Result := text.hash_code
 		ensure then
-			good_result: Result = id
+			good_result: Result = text.hash_code
 		end
 
 feature -- Equality
