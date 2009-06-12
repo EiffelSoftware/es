@@ -84,7 +84,7 @@ feature -- Setting
 		end
 
 invariant
-		access_pattern_valid: access_pattern.count = predicate.narity
+		access_pattern_valid: access_pattern.count = predicate.arity
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

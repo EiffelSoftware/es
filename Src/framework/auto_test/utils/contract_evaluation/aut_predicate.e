@@ -57,7 +57,7 @@ feature -- Access
 			-- Arguments are 1-based. The first argument of
 			-- this predicate has index 1 and so on.
 
-	narity: INTEGER
+	arity: INTEGER
 			-- Number of arguments of Current predicate
 			-- Can be zero for constant predicate, for example,
 			-- "{PLATFORM}.is_windows".
