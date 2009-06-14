@@ -1,68 +1,51 @@
 note
-
-	description:
-
-		"Equality tester for AUT_FEATURE_OF_TYPE"
-
-	copyright: "Copyright (c) 2005, Andreas Leitner and others"
-	license: "Eiffel Forum License v2 (see forum.txt)"
+	description: "AutoTest request to evaluate predicates on given objects"
+	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-
-class AUT_FEATURE_OF_TYPE_EQUALITY_TESTER
+class
+	AUT_PREDICATE_EVALUATION_REQUEST
 
 inherit
-
-	KL_EQUALITY_TESTER [AUT_FEATURE_OF_TYPE]
-		redefine
-			test
+	AUT_REQUEST
+		rename
+			make as old_make
 		end
 
 create
-
-	make,
-	make_with_creator_flag
-
-feature {NONE} -- Initialization
-
 	make
-			-- Create new tester.
-			-- `a_feature' of type `a_type'.
+
+feature{NONE} -- Initialization
+
+	make (a_system: like system; a_predicates: like predicates) is
+			-- Initialize.
+		require
+			a_system_attached: a_system /= Void
+			a_predicates_attached: a_predicates /= Void
+			a_predicates_valid: not a_predicates.has (Void)
 		do
-			is_creator_checked := True
+			old_make (a_system)
+			predicates := a_predicates
 		end
 
-	make_with_creator_flag (b: BOOLEAN) is
-			-- Initialize `is_creator_checked' with `b'.
+feature -- Access
+
+	predicates: LINKED_LIST [TUPLE [predicate: INTEGER; arguments: SPECIAL [INTEGER]]]
+			-- Predicates that are to be evaluated
+			-- `predicate' is ID of the preidcate to be evaluated.
+			-- `arguments' stores the indexes of objects that are used to evaluate `predicate'.
+			-- Note: `arguments' stores all objects that are to be used as arguments for `preciate',
+			-- this means that `preciate' can be evaluated multiple times depending on how many objects
+			-- are in `arguments'.
+
+feature -- Processing
+
+	process (a_processor: AUT_REQUEST_PROCESSOR)
+			-- Process current request.
 		do
-			is_creator_checked := b
-		ensure
-			is_creator_checked_set: is_creator_checked = b
+			a_processor.process_predicate_evaluation_request (Current)
 		end
-
-
-feature -- Status report
-
-	test (v, u: AUT_FEATURE_OF_TYPE): BOOLEAN
-		do
-			if v = u then
-				Result := True
-			elseif v = Void then
-				Result := False
-			elseif u = Void then
-				Result := False
-			else
-				Result := v.feature_.equiv (u.feature_) and
-							v.type.is_equivalent (u.type) and
-							(is_creator_checked implies v.is_creator = u.is_creator)
-
-			end
-		end
-
-	is_creator_checked: BOOLEAN;
-			-- Is `{AUT_FEATURE_OF_TYPE}.is_creator' checked during equality comparison?
-			-- Default: True
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

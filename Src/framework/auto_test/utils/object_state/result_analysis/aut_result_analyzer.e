@@ -562,7 +562,7 @@ feature -- Process
 			until
 				a_classes.after
 			loop
-				Result.append_last (testable_features (a_classes.item_for_iteration.actual_type, system))
+				Result.append_last (testable_features_from_type (a_classes.item_for_iteration.actual_type, system))
 				a_classes.forth
 			end
 		end

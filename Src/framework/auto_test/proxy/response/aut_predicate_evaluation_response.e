@@ -1,68 +1,54 @@
 note
-
-	description:
-
-		"Equality tester for AUT_FEATURE_OF_TYPE"
-
-	copyright: "Copyright (c) 2005, Andreas Leitner and others"
-	license: "Eiffel Forum License v2 (see forum.txt)"
+	description: "Summary description for {AUT_PREDICATE_EVALUATION_RESPONSE}."
+	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-
-class AUT_FEATURE_OF_TYPE_EQUALITY_TESTER
+class
+	AUT_PREDICATE_EVALUATION_RESPONSE
 
 inherit
-
-	KL_EQUALITY_TESTER [AUT_FEATURE_OF_TYPE]
+	AUT_NORMAL_RESPONSE
+		rename
+			make as old_make
 		redefine
-			test
+			process
 		end
+
+	AUT_SHARED_CONSTANTS
 
 create
-
-	make,
-	make_with_creator_flag
-
-feature {NONE} -- Initialization
-
 	make
-			-- Create new tester.
-			-- `a_feature' of type `a_type'.
-		do
-			is_creator_checked := True
-		end
 
-	make_with_creator_flag (b: BOOLEAN) is
-			-- Initialize `is_creator_checked' with `b'.
+feature{NONE} -- Initialization
+
+	make (a_evaluation_result: like evaluation_result) is
+			-- Initialize.
+		require
+			a_evaluation_result_attached: a_evaluation_result /= Void
 		do
-			is_creator_checked := b
+			evaluation_result := a_evaluation_result
 		ensure
-			is_creator_checked_set: is_creator_checked = b
+			evaluation_result_set: evaluation_result = a_evaluation_result
 		end
 
+feature -- Access
 
-feature -- Status report
+	evaluation_result: LINKED_LIST [TUPLE [predicate: INTEGER; evaluation: SPECIAL [NATURAL_8]]]
+			-- Evaluation result
+			-- `preciate' is the ID of predicate that are evaluated.
+			-- `evaluation' is the result of evaluation for that predicate'.
+			-- There are 3 possible values for an evaluation result:
+			-- 0 The evaluation succeeded
+			-- 1 The evaluation failed
+			-- 2 There was an exception during the evaluation.
 
-	test (v, u: AUT_FEATURE_OF_TYPE): BOOLEAN
+feature -- Process
+
+	process (a_visitor: AUT_RESPONSE_VISITOR)
+			-- Process `Current' using `a_visitor'.
 		do
-			if v = u then
-				Result := True
-			elseif v = Void then
-				Result := False
-			elseif u = Void then
-				Result := False
-			else
-				Result := v.feature_.equiv (u.feature_) and
-							v.type.is_equivalent (u.type) and
-							(is_creator_checked implies v.is_creator = u.is_creator)
-
-			end
 		end
-
-	is_creator_checked: BOOLEAN;
-			-- Is `{AUT_FEATURE_OF_TYPE}.is_creator' checked during equality comparison?
-			-- Default: True
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

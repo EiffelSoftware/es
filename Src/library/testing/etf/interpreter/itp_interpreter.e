@@ -75,6 +75,9 @@ feature {NONE} -- Initialization
 				-- Initialize precondition table.
 			initialize_precondition_table
 
+				-- Initialize predicate related data structure.
+			initialize_predicates
+
 			start (l_port, l_server_url)
 
 				-- Close log file.
@@ -134,7 +137,8 @@ feature -- Status report
 				a_type = execute_request_flag or else
 				a_type = object_state_request_flag or else
 				a_type = type_request_flag or else
-				a_type = precondition_evaluation_request_flag
+				a_type = precondition_evaluation_request_flag or else
+				a_type = predicate_evaluation_request_flag
 		end
 
 feature {NONE} -- Handlers
@@ -497,6 +501,9 @@ feature {NONE} -- Parsing
 					when precondition_evaluation_request_flag then
 						report_precondition_evaluation_request
 
+					when predicate_evaluation_request_flag then
+						report_predicate_evaluate_requrest
+
 					when quit_request_flag then
 						report_quit_request
 					end
@@ -761,6 +768,8 @@ feature{NONE} -- Object state checking
 
 	invalid_precondition_evaluation_request: STRING = "Invalid precondition evaluation request."
 
+	invalid_predicate_evaluation_request: STRING = "Invalid predicate evaluation request."
+
 	query_values: LINKED_LIST [detachable STRING]
 			-- List to store string representation of query values
 
@@ -889,6 +898,7 @@ feature -- Precondition satisfaction
 			end
 		rescue
 			l_retried := True
+			l_checking := {ISE_RUNTIME}.check_assert (l_checking)
 			retry
 		end
 
@@ -898,6 +908,9 @@ feature -- Precondition satisfaction
 			-- Key is the feature identifier in the form of "CLASS_NAME.feature_name".
 			-- Value is the agent used to evaluate precondition of that feature.
 
+	argument_arrays: ARRAY [ARRAY [INTEGER]]
+			-- Array for arguments used in predicate evaluation
+
 	initialize_precondition_table is
 			-- Initialize `precondition_table'.
 		deferred
@@ -906,29 +919,39 @@ feature -- Precondition satisfaction
 	objects_satisfying_precondition (a_feature: STRING; a_args: ARRAY [INTEGER]): detachable TUPLE is
 			--
 		local
-			l_count: INTEGER
 			l_agent: FUNCTION [ANY, TUPLE, TUPLE]
+		do
+			l_agent := precondition_table.item (a_feature)
+			Result := safe_satisfied_objects (l_agent, arguement_tuple_from_indexes (a_args))
+		end
+
+	arguement_tuple_from_indexes (a_indexes: ARRAY [INTEGER]): TUPLE is
+			-- Tuple containing objects with `a_indexes'
+		require
+			a_indexes_attached: a_indexes /= Void
+		local
+			l_count: INTEGER
 			l_args: ARRAYED_LIST [detachable ANY]
 			i: INTEGER
 			l_arg_tuple: TUPLE
 		do
-			l_agent := precondition_table.item (a_feature)
-
 				-- Load arguments from object pool.
-			l_count := a_args.count
+			l_count := a_indexes.count
 			create l_args.make (l_count)
 			from
 				i := 1
 			until
 				i > l_count
 			loop
-				l_args.extend (variable_at_index (a_args.item (i)))
+				l_args.extend (variable_at_index (a_indexes.item (i)))
 				i := i + 1
 			end
 
 				-- Generate tuple for agent call.
 			inspect
 				l_count
+			when 0 then
+				l_arg_tuple := []
 			when 1 then
 				l_arg_tuple := [l_args.i_th (1)]
 			when 2 then
@@ -948,10 +971,152 @@ feature -- Precondition satisfaction
 			when 9 then
 				l_arg_tuple := [l_args.i_th (1), l_args.i_th (2), l_args.i_th (3), l_args.i_th (4), l_args.i_th (5), l_args.i_th (6), l_args.i_th (7), l_args.i_th (8), l_args.i_th (9)]
 			end
-
-			Result := safe_satisfied_objects (l_agent, l_arg_tuple)
+			Result := l_arg_tuple
+		ensure
+			result_attached: Result /= Void Result.count = a_indexes.count
 		end
 
+
+feature -- Predicate evaluation
+
+	predicate_table: HASH_TABLE [FUNCTION [ANY, TUPLE, BOOLEAN], INTEGER]
+			-- Table for predicates that are to be monitered during testing
+			-- [Agent for the predicate, predicate index]
+			-- predicate index is 1-based, it is the identifier associated with
+			-- every unique predicate. See {AUT_PREDICATE}.`id' for more information.
+
+	predicate_arity: HASH_TABLE [INTEGER, INTEGER]
+			-- Arity of predicates in `preciate_table'.
+			-- [Predicate arity, predicate index].
+			-- predicate index is 1-based, it is the identifier associated with
+			-- every unique predicate. See {AUT_PREDICATE}.`id' for more information.
+
+	initialize_predicates is
+			-- Initialize `predicate_table' and `predicate_arity'.
+		deferred
+		end
+
+	evaluated_predicate_result (a_predicate_id: INTEGER; a_arguments: ARRAY [INTEGER]): NATURAL_8 is
+			-- Evaluated result of predicate with id `a_predicate_id' on objects with index `a_arguments'.
+			-- The result can be of one of the following values:
+			-- 0 The evaluation succeeded
+			-- 1 The evaluation failed
+			-- 2 There was an exception during the evaluation.
+		local
+			l_args: TUPLE
+			l_predicate: FUNCTION [ANY, TUPLE, BOOLEAN]
+		do
+			l_args := arguement_tuple_from_indexes (a_arguments)
+			l_predicate := predicate_table.item (a_predicate_id)
+			Result := safe_predicate_evaluation_result (l_predicate, l_args)
+		ensure
+			result_valid: Result = 0 or Result = 1 or Result = 2
+		end
+
+	safe_predicate_evaluation_result (a_predicate: FUNCTION [ANY, TUPLE, BOOLEAN]; a_arguments: TUPLE): NATURAL_8 is
+			-- Evaluated result of `a_predicate' on `a_arguments'.
+			-- The result can be of one of the following values:
+			-- 0 The evaluation succeeded
+			-- 1 The evaluation failed
+			-- 2 There was an exception during the evaluation.
+		require
+			a_predicate_attached: a_predicate /= Void
+			a_arguments_attached: a_arguments /= Void
+		local
+			l_retried: BOOLEAN
+			l_result: BOOLEAN
+		do
+			if not l_retried then
+				l_result := a_predicate.item (a_arguments)
+				if l_result then
+					Result := 0
+				else
+					Result := 1
+				end
+			else
+				Result := 2
+			end
+		rescue
+			l_retried := True
+			retry
+		end
+
+	report_predicate_evaluate_requrest is
+			-- Report a predicate evaluation request.
+		local
+			l_checking: BOOLEAN
+			l_pred_id: INTEGER
+			l_objects: SPECIAL [INTEGER]
+			l_arity: INTEGER
+			l_pred_table: like predicate_table
+			l_arity_table: like predicate_arity
+			l_argument_holder: like argument_arrays
+			i, j: INTEGER
+			l_count: INTEGER
+			l_args: ARRAY [INTEGER]
+			l_arg_index: INTEGER
+			l_response: LINKED_LIST [TUPLE [INTEGER, SPECIAL [NATURAL_8]]]
+			l_pred_response: SPECIAL [NATURAL_8]
+		do
+			output_buffer.wipe_out
+			error_buffer.wipe_out
+			create l_response.make
+			if attached {LINKED_LIST [TUPLE [predicate_id: INTEGER; objects: SPECIAL [INTEGER]]]} last_request as l_request then
+				l_checking := {ISE_RUNTIME}.check_assert (False)
+				l_pred_table := predicate_table
+				l_arity_table := predicate_arity
+				l_argument_holder := argument_arrays
+				from
+					l_request.start
+				until
+					l_request.after
+				loop
+					l_pred_id := l_request.item_for_iteration.predicate_id
+					l_objects := l_request.item_for_iteration.objects
+					l_arity := l_arity_table.item (l_pred_id)
+					l_count := l_objects.count
+
+--					check
+--						(l_arity > 0 implies l_objects.count \\ l_arity = 0) and then
+--						(l_arity = 0 implies l_objects.count = 0)
+--					end
+					create l_pred_response.make (l_count)
+					l_args := l_argument_holder.item (l_arity)
+					j := 0
+					if l_arity = 0 then
+						l_pred_response.put (evaluated_predicate_result (l_pred_id, l_args), j)
+					else
+						from
+							i := 0
+							l_arg_index := 1
+						until
+							i = l_count
+						loop
+							l_args.put (l_objects.item (i), l_arg_index)
+							if l_arg_index = l_arity then
+								l_pred_response.put (evaluated_predicate_result (l_pred_id, l_args), j)
+								l_arg_index := 1
+								j := j + 1
+							else
+								l_arg_index := l_arg_index + 1
+							end
+							i := i + 1
+						end
+					end
+					l_response.extend ([l_pred_id, l_pred_response])
+					l_request.forth
+				end
+				l_checking := {ISE_RUNTIME}.check_assert (l_checking)
+				last_response := [l_response, output_buffer, error_buffer]
+				refresh_last_response_flag
+				send_response_to_socket
+			else
+				report_error (invalid_predicate_evaluation_request)
+				last_response := [Void, output_buffer, error_buffer]
+				refresh_last_response_flag
+				send_response_to_socket
+			end
+		end
 
 invariant
 	log_file_open_write: log_file.is_open_write

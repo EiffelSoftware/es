@@ -336,6 +336,13 @@ feature {AUT_REQUEST} -- Processing
 			last_request := [precondition_evaluation_request_flag, [l_feature_identifier, l_object_ids]]
 		end
 
+	process_predicate_evaluation_request (a_request: AUT_PREDICATE_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		do
+			last_request := [predicate_evaluation_request_flag, a_request.predicates]
+		end
+
+
 feature {NONE} -- Byte code generation
 
 	new_check_invariant_feature_call (a_local_index: INTEGER; a_object_index: INTEGER; a_local_type: TYPE_A): CALL_ACCESS_B is

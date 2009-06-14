@@ -289,9 +289,7 @@ feature {NONE} -- Implementation
 			feature_i: FEATURE_I
 		do
 			create feature_.make (a_feature, a_type)
-			if a_creator then
-				feature_.set_is_creator (True)
-			end
+			feature_.set_is_creator (a_creator)
 
 			if a_feature.written_class.name.is_case_insensitive_equal ("ANY") then
 				if a_creator then

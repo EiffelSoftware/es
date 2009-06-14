@@ -298,6 +298,12 @@ feature {NONE} -- Processsing
 			-- Do nothing.
 		end
 
+	process_predicate_evaluation_request (a_request: AUT_PREDICATE_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		do
+			-- Do nothing.
+		end
+
 feature{NONE} -- Implementation
 
 	found_request_count: INTEGER

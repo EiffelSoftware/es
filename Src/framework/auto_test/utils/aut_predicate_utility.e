@@ -14,6 +14,17 @@ inherit
 
 feature -- Access
 
+	feature_signature_type_equality_tester: AGENT_BASED_EQUALITY_TESTER [AUT_FEATURE_SIGNATURE_TYPE] is
+			-- Equality tester for {AUT_FEATURE_SIGNATURE_TYPE}
+		do
+			create Result.make (
+				agent (a, b: AUT_FEATURE_SIGNATURE_TYPE): BOOLEAN
+					do
+						Result := a.position = b.position and then a.type.same_type (b.type) and then a.type.is_equivalent (b.type)
+					end
+				)
+		end
+
 	predicate_equality_tester: AGENT_BASED_EQUALITY_TESTER [AUT_PREDICATE] is
 			-- Equality tester for predicate
 		do
@@ -24,6 +35,13 @@ feature -- Access
 			-- Equality tester for feature of type
 		do
 			create Result.make
+		end
+
+	feature_of_type_loose_equality_tester: AUT_FEATURE_OF_TYPE_EQUALITY_TESTER is
+			-- Equality tester for feature of type
+			-- Doesn't take {AUT_FEATURE_OF_TYPE}.is_creator into consideration.
+		do
+			create Result.make_with_creator_flag (False)
 		end
 
 	feature_of_type_name_equality_tester (a_system: SYSTEM_I): AUT_FEATURE_OF_TYPE_NAME_EQUALITY_TEST is
@@ -58,7 +76,7 @@ feature -- Access
 			end
 		end
 
-	testable_features (a_type: TYPE_A; a_system: SYSTEM_I): DS_LINKED_LIST [AUT_FEATURE_OF_TYPE] is
+	testable_features_from_type (a_type: TYPE_A; a_system: SYSTEM_I): DS_LINKED_LIST [AUT_FEATURE_OF_TYPE] is
 			-- Features in `a_type' in `a_system' which are testable by AutoTest
 		require
 			a_type_has_class: a_type.has_associated_class
@@ -91,6 +109,26 @@ feature -- Access
 				end
 				l_feat_table.forth
 			end
+		end
+
+	testable_features_from_types (a_types: DS_LIST [TYPE_A]; a_system: SYSTEM_I): DS_HASH_SET [AUT_FEATURE_OF_TYPE] is
+			-- Features from `a_types' that are testable by AutoTest
+		require
+			a_types_attached: a_types /= Void
+			a_system_attached: a_system /= Void
+		do
+			create Result.make (100)
+			Result.set_equality_tester (feature_of_type_loose_equality_tester)
+			from
+				a_types.start
+			until
+				a_types.after
+			loop
+				Result.append_last (testable_features_from_type (a_types.item_for_iteration, a_system))
+				a_types.forth
+			end
+		ensure
+			result_attached: Result /= Void
 		end
 
 	normalized_argument_name (a_argument_index: INTEGER): STRING is

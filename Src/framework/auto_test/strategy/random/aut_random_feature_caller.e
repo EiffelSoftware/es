@@ -169,44 +169,44 @@ feature -- Execution
 				argument_creator.step
 			elseif feature_caller /= Void and then feature_caller.has_next_step then
 				feature_caller.step
-			elseif has_precondition and then precondition_evaluator = Void then
-					create_precondition_evaluator
-			elseif has_precondition and then precondition_evaluator /= Void and then precondition_evaluator.has_next_step then
-				precondition_evaluator.step
+--			elseif has_precondition and then precondition_evaluator = Void then
+--					create_precondition_evaluator
+--			elseif has_precondition and then precondition_evaluator /= Void and then precondition_evaluator.has_next_step then
+--				precondition_evaluator.step
 			else
 				if not target_creator.has_error then
-					if not has_precondition then
+--					if not has_precondition then
 						if argument_creator /= Void and then argument_creator.receivers /= Void then
 							arguments := argument_creator.receivers
 						else
 							create {DS_LINKED_LIST [ITP_EXPRESSION]} arguments.make
 						end
 						l_call := True
-					elseif precondition_evaluator.is_precondition_satisfied then
-						create {DS_LINKED_LIST [ITP_EXPRESSION]} arguments.make_from_array (precondition_evaluator.variables)
-						target ?= arguments.first
-						arguments.start
-						arguments.remove_at
-						recheck_type_and_feature
-						l_call := True
-					end
+--					elseif precondition_evaluator.is_precondition_satisfied then
+--						create {DS_LINKED_LIST [ITP_EXPRESSION]} arguments.make_from_array (precondition_evaluator.variables)
+--						target ?= arguments.first
+--						arguments.start
+--						arguments.remove_at
+--						recheck_type_and_feature
+--						l_call := True
+--					end
 
-						-- Log precondition evaluation statistics.
-					if
-						interpreter.configuration.is_precondition_checking_enabled and then
-						precondition_evaluator /= Void
-					then
-						interpreter.log_precondition_evaluation (
-							type,
-							feature_to_call,
-							precondition_evaluator.tried_count,
-							precondition_evaluator.worst_case_search_count,
-							precondition_evaluator.start_time,
-							precondition_evaluator.end_time,
-							precondition_evaluator.is_precondition_satisfied)
-					end
+--						-- Log precondition evaluation statistics.
+--					if
+--						interpreter.configuration.is_precondition_checking_enabled and then
+--						precondition_evaluator /= Void
+--					then
+--						interpreter.log_precondition_evaluation (
+--							type,
+--							feature_to_call,
+--							precondition_evaluator.tried_count,
+--							precondition_evaluator.worst_case_search_count,
+--							precondition_evaluator.start_time,
+--							precondition_evaluator.end_time,
+--							precondition_evaluator.is_precondition_satisfied)
+--					end
 
-					if l_call then
+					if l_call and then arguments.count = feature_to_call.argument_count then
 						invoke
 					else
 						queue.mark (create {AUT_FEATURE_OF_TYPE}.make (feature_to_call, interpreter.variable_table.variable_type (target)))
@@ -299,8 +299,8 @@ feature {NONE} -- Steps
 			type_not_expanded: not type.is_expanded
 			feature_not_void: feature_to_call /= Void
 			input_creator_not_void: target_creator /= Void
-			input_creator_done: feature_to_call.arguments /= Void and target /= Void implies target_creator.receivers.count = feature_to_call.arguments.count
-			input_creator_done: feature_to_call.arguments /= Void and target = Void implies target_creator.receivers.count = feature_to_call.arguments.count + 1
+			input_creator_done: feature_to_call.arguments /= Void and target /= Void implies arguments.count = feature_to_call.arguments.count
+--			input_creator_done: feature_to_call.arguments /= Void and target = Void implies arguments.count = feature_to_call.arguments.count + 1
 		local
 			list: DS_LIST [ITP_EXPRESSION]
 			normal_response: AUT_NORMAL_RESPONSE

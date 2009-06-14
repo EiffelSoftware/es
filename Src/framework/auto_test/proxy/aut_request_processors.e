@@ -69,6 +69,11 @@ feature {AUT_REQUEST} -- Processing
 			do_all (agent a_request.process (?))
 		end
 
+	process_predicate_evaluation_request (a_request: AUT_PREDICATE_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		do
+			do_all (agent a_request.process (?))
+		end
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

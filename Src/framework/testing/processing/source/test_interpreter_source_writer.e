@@ -52,6 +52,11 @@ inherit
 			type_a_generator
 		end
 
+	AUT_SHARED_PREDICATE_CONTEXT
+		undefine
+			type_a_generator
+		end
+
 create
 	make
 
@@ -120,6 +125,9 @@ feature -- Basic operations
 
 				-- Generate routines to check preconditions
 			put_precondition_checking_routines
+
+				-- Generate predicate related routines
+			put_predicate_related_routines
 
 			put_class_footer
 			stream := Void
@@ -540,23 +548,11 @@ feature -- Object state retrieval
 
 feature -- Precondition satisfaction
 
-	predicates: DS_HASH_SET [AUT_PREDICATE]
-			-- Set of predicates that are to be checked
+--	predicates: DS_HASH_SET [AUT_PREDICATE]
+--			-- Set of predicates that are to be checked
 
-	predicate_pattern_by_feature: DS_HASH_TABLE [DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN], AUT_FEATURE_OF_TYPE]
-			-- Table of predicate access patterns associated with each feature
-
-	types_under_test: DS_ARRAYED_LIST [CL_TYPE_A]
-			-- Types under test
-
-	set_types_under_test (a_types: like types_under_test) is
-			-- Set `types_under_test' with `a_types'.
-		do
-			fixme ("`types_under_test' is similar to `a_type_list' in `write_class', refactoring is needed.")
-			types_under_test := a_types
-		ensure
-			types_under_test_set: types_under_test = a_types
-		end
+--	predicate_pattern_by_feature: DS_HASH_TABLE [DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN], AUT_FEATURE_OF_TYPE]
+--			-- Table of predicate access patterns associated with each feature
 
 	generate_precondition_checker (a_feature: AUT_FEATURE_OF_TYPE; a_preconditions: DS_ARRAYED_LIST [AUT_PREDICATE_ACCESS_PATTERN]) is
 			-- Generate precondition checker for `a_feature' whose preconditions are `a_preconditions'.
@@ -710,7 +706,7 @@ feature -- Precondition satisfaction
 
 			if not l_visitor.last_predicates.is_empty then
 					-- Extract precondition predicates.
-				create l_predicates.make_from_linear (l_visitor.last_feature_access_pattern)
+				create l_predicates.make_from_linear (l_visitor.last_predicate_access_patterns)
 
 					-- Generate routine to check precondition of `a_feature'.
 				generate_precondition_checker (a_feature, l_predicates)
@@ -719,11 +715,11 @@ feature -- Precondition satisfaction
 					-- Setup precondition information.
 				features_with_precondition.force_last (a_feature)
 
-				if predicate_pattern_by_feature.has (a_feature) then
-					l_patterns := predicate_pattern_by_feature.item (a_feature)
+				if precondition_access_pattern.has (a_feature) then
+					l_patterns := precondition_access_pattern.item (a_feature)
 				else
 					create l_patterns.make
-					predicate_pattern_by_feature.force_last (l_patterns, a_feature)
+					precondition_access_pattern.force_last (l_patterns, a_feature)
 				end
 				l_patterns.extend_last (l_predicates)
 			end
@@ -743,19 +739,15 @@ feature -- Precondition satisfaction
 			l_any_class: CLASS_C
 			l_feature: AUT_FEATURE_OF_TYPE
 			l_type: TYPE_A
+			types_under_test: like class_types_under_test
 		do
 			fixme ("This feature is similar to AUT_DYNAMIC_PRIORITY_QUEUE.set_static_priority_of_type. Refactoring is needed.")
 			create features_with_precondition.make
 
-			create predicates.make (100)
-			predicates.set_equality_tester (predicate_equality_tester)
-
-			create predicate_pattern_by_feature.make (100)
-			predicate_pattern_by_feature.set_key_equality_tester (feature_of_type_name_equality_tester (system))
-
 			if configuration.is_precondition_checking_enabled then
 				l_any_class := system.any_class.compiled_class
 				from
+					types_under_test := class_types_under_test
 					types_under_test.start
 				until
 					types_under_test.after
@@ -776,6 +768,7 @@ feature -- Precondition satisfaction
 								is_exported_creator (l_feati, l_type)
 							then
 								create l_feature.make (l_feati, l_type)
+								features_under_test.force_last (l_feature)
 								put_precondition_checking_routine (l_feature)
 							end
 						end
@@ -841,6 +834,16 @@ feature -- Precondition satisfaction
 			stream.dedent
 		end
 
+feature -- Predicate evaluation
+
+	put_predicate_related_routines is
+			-- Geneate routines for predicate monitoring.
+		local
+			l_writer: AUT_PREDICATE_SOURCE_WRITER
+		do
+			create l_writer.make (configuration, stream)
+			l_writer.generate_predicates
+		end
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

@@ -71,6 +71,11 @@ inherit
 			{NONE} all
 		end
 
+	AUT_SHARED_PREDICATE_CONTEXT
+		undefine
+			system
+		end
+
 create
 	make
 
@@ -348,6 +353,7 @@ feature {NONE} -- Implementation
 			else
 
 				build_types_and_classes_under_test
+				setup_for_precondition_evaluation
 				generate_interpreter
 
 				if not is_finished and interpreter /= Void then
@@ -435,7 +441,6 @@ feature {NONE} -- Interpreter generation
 						-- Generate typed object pool for precondition evaluation.
 					if configuration.is_precondition_checking_enabled then
 						interpreter.generate_typed_object_pool
-						interpreter.set_predicate_pattern_by_feature (predicate_pattern_by_feature)
 					end
 				end
 
@@ -469,9 +474,8 @@ feature {NONE} -- Interpreter generation
 			l_types := class_names
 			create l_source_writer.make (configuration)
 			if l_file.is_open_write and l_types /= Void then
-				l_source_writer.set_types_under_test (types_under_test)
+				class_types_under_test.extend_last (types_under_test)
 				l_source_writer.write_class (l_file, l_types, l_system)
-				predicate_pattern_by_feature := l_source_writer.predicate_pattern_by_feature
 				l_file.flush
 				l_file.close
 			end
@@ -906,8 +910,89 @@ feature {NONE} -- Constants
 
 feature -- Precondition satisfaction
 
-	predicate_pattern_by_feature: DS_HASH_TABLE [DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN], AUT_FEATURE_OF_TYPE]
-			-- Predicate access patterns for features.
+	setup_for_precondition_evaluation is
+			-- Setup for precondition evaluation.
+		do
+			if configuration.is_precondition_checking_enabled then
+					-- Get the list of all features under test.
+				features_under_test.append_last (testable_features_from_types (types_under_test, system))
+
+					-- Find out all preconditions.
+				find_precondition_predicates
+
+					-- Find out relevant predicates for every feature in `features_under_test'.
+				find_relevant_predicates
+			end
+		end
+
+	find_precondition_predicates is
+			-- Find precondition predicates from `features_under_test',
+			-- store those predicates into `predicates', and store
+			-- the access patterns of those predicates into
+			-- `precondition_access_pattern'.
+		local
+			l_visitor: AUT_PRECONDITION_ANALYZER
+			l_features: like features_under_test
+			l_feature: AUT_FEATURE_OF_TYPE
+		do
+			l_features := features_under_test
+			from
+				l_features.start
+			until
+				l_features.after
+			loop
+					-- Get preconditions from `l_feature'.
+				l_feature := l_features.item_for_iteration
+				create l_visitor.make
+				l_visitor.generate_precondition_predicates (l_feature)
+
+					-- Store precondition predicates and their access patterns.
+				if not l_visitor.last_predicates.is_empty then
+					l_visitor.last_predicates.do_all (agent predicates.force_last)
+					precondition_access_pattern.force_last (l_visitor.last_predicate_access_patterns, l_feature)
+				end
+				l_features.forth
+			end
+		end
+
+	find_relevant_predicates is
+			-- For each feature in `features_under_test',
+			-- find relevant predicates that needs to be reevalated
+			-- every time when that feature is executed.
+		local
+			l_features: like features_under_test
+			l_feature: AUT_FEATURE_OF_TYPE
+			l_arranger: AUT_PREDICATE_ARGUMENT_ARRANGER
+			l_predicates: like predicates
+			l_relevant: DS_HASH_TABLE [DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]], AUT_PREDICATE]
+			l_arrangements: DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]]
+		do
+			l_features := features_under_test
+			l_predicates := predicates
+			from
+				l_features.start
+			until
+				l_features.after
+			loop
+				l_feature := l_features.item_for_iteration
+				create l_relevant.make (10)
+				l_relevant.set_key_equality_tester (predicate_equality_tester)
+				relevant_predicates_of_feature.force_last (l_relevant, l_feature)
+				from
+					l_predicates.start
+				until
+					l_predicates.after
+				loop
+					create l_arranger.make (l_predicates.item_for_iteration, system)
+					l_arrangements := l_arranger.arrangements_for_feature (l_feature)
+					if not l_arrangements.is_empty then
+						l_relevant.force_last (l_arrangements, l_predicates.item_for_iteration)
+					end
+					l_predicates.forth
+				end
+				l_features.forth
+			end
+		end
 
 feature -- Log processor
 

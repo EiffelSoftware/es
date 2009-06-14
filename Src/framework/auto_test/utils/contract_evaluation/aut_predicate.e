@@ -24,6 +24,8 @@ feature{NONE} -- Initialization
 			-- Initialize current.
 		require
 			a_context_class_valid: a_context_class.class_id = a_expression.context_class.class_id
+			a_types_attached: a_types /= Void
+			a_types_valid: not a_types.there_exists (agent (a: TYPE_A): BOOLEAN do Result := a.is_like end)
 		do
 			create argument_types.make
 			a_types.do_all (agent argument_types.force_last)
@@ -88,6 +90,8 @@ feature -- Equality
 	is_equal (other: like Current): BOOLEAN
 			-- Is `other' attached to an object considered
 			-- equal to current object?
+		local
+			l_cur, l_other_cur: DS_LINKED_LIST_CURSOR [TYPE_A]
 		do
 				-- Two predicate are considered to be equal iff:
 				-- 1. They come from the same class
@@ -102,18 +106,20 @@ feature -- Equality
 				text ~ other.text
 			then
 					-- Check type equivalence of corresponding arguments.
+				l_cur := argument_types.new_cursor
+				l_other_cur := other.argument_types.new_cursor
 				from
 					Result := True
-					argument_types.start
-					other.argument_types.start
+					l_cur.start
+					l_other_cur.start
 				until
-					argument_types.after or else not Result
+					l_cur.after or else not Result
 				loop
 					Result :=
-						argument_types.item_for_iteration.same_type (other.argument_types.item_for_iteration) and then
-						argument_types.item_for_iteration.is_equivalent (other.argument_types.item_for_iteration)
-					argument_types.forth
-					other.argument_types.forth
+						l_cur.item.same_type (l_other_cur.item) and then
+						l_cur.item.is_equivalent (l_other_cur.item)
+					l_cur.forth
+					l_other_cur.forth
 				end
 			end
 		end

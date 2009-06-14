@@ -200,6 +200,13 @@ feature {AUT_REQUEST} -- Processing
 			to_implement ("Implement")
 		end
 
+	process_predicate_evaluation_request (a_request: AUT_PREDICATE_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		do
+			to_implement ("Implement")
+		end
+
+
 
 feature {NONE} -- Implementation
 

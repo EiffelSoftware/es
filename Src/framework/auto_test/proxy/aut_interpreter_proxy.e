@@ -61,6 +61,11 @@ inherit
 
 	AUT_OBJECT_STATE_REQUEST_UTILITY
 
+	AUT_SHARED_PREDICATE_CONTEXT
+		undefine
+			system
+		end
+
 create
 	make
 
@@ -408,6 +413,9 @@ feature -- Execution
 					end
 					if normal_response.exception = Void then
 						variable_table.define_variable (a_receiver, a_type)
+
+							-- Predicate evaluation.
+						evaluate_predicates_after_test_case (create {AUT_FEATURE_OF_TYPE}.make (a_procedure, a_type), relevant_objects (a_receiver, an_argument_list, Void))
 					end
 				end
 			else
@@ -497,6 +505,18 @@ feature -- Execution
 			stop_process_on_problems (last_response)
 			log_speed
 
+				-- Predicate evaluation.
+			if
+				is_running and then
+				not (last_response.is_bad or last_response.is_error) and then
+				not (last_response.is_precondition_violation or
+					 last_response.is_class_invariant_violation_on_entry or
+					 last_response.is_class_invariant_violation_on_exit)
+			then
+				evaluate_predicates_after_test_case (create {AUT_FEATURE_OF_TYPE}.make (a_feature, a_type), relevant_objects (a_target, an_argument_list, Void))
+			end
+
+				-- Object state retrieval.
 			if is_running and then is_state_recording_enabled then
 				l_var_set.wipe_out
 				retrieve_target_object_state (a_target, l_var_set)
@@ -582,6 +602,17 @@ feature -- Execution
 				end
 			end
 			log_speed
+
+				-- Predicate evaluation.
+			if
+				is_running and then
+				not (last_response.is_bad or last_response.is_error) and then
+				not (last_response.is_precondition_violation or
+					 last_response.is_class_invariant_violation_on_entry or
+					 last_response.is_class_invariant_violation_on_exit)
+			then
+				evaluate_predicates_after_test_case (create {AUT_FEATURE_OF_TYPE}.make (a_query, a_type), relevant_objects (a_target, an_argument_list, a_receiver))
+			end
 
 			if is_running and then is_state_recording_enabled then
 				l_var_set.wipe_out
@@ -1331,17 +1362,6 @@ feature -- Precondition satisfaction
 			retry
 		end
 
-	predicate_pattern_by_feature: DS_HASH_TABLE [DS_LIST [AUT_PREDICATE_ACCESS_PATTERN], AUT_FEATURE_OF_TYPE]
-			-- Predicate access patterns for features
-
-	set_predicate_pattern_by_feature (a_pattern: like predicate_pattern_by_feature) is
-			-- Set `predicate_pattern_by_feature' with `a_pattern'.
-		do
-			predicate_pattern_by_feature := a_pattern
-		ensure
-			predicate_pattern_by_feature_set: predicate_pattern_by_feature = a_pattern
-		end
-
 	object_state (a_variable: ITP_VARIABLE): HASH_TABLE [detachable STRING, STRING] is
 			-- State of `a_variable'
 			-- Value is in the form [query value, query name].
@@ -1437,6 +1457,165 @@ feature -- Precondition satisfaction
 			l_text.append (a_feature.feature_name.as_lower)
 
 			log_line (l_text)
+		end
+
+feature -- Predicate evaluation
+
+	evaluate_predicates (a_predicates: LINKED_LIST [TUPLE [predicate: INTEGER; arguments: SPECIAL [INTEGER]]]) is
+			-- Evaluate `a_predicates'.
+		require
+			a_predicates_attached: a_predicates /= Void
+			a_predicates_valid: not a_predicates.has (Void)
+		local
+			l_request: AUT_PREDICATE_EVALUATION_REQUEST
+		do
+			create l_request.make (system, a_predicates)
+			last_request := l_request
+			last_request.process (request_printer)
+			flush_process
+			parse_predicate_evaluation_response
+			last_request.set_response (last_response)
+			if last_response.is_bad then
+				is_ready  := False
+			end
+			stop_process_on_problems (last_response)
+		end
+
+	parse_predicate_evaluation_response is
+			-- Parse the response of the last predicate evaluation request.
+		do
+			if attached {AUT_PREDICATE_EVALUATION_REQUEST} last_request as l_request then
+				retrieve_predicate_evaluation_response
+				if is_logging_enabled then
+					last_response.process (response_printer)
+				end
+			end
+		end
+
+	retrieve_predicate_evaluation_response is
+			-- Retrieve response of the last predicate evaluation request.
+		local
+			l_data: TUPLE [evaluation_result: detachable LINKED_LIST [TUPLE [INTEGER, SPECIAL [NATURAL_8]]]; output: detachable STRING; error: detachable STRING]
+			l_retried: BOOLEAN
+			l_socket: like socket
+			l_response_flag: NATURAL_32
+			l_response: AUT_PREDICATE_EVALUATION_RESPONSE
+			l_any: detachable ANY
+		do
+			if not l_retried then
+				l_socket := socket
+				l_socket.read_natural_32
+				l_response_flag := l_socket.last_natural_32
+				l_any ?= l_socket.retrieved
+				l_data ?= l_any
+				process.set_timeout (0)
+				if l_data /= Void and then l_data.evaluation_result /= Void then
+					create l_response.make (l_data.evaluation_result)
+					last_response := l_response
+				else
+					last_raw_response := Void
+				end
+			end
+		rescue
+			is_ready := False
+			l_retried := True
+			last_raw_response := Void
+			retry
+		end
+
+	evaluate_predicates_after_test_case (a_feature: AUT_FEATURE_OF_TYPE; a_related_objects: ARRAY [ITP_VARIABLE]) is
+			-- Evaluate `relevant_predicates_of_feature' for `a_feature' with `a_related_objects'.
+		require
+			a_feature_attached: a_feature /= Void
+			a_related_objects_attached: a_related_objects /= Void
+			a_related_objects_valid: a_related_objects.lower = 0
+		local
+			l_predicate_table: DS_HASH_TABLE [DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]], AUT_PREDICATE]
+			l_cursor: DS_HASH_TABLE_CURSOR [DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]], AUT_PREDICATE]
+			l_request_data:  LINKED_LIST [TUPLE [predicate: INTEGER; arguments: SPECIAL [INTEGER]]]
+			l_arguments: SPECIAL [INTEGER]
+			l_predicate: AUT_PREDICATE
+			l_arranger: DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]]
+			i, j: INTEGER
+			l_arranger_cursor: DS_LINKED_LIST_CURSOR [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]]
+			l_args: ARRAY [AUT_FEATURE_SIGNATURE_TYPE]
+			l_arity: INTEGER
+		do
+			if configuration.is_precondition_checking_enabled then
+				create l_request_data.make
+				if relevant_predicates_of_feature.has (a_feature) then
+					l_predicate_table := relevant_predicates_of_feature.item (a_feature)
+					from
+						l_cursor := l_predicate_table.new_cursor
+						l_cursor.start
+					until
+						l_cursor.after
+					loop
+						l_predicate := l_cursor.key
+						l_arranger := l_cursor.item
+						l_arity := l_predicate.arity
+						create l_arguments.make (l_arranger.count * l_arity)
+						from
+							i := 0
+							l_arranger_cursor := l_arranger.new_cursor
+							l_arranger_cursor.start
+						until
+							l_arranger_cursor.after
+						loop
+							from
+								l_args := l_arranger_cursor.item
+								j := 1
+							until
+								j > l_arity
+							loop
+								l_arguments.put (a_related_objects.item (l_args.item (j).position).index, i)
+								i := i + 1
+								j := j + 1
+							end
+							l_arranger_cursor.forth
+						end
+						l_request_data.extend ([l_predicate.id, l_arguments])
+						l_cursor.forth
+					end
+					evaluate_predicates (l_request_data)
+				end
+			end
+		end
+
+	relevant_objects (a_target: ITP_VARIABLE; a_arguments: DS_LINEAR [ITP_EXPRESSION]; a_result: detachable ITP_VARIABLE): ARRAY [ITP_VARIABLE] is
+			-- Relevant objects
+		local
+			l_cursor: DS_LINEAR_CURSOR [ITP_EXPRESSION]
+			l_variable: ITP_VARIABLE
+			i: INTEGER
+		do
+			if a_result /= 0 then
+				create Result.make (0, a_arguments.count + 1)
+			else
+				create Result.make (0, a_arguments.count)
+			end
+			Result.put (a_target, 0)
+			if not a_arguments.is_empty then
+				from
+					l_cursor := a_arguments.new_cursor
+					i := 1
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					l_variable ?= l_cursor.item
+					check l_variable /= Void end
+					Result.put (l_variable, i)
+					i := i + 1
+					l_cursor.forth
+				end
+			end
+			if a_result /= Void then
+				Result.put (a_result, Result.upper)
+			end
+		ensure
+			result_attached: Result /= Void
+			result_valid: Result.lower = 0
 		end
 
 feature -- Object State Exploration

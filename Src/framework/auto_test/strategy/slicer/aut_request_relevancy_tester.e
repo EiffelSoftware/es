@@ -87,6 +87,11 @@ feature {AUT_REQUEST} -- Processing
 			is_relevant := False
 		end
 
+	process_predicate_evaluation_request (a_request: AUT_PREDICATE_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		do
+			is_relevant := False
+		end
 
 invariant
 

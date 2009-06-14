@@ -88,7 +88,7 @@ feature -- Execution
 				interpreter.stop
 			end
 			if not interpreter.is_running then
-				if sub_task /= Void then
+				if sub_task /= Void and then sub_task.has_next_step then
 					sub_task.cancel
 				end
 				interpreter.start

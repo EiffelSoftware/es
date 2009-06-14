@@ -19,6 +19,11 @@ inherit
 			system
 		end
 
+	AUT_SHARED_PREDICATE_CONTEXT
+		undefine
+			system
+		end
+
 create
 	make
 
@@ -348,7 +353,7 @@ feature -- Execution
 				-- Generate linear constraint solving proof obligation.
 			if has_constraint_model then
 				create l_smt_generator
-				l_smt_generator.generate_smtlib (feature_, interpreter.predicate_pattern_by_feature.item (feature_))
+				l_smt_generator.generate_smtlib (feature_, precondition_access_pattern.item (feature_))
 				check l_smt_generator.has_linear_constraints end
 				l_proof_obligation := l_smt_generator.last_smtlib.twin
 
@@ -503,8 +508,8 @@ feature{NONE} -- Implementation
 			l_access_pattern: DS_HASH_TABLE [INTEGER, INTEGER]
 		do
 			create mentioned_argument_indexes.make (variables.count)
-			check interpreter.predicate_pattern_by_feature.has (feature_) end
-			l_patterns := interpreter.predicate_pattern_by_feature.item (feature_)
+			check precondition_access_pattern.has (feature_) end
+			l_patterns := precondition_access_pattern.item (feature_)
 			if l_patterns /= Void then
 				from
 					l_patterns.start
@@ -535,7 +540,7 @@ feature{NONE} -- Implementation
 			l_patterns: DS_LIST [AUT_PREDICATE_ACCESS_PATTERN]
 			l_set: like linear_solvable_arguments
 		do
-			l_patterns := interpreter.predicate_pattern_by_feature.item (feature_)
+			l_patterns := precondition_access_pattern.item (feature_)
 			if l_patterns /= Void then
 				create linear_solvable_arguments.make (2)
 				create linear_solvable_argument_names.make (2)

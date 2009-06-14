@@ -12,6 +12,8 @@ inherit
 
 	AUT_SHARED_CONSTANTS
 
+	REFACTORING_HELPER
+
 create
 	make,
 	make_with_prefix
@@ -145,7 +147,13 @@ feature -- Process
 	process_precondition_evaluation_response (a_response: AUT_PRECONDITION_EVALUATION_RESPONSE)
 			-- Process `a_response'.
 		do
-			-- To implement
+			to_implement ("Implement")
+		end
+
+	process_predicate_evaluation_response (a_response: AUT_PREDICATE_EVALUATION_RESPONSE)
+			-- Process `a_response'.
+		do
+			to_implement ("Implement")
 		end
 
 feature{NONE} -- Implementation

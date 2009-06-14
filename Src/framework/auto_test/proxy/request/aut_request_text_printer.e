@@ -135,6 +135,12 @@ feature {AUT_REQUEST} -- Processing
 			-- Do nothing.
 		end
 
+	process_predicate_evaluation_request (a_request: AUT_PREDICATE_EVALUATION_REQUEST)
+			-- Process `a_request'.
+		do
+			-- Do nothing.
+		end
+
 feature {NONE} -- Printing
 
 	print_argument_list (an_argument_list: DS_LINEAR [ITP_EXPRESSION])
