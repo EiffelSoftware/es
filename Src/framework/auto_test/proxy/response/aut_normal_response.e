@@ -16,7 +16,11 @@ inherit
 		rename
 			make as make_response
 		redefine
-			is_exception
+			is_exception,
+			is_precondition_violation,
+			is_postcondition_violation,
+			is_class_invariant_violation_on_entry,
+			is_class_invariant_violation_on_exit
 		end
 
 create
@@ -84,6 +88,31 @@ feature -- Status report
 			good_result: Result = (exception /= Void)
 		end
 
+	is_precondition_violation: BOOLEAN is
+			-- Does response contain a precondition violation from the testee feature?
+			-- True means current test case is invalid.
+		do
+			Result := exception /= Void and then exception.code = {EXCEP_CONST}.precondition
+		end
+
+	is_postcondition_violation: BOOLEAN is
+			-- Does response contain a postcondition violation from the testee feature?
+		do
+			Result := exception /= Void and then exception.code = {EXCEP_CONST}.postcondition
+		end
+
+	is_class_invariant_violation_on_entry: BOOLEAN is
+			-- Does response contain a class invariant violation on feature entry?
+		do
+			Result := exception /= Void and then exception.is_invariant_violation_on_feature_entry
+		end
+
+	is_class_invariant_violation_on_exit: BOOLEAN is
+			-- Does response contain a class invariant violation on feature exit?
+		do
+			Result := exception /= Void and then exception.code = {EXCEP_CONST}.class_invariant and then not (exception.is_invariant_violation_on_feature_entry)
+		end
+
 feature -- Access
 
 	exception: AUT_EXCEPTION
@@ -97,4 +126,35 @@ feature -- Process
 			a_visitor.process_normal_response (Current)
 		end
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

@@ -75,6 +75,21 @@ feature -- Access
 			good_result: not Result.has_void
 		end
 
+	typed_object_pool: AUT_TYPED_OBJECT_POOL is
+			-- Type object pool
+		do
+			Result := typed_object_pool_cell.item
+		ensure
+			good_result: Result = typed_object_pool_cell.item
+		end
+
+	typed_object_pool_cell: CELL [detachable AUT_TYPED_OBJECT_POOL] is
+			-- Cell for `typed_object_pool'
+		once
+			create Result.put (Void)
+		end
+
+
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

@@ -48,8 +48,13 @@ feature -- Status report
 		end
 
 	is_precondition_violation: BOOLEAN is
-			-- Does response contain an precondition violation from the testee feature?
+			-- Does response contain a precondition violation from the testee feature?
 			-- True means current test case is invalid.
+		do
+		end
+
+	is_postcondition_violation: BOOLEAN is
+			-- Does response contain a postcondition violation from the testee feature?
 		do
 		end
 

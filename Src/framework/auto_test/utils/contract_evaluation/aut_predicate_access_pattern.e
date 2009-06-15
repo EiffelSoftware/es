@@ -65,7 +65,7 @@ feature -- Access
 
 	access_pattern: DS_HASH_TABLE [INTEGER, INTEGER]
 			-- Access patterns for the predicates associated with current feature.
-			-- [call variable index, predicate argument index]
+			-- [predicate argument index, call variable index]
 			-- Key is the variable index in actual feature call (0 is the index for target).
 			-- Value is the argument position (which is 1-based) in the assoicated `predicate'.
 

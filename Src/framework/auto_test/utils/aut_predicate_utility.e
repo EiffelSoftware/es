@@ -137,8 +137,11 @@ feature -- Access
 		require
 			a_argument_index_positive: a_argument_index > 0
 		do
-			Result := "a_arg_" + a_argument_index.out
+			Result :=normalized_argument_name_prefix + a_argument_index.out
 		end
+
+	normalized_argument_name_prefix: STRING is "a_arg_";
+		-- Prefix for normalized argument name
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

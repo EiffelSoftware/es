@@ -1293,16 +1293,16 @@ feature{NONE} -- Speed logging
 
 feature -- Precondition satisfaction
 
-	typed_object_pool: AUT_TYPED_OBJECT_POOL
-			-- Typed object pool
-
 	generate_typed_object_pool is
 			-- Generate `typed_object_pool' and
 			-- initialize it with `a_types'.
+		local
+			l_pool: AUT_TYPED_OBJECT_POOL
 		do
-			create typed_object_pool.make (system, configuration.types_under_test)
-			variable_table.set_defining_variable_action (agent typed_object_pool.put_variable)
-			variable_table.set_wipe_out_action (agent typed_object_pool.wipe_out)
+			create l_pool.make (system, configuration.types_under_test)
+			variable_table.set_defining_variable_action (agent l_pool.put_variable)
+			variable_table.set_wipe_out_action (agent l_pool.wipe_out)
+			typed_object_pool_cell.put (l_pool)
 		end
 
 	is_precondition_satisfied (a_feature: AUT_FEATURE_OF_TYPE; a_variables: DS_LIST [ITP_VARIABLE]): BOOLEAN is
@@ -1523,6 +1523,55 @@ feature -- Predicate evaluation
 			retry
 		end
 
+	update_predicate_pool_on_precondition_violation (a_feature: AUT_FEATURE_OF_TYPE; a_related_objects: ARRAY [ITP_VARIABLE]) is
+			-- Update predicate pool if there is a precondition violation when `a_feature' was executed with `a_related_objects'.
+		local
+			l_bp_slot: INTEGER
+			l_preconditions: DS_HASH_SET [AUT_PREDICATE]
+			l_pattern_cursor: DS_LINKED_LIST_CURSOR [AUT_PREDICATE_ACCESS_PATTERN]
+			l_access_patterns: DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN]
+			l_done: BOOLEAN
+			l_pred_args: ARRAY [ITP_VARIABLE]
+			l_pattern: DS_HASH_TABLE [INTEGER, INTEGER]
+			l_ptn_cursor: DS_HASH_TABLE_CURSOR [INTEGER, INTEGER]
+			l_failed_predicate: AUT_PREDICATE
+		do
+			if configuration.is_precondition_checking_enabled then
+					-- When there is a precondition violation, we first update the predicate pool.
+				if last_response.is_precondition_violation then
+					if attached {AUT_NORMAL_RESPONSE} last_response as l_normal_response then
+						l_bp_slot := l_normal_response.exception.break_point_slot
+						l_preconditions := preconditions_of_feature.item (a_feature)
+						l_access_patterns := precondition_access_pattern.item (a_feature)
+						l_pattern_cursor := l_access_patterns.new_cursor
+						from
+							l_pattern_cursor.start
+						until
+							l_pattern_cursor.after or else l_done
+						loop
+							if l_pattern_cursor.item.break_point_slot = l_bp_slot then
+								l_done := True
+								l_failed_predicate := l_pattern_cursor.item.predicate
+								create l_pred_args.make (1, l_pattern_cursor.item.predicate.arity)
+								from
+									l_pattern := l_pattern_cursor.item.access_pattern
+									l_ptn_cursor := l_pattern.new_cursor
+								until
+									l_ptn_cursor.after
+								loop
+									l_pred_args.put (a_related_objects.item (l_ptn_cursor.key), l_ptn_cursor.item)
+									l_ptn_cursor.forth
+								end
+							end
+							l_pattern_cursor.forth
+						end
+
+						-- Update predicate: Set `l_failed_predicate' with `l_pred_args' with value False.
+					end
+				end
+			end
+		end
+
 	evaluate_predicates_after_test_case (a_feature: AUT_FEATURE_OF_TYPE; a_related_objects: ARRAY [ITP_VARIABLE]) is
 			-- Evaluate `relevant_predicates_of_feature' for `a_feature' with `a_related_objects'.
 		require
@@ -1542,6 +1591,7 @@ feature -- Predicate evaluation
 			l_arity: INTEGER
 		do
 			if configuration.is_precondition_checking_enabled then
+				update_predicate_pool_on_precondition_violation (a_feature, a_related_objects)
 				create l_request_data.make
 				if relevant_predicates_of_feature.has (a_feature) then
 					l_predicate_table := relevant_predicates_of_feature.item (a_feature)

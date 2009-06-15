@@ -437,6 +437,8 @@ feature -- Precondition evaluation
 	precondition_evaluator: AUT_PRECONDITION_EVALUATION_TASK
 			-- Precondition evaluator
 
+	precondition_satisfaction_evaluator: AUT_PRECONDITION_SATISFACTION_TASK
+
 	create_precondition_evaluator is
 			-- Create `precondition_evaluator'.
 		local

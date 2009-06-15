@@ -29,6 +29,7 @@ feature -- Access
 
 	constrained_arguments: DS_HASH_SET [STRING]
 			-- Set of name of constrained arguments
+			-- The names are arguments of the feature (not predicate argument names).
 
 	assertions: LINKED_LIST [AUT_EXPRESSION]
 			-- Assertions of all the linearly solvable preconditions
@@ -49,6 +50,8 @@ feature -- Basic operations
 			-- `a_patterns' are access patterns of preconditions for that feature.
 			-- If there is any linear constraints for `a_feature', set `has_linear_constraints' to True and then
 			-- generate the SMT-LIB file into `last_smtlib'.
+		local
+			l_cursor: DS_HASH_TABLE_CURSOR [INTEGER, INTEGER]
 		do
 			current_feature := a_feature
 			access_patterns := a_patterns
@@ -67,7 +70,15 @@ feature -- Basic operations
 			loop
 				if attached {AUT_LINEAR_SOLVABLE_PREDICATE} a_patterns.item_for_iteration.predicate as l_linear_pred then
 					has_linear_constraints := True
-					l_linear_pred.constrained_arguments.do_all (agent (a_index: INTEGER) do constrained_arguments.force_last (normalized_argument_name (a_index)) end)
+					l_cursor := a_patterns.item_for_iteration.access_pattern.new_cursor
+					from
+						l_cursor.start
+					until
+						l_cursor.after
+					loop
+						constrained_arguments.force_last (normalized_argument_name (l_cursor.key))
+						l_cursor.forth
+					end
 					l_linear_pred.constraining_queries.do_all (agent constraining_queries.force_last)
 					assertions.extend (l_linear_pred.expression)
 				end
