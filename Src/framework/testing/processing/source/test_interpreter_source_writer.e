@@ -624,7 +624,7 @@ feature -- Precondition satisfaction
 					stream.put_line ("end")
 				end
 
-				predicates.force_last (a_preconditions.item_for_iteration.predicate)
+--				predicates.force_last (a_preconditions.item_for_iteration.predicate)
 				i := i + 1
 				a_preconditions.forth
 			end
