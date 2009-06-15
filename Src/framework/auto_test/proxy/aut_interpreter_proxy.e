@@ -1531,7 +1531,7 @@ feature -- Predicate evaluation
 			l_pattern_cursor: DS_LINKED_LIST_CURSOR [AUT_PREDICATE_ACCESS_PATTERN]
 			l_access_patterns: DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN]
 			l_done: BOOLEAN
-			l_pred_args: ARRAY [ITP_VARIABLE]
+			l_pred_args: LINKED_LIST [INTEGER]
 			l_pattern: DS_HASH_TABLE [INTEGER, INTEGER]
 			l_ptn_cursor: DS_HASH_TABLE_CURSOR [INTEGER, INTEGER]
 			l_failed_predicate: AUT_PREDICATE
@@ -1552,21 +1552,22 @@ feature -- Predicate evaluation
 							if l_pattern_cursor.item.break_point_slot = l_bp_slot then
 								l_done := True
 								l_failed_predicate := l_pattern_cursor.item.predicate
-								create l_pred_args.make (1, l_pattern_cursor.item.predicate.arity)
+								create l_pred_args.make
 								from
 									l_pattern := l_pattern_cursor.item.access_pattern
 									l_ptn_cursor := l_pattern.new_cursor
 								until
 									l_ptn_cursor.after
 								loop
-									l_pred_args.put (a_related_objects.item (l_ptn_cursor.key), l_ptn_cursor.item)
+									l_pred_args.extend (a_related_objects.item (l_ptn_cursor.key).index)
 									l_ptn_cursor.forth
 								end
 							end
 							l_pattern_cursor.forth
 						end
 
-						-- Update predicate: Set `l_failed_predicate' with `l_pred_args' with value False.
+							-- Update predicate: Set `l_failed_predicate' with `l_pred_args' with value False.
+						update_predicate (l_failed_predicate, l_pred_args, False)
 					end
 				end
 			end
@@ -1628,6 +1629,7 @@ feature -- Predicate evaluation
 						l_cursor.forth
 					end
 					evaluate_predicates (l_request_data)
+					update_predicate_pool (last_request)
 				end
 			end
 		end
@@ -1666,6 +1668,81 @@ feature -- Predicate evaluation
 		ensure
 			result_attached: Result /= Void
 			result_valid: Result.lower = 0
+		end
+
+	update_predicate_pool (a_request: AUT_REQUEST) is
+			-- Update predicate pool according to `a_request' and its response.
+		require
+			a_request_attached: a_request /= Void
+			a_response_attached: a_request.response /= Void
+		local
+			l_predicate_request: LINKED_LIST [TUPLE [predicate: INTEGER_32; arguments: SPECIAL [INTEGER]]]
+			l_result: LINKED_LIST [TUPLE [predicate: INTEGER_32; evaluation: SPECIAL [NATURAL_8]]]
+			l_predicate: AUT_PREDICATE
+			l_arity: INTEGER
+			l_predicate_tbl: like predicate_table
+			l_arguments: SPECIAL [INTEGER]
+			l_evaluation: SPECIAL [NATURAL_8]
+			i: INTEGER
+			j: INTEGER
+			l_count: INTEGER
+			l_pred_args: LINKED_LIST [INTEGER]
+		do
+			if attached {AUT_PREDICATE_EVALUATION_REQUEST} a_request as l_request then
+				if attached {AUT_PREDICATE_EVALUATION_RESPONSE} a_request.response as l_response then
+					l_predicate_request := l_request.predicates
+					l_result := l_response.evaluation_result
+					if l_predicate_request.count = l_result.count then
+						l_predicate_tbl := predicate_table
+						from
+							l_predicate_request.start
+							l_result.start
+						until
+							l_predicate_request.after
+						loop
+								-- Get the predicate under consideration.
+							l_predicate := l_predicate_tbl.item (l_predicate_request.item_for_iteration.predicate)
+							l_arity := l_predicate.arity
+
+							l_arguments := l_predicate_request.item_for_iteration.arguments
+							l_evaluation := l_result.item_for_iteration.evaluation
+
+								-- Check if the number of evaluation request and the number of results are consistant.
+							if l_arguments.count = l_evaluation.count * l_arity then
+								l_count := l_arguments.count
+								create l_pred_args.make
+								from
+									i := 0
+									j := 0
+								until
+									i = l_count
+								loop
+									l_pred_args.extend (l_arguments.item (i))
+									if i \\ l_arity = 0 then
+										update_predicate (l_predicate, l_pred_args, (l_evaluation.item (j) = 0))
+										l_pred_args.wipe_out
+										j := j + 1
+									end
+									i := i + 1
+								end
+							end
+							l_predicate_request.forth
+							l_result.forth
+						end
+					end
+				end
+			end
+		end
+
+	update_predicate (a_predicate: AUT_PREDICATE; a_arguments: LINKED_LIST [INTEGER]; a_result: BOOLEAN) is
+			-- Update the value of `a_predicate' evaluated with `a_arguments' to `a_result' in predicate pool.
+			-- `a_arguments' stored the object index of the corresponding argument for `a_predicate'.
+		require
+			a_predicate_attached: a_predicate /= Void
+			a_arguments_attached: a_arguments /= Void
+			a_arguments_valid: a_arguments.count = a_predicate.arity
+		do
+			to_implement ("To implement")
 		end
 
 feature -- Object State Exploration

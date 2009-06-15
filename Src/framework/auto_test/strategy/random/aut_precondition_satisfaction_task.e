@@ -34,6 +34,7 @@ feature{NONE} -- Initialization
 		require
 			a_feature_attached: a_feature /= Void
 			a_vars_attached: a_vars /= Void
+			a_vars_valid: not a_vars.has (Void)
 		local
 			i: INTEGER
 		do
@@ -79,14 +80,14 @@ feature -- Access
 	access_pattern: DS_HASH_TABLE [AUT_PREDICATE_ACCESS_PATTERN, AUT_PREDICATE]
 			-- Predicate access pattern
 
-	initial_variables: ARRAY [ITP_VARIABLE]
+	initial_variables: ARRAY [detachable ITP_VARIABLE]
 			-- Initial variables as candidates
 
-	last_evaluated_variables: ARRAY [detachable ITP_VARIABLE]
+	last_evaluated_variables: like initial_variables
 			-- Variables used to evaluate the precondition of `feature_'
 			-- Index in `last_evaluated_variables' is 0-based, the first item is the target of the feature call.
 
-	candidate_variables: DS_ARRAYED_LIST [ARRAY [ITP_VARIABLE]]
+	candidate_variables: DS_ARRAYED_LIST [like initial_variables]
 			-- Queue for variable candidcate to execute `feature_'
 
 	start_time: INTEGER
@@ -149,13 +150,16 @@ feature -- Execution
 			set_start_time (interpreter.duration_until_now.millisecond_count)
 
 			if interpreter.configuration.is_precondition_checking_enabled then
+
+					-- Evaluate precondition satisfaction on `initial_variables'.
 				evaluate_precondition (initial_variables)
+
 				if last_precondition_evaluation_satisfied then
 						-- The initial assigned variables satisfy the precondition of `feature_'.					
 					steps_completed := True
 					set_end_time (interpreter.duration_until_now.millisecond_count)
 				else
-						-- The initial assigned variables satisfy the precondition of `feature_',
+						-- `initial_variables' DO NOT satisfy the precondition of `feature_',
 						-- new search is needed.
 					load_candidates
 				end
@@ -170,24 +174,29 @@ feature -- Execution
 			-- <Precursor>
 		local
 			l_candidate_index: INTEGER
+			l_satisfied: BOOLEAN
 		do
 			if untried_candidate_count = 0 then
 				steps_completed := True
 			else
-					-- Get the next candidate from `candidate_variables'.
+					-- Get the next candidate from `candidate_variables',
+					-- store the candidate in `last_evaluated_variables'.
+					-- Those arguments in the candidate should already satisfy all normal preconditions.
 				random.forth
 				l_candidate_index := random.item // untried_candidate_count + 1
 				last_evaluated_variables := candidate_variables.item (l_candidate_index)
 				candidate_variables.swap (l_candidate_index, untried_candidate_count)
 				untried_candidate_count := untried_candidate_count - 1
 
+					-- Check if linearly solvable arguments have solution.
 				if has_linear_solvable_precondition then
 					choose_constraint_arguments
-					last_precondition_evaluation_satisfied := has_constraint_model
+					l_satisfied := has_constraint_model
+				end
+
+				if l_satisfied then
+					last_precondition_evaluation_satisfied := not last_evaluated_variables.has (Void)
 					steps_completed := last_precondition_evaluation_satisfied
-				else
-					last_precondition_evaluation_satisfied := True
-					steps_completed := True
 				end
 			end
 
@@ -216,7 +225,7 @@ feature{NONE} -- Implementation
 				-- except for linearly constrained variables.			
 		end
 
-	evaluate_precondition (a_variables: ARRAY [ITP_VARIABLE]) is
+	evaluate_precondition (a_variables: like initial_variables) is
 			-- Evalute precondition of `feature_' on `a_variables'.
 			-- Set `last_precondition_evaluation_satisfied',
 			-- and put variable that satisfied the precondition into
@@ -227,13 +236,22 @@ feature{NONE} -- Implementation
 			l_satisfied: BOOLEAN
 		do
 			last_evaluated_variables := a_variables.twin
+
+				-- Evaluate normal preconditions using predicate pool
 			if has_normal_precondition then
 				-- Check if `a_variables' satisfy `normal_preconditions'.
 			end
-			if last_precondition_evaluation_satisfied and then has_linear_solvable_precondition then
+
+				-- Check if linearly solvable arguments has solutions.
+			if l_satisfied and then has_linear_solvable_precondition then
 					-- Check if `a_variables' satisfy `linear_solvable_preconditions'.
 				choose_constraint_arguments
-				last_precondition_evaluation_satisfied := has_constraint_model
+				l_satisfied := has_constraint_model
+			end
+
+				-- Check if all arguments are assigned.
+			if l_satisfied then
+				last_precondition_evaluation_satisfied := not last_evaluated_variables.has (Void)
 			end
 		end
 

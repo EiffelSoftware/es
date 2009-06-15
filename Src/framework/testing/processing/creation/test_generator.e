@@ -946,10 +946,12 @@ feature -- Precondition satisfaction
 				create l_visitor.make
 				l_visitor.generate_precondition_predicates (l_feature)
 
-					-- Store precondition predicates and their access patterns.
+					-- Store predicates and their access patterns.
 				if not l_visitor.last_predicates.is_empty then
-					l_visitor.last_predicates.do_all (agent predicates.force_last)
+					l_visitor.last_predicates.do_all (agent put_predicate)
+
 					precondition_access_pattern.force_last (l_visitor.last_predicate_access_patterns, l_feature)
+					predicate_access_pattern.force_last (l_visitor.last_predicate_access_patterns, l_feature)
 				end
 				l_features.forth
 			end
@@ -966,6 +968,7 @@ feature -- Precondition satisfaction
 			l_predicates: like predicates
 			l_relevant: DS_HASH_TABLE [DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]], AUT_PREDICATE]
 			l_arrangements: DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]]
+			l_predicate_cursor: DS_HASH_SET_CURSOR [AUT_PREDICATE]
 		do
 			l_features := features_under_test
 			l_predicates := predicates
@@ -979,16 +982,17 @@ feature -- Precondition satisfaction
 				l_relevant.set_key_equality_tester (predicate_equality_tester)
 				relevant_predicates_of_feature.force_last (l_relevant, l_feature)
 				from
-					l_predicates.start
+					l_predicate_cursor := l_predicates.new_cursor
+					l_predicate_cursor.start
 				until
-					l_predicates.after
+					l_predicate_cursor.after
 				loop
-					create l_arranger.make (l_predicates.item_for_iteration, system)
+					create l_arranger.make (l_predicate_cursor.item, system)
 					l_arrangements := l_arranger.arrangements_for_feature (l_feature)
 					if not l_arrangements.is_empty then
-						l_relevant.force_last (l_arrangements, l_predicates.item_for_iteration)
+						l_relevant.force_last (l_arrangements, l_predicate_cursor.item)
 					end
-					l_predicates.forth
+					l_predicate_cursor.forth
 				end
 				l_features.forth
 			end

@@ -24,12 +24,22 @@ feature -- Access
 
 	predicates: DS_HASH_SET [AUT_PREDICATE] is
 			-- Predicates that are managed in current test session
+			-- Note: Should only be manipulated by `put_predicate'.
 		once
 			create Result.make (100)
 			Result.set_equality_tester (predicate_equality_tester)
 		ensure
 			result_attached: Result /= Void
 			good_result: not Result.has (Void)
+		end
+
+	predicate_table: DS_HASH_TABLE [AUT_PREDICATE, INTEGER] is
+			-- Predicate table indexed by {AUT_PREDICATE}.`id'
+			-- Note: Should only be manipulated by `put_predicate'.
+		once
+			create Result.make (100)
+		ensure
+			result_attached: Result /= Void
 		end
 
 	preconditions_of_feature: DS_HASH_TABLE [DS_HASH_SET [AUT_PREDICATE], AUT_FEATURE_OF_TYPE] is
@@ -45,6 +55,20 @@ feature -- Access
 
 	precondition_access_pattern: DS_HASH_TABLE [DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN], AUT_FEATURE_OF_TYPE] is
 			-- Precondition predicate access patterns of features
+			-- Only predicates appearing in preconditions should be stored here.
+			-- This should be a subset of `predicate_access_pattern'.
+			-- [Access pattern, feature]
+		once
+			create Result.make (100)
+			Result.set_key_equality_tester (feature_of_type_loose_equality_tester)
+		ensure
+			result_attached: Result /= Void
+		end
+
+	predicate_access_pattern: DS_HASH_TABLE [DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN], AUT_FEATURE_OF_TYPE] is
+			-- Predicate access patterns associated with a feature.
+			-- Predicates associated with a feature can be preconditions, postconditions and all "interesting" predcates
+			-- extracted from the code or provided by programmers.
 			-- [Access pattern, feature]
 		once
 			create Result.make (100)
@@ -89,6 +113,20 @@ feature -- Access
 			create Result.put (Void)
 		end
 
+feature -- Basic operations
+
+	put_predicate (a_predicate: AUT_PREDICATE) is
+			-- Put `a_predicate' into `predicates' and `predicate_table'.
+		require
+			a_predicate_attached: a_predicate /= Void
+			a_predicate_not_exist: not predicates.has (a_predicate)
+		do
+			predicates.force_last (a_predicate)
+			predicate_table.force_last (a_predicate, a_predicate.id)
+		ensure
+			predicate_put: predicates.has (a_predicate)
+			predicate_table_put: predicate_table.has (a_predicate.id) and then predicate_table.item (a_predicate.id) = a_predicate
+		end
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
