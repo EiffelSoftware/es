@@ -1046,9 +1046,8 @@ feature -- Precondition satisfaction
 					-- Store predicates and their access patterns.
 				if not l_visitor.last_predicates.is_empty then
 					l_visitor.last_predicates.do_if (agent put_predicate, agent (a_pred: AUT_PREDICATE): BOOLEAN do Result := not predicates.has (a_pred) end (?))
-
-					precondition_access_pattern.force_last (l_visitor.last_predicate_access_patterns, l_feature)
-					predicate_access_pattern.force_last (l_visitor.last_predicate_access_patterns, l_feature)
+					put_predicate_access_pattern (l_feature, l_visitor.last_predicate_access_patterns)
+					put_precondition_access_pattern (l_feature, l_visitor.last_predicate_access_patterns)
 				end
 				l_features.forth
 			end
