@@ -191,4 +191,13 @@ feature -- Types under test
 			types_under_test.append_last (a_types)
 		end
 
+feature -- CITADEL
+
+	is_citadel_test_generation_enabled: BOOLEAN
+			-- Should AutoTest only generate tests to be input to CITADEL from an existing proxy log?
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
 end
