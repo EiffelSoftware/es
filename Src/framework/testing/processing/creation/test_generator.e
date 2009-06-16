@@ -143,6 +143,10 @@ feature -- Status report
 			Result := status = load_log_code
 		end
 
+	is_generating_citadel_tests: BOOLEAN
+		do
+			Result := status = citadel_status_code
+		end
 
 feature {NONE} -- Status report
 
@@ -227,8 +231,10 @@ feature {NONE} -- Basic operations
 					current_task := Void
 					if is_replay_enabled then
 						status := replay_status_code
-					elseif is_load_log_enabled then
+					elseif is_load_log_enabled and not configuration.is_citadel_test_generation_enabled then
 						status := load_log_code
+					elseif configuration.is_citadel_test_generation_enabled then
+						status := citadel_status_code
 					else
 						status := minimize_status_code
 					end
@@ -259,6 +265,7 @@ feature {NONE} -- Basic operations
 			elseif is_generating_statistics then
 				if current_task = Void then
 					generate_test_class
+					generate_failure_statistics -- Ilinca, "number of faults law" experiment
 					if is_text_statistics_format_enabled then
 						generate_text_statistics
 					end
@@ -277,8 +284,15 @@ feature {NONE} -- Basic operations
 					end
 					is_finished := True
 				end
+			elseif is_generating_citadel_tests then
+				load_log (log_file_path)
+				build_citadel_result_repository
+				generate_citadel_tests
+				is_finished := True
 			elseif is_loading_log then
 				load_log (log_file_path)
+				build_failure_only_result_repository -- Ilinca, "number of faults law" experiment
+				generate_failure_statistics -- Ilinca, "number of faults law" experiment
 				is_finished := True
 			end
 
@@ -321,6 +335,8 @@ feature {NONE} -- Implementation
 		local
 			l_file_name: FILE_NAME
 			l_file: KL_TEXT_OUTPUT_FILE
+			l_dir: KL_DIRECTORY
+			l_log_dirname: STRING
 		do
 			check_environment_variable
 			set_precompile (False)
@@ -329,6 +345,20 @@ feature {NONE} -- Implementation
 			create error_handler.make (system)
 
 			process_configuration
+
+			create l_dir.make (system.eiffel_project.project_directory.testing_results_path)
+			if not l_dir.exists then
+				l_dir.recursive_create_directory
+			end
+			create l_dir.make (output_dirname)
+			if not l_dir.exists then
+				l_dir.recursive_create_directory
+			end
+			l_log_dirname := file_system.pathname (output_dirname, "log")
+			create l_dir.make (l_log_dirname)
+			if not l_dir.exists then
+				l_dir.recursive_create_directory
+			end
 
 			create l_file_name.make_from_string (output_dirname)
 			l_file_name.extend ("log")
@@ -400,6 +430,15 @@ feature {NONE} -- Implementation
 		do
 			create l_task.make (result_repository, interpreter, error_handler, system, output_dirname, is_ddmin_enabled, is_slicing_enabled)
 			launch_task (l_task)
+		end
+
+	generate_citadel_tests
+			-- Generate tests for CITADEL from an existing proxy log file.
+		local
+			l_gen: AUT_CITADEL_TEST_GENERATOR
+		do
+			create l_gen.make (result_repository, interpreter, error_handler, system, output_dirname)
+			l_gen.generate_tests (class_names)
 		end
 
 feature {NONE} -- Interpreter generation
@@ -702,7 +741,49 @@ feature{NONE} -- Test result analyizing
 				result_repository := builder.last_result_repository
 				log_stream.close
 			end
+		ensure
+			result_repository_not_void: result_repository /= Void
+		end
 
+	build_failure_only_result_repository
+			-- Build result repository from failure log file.
+			-- Ilinca, "number of faults law" experiment
+		local
+			log_stream: KL_TEXT_INPUT_FILE
+			builder: AUT_RESULT_REPOSITORY_BUILDER
+		do
+			create result_repository.make
+			create log_stream.make (log_file_path)
+			log_stream.open_read
+			if not log_stream.is_open_read then
+				error_handler.report_cannot_read_error (log_file_path)
+			else
+				create builder.make  (system, error_handler)
+				builder.build (log_stream)
+				result_repository := builder.last_result_repository
+				log_stream.close
+			end
+		ensure
+			result_repository_not_void: result_repository /= Void
+		end
+
+	build_citadel_result_repository
+			-- Build result repository from log file.
+		local
+			log_stream: KL_TEXT_INPUT_FILE
+			builder: AUT_CITADEL_RESULT_REPOSITORY_BUILDER
+		do
+			create result_repository.make
+			create log_stream.make (log_file_path)
+			log_stream.open_read
+			if not log_stream.is_open_read then
+				error_handler.report_cannot_read_error (log_file_path)
+			else
+				create builder.make  (system, error_handler)
+				builder.build (log_stream)
+				result_repository := builder.last_result_repository
+				log_stream.close
+			end
 		ensure
 			result_repository_not_void: result_repository /= Void
 		end
@@ -730,6 +811,21 @@ feature{NONE} -- Test result analyizing
 			result_repository_not_void: result_repository /= Void
 		local
 			l_generator: AUT_TEXT_STATISTICS_GENERATOR
+		do
+			create l_generator.make ("", file_system.pathname (output_dirname, "result"), system, classes_under_test)
+			l_generator.generate (result_repository)
+			if l_generator.has_fatal_error then
+				error_handler.report_text_generation_error
+			else
+				error_handler.report_text_generation_finished (l_generator.absolute_index_filename)
+			end
+		end
+
+	generate_failure_statistics
+		require
+			result_repository_not_void: result_repository /= Void
+		local
+			l_generator: AUT_FAILURE_STATISTICS_GENERATOR
 		do
 			create l_generator.make ("", file_system.pathname (output_dirname, "result"), system, classes_under_test)
 			l_generator.generate (result_repository)
@@ -903,6 +999,7 @@ feature {NONE} -- Constants
 	replay_status_code: NATURAL = 2
 	minimize_status_code: NATURAL = 3
 	statistic_status_code: NATURAL = 4
+	citadel_status_code: NATURAL = 5
 	load_log_code: NATURAL = 20
 
 	max_tests_per_class: NATURAL = 9
