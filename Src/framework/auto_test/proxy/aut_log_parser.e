@@ -89,6 +89,12 @@ feature -- Parsing
 					if line.count >= 2 and then line.substring (1, 2).same_string ("--") then
 							-- We are in the comment line. If this line matches the start request,
 							-- the start request will be handled, otherwise, the line is ignored.
+
+							-- Ilinca, "number of faults law" experiment
+						if line.has_substring (exception_thrown_message) then
+							last_response_text.append_string (line)
+						end
+						
 						if line.same_string (proxy_has_started_and_connected_message) then
 							-- We are in the "start" request.
 							report_request_line (line)

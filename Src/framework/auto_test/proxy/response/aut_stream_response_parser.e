@@ -60,6 +60,8 @@ feature  -- Parsing
 			-- request has been sent.
 		local
 			output: STRING
+			l_index, num_seconds: INTEGER
+			l_time: DT_DATE_TIME_DURATION
 		do
 			create last_response_text.make (default_response_length)
 			try_parse_multi_line_value
@@ -84,13 +86,29 @@ feature  -- Parsing
 							create {AUT_BAD_RESPONSE} last_response.make (last_response_text)
 						else
 							create {AUT_NORMAL_RESPONSE} last_response.make_exception (output, last_exception)
+
+								-- Ilinca, "number of faults law" experiment
+							parse_done
+							if last_string = Void then
+								create {AUT_BAD_RESPONSE} last_response.make (last_response_text)
+							else
+								try_read_line
+								if last_string /= Void and then last_string.has_substring (exception_thrown_message) then
+									num_seconds := last_string.substring (last_string.index_of (':', 1) + 2, last_string.count).to_integer
+									create l_time.make_canonical_definite (num_seconds)
+									last_response.set_time (l_time)
+								end
+							end
+
 						end
 					end
 				end
 				if not last_response.is_bad then
-					parse_done
-					if last_string = Void then
-						create {AUT_BAD_RESPONSE} last_response.make (last_response_text)
+					if not last_response.is_exception then -- Ilinca, "number of faults law" experiment
+						parse_done
+						if last_string = Void then
+							create {AUT_BAD_RESPONSE} last_response.make (last_response_text)
+						end
 					end
 				end
 			end

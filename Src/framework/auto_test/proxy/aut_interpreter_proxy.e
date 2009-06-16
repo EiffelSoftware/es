@@ -109,24 +109,34 @@ feature {NONE} -- Initialization
 			request_printer.extend (create {AUT_REQUEST_TEXT_PRINTER}.make (system, log_stream))
 			request_printer.extend (socket_data_printer)
 
+				-- Ilinca, "number of faults law" experiment
+			create failure_log_stream.make_empty
+			create failure_request_printer.make (system, failure_log_stream)
+
 			executable_file_name := an_executable_file_name
 			melt_path := file_system.dirname (executable_file_name)
 			interpreter_log_filename := an_interpreter_log_filename
 			create proxy_log_file.make (a_proxy_log_filename)
 			proxy_log_file.open_write
 
-			create response_printer.make_with_prefix (proxy_log_file, interpreter_log_prefix)
+				-- Ilinca, "number of faults law" experiment
+			create proxy_failure_log_file.make (a_proxy_log_filename + "_failures_only")
+			proxy_failure_log_file.open_write
 
+			create response_printer.make_with_prefix (proxy_log_file, interpreter_log_prefix)
 			set_is_logging_enabled (True)
 			set_is_speed_logging_enabled (True)
 			set_is_test_case_index_logging_enabled (True)
-
 			log_types_under_test
+
+				-- Ilinca, "number of faults law" experiment
+			create failure_response_printer.make_with_prefix (proxy_failure_log_file, interpreter_log_prefix)
+
 			log_line ("-- A new proxy has been created.")
 			proxy_start_time := system_clock.date_time_now
 			error_handler := a_error_handler
 			timeout := default_timeout
-
+			
 			if configuration.is_object_state_exploration_enabled then
 				create object_state_table.make
 			end
@@ -201,6 +211,16 @@ feature -- Access
 
 	configuration: TEST_GENERATOR_CONF_I
 			-- Configuration associated with current AutoTest run
+
+	proxy_failure_log_filename: STRING
+			-- File name of proxy failure log
+			-- Ilinca, "number of faults law" experiment
+		do
+			Result := proxy_failure_log_file.name
+		ensure
+			filename_not_void: Result /= Void
+			valid_filename: Result.is_equal (proxy_failure_log_file.name)
+		end
 
 feature -- Settings
 
@@ -297,10 +317,15 @@ feature -- Execution
 						socket := l_socket
 						process.set_timeout (timeout)
 						log_stream.string.wipe_out
+						failure_log_stream.string.wipe_out -- Ilinca, "number of faults law" experiment
 						last_request.process (request_printer)
+						last_request.process (failure_request_printer) -- Ilinca, "number of faults law" experiment
 						flush_process
 						log_line (proxy_has_started_and_connected_message)
 						log_line (itp_start_time_message + error_handler.duration_to_now.second_count.out)
+						failure_log (proxy_has_started_and_connected_message + "%N") -- Ilinca, "number of faults law" experiment
+						failure_log (itp_start_time_message + error_handler.duration_to_now.second_count.out + "%N") -- Ilinca, "number of faults law" experiment
+						record_failure_time_stamp -- Ilinca, "number of faults law" experiment
 						parse_start_response
 						last_request.set_response (last_response)
 						if last_response.is_bad then
@@ -309,6 +334,7 @@ feature -- Execution
 						is_ready := True
 					else
 						log_line ("-- Error: Interpreter was not able to connect.")
+						failure_log ("-- Error: Interpreter was not able to connect.%N")
 					end
 				else
 					is_ready := False
@@ -335,6 +361,7 @@ feature -- Execution
 
 					create {AUT_STOP_REQUEST} last_request.make (system)
 					last_request.process (request_printer)
+					last_request.process (failure_request_printer) -- Ilinca, "number of faults law" experiment
 					flush_process
 					parse_stop_response
 					last_request.set_response (last_response)
@@ -343,14 +370,17 @@ feature -- Execution
 					if not process.has_exited then
 							-- Force shutdown of `process' because it has not terminated regularly
 						log_line ("-- Warning: proxy was not able to terminate interpreter.")
+						failure_log ("-- Warning: proxy was not able to terminate interpreter.%N") -- Ilinca, "number of faults law" experiment
 
 							-- Set flag to indicate that the interpreter should be terminated.
 							-- When `time_out_checker_thread' sees this flag, it will terminate the interpreter.
 						process.terminate
 						is_ready := False
 						log_line ("-- Warning: proxy forced termination of interpreter.")
+						failure_log ("-- Warning: proxy forced termination of interpreter.%N") -- Ilinca, "number of faults law" experiment
 					else
 						log_line ("-- Proxy has terminated interpreter.")
+						failure_log ("-- Proxy has terminated interpreter.%N") -- Ilinca, "number of faults law" experiment
 					end
 				end
 				if socket /= Void then
@@ -413,9 +443,26 @@ feature -- Execution
 					end
 					if normal_response.exception = Void then
 						variable_table.define_variable (a_receiver, a_type)
-
 							-- Predicate evaluation.
 						evaluate_predicates_after_test_case (create {AUT_FEATURE_OF_TYPE}.make (a_procedure, a_type), relevant_objects (a_receiver, an_argument_list, Void))
+
+							-- Ilinca, "number of faults law" experiment
+						failure_log_test_case_index
+						last_request.process (failure_request_printer)
+						failure_log (failure_log_stream.string)
+						failure_log_stream.string.wipe_out
+						last_response.process (failure_response_printer)
+						record_failure_time_stamp
+					else -- Ilinca, "number of faults law" experiment
+						if not normal_response.exception.is_invariant_violation_on_feature_entry and not normal_response.exception.is_test_invalid then
+							failure_log_test_case_index
+							last_request.process (failure_request_printer)
+							failure_log (failure_log_stream.string)
+							failure_log_stream.string.wipe_out
+							last_response.process (failure_response_printer)
+							record_failure_time_stamp
+--							failure_log_speed
+						end
 					end
 				end
 			else
@@ -457,6 +504,7 @@ feature -- Execution
 			l_objects: DS_LINEAR [ITP_EXPRESSION]
 			l_var_set: like variable_set
 			l_object_state: AUT_OBJECT_STATE
+			l_normal_response: AUT_NORMAL_RESPONSE
 		do
 --			log_time_stamp ("exec")
 			l_target_type := variable_table.variable_type (a_target)
@@ -499,6 +547,23 @@ feature -- Execution
 			last_request.set_response (last_response)
 			if not last_response.is_bad or last_response.is_error then
 --				is_ready := True
+					-- Ilinca, "number of faults law" experiment
+				if last_response.is_normal then
+					l_normal_response ?= last_response
+					check
+						l_normal_response_not_void: l_normal_response /= Void
+					end
+					if l_normal_response.exception /= Void and then
+						(not l_normal_response.exception.is_invariant_violation_on_feature_entry and not l_normal_response.exception.is_test_invalid) then
+							failure_log_test_case_index
+							last_request.process (failure_request_printer)
+							failure_log (failure_log_stream.string)
+							failure_log_stream.string.wipe_out
+							last_response.process (failure_response_printer)
+							record_failure_time_stamp
+--							failure_log_speed
+						end
+				end
 			else
 				is_ready := False
 			end
@@ -586,6 +651,20 @@ feature -- Execution
 					normal_response ?= last_response
 					check
 						normal_response_not_void: normal_response /= Void
+					end
+
+						-- Ilinca, "number of faults law" experiment
+					if last_response.is_normal then
+						if normal_response.exception /= Void and then
+							(not normal_response.exception.is_invariant_violation_on_feature_entry and not normal_response.exception.is_test_invalid) then
+								failure_log_test_case_index
+								last_request.process (failure_request_printer)
+								failure_log (failure_log_stream.string)
+								failure_log_stream.string.wipe_out
+								last_response.process (failure_response_printer)
+								record_failure_time_stamp
+	--							failure_log_speed
+							end
 					end
 				end
 			else
@@ -684,6 +763,13 @@ feature -- Execution
 						valid_type: base_type (normal_response.text) /= Void
 					end
 					variable_table.define_variable (a_variable, base_type (normal_response.text))
+
+						-- Ilinca, "number of faults law" experiment
+					last_request.process (failure_request_printer)
+					failure_log (failure_log_stream.string)
+					failure_log_stream.string.wipe_out
+					last_response.process (failure_response_printer)
+
 				end
 			else
 				is_ready  := False
@@ -979,6 +1065,7 @@ feature{NONE} -- Process scheduling
 --				is_ready := False
 				if process.input_direction = {PROCESS_REDIRECTION_CONSTANTS}.to_stream then
 					log (log_stream.string)
+--					failure_log (failure_log_stream.string) -- Ilinca, "number of faults law" experiment
 					request_count := request_count + 1
 					process.set_timeout (timeout+100000)
 					if socket /= Void and then socket.is_open_write and socket.extendible then
@@ -990,6 +1077,7 @@ feature{NONE} -- Process scheduling
 					log_line ("-- Error: could not send instruction to interpreter due its input stream being closed.")
 				end
 				log_stream.string.wipe_out
+--				failure_log_stream.string.wipe_out -- Ilinca, "number of faults law" experiment
 			end
 		rescue
 			is_ready := False
@@ -1020,13 +1108,14 @@ feature{NONE} -- Process scheduling
 					check
 						normal_response_not_void: normal_response /= Void
 					end
---					if normal_response.exception /= Void then
---						if normal_response.exception.code = Class_invariant then
+					if normal_response.exception /= Void then
+						if normal_response.exception.code = Class_invariant then
 --							stop
 --							log_line ("-- Proxy has terminated interpreter due to class invariant violation.")
---						end
---					end
+							failure_log_line (exception_thrown_message + error_handler.duration_to_now.second_count.out)
 						end
+					end
+				end
 			else
 				log_line ("-- Interpreter seems to have quit on its own.")
 			end
@@ -1150,6 +1239,17 @@ feature -- Logging
 			log ("%N")
 		end
 
+	failure_log_line (a_string: STRING)
+			-- Log `a_string' followed by a new-line character to `failure_log_file'.
+			-- Ilinca, "number of faults law" experiment
+		require
+			a_string_not_void: a_string /= Void
+		do
+			failure_log (a_string)
+			failure_log ("%N")
+		end
+
+
 feature {NONE} -- Logging
 
 	log (a_string: STRING)
@@ -1160,6 +1260,18 @@ feature {NONE} -- Logging
 			if is_logging_enabled and then proxy_log_file.is_open_write then
 				proxy_log_file.put_string (a_string)
 				proxy_log_file.flush
+			end
+		end
+
+	failure_log (a_string: STRING)
+			-- Log `a_string' to `failure_log_file'.
+			-- Ilinca, "number of faults law" experiment
+		require
+			a_string_not_void: a_string /= Void
+		do
+			if is_logging_enabled and then proxy_failure_log_file.is_open_write then
+				proxy_failure_log_file.put_string (a_string)
+				proxy_failure_log_file.flush
 			end
 		end
 
@@ -1186,6 +1298,19 @@ feature {NONE} -- Logging
 			log_line (duration.millisecond_count.out)
 		end
 
+	record_failure_time_stamp
+			-- Record the timing information for `last_request'.
+			-- Ilinca, "number of faults law" experiment
+		local
+			time_now: DT_DATE_TIME
+			duration: DT_DATE_TIME_DURATION
+		do
+			time_now := system_clock.date_time_now
+			duration := time_now.duration (proxy_start_time)
+			duration.set_time_canonical
+			last_request.set_time (duration)
+		end
+
 	log_test_case_index (a_request: like last_request) is
 			-- Log `test_case_index' in `a_request' and
 		require
@@ -1196,6 +1321,21 @@ feature {NONE} -- Logging
 	            last_request.set_test_case_index (test_case_count)
 			end
 			log_line ("-- test case No." + test_case_count.out)
+		ensure
+			test_case_logged:
+				is_test_case_index_logging_enabled implies (
+					test_case_count = old test_case_count + 1 and
+					last_request.test_case_index = test_case_count)
+		end
+
+	failure_log_test_case_index is
+			-- Log `test_case_index' in `a_request'
+			-- Ilinca, "number of faults law" experiment
+		do
+			if is_test_case_index_logging_enabled then
+	            last_request.set_test_case_index (test_case_count)
+			end
+			failure_log_line ("-- test case No." + test_case_count.out)
 		ensure
 			test_case_logged:
 				is_test_case_index_logging_enabled implies (
@@ -1217,11 +1357,19 @@ feature {NONE} -- Implementation
 	request_printer: AUT_REQUEST_PROCESSORS
 			-- Request printer
 
+	failure_request_printer: AUT_REQUEST_TEXT_PRINTER
+			-- Request printer in textual form printing only requests trigerring failures
+			-- (Ilinca, "number of faults law" experiment)
+
 	socket_data_printer: AUT_REQUEST_PRINTER
 			-- Printer to generate socket data for interpreter
 
 	log_stream: KL_STRING_OUTPUT_STREAM
 			-- Output stream used by `request_printer' for log file generation
+
+	failure_log_stream: KL_STRING_OUTPUT_STREAM
+			-- Output stream used by `failure_request_printer' for log file generation
+			-- Ilinca, "number of faults law" experiment
 
 	injected_feature_body_id: INTEGER
 			-- Feature body ID of the feature whose byte-code is to be injected
@@ -1235,11 +1383,19 @@ feature {NONE} -- Implementation
 	response_printer: AUT_RESPONSE_LOG_PRINTER
 			-- Log printer
 
+	failure_response_printer: AUT_RESPONSE_LOG_PRINTER
+			-- Response printer, printing only responses representing failures
+			-- (Ilinca, "number of faults law" experiment)
+
 	proxy_start_time: DT_DATE_TIME
 			-- Time when Current proxy started.
 
 	proxy_log_file: KL_TEXT_OUTPUT_FILE
 			-- Proxy log file
+
+	proxy_failure_log_file: KL_TEXT_OUTPUT_FILE
+			-- Proxy log file recording only the failing test cases
+			-- (Ilinca, "Number of faults law" experiment)
 
 	default_timeout: INTEGER = 5
 			-- Default value in second for `timeout'
@@ -1280,6 +1436,31 @@ feature{NONE} -- Speed logging
 					if l_second_count > 60 then
 						l_speed := ((test_case_log_count.to_real / l_second_count) * 60).floor
 						log_line ("-- testing speed: " + l_speed.out + " test cases per minute.")
+						test_case_log_count := 0
+						last_speed_check_time := l_time_now
+					else
+						test_case_log_count := test_case_log_count + 1
+					end
+				else
+					last_speed_check_time := l_time_now
+				end
+			end
+		end
+
+	failure_log_speed is
+			-- Log testing speed when `is_speed_logging_enabled' is True.
+		local
+			l_time_now: DT_DATE_TIME
+			l_speed: INTEGER
+			l_second_count: INTEGER
+        do
+			if is_speed_logging_enabled then
+				l_time_now := system_clock.date_time_now
+				if last_speed_check_time /= Void then
+					l_second_count := l_time_now.duration (last_speed_check_time).second_count
+					if l_second_count > 60 then
+						l_speed := ((test_case_log_count.to_real / l_second_count) * 60).floor
+						failure_log_line ("-- testing speed: " + l_speed.out + " test cases per minute.")
 						test_case_log_count := 0
 						last_speed_check_time := l_time_now
 					else

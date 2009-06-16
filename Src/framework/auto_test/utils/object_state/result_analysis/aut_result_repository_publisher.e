@@ -10,7 +10,7 @@ class
 inherit
 	AUT_RESULT_REPOSITORY_BUILDER
 		redefine
-			update_result_reposotory,
+			update_result_repository,
 			build
 		end
 
@@ -80,7 +80,7 @@ feature{NONE} -- Implementation
 	unprocessed_witnesses_internal: detachable like unprocessed_witnesses
 			-- Implementation of `unprocessed_witnesses'
 
-	update_result_reposotory
+	update_result_repository
 			-- Update result repository based on last request in result-history.			
 		local
 			witness: AUT_WITNESS

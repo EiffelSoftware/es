@@ -71,7 +71,7 @@ feature{NONE} -- Processing
 			end
 			a_request.set_start_time (last_test_case_start_time)
 			Precursor (a_request)
-			update_result_reposotory
+			update_result_repository
 		end
 
 	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)
@@ -81,7 +81,7 @@ feature{NONE} -- Processing
 			end
 			a_request.set_start_time (last_test_case_start_time)
 			Precursor (a_request)
-			update_result_reposotory
+			update_result_repository
 		end
 
 	report_comment_line (a_line: STRING) is
@@ -105,7 +105,7 @@ feature {NONE} -- Implementation
 	last_start_index: INTEGER
 			-- Index of the last "start" request in `request_history'
 
-	update_result_reposotory
+	update_result_repository
 			-- Update result repository based on last request in result-history.			
 		require
 			last_start_index_large_enough: last_start_index > 0 -- To be removed when added back to invariant
@@ -114,7 +114,7 @@ feature {NONE} -- Implementation
 			last_request_has_response: request_history.item (request_history.count).response /= Void
 		local
 			witness: AUT_WITNESS
-		do	
+		do
 			create witness.make (request_history, last_start_index, request_history.count)
 			last_result_repository.add_witness (witness)
 			last_test_case_request := witness.item (witness.count)

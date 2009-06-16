@@ -78,6 +78,20 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
+	time: DT_DATE_TIME_DURATION
+			-- Time (in seconds) elapsed since the beginning of the testing session when this response was received
+			-- (NOTE: is currently only recorded for thrown exceptions)
+
+	set_time (a_time: like time)
+			-- Set `time' to `a_time'.
+		require
+			a_time_not_void: a_time /= Void
+		do
+			time := a_time
+		ensure
+			time_set: time = a_time
+		end
+
 feature -- Process
 
 	process (a_visitor: AUT_RESPONSE_VISITOR)

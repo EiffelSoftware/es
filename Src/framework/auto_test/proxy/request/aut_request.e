@@ -61,6 +61,17 @@ feature -- Access
 			good_result: Result = end_time - start_time
 		end
 
+	time: DT_DATE_TIME_DURATION
+			-- Duration of current request
+
+	set_time (a_time: like time) is
+			-- Set `time' with `a_time'.
+		do
+			time := a_time
+		ensure
+			time_set: time = a_time
+		end
+		
 	start_time: INTEGER
 			-- Start time in millisecond relative to current AutoTest run
 
