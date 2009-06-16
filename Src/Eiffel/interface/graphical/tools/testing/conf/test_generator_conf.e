@@ -170,6 +170,9 @@ feature -- Access: cache
 	max_precondition_search_time_cache: like max_precondition_search_time
 			-- Cache for `max_precondition_search_time'
 
+	is_citadel_test_generation_enabled_cache: like is_citadel_test_generation_enabled assign set_is_citadel_test_generation_enabled
+			-- Cache for `is_citadel_test_generation_enabled'
+
 feature -- Status report
 
 	is_new_class: BOOLEAN = True
@@ -264,6 +267,15 @@ feature -- Object State Exploration
 			good_result: Result = object_state_exploration_cache
 		end
 
+
+	is_citadel_test_generation_enabled: BOOLEAN
+			-- Is random testing enabled?
+		do
+			Result := is_citadel_test_generation_enabled_cache
+		ensure then
+			result_set: Result = is_citadel_test_generation_enabled_cache
+		end
+
 feature -- Status setting
 
 	set_ddmin_enabled (a_is_ddmin_enabled: like is_ddmin_enabled)
@@ -345,6 +357,15 @@ feature -- Status setting
 		ensure
 			is_precondition_checking_enabled_set: is_precondition_checking_enabled = b
 		end
+
+	set_is_citadel_test_generation_enabled (b: BOOLEAN) is
+			-- Set `is_citadel_test_generation_enabled' with `b'.
+		do
+			is_citadel_test_generation_enabled_cache := b
+		ensure
+			is_citadel_test_generation_enabled_set: is_citadel_test_generation_enabled = b
+		end
+
 
 	set_is_linear_solving_enabled (b: BOOLEAN) is
 			-- Set `is_precondition_checking_enabled' with `b'.

@@ -142,6 +142,18 @@ feature -- Execution
 				if l_ap.is_seed_provided then
 					l_conf.set_seed (l_ap.seed.as_natural_32)
 				end
+
+					-- Should AutoTest generate tests for CITADEL from the given proxy log?
+				l_conf.set_is_citadel_test_generation_enabled (l_ap.prepare_citadel_tests)
+
+					-- Ilinca, "number of faults law" experiment
+				if l_ap.random.seed >= 0 then
+					l_conf.set_seed (l_ap.random.seed.to_natural_32)
+				else
+					l_conf.set_seed ((-l_ap.random.seed).to_natural_32)
+				end
+
+
 				if l_root_group.is_cluster then
 					if attached {CONF_CLUSTER} l_root_group as l_cluster then
 						l_conf.set_cluster (l_cluster)
