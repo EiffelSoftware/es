@@ -124,6 +124,9 @@ feature -- Status report
 			-- Provided seed
 			-- Only have effect if `is_seed_provided' is True.
 
+	prepare_citadel_tests: BOOLEAN
+			-- Should AutoTest prepare tests for CITADEL from a given proxy log file?
+
 feature -- Element change
 
 	set_error_handler (a_error_handler: like error_handler)
@@ -169,7 +172,8 @@ feature -- Parsing
 			l_log_processor_op: AP_STRING_OPTION
 			l_log_processor_output_op: AP_STRING_OPTION
 			l_max_precondition_tries_op: AP_INTEGER_OPTION
-			l_max_precondition_time_op: AP_INTEGER_OPTION
+			l_max_precondition_time_op: AP_INTEGER_OPTION			
+			l_prepare_citadel_tests_option: AP_STRING_OPTION
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -282,6 +286,10 @@ feature -- Parsing
 			create l_max_precondition_time_op.make_with_long_form ("max-precondition-time")
 			l_max_precondition_time_op.set_description ("Maximal time that can be spent in searching for an object combination satisfying precondition of a feature. 0 means that search until an object combination is found.")
 			parser.options.force_last (l_max_precondition_time_op)
+
+			create l_prepare_citadel_tests_option.make_with_long_form ("citadel")
+			l_prepare_citadel_tests_option.set_description ("Generate, from an existing proxy log given as next parameter, tests which CITADEL can use.")
+			parser.options.force_last (l_prepare_citadel_tests_option)
 
 			parser.parse_list (a_arguments)
 
@@ -440,6 +448,14 @@ feature -- Parsing
 			if not error_handler.has_error then
 				if l_max_precondition_time_op.was_found then
 					max_precondition_search_time := l_max_precondition_time_op.parameter
+				end
+			end
+
+			if not error_handler.has_error then
+				if l_prepare_citadel_tests_option.was_found then
+					prepare_citadel_tests := True
+					is_automatic_testing_enabled := False
+					log_file_path := l_prepare_citadel_tests_option.parameter
 				end
 			end
 
