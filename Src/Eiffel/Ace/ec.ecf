@@ -165,6 +165,7 @@
 		<library name="editor" location="$ISE_LIBRARY\library\editor\editor.ecf" readonly="false"/>
 		<library name="eve_proofs" location="$EIFFEL_SRC\framework\eve_proofs\eve_proofs.ecf" readonly="false"/>
 		<library name="graph" location="$ISE_LIBRARY\library\graph\graph.ecf" readonly="false"/>
+        <library name="jstar_proofs" location="$EIFFEL_SRC\framework\jstar_proofs\jstar_proofs.ecf" readonly="false"/>
 		<library name="lex" location="$ISE_LIBRARY\library\lex\lex.ecf" readonly="false"/>
 		<library name="memory_analyzer" location="$ISE_LIBRARY\library\memory_analyzer\memory_analyzer.ecf" readonly="false"/>
 		<library name="net" location="$ISE_LIBRARY\library\net\net.ecf" readonly="false"/>
