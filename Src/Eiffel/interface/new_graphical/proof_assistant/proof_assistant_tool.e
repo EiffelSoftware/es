@@ -1,4 +1,4 @@
-note
+indexing
 	description: "Summary description for {PROOF_ASSISTANT_TOOL}."
 	author: ""
 	date: "$Date$"

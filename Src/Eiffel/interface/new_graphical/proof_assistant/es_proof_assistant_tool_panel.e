@@ -1,4 +1,4 @@
-note
+indexing
 	description: "Summary description for {ES_PROOF_ASSISTANT_TOOL_PANEL}."
 	author: ""
 	date: "$Date$"

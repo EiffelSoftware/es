@@ -1,4 +1,4 @@
-note
+indexing
 	description: "Summary description for {ES_PROOF_ASSISTANT_TOOL}."
 	author: ""
 	date: "$Date$"
@@ -20,7 +20,7 @@ feature -- Access
 			-- Tool icon
 			-- Note: Do not call `tool.icon' as it will create the tool unnecessarily!
 		do
-			Result := stock_pixmaps.compile_success_icon_buffer 
+			Result := stock_pixmaps.compile_success_icon_buffer
 		end
 
 	icon_pixmap: EV_PIXMAP
