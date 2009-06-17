@@ -1162,10 +1162,11 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			Result.extend (create {EV_MENU_SEPARATOR})
 			insert_show_tool_menu_item (Result, {ES_TESTING_TOOL})
 			insert_show_tool_menu_item (Result, {ES_PROOF_TOOL})
+			insert_show_tool_menu_item (Result, {ES_PROOF_ASSISTANT_TOOL})
 
 			Result.extend (create {EV_MENU_SEPARATOR})
 			insert_show_tool_menu_item (Result, {ES_SCHEMA_EVOLUTION_TOOL})
-			
+
 			l_customized_tools := develop_window.tools.customized_tools
 			if not l_customized_tools.is_empty then
 				Result.extend (create {EV_MENU_SEPARATOR})
