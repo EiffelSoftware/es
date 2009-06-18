@@ -24,6 +24,7 @@ WXS = \
 	studio_core.wxs \
 	studio_examples.wxs \
 	studio_libraries.wxs \
+	studio_experimental.wxs \
 	studio_gdiplus.wxs \
 	studio_ent_ec.wxs \
 	studio_gpl_ec.wxs
@@ -38,6 +39,7 @@ studio_gcc.wxs:
 studio_core.wxs:
 	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\EiffelStudio" -dr:"INSTALLDIR" \
 		-de:"\\EiffelStudio\\library$$" -de:"\\EiffelStudio\\examples$$" \
+		-de:"\\EiffelStudio\\experimental$$" \
 		-fe:"\\EiffelStudio\\studio\\spec\\w.*\\estudio.exe$$" \
 		-fe:"\\EiffelStudio\\esbuilder\\spec\\w.*\\esbuilder.exe$$" \
 		-g:"Core" -r -n:"Core." > $@.tmp
@@ -51,6 +53,11 @@ studio_examples.wxs:
 studio_libraries.wxs:
 	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\EiffelStudio\library" \
 		-dr:"Dir.Core.library" -g:"Core.library" -r -n:"Core.library." > $@.tmp
+	move $@.tmp $@
+
+studio_experimental.wxs:
+	$(HALLOW) $(HALLOW_FLAGS) "$(INSTALL_DIR)\EiffelStudio\experimental" \
+		-dr:"Dir.Core.experimental" -g:"Core.experimental" -r -n:"Core.experimental." > $@.tmp
 	move $@.tmp $@
 
 studio_gdiplus.wxs:
