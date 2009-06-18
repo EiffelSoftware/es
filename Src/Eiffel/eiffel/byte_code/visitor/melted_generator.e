@@ -554,6 +554,8 @@ feature {NONE} -- Visitors
 				a_node.check_list.process (Current)
 					-- Jump offset evaluation
 				ba.write_forward
+
+				context.set_assertion_type (0)
 			end
 		end
 
@@ -571,6 +573,7 @@ feature {NONE} -- Visitors
 			l_class_type: SPECIAL_CLASS_TYPE
 			l_call: CALL_ACCESS_B
 			l_nested: NESTED_B
+			l_is_make_filled: BOOLEAN
 		do
 			l_basic_type ?= context.real_type_fixed (a_node.type)
 			if l_basic_type /= Void then
@@ -580,7 +583,8 @@ feature {NONE} -- Visitors
 				l_basic_type.c_type.make_default_byte_code (ba)
 			else
 				l_call := a_node.call
-				if l_call /= Void and then l_call.routine_id = system.special_make_rout_id then
+				if a_node.is_special_creation then
+				 	l_is_make_filled := a_node.is_special_make_filled
 					l_special_type := context.real_type (a_node.type)
 					check
 						is_special_call_valid: a_node.is_special_call_valid
@@ -592,9 +596,24 @@ feature {NONE} -- Visitors
 						l_class_type_not_void: l_class_type /= Void
 					end
 					l_call.parameters.first.process (Current)
+					if l_is_make_filled then
+						l_call.parameters.i_th (2).process (Current)
+					end
 					ba.append (Bc_spcreate)
+						-- Say whether or not we should fill the SPECIAL.
+					ba.append_boolean (l_is_make_filled)
+					ba.append_boolean (a_node.is_special_make_empty)
 					a_node.info.make_byte_code (ba)
 					l_class_type.make_creation_byte_code (ba)
+					if l_is_make_filled then
+						create l_nested
+						l_nested.set_target (a_node)
+						l_nested.set_message (l_call)
+						l_call.set_parent (l_nested)
+						make_call_access_b (
+							l_call, bc_feature, bc_feature_inv, bc_pfeature, bc_pfeature_inv, True)
+						l_call.set_parent (Void)
+					end
 				else
 					ba.append (Bc_create)
 						-- If there is a call, we need to duplicate newly created object
@@ -1037,12 +1056,18 @@ feature {NONE} -- Visitors
 					make_case_range (l_case)
 					i := i - 1
 				end
+					-- Go to else part
 				ba.append (Bc_jmp)
-				ba.mark_forward3		-- To else part
+				ba.mark_forward3
+
+					-- Generate code for the various inspect matches
 				a_node.case_list.process (Current)
 				ba.write_forward3
 			end
 			if a_node.else_part /= Void then
+					-- We need to pop the value of the expression since we do not need it anymore.
+				ba.append (bc_pop)
+				ba.append_natural_32 (1)
 				a_node.else_part.process (Current)
 			else
 				ba.append (Bc_inspect_excep)
@@ -1057,7 +1082,6 @@ feature {NONE} -- Visitors
 				ba.write_forward
 				i := i - 1
 			end
-			ba.append (Bc_inspect)
 		end
 
 	process_instr_call_b (a_node: INSTR_CALL_B)
@@ -1200,9 +1224,6 @@ feature {NONE} -- Visitors
 			invariant_breakpoint_slot := l_context.get_breakpoint_slot
 
 			if not (a_node.invariant_part = Void and then a_node.variant_part = Void) then
-					-- Set the assertion type
-				l_context.set_assertion_type ({ASSERT_TYPE}.in_loop_invariant)
-
 				ba.append (Bc_loop)
 					-- In case the loop assertion are not checked, we
 					-- have to put a jump value.
@@ -1222,6 +1243,7 @@ feature {NONE} -- Visitors
 
 					-- Evaluation of the jump value
 				ba.write_forward
+				l_context.set_assertion_type (0)
 			end
 
 				-- Generate byte code for exit expression
@@ -1244,9 +1266,6 @@ feature {NONE} -- Visitors
 			l_context.set_breakpoint_slot (invariant_breakpoint_slot)
 
 			if not (a_node.invariant_part = Void and then a_node.variant_part = Void) then
-					-- Set the assertion type
-				l_context.set_assertion_type ({ASSERT_TYPE}.in_loop_invariant)
-
 				ba.append (Bc_loop)
 					-- In case the loop assertion are not checked, we
 					-- have to put a jump value.
@@ -1266,6 +1285,7 @@ feature {NONE} -- Visitors
 
 					-- Evaluation of the jump value
 				ba.write_forward
+				l_context.set_assertion_type (0)
 			end
 
 				-- Restore hook context
@@ -2126,7 +2146,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -2139,22 +2159,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

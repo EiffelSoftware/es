@@ -197,7 +197,12 @@ feature {NONE} -- Access
 					end
 					i := i + 1
 				end
-				Result := l_result
+
+				create Result.make (1, l_result.count)
+				from l_result.start until l_result.after loop
+					Result.put (l_result.item_for_iteration, l_result.index)
+					l_result.forth
+				end
 			else
 				Result := argument_source.arguments
 			end
@@ -252,6 +257,26 @@ feature {NONE} -- Element change
 			non_switched_argument_validator := a_validator
 		ensure
 			non_switched_argument_validator_set: non_switched_argument_validator = a_validator
+		end
+
+feature {NONE} -- Measurement
+
+	max_columns: NATURAL
+			-- Maximum columns to display in the terminal
+		once
+			Result := {ARGUMENT_EXTERNALS}.c_get_term_columns.as_natural_32
+			if Result = 0 then
+				Result := {INTEGER_32}.max_value.as_natural_32
+			else
+				if {PLATFORM}.is_windows then
+						-- Negate a single column because of Windows soft-wrapping behavior causes an extra line
+						-- break when a line is the exact length of the terminal width.
+					Result := Result - 1
+				end
+				Result := Result.max (25)
+			end
+		ensure
+			result_reasonable: Result >= 25
 		end
 
 feature -- Status report
@@ -704,7 +729,7 @@ feature {NONE} -- Basic Operations
 			a_action_attached: a_action /= Void
 			option_values_is_empty: option_values.is_empty and values.is_empty
 		do
-			if is_allowing_non_switched_arguments then
+			if is_allowing_non_switched_arguments and is_non_switch_argument_required then
 				display_usage
 			else
 				a_action.call (Void)
@@ -1110,7 +1135,7 @@ feature {NONE} -- Validation
 					loop
 						l_switch := l_switches [i]
 						if not l_switch.optional then
-							if not l_switch.is_special and then option_of_name (l_switch.id) = Void then
+							if not l_switch.is_special and then not has_option (l_switch.id) then
 								add_template_error (e_missing_switch_dependency_error, [l_option.name, l_switch.name])
 							end
 						end
@@ -1138,8 +1163,7 @@ feature {NONE} -- Validation
 			l_switch: ARGUMENT_SWITCH
 			l_cursor: CURSOR
 			l_valid: BOOLEAN
-			l_switches: ARRAY [ARGUMENT_SWITCH]
-			i, nb: INTEGER
+			l_switches: ARRAYED_LIST [ARGUMENT_SWITCH]
 		do
 			l_extend_groups := expanded_switch_groups.twin
 
@@ -1164,17 +1188,17 @@ feature {NONE} -- Validation
 				from l_extend_groups.start until l_extend_groups.after loop
 					from
 						l_switches := l_extend_groups.item.switches
-						i := l_switches.lower
-						nb := l_switches.upper
+						l_cursor := l_switches.cursor
+						l_switches.start
 						l_valid := True
 					until
-						i > nb or not l_valid
+						l_switches.after or not l_valid
 					loop
-						l_switch := l_switches.item (i)
-						if l_switch /= Void then
+						l_switch := l_switches.item_for_iteration
+						if attached l_switch then
 							l_valid := l_switch.optional or else has_option (l_switch.id)
 						end
-						i := i + 1
+						l_switches.forth
 					end
 					if not l_valid then
 						l_extend_groups.remove
@@ -1223,25 +1247,22 @@ feature {NONE} -- Validation
 	frozen expand_switch_group (a_group: ARGUMENT_GROUP): ARGUMENT_GROUP
 			-- Expands a group of switch `a_group' to include any item associated appurtenance switches.
 			--
-			-- `a_group':
-			-- `Result':
+			-- `a_group': A group to expand.
+			-- `Result': The expanded group of switches.
 		require
 			a_group_attached: a_group /= Void
 		local
-			l_group_switches: ARRAYED_SET [ARGUMENT_SWITCH]
+			l_group_switches: ARRAYED_LIST [ARGUMENT_SWITCH]
 			l_switch_dependencies: like switch_dependencies
 			l_switch: ARGUMENT_SWITCH
-			l_switches: ARRAYED_LIST [ARGUMENT_SWITCH]
 			l_upper, i: INTEGER
 		do
-			l_group_switches := a_group.switches
+			l_group_switches := a_group.switches.twin
 			l_switch_dependencies := switch_dependencies
-
-			create l_switches.make_from_array (l_group_switches)
 			if not l_switch_dependencies.is_empty then
 				from l_group_switches.start until l_group_switches.after loop
 					l_switch := l_group_switches.item
-					if attached {ARRAY [ARGUMENT_SWITCH]} l_switch_dependencies [l_switch] as l_appurtenances then
+					if attached l_switch_dependencies [l_switch] as l_appurtenances then
 						from
 							i := l_appurtenances.lower
 							l_upper := l_appurtenances.upper
@@ -1249,22 +1270,21 @@ feature {NONE} -- Validation
 							i > l_upper
 						loop
 							l_switch := l_appurtenances[i]
-							if not l_switches.has (l_switch) then
-								l_switches.extend (l_switch)
+							if not l_group_switches.has (l_switch) then
+								l_group_switches.extend (l_switch)
+								check not_l_group_switches_after: not l_group_switches.after end
 							end
 							i := i + 1
 						end
-					else
-						check False end
 					end
 					l_group_switches.forth
 				end
 			end
 
 			if a_group.is_hidden then
-				create Result.make (l_switches, a_group.is_allowing_non_switched_arguments)
+				create Result.make (l_group_switches, a_group.is_allowing_non_switched_arguments)
 			else
-				create Result.make_hidden (l_switches, a_group.is_allowing_non_switched_arguments)
+				create Result.make_hidden (l_group_switches, a_group.is_allowing_non_switched_arguments)
 			end
 		ensure
 			result_attached: Result /= Void
@@ -1383,7 +1403,6 @@ feature {NONE} -- Output
 		local
 			l_errors: like error_messages
 			l_cursor: CURSOR
-			l_item: STRING
 			l_error: STRING
 			l_tab_string: STRING
 		do
@@ -1399,11 +1418,7 @@ feature {NONE} -- Output
 				io.error.put_string (tab_string)
 				io.error.put_string ("> ")
 
-				l_item := l_errors.item
-				create l_error.make (2 + tab_string.count + l_item.count)
-				l_error.append (l_item)
-				l_error.replace_substring_all ("%N", l_tab_string)
-
+				l_error := format_terminal_text (l_errors.item, tab_string.count.as_natural_8 + 2)
 				io.error.put_string (l_error)
 				io.error.new_line
 				l_errors.forth
@@ -1427,8 +1442,7 @@ feature {NONE} -- Output
 			l_switch: ARGUMENT_SWITCH
 			l_value_switch: ARGUMENT_VALUE_SWITCH
 			l_value_switches: ARRAYED_LIST [ARGUMENT_VALUE_SWITCH]
-			l_nl: STRING
-			l_tabbed_nl: STRING
+			l_padding: INTEGER
 			l_max_len: INTEGER
 			l_name: STRING
 			l_arg_name: STRING
@@ -1476,7 +1490,6 @@ feature {NONE} -- Output
 			end
 
 			l_switches := available_visible_switches
-			l_nl := "%N"
 
 				-- Retrieve option max length for alignment
 			l_cursor := l_switches.cursor
@@ -1491,9 +1504,6 @@ feature {NONE} -- Output
 				end
 				l_switches.forth
 			end
-
-			create l_tabbed_nl.make_filled (' ', l_nl.count + tab_string.count + 1 + l_max_len)
-			l_tabbed_nl.insert_string (l_nl, 1)
 
 			l_inline_args := is_showing_argument_usage_inline
 
@@ -1524,19 +1534,23 @@ feature {NONE} -- Output
 				if l_switch.optional then
 					l_desc.append (once " (Optional)")
 				end
+				l_padding := l_name.count + tab_string.count + 2
+				l_desc := format_terminal_text (l_desc, l_padding.as_natural_8)
 				if l_inline_args and then attached {ARGUMENT_VALUE_SWITCH} l_switch as l_value_switch_2 then
 					l_arg_name := l_value_switch_2.arg_name
-					l_desc.append (once "%N<")
+					l_desc.append_character ('%N')
+					l_desc.append (create {STRING}.make_filled (' ', l_padding))
+					l_desc.append_character ('<')
 					l_desc.append (l_arg_name)
 					l_desc.append (once ">: ")
+					create l_arg_desc.make (32)
 					if l_value_switch_2.is_value_optional then
-						l_desc.append (once "(Optional) ")
+						l_arg_desc.append (once "(Optional) ")
 					end
-					l_arg_desc := l_value_switch_2.arg_description.twin
-					l_arg_desc.replace_substring_all ("%N", "%N" + create {STRING}.make_filled (' ', l_arg_name.count + 4))
+					l_arg_desc.append (l_value_switch_2.arg_description)
+					l_arg_desc := format_terminal_text (l_arg_desc, (l_padding + l_arg_name.count + 4).as_natural_8)
 					l_desc.append (l_arg_desc)
 				end
-				l_desc.replace_substring_all (l_nl, l_tabbed_nl)
 
 				io.put_string (tab_string)
 				io.put_string (l_name)
@@ -1560,9 +1574,6 @@ feature {NONE} -- Output
 					l_value_switches.forth
 				end
 
-				create l_tabbed_nl.make_filled (' ', l_nl.count + 6 + l_max_len)
-				l_tabbed_nl.insert_string (l_nl, 1)
-
 				from l_value_switches.start until l_value_switches.after loop
 					l_value_switch := l_value_switches.item
 
@@ -1577,9 +1588,7 @@ feature {NONE} -- Output
 						l_name.insert_string (l_arg_name, 2)
 						l_name.insert_character ('>', l_arg_name.count + 2)
 
-						l_desc := l_value_switch.arg_description.twin
-						l_desc.replace_substring_all (l_nl, l_tabbed_nl)
-
+						l_desc := format_terminal_text (l_value_switch.arg_description, (l_arg_name.count + tab_string.count + 4).as_natural_8)
 						io.put_string (tab_string)
 						io.put_string (l_name)
 						io.put_string (once ": ")
@@ -1651,7 +1660,7 @@ feature {NONE} -- Usage
 				from l_groups.start until l_groups.after loop
 					l_group := l_groups.item
 					if not l_group.is_hidden then
-						create l_switches.make_from_array (l_group.switches)
+						l_switches := l_group.switches
 							-- Add nologo switch, if not already added
 
 						if has_switch (nologo_switch) then
@@ -1691,6 +1700,7 @@ feature {NONE} -- Usage
 		local
 			l_dependencies: like switch_dependencies
 			l_dependent_switches: detachable ARRAY [ARGUMENT_SWITCH]
+			l_dependent_list: ARRAYED_LIST [ARGUMENT_SWITCH]
 			l_use_separated: like is_using_separated_switch_values
 			l_cursor: CURSOR
 			l_switch: ARGUMENT_SWITCH
@@ -1699,6 +1709,7 @@ feature {NONE} -- Usage
 			l_opt: BOOLEAN
 			l_opt_val: BOOLEAN
 			l_add_switch: BOOLEAN
+			i, l_upper: INTEGER
 		do
 			if not a_group.is_empty then
 				l_dependencies := switch_dependencies
@@ -1739,10 +1750,25 @@ feature {NONE} -- Usage
 							if l_dependencies /= Void and then l_dependencies.has (l_switch) then
 								l_dependent_switches := l_dependencies [l_switch]
 								check l_dependent_switches_attached: l_dependent_switches /= Void end
-								l_cfg := command_option_group_configuration (create {ARRAYED_LIST [ARGUMENT_SWITCH]}.make_from_array (l_dependent_switches), False, False, False, a_src_group)
-								if not l_cfg.is_empty then
-									Result.append_character (' ')
-									Result.append (l_cfg)
+								if not l_dependent_switches.is_empty then
+									create l_dependent_list.make (l_dependent_switches.count)
+									from
+										i := 1
+										l_upper := l_dependent_switches.upper
+									until
+										i > l_upper
+									loop
+										if attached l_dependent_switches.item (i) as l_dependency then
+											l_dependent_list.extend (l_dependency)
+										end
+										i := i + 1
+									end
+
+									l_cfg := command_option_group_configuration (l_dependent_list, False, False, False, a_src_group)
+									if not l_cfg.is_empty then
+										Result.append_character (' ')
+										Result.append (l_cfg)
+									end
 								end
 							end
 							if l_switch.allow_multiple then
@@ -1769,6 +1795,69 @@ feature {NONE} -- Usage
 		ensure
 			result_attached: Result /= Void
 			a_group_unmoved: a_group.cursor ~ old a_group.cursor
+		end
+
+	frozen format_terminal_text (a_text: STRING; a_left_padding: NATURAL_8): STRING
+			-- Formats the text for display on a terminal so that it is correctly wrapped..
+			--
+			-- `a_text': The text to format.
+			-- `a_left_padding': Padding, in columns, the description will be indented by.
+			-- `Result': A formatted text to fit the terminal.
+		require
+			a_text_attached: a_text /= Void
+			not_a_text_is_empty: not a_text.is_empty
+		local
+			l_columns: INTEGER
+			l_lines: LIST [STRING]
+			l_padding: STRING
+			i: INTEGER
+		do
+			l_lines := a_text.split ('%N')
+			l_columns := max_columns.as_integer_32 - a_left_padding
+
+				-- The lines need to be justified.
+			create l_padding.make_filled (' ', a_left_padding)
+			create Result.make (a_text.count + (l_lines.count * (a_left_padding + 1)))
+			from l_lines.start until l_lines.after loop
+				if attached l_lines.item as l_line then
+					if not Result.is_empty then
+						Result.append_character ('%N')
+						Result.append (l_padding)
+					end
+
+					if l_line.count > l_columns then
+							-- The line is too long, trim it
+						from
+							i := l_line.count.min (l_columns)
+						until
+							i = 0 or else l_line.item (i).is_space or else l_line.item (i) = '-'
+						loop
+							i := i - 1
+						end
+						if i = 0 then
+								-- No whitespace found.
+							i := l_columns
+						end
+
+						Result.append (l_line.substring (1, i))
+						l_line.keep_tail (l_line.count - i)
+						l_line.left_adjust
+					else
+							-- The line is within the maximum bounds.
+						Result.append (l_line)
+						l_line.wipe_out
+					end
+					if l_line.is_empty then
+						l_lines.forth
+					end
+				else
+					l_lines.forth
+				end
+			end
+
+		ensure
+			result_attached: Result /= Void
+			not_result_is_empty: not Result.is_empty
 		end
 
 	extended_usage: STRING
@@ -2099,11 +2188,12 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end
+

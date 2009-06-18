@@ -28,6 +28,9 @@ inherit
 		end
 
 	HEXADECIMAL_STRING_CONVERTER
+		export
+			{NONE} all
+		end
 
 	IPC_SHARED
 		export
@@ -79,6 +82,7 @@ feature {NONE} -- Implementation
 				end
 			else
 				dmp := a_target
+				check is_valid_value: dmp.is_valid_value end
 				if dmp.is_basic then
 					fi := realf
 					par := par + 4
@@ -114,7 +118,9 @@ feature {NONE} -- Implementation
 					rout_info := System.rout_info_table.item (fi.rout_id_set.first)
 					send_rqst_4_integer (Rqst_dynamic_eval, rout_info.offset, rout_info.origin, wclt.type_id - 1, par)
 				else
-					fixme ("it seems the runtime/debug is not designed to call precursor ...")
+					debug ("refactor_fixme")
+						fixme ("it seems the runtime/debug is not designed to call precursor ...")
+					end
 					send_rqst_4_integer (Rqst_dynamic_eval, fi.feature_id, wclt.static_type_id - 1, 0, par)
 				end
 					-- Receive the Result.
@@ -321,7 +327,7 @@ feature -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -334,22 +340,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

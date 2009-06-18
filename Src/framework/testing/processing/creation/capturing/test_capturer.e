@@ -23,6 +23,8 @@ inherit
 
 	DEBUG_VALUE_EXPORTER
 
+	CHARACTER_ROUTINES
+
 create
 	make
 
@@ -138,7 +140,7 @@ feature {NONE} -- Query
 			reference_value: is_reference_value (an_adv)
 		do
 			if not an_adv.address.is_void then
-				Result := attached {attached EIFFEL_CLASS_C} an_adv.dynamic_class as l_class
+				Result := attached {EIFFEL_CLASS_C} an_adv.dynamic_class as l_class
 			end
 		end
 
@@ -279,25 +281,31 @@ feature {NONE} -- Basic operations
 					end
 				end
 			elseif is_expanded_basic_type (an_adv) then
-				if attached {attached DEBUG_BASIC_VALUE [BOOLEAN]} an_adv as l_bool then
+				if attached {DEBUG_BASIC_VALUE [BOOLEAN]} an_adv as l_bool then
 					last_value := l_bool.value.out
-				elseif attached {attached DEBUG_BASIC_VALUE [POINTER]} an_adv as l_pointer then
+				elseif attached {DEBUG_BASIC_VALUE [POINTER]} an_adv as l_pointer then
 
 						-- Note: we do not store pointer values
 
-				elseif attached {attached DEBUG_BASIC_VALUE [ANY]} an_adv as l_value then
+				elseif attached {DEBUG_BASIC_VALUE [ANY]} an_adv as l_value then
 					l_type := l_value.dynamic_class.name
-					l_manifest := l_value.value.out
-					create last_value.make (l_type.count + l_manifest.count + 3)
+					create last_value.make (l_type.count + 20)
 					last_value.append_character ('{')
 					last_value.append (l_type)
 					last_value.append_character ('}')
 					last_value.append_character (' ')
-					last_value.append (l_manifest)
-					if attached {REAL_32} l_value.value as l_real or attached {REAL_64} l_value.value as l_double then
-						if not l_manifest.has ('.') then
-							last_value.append (".0")
+					if attached {DEBUG_BASIC_VALUE [CHARACTER]} l_value as l_char_value then
+						last_value.append_character ('%'')
+						last_value.append (char_text (l_char_value.value))
+						last_value.append_character ('%'')
+					else
+						l_manifest := l_value.dump_value.output_value (False)
+						if attached {DEBUG_BASIC_VALUE [REAL_32]} l_value or attached {DEBUG_BASIC_VALUE [REAL_64]} l_value then
+							if not l_manifest.has ('.') then
+								l_manifest.append (".0")
+							end
 						end
+						last_value.append (l_manifest)
 					end
 				end
 			end
@@ -374,7 +382,7 @@ feature {NONE} -- Basic operations
 				l_dbg_value := a_list.item_for_iteration
 				if l_dbg_value /= Void then
 					if
-						attached {attached STRING} l_dbg_value.dump_value.generating_type_representation (True) as l_type and then
+						attached l_dbg_value.dump_value.generating_type_representation (True) as l_type and then
 						not a_object.type.is_equal (l_type)
 					then
 							-- If the content referes to the same type, we do not increase the depth. That prevents
@@ -472,10 +480,10 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

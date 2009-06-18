@@ -11,8 +11,9 @@ note
 class AUT_RESULT_REPOSITORY_BUILDER
 
 inherit
-	AUT_LOG_PARSER
+	AUT_PROXY_EVENT_RECORDER
 		redefine
+			make,
 			process_start_request,
 			process_create_object_request,
 			process_invoke_feature_request,
@@ -22,24 +23,18 @@ inherit
 create
 	make
 
-feature -- Building
+feature {NONE} -- Initialization
 
-	build (a_input_stream: KI_TEXT_INPUT_STREAM)
-			-- Build result repository from `a_input_stream' and
-			-- store result in `last_result_repository'.
-		require
-			a_input_stream_attached: a_input_stream /= Void
-			a_input_stream_is_open_read: a_input_stream.is_open_read
+	make (a_system: like system)
+			-- <Precursor>
 		do
-			create last_result_repository.make
-			parse_stream (a_input_stream)
-		ensure
-			last_result_repository_built: last_result_repository /= Void
+			Precursor {AUT_PROXY_EVENT_RECORDER} (a_system)
+			create result_repository.make
 		end
 
 feature -- Access
 
-	last_result_repository: AUT_TEST_CASE_RESULT_REPOSITORY
+	result_repository: AUT_TEST_CASE_RESULT_REPOSITORY
 			-- Last result repository built by `build'
 
 	comment_processors: LINKED_LIST [PROCEDURE [ANY, TUPLE [STRING]]] is
@@ -84,7 +79,7 @@ feature{NONE} -- Processing
 			update_result_repository
 		end
 
-	report_comment_line (a_line: STRING) is
+	report_comment_line (a_producer: AUT_PROXY_EVENT_PRODUCER; a_line: STRING) is
 			-- Report comment line `a_line'.
 		local
 			l_processors: like comment_processors
@@ -116,7 +111,7 @@ feature {NONE} -- Implementation
 			witness: AUT_WITNESS
 		do
 			create witness.make (request_history, last_start_index, request_history.count)
-			last_result_repository.add_witness (witness)
+			result_repository.add_witness (witness)
 			last_test_case_request := witness.item (witness.count)
 			last_test_case_request.set_test_case_index (last_test_case_index)
 		end
@@ -180,14 +175,23 @@ feature -- Time measurement
 			end
 		end
 
+	exception_thrown_comment_processor (a_line: STRING) is
+			-- Process `a_line' if it is an exception thrown line.
+		do
+				-- Ilinca, "number of faults law" experiment
+			if a_line.has_substring ({AUT_SHARED_CONSTANTS}.exception_thrown_message) then
+--				last_response_text.append_string (a_line)
+			end
+		end
+
 	last_test_case_request: detachable AUT_REQUEST
 			-- Request of the last met test case
 
-	comment_processors_internal: like comment_processors
-			-- Implementation of `comment_processors'
-
 	last_test_case_index: INTEGER
 			-- Last met test case index
+
+	comment_processors_internal: like comment_processors
+			-- Implementation of `comment_processors'
 
 ;note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

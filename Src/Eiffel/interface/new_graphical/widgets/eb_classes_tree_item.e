@@ -139,7 +139,7 @@ feature {NONE} -- Implementation
 			-- Is `Current' already associated to a window?
 
 	pointer_press_action (a_x: INTEGER_32; a_y: INTEGER_32; a_button: INTEGER_32; a_x_tilt: REAL_64; a_y_tilt: REAL_64; a_pressure: REAL_64;
-						 a_screen_x: INTEGER_32; a_screen_y: INTEGER_32; action: PROCEDURE [ANY, TUPLE])
+						 a_screen_x: INTEGER_32; a_screen_y: INTEGER_32)
 			-- Send a stone corresponding to `Current' to `associated_window'.
 		local
 			l_stone: STONE
@@ -150,6 +150,17 @@ feature {NONE} -- Implementation
 				l_stone := stone
 				if l_stone /= Void and then l_stone.is_valid then
 						(create {EB_CONTROL_PICK_HANDLER}).launch_stone (l_stone)
+				end
+			end
+		end
+
+	register_pressed_item (a_x: INTEGER_32; a_y: INTEGER_32; a_button: INTEGER_32; a_x_tilt: REAL_64; a_y_tilt: REAL_64; a_pressure: REAL_64;
+						 a_screen_x: INTEGER_32; a_screen_y: INTEGER_32)
+			-- Register current into the tree.
+		do
+			if a_button = 1 then
+				if attached parent_tree as l_tree then
+					l_tree.set_last_pressed_item (Current)
 				end
 			end
 		end
@@ -168,7 +179,7 @@ feature {NONE} -- Implementation
 			-- `pointer_press_action' handler
 
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -181,22 +192,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_CLASSES_TREE_ITEM

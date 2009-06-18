@@ -52,6 +52,7 @@ feature {NONE} -- Initialization
 			make_output_pane
 			create name.make_from_string (a_name.as_string_32)
 			icon := a_icon
+			is_auto_scrolled := True
 		ensure
 			name_set: a_name.as_string_32 ~ name.as_string_32
 			icon_set: icon ~ a_icon
@@ -66,6 +67,7 @@ feature {NONE} -- Initialization
 			a_widget.editor.disable_editable
 			a_widget.editor.disable_has_breakable_slots
 			a_widget.editor.set_read_only (True)
+			a_widget.editor.set_focus
 
 				-- Set up a redirection for all dropped stones so they are forwarded to the correct
 				-- default tool.
@@ -80,13 +82,15 @@ feature {NONE} -- Initialization
 				local
 					l_cursor: DS_HASH_TABLE_CURSOR [ES_EDITOR_WIDGET, NATURAL_32]
 				do
-					if attached widget_table as l_table then
-						l_cursor := l_table.new_cursor
-						from l_cursor.start until l_cursor.after loop
-							if attached l_cursor.item as l_widget then
-								l_widget.scroll_editor_to_end (False)
+					if is_auto_scrolled then
+						if attached widget_table as l_table then
+							l_cursor := l_table.new_cursor
+							from l_cursor.start until l_cursor.after loop
+								if attached l_cursor.item as l_widget then
+									l_widget.scroll_editor_to_end (True)
+								end
+								l_cursor.forth
 							end
-							l_cursor.forth
 						end
 					end
 				end)
@@ -114,6 +118,22 @@ feature -- Access
 	name: IMMUTABLE_STRING_32
 			-- <Precursor>
 
+feature -- Status report
+
+	is_searchable: BOOLEAN = True
+			-- <Precursor>
+
+	is_auto_scrolled: BOOLEAN assign set_is_auto_scrolled
+			-- <Precursor>
+
+feature -- Status setting
+
+	set_is_auto_scrolled (a_auto: BOOLEAN)
+			-- <Precursor>
+		do
+			is_auto_scrolled := a_auto
+		end
+
 feature -- Query
 
 	text_from_window (a_window: SHELL_WINDOW_I): STRING_32
@@ -133,7 +153,6 @@ feature -- Query
 			-- <Precursor>
 		local
 			l_widget: ES_EDITOR_WIDGET
-			l_result: detachable OUTPUT_WINDOW
 		do
 			l_widget := widget_table.item (a_window.window_id)
 			check l_widget_attached: l_widget /= Void end
@@ -179,6 +198,21 @@ feature -- Basic operations
 			l_widget := widget_from_window (a_window)
 			if l_widget.is_interface_usable then
 				l_widget.clear
+			end
+		end
+
+	search_window (a_window: SHELL_WINDOW_I)
+			-- <Precursor>
+		local
+			l_widget: like widget_from_window
+			l_editor: EB_CLICKABLE_EDITOR
+		do
+			l_widget := widget_from_window (a_window)
+			if l_widget.is_interface_usable then
+				l_editor := l_widget.editor
+				if l_editor.is_interface_usable then
+					l_editor.quick_search
+				end
 			end
 		end
 

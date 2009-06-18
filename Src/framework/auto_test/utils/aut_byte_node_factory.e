@@ -251,7 +251,7 @@ feature -- Byte node generation
 			l_cidx := 2
 
 			create l_tuple_type.make (System.tuple_id, l_oargtypes)
-			l_current_class_void_safe := interpreter_root_class.lace_class.is_void_safe
+			l_current_class_void_safe := interpreter_root_class.lace_class.is_void_safe_call
 
 			if not l_tuple_type.is_attached then
 					-- Type of an argument tuple is always attached.

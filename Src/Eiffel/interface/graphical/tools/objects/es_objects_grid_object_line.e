@@ -148,8 +148,12 @@ feature -- Properties
 
 	object_spec_upper: INTEGER
 
-	object_spec_capacity: INTEGER
+	object_spec_count_and_capacity: TUPLE [spec_count, spec_capacity: INTEGER]
+		require
+			object_is_special_value: object_is_special_value
 		deferred
+		ensure
+			result_attached: Result /= Void
 		end
 
 feature -- Bridge to parent ES_OBJECTS_GRID
@@ -270,7 +274,7 @@ feature {NONE} -- Pick and Drop implementation
 			ocl: CLASS_C
 			t: like internal_item_stone_data_i_th
 		do
-			create internal_items_stone_data.make (row.count + 1) -- FIXME: upper value ?
+			create internal_items_stone_data.make_filled (Void, row.count + 1) -- FIXME: upper value ?
 			if attached object_address as oadd and then not oadd.is_void then
 					--| For now we don't support this for external type
 				ostn := object_name
@@ -283,18 +287,18 @@ feature {NONE} -- Pick and Drop implementation
 				t.pebble := ost
 				t.accept_cursor := ost.stone_cursor
 				t.deny_cursor := ost.X_stone_cursor
-				--When compiler is fixed use: t := [ost, ost.stone_cursor, ost.X_stone_cursor]
-				internal_items_stone_data[col_value_index] := t
-				internal_items_stone_data[col_type_index] := t
+					-- When compiler is fixed use: t := [ost, ost.stone_cursor, ost.X_stone_cursor]
+				internal_items_stone_data.put (t, col_value_index)
+				internal_items_stone_data.put (t, col_type_index)
 			else
 				ocl := object_dynamic_class
 				if ocl /= Void then
-					create {CLASSC_STONE} clst.make (ocl)
+					create clst.make (ocl)
 					create t
 					t.pebble := clst
 					t.accept_cursor := clst.stone_cursor
 					t.deny_cursor := clst.X_stone_cursor
-					--When compiler is fixed use: t := [clst, clst.stone_cursor, clst.X_stone_cursor]
+						-- When compiler is fixed use: t := [clst, clst.stone_cursor, clst.X_stone_cursor]
 					internal_items_stone_data[col_type_index] := t
 				end
 			end
@@ -821,7 +825,7 @@ feature {NONE} -- Filling
 				if object_is_special_value then
 					if object_spec_lower > 0 then
 						es_glab := slice_label_item (Interface_names.l_More_items)
-						if object_spec_lower > object_spec_capacity then
+						if object_spec_lower > object_spec_count_and_capacity.spec_capacity then
 							es_glab.set_text (es_glab.text + " (" + object_spec_lower.out + ")")
 						end
 						es_glab.pointer_double_press_actions.force_extend (agent on_slice_double_click)
@@ -831,7 +835,7 @@ feature {NONE} -- Filling
 					end
 					if
 						0 <= object_spec_upper and then
-						object_spec_upper < object_spec_capacity - 1
+						object_spec_upper < object_spec_count_and_capacity.spec_capacity - 1
 					then
 						es_glab := slice_label_item (Interface_names.l_More_items)
 						es_glab.pointer_double_press_actions.force_extend (agent on_slice_double_click)
@@ -847,7 +851,13 @@ feature {NONE} -- Filling
 				end
 				dcl := object_dynamic_class
 				if dcl /= Void then
-					if dcl.conform_to (debugger_manager.compiler_data.tuple_class_c) then
+					if
+						--| FIXME jfiat [2009-06-03]: check the implementation for dotnet, related to count and capacity
+						debugger_manager.is_classic_project and then
+						dcl.conform_to (debugger_manager.compiler_data.special_class_c)
+					then
+						fill_extra_attributes_for_special (a_row, list_cursor)
+					elseif dcl.conform_to (debugger_manager.compiler_data.tuple_class_c) then
 						fill_extra_attributes_for_tuple (a_row, list_cursor)
 					elseif
 						Eb_debugger_manager.display_agent_details
@@ -1015,6 +1025,39 @@ feature {NONE} -- Agent filling
 			Result.disable_use_overload_name
 		ensure
 			result_attached: Result /= Void
+		end
+
+	fill_extra_attributes_for_special (a_row: EV_GRID_ROW; list_cursor: DS_LINEAR_CURSOR [ABSTRACT_DEBUG_VALUE])
+		require
+			a_row /= Void
+			list_cursor /= Void
+		local
+			lrow: EV_GRID_ROW
+			grid: EV_GRID
+			glab: EV_GRID_LABEL_ITEM
+		do
+			grid := a_row.parent
+			list_cursor.start
+
+			a_row.insert_subrow (1)
+			lrow := a_row.subrow (1)
+
+			create glab.make_with_text ("count")
+			glab.set_pixmap (pixmaps.mini_pixmaps.general_search_icon)
+			lrow.set_item (col_name_index, glab)
+
+			create glab.make_with_text (object_spec_count_and_capacity.spec_count.out)
+			lrow.set_item (Col_value_index, glab)
+
+			a_row.insert_subrow (2)
+			lrow := a_row.subrow (2)
+
+			create glab.make_with_text ("capacity")
+			glab.set_pixmap (pixmaps.mini_pixmaps.general_search_icon)
+			lrow.set_item (col_name_index, glab)
+
+			create glab.make_with_text (object_spec_count_and_capacity.spec_capacity.out)
+			lrow.set_item (Col_value_index, glab)
 		end
 
 	fill_extra_attributes_for_tuple (a_row: EV_GRID_ROW; list_cursor: DS_LINEAR_CURSOR [ABSTRACT_DEBUG_VALUE])

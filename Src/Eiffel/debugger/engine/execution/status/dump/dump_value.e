@@ -129,7 +129,24 @@ feature {DUMP_VALUE_FACTORY} -- Restricted Initialization
 			dynamic_class := Void
 		end
 
+feature -- Status
+
+	is_invalid_value: BOOLEAN
+			-- Is Current an invalid value?
+
+	is_valid_value: BOOLEAN
+			-- Is Current a valid value?
+		do
+			Result := not is_invalid_value
+		end
+
 feature -- change
+
+	invalidate_value
+			-- Mark Current as invalid value
+		do
+			is_invalid_value := True
+		end
 
 	set_icd_value_dotnet (v: like value_dotnet)
 			-- Set `value_dotnet' as `v'
@@ -704,7 +721,9 @@ feature -- Action
 		do
 			inspect (type)
 			when Type_manifest_string then
-				fixme("We should handle STRING_32 on the runtime side of the debuger")
+				debug ("refactor_fixme")
+					fixme("We should handle STRING_32 on the runtime side of the debuger")
+				end
 				value_string_c := value_string.as_string_8.to_c
 				send_string_value ($value_string_c)
 			when Type_object, Type_expanded_object then
@@ -948,7 +967,9 @@ feature {DBG_EVALUATOR} -- Convertor
 		local
 			s: STRING_8
 		do
-			fixme ("This is a temporary safe solution for 6.1, later we'll need to redesign part of debugger's data+evaluator")
+			debug ("refactor_fixme")
+				fixme ("This is a temporary safe solution for 6.1, later we'll need to redesign part of debugger's data+evaluator")
+			end
 			s := value_string
 			if s /= Void then
 				Result := debugger_manager.expression_evaluation ("(%"" + s + "%").twin")
@@ -958,7 +979,7 @@ feature {DBG_EVALUATOR} -- Convertor
 			end
 		end
 
-feature {DEBUGGER_EXPORTER, DUMP_VALUE, DBG_EXPRESSION_EVALUATOR, DBG_EVALUATOR} -- Internal data
+feature -- Access: internal data
 
 	value_address	: like address -- string standing for the address of the object if type=Type_object
 	value_string    : STRING_32 -- String value
@@ -1003,7 +1024,7 @@ feature {NONE} -- Private Constants
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -1016,22 +1037,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class DUMP_VALUE

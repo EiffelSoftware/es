@@ -25,13 +25,14 @@ feature
 
 	our_list: OUR_MESSAGE
 
-	received: ?OUR_MESSAGE -- Type redefinition
+	received: detachable OUR_MESSAGE -- Type redefinition
 
 	make_client (argv: ARRAY [STRING])
 			-- Build list, send it, receive modified list, and print it.
 		local
 			l_host: STRING
 			l_port: INTEGER
+			l_in_out: detachable like in_out
 		do
 			if argv.count /= 3 then
 				io.error.put_string ("Usage: ")
@@ -45,13 +46,16 @@ feature
 				l_host := argv.item (1)
 			end
 			make (l_port, l_host)
+			l_in_out := in_out
 			build_list
 			send (our_list)
 			receive
 			process_received
 			cleanup
 		rescue
-			cleanup
+			if l_in_out /= Void and then not l_in_out.is_closed then
+				l_in_out.close
+			end
 		end
 
 	build_list
@@ -67,7 +71,7 @@ feature
 	process_received
 			-- Print the contents of received in sequence.
 		do
-			if {l_received: OUR_MESSAGE} received then
+			if attached {OUR_MESSAGE} received as l_received then
 				from
 					l_received.start
 				until

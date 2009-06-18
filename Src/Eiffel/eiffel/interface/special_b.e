@@ -26,7 +26,6 @@ feature -- Validity
 			special_error: SPECIAL_ERROR
 			feat_table: FEATURE_TABLE
 			item_feature, put_feature, make_feature: FEATURE_I
-			done: BOOLEAN
 		do
 				-- Check if class has one formal generic parameter
 			if generics = Void or else generics.count /= 1 or else not is_frozen then
@@ -36,54 +35,59 @@ feature -- Validity
 
 			feat_table := feature_table
 
-				-- Check if class has a feature make (INTEGER)
-			make_feature := feat_table.item_id (names_heap.make_name_id)
-			if
-				make_feature = Void
-				or else not (make_feature.written_in = class_id)
-				or else not make_feature.same_signature (make_signature)
-			then
-				create special_error.make (special_case_2, Current)
-				Error_handler.insert_error (special_error)
-			end
-
-				-- Check that `make' is indeed a creation procedure
-			if creators = Void then
-				create special_error.make (special_case_3, Current)
-				Error_handler.insert_error (special_error)
-			else
-				from
-					creators.start
-				until
-					done or else creators.after
-				loop
-					done := creators.key_for_iteration.
-						is_equal (names_heap.item (Names_heap.make_name_id))
-					creators.forth
+				-- Check if class has a feature `make (INTEGER)' or `make_empty (INTEGER)'.
+			make_feature := feat_table.item_id ({PREDEFINED_NAMES}.make_name_id)
+			if make_feature /= Void then
+				if
+					not (make_feature.written_in = class_id) or else
+					not make_feature.same_signature (make_signature) or else
+					not has_creation_routine (make_feature)
+				then
+					create special_error.make (special_case_2, Current)
+					Error_handler.insert_error (special_error)
 				end
-				if not done then
+			else
+				make_feature := feat_table.item_id ({PREDEFINED_NAMES}.make_empty_name_id)
+				if
+					make_feature = Void or else
+					not (make_feature.written_in = class_id) or else
+					not make_feature.same_signature (make_empty_signature) or else
+					not has_creation_routine (make_feature)
+				then
 					create special_error.make (special_case_3, Current)
 					Error_handler.insert_error (special_error)
 				end
 			end
 
-				-- Check if class has a feature item (INTEGER): G#1
-			item_feature := feat_table.item_id (names_heap.item_name_id)
-			if item_feature = Void
-				or else not (item_feature.written_in = class_id)
-				or else not item_feature.same_signature (item_signature)
+				-- Check if class has a feature `make_filled (G#1, INTEGER)'
+			make_feature := feat_table.item_id ({PREDEFINED_NAMES}.make_filled_name_id)
+			if
+				make_feature = Void or else
+				not (make_feature.written_in = class_id) or else
+				not make_feature.same_signature (make_filled_signature) or else
+				not has_creation_routine (make_feature)
 			then
 				create special_error.make (special_case_4, Current)
 				Error_handler.insert_error (special_error)
 			end
 
+				-- Check if class has a feature item (INTEGER): G#1
+			item_feature := feat_table.item_id ({PREDEFINED_NAMES}.item_name_id)
+			if item_feature = Void
+				or else not (item_feature.written_in = class_id)
+				or else not item_feature.same_signature (item_signature)
+			then
+				create special_error.make (special_case_5, Current)
+				Error_handler.insert_error (special_error)
+			end
+
 				-- Check if class has a feature put (G#1, INTEGER)
-			put_feature := feat_table.item_id (names_heap.put_name_id)
+			put_feature := feat_table.item_id ({PREDEFINED_NAMES}.put_name_id)
 			if put_feature = Void
 				or else not (put_feature.written_in = class_id)
 				or else not put_feature.same_signature (put_signature)
 			then
-				create special_error.make (special_case_5, Current)
+				create special_error.make (special_case_6, Current)
 				Error_handler.insert_error (special_error)
 			end
 		end
@@ -225,18 +229,64 @@ feature -- Code generation
 
 feature {NONE} -- Implementation
 
+	has_creation_routine (a_feature: FEATURE_I): BOOLEAN
+			-- Check that `a_feature' is indeed a creation procedure.
+		require
+			a_feature_attached: a_feature /= Void
+		do
+			if creators /= Void then
+				from
+					creators.start
+				until
+					Result or else creators.after
+				loop
+					Result := creators.key_for_iteration.is_equal (a_feature.feature_name)
+					creators.forth
+				end
+			end
+		end
+
 	make_signature: DYN_PROC_I
 			-- Required signature for feature `make' of class SPECIAL
 		local
 			args: FEAT_ARG
 		do
 			create args.make (1)
-			args.put_i_th (Integer_type, 1)
+			args.extend (Integer_type)
 			create Result
 			Result.set_arguments (args)
 			Result.set_feature_name_id (Names_heap.make_name_id, 0)
 		ensure
 			item_signature_not_void: Result /= Void
+		end
+
+	make_empty_signature: DYN_PROC_I
+			-- Required signature for feature `make_empty' of class NATIVE_ARRAY.
+		local
+			args: FEAT_ARG
+		do
+			create  args.make (1)
+			args.extend (Integer_type)
+			create  Result
+			Result.set_arguments (args)
+			Result.set_feature_name_id ({PREDEFINED_NAMES}.make_empty_name_id, 0)
+		end
+
+	make_filled_signature: DYN_PROC_I
+			-- Required signature for feature `make_filled' of class SPECIAL
+		local
+			args: FEAT_ARG
+			f: FORMAL_A
+		do
+			create f.make (False, False, 1)
+			create args.make (2)
+			args.extend (f)
+			args.extend (Integer_type)
+			create Result
+			Result.set_arguments (args)
+			Result.set_feature_name_id (Names_heap.make_filled_name_id, 0)
+		ensure
+			put_signature_not_void: Result /= Void
 		end
 
 	item_signature: DYN_FUNC_I
@@ -246,7 +296,7 @@ feature {NONE} -- Implementation
 			f: FORMAL_A
 		do
 			create args.make (1)
-			args.put_i_th (Integer_type, 1)
+			args.extend (Integer_type)
 			create Result
 			Result.set_arguments (args)
 			create f.make (False, False, 1)
@@ -264,8 +314,8 @@ feature {NONE} -- Implementation
 		do
 			create f.make (False, False, 1)
 			create args.make (2)
-			args.put_i_th (f, 1)
-			args.put_i_th (Integer_type, 2)
+			args.extend (f)
+			args.extend (Integer_type)
 			create Result
 			Result.set_arguments (args)
 			Result.set_feature_name_id (Names_heap.put_name_id, 0)
@@ -274,7 +324,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -287,22 +337,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

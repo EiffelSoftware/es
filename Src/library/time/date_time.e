@@ -41,13 +41,13 @@ class DATE_TIME inherit
 		end
 
 create
-
 	make,
 	make_fine,
 	make_by_date_time,
 	make_by_date,
 	make_now,
 	make_now_utc,
+	make_from_epoch,
 	make_from_string,
 	make_from_string_with_base,
 	make_from_string_default,
@@ -197,6 +197,30 @@ feature -- Initialization
 			make_by_date_time (date_time.date, date_time.time)
 		end
 
+	make_from_epoch (s: INTEGER)
+			-- Create a new date time from the number of
+			-- seconds since epoch (1 Jan 1970 at 00:00:00).
+		local
+			d: INTEGER
+			ss: INTEGER
+			l_dur: DATE_TIME_DURATION
+		do
+			if s < 0 then
+				ss := -s
+			else
+				ss := s
+			end
+			d := ss // Seconds_in_day
+			ss := ss \\ Seconds_in_day
+			create l_dur.make_definite (d, 0, 0, ss)
+			make_fine (1970, 1, 1, 0, 0, 0.0)
+			if s < 0 then
+				add (-l_dur)
+			else
+				add (l_dur)
+			end
+		end
+
 feature -- Access
 
 	date: DATE
@@ -293,7 +317,7 @@ feature -- Element Change
 
 feature -- Basic operations
 
-	infix "+" (d: DATE_TIME_DURATION): like Current
+	plus alias "+" (d: DATE_TIME_DURATION): like Current
 			-- Sum the current object with `d'
 		require
 			d_not_void: d /= Void

@@ -474,11 +474,11 @@ end;
 			-- CALLS_FILTER (true) or not (false).
 			-- Index of value is `i'.
 		local
-			real_ref: REAL_REF;
+			real_ref: REAL_64_REF;
 			int_ref: INTEGER_REF;
 			lower, upper, origin: STRING;
 			lower_ref_int, upper_ref_int: INTEGER_REF;
-			lower_ref_real, upper_ref_real: REAL_REF
+			lower_ref_real, upper_ref_real: REAL_64_REF
 		do
 			Result := filter;
 			origin := prof_query.subquery_at (i).value;
@@ -513,7 +513,7 @@ end;
 			-- `val' contains the value.
 		local
 			int_ref: INTEGER_REF
-			real_ref: REAL_REF
+			real_ref: REAL_64_REF
 		do
 			if calls then
 				create int_ref;
@@ -579,7 +579,7 @@ end;
 									/ profile_information.profile_data.number_of_cycles)
 						end
 					else
-						real_ref.set_item (val.to_real)
+						real_ref.set_item (val.to_double)
 					end
 				elseif prof_query.subquery_at (i).column.is_equal (profiler_descendants) then
 					if val.is_equal (profiler_min) then
@@ -610,7 +610,7 @@ end;
 									/ profile_information.profile_data.number_of_cycles)
 						end
 					else
-						real_ref.set_item (val.to_real)
+						real_ref.set_item (val.to_double)
 					end
 				elseif prof_query.subquery_at (i).column.is_equal (profiler_self) then
 					if val.is_equal (profiler_min) then
@@ -641,7 +641,7 @@ end;
 									/ profile_information.profile_data.number_of_cycles)
 						end
 					else
-						real_ref.set_item (val.to_real)
+						real_ref.set_item (val.to_double)
 					end
 				elseif prof_query.subquery_at (i).column.is_equal (profiler_total) then
 					if val.is_equal (profiler_min) then
@@ -672,7 +672,7 @@ end;
 									/ profile_information.profile_data.number_of_cycles)
 						end
 					else
-						real_ref.set_item (val.to_real)
+						real_ref.set_item (val.to_double)
 					end
 				end;
 				Result := real_ref
@@ -743,13 +743,13 @@ end;
 					elseif prof_options.output_names.item (i).is_equal ("calls") then
 						text_formatter.add (item.calls.out)
 					elseif prof_options.output_names.item (i).is_equal ("self") then
-						text_formatter.add (item.self.out)
+						text_formatter.add (time_formatter.formatted (item.self))
 					elseif prof_options.output_names.item (i).is_equal ("descendants") then
-						text_formatter.add (item.descendants.out)
+						text_formatter.add (time_formatter.formatted (item.descendants))
 					elseif prof_options.output_names.item (i).is_equal ("total") then
-						text_formatter.add (item.total.out)
+						text_formatter.add (time_formatter.formatted (item.total))
 					elseif prof_options.output_names.item (i).is_equal ("percentage") then
-						text_formatter.add (item.percentage.out)
+						text_formatter.add (percentage_formatter.formatted (item.percentage))
 					end
 					text_formatter.add_indent
 					i := i + 1
@@ -775,8 +775,22 @@ feature {NONE} -- Attributes
 	prof_query: PROFILER_QUERY;
 		-- All the active queries.
 
-	prof_options: PROFILER_OPTIONS;
+	prof_options: PROFILER_OPTIONS
 		-- The options specified by the user.
+
+	time_formatter: FORMAT_DOUBLE
+			-- Consistent presentation of real numbers.
+		once
+			create Result.make (7, 6)
+			Result.hide_trailing_zeros
+		end
+
+	percentage_formatter: FORMAT_DOUBLE
+			-- Consistent presentation of real numbers.
+		once
+			create Result.make (4, 3)
+			Result.hide_trailing_zeros
+		end
 
 note
 	copyright:	"Copyright (c) 1984-2006, Eiffel Software"

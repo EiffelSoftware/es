@@ -57,7 +57,9 @@ feature -- Status setting
 					port_counter.put (min_port)
 				end
 				last_port := port_counter.item
-				create l_socket.make_server_by_port (last_port)
+
+				create l_socket.make_loopback_server_by_port (last_port)
+
 				l_tries := l_tries + 1
 			end
 			if l_socket /= Void and then l_socket.is_open_read then
@@ -123,8 +125,10 @@ feature {NONE} -- Implementation
 						if l_flag = l_next then
 							if attached {EQA_TEST_RESULT} a_socket.retrieved as l_outcome then
 								a_status.put_outcome (l_outcome)
-								l_stop := False
+							else
+								a_status.put_outcome (create {EQA_TEST_RESULT}.make_communication_error (create {DATE_TIME}.make_now))
 							end
+							l_stop := False
 						end
 					end
 				end
@@ -181,10 +185,10 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

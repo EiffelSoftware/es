@@ -305,13 +305,18 @@ feature {NONE} -- Steps
 			list: DS_LIST [ITP_EXPRESSION]
 			normal_response: AUT_NORMAL_RESPONSE
 		do
---			if argument_creator /= Void and then not argument_creator.receivers.is_empty then
---				list := argument_creator.receivers
---			else
---				create {DS_LINKED_LIST [ITP_EXPRESSION]} list.make
---			end
-			list := arguments
-			if target /= Void and then not interpreter.variable_table.variable_type (target).is_none then
+			if argument_creator /= Void and then not argument_creator.receivers.is_empty then
+				list := argument_creator.receivers
+			else
+				create {DS_LINKED_LIST [ITP_EXPRESSION]} list.make
+			end
+
+				-- Before calling the routine, we make sure it's target is attached and input for the
+				-- arguments was succesfully created.
+			if
+				target /= Void and then not interpreter.variable_table.variable_type (target).is_none and then
+				feature_to_call.argument_count = list.count
+			then
 				if feature_to_call.type /= void_type then
 					receiver := interpreter.variable_table.new_variable
 					interpreter.invoke_and_assign_feature (receiver, type, feature_to_call, target, list)

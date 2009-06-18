@@ -86,10 +86,12 @@ feature -- Access
 		end
 
 	long_title: STRING_32
-			-- Client programmer's widget's long title. Which is shown at SD_TITLE_BAR.
+			-- Client programmer's widget's long title.
+			-- The long title is used in all title bars where are enough space.
 
 	short_title: STRING_32
-			-- Client programmer's widget's short title. Which is shown at SD_TAB_STUB.		
+			-- Client programmer's widget's short title.
+			-- The short title is used in all tabs where are not enough space. 	
 
 	pixmap: like internal_pixmap
 			-- Client programmer's widget's pixmap.
@@ -227,7 +229,7 @@ feature -- Set
 			a_long_title_not_void: a_long_title /= Void
 		do
 			long_title := a_long_title
-			internal_state.change_title (a_long_title, Current)
+			internal_state.change_long_title (a_long_title, Current)
 		ensure
 			set: a_long_title.as_string_32.is_equal (long_title)
 		end
@@ -236,9 +238,10 @@ feature -- Set
 			-- Set `short_title'.
 		require
 			a_short_title_not_void: a_short_title /= Void
+			not_too_long: a_short_title.count < 1000
 		do
 			short_title := a_short_title
-			internal_state.change_title (a_short_title, Current)
+			internal_state.change_short_title (a_short_title, Current)
 		ensure
 			set: a_short_title.as_string_32.is_equal (short_title)
 		end

@@ -337,9 +337,6 @@ feature -- Properties
 			--| Once melted, it is kept in memory so it won't be re-processed
 			--| each time
 
-	nb_frozen_features: INTEGER
-			-- Number of frozen features in system.
-
 	body_index_table: ARRAY [INTEGER]
 			-- Body index table
 			--| Correspondance of generic body index and generic body
@@ -1446,18 +1443,15 @@ feature -- SPECIAL.make routine id
 
 	special_make_rout_id: INTEGER
 			-- Routine id of `make' from SPECIAL.
-			-- Return 0 if SPECIAL has not been compiled or
-			-- does not have a feature named `make'.
+			-- Return 0 if SPECIAL has not been compiled or does not have a feature named `make'.
 		local
 			feature_i: FEATURE_I
 		do
 			Result := internal_special_make_rout_id
 			if Result < 0 then
 				Result := 0
-				if special_class /= Void and then
-						special_class.compiled_class /= Void then
-					feature_i := special_class.compiled_class.
-						feature_table.item_id (names.make_name_id)
+				if special_class /= Void and then special_class.compiled_class /= Void then
+					feature_i := special_class.compiled_class.feature_table.item_id ({PREDEFINED_NAMES}.make_name_id)
 					if feature_i /= Void then
 						Result := feature_i.rout_id_set.first
 					end
@@ -1465,6 +1459,46 @@ feature -- SPECIAL.make routine id
 				internal_special_make_rout_id := Result
 			end
 		end
+
+	special_make_empty_rout_id: INTEGER
+			-- Routine id of `make_empty' from SPECIAL.
+			-- Return 0 if SPECIAL has not been compiled or does not have a feature named `make_empty'.
+		local
+			feature_i: FEATURE_I
+		do
+			Result := internal_special_make_empty_rout_id
+			if Result < 0 then
+				Result := 0
+				if special_class /= Void and then special_class.compiled_class /= Void then
+					feature_i := special_class.compiled_class.feature_table.item_id ({PREDEFINED_NAMES}.make_empty_name_id)
+					if feature_i /= Void then
+						Result := feature_i.rout_id_set.first
+					end
+				end
+				internal_special_make_empty_rout_id := Result
+			end
+		end
+
+	special_make_filled_rout_id: INTEGER
+			-- Routine id of `make_filled' from SPECIAL.
+			-- Return 0 if SPECIAL has not been compiled or
+			-- does not have a feature named `make_filled'.
+		local
+			feature_i: FEATURE_I
+		do
+			Result := internal_special_make_filled_rout_id
+			if Result < 0 then
+				Result := 0
+				if special_class /= Void and then special_class.compiled_class /= Void then
+					feature_i := special_class.compiled_class.feature_table.item_id ({PREDEFINED_NAMES}.make_filled_name_id)
+					if feature_i /= Void then
+						Result := feature_i.rout_id_set.first
+					end
+				end
+				internal_special_make_filled_rout_id := Result
+			end
+		end
+
 
 feature -- Routine IDS update
 
@@ -1479,6 +1513,8 @@ feature -- Routine IDS update
 			internal_default_create_rout_id := -1
 			internal_is_equal_rout_id := -1
 			internal_special_make_rout_id := - 1
+			internal_special_make_empty_rout_id := - 1
+			internal_special_make_filled_rout_id := - 1
 		end
 
 feature {NONE} -- Implementation: predefined routine IDs
@@ -1494,6 +1530,12 @@ feature {NONE} -- Implementation: predefined routine IDs
 
 	internal_special_make_rout_id: INTEGER
 			-- Once per compilation value of routine id of `make' from SPECIAL.
+
+	internal_special_make_empty_rout_id: INTEGER
+			-- Once per compilation value of routine id of `make' from SPECIAL.
+
+	internal_special_make_filled_rout_id: INTEGER
+			-- Once per compilation value of routine id of `make_filled' from SPECIAL.
 
 feature -- Feature declaration
 
@@ -2408,6 +2450,9 @@ end
 				-- next time we will freeze, all the melted classes will
 				-- be in `Degree_minus_1'.
 			Degree_1.transfer_to (Degree_minus_1)
+
+				-- Compress execution table.
+			execution_table.melt
 		end
 
 	make_update (empty: BOOLEAN)
@@ -2952,8 +2997,13 @@ end
 debug ("ACTIVITY")
 	io.error.put_string ("Shake%N")
 end
-				-- Rebuild the execution table
-			shake
+				-- Compress execution table.
+			if not first_compilation then
+				execution_table.freeze
+			end
+
+				-- Freeze the external table.
+			externals.freeze
 
 				-- Generation of the descriptor tables
 			process_degree_minus_1
@@ -3005,33 +3055,12 @@ end
 
 			deg_output.display_degree_output (degree_message, 1, 10)
 			execution_table.generate
-				-- Empty melted list of execution table
-			execution_table.freeze
 
 			deg_output.display_degree_output (degree_message, 0, 10)
 			t.generate_make_file
 
 				-- Create an empty update file ("melted.eif")
 			make_update (True)
-		end
-
-	shake
-		local
-			exec_table: EXECUTION_TABLE
-		do
-				-- Compress execution table
-			exec_table := execution_table
-
-			if not first_compilation then
-				exec_table.shake
-			end
-
-				-- Reset the frozen level since the execution table
-				-- is re-built now.
-			nb_frozen_features := exec_table.nb_frozen_features
-
-				-- Freeze the external table.
-			externals.freeze
 		end
 
 feature -- Final mode generation
@@ -3057,7 +3086,7 @@ feature -- Final mode generation
 			l_old_type_id_counter: INTEGER
 		do
 			eiffel_project.terminate_c_compilation
-			if not retried and is_finalization_needed then
+			if not retried and True then --is_finalization_needed then
 				create skeleton_table.make (400)
 				if not il_generation then
 					internal_retrieved_finalized_type_mapping := Void
@@ -5296,7 +5325,7 @@ feature -- Pattern table generation
 					-- Set the frozen level
 				buffer.put_new_line
 				buffer.put_string ("eif_nb_features = ")
-				buffer.put_integer (nb_frozen_features)
+				buffer.put_integer (execution_table.nb_frozen_features)
 				buffer.put_character (';')
 
 				buffer.generate_block_close
@@ -6135,22 +6164,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class SYSTEM_I

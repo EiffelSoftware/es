@@ -27,11 +27,16 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_system: like system; a_config: like configuration) is
+	make (a_system: like system; a_config: like configuration; a_session: AUT_SESSION) is
 			-- Initialize.
+		require
+			a_system_attached: a_system /= Void
+			a_config_attached: a_config /= Void
+			a_session_attached: a_session /= Void
 		do
 			system := a_system
 			configuration := a_config
+			session := a_session
 
 			create class_under_test.make (10)
 			class_under_test.set_equality_tester (create {AGENT_BASED_EQUALITY_TESTER [CLASS_C]}.make (
@@ -57,7 +62,7 @@ feature -- Process
 			l_output_file: KL_TEXT_OUTPUT_FILE
 		do
 				-- Setup log file analyzer.
-			create l_log_publisher.make (system, create {AUT_ERROR_HANDLER}.make (system))
+			create l_log_publisher.make (system, session)
 
 			create basic_witness_observer.make (system)
 			create faulty_witness_observer.make (system)
@@ -300,10 +305,10 @@ feature -- Result printing
 				a_output_file.put_integer (l_data.fail)
 				a_output_file.put_character ('%T')
 
-				a_output_file.put_integer (l_data.invalid)
+				a_output_file.put_integer (l_data.bad)
 				a_output_file.put_character ('%T')
 
-				a_output_file.put_integer (l_data.bad)
+				a_output_file.put_integer (l_data.invalid)
 				a_output_file.put_character ('%T')
 
 
@@ -313,10 +318,10 @@ feature -- Result printing
 				a_output_file.put_integer (l_data.fail_time // 1000)
 				a_output_file.put_character ('%T')
 
-				a_output_file.put_integer (l_data.invalid_time // 1000)
+				a_output_file.put_integer (l_data.bad_time // 1000)
 				a_output_file.put_character ('%T')
 
-				a_output_file.put_integer (l_data.bad_time // 1000)
+				a_output_file.put_integer (l_data.invalid_time // 1000)
 				a_output_file.put_character ('%T')
 
 				if l_data.time_of_first_valid_test_case >= 0 then

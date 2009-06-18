@@ -115,7 +115,7 @@ feature -- Modification: Feature
 				until
 					l_indexes.after or l_found
 				loop
-					if attached {INDEX_AS} l_indexes.item as lt_index then
+					if attached l_indexes.item as lt_index then
 						l_entry := eis_entry_from_index (lt_index, l_feature_id)
 						if l_entry /= Void and then l_entry.same_entry (a_entry) then
 							if l_indexes.count = 1 and then a_clean_empty_clause then
@@ -149,10 +149,10 @@ feature {NONE} -- Implementation
 			-- Get eis container structure keyword from parser.
 			-- Either note or indexing
 		local
-			l_syntax_level: CONF_VALUE_CHOICE
+			l_syntax: CONF_VALUE_CHOICE
 		do
-			l_syntax_level := context_class.options.syntax_level
-			if l_syntax_level.item /= {CONF_OPTION}.syntax_level_obsolete  then
+			l_syntax := context_class.options.syntax
+			if l_syntax.index /= {CONF_OPTION}.syntax_index_obsolete  then
 				Result := {EIFFEL_KEYWORD_CONSTANTS}.note_keyword
 			else
 				Result := {EIFFEL_KEYWORD_CONSTANTS}.indexing_keyword
@@ -160,7 +160,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2007, Eiffel Software"
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -184,11 +184,11 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

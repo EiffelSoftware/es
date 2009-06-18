@@ -258,6 +258,12 @@ feature -- Value
 			Result := show_completion_obsolete_items_preference.value
 		end
 
+	show_completion_tooltip: BOOLEAN
+			-- Should tooltips be shown in the completion list
+		do
+			Result := show_completion_tooltip_preference.value
+		end
+
 	syntax_complete_enabled: BOOLEAN
 			-- should main keywords be completed ?
 		do
@@ -418,6 +424,9 @@ feature -- Preference
 	show_completion_obsolete_items_preference: BOOLEAN_PREFERENCE
 			-- Should obsolete items be shown in completion list?
 
+	show_completion_tooltip_preference: BOOLEAN_PREFERENCE
+			-- Should obsolete items be shown in completion list?
+
 	syntax_complete_enabled_preference: BOOLEAN_PREFERENCE
 			-- should main keywords be completed ?
 
@@ -517,6 +526,9 @@ feature {NONE} -- Preference Strings
 
 	show_completion_obsolete_items_string: STRING = "editor.eiffel.show_obsolete_items"
 			-- Should obsolete items be shown in completion list?
+
+	show_completion_tooltip_string: STRING = "editor.eiffel.show_completion_tooltip"
+			-- Should completion tooltips be shown in the completion list?
 
 	syntax_complete_enabled_string: STRING = "editor.eiffel.syntax_complete_enabled"
 			-- should main keywords be completed ?
@@ -652,6 +664,7 @@ feature {NONE} -- Initialization
 			show_completion_type_preference := l_manager.new_boolean_preference_value (l_manager, show_completion_type_string, True)
 			show_completion_disambiguated_name_preference := l_manager.new_boolean_preference_value (l_manager, show_completion_disambiguated_name_string, False)
 			show_completion_obsolete_items_preference := l_manager.new_boolean_preference_value (l_manager, show_completion_obsolete_items_string, False)
+			show_completion_tooltip_preference := l_manager.new_boolean_preference_value (l_manager, show_completion_tooltip_string, True)
 			customized_string_1_preference := l_manager.new_string_preference_value (l_manager, customized_string_1_string, "")
 			customized_strings.extend (customized_string_1_preference)
 			customized_string_2_preference := l_manager.new_string_preference_value (l_manager, customized_string_2_string, "")
@@ -722,6 +735,7 @@ feature {NONE} -- Initialization
 			show_completion_type_preference.change_actions.extend (agent update)
 			show_completion_disambiguated_name_preference.change_actions.extend (agent update)
 			show_completion_obsolete_items_preference.change_actions.extend (agent update)
+			show_completion_tooltip_preference.change_actions.extend (agent update)
 			customized_string_1_preference.change_actions.extend (agent update)
 			customized_string_2_preference.change_actions.extend (agent update)
 			customized_string_3_preference.change_actions.extend (agent update)
@@ -760,8 +774,8 @@ feature {NONE} -- Initialization
 			a_list: ARRAYED_LIST [STRING]
 		do
 			from
-				create complete_keywords.make (1, 39)
-				create insert_after_keyword.make (1, 39)
+				create complete_keywords.make (1, 40)
+				create insert_after_keyword.make (1, 40)
 				cnt := complete_keywords.count
 				complete_keywords_names_keys.start
 			until
@@ -856,6 +870,8 @@ feature {NONE} -- Build preferences for autocomplete
 					<<" $cursor$", "%N$indent$%%T$cursor$", " $cursor$", "%N$indent$%T$cursor$">>,
 						-- local
 					<<" $cursor$", "%N$indent$%%T$cursor$", " $cursor$", "%N$indent$%T$cursor$">>,
+						-- attribute
+					<<" $cursor$ end", "%N$indent$%%T$cursor$%N$indent$end", " $cursor$", "%N$indent$%T$cursor$">>,
 						-- do
 					<<" $cursor$ end", "%N$indent$%%T$cursor$%N$indent$end", " $cursor$", "%N$indent$%T$cursor$">>,
 						-- once
@@ -977,7 +993,7 @@ feature -- Syntax Completion Customization
 	feature_completed_keywords: ARRAYED_LIST [STRING]
 			-- list of completed keywords
 		once
-			create Result.make_from_array (<<"is", "require", "require else", "local", "do", "once", "deferred", "external", "rescue", "ensure", "ensure then", "alias">>)
+			create Result.make_from_array (<<"is", "require", "require else", "local", "attribute", "do", "once", "deferred", "external", "rescue", "ensure", "ensure then", "alias">>)
 			Result.compare_objects
 		end
 
@@ -1147,7 +1163,8 @@ feature -- Keybord shortcuts Customization
 			l_hash.put ([False, False, False, key_strings.item (Key_F3).twin.as_string_8], "toggle_show_signature")
 			l_hash.put ([False, False, False, key_strings.item (Key_F4).twin.as_string_8], "toggle_show_disambiguated_name")
 			l_hash.put ([False, False, False, key_strings.item (Key_F5).twin.as_string_8], "toggle_show_obsolete_items")
-			l_hash.put ([False, False, False, key_strings.item (Key_F6).twin.as_string_8], "toggle_remember_size")
+			l_hash.put ([False, False, False, key_strings.item (Key_F6).twin.as_string_8], "toggle_show_tooltip")
+			l_hash.put ([False, False, False, key_strings.item (Key_F7).twin.as_string_8], "toggle_remember_size")
 			Result.extend ([l_hash, completion_window_group])
 		end
 
@@ -1207,6 +1224,7 @@ invariant
 	show_completion_type_preference_not_void: show_completion_type_preference /= Void
 	show_completion_disambiguated_name_preference_not_void: show_completion_disambiguated_name_preference /= Void
 	show_completion_obsolete_items_preference_not_void: show_completion_obsolete_items_preference /= Void
+	show_completion_tooltip_string_attached: show_completion_tooltip_string /= Void
 	syntax_complete_enabled_preference_not_void: syntax_complete_enabled_preference /= Void
 	customized_string_1_preference_not_void: customized_string_1_preference /= Void
 	customized_string_2_preference_not_void: customized_string_2_preference /= Void
@@ -1220,7 +1238,7 @@ invariant
 
 
 note
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -1244,11 +1262,11 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_EDITOR_DATA

@@ -231,7 +231,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end
@@ -302,12 +302,12 @@ feature -- Access for Errors
 
 feature -- Value AST creation
 
-	new_character_value_as (a_psr: EIFFEL_SCANNER_SKELETON; buffer: STRING; a_text: STRING): CHAR_AS
+	new_character_value_as (a_psr: EIFFEL_SCANNER_SKELETON; buffer: STRING; roundtrip_buffer: STRING): CHAR_AS
 			-- New character value for a numerical character representation (i.e. '%/001/').
 		require
 			buffer_not_void: buffer /= Void
 			buffer_not_empty: not buffer.is_empty
-			a_text_not_void: a_text /= Void
+			a_text_not_void: roundtrip_buffer /= Void
 			a_psr_not_void: a_psr /= Void
 		local
 			l_integer: INTEGER_AS
@@ -320,12 +320,15 @@ feature -- Value AST creation
 			resume_match_list_count
 			if l_integer /= Void then
 				if l_integer.natural_64_value <= {NATURAL_32}.Max_value then
-					Result := new_character_as (l_integer.natural_32_value.to_character_32, a_psr.line, a_psr.column, a_psr.position, a_text.count, a_text)
+					Result := new_character_as (l_integer.natural_32_value.to_character_32, a_psr.line, a_psr.column, a_psr.position, roundtrip_buffer.count, roundtrip_buffer)
 				else
 					a_psr.report_character_code_too_large_error (buffer)
 							-- Dummy code (for error recovery) follows:
-					Result := new_character_as ('a', 0, 0, 0, 0, "")
+					Result := new_character_as ('a', 0, 0, 0, 0, roundtrip_buffer)
 				end
+			else
+					-- Dummy code since integer value could not be computed.
+				Result := new_character_as ('a', 0, 0, 0, 0, roundtrip_buffer)
 			end
 		end
 
@@ -1041,7 +1044,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end
@@ -1051,7 +1054,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end
@@ -1061,7 +1064,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end
@@ -1071,7 +1074,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end
@@ -1081,7 +1084,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end
@@ -1091,7 +1094,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end
@@ -1101,7 +1104,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end
@@ -1117,7 +1120,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end
@@ -1127,7 +1130,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end
@@ -1137,7 +1140,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end
@@ -1147,7 +1150,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end
@@ -1157,7 +1160,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end
@@ -1167,7 +1170,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end
@@ -1177,7 +1180,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end
@@ -1187,7 +1190,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end
@@ -1197,7 +1200,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end
@@ -1207,7 +1210,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end
@@ -1217,7 +1220,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end
@@ -1227,7 +1230,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end
@@ -1237,7 +1240,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end
@@ -1247,7 +1250,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end
@@ -1257,7 +1260,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end
@@ -1424,7 +1427,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		end
 
 	new_if_as (cnd: EXPR_AS; cmp: EIFFEL_LIST [INSTRUCTION_AS];
@@ -1866,7 +1869,7 @@ feature -- Access
 		require
 			n_non_negative: n >= 0
 		do
-			create Result.make (n)
+			create Result.make_filled (n)
 		ensure
 			list_full: Result /= Void implies Result.capacity = n and Result.all_default
 		end

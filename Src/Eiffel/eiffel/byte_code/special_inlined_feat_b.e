@@ -15,6 +15,8 @@ inherit
 			generate_parameters
 		end
 
+	SHARED_INCLUDE
+
 feature -- Generation
 
 	generate_parameters (gen_reg: REGISTRABLE)
@@ -81,12 +83,9 @@ feature -- Generation
 
 				buf.put_new_line
 				result_reg.print_register
-				buf.put_string (" = ")
-				buf.put_string ("(*(EIF_INTEGER *) (char *) ((")
+				buf.put_string (" = RT_SPECIAL_COUNT(")
 				gen_reg.print_register
-				buf.put_string (") + (HEADER(")
-				gen_reg.print_register
-				buf.put_string (")->ov_size & B_SIZE) - LNGPAD_2));")
+				buf.put_two_character (')', ';')
 				buf.put_new_line
 				buf.put_string ("/* END INLINED CODE */")
 			else
@@ -373,7 +372,6 @@ feature {NONE} -- Implementation
 
 			if l_param_is_expanded then
 				l_exp_class_type := l_gen_param.associated_class_type (context.context_class_type.type)
-
 				buf.put_string ("((char *)")
 				gen_reg.print_register
 				buf.put_string (" + (rt_uint_ptr)")
@@ -409,6 +407,19 @@ feature {NONE} -- Implementation
 			end
 			buf.put_character (')')
 			buf.put_character (';')
+
+				-- Add `eif_helpers.h' for C compilation where `eif_max_int32' function is declared.
+			shared_include_queue.put ({PREDEFINED_NAMES}.eif_helpers_header_name_id)
+			buf.put_new_line
+			buf.put_string("RT_SPECIAL_COUNT(");
+			gen_reg.print_register
+			buf.put_string (") = eif_max_int32(RT_SPECIAL_COUNT(")
+			gen_reg.print_register
+			buf.put_three_character (')', ',', ' ')
+			parameters.i_th (2).print_register
+			buf.put_three_character (' ', '+', ' ')
+			parameters.i_th (3).print_register
+			buf.put_two_character (')', ';')
 			buf.put_new_line
 			buf.put_string ("/* END INLINED CODE */")
 		end
@@ -491,6 +502,18 @@ feature {NONE} -- Implementation
 				buf.put_character (';')
 			end
 
+				-- Add `eif_helpers.h' for C compilation where `eif_max_int32' function is declared.
+			shared_include_queue.put ({PREDEFINED_NAMES}.eif_helpers_header_name_id)
+			buf.put_new_line
+			buf.put_string("RT_SPECIAL_COUNT(");
+			gen_reg.print_register
+			buf.put_string (") = eif_max_int32(RT_SPECIAL_COUNT(")
+			gen_reg.print_register
+			buf.put_three_character (')', ',', ' ')
+			parameters.i_th (3).print_register
+			buf.put_three_character (' ', '+', ' ')
+			parameters.i_th (4).print_register
+			buf.put_two_character (')', ';')
 			buf.put_new_line
 			buf.put_string ("/* END INLINED CODE */")
 		end
@@ -509,15 +532,15 @@ feature {NONE} -- Implementation
 			buf.put_new_line
 			buf.put_string ("memset (")
 			gen_reg.print_register
-			buf.put_string (", 0, (HEADER(")
+			buf.put_string (", 0, RT_SPECIAL_VISIBLE_SIZE(")
 			gen_reg.print_register
-			buf.put_string (")->ov_size & B_SIZE) - LNGPAD_2);")
+			buf.put_three_character (')', ')', ';')
 			buf.put_new_line
 			buf.put_string ("/* END INLINED CODE */")
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -530,22 +553,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class SPECIAL_INLINED_FEAT_B

@@ -11,6 +11,11 @@ note
 class AUT_INTERPRETER_PROXY
 
 inherit
+	AUT_PROXY_EVENT_PRODUCER
+		rename
+			make as make_event_producer
+		end
+
 	AUT_RESPONSE_PARSER
 		rename
 			make as make_response_parser
@@ -89,6 +94,9 @@ feature {NONE} -- Initialization
 			l_itp_class: like interpreter_class
 		do
 			configuration := a_config
+
+			make_event_producer
+
 			l_itp_class := interpreter_class
 			create variable_table.make (a_system)
 			create raw_response_analyzer
@@ -110,8 +118,8 @@ feature {NONE} -- Initialization
 			request_printer.extend (socket_data_printer)
 
 				-- Ilinca, "number of faults law" experiment
-			create failure_log_stream.make_empty
-			create failure_request_printer.make (system, failure_log_stream)
+--			create failure_log_stream.make_empty
+--			create failure_request_printer.make (system, failure_log_stream)
 
 			executable_file_name := an_executable_file_name
 			melt_path := file_system.dirname (executable_file_name)
@@ -136,7 +144,7 @@ feature {NONE} -- Initialization
 			proxy_start_time := system_clock.date_time_now
 			error_handler := a_error_handler
 			timeout := default_timeout
-			
+
 			if configuration.is_object_state_exploration_enabled then
 				create object_state_table.make
 			end
@@ -175,7 +183,12 @@ feature -- Status
 			result_implies_launched: Result implies process.is_launched
 		end
 
-	is_in_replay_mode: BOOLEAN
+	is_executing: BOOLEAN = True
+			-- <Precursor>
+			--
+			-- Note: `Current' always sends request to an interpreter.
+
+	is_replaying: BOOLEAN
 			-- Is Current in replay mode?
 			-- If so, no extra "type" request will be generated
 			-- after every "assign" request and every query invokation.
@@ -245,9 +258,9 @@ feature -- Settings
 	set_is_in_replay_mode (b: BOOLEAN)
 			-- Set `is_in_replay_mode' with `b'.
 		do
-			is_in_replay_mode := b
+			is_replaying := b
 		ensure
-			is_in_replay_mode_set: is_in_replay_mode = b
+			is_in_replay_mode_set: is_replaying = b
 		end
 
 	set_proxy_log_filename (a_filename: like proxy_log_filename)
@@ -317,15 +330,15 @@ feature -- Execution
 						socket := l_socket
 						process.set_timeout (timeout)
 						log_stream.string.wipe_out
-						failure_log_stream.string.wipe_out -- Ilinca, "number of faults law" experiment
+--						failure_log_stream.string.wipe_out -- Ilinca, "number of faults law" experiment
 						last_request.process (request_printer)
-						last_request.process (failure_request_printer) -- Ilinca, "number of faults law" experiment
+--						last_request.process (failure_request_printer) -- Ilinca, "number of faults law" experiment
 						flush_process
 						log_line (proxy_has_started_and_connected_message)
 						log_line (itp_start_time_message + error_handler.duration_to_now.second_count.out)
-						failure_log (proxy_has_started_and_connected_message + "%N") -- Ilinca, "number of faults law" experiment
-						failure_log (itp_start_time_message + error_handler.duration_to_now.second_count.out + "%N") -- Ilinca, "number of faults law" experiment
-						record_failure_time_stamp -- Ilinca, "number of faults law" experiment
+--						failure_log (proxy_has_started_and_connected_message + "%N") -- Ilinca, "number of faults law" experiment
+--						failure_log (itp_start_time_message + error_handler.duration_to_now.second_count.out + "%N") -- Ilinca, "number of faults law" experiment
+--						record_failure_time_stamp -- Ilinca, "number of faults law" experiment
 						parse_start_response
 						last_request.set_response (last_response)
 						if last_response.is_bad then
@@ -441,26 +454,27 @@ feature -- Execution
 					check
 						normal_response_not_void: normal_response /= Void
 					end
-					if normal_response.exception = Void then
+					if not normal_response.has_exception then
 						variable_table.define_variable (a_receiver, a_type)
 							-- Predicate evaluation.
 						evaluate_predicates_after_test_case (create {AUT_FEATURE_OF_TYPE}.make (a_procedure, a_type), relevant_objects (a_receiver, an_argument_list, Void))
 
 							-- Ilinca, "number of faults law" experiment
-						failure_log_test_case_index
-						last_request.process (failure_request_printer)
-						failure_log (failure_log_stream.string)
-						failure_log_stream.string.wipe_out
-						last_response.process (failure_response_printer)
-						record_failure_time_stamp
+--						failure_log_test_case_index
+--						last_request.process (failure_request_printer)
+--						failure_log (failure_log_stream.string)
+--						failure_log_stream.string.wipe_out
+--						last_response.process (failure_response_printer)
+--						record_failure_time_stamp
+
 					else -- Ilinca, "number of faults law" experiment
 						if not normal_response.exception.is_invariant_violation_on_feature_entry and not normal_response.exception.is_test_invalid then
-							failure_log_test_case_index
-							last_request.process (failure_request_printer)
-							failure_log (failure_log_stream.string)
-							failure_log_stream.string.wipe_out
-							last_response.process (failure_response_printer)
-							record_failure_time_stamp
+--							failure_log_test_case_index
+--							last_request.process (failure_request_printer)
+--							failure_log (failure_log_stream.string)
+--							failure_log_stream.string.wipe_out
+--							last_response.process (failure_response_printer)
+--							record_failure_time_stamp
 --							failure_log_speed
 						end
 					end
@@ -548,22 +562,22 @@ feature -- Execution
 			if not last_response.is_bad or last_response.is_error then
 --				is_ready := True
 					-- Ilinca, "number of faults law" experiment
-				if last_response.is_normal then
-					l_normal_response ?= last_response
-					check
-						l_normal_response_not_void: l_normal_response /= Void
-					end
-					if l_normal_response.exception /= Void and then
-						(not l_normal_response.exception.is_invariant_violation_on_feature_entry and not l_normal_response.exception.is_test_invalid) then
-							failure_log_test_case_index
-							last_request.process (failure_request_printer)
-							failure_log (failure_log_stream.string)
-							failure_log_stream.string.wipe_out
-							last_response.process (failure_response_printer)
-							record_failure_time_stamp
---							failure_log_speed
-						end
-				end
+--				if last_response.is_normal then
+--					l_normal_response ?= last_response
+--					check
+--						l_normal_response_not_void: l_normal_response /= Void
+--					end
+--					if l_normal_response.exception /= Void and then
+--						(not l_normal_response.exception.is_invariant_violation_on_feature_entry and not l_normal_response.exception.is_test_invalid) then
+--							failure_log_test_case_index
+--							last_request.process (failure_request_printer)
+--							failure_log (failure_log_stream.string)
+--							failure_log_stream.string.wipe_out
+--							last_response.process (failure_response_printer)
+--							record_failure_time_stamp
+----							failure_log_speed
+--						end
+--				end
 			else
 				is_ready := False
 			end
@@ -654,25 +668,25 @@ feature -- Execution
 					end
 
 						-- Ilinca, "number of faults law" experiment
-					if last_response.is_normal then
-						if normal_response.exception /= Void and then
-							(not normal_response.exception.is_invariant_violation_on_feature_entry and not normal_response.exception.is_test_invalid) then
-								failure_log_test_case_index
-								last_request.process (failure_request_printer)
-								failure_log (failure_log_stream.string)
-								failure_log_stream.string.wipe_out
-								last_response.process (failure_response_printer)
-								record_failure_time_stamp
-	--							failure_log_speed
-							end
-					end
+--					if last_response.is_normal then
+--						if normal_response.exception /= Void and then
+--							(not normal_response.exception.is_invariant_violation_on_feature_entry and not normal_response.exception.is_test_invalid) then
+--								failure_log_test_case_index
+--								last_request.process (failure_request_printer)
+--								failure_log (failure_log_stream.string)
+--								failure_log_stream.string.wipe_out
+--								last_response.process (failure_response_printer)
+--								record_failure_time_stamp
+--	--							failure_log_speed
+--							end
+--					end
 				end
 			else
 				is_ready := False
 			end
 			stop_process_on_problems (last_response)
 			if is_ready and normal_response /= Void and then normal_response.exception = Void then
-				if not is_in_replay_mode then
+				if not is_replaying then
 						-- If we are not in replay mode, we generate "type" request to get the
 						-- dynamic type of the assignment target. If we are in replay mode,
 						-- the "type" request will be already in the replay list, so we don't need to
@@ -715,6 +729,7 @@ feature -- Execution
 			a_constant_not_void: an_expression /= Void
 		do
 			create {AUT_ASSIGN_EXPRESSION_REQUEST} last_request.make (system, a_receiver, an_expression)
+
 			last_request.process (request_printer)
 			flush_process
 			parse_invoke_response
@@ -725,7 +740,7 @@ feature -- Execution
 				is_ready := False
 			end
 			stop_process_on_problems (last_response)
-			if is_ready and then not is_in_replay_mode then
+			if is_ready and then not is_replaying then
 					-- If we are not in replay mode, we generate "type" request to get the
 					-- dynamic type of the assignment target. If we are in replay mode,
 					-- the "type" request will be already in the replay list, so we don't need to
@@ -765,11 +780,10 @@ feature -- Execution
 					variable_table.define_variable (a_variable, base_type (normal_response.text))
 
 						-- Ilinca, "number of faults law" experiment
-					last_request.process (failure_request_printer)
-					failure_log (failure_log_stream.string)
-					failure_log_stream.string.wipe_out
-					last_response.process (failure_response_printer)
-
+--					last_request.process (failure_request_printer)
+--					failure_log (failure_log_stream.string)
+--					failure_log_stream.string.wipe_out
+--					last_response.process (failure_response_printer)
 				end
 			else
 				is_ready  := False
@@ -954,10 +968,18 @@ feature -- Response parsing
 
 	parse_response
 			-- Parse response from interpreter, store it in `last_response'.
+		local
+			l_response: like last_response
 		do
 			Precursor
 
+			l_response := last_response
+			check l_response /= Void end
+			report_event (l_response)
+
 				-- Print `last_response' into log file when `is_logging_enabled'.
+				--
+				-- Note: this will be removed once logging is implemented as an observer
 			if is_logging_enabled then
 				last_response.process (response_printer)
 			end
@@ -1040,6 +1062,7 @@ feature{NONE} -- Process scheduling
 		local
 			arguments: ARRAYED_LIST [STRING]
 			l_body_id: INTEGER
+			l_workdir: STRING
 		do
 				-- $MELT_PATH needs to be set here in only to allow debugging.
 			execution_environment.set_variable_value ("MELT_PATH", melt_path)
@@ -1049,7 +1072,8 @@ feature{NONE} -- Process scheduling
 			l_body_id := injected_feature_body_id - 1
 			create arguments.make_from_array (<<"localhost", port.out, l_body_id.out, injected_feature_pattern_id.out, interpreter_log_filename, "-eif_root", interpreter_root_class_name + "." + interpreter_root_feature_name>>)
 
-			create process.make (executable_file_name, arguments, ".")
+			l_workdir := system.lace.directory_name
+			create process.make (executable_file_name, arguments, l_workdir)
 			process.set_timeout (0)
 			process.launch (agent stdout_reader.put_string)
 		end
@@ -1059,9 +1083,15 @@ feature{NONE} -- Process scheduling
 			-- If error occurs, close `socket'.
 		local
 			failed: BOOLEAN
-			l_last_request: TUPLE [flag: NATURAL_8; data: detachable ANY]
+			l_last_request: like last_request
+			l_last_bc_request: TUPLE [flag: NATURAL_8; data: detachable ANY]
 		do
 			if not failed then
+					-- Log request
+				l_last_request := last_request
+				check l_last_request /= Void end
+				report_event (l_last_request)
+
 --				is_ready := False
 				if process.input_direction = {PROCESS_REDIRECTION_CONSTANTS}.to_stream then
 					log (log_stream.string)
@@ -1069,9 +1099,9 @@ feature{NONE} -- Process scheduling
 					request_count := request_count + 1
 					process.set_timeout (timeout+100000)
 					if socket /= Void and then socket.is_open_write and socket.extendible then
-						l_last_request := socket_data_printer.last_request
-						socket.put_natural_32 (l_last_request.flag)
-						socket.independent_store (l_last_request.data)
+						l_last_bc_request := socket_data_printer.last_request
+						socket.put_natural_32 (l_last_bc_request.flag)
+						socket.independent_store (l_last_bc_request.data)
 					end
 				else
 					log_line ("-- Error: could not send instruction to interpreter due its input stream being closed.")
@@ -1112,7 +1142,7 @@ feature{NONE} -- Process scheduling
 						if normal_response.exception.code = Class_invariant then
 --							stop
 --							log_line ("-- Proxy has terminated interpreter due to class invariant violation.")
-							failure_log_line (exception_thrown_message + error_handler.duration_to_now.second_count.out)
+--							failure_log_line (exception_thrown_message + error_handler.duration_to_now.second_count.out)
 						end
 					end
 				end
@@ -1151,6 +1181,7 @@ feature -- Socket IPC
 	cleanup
 			-- Clean up Current proxy.
 		do
+			observers.wipe_out
 			if socket /= Void then
 				cleanup_socket
 			end
@@ -1182,7 +1213,7 @@ feature -- Socket IPC
 				l_data ?= l_socket.retrieved
 				process.set_timeout (0)
 				if l_data /= Void then
-					create last_raw_response.make (l_data.output, l_data.error, l_response_flag)
+					create last_raw_response.make (create {STRING}.make_from_string (l_data.output), create {STRING}.make_from_string (l_data.error), l_response_flag)
 						-- Fixme: This is a walk around for the issue that we cannot launch a process
 						-- only with standard input redirected. Remove the following line when fixed,
 						-- because everything that the interpreter output should come from `l_data.output'.
@@ -1222,7 +1253,7 @@ feature -- Socket IPC
 						-- has been read at this point.
 					stdout_reader.try_read_all_lines
 					if stdout_reader.last_string /= Void then
-						last_raw_response.set_output (stdout_reader.last_string)
+						last_raw_response.set_output (create {STRING}.make_from_string (stdout_reader.last_string))
 					end
 				end
 			end

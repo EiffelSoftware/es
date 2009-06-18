@@ -256,6 +256,49 @@ feature {NONE} -- Implementation
 	priority_table: DS_HASH_TABLE [DS_PAIR [INTEGER, INTEGER], AUT_FEATURE_OF_TYPE]
 			-- Table that maps features to their priorities (static, dynamic)
 
+	reset_dynamic_priorities
+			-- Reset the dynamic priorities of all
+			-- features to their static value.
+		local
+			cs: DS_HASH_TABLE_CURSOR [DS_PAIR [INTEGER, INTEGER], AUT_FEATURE_OF_TYPE]
+			old_priority: INTEGER
+			new_priority: INTEGER
+			feature_: AUT_FEATURE_OF_TYPE
+			list: DS_LINKED_LIST [AUT_FEATURE_OF_TYPE]
+		do
+			from
+				cs := priority_table.new_cursor
+				cs.start
+			until
+				cs.off
+			loop
+				new_priority := cs.item.first
+				old_priority := cs.item.second
+				feature_ := cs.key
+				cs.item.put_second (new_priority)
+				feature_list_table.search (old_priority)
+				check
+					found: feature_list_table.found
+				end
+				list := feature_list_table.found_item
+				list.delete (feature_)
+				if list.count = 0 then
+					feature_list_table.remove (old_priority)
+				end
+				feature_list_table.search (new_priority)
+				if feature_list_table.found then
+					feature_list_table.found_item.force_last (feature_)
+				else
+					create list.make_equal
+					list.set_equality_tester (create {AUT_FEATURE_OF_TYPE_EQUALITY_TESTER}.make)
+					list.force_last (feature_)
+					feature_list_table.force (list, new_priority)
+				end
+				cs.forth
+			end
+			set_highest_priority
+		end
+
 	set_highest_priority
 			-- Set `highest_dynamic_priority' to the highest priority value
 			-- found in `feature_list_table'.
@@ -302,49 +345,6 @@ feature {NONE} -- Implementation
 			else
 				set_static_priority_of_feature (feature_, a_priority)
 			end
-		end
-
-	reset_dynamic_priorities
-			-- Reset the dynamic priorities of all
-			-- features to their static value.
-		local
-			cs: DS_HASH_TABLE_CURSOR [DS_PAIR [INTEGER, INTEGER], AUT_FEATURE_OF_TYPE]
-			old_priority: INTEGER
-			new_priority: INTEGER
-			feature_: AUT_FEATURE_OF_TYPE
-			list: DS_LINKED_LIST [AUT_FEATURE_OF_TYPE]
-		do
-			from
-				cs := priority_table.new_cursor
-				cs.start
-			until
-				cs.off
-			loop
-				new_priority := cs.item.first
-				old_priority := cs.item.second
-				feature_ := cs.key
-				cs.item.put_second (new_priority)
-				feature_list_table.search (old_priority)
-				check
-					found: feature_list_table.found
-				end
-				list := feature_list_table.found_item
-				list.delete (feature_)
-				if list.count = 0 then
-					feature_list_table.remove (old_priority)
-				end
-				feature_list_table.search (new_priority)
-				if feature_list_table.found then
-					feature_list_table.found_item.force_last (feature_)
-				else
-					create list.make_equal
-					list.set_equality_tester (create {AUT_FEATURE_OF_TYPE_EQUALITY_TESTER}.make)
-					list.force_last (feature_)
-					feature_list_table.force (list, new_priority)
-				end
-				cs.forth
-			end
-			set_highest_priority
 		end
 
 feature {NONE} -- Assertion helpers

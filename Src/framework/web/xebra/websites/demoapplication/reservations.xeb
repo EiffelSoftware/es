@@ -1,76 +1,75 @@
-<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Xebra Demo Application</title>
-<style type="text/css">
-<!--
-body,td,th {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 12px;
-	color: #666666;
-}
-body {
-	background-color: #FFFFFF;
-	margin-left: 20px;
-	margin-top: 20px;
-	margin-right: 50px;
-	margin-bottom: 50px;
-}
-a:link {
-	color: #990000;
-	text-decoration: none;
-}
-a:visited {
-	color: #990099;
-	text-decoration: none;
-}
-a:hover {
-	color: #FF0000;
-	text-decoration: none;
-}
-a:active {
-	color: #990033;
-	text-decoration: none;
-}
-h1 {
-	font-size: x-large;
-	color: #333333;
-}
-h2 {
-	font-size: large;
-	color: #333333;
-}
-.style4 {color: #666666; font-weight: bold; }
-a {
-	font-weight: bold;
-}
-.style5 {color: #CCCCCC}
--->
-</style>
-</head>
-
-<body>
-<table width="1024" border="0" align="center">
-  <tr>
-    <td colspan="4"><h1>Xebra Demo Application</h1></td>
-  </tr>
-  <tr>
-    <td colspan="4" bgcolor="#CCCCCC"><div align="center" class="style5"><a href="login.xeb">Login</a> | <a href="reservations.xeb"> Reservations</a> | <a href="contact.xeb">Contact</a></div></td>
-  </tr>
-  <tr>
-    <td><h2>Reservations</h2></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td colspan="4">
-       <p></p>
-      <p align="center">No reservations.</p>
-      <p></p>
-    </td>
-  </tr>
-</table>
-</body>
-</html>
+<page:include template="master_template">
+	<page:controller class="reservation_controller" />
+	<page:define_region id="content">
+		<h2 class="style1">Reservations</h2>
+		<xeb:container render="not_authenticated">
+			<p>Please log in to see reservations.</p>
+		</xeb:container>
+		<xeb:container render="authenticated">
+			<table width="100%" border="0" cellpadding="0">
+				<tr class="tableheader">
+					<td>Name</td>
+					<td>Date</td>
+					<td>Persons</td>
+					<xeb:container render="authenticated_admin">
+						<td>Delete</td>
+					</xeb:container>
+					<xeb:container render="not_authenticated_admin">
+						<td>Details</td>
+					</xeb:container>
+				</tr>
+				<xeb:iterate list="global_state.db.reservations"
+					variable="reservation" type="RESERVATION">
+					<tr>
+						<td><xeb:display feature="#{reservation.name}"/></td>
+						<td><xeb:display feature="#{reservation.date}"/></td>
+						
+						
+						
+						<td><xeb:display feature="#{reservation.s_persons}"/></td>
+						<xeb:container render="authenticated_admin">
+							<td class="style2">
+							<f:form>
+								<f:command_link label="Delete" action="delete" variable="reservation" />
+							</f:form>
+							</td>					
+						</xeb:container>
+						<xeb:container render="not_authenticated_admin">
+							<td class="style2"><a href="">Details</a></td>
+						</xeb:container>
+					</tr>
+				</xeb:iterate>
+			</table>
+		</xeb:container>
+		<xeb:container render="authenticated_admin">
+			<h2 class="style1">New Reservation</h2>
+			<f:form variable="new_reservation" class="RESERVATION">
+			<table width="400" border="0" cellpadding="2" cellspacing="2">
+				<tr>
+					<td>Name</td>
+					<td><f:input_text value="name" name="a_name" text="#{new_reservation.name}" /></td>
+				</tr>
+				<tr>
+					<td>Date</td>
+					<td><f:input_text value="date" name="a_date" text="#{new_reservation.date}" /></td>
+				</tr>
+				<tr>
+					<td>Persons</td>
+					<td><f:input_text value="s_persons" name="a_s_persons" text="#{new_reservation.s_persons}" /></td>
+				</tr>
+				<tr>
+					<td>Description</td>
+					<td><f:text_area value="description" name="a_description" text="#{new_reservation.description}"
+						cols="45" rows="5"/></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+					<div align="center">
+					<f:button value="Save" action="save" type="submit" /></div>
+					</td>
+				</tr>
+			</table>
+			</f:form>
+		</xeb:container>
+	</page:define_region>
+</page:include>

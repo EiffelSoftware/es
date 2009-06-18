@@ -1768,7 +1768,7 @@ rt_private struct ex_vect *traverse_for_trace (struct xstack *from_stack, int fo
 	struct ex_vect *trace = NULL;	/* The stack trace entry */
 	int l_level = echlvl;			/* We cannot change the value of `echlvl' when building full trace */
 
-	while (top = extop(from_stack)) {	/* While bottom not reached */
+	while ((top = extop(from_stack))) {	/* While bottom not reached */
 
 		/* Whether or not there is a rescue clause for the top of the stack
 		 * (indicated by the jmp_buf pointer), we need to push the current
@@ -4195,7 +4195,6 @@ rt_public EIF_BOOLEAN eif_is_in_rescue (void)
 	struct xstack *stk = &eif_stack;
 	struct ex_vect *top = stk->st_top;	/* Top of stack */
 	struct stxchunk *cur;
-	int found = 0;
 
 	if (top == (struct ex_vect *) 0)	{		/* No stack yet? */
 		return EIF_TRUE;

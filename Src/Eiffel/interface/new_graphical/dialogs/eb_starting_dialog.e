@@ -150,13 +150,9 @@ feature {NONE} -- Initialization
 			if show_open_project_frame then
 				create vb
 				create open_project.make (Current)
-				wizards_list.row_select_actions.force_extend (agent open_project.remove_selection)
-				wizards_list.row_select_actions.force_extend (agent ok_button.set_text (interface_names.b_create))
-				wizards_list.row_select_actions.force_extend (agent ok_button.enable_sensitive)
+				wizards_list.row_select_actions.force_extend (agent on_wizards_selected)
 				wizards_list.row_deselect_actions.force_extend (agent on_item_deselected)
-				open_project.select_actions.force_extend (agent wizards_list.remove_selection)
-				open_project.select_actions.force_extend (agent ok_button.set_text (interface_names.b_open))
-				open_project.select_actions.force_extend (agent ok_button.enable_sensitive)
+				open_project.select_actions.force_extend (agent on_project_selected)
 				open_project.deselect_actions.force_extend (agent on_item_deselected)
 
 				vb.extend (open_project.widget)
@@ -311,6 +307,26 @@ feature {NONE} -- Execution
 			end
 		end
 
+	on_wizards_selected
+			-- Items in the wizards are selected.
+		do
+			open_project.remove_selection
+			ok_button.set_text (interface_names.b_create)
+			ok_button.enable_sensitive
+		end
+
+	on_project_selected
+			-- Items in the project list selected.
+		do
+			wizards_list.remove_selection
+			ok_button.set_text (interface_names.b_open)
+			if not open_project.has_error then
+				ok_button.enable_sensitive
+			else
+				ok_button.disable_sensitive
+			end
+		end
+
 	create_blank_project
 			-- Create a new blank project.
 		require
@@ -358,8 +374,8 @@ feature {NONE} -- Execution
 
 feature {NONE} -- Implementation
 
-	compile_project: BOOLEAN
-			-- Should a compilation be launched upon completion of this dialog?
+	compile_project, freeze_project: BOOLEAN
+			-- Should a compilation be launched upon completion of this dialog and possible frozen?
 
 	update_preferences
 			-- Update user preferences
@@ -501,7 +517,7 @@ feature {NONE} -- Implementation
 			ace_file_name_not_void: ace_file_name /= Void
 		local
 			l_loader: EB_GRAPHICAL_PROJECT_LOADER
-			ebench_name: STRING
+			ebench_name, l_profile: STRING
 			last_char: CHARACTER
 			ace_name, dir_name: STRING
 		do
@@ -520,10 +536,19 @@ feature {NONE} -- Implementation
 				l_loader.open_project_file (ace_file_name, Void, directory_name, True)
 				if not l_loader.has_error and then compile_project then
 					l_loader.set_is_compilation_requested (compile_project)
-					l_loader.compile_project
+					if freeze_project then
+						l_loader.freeze_project (False)
+					else
+						l_loader.melt_project (False)
+					end
 				end
 			else
-				ebench_name := "%"" + eiffel_layout.Estudio_command_name + "%""
+				ebench_name := "%"" + eiffel_layout.estudio_command_name + "%""
+				l_profile := eiffel_layout.command_line_profile_option
+				if not l_profile.is_empty then
+					ebench_name.append_character (' ')
+					ebench_name.append (l_profile)
+				end
 				ebench_name.append (" -clean")
 				if dir_name /= Void and not dir_name.is_empty then
 					ebench_name.append (" -project_path %"")
@@ -533,7 +558,11 @@ feature {NONE} -- Implementation
 				ebench_name.append (" -config %"")
 				ebench_name.append (ace_name)
 				if compile_project then
-					ebench_name.append ("%" -melt")
+					if freeze_project then
+						ebench_name.append ("%" -freeze")
+					else
+						ebench_name.append ("%" -melt")
+					end
 					compile_project := False
 				else
 					ebench_name.append ("%"")
@@ -555,6 +584,7 @@ feature {NONE} -- Implementation
 		do
 			if not retried then
 				compile_project := False
+				freeze_project := False
 
 					-- Disable all controls
 				disable_sensitive
@@ -579,6 +609,9 @@ feature {NONE} -- Implementation
 						elseif (result_parameters.item @ 1).is_equal ("compilation") then
 							(result_parameters.item @ 2).to_lower
 							compile_project := (result_parameters.item @ 2).is_equal ("yes")
+						elseif (result_parameters.item @ 1).is_equal ("compilation_type") then
+							(result_parameters.item @ 2).to_lower
+							freeze_project := (result_parameters.item @ 2).is_equal ("freeze")
 						elseif (result_parameters.item @ 1).is_equal ("success") then
 							-- Do nothing
 						else
@@ -636,7 +669,7 @@ feature {NONE} -- Private attributes
 			-- Widget for opening a project using a config file.
 
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -649,22 +682,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_STARTING_DIALOG

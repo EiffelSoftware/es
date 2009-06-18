@@ -15,23 +15,40 @@ class
 	EQA_TEST_RESULT
 
 create
-	make, make_with_setup, make_without_response
+	make,
+	make_with_setup,
+	make_user_abort,
+	make_communication_error,
+	make_evaluator_died
 
 feature {NONE} -- Initialization
 
-	make_without_response (a_date: like date; a_is_user_abort: like is_user_abort)
-			-- Initialize `Current' without any responses.
-			--
-			-- `a_date': Date when outcome was produced.
-			-- `a_is_user_abort': Are the responces missing due to user abort?
-		require
-			a_date_attached: a_date /= Void
+	make_communication_error (a_date: like date)
+			-- Initialize `Current' indicating that a communication error occurred.
 		do
-			date := a_date
-			is_user_abort := a_is_user_abort
+			initialize (a_date)
+			is_communication_error := True
 		ensure
-			date_set: a_date = date
-			is_user_abort_set: is_user_abort = a_is_user_abort
+			communication_error: is_communication_error
+			no_response: not has_response
+		end
+
+	make_user_abort (a_date: like date)
+			-- Initialize `Current' indicating that the user aborted the test execution.
+		do
+			initialize (a_date)
+			is_user_abort := True
+		ensure
+			user_abort: is_user_abort
+			no_response: not has_response
+		end
+
+	make_evaluator_died (a_date: like date)
+			-- Initialize `Current' indicating that the evaluator unexpectedly terminated
+		do
+			initialize (a_date)
+		ensure
+			evaluator_died: has_evaluator_died
 			no_response: not has_response
 		end
 
@@ -42,7 +59,7 @@ feature {NONE} -- Initialization
 			a_setup_response_exceptional: a_setup_response.is_exceptional
 			a_date_attached: a_date /= Void
 		do
-			date := a_date
+			initialize (a_date)
 			setup_response := a_setup_response
 		ensure
 			has_response: has_response
@@ -56,13 +73,19 @@ feature {NONE} -- Initialization
 			a_setup_response_clean: not a_setup_response.is_exceptional
 			a_date_attached: a_date /= Void
 		do
-			date := a_date
+			initialize (a_date)
 			setup_response := a_setup_response
 			test_response := a_test_response
 			teardown_response := a_teardown_response
 		ensure
 			has_response: has_response
 			setup_clean: is_setup_clean
+		end
+
+	initialize (a_date: like date)
+			-- Initialize `Current'.
+		do
+			date := a_date
 		end
 
 feature -- Access
@@ -155,7 +178,18 @@ feature -- Status report
 		end
 
 	is_user_abort: BOOLEAN
-			-- Are the responces missing due to user abort?
+			-- Are the responses missing due to user abort?
+
+	is_communication_error: BOOLEAN
+			-- Are the responses missing due to a communication error?
+
+	has_evaluator_died: BOOLEAN
+			-- Has the evaluator terminated unexpectedly?
+		do
+			Result := not has_response and not (is_user_abort or is_communication_error)
+		ensure
+			definition: Result = not has_response and not (is_user_abort or is_communication_error)
+		end
 
 	is_setup_clean: BOOLEAN
 			-- Does `Current' contain a test stage response?
@@ -221,6 +255,8 @@ feature {NONE} -- Implementation
 
 invariant
 	one_of_pass_fail_unresolved: one_of (is_pass, is_fail, is_unresolved)
+	one_of_fail_reasons: not has_response implies one_of (is_user_abort, is_communication_error, has_evaluator_died)
+	response_implies_no_failure: has_response implies not (is_communication_error or is_user_abort)
 	setup_clean_implies_test_response_attached: is_setup_clean implies test_response /= Void
 	setup_clean_implies_teardown_response_attached: is_setup_clean implies teardown_response /= Void
 

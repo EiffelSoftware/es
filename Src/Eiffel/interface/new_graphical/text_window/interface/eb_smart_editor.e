@@ -92,7 +92,7 @@ feature {NONE} -- Initialize
 			set_completion_possibilities_provider (text_displayed)
 			text_displayed.set_code_completable (Current)
 
-			if attached {attached EV_WINDOW} a_dev_window as l_window then
+			if attached {EV_WINDOW} a_dev_window as l_window then
 				bind_help_shortcut (l_window)
 			end
 		end
@@ -102,7 +102,7 @@ feature {NONE} -- Access
 	editor_context_cookie: attached UUID
 			-- The associated editor's context cookie for use with the event list service.
 		do
-			if attached {UUID} internal_editor_context_cookie as l_cookie then
+			if attached internal_editor_context_cookie as l_cookie then
 				Result := l_cookie
 			else
 				Result := (create {UUID_GENERATOR}).generate_uuid.as_attached
@@ -138,26 +138,23 @@ feature {NONE} -- Basic operations
 			if help_providers.is_service_available and then has_focus then
 					-- Look for help contexts
 				l_uri_scavenger := help_uri_scavenger
-				if attached {attached EB_SMART_EDITOR} Current as l_editor then
-					l_uri_scavenger.probe (l_editor)
-					if l_uri_scavenger.has_probed then
-						l_contexts := l_uri_scavenger.scavenged_contexts
-						if not l_contexts.is_empty then
-							if l_contexts.count > 1 then
-									-- Multiple pieces of help available, show dialog
-								create l_dialog.make
-								l_dialog.set_links (l_contexts)
-								l_dialog.show_on_active_window
-							else
-									-- Only one piece of help available.
-								on_help_requested (l_contexts.first)
-							end
+				l_uri_scavenger.probe (Current)
+				if l_uri_scavenger.has_probed then
+					l_contexts := l_uri_scavenger.scavenged_contexts
+					if not l_contexts.is_empty then
+						if l_contexts.count > 1 then
+								-- Multiple pieces of help available, show dialog
+							create l_dialog.make
+							l_dialog.set_links (l_contexts)
+							l_dialog.show_on_active_window
+						else
+								-- Only one piece of help available.
+							on_help_requested (l_contexts.first)
 						end
 					end
 				end
 			end
 		end
-
 
 feature -- Content change
 
@@ -661,7 +658,7 @@ feature {EB_CODE_COMPLETION_WINDOW} -- automatic completion
 			Result := Result - 20
 
 			create l_helpers
-			if attached {attached EV_TITLED_WINDOW} l_helpers.widget_top_level_window (widget, True) as l_window and then l_window.is_maximized then
+			if attached {EV_TITLED_WINDOW} l_helpers.widget_top_level_window (widget, True) as l_window and then l_window.is_maximized then
 				Result := l_helpers.suggest_pop_up_widget_location_with_size (l_window, Result, 0, list_width, 10).x
 			end
 			Result := Result.max (0)
@@ -682,7 +679,7 @@ feature {EB_CODE_COMPLETION_WINDOW} -- automatic completion
 				-- Get y pos of cursor
 			create l_helpers
 
-			if attached {attached EV_TITLED_WINDOW} l_helpers.widget_top_level_window (widget, True) as l_window and then l_window.is_maximized then
+			if attached {EV_TITLED_WINDOW} l_helpers.widget_top_level_window (widget, True) as l_window and then l_window.is_maximized then
 				l_height := l_helpers.window_working_area (l_window).height
 			end
 			if l_height = 0 then
@@ -1326,7 +1323,7 @@ feature {NONE} -- Factory
 			-- Create a token handler, used to perform actions or respond to mouse/keyboard events
 			-- Note: Return Void to prevent any handling from takening place.
 		do
-			if attached {attached EB_CUSTOM_WIDGETTED_EDITOR} Current as l_editor then
+			if attached {EB_CUSTOM_WIDGETTED_EDITOR} Current as l_editor then
 				create {attached ES_SMART_EDITOR_TOKEN_HANDLER} Result.make (l_editor)
 			end
 		end

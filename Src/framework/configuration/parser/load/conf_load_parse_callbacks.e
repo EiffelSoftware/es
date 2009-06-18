@@ -140,13 +140,7 @@ feature -- Callbacks
 								set_parse_error_message (conf_interface_names.e_parse_invalid_value (a_local_part))
 							end
 						else
-							if is_unknown_version then
-									-- unknown version, just add a warning
-								set_parse_warning_message (conf_interface_names.e_parse_invalid_attribute (a_local_part))
-							else
-									-- known version, this is an error
-								set_parse_error_message (conf_interface_names.e_parse_invalid_attribute (a_local_part))
-							end
+							report_unknown_attribute (a_local_part)
 						end
 					else
 							-- Put undefined attributes in `current_attributes_undefined'.
@@ -243,7 +237,7 @@ feature -- Callbacks
 				when t_note then
 					process_element_under_note
 				else
-						-- Process attributs of elements under the first level of note.
+						-- Process attributes of elements under the first level of note.
 					if note_level > 0 then
 						process_element_under_note
 					end
@@ -342,6 +336,11 @@ feature -- Callbacks
 					uses_list.clear_all
 					overrides_list.clear_all
 					group_list.clear_all
+					if current_target.extends = Void then
+							-- Set default options for the standalone target in case the old schema is being processed.
+							-- Extension targets do not need it because the options are inherited from the standalone ones.
+						set_default_options (current_target, a_namespace)
+					end
 					current_target := Void
 				when t_file_rule then
 					current_file_rule := Void
@@ -1168,7 +1167,7 @@ feature {NONE} -- Implementation attribute processing
 			l_trace, l_profile, l_optimize, l_debug, l_namespace, l_class,
 			l_warning, l_msil_application_optimize, l_full_class_checking,
 			l_cat_call_detection, l_is_attached_by_default, l_is_void_safe,
-			l_syntax_level: STRING
+			l_void_safety, l_syntax_level, l_syntax: STRING
 		do
 			l_trace := current_attributes.item (at_trace)
 			l_profile := current_attributes.item (at_profile)
@@ -1182,7 +1181,9 @@ feature {NONE} -- Implementation attribute processing
 			l_cat_call_detection := current_attributes.item (at_cat_call_detection)
 			l_is_attached_by_default := current_attributes.item (at_is_attached_by_default)
 			l_is_void_safe := current_attributes.item (at_is_void_safe)
+			l_void_safety := current_attributes.item (at_void_safety)
 			l_syntax_level := current_attributes.item (at_syntax_level)
+			l_syntax := current_attributes.item (at_syntax)
 
 			current_option := factory.new_option
 			if l_trace /= Void then
@@ -1248,17 +1249,60 @@ feature {NONE} -- Implementation attribute processing
 				end
 			end
 			if l_is_void_safe /= Void then
-				if l_is_void_safe.is_boolean then
-					current_option.set_is_void_safe (l_is_void_safe.to_boolean)
+				if is_unknown_version or else current_namespace <= namespace_1_4_0 then
+					if l_is_void_safe.is_boolean then
+						if l_is_void_safe.to_boolean then
+							current_option.void_safety.put_index ({CONF_OPTION}.void_safety_index_all)
+						else
+							current_option.void_safety.put_index ({CONF_OPTION}.void_safety_index_none)
+						end
+					else
+						set_parse_error_message (conf_interface_names.e_parse_invalid_value ("is_void_safe"))
+					end
 				else
-					set_parse_error_message (conf_interface_names.e_parse_invalid_value ("is_void_safe"))
+					report_unknown_attribute ("is_void_safe")
+				end
+			end
+			if l_void_safety /= Void then
+				if is_unknown_version or else current_namespace >= namespace_1_5_0 then
+					if current_option.void_safety.is_valid_item (l_void_safety) then
+						current_option.void_safety.put (l_void_safety)
+					else
+						set_parse_error_message (conf_interface_names.e_parse_invalid_value ("void_safety"))
+					end
+				else
+					report_unknown_attribute ("void_safety")
 				end
 			end
 			if l_syntax_level /= Void then
-				if l_syntax_level.is_natural_8 and then current_option.is_valid_syntax_level (l_syntax_level.to_natural_8) then
-					current_option.syntax_level.put (l_syntax_level.to_natural_8)
+				if is_unknown_version or else current_namespace <= namespace_1_4_0 then
+					if l_syntax_level.is_natural_8 then
+						inspect l_syntax_level.to_natural_8
+						when 0 then
+							current_option.syntax.put_index ({CONF_OPTION}.syntax_index_obsolete)
+						when 1 then
+							current_option.syntax.put_index ({CONF_OPTION}.syntax_index_transitional)
+						when 2 then
+							current_option.syntax.put_index ({CONF_OPTION}.syntax_index_standard)
+						else
+							set_parse_error_message (conf_interface_names.e_parse_invalid_value ("syntax_level"))
+						end
+					else
+						set_parse_error_message (conf_interface_names.e_parse_invalid_value ("syntax_level"))
+					end
 				else
-					set_parse_error_message (conf_interface_names.e_parse_invalid_value ("syntax_level"))
+					report_unknown_attribute ("syntax_level")
+				end
+			end
+			if l_syntax /= Void then
+				if is_unknown_version or else current_namespace >= namespace_1_5_0 then
+					if current_option.syntax.is_valid_item (l_syntax) then
+						current_option.syntax.put (l_syntax)
+					else
+						set_parse_error_message (conf_interface_names.e_parse_invalid_value ("syntax"))
+					end
+				else
+					report_unknown_attribute ("syntax")
 				end
 			end
 
@@ -1274,6 +1318,9 @@ feature {NONE} -- Implementation attribute processing
 				else
 					current_target.set_options (current_option)
 				end
+			end
+			if current_group /= Void and then attached {CONF_LIBRARY} current_group then
+				report_non_client_options
 			end
 		ensure
 			current_option_not_void: not is_error implies current_option /= Void
@@ -1664,6 +1711,104 @@ feature {NONE} -- Implementation content processing
 				current_file_rule.add_include (current_content)
 			else
 				set_error (create {CONF_ERROR_REGEXP}.make (current_content))
+			end
+		end
+
+feature {NONE} -- Processing of options
+
+	set_default_options (t: like current_target; namespace: like namespace_1_0_0)
+			-- Set default options depending on the supplied schema.
+		require
+			t_attached: t /= Void
+		local
+			o: detachable CONF_OPTION
+		do
+			if namespace /~ latest_namespace then
+					-- Option settings are different from the current defauls, we need to set them if they are not set yet.
+				o := t.options
+				if o = Void then
+					o := factory.new_option
+				end
+				if namespace ~ namespace_1_5_0 then
+						-- Use the defaults of ES 6.4.
+					o.merge (default_options_6_4)
+				elseif
+					namespace ~ namespace_1_4_0 or else
+					namespace ~ namespace_1_3_0 or else
+					namespace ~ namespace_1_2_0 or else
+					namespace ~ namespace_1_0_0
+				then
+						-- Use the defaults of ES 6.3 and below.
+					o.merge (default_options_6_3)
+				else
+						-- Unknown version, do not change anything just in case it is above the current one.
+					o := Void
+				end
+				if o /= Void then
+					t.set_options (o)
+				end
+			end
+		end
+
+	non_client_options: ARRAY [TUPLE [name: STRING; id: INTEGER]]
+			-- Non-client option names with their IDs
+		local
+			ids: ARRAY [like at_syntax]
+			i: INTEGER
+			o: like at_syntax
+			a: HASH_TABLE [like at_syntax, STRING]
+		once
+			a := tag_attributes.item (t_option)
+			ids := <<
+					at_namespace,
+					at_full_class_checking,
+					at_cat_call_detection,
+					at_is_attached_by_default,
+					at_is_void_safe,
+					at_void_safety,
+					at_syntax_level,
+					at_syntax
+				>>
+			from
+				i := 1
+				create Result.make (1, 0)
+			until
+				i > ids.upper
+			loop
+				o := ids.item (i)
+				check
+					a.has_item (o)
+				end
+				from
+					a.start
+				until
+					a.item_for_iteration = o
+				loop
+					a.forth
+				end
+				Result.force ([a.key_for_iteration, o], i)
+				i := i + 1
+			end
+		ensure
+			result_attached: Result /= Void
+		end
+
+	report_non_client_options
+			-- Report options that cannot be overridden if specified in the current context (`current_attributes').
+		local
+			o: like non_client_options
+			i: INTEGER
+		do
+			o := non_client_options
+			from
+				i := o.lower
+			until
+				i > o.upper
+			loop
+				if current_attributes.has (o [i].id) then
+					set_parse_warning_message (conf_interface_names.e_parse_incorrect_option_override (o[i].name))
+				end
+				i := i + 1
 			end
 		end
 
@@ -2096,7 +2241,9 @@ feature {NONE} -- Implementation state transitions
 			l_attr.force (at_cat_call_detection, "cat_call_detection")
 			l_attr.force (at_is_attached_by_default, "is_attached_by_default")
 			l_attr.force (at_is_void_safe, "is_void_safe")
+			l_attr.force (at_void_safety, "void_safety")
 			l_attr.force (at_syntax_level, "syntax_level")
+			l_attr.force (at_syntax, "syntax")
 			Result.force (l_attr, t_option)
 
 				-- class_option
@@ -2296,6 +2443,38 @@ feature {NONE} -- Implementation state transitions
 			Result.force (t_note)
 		end
 
+	report_unknown_attribute (name: STRING)
+			-- Report that attributes `name' is unknown for the current element.
+		require
+			name_attached: name /= Void
+		do
+			if is_unknown_version then
+					-- unknown version, just add a warning
+				set_parse_warning_message (conf_interface_names.e_parse_invalid_attribute (name))
+			else
+					-- known version, this is an error
+				set_parse_error_message (conf_interface_names.e_parse_invalid_attribute (name))
+			end
+		end
+
+feature {NONE} -- Default options
+
+	default_options_6_4: CONF_OPTION
+			-- Default options of 6.4
+		once
+			create Result.make_6_4
+		ensure
+			result_attached: Result /= Void
+		end
+
+	default_options_6_3: CONF_OPTION
+			-- Default options of 6.3
+		once
+			create Result.make_6_3
+		ensure
+			result_attached: Result /= Void
+		end
+
 feature {NONE} -- Implementation constants
 
 		-- Tag states
@@ -2406,7 +2585,9 @@ feature {NONE} -- Implementation constants
 	at_cat_call_detection: INTEGER = 1059
 	at_is_attached_by_default: INTEGER = 1060
 	at_is_void_safe: INTEGER = 1061
-	at_syntax_level: INTEGER = 1062
+	at_void_safety: INTEGER = 1062
+	at_syntax_level: INTEGER = 1063
+	at_syntax: INTEGER = 1064
 
 		-- Undefined tag starting number
 	undefined_tag_start: INTEGER = 100000

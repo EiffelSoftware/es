@@ -597,13 +597,13 @@ feature {NONE} -- Actions implementation
 			end
 		end
 
-	evs_on_pebble_function (a_item: EV_GRID_ITEM; a_grid_support: EB_EDITOR_TOKEN_GRID_SUPPORT)
+	evs_on_pebble_function (a_item: EV_GRID_ITEM; a_orignal_pointer_position: EV_COORDINATE; a_grid_support: EB_EDITOR_TOKEN_GRID_SUPPORT)
 		local
 			l_pebble: ANY
 		do
 			l_pebble := on_pebble_function (a_item)
 			if l_pebble = Void then
-				Precursor {EB_EDITOR_TOKEN_GRID_SUPPORT}(a_item, a_grid_support)
+				Precursor {EB_EDITOR_TOKEN_GRID_SUPPORT}(a_item, a_orignal_pointer_position, a_grid_support)
 			end
 		end
 
@@ -821,7 +821,9 @@ feature {ES_OBJECTS_GRID_MANAGER} -- Layout managment
 						s := addr.output
 						if is_recording_layout then
 							keep_object_in_debugger_for_gui_need (addr)
-							fixme ("We should 'adopt' the object in order to be sure the address value will stay the same")
+							debug ("refactor_fixme")
+								fixme ("We should 'adopt' the object in order to be sure the address value will stay the same")
+							end
 						end
 					end
 				end

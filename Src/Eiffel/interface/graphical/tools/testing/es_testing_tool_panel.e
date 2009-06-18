@@ -217,7 +217,7 @@ feature -- Access: help
 			Result := (create {HELP_PROVIDER_KINDS}).wiki
 		end
 
-	help_context_id: attached STRING_GENERAL
+	help_context_id: STRING
 			-- <Precursor>
 		once
 			Result := "Testing Tool (Specification)"
@@ -462,7 +462,7 @@ feature {NONE} -- Status setting: stones
 			l_is_test_class: BOOLEAN
 		do
 			if not is_in_stone_synchronization then
-				if attached {attached CLASSI_STONE} stone as l_class_stone and then attached {attached EIFFEL_CLASS_I} l_class_stone.class_i as l_class then
+				if attached {CLASSI_STONE} stone as l_class_stone and then attached {EIFFEL_CLASS_I} l_class_stone.class_i as l_class then
 					create l_filter_text.make (40)
 					l_filter_text.append ("class:")
 					l_filter_text.append (l_class_stone.class_name)
@@ -626,7 +626,7 @@ feature {NONE} -- Events: test execution
 			else
 				create l_conf.make (a_type ~ debug_executor_type)
 			end
-			launch_processor (a_type, l_conf, False)
+			launch_processor (a_type, l_conf)
 		end
 
 	on_stop

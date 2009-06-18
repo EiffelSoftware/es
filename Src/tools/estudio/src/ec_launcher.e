@@ -317,7 +317,7 @@ feature {NONE} -- Command sender
 			command_sender_not_void: command_sender /= Void
 		do
 			last_command_handled := False
-			if {lt_action: STRING}direct_action then
+			if attached {STRING} direct_action as lt_action then
 				command_sender.send_command (lt_action, {COMMAND_PROTOCOL_NAMES}.eiffel_studio_key)
 				last_command_handled := command_sender.last_command_handled
 			end
@@ -334,7 +334,7 @@ feature {NONE} -- Command sender
 				print ("Launched process ID: " + last_launched_ec_pid.out + "%N")
 			end
 				-- We send `ec_action' rather than `direct_action' trying to conduct the explicit target of ES.
-			if {lt_action: STRING}ec_action and then last_launched_ec_pid > 0 then
+			if attached {STRING} ec_action as lt_action and then last_launched_ec_pid > 0 then
 				command_sender.send_command_process (lt_action, {COMMAND_PROTOCOL_NAMES}.eiffel_studio_key, last_launched_ec_pid)
 				command_sent_trial := command_sent_trial + 1
 				last_command_handled := command_sender.last_command_handled
@@ -362,7 +362,7 @@ feature {NONE} -- Command sender
 	last_launched_ec_pid: INTEGER
 			-- Last process ID of launched ec.
 
-	command_sender: ?COMMAND_SENDER
+	command_sender: detachable COMMAND_SENDER
 			-- Command sender
 
 	is_ec_action: BOOLEAN
@@ -450,7 +450,7 @@ feature -- Environment
 						cmdline_remove_head (1)
 						if cmdline_arguments_count > 0 then
 							argument_variables.put (cmdline_argument (1), ec_action_string)
-							if {lt_string: STRING}cmdline_argument (1) then
+							if attached {STRING} cmdline_argument (1) as lt_string then
 								ec_action_parser.parse (lt_string)
 								ec_action := ec_action_parser.last_command
 								direct_action := ec_action_parser.last_direct_command
@@ -473,7 +473,6 @@ feature -- Environment
 			fn: FILE_NAME
 			file: RAW_FILE
 			i: INTEGER
-			l_has_compat_index: INTEGER
 		do
 				--| Compute command line, args, and working directory
 			create {ARRAYED_LIST [STRING]} ec_arguments.make (cmdline_arguments_count + 1)
@@ -481,55 +480,24 @@ feature -- Environment
 
 			if cmdline_arguments_count > 0 then
 					--| And now we get the parameters for EiffelStudio
-				l_has_compat_index := cmdline_arguments.index_of_word_option ("compat")
-				if cmdline_arguments_count = 1 and l_has_compat_index > 0 then
-					ec_arguments.extend ("-compat")
-				elseif
-					(cmdline_arguments_count = 1 and l_has_compat_index = 0) or
-					(cmdline_arguments_count = 2 and l_has_compat_index > 0)
-				then
-					if l_has_compat_index > 0 then
-						ec_arguments.extend ("-compat")
-					end
-						--| use the -config argument
-					ec_arguments.extend ("-config")
-					if l_has_compat_index = 1 then
-						s := cmdline_argument (2).twin
+				if cmdline_arguments_count = 1 then
+					if not eiffel_layout.is_default_mode then
+						ec_arguments.extend (eiffel_layout.command_line_profile_option)
 					else
-						check
-							absent_or_last: l_has_compat_index = 0 or l_has_compat_index = 2
-						end
+							--| use the required -config argument
+						ec_arguments.extend ("-config")
 						s := cmdline_argument (1)
-					end
 
-						--| Try to be smart and guess if the path is relative or not
-					cwd := Execution_environment.current_working_directory
-					create fn.make
-					if fn.is_file_name_valid (s) then
-						create file.make (s)
-					end
-					if file = Void or else not file.exists then
-						fn.set_directory (cwd)
-						fn.set_file_name (s)
-						if fn.is_valid then
-							create file.make (fn)
-							if file.exists then
-								s := fn
-							end
+							--| `s' is the path to the config file
+						if s.has (' ') and then not s.has ('"') then
+							s.left_adjust
+							s.right_adjust
+							s.prepend_character ('"')
+							s.append_character ('"')
 						end
-						fn := Void
-						file := Void
+						ec_arguments.extend (s)
 					end
-
-						--| `s' is the path to the config file
-					if s.has (' ') and then not s.has ('"') then
-						s.left_adjust
-						s.right_adjust
-						s.prepend_character ('"')
-						s.append_character ('"')
-					end
-					ec_arguments.extend (s)
-				elseif cmdline_arguments_count >= 1  then
+				else
 					from
 						i := 1
 					until

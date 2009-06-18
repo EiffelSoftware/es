@@ -316,14 +316,22 @@ feature -- Option names and descriptions
 	option_is_attached_by_default_name: STRING_GENERAL do Result := locale.translation ("Are types attached by default?") end
 	option_is_attached_by_default_description: STRING_GENERAL do Result := locale.translation ("Are types without explicit attachment mark considered attached?") end
 
-	option_is_void_safe_name: STRING_GENERAL do Result := locale.translation ("Is source code void safe?") end
-	option_is_void_safe_description: STRING_GENERAL do Result := locale.translation ("Shall feature calls on targets of detachable types be reported as errors?") end
+	option_void_safety_name: STRING_GENERAL do Result := locale.translation ("Void safety") end
+	option_void_safety_description: STRING_GENERAL do Result := locale.translation ("%
+		%Void safety level the source code should provide:%
+		% None - void safety is not checked at all;%
+		% On demand - entities of attached type are ensured to be properly initialized;%
+		% Complete - all void safety validity rules are checked%
+	%") end
+	option_void_safety_none_name: STRING_GENERAL do Result := locale.translation ("No void safety") end
+	option_void_safety_initialization_name: STRING_GENERAL do Result := locale.translation ("On demand void safety") end
+	option_void_safety_all_name: STRING_GENERAL do Result := locale.translation ("Complete void safety") end
 
-	option_syntax_level_name: STRING_GENERAL do Result := locale.translation ("Syntax level") end
-	option_syntax_level_description: STRING_GENERAL do Result := locale.translation ("Variant of syntax used in source code") end
-	option_syntax_level_obsolete_name: STRING_GENERAL do Result := locale.translation ("Obsolete syntax") end
-	option_syntax_level_transitional_name: STRING_GENERAL do Result := locale.translation ("Transitional syntax") end
-	option_syntax_level_standard_name: STRING_GENERAL do Result := locale.translation ("Standard syntax") end
+	option_syntax_name: STRING_GENERAL do Result := locale.translation ("Syntax") end
+	option_syntax_description: STRING_GENERAL do Result := locale.translation ("Variant of syntax used in source code") end
+	option_syntax_obsolete_name: STRING_GENERAL do Result := locale.translation ("Obsolete syntax") end
+	option_syntax_transitional_name: STRING_GENERAL do Result := locale.translation ("Transitional syntax") end
+	option_syntax_standard_name: STRING_GENERAL do Result := locale.translation ("Standard syntax") end
 
 	warning_names: HASH_TABLE [STRING_GENERAL, STRING]
 			-- Warning names.
@@ -518,13 +526,20 @@ feature -- Validation warnings
 	root_invalid_feature: STRING = "Root procedure name is invalid."
 	cluster_dependency_group_not_exist: STRING = "Cannot add dependency. There is no group with this name."
 	override_group_not_exist: STRING = "Cannot add override. There is no group with this name."
-	invalid_group_name: STRING = "The name of the group is invalid."
+	invalid_assembly_name: STRING = "The name of the assembly is invalid."
+	invalid_cluster_name: STRING = "The name of the cluster is invalid."
+	invalid_library_name: STRING = "The name of the library is invalid."
+	invalid_override_name: STRING = "The name of the override is invalid."
+	invalid_precompile_name: STRING = "The name of the precompile is invalid."
+	
 	group_already_exists (a_group: STRING): STRING
 		require
 			a_group_not_void: a_group /= Void
 		do
 			Result := "There is already a group with name "+a_group+"."
 		end
+	file_is_not_a_library: STRING = "The selected configuration file is not a library.%NPlease make sure the library is a valid Eiffel Configuration File and is has a library target."
+	add_non_void_safe_library: STRING = "The selected library is not Void-Safe. Do you still want to utilize it?%N%NNote: Using non-Void-Safe libraries in a void-safe system can cause library incompatibilities."
 
 	assembly_no_location: STRING = "No location specified."
 
@@ -711,6 +726,13 @@ feature -- Parse errors
 		end
 
 	e_parse_incorrect_class_opt: STRING = "Invalid class_option tag."
+
+	e_parse_incorrect_option_override (option_name: STRING): STRING
+		do
+			Result := locale.formatted_string (locale.translation ("[
+				Library option "$1" cannot be overridden outside the library.
+			]"), [option_name])
+		end
 
 	e_parse_incorrect_visible (a_parent: STRING): STRING
 		do

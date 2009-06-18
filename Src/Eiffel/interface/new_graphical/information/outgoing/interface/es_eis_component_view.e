@@ -54,14 +54,14 @@ inherit
 
 feature -- HELP_CONTEXT_I, Access
 
-	help_context_id: attached STRING_GENERAL
+	help_context_id: STRING
 			-- <Precursor>
 		local
 			l_eis_entry: EIS_ENTRY
 		do
 			l_eis_entry ?= eis_grid.selected_rows.i_th (1).data
-			if l_eis_entry /= Void and then attached {STRING_GENERAL} l_eis_entry.source as lt_src and then not lt_src.is_empty then
-				Result := lt_src
+			if l_eis_entry /= Void and then attached l_eis_entry.source as l_src and then not l_src.is_empty then
+				Result := l_src
 			else
 					-- Looks like the post condition is too strict.
 				Result := "No source specified."
@@ -71,30 +71,27 @@ feature -- HELP_CONTEXT_I, Access
 	help_context_section: detachable HELP_CONTEXT_SECTION_I
 			-- <Precursor>
 		do
-			if attached {EIS_ENTRY} eis_grid.selected_rows.i_th (1).data as lt_entry then
-				Result := create {HELP_SECTION_EIS_ENTRY}.make (lt_entry)
+			if attached {EIS_ENTRY} eis_grid.selected_rows.i_th (1).data as l_entry then
+				Result := create {HELP_SECTION_EIS_ENTRY}.make (l_entry)
 			else
 				check entry_not_attached: False end
 			end
 		end
 
-	help_context_description: detachable STRING_GENERAL
+	help_context_description: detachable STRING_32
 			-- An optional description of the context.
 		do
-			if attached {EIS_ENTRY} eis_grid.selected_rows.i_th (1).data as lt_entry then
-				eis_output.process (lt_entry)
+			if attached {EIS_ENTRY} eis_grid.selected_rows.i_th (1).data as l_entry then
+				eis_output.process (l_entry)
 				Result := eis_output.last_output_code
 			end
 		end
 
-	help_provider: attached UUID
+	help_provider: UUID
 			-- <Precursor>
 			-- Help provider computed from selected eis entry
-		local
-			l_eis_entry: EIS_ENTRY
 		do
-			l_eis_entry ?= eis_grid.selected_rows.i_th (1).data
-			if l_eis_entry /= Void then
+			if attached {EIS_ENTRY} eis_grid.selected_rows.i_th (1).data as l_eis_entry then
 				Result := help_provider_from_protocol (l_eis_entry.protocol)
 			else
 				check entry_not_attached: False end
@@ -186,14 +183,14 @@ feature {NONE} -- Sorting
 		do
 			inspect cached_column
 			when column_location then
-				if attached {STRING} u.id as lt_id_u then
-					if attached {STRING} v.id as lt_id_v then
+				if attached u.id as lt_id_u then
+					if attached v.id as lt_id_v then
 						type_u := id_solution.most_possible_type_of_id (lt_id_u)
 						type_v := id_solution.most_possible_type_of_id (lt_id_v)
 						if type_u = type_v then
 								-- Type is the same, compare the name
 							if type_u = id_solution.target_type then
-								if attached {CONF_TARGET} id_solution.target_of_id (lt_id_u) as lt_target_u and then attached {CONF_TARGET} id_solution.target_of_id (lt_id_v) as lt_target_v then
+								if attached id_solution.target_of_id (lt_id_u) as lt_target_u and then attached id_solution.target_of_id (lt_id_v) as lt_target_v then
 									Result := lt_target_u.name < lt_target_v.name
 								else
 										-- Simply compare there ids.
@@ -215,8 +212,8 @@ feature {NONE} -- Sorting
 					Result := not Result
 				end
 			when column_name then
-				if attached {STRING_32} u.name as lt_name_u then
-					if attached {STRING_32} v.name as lt_name_v then
+				if attached u.name as lt_name_u then
+					if attached v.name as lt_name_v then
 						Result := lt_name_u < lt_name_v
 					else
 						Result := True
@@ -226,8 +223,8 @@ feature {NONE} -- Sorting
 					Result := not Result
 				end
 			when column_protocol then
-				if attached {STRING_32} u.protocol as lt_protocol_u then
-					if attached {STRING_32} v.protocol as lt_protocol_v then
+				if attached u.protocol as lt_protocol_u then
+					if attached v.protocol as lt_protocol_v then
 						Result := lt_protocol_u < lt_protocol_v
 					else
 						Result := True
@@ -237,8 +234,8 @@ feature {NONE} -- Sorting
 					Result := not Result
 				end
 			when column_source then
-				if attached {STRING_32} u.source as lt_source_u then
-					if attached {STRING_32} v.source as lt_source_v then
+				if attached u.source as lt_source_u then
+					if attached v.source as lt_source_v then
 						Result := lt_source_u < lt_source_v
 					else
 						Result := True
@@ -248,8 +245,8 @@ feature {NONE} -- Sorting
 					Result := not Result
 				end
 			when column_tags then
-				if attached {STRING_32} u.tags_as_string as lt_tags_u then
-					if attached {STRING_32} v.tags_as_string as lt_tags_v then
+				if attached u.tags_as_string as lt_tags_u then
+					if attached v.tags_as_string as lt_tags_v then
 						Result := lt_tags_u < lt_tags_v
 					else
 						Result := True
@@ -259,8 +256,8 @@ feature {NONE} -- Sorting
 					Result := not Result
 				end
 			when column_others then
-				if attached {STRING_32} u.others_as_string as lt_others_u then
-					if attached {STRING_32} v.others_as_string as lt_others_v then
+				if attached u.others_as_string as lt_others_u then
+					if attached v.others_as_string as lt_others_v then
 						Result := lt_others_u < lt_others_v
 					else
 						Result := True
@@ -337,7 +334,7 @@ feature {NONE} -- Initialization
 	setup_grid_from_component
 			-- Fill data into the displaying grid from given `component'.
 		do
-			create extracted_entries.make_from_array (new_extractor.eis_entries.linear_representation)
+			create extracted_entries.make_from_array (new_extractor.eis_entries.linear_representation.to_array)
 			cached_column := sorting_column
 			cached_descend := descend_order
 			new_sorter.sort (extracted_entries)
@@ -460,7 +457,7 @@ feature {NONE} -- Events
 					-- Setup background colors
 					-- Put a special backgroud color if the line of entry is from inherited.
 
-				if attached {EV_COLOR} background_color_of_entry (l_eis_entry) as lt_color then
+				if attached background_color_of_entry (l_eis_entry) as lt_color then
 					Result.set_background_color (lt_color)
 				end
 			elseif a_row = eis_grid.row_count and then new_entry_possible then

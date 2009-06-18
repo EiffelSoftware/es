@@ -23,13 +23,17 @@ feature {NONE} -- Initialization
 	make (a_preference: TEST_PREFERENCES)
 			-- <Precursor>
 		local
-			l_timeout, l_proxy, l_seed: INTEGER
+			l_timeout, l_test_count, l_proxy, l_seed: INTEGER
 		do
 			create types_cache.make_default
 			Precursor (a_preference)
 			l_timeout := a_preference.autotest_timeout.value
 			if l_timeout > 0 then
 				time_out_cache := l_timeout.to_natural_32
+			end
+			l_test_count := a_preference.autotest_test_count.value
+			if l_test_count > 0 then
+				test_count_cache := l_test_count.to_natural_32
 			end
 			l_proxy := a_preference.autotest_proxy_timeout.value
 			if l_proxy > 0 then
@@ -58,6 +62,14 @@ feature -- Access
 			Result := time_out_cache
 		ensure then
 			result_equals_cache: Result = time_out_cache
+		end
+
+	test_count: NATURAL
+			-- <Precursor>
+		do
+			Result := test_count_cache
+		ensure then
+			result_equals_cache: Result = test_count_cache
 		end
 
 	proxy_time_out: NATURAL
@@ -128,6 +140,9 @@ feature -- Access: cache
 	time_out_cache: like time_out assign set_time_out
 			-- Cache for `time_out'
 
+	test_count_cache: like test_count assign set_test_count
+			-- Cache for `test_count'
+
 	proxy_time_out_cache: like proxy_time_out assign set_proxy_time_out
 			-- Cache for `proxy_time_out'		
 
@@ -143,6 +158,8 @@ feature -- Access: cache
 	is_html_output_cache: like is_html_output assign set_html_output
 			-- Cache for `is_html_output'
 
+	is_debugging_cache: like is_debugging assign set_debugging
+			-- Cache for `is_debugging'
 	is_random_testing_enabled_cache: like is_random_testing_enabled assign set_is_random_testing_enabled
 			-- Cache for `is_random_testing_enabled'
 
@@ -202,9 +219,16 @@ feature -- Status report
 		do
 			Result := is_html_output_cache
 		ensure then
-			result_equals_cache: Result = is_html_output
+			result_equals_cache: Result = is_html_output_cache
 		end
 
+	is_debugging: BOOLEAN
+			-- <Precursor>
+		do
+			Result := is_debugging_cache
+		ensure then
+			result_equals_cache: Result = is_debugging_cache
+		end
 	is_load_log_enabled: BOOLEAN is
 			-- Should a specified load file be loaded?
 		do
@@ -302,6 +326,14 @@ feature -- Status setting
 			is_html_output_set: is_html_output_cache = a_is_html_output
 		end
 
+	set_debugging (a_is_debugging: like is_debugging)
+			-- Set `is_debugging' to `a_is_debugging'.
+		do
+			is_debugging_cache := a_is_debugging
+		ensure
+			is_debugging_set: is_debugging_cache = a_is_debugging
+		end
+
 	set_seed (a_seed: like seed)
 			-- Set `seed' to `a_seed'.
 		do
@@ -316,6 +348,14 @@ feature -- Status setting
 			time_out_cache := a_time_out
 		ensure
 			time_out_set: time_out_cache = a_time_out
+		end
+
+	set_test_count (a_test_count: like test_count)
+			-- Set `test_count' to `a_test_count'.
+		do
+			test_count_cache := a_test_count
+		ensure
+			test_count_set: test_count_cache = a_test_count
 		end
 
 	set_proxy_time_out (a_proxy_time_out: like proxy_time_out)

@@ -140,7 +140,7 @@ feature {NONE} -- User interface initialization
 
 feature -- Access: Help
 
-	help_context_id: attached STRING_GENERAL
+	help_context_id: STRING
 			-- <Precursor>
 		once
 			Result := "1AC830AB-7600-8E52-2351-C515BCC31D41"
@@ -651,6 +651,7 @@ feature {NONE} -- When hits
 			mi: EV_LIST_ITEM
 			l_scroll: EV_SCROLLABLE_AREA
 			l_fixed: EV_FIXED
+			l_array: ARRAY [TUPLE [s:STRING_GENERAL; type: TYPE [BREAKPOINT_WHEN_HITS_ACTION_I]]]
 		do
 				--| Internal Data
 			create when_hits_actions_entries.make
@@ -667,13 +668,14 @@ feature {NONE} -- When hits
 			mi.set_pixmap (stock_pixmaps.general_add_icon)
 			l_combo.extend (mi)
 			register_action (l_combo.select_actions, agent mi.enable_select)
-			(<<
+			l_array := <<
 				[interface_names.b_bp_print_message, {BREAKPOINT_WHEN_HITS_ACTION_PRINT_MESSAGE}],
 				[interface_names.b_bp_change_assertion_checking, {BREAKPOINT_WHEN_HITS_ACTION_CHANGE_ASSERTION_CHECKING}],
 				[interface_names.b_bp_activate_execution_recording, {BREAKPOINT_WHEN_HITS_ACTION_EXECUTION_RECORDING}],
 				[interface_names.b_bp_enable_disable_breakpoints, {BREAKPOINT_WHEN_HITS_ACTION_CHANGE_BREAKPOINTS_STATUS}],
 				[interface_names.b_bp_reset_hits_count, {BREAKPOINT_WHEN_HITS_ACTION_RESET_HIT_COUNT}]
-			>>).do_all (agent (t: TUPLE [s:STRING_GENERAL; type: TYPE [BREAKPOINT_WHEN_HITS_ACTION_I]]; b: EV_VERTICAL_BOX; comb: EV_COMBO_BOX)
+			>>
+			l_array.do_all (agent (t: TUPLE [s:STRING_GENERAL; type: TYPE [BREAKPOINT_WHEN_HITS_ACTION_I]]; b: EV_VERTICAL_BOX; comb: EV_COMBO_BOX)
 					local
 						lmi: EV_LIST_ITEM
 					do
@@ -1588,7 +1590,7 @@ feature -- Access
 			-- Indicates if the size and position information is remembered for the dialog	
 
 ;note
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -1612,11 +1614,11 @@ feature -- Access
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

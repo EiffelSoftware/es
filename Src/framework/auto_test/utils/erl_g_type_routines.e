@@ -169,21 +169,8 @@ feature {NONE} -- Parsing class types
 			-- The result is resolved in `a_context_class'.
 		require
 			a_name_not_void: a_name /= Void
-		local
-			l_type_as: TYPE_AS
 		do
-			if a_name.is_case_insensitive_equal ("NONE") then
-				Result := none_type
-			else
-					-- Parse `a_name' into a type AST node.
-				type_parser.parse_from_string ("type " + a_name, interpreter_root_class)
-				l_type_as := type_parser.type_node
-
-					-- Generate TYPE_A object from type AST node.
-				if l_type_as /= Void and then attached {CLASS_C} interpreter_root_class as l_context_class then
-					Result := type_a_generator.evaluate_type_if_possible (l_type_as, l_context_class)
-				end
-			end
+			Result := base_type_with_context (a_name, interpreter_root_class)
 		end
 
 feature{NONE} -- Implementation
@@ -275,11 +262,23 @@ feature -- Types
 			a_name_not_void: a_name /= Void
 		local
 			l_type_as: TYPE_AS
+			l_options: CONF_OPTION
 		do
 			fixme ("Code is similar to ERL_G_TYPE_ROUTINES.base_type. Refactoring is needed.")
 			if a_name.is_case_insensitive_equal ("NONE") then
 				Result := none_type
 			else
+					-- Setup syntax level according to `a_context_class'.
+				l_options := a_context_class.lace_class.options
+				inspect l_options.syntax.index
+				when {CONF_OPTION}.syntax_index_obsolete then
+					type_parser.set_syntax_version ({EIFFEL_SCANNER}.obsolete_64_syntax)
+				when {CONF_OPTION}.syntax_index_transitional then
+					type_parser.set_syntax_version ({EIFFEL_SCANNER}.transitional_64_syntax)
+				else
+					type_parser.set_syntax_version ({EIFFEL_SCANNER}.ecma_syntax)
+				end
+
 					-- Parse `a_name' into a type AST node.
 				type_parser.parse_from_string ("type " + a_name, a_context_class)
 				l_type_as := type_parser.type_node

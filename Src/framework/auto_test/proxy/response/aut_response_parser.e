@@ -97,6 +97,11 @@ feature -- Parsing
 		deferred
 		end
 
+	parse_object_state_response
+			-- Parse response from a object state request.
+		deferred
+		end
+
 	retrieve_response
 			-- Retrieve response from the interpreter,
 			-- store it in `last_raw_response'.

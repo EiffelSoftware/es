@@ -96,7 +96,7 @@ feature {NONE} -- Initialization
         			-- We need a widget that is parented to a window so we need to wait until after the
         			-- docking content is attached to the window.
         		do
-		        	if attached {attached EV_WINDOW} helpers.widget_top_level_window (user_widget, False) as l_window then
+		        	if attached {EV_WINDOW} helpers.widget_top_level_window (user_widget, False) as l_window then
 		        			-- Set up help shortcut binding
 		        		bind_help_shortcut (l_window)
 		        	end
@@ -494,10 +494,10 @@ feature {NONE} -- Basic operations (Note code is replicated from ES_TOOL_FOUNDAT
 				a_action.call ([a_start_widget])
 			end
 
-			if attached {attached EV_WIDGET_LIST} a_start_widget as l_list then
+			if attached {EV_WIDGET_LIST} a_start_widget as l_list then
 				l_cursor := l_list.cursor
 				from l_list.start until l_list.after loop
-					if attached {attached EV_WIDGET} l_list.item as l_widget and then not l_widget.is_destroyed then
+					if attached l_list.item as l_widget and then not l_widget.is_destroyed then
 							-- Perform action on all child widgets
 						propagate_action (l_widget, a_action, a_excluded)
 					end
@@ -505,10 +505,10 @@ feature {NONE} -- Basic operations (Note code is replicated from ES_TOOL_FOUNDAT
 				end
 				l_list.go_to (l_cursor)
 			elseif attached {EV_SPLIT_AREA} a_start_widget as l_split then
-				if attached {attached EV_WIDGET} l_split.first as l_first and then not l_first.is_destroyed then
+				if attached l_split.first as l_first and then not l_first.is_destroyed then
 					propagate_action (l_first, a_action, a_excluded)
 				end
-				if attached {attached EV_WIDGET} l_split.second as l_second and then not l_second.is_destroyed then
+				if attached l_split.second as l_second and then not l_second.is_destroyed then
 					propagate_action (l_second, a_action, a_excluded)
 				end
 			end
@@ -537,7 +537,7 @@ feature {NONE} -- Basic operations (Note code is replicated from ES_TOOL_FOUNDAT
 				end
 			end
 
-			if attached {attached EV_WINDOW} a_start_widget as l_window then
+			if attached {EV_WINDOW} a_start_widget as l_window then
 				if not l_window.is_empty then
 					l_start_widget := l_window.item
 				end
@@ -545,10 +545,10 @@ feature {NONE} -- Basic operations (Note code is replicated from ES_TOOL_FOUNDAT
 				l_start_widget := a_start_widget
 			end
 
-			if attached {attached EV_WIDGET_LIST} l_start_widget as l_list then
+			if attached {EV_WIDGET_LIST} l_start_widget as l_list then
 				l_cursor := l_list.cursor
 				from l_list.start until l_list.after loop
-					if attached {attached EV_WIDGET} l_list.item as l_widget and then not l_widget.is_destroyed then
+					if attached l_list.item as l_widget and then not l_widget.is_destroyed then
 							-- Apply addition to all child widgets
 						propagate_register_action (l_widget, a_sequence, a_action, a_excluded)
 					end
@@ -556,10 +556,10 @@ feature {NONE} -- Basic operations (Note code is replicated from ES_TOOL_FOUNDAT
 				end
 				l_list.go_to (l_cursor)
 			elseif attached {EV_SPLIT_AREA} l_start_widget as l_split then
-				if attached {attached EV_WIDGET} l_split.first as l_first and then not l_first.is_destroyed then
+				if attached l_split.first as l_first and then not l_first.is_destroyed then
 					propagate_register_action (l_first, a_sequence, a_action, a_excluded)
 				end
-				if attached {attached EV_WIDGET} l_split.second as l_second and then not l_second.is_destroyed then
+				if attached l_split.second as l_second and then not l_second.is_destroyed then
 					propagate_register_action (l_second, a_sequence, a_action, a_excluded)
 				end
 			end
@@ -722,6 +722,7 @@ feature {NONE} -- User interface elements
     frozen tool_bar_widget: SD_WIDGET_TOOL_BAR
             -- Main tool tool bar
         local
+        	l_padding: EV_CELL
             l_cell: like internal_tool_bar_widget
             l_items: DS_LINEAR [SD_TOOL_BAR_ITEM]
         do
@@ -736,7 +737,16 @@ feature {NONE} -- User interface elements
 
                         -- Add tool bar items
 					from l_items.start until l_items.after loop
-						Result.extend (l_items.item_for_iteration)
+						if attached l_items.item_for_iteration as l_item then
+							if l_items.is_first and then attached {SD_TOOL_BAR_WIDGET_ITEM} l_item as l_widget then
+									-- Need to added initial padding because the widgets look too close to the window's border.
+								create l_padding
+								l_padding.set_minimum_width ({ES_UI_CONSTANTS}.frame_border)
+								Result.extend (create {SD_TOOL_BAR_WIDGET_ITEM}.make (l_padding))
+							end
+							Result.extend (l_item)
+						end
+
 						l_items.forth
 					end
 
@@ -780,7 +790,9 @@ feature {NONE} -- User interface elements
                 l_items := create_right_tool_bar_items
                 if l_items /= Void then
                     create {SD_WIDGET_TOOL_BAR} Result.make (create {SD_TOOL_BAR}.make)
-                    Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
+                    if attached tool_bar_widget as l_tool_bar and then not l_tool_bar.items.is_empty then
+                    	Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
+                    end
                     l_items.do_all (agent Result.extend)
                     l_cell.put (Result)
                 end
@@ -1033,7 +1045,7 @@ feature {NONE} -- Factory
 			create Result.make
 			Result.set_pixel_buffer (stock_mini_pixmaps.callstack_send_to_external_editor_icon_buffer)
 			Result.set_pixmap (stock_mini_pixmaps.callstack_send_to_external_editor_icon)
-			Result.set_tooltip ("Click to show the help documentation.")
+			Result.set_tooltip (locale_formatter.formatted_translation (tt_show_help, [tool_descriptor.title]))
 			register_action (Result.select_actions, agent show_help)
 		ensure
 			not_result_is_destroyed: Result /= Void implies not Result.is_destroyed
@@ -1064,6 +1076,10 @@ feature {NONE} -- Internal implementation cache
 
     internal_right_tool_bar_widget: detachable CELL [detachable like right_tool_bar_widget]
             -- Cached version of `right_tool_bar_widget'
+
+feature {NONE} -- Internationalization
+
+	tt_show_help: STRING = "Click to show the $1 tool help documentation."
 
 invariant
     not_is_initialized: is_initializing implies not is_initialized

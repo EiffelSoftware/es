@@ -47,6 +47,53 @@ feature -- Access: User interface
 			not_result_is_destroyed: not Result.is_destroyed
 		end
 
+	icon_animations: ARRAY [EV_PIXEL_BUFFER]
+			-- An list of animation icons representing the output pane is active.
+		require
+			is_interface_usable: is_interface_usable
+		deferred
+		ensure
+			result_attached: Result /= Void
+			not_result_is_empty: not Result.is_empty
+			not_result_is_destroyed: not Result.there_exists (agent {EV_PIXEL_BUFFER}.is_destroyed)
+			result_consistent: Result = icon_animations
+		end
+
+	icon_pixmap_animations: ARRAY [EV_PIXMAP]
+			-- An list of animation pixmap icons representing the output pane is active.
+		require
+			is_interface_usable: is_interface_usable
+		deferred
+		ensure
+			result_attached: Result /= Void
+			not_result_is_empty: not Result.is_empty
+			not_result_is_destroyed: not Result.there_exists (agent {EV_PIXMAP}.is_destroyed)
+			result_consistent: Result = icon_pixmap_animations
+		end
+
+feature -- Status report
+
+	is_searchable: BOOLEAN
+			-- Indicates if the output pane is searchable.
+		deferred
+		end
+
+	is_auto_scrolled: BOOLEAN assign set_is_auto_scrolled
+			-- Indicates if the editor should auto scroll the content.
+		deferred
+		end
+
+feature -- Status setting
+
+	set_is_auto_scrolled (a_auto: BOOLEAN)
+			-- Set auto scroll nature of the output pane.
+			--
+			-- `a_auto': True to auto-scroll the output pane; False otherwise.
+		deferred
+		ensure
+			is_auto_scrolled_set: is_auto_scrolled = a_auto
+		end
+
 feature -- Query
 
 	text_from_window (a_window: SHELL_WINDOW_I): STRING_32
@@ -119,6 +166,18 @@ feature -- Basic operations
 			--
 			-- `a_window': A window to clear the output on.
 		require
+			is_interface_usable: is_interface_usable
+			a_window_attached: a_window /= Void
+			a_window_is_interface_usable: a_window.is_interface_usable
+		deferred
+		end
+
+	search_window (a_window: SHELL_WINDOW_I)
+			-- Search the output window.
+			--
+			-- `a_window': A window to search the output on.
+		require
+			is_searchable: is_searchable
 			is_interface_usable: is_interface_usable
 			a_window_attached: a_window /= Void
 			a_window_is_interface_usable: a_window.is_interface_usable

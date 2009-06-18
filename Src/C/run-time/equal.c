@@ -42,7 +42,6 @@ doc:<file name="equal.c" header="eif_equal.h" version="$Id$" summary="Equality o
 #include "eif_equal.h"			/* For Eiffel boolean */
 #include "rt_struct.h"			/* For skeleton structure */
 #include "rt_traverse.h"		/* For traversing objects */
-#include "eif_size.h"			/* For macro LNGPAD */
 #include "rt_tools.h"			/* For `nprime' */
 #include "rt_search.h"
 #include "eif_plug.h"			/* for econfg */
@@ -140,12 +139,14 @@ rt_public EIF_BOOLEAN eequal(register EIF_REFERENCE target, register EIF_REFEREN
 				*/
 		
 				/* First condition: same count */
-			rt_uint_ptr s_size = RT_SPECIAL_COUNT(source);
-			if (RT_SPECIAL_COUNT(target) != s_size) {
+			if
+				((RT_SPECIAL_COUNT(source) != RT_SPECIAL_COUNT(target)) ||
+				(RT_SPECIAL_ELEM_SIZE(source) != RT_SPECIAL_ELEM_SIZE(target)))
+			{
 				return EIF_FALSE;
 			} else {
 					/* Second condition: block equality */
-				return EIF_TEST(!memcmp (source, target, s_size * (rt_uint_ptr) RT_SPECIAL_ELEM_SIZE(source)));
+				return EIF_TEST(!memcmp (source, target, RT_SPECIAL_VISIBLE_SIZE(source)));
 			}
 		} else if (Dftype(source) == egc_bit_dtype) {
 				/* Eiffel standard equality on BIT objects */
@@ -182,13 +183,7 @@ rt_public EIF_BOOLEAN eiso(EIF_REFERENCE target, EIF_REFERENCE source)
 		target, System(Dtype(target)).cn_generator);
 #endif
 
-	if (HEADER(source)->ov_flags & EO_C)
-		return EIF_FALSE;
-
-	if (HEADER(target)->ov_flags & EO_C)
-		return EIF_FALSE;
-
-	/* Check if the dynamic types are the same */
+		/* Check if the dynamic types are the same */
 	if (Dftype(source) != Dftype(target)) {
 		return EIF_FALSE;
 	} else {
@@ -226,23 +221,19 @@ rt_public EIF_BOOLEAN spiso(register EIF_REFERENCE target, register EIF_REFERENC
 	s_zone = HEADER(source);
 	t_zone = HEADER(target);
 
-	/* First condition: same count */
-	s_ref = RT_SPECIAL_INFO_WITH_ZONE(source, s_zone);
-	t_ref = RT_SPECIAL_INFO_WITH_ZONE(target, t_zone);
-
 #ifdef DEBUG
 	dprintf(2)("spiso: source = 0x%lx [%d] target = 0x%lx [%d]\n",
-		source, RT_SPECIAL_COUNT_WITH_INFO (s_ref),
-		target, RT_SPECIAL_COUNT_WITH_INFO (t_ref));
+		source, RT_SPECIAL_COUNT(source),
+		target, RT_SPECIAL_COUNT(target));
 #endif
 
-	count = RT_SPECIAL_COUNT_WITH_INFO(s_ref);
-	if (count != RT_SPECIAL_COUNT_WITH_INFO(t_ref))
+	count = RT_SPECIAL_COUNT(source);
+	if (count != RT_SPECIAL_COUNT(target))
 		return EIF_FALSE;
 
 	/* Second condition: same element size */
-	elem_size = RT_SPECIAL_ELEM_SIZE_WITH_INFO (s_ref);
-	if (elem_size != RT_SPECIAL_ELEM_SIZE_WITH_INFO(t_ref))
+	elem_size = RT_SPECIAL_ELEM_SIZE(source);
+	if (elem_size != RT_SPECIAL_ELEM_SIZE(target))
 		return EIF_FALSE;
 
 	s_flags = s_zone->ov_flags;
@@ -391,8 +382,7 @@ rt_private EIF_BOOLEAN rdeepiso(EIF_REFERENCE target,EIF_REFERENCE source)
 			return EIF_TRUE;
 
 		/* Evaluation of the count of the target special object */
-		t_ref = RT_SPECIAL_INFO_WITH_ZONE(target, zone);
-		count = RT_SPECIAL_COUNT_WITH_INFO(t_ref);
+		count = RT_SPECIAL_COUNT(target);
 
 		if (flags & EO_TUPLE) {
 			EIF_TYPED_VALUE * l_source = (EIF_TYPED_VALUE *) source;
@@ -450,7 +440,7 @@ rt_private EIF_BOOLEAN rdeepiso(EIF_REFERENCE target,EIF_REFERENCE source)
 			/* Special objects filled with (non-special) expanded objects.
 			 * we call then standard isomorphism test on normal objects.
 			 */
-			elem_size = RT_SPECIAL_ELEM_SIZE_WITH_INFO(t_ref);
+			elem_size = RT_SPECIAL_ELEM_SIZE(target);
 			for (
 				s_ref = source+OVERHEAD, t_ref = target+OVERHEAD;
 				count > 0;

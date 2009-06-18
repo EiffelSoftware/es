@@ -66,6 +66,7 @@ feature {NONE}-- Initialization
 				text_displayed.add_selection_observer (dev_window.agents)
 			end
 			create after_reading_text_actions.make
+			after_reading_text_actions.compare_objects
 
 			editor_drawing_area.set_pebble_function (agent pebble_from_x_y)
 			editor_drawing_area.enable_pebble_positioning
@@ -193,7 +194,11 @@ feature -- Possibly delayed operations
 							text_displayed.select_line (l_num)
 						end
 					end
-					display_line_with_context (l_num)
+					if highlight and has_selection then
+						show_selection (False)
+					else
+						display_line_with_context (l_num)
+					end
 					refresh_now
 				end
 			else
@@ -316,21 +321,25 @@ feature -- Possibly delayed operations
 
 	scroll_to_end_when_ready
 			-- scroll to position `pos' in characters
-			-- does not need the text to be fully loaded			
+			-- does not need the text to be fully loaded
+		local
+			l_deferred_action: PROCEDURE [EB_CLICKABLE_EDITOR, TUPLE]
 		do
-			if text_is_fully_loaded then
-				if text_displayed.cursor /= Void then
-					if text_displayed.has_selection then
-						text_displayed.disable_selection
-					end
-					text_displayed.cursor.make_from_character_pos (1, number_of_lines, text_displayed)
-					if number_of_lines > number_of_lines_displayed then
-						check_cursor_position
-					end
-					refresh
+			if text_is_fully_loaded and text_displayed.cursor /= Void then
+				if text_displayed.has_selection then
+					text_displayed.disable_selection
 				end
+				text_displayed.cursor.make_from_character_pos (1, number_of_lines, text_displayed)
+				if number_of_lines > number_of_lines_displayed then
+					check_cursor_position
+				end
+				refresh
 			else
-				after_reading_text_actions.extend (agent scroll_to_end_when_ready)
+				l_deferred_action := agent scroll_to_end_when_ready
+				if not after_reading_text_actions.has (l_deferred_action) then
+						-- Ensure the scroll action is not added twice.
+					after_reading_text_actions.extend (l_deferred_action)
+				end
 			end
 		end
 
@@ -819,7 +828,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -843,11 +852,11 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_CLICKABLE_EDITOR

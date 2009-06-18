@@ -650,7 +650,7 @@ feature {NONE} -- Implementation
 	process_char_as (l_as: CHAR_AS)
 		do
 			if not expr_type_visiting then
-				text_formatter_decorator.process_character_text (l_as.string_value)
+				text_formatter_decorator.process_character_text (l_as.string_32_value)
 			end
 			last_type := character_type
 		end
@@ -891,12 +891,9 @@ feature {NONE} -- Implementation
 									last_class := current_class
 								end
 							else
+									-- When processing creation target, `last_class' should always be `current_class'.
 								l_feat := feature_in_class (current_class, l_rout_id_set)
-								if last_type /= Void then
-									last_class := last_type.associated_class
-								else
-									last_class := current_class
-								end
+								last_class := current_class
 							end
 						else
 							if last_type /= Void then
@@ -1033,11 +1030,11 @@ feature {NONE} -- Implementation
 						if processing_creation_target then
 							if last_type = Void then
 								l_type := l_feat.type.actual_type
-								last_type := current_class.actual_type
 							else
 									-- A static type in creation as.
 								l_type := last_type
 							end
+							last_type := current_class.actual_type
 						else
 							l_type := l_feat.type
 									-- If it has a like argument type, we solve the type from the arguments.
@@ -1316,27 +1313,6 @@ feature {NONE} -- Implementation
 					l_as.precondition.process (Current)
 					l_text_formatter_decorator.set_not_in_assertion
 				end
-			end
-			if l_as.object_test_locals /= Void then
-					-- We do not need to remember the previous value of
-					-- expr_type_visiting, because there is an earlier check
-					-- statement stating that it should be False.
-					-- Here we enable it, because we don't want the object test
-					-- locals to be printed while evaluating their type.
-				expr_type_visiting := True
-				from
-					l_as.object_test_locals.start
-				until
-					l_as.object_test_locals.after
-				loop
-					l_as.object_test_locals.item.type.process (Current)
-					if last_type /= Void then
-						object_test_locals_for_current_feature.put (last_type,
-							l_as.object_test_locals.item.name.name)
-					end
-					l_as.object_test_locals.forth
-				end
-				expr_type_visiting := False
 			end
 			if not l_text_formatter_decorator.is_feature_short then
 				if l_as.locals /= Void then
@@ -2262,6 +2238,8 @@ feature {NONE} -- Implementation
 	process_object_test_as (l_as: OBJECT_TEST_AS)
 		local
 			l_text_formatter_decorator: like text_formatter_decorator
+			l_ot_type: detachable TYPE_A
+			l_ot_name: detachable ID_AS
 		do
 			l_text_formatter_decorator := text_formatter_decorator
 				-- Regardless of the syntax used for object test, we always use the most recent
@@ -2279,13 +2257,25 @@ feature {NONE} -- Implementation
 				else
 					l_as.type.process (Current)
 				end
+				l_ot_type := last_type
 			end
 			l_as.expression.process (Current)
-			if not expr_type_visiting and then l_as.name /= Void then
+
+				-- If no `l_as.type' presents, we take type from the expression evaluation.
+			if l_ot_type = Void then
+				l_ot_type := last_type
+			end
+			l_ot_name := l_as.name
+			if not expr_type_visiting and l_ot_name /= Void then
 				l_text_formatter_decorator.put_space
 				l_text_formatter_decorator.process_keyword_text (ti_as_keyword, Void)
 				l_text_formatter_decorator.put_space
-				l_as.name.process (Current)
+				l_ot_name.process (Current)
+			end
+
+				-- Remember found OT locals.
+			if l_ot_name /= Void and l_ot_type /= Void then
+				object_test_locals_for_current_feature.force (l_ot_type, l_ot_name.name)
 			end
 			last_type := boolean_type
 		end

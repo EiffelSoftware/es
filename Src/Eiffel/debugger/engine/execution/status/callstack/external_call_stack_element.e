@@ -17,16 +17,17 @@ create
 
 feature -- Change
 
-	set_info (a_oa: DBG_ADDRESS; a_cn, a_fn: STRING; a_bi: INTEGER; a_info: STRING)
+	set_info (a_oa: DBG_ADDRESS; a_cn, a_fn: STRING; a_bp, a_bp_nested: INTEGER; a_info: STRING)
 		require
 			object_address_not_void: a_oa /= Void
 			class_name_not_void: a_cn /= Void
 			routine_name_not_void: a_fn /= Void
-			break_index_positive: a_bi >= 0
+			break_index_positive: a_bp >= 0
 		do
 			class_name := a_cn
 			routine_name := a_fn
-			break_index := a_bi
+			break_index := a_bp
+			break_nested_index := a_bp_nested
 			object_address := a_oa
 			info := a_info
 		end
@@ -50,7 +51,7 @@ feature -- Output
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -63,22 +64,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EIFFEL_CALL_STACK_ELEMENT

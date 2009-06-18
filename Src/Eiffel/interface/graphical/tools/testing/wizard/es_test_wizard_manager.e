@@ -179,7 +179,11 @@ feature {NONE} -- Implementation
 		do
 			l_target := a_project.universe.target
 			create l_factory
-			l_location := l_factory.new_location_from_full_path (testing_library_path, l_target)
+			if l_target.options.void_safety.index = {CONF_OPTION}.void_safety_index_all then
+				l_location := l_factory.new_location_from_full_path (testing_library_path_safe, l_target)
+			else
+				l_location := l_factory.new_location_from_full_path (testing_library_path, l_target)
+			end
 			if a_project.universe.group_of_name (testing_library_name) /= Void then
 				l_name := testing_library_name + "_library"
 			else
@@ -193,14 +197,19 @@ feature {NONE} -- Implementation
 			l_target.add_library (l_library)
 			l_target.system.store
 
-			create l_manager.make (development_window)
-			l_manager.refresh
+			if l_target.system.store_successful then
+				create l_manager.make (development_window)
+				l_manager.refresh
 
-			if a_recompile and discover_melt_cmd.executable then
-				discover_melt_cmd.execute
+				if a_recompile and discover_melt_cmd.executable then
+					discover_melt_cmd.execute
+				end
+
+				launch_wizard
+			else
+				prompts.show_error_prompt (warning_messages.w_not_writable (l_target.system.file_name), development_window.window, Void)
 			end
 
-			launch_wizard
 		end
 
 feature {NONE} -- Constants
@@ -209,7 +218,7 @@ feature {NONE} -- Constants
 
 feature {NONE} -- Internationalization
 
-	t_title: STRING = "New Eiffel test"
+	t_title: STRING = "New Eiffel Test"
 
 	q_add_library: STRING =
 		"The testing library which is needed to compile and execute tests has not been added yet.%N%N%

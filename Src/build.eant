@@ -15,8 +15,10 @@
 		<echo message="                                       library, framework." /> 
 		<echo message=" geant compile             Compile 'ec' finalized" />
 		<echo message=" geant compile_workbench   Compile 'ec' workbench" />
+		<echo message=" geant estudio_workbench   Compile 'ec' workbench in GUI" />
 		<echo message=" ---- "/>
 		<echo message=" geant make_delivery       Build a complete delivery " />
+		<echo message=" geant make_delivery_menu  Build a complete delivery (interactive) " />
 		<echo message="" />
 		<echo message="defines:" />
 		<!--
@@ -58,6 +60,13 @@
 			dir="$L_comp_dir"
 			reuse_variables="true" fork="false" />
 	</target>
+	<target name="estudio_workbench" depend="init_compilation" >
+		<echo message="workbench `ec' in [$L_comp_dir]" />
+
+		<geant target="estudio" file="${EIFFEL_SRC}${path_separator}scripts${path_separator}tools${path_separator}ec_bench.eant"
+			dir="$L_comp_dir"
+			reuse_variables="true" fork="false" />
+	</target>
 	<target name="clean_compilation" depend="init_compilation" >
 		<echo message="Clean `ec' compilation from [$L_comp_dir]" />
 
@@ -76,12 +85,16 @@
 		<geant target="clean_compilation" />
 	</target>
 
-	<target name="clobber" depend="clean" >
+	<target name="clobber" >
 		<geant target="_target_template_" arguments="clobber" dir="${EIFFEL_SRC}" />
 	</target>
 
 	<target name="make_delivery" >
 		<geant target="build_delivery" file="${EIFFEL_SRC}${path_separator}scripts${path_separator}deliv.eant"
+			reuse_variables="true" fork="false" />
+	</target>
+	<target name="make_delivery_menu" >
+		<geant target="menu" file="${EIFFEL_SRC}${path_separator}scripts${path_separator}menu.eant"
 			reuse_variables="true" fork="false" />
 	</target>
 

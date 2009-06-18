@@ -108,7 +108,7 @@ feature {NONE} -- Initialization
 			vb2.extend (l_padding)
 
 				-- Void-Safe check
-			if target.options.is_void_safe then
+			if target.options.void_safety.index = {CONF_OPTION}.void_safety_index_all then
 				create l_void_safe_check.make_with_text ("Show only Void-Safe libraries")
 				l_void_safe_check.enable_select
 				l_void_safe_check.select_actions.extend (agent on_void_safe_check_selected)
@@ -329,11 +329,17 @@ feature {NONE} -- Actions
 			end
 
 			browse_dialog.show_modal_to_window (Current)
-			if attached {STRING_32} browse_dialog.file_name as l_fn and then not l_fn.is_empty then
+			if attached browse_dialog.file_name as l_fn and then not l_fn.is_empty then
 				create l_loader.make (create {CONF_PARSE_FACTORY})
 				l_loader.retrieve_configuration (l_fn)
-				if not l_loader.is_error and then attached {CONF_SYSTEM} l_loader.last_system as l_system and then attached {CONF_TARGET} l_system.library_target as l_target then
-					on_library_selected (l_system, l_fn.as_string_8.as_attached)
+				if not l_loader.is_error and then attached l_loader.last_system as l_system then
+					if not attached l_system.library_target as l_target then
+						prompts.show_error_prompt (conf_interface_names.file_is_not_a_library, Current, Void)
+					elseif (not attached void_safe_check as l_check) or else (not l_check.is_selected or else l_target.options.void_safety.index = {CONF_OPTION}.void_safety_index_all) then
+						on_library_selected (l_system, l_fn.as_string_8)
+					else
+						prompts.show_question_prompt (conf_interface_names.add_non_void_safe_library, Current, agent on_library_selected (l_system, l_fn.as_string_8.as_attached), Void)
+					end
 				end
 			end
 		end
@@ -371,7 +377,7 @@ feature {NONE} -- Action handlers
 				i > nb
 			loop
 				l_row := l_grid.row (i)
-				if l_show_all or else (attached {CONF_TARGET} l_row.data as l_target and then l_target.options.is_void_safe) then
+				if l_show_all or else (attached {CONF_TARGET} l_row.data as l_target and then l_target.options.void_safety.index = {CONF_OPTION}.void_safety_index_all) then
 					l_row.show
 				else
 					l_row.hide
@@ -390,7 +396,7 @@ feature {NONE} -- Action handlers
 				-- library choosen?
 			if not location.text.is_empty and not name.text.is_empty then
 				if not is_valid_group_name (name.text) then
-					(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_error_prompt (conf_interface_names.invalid_group_name, Current, Void)
+					(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_error_prompt (conf_interface_names.invalid_library_name, Current, Void)
 				elseif group_exists (name.text, target) then
 					(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_error_prompt (conf_interface_names.group_already_exists (name.text), Current, Void)
 				else
@@ -486,7 +492,7 @@ feature {NONE} -- Basic operation
 					end
 				end
 
-				if l_show_void_safe_only and then not l_target.options.is_void_safe then
+				if l_show_void_safe_only and then l_target.options.void_safety.index /= {CONF_OPTION}.void_safety_index_all then
 						-- The library is not Void-Safe, hide it if showing only Void-Safe libraries.
 					l_row.hide
 				end
@@ -644,10 +650,10 @@ feature {NONE} -- Constants
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

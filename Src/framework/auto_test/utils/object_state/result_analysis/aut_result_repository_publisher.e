@@ -9,9 +9,10 @@ class
 
 inherit
 	AUT_RESULT_REPOSITORY_BUILDER
+		rename
+			make as old_make
 		redefine
-			update_result_repository,
-			build
+			update_result_repository
 		end
 
 	AUT_RESULT_ANALYSIS_UTILITY
@@ -19,7 +20,19 @@ inherit
 create
 	make
 
+feature{NONE} -- Initialization
+
+	make (a_system: like system; a_session: like session)
+			-- <Precursor>
+		do
+			old_make (a_system)
+			session := a_session
+		end
+
 feature -- Access
+
+	session: AUT_SESSION
+			-- Current AutoTest session
 
 	witness_observers: LIST [AUT_WITNESS_OBSERVER] is
 			-- List of observers for witness.
@@ -57,9 +70,13 @@ feature -- Basic operation
 
 	build (a_input_stream: KI_TEXT_INPUT_STREAM)
 			-- Build result repository from `a_input_stream' and
-			-- store result in `last_result_repository'.
+			-- store result in `result_repository'.
+		local
+			l_log_parser: AUT_LOG_PARSER
 		do
-			Precursor (a_input_stream)
+			create l_log_parser.make (system, session.error_handler)
+			l_log_parser.add_observer (Current)
+			l_log_parser.parse_stream (a_input_stream)
 			notify_observers
 		end
 
@@ -84,13 +101,12 @@ feature{NONE} -- Implementation
 			-- Update result repository based on last request in result-history.			
 		local
 			witness: AUT_WITNESS
---			l_observers: like witness_observers
 		do
 			notify_observers
 
 			fixme ("The following 4 lines are copied from the Precursor version, should be refactored.")
 			create witness.make (request_history, last_start_index, request_history.count)
-			last_result_repository.add_witness (witness)
+			result_repository.add_witness (witness)
 			last_test_case_request := witness.item (witness.count)
 			last_test_case_request.set_test_case_index (last_test_case_index)
 

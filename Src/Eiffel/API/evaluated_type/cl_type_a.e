@@ -577,7 +577,7 @@ feature {TYPE_A} -- Helpers
 
 	internal_same_generic_derivation_as (current_type, other: TYPE_A; a_level: INTEGER): BOOLEAN
 		do
-			Result := same_type (other) and then attached {attached like Current} other as l_cl_type and then
+			Result := same_type (other) and then attached {like Current} other as l_cl_type and then
 				l_cl_type.class_id = class_id and then
 						-- 'class_id' is the same therefore we can compare 'declaration_mark'.
 						-- If 'declaration_mark' is not the same for both then we have to make sure
@@ -667,7 +667,7 @@ feature {COMPILER_EXPORTER} -- Conformance
 						end
 						Result := other_class_type.class_id = system.system_object_id
 					end
-					if Result and then a_context_class.lace_class.is_void_safe then
+					if Result and then a_context_class.lace_class.is_void_safe_conformance then
 							-- We should still verify that the attachment marks are taken into account.
 						Result := is_attachable_to (other_class_type)
 					end

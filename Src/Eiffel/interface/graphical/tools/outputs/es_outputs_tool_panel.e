@@ -26,9 +26,24 @@ inherit
 			create_right_tool_bar_items
 		end
 
+	ES_HELP_CONTEXT
+		export
+			{NONE} all
+		redefine
+			is_help_available,
+			help_provider,
+			help_context_section,
+			help_context_id,
+			help_context_description
+		end
+
+	ES_OUTPUTS_COMMANDER_I
+		export
+			{ES_OUTPUTS_COMMANDER_I} all
+		end
+
 	OUTPUT_MANAGER_OBSERVER
 		redefine
-			on_output_registered,
 			on_output_unregistered,
 			on_output_activated
 		end
@@ -42,11 +57,6 @@ inherit
 			on_output_unlocked
 		end
 
-	ES_OUTPUTS_COMMANDER_I
-		export
-			{ES_OUTPUTS_COMMANDER_I} all
-		end
-
 create {ES_OUTPUTS_TOOL}
 	make
 
@@ -56,8 +66,9 @@ feature {NONE} -- User interface initialization
 			-- <Precursor>
 		do
 			register_action (selection_combo.change_actions, agent on_selected_editor_changed)
-			register_action (clear_button.select_actions, agent on_clear)
 			register_action (save_button.select_actions, agent on_save)
+			register_action (search_button.select_actions, agent on_search)
+			register_action (clear_button.select_actions, agent on_clear)
 		end
 
 	on_before_initialize
@@ -69,7 +80,6 @@ feature {NONE} -- User interface initialization
 
 	on_after_initialized
 			-- <Precursor>
-			-- test {ES_OUTPUTS_TOOL_PANEL}.on_before_initialize
 		local
 			l_output_manager: like output_manager
 			l_active_outputs: attached DS_LINEAR [OUTPUT_I]
@@ -81,26 +91,29 @@ feature {NONE} -- User interface initialization
 			l_output_manager := output_manager
 			if l_output_manager.is_service_available then
 				l_output_manager.service.output_manager_event_connection.connect_events (Current)
-				l_active_outputs := l_output_manager.service.active_outputs
-				from l_active_outputs.start until l_active_outputs.after loop
-					if attached {ES_OUTPUT_PANE_I} l_active_outputs.item_for_iteration as l_output_pane then
-						if l_first_output = Void then
-							l_first_output := l_output_pane
+				if not attached last_output then
+						-- No output is currently been set.
+					l_active_outputs := l_output_manager.service.active_outputs
+					from l_active_outputs.start until l_active_outputs.after loop
+						if attached {ES_OUTPUT_PANE_I} l_active_outputs.item_for_iteration as l_output_pane then
+							if l_first_output = Void then
+								l_first_output := l_output_pane
+							end
+							extend_output (l_output_pane)
 						end
-						extend_output (l_output_pane)
+						l_active_outputs.forth
 					end
-					l_active_outputs.forth
-				end
 
-					-- Set best output
-				if attached {ES_OUTPUT_PANE_I} l_output_manager.service.general_output as l_active_output then
-						-- The general output is a EiffelStudio output pane.
-					set_output (l_active_output)
-				else
-						-- The general output is not a EiffelStudio output pane, use the first output
-						-- instead.
-					check l_first_output_attached: attached l_first_output end
-					set_output (l_first_output)
+						-- Set best output
+					if attached {ES_OUTPUT_PANE_I} l_output_manager.service.general_output as l_active_output then
+							-- The general output is a EiffelStudio output pane.
+						set_output (l_active_output)
+					else
+							-- The general output is not a EiffelStudio output pane, use the first output
+							-- instead.
+						check l_first_output_attached: attached l_first_output end
+						set_output (l_first_output)
+					end
 				end
 			else
 					-- The tool cannot be used if the output service is unavailable.
@@ -139,10 +152,44 @@ feature {NONE} -- Access
 
 feature -- Access: Help
 
-	help_context_id: attached STRING_GENERAL
+	help_context_id: attached STRING
 			-- <Precursor>
-		once
-			Result := "BC9B2EF1-B4C4-773A-9BA8-97143FB2727A"
+		do
+			if (attached last_output as l_output) and then (attached {HELP_CONTEXT_I} l_output.widget_from_window (develop_window) as l_context) then
+				Result := l_context.help_context_id
+			else
+				Result := once "BC9B2EF1-B4C4-773A-9BA8-97143FB2727A"
+			end
+		end
+
+	help_context_section: detachable HELP_CONTEXT_SECTION_I
+			-- <Precursor>
+		do
+			if (attached last_output as l_output) and then (attached {HELP_CONTEXT_I} l_output.widget_from_window (develop_window) as l_context) then
+				Result := l_context.help_context_section
+			else
+				Result := Precursor
+			end
+		end
+
+	help_context_description: detachable STRING_32
+			-- <Precursor>
+		do
+			if (attached last_output as l_output) and then (attached {HELP_CONTEXT_I} l_output.widget_from_window (develop_window) as l_context) then
+				Result := l_context.help_context_description
+			else
+				Result := Precursor
+			end
+		end
+
+	help_provider: UUID
+			-- <Precursor>
+		do
+			if (attached last_output as l_output) and then (attached {HELP_CONTEXT_I} l_output.widget_from_window (develop_window) as l_context) then
+				Result := l_context.help_provider
+			else
+				Result := Precursor
+			end
 		end
 
 feature {NONE} -- Access: User interface
@@ -153,11 +200,23 @@ feature {NONE} -- Access: User interface
 	save_button: detachable SD_TOOL_BAR_BUTTON
 			-- Tool bar button used to save the content of the editor.
 
+	search_button: detachable SD_TOOL_BAR_BUTTON
+			-- Tool bar button used to search the content of the editor.
+
 	clear_button: detachable SD_TOOL_BAR_BUTTON
 			-- Tool bar button used to clear the editor.
 
 	modified_outputs_tool_bar: detachable SD_TOOL_BAR
 			-- Tool bar used to contain the modified outputs buttons.
+
+	icon_animations: detachable ARRAYED_LIST [EV_PIXEL_BUFFER]
+			-- Animation icons used to notify users output is being generated.
+
+	icon_pixmap_animations: detachable ARRAYED_LIST [EV_PIXMAP]
+			-- Animation icon pixmaps used to notify users output is being generated.
+
+	icon_animation_timer: detachable EV_TIMEOUT
+			-- Animation icon timer used to cycle frames.
 
 feature {ES_OUTPUTS_COMMANDER_I} -- Element change
 
@@ -171,6 +230,14 @@ feature {ES_OUTPUTS_COMMANDER_I} -- Element change
 			l_widget: ES_WIDGET [EV_WIDGET]
 			l_window: EB_DEVELOPMENT_WINDOW
 		do
+			if not is_initialized then
+					-- Force initialization.
+					-- We set the output to prevent initialization from setting a default output.
+				output := a_output
+				initialize
+				output := Void
+			end
+
 			if output /= a_output then
 				l_old_output := output
 				if attached l_old_output then
@@ -183,16 +250,18 @@ feature {ES_OUTPUTS_COMMANDER_I} -- Element change
 				end
 
 				l_combo := selection_combo
-				l_actions_running := l_combo.change_actions.state = {ACTION_SEQUENCE [TUPLE]}.normal_state
-				if l_actions_running then
-					l_combo.change_actions.block
-				end
+				if l_combo /= Void then
+					l_actions_running := l_combo.change_actions.state = {ACTION_SEQUENCE [TUPLE]}.normal_state
+					if l_actions_running then
+						l_combo.change_actions.block
+					end
 
-					-- Change label in the combo box.
-				l_combo.set_text (a_output.name.as_string_32)
+						-- Change label in the combo box.
+					l_combo.set_text (a_output.name.as_string_32)
 
-				if l_actions_running then
-					l_combo.change_actions.resume
+					if l_actions_running then
+						l_combo.change_actions.resume
+					end
 				end
 
 				l_window := develop_window.as_attached
@@ -233,7 +302,7 @@ feature {ES_OUTPUTS_COMMANDER_I} -- Element change
 --			a_editor_parented: a_editor.widget.widget.parent = user_widget
 --			a_editor_is_displayed: a_editor.widget.is_shown
 --			not_old_editor_is_display: old editor /= Void implies not (old editor).widget.is_shown
-			selection_combo_changed_actions_restored: selection_combo.change_actions.state = old selection_combo.change_actions.state
+--			selection_combo_changed_actions_restored: selection_combo.change_actions.state = old (selection_combo.change_actions).state
 		end
 
 feature -- Status report
@@ -242,6 +311,18 @@ feature -- Status report
 			-- <Precursor>
 		do
 			Result := True
+		end
+
+feature {NONE} -- Status report
+
+	is_help_available: BOOLEAN
+			-- <Precursor>
+		do
+			if (attached last_output as l_output) and then (attached {HELP_CONTEXT_I} l_output.widget_from_window (develop_window) as l_context) then
+				Result := l_context.is_help_available
+			else
+				Result := Precursor
+			end
 		end
 
 feature {NONE} -- Helpers
@@ -308,7 +389,11 @@ feature {NONE} -- Basic operations
 				create l_item.make_with_text (l_name)
 				l_item.set_pixmap (a_editor.icon_pixmap)
 				l_item.set_data (a_editor)
-				register_kamikaze_action (l_item.select_actions, agent inject_output_widget (a_editor))
+
+					-- Inject the output widget into the UI now, so it recieves updates.
+				inject_output_widget (a_editor)
+
+					-- Set up action to ensure users are notified when a hidden output changes.
 				register_action (a_editor.text_changed_actions, agent (ia_sender: ES_NOTIFIER_OUTPUT_WINDOW; ia_output: ES_OUTPUT_PANE_I)
 					require
 						ia_sender_attached: ia_sender /= Void
@@ -411,6 +496,105 @@ feature {NONE} -- Basic operations
 			end
 		end
 
+	start_icon_animation
+			-- Initializes the start of the icon animation on the output pane.
+		require
+			is_interface_usable: is_interface_usable
+			is_initialized: is_initialized
+		local
+			l_icons: like icon_animations
+			l_output_icons: ARRAY [EV_PIXEL_BUFFER]
+			l_icon_pixmaps: like icon_pixmap_animations
+			l_output_icon_pixmaps: ARRAY [EV_PIXMAP]
+			l_timer: like icon_animation_timer
+			i, l_upper: INTEGER
+		do
+				-- Set the new animation icon list
+			if attached output as l_output then
+				l_output_icons := l_output.icon_animations
+				create l_icons.make (l_output_icons.upper)
+				from
+					i := 1
+					l_upper := l_output_icons.upper
+				until
+					i > l_upper
+				loop
+					l_icons.extend (l_output_icons[i])
+					i := i + 1
+				end
+
+				l_output_icon_pixmaps := l_output.icon_pixmap_animations
+				create l_icon_pixmaps.make (l_output_icon_pixmaps.upper)
+				from
+					i := 1
+					l_upper := l_output_icon_pixmaps.upper
+				until
+					i > l_upper
+				loop
+					l_icon_pixmaps.extend (l_output_icon_pixmaps[i])
+					i := i + 1
+				end
+			else
+				create l_icons.make (1)
+				l_icons.extend (tool_descriptor.icon)
+				create l_icon_pixmaps.make (1)
+				l_icon_pixmaps.extend (tool_descriptor.icon_pixmap)
+			end
+				-- Reset the animation so the next icon will be the first
+			l_icons.start
+			l_icon_pixmaps.start
+			l_icons.back
+			l_icon_pixmaps.back
+			icon_animations := l_icons
+			icon_pixmap_animations := l_icon_pixmaps
+
+				-- Perform the first animation step
+			on_icon_animation_timeout
+
+				-- Start the timer
+			l_timer := icon_animation_timer
+			check l_timer_detached: l_timer = Void end
+			create l_timer.make_with_interval (200)
+			register_action (l_timer.actions, agent on_icon_animation_timeout)
+			icon_animation_timer := l_timer
+		ensure
+			icon_animations_attached: icon_animations /= Void
+			icon_pixmap_animations_attached: icon_pixmap_animations /= Void
+			icon_animation_timer_attached: icon_animation_timer /= Void
+		end
+
+	end_icon_animation
+			-- Ends the icon animation on the output pane.
+		require
+			is_interface_usable: is_interface_usable
+			is_initialized: is_initialized
+		local
+			l_timer: like icon_animation_timer
+		do
+				-- Remove timer.
+			l_timer := icon_animation_timer
+			l_timer.set_interval (0)
+			check l_timer_attached: l_timer /= Void end
+			unregister_action (l_timer.actions, agent on_icon_animation_timeout)
+			l_timer.destroy
+			icon_animation_timer := Void
+			icon_animations := Void
+			icon_pixmap_animations := Void
+
+				-- Put back the icon.
+			if attached output as l_output then
+				content.set_pixel_buffer (l_output.icon)
+				content.set_pixmap (l_output.icon_pixmap)
+			else
+				content.set_pixel_buffer (tool_descriptor.icon)
+				content.set_pixmap (tool_descriptor.icon_pixmap)
+			end
+		ensure
+			icon_animations_detached: icon_animations = Void
+			icon_pixmap_animations_detached: icon_pixmap_animations = Void
+			icon_animation_timer_detached: icon_animation_timer = Void
+		end
+
 feature {NONE} -- Action handlers
 
 	on_selected_editor_changed
@@ -444,7 +628,7 @@ feature {NONE} -- Action handlers
 
 				-- Create output file name.
 			create l_file_name.make_from_string (output.name.as_string_8)
-			l_file_name.add_extension (".out")
+			l_file_name.add_extension ("txt")
 
 				-- Show save dialog.
 			create l_dialog.make_with_sticky_path (locale_formatter.formatted_translation (t_save_1, [output.name]), {ES_STANDARD_DIALOG_STICKY_IDS}.global_sticky_id)
@@ -453,6 +637,18 @@ feature {NONE} -- Action handlers
 			l_dialog.show_on_active_window
 			if l_dialog.is_confirmed then
 				save_output (output.as_attached, l_dialog.file_path)
+			end
+		end
+
+	on_search
+			-- Called when the user requests to search the active editor.
+		require
+			is_interface_usable: is_interface_usable
+			is_initialized: is_initialized
+		do
+			if attached last_output as l_output then
+				check l_output.is_searchable end
+				l_output.search_window (develop_window)
 			end
 		end
 
@@ -470,18 +666,61 @@ feature {NONE} -- Action handlers
 			end
 		end
 
-feature {REGISTRAR_I} -- Event handlers
-
-	on_output_registered (a_registrar: attached OUTPUT_MANAGER_S; a_registration: attached CONCEALER_I [OUTPUT_I]; a_key: attached UUID)
-			-- <Precursor>
+	on_icon_animation_timeout
+			-- Steps the icon animation on the output tool panel.
+		require
+			is_interface_usable: is_interface_usable
+			is_initialized: is_initialized
+			icon_animations_attached: icon_animations /= Void
+			icon_pixmap_animations_attached: icon_pixmap_animations /= Void
+		local
+			l_icon: EV_PIXEL_BUFFER
+			l_icon_pixmap: EV_PIXMAP
 		do
-				-- We have to force revealing the object to retrieve the
-			if attached {ES_OUTPUT_PANE_I} a_registration.object as l_output_pane then
-				extend_output (l_output_pane)
+				-- Retrieve active icon
+			if attached output as l_output then
+				l_icon := l_output.icon
+				l_icon_pixmap := l_output.icon_pixmap
 			else
-				check must_have_object: False end
+				l_icon := tool_descriptor.icon
+				l_icon_pixmap := tool_descriptor.icon_pixmap
+			end
+
+			if attached icon_animations as l_icons then
+					-- Set the next pixel buffer
+				if not l_icons.after then
+					l_icons.forth
+				end
+				if l_icons.after then
+					l_icons.start
+				end
+				l_icon := l_icons.item
+				check l_icon_attached: l_icon /= Void end
+
+					-- Set icon
+				content.set_pixel_buffer (l_icon)
+			else
+				check no_icons_set: False end
+			end
+			if attached icon_pixmap_animations as l_icons then
+					-- Set the next icon
+				if not l_icons.after then
+					l_icons.forth
+				end
+				if l_icons.after then
+					l_icons.start
+				end
+				l_icon_pixmap := l_icons.item
+				check l_icon_pixmap_attached: l_icon_pixmap /= Void end
+
+					-- Set icon
+				content.set_pixmap (l_icon_pixmap)
+			else
+				check no_icons_set: False end
 			end
 		end
+
+feature {REGISTRAR_I} -- Event handlers
 
 	on_output_unregistered (a_registrar: attached OUTPUT_MANAGER_S; a_registration: attached CONCEALER_I [OUTPUT_I]; a_key: attached UUID)
 			-- <Precursor>
@@ -498,6 +737,9 @@ feature {REGISTRAR_I} -- Event handlers
 		do
 				-- The output pane has been created in the registrar (as `on_output_activated' is a renamed
 				-- feature from {REGISTRAR_OBSERVER}. Now we can extend the UI to include the actual widget.
+			if attached {ES_OUTPUT_PANE_I} a_registration as l_output_pane then
+				extend_output (l_output_pane)
+			end
 		end
 
 feature {LOCKABLE_I} -- Event handlers
@@ -505,23 +747,27 @@ feature {LOCKABLE_I} -- Event handlers
 	on_output_locked (a_lock: attached ES_OUTPUT_PANE_I)
 			-- <Precursor>
 		do
-			if is_initialized and then a_lock ~ output then
+			if is_initialized and then a_lock = output then
 				clear_button.disable_sensitive
+				start_icon_animation
 			end
 		end
 
 	on_output_unlocked (a_lock: attached ES_OUTPUT_PANE_I)
 			-- <Precursor>
 		do
-			if is_initialized and then a_lock ~ output then
+			if is_initialized and then a_lock = output then
 				clear_button.enable_sensitive
+				end_icon_animation
 			end
 		end
 
 feature {NONE} -- Events handlers
 
 	on_output_modified (a_output: attached ES_OUTPUT_PANE_I)
-			-- Called when an output pane has been modified with new text
+			-- Called when an output pane has been modified with new text.
+			--
+			-- `a_output': The output containing modifications.
 		require
 			is_interface_usable: is_interface_usable
 			is_initialized: is_initialized
@@ -568,6 +814,8 @@ feature {NONE} -- Events handlers
 
 	on_output_shown (a_output: attached ES_OUTPUT_PANE_I)
 			-- Called when an output pane is shown on the UI.
+			--
+			-- `a_output': The output shown on the UI.
 		require
 			is_interface_usable: is_interface_usable
 			a_output_is_interface_usable: a_output.is_interface_usable
@@ -606,6 +854,13 @@ feature {NONE} -- Events handlers
 				l_main_tool_bar.update_size
 			end
 
+				-- Enable search functionality.
+			if a_output.is_searchable then
+				search_button.enable_sensitive
+			else
+				search_button.disable_sensitive
+			end
+
 				-- Ensure the last output is set.
 			last_output := a_output
 
@@ -636,7 +891,7 @@ feature {NONE} -- Factory
 			l_widget: SD_TOOL_BAR_RESIZABLE_ITEM
 			l_tool_bar: SD_TOOL_BAR
 		do
-			create Result.make (3)
+			create Result.make (4)
 
 			create l_box
 			l_box.set_minimum_width (280)
@@ -663,6 +918,14 @@ feature {NONE} -- Factory
 			l_button.set_tooltip (locale_formatter.translation (tt_save_output))
 			Result.put_last (l_button)
 			save_button := l_button
+
+				-- Search button
+			create l_button.make
+			l_button.set_pixel_buffer (stock_pixmaps.tool_search_icon_buffer)
+			l_button.set_pixmap (stock_pixmaps.tool_search_icon)
+			l_button.set_tooltip (locale_formatter.translation (tt_search_output))
+			Result.put_last (l_button)
+			search_button := l_button
 
 				-- Tool bar for modified outputs
 			create l_tool_bar.make
@@ -698,6 +961,7 @@ feature {NONE} -- Internationalization
 	lb_output: STRING = "Output"
 
 	tt_save_output: STRING = "Save current output to disk"
+	tt_search_output: STRING = "Search the output"
 	tt_clear_output: STRING = "Clear current output"
 	tt_show_modified_output_1: STRING = "Show the modified $1 output"
 

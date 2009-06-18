@@ -131,7 +131,12 @@ feature -- Update
 						-- the address and the count of the special to be consistent
 						-- with the way we retrieve a special object in recv_attributes.
 					address := to_pointer (c_tread)
-					capacity := to_integer_32 (c_tread)
+					if is_tuple then
+						capacity := to_integer_32 (c_tread)
+					else
+						capacity := to_integer_32 (c_tread) --| Count
+						max_capacity := to_integer_32 (c_tread) --| Capacity
+					end
 					recv_attributes (attributes, Void, True)
 					debug ("DEBUG_RECV")
 						io.error.put_string ("And being back again in `send'.%N")
@@ -165,151 +170,175 @@ feature {NONE} -- Implementation
 			-- Receive `e_class attribute info from application and
 			-- store it in `attr_list'.
 		local
-			attr_name: STRING;
+			s: STRING
+			attr_name: STRING
 			sk_type: INTEGER
-			i, attr_nb: INTEGER;
-			attr: ABSTRACT_DEBUG_VALUE;
-			exp_attr: EXPANDED_VALUE;
-			spec_attr: SPECIAL_VALUE;
-			type_id: INTEGER;
+			i, attr_nb: INTEGER
+			attr: ABSTRACT_DEBUG_VALUE
+			exp_attr: EXPANDED_VALUE
+			spec_attr: SPECIAL_VALUE
+			type_id: INTEGER
 			p: POINTER
+			i1,i2: INTEGER
 		do
-			attr_nb := to_integer_32 (c_tread)
-			if attr_list.capacity <= attr_nb then
-				attr_list.resize (attr_nb)
-			end
-			debug("DEBUG_RECV")
-				io.error.put_string ("Getting ")
-				io.error.put_integer (attr_nb)
-				io.error.put_string (" attributes ...")
-				if e_class /= Void then
-					io.error.put_string (" (related to e_class = " + e_class.name_in_upper + ") ")
+			s := c_tread
+			if is_valid_integer_32_string (s) then
+				attr_nb := to_integer_32 (s)
+				if attr_list.capacity <= attr_nb then
+					attr_list.resize (attr_nb)
 				end
-				io.error.put_new_line
-			end
-			from
-				i := 1
-			until
-				i > attr_nb
-			loop
-				attr_name := c_tread
-				sk_type := to_integer_32 (c_tread)
 				debug("DEBUG_RECV")
-					io.error.put_string ("Grepping attribute `");
-					io.error.put_string (attr_name);
-					io.error.put_string ("' of type ");
-					io.error.put_string ("0x" + sk_type.to_hex_string)
+					io.error.put_string ("Getting ")
+					io.error.put_integer (attr_nb)
+					io.error.put_string (" attributes ...")
+					if e_class /= Void then
+						io.error.put_string (" (related to e_class = " + e_class.name_in_upper + ") ")
+					end
 					io.error.put_new_line
 				end
-				inspect
-					sk_type
-				when Sk_bool then
-					create {DEBUG_BASIC_VALUE [BOOLEAN]} attr.make_attribute (sk_type, attr_name, e_class, to_boolean (c_tread))
-				when Sk_char then
-					create {CHARACTER_VALUE} attr.make_attribute (sk_type, attr_name, e_class, to_character_8 (c_tread))
-				when Sk_wchar then
-					create {CHARACTER_32_VALUE} attr.make_attribute (sk_type, attr_name, e_class, to_character_32 (c_tread))
-				when Sk_uint8 then
-					create {DEBUG_BASIC_VALUE [NATURAL_8]} attr.make_attribute (sk_type, attr_name, e_class, to_natural_8 (c_tread))
-				when Sk_uint16 then
-					create {DEBUG_BASIC_VALUE [NATURAL_16]} attr.make_attribute (sk_type, attr_name, e_class, to_natural_16 (c_tread))
-				when Sk_uint32 then
-					create {DEBUG_BASIC_VALUE [NATURAL_32]} attr.make_attribute (sk_type, attr_name, e_class, to_natural_32 (c_tread))
-				when Sk_uint64 then
-					create {DEBUG_BASIC_VALUE [NATURAL_64]} attr.make_attribute (sk_type, attr_name, e_class, to_natural_64 (c_tread))
-				when Sk_int8 then
-					create {DEBUG_BASIC_VALUE [INTEGER_8]} attr.make_attribute (sk_type, attr_name, e_class, to_integer_8 (c_tread))
-				when Sk_int16 then
-					create {DEBUG_BASIC_VALUE [INTEGER_16]} attr.make_attribute (sk_type, attr_name, e_class, to_integer_16 (c_tread))
-				when Sk_int32 then
-					create {DEBUG_BASIC_VALUE [INTEGER]} attr.make_attribute (sk_type, attr_name, e_class, to_integer_32 (c_tread))
-				when Sk_int64 then
-					create {DEBUG_BASIC_VALUE [INTEGER_64]} attr.make_attribute (sk_type, attr_name, e_class, to_integer_64 (c_tread))
-				when Sk_real32 then
-					create {DEBUG_BASIC_VALUE [REAL]} attr.make_attribute (sk_type, attr_name, e_class, to_real_32 (c_tread))
-				when Sk_real64 then
-					create {DEBUG_BASIC_VALUE [DOUBLE]} attr.make_attribute (sk_type, attr_name, e_class, to_real_64 (c_tread))
-				when Sk_pointer then
-					create {DEBUG_BASIC_VALUE [POINTER]} attr.make_attribute (sk_type, attr_name, e_class, to_pointer (c_tread))
-				when Sk_bit then
-					create {BITS_VALUE} attr.make_attribute (attr_name, e_class, c_tread)
-				when Sk_exp then
-					type_id := to_integer_32 (c_tread) + 1;
-					if container_is_special then
-						--| If expanded contained in SPECIAL, it doesn't have a specific (hector) address
-						--| and is only addressed via the SPECIAL object and the index
-						--| Then in this case we receive its attributes right away
-						create exp_attr.make_attribute_of_special (attr_name, e_class, type_id)
-						attr := exp_attr
-						if Eiffel_system.valid_dynamic_id (type_id) then
-							recv_attributes (exp_attr.attributes, Eiffel_system.class_of_dynamic_id (type_id, False), False)
-						else
-							recv_attributes (exp_attr.attributes, Void, False)
-						end;
-							--| FIXME JFIAT: we need to sort it right away to keep same behavior
-						sort_debug_values (exp_attr.attributes)
+				from
+					i := 1
+				until
+					i > attr_nb
+				loop
+					attr_name := c_tread
+					s := c_tread
+					if is_valid_integer_32_string (s) then
+						sk_type := to_integer_32 (s)
 					else
-						p := to_pointer (c_tread)
-						create {REFERENCE_VALUE} attr.make_attribute (attr_name, e_class, type_id, create {DBG_ADDRESS}.make_from_pointer (p));
+						sk_type := 0
 					end
-				when Sk_ref then
-						-- Is this a special object?
-					if to_boolean (c_tread) then
-							-- Is this a tuple object?
-						if to_boolean (c_tread) then
-							type_id := to_integer_32 (c_tread) + 1
-							create {REFERENCE_VALUE} attr.make_attribute (attr_name, e_class,
-								type_id, create {DBG_ADDRESS}.make_from_pointer (to_pointer (c_tread)))
-						else
-							debug("DEBUG_RECV")
-								io.error.put_string ("Creating special object.%N")
-							end
-							p := to_pointer (c_tread)
-							create spec_attr.make_attribute (attr_name, e_class, create {DBG_ADDRESS}.make_from_pointer (p), to_integer_32 (c_tread))
-							debug("DEBUG_RECV")
-								io.error.put_string ("Attribute name: ");
-								io.error.put_string (attr_name);
-								io.error.put_new_line;
-								io.error.put_string ("The eiffel class: ");
-								io.error.put_string (e_class.name_in_upper);
-								io.error.put_new_line
-							end;
-							if sp_upper = -1 then
-								spec_attr.set_sp_bounds (sp_lower, spec_attr.capacity);
+
+					debug("DEBUG_RECV")
+						io.error.put_string ("Grepping attribute `");
+						io.error.put_string (attr_name);
+						io.error.put_string ("' of type ");
+						io.error.put_string ("0x" + sk_type.to_hex_string)
+						io.error.put_new_line
+					end
+					inspect
+						sk_type
+					when Sk_bool then
+						create {DEBUG_BASIC_VALUE [BOOLEAN]} attr.make_attribute (sk_type, attr_name, e_class, to_boolean (c_tread))
+					when Sk_char then
+						create {CHARACTER_VALUE} attr.make_attribute (sk_type, attr_name, e_class, to_character_8 (c_tread))
+					when Sk_wchar then
+						create {CHARACTER_32_VALUE} attr.make_attribute (sk_type, attr_name, e_class, to_character_32 (c_tread))
+					when Sk_uint8 then
+						create {DEBUG_BASIC_VALUE [NATURAL_8]} attr.make_attribute (sk_type, attr_name, e_class, to_natural_8 (c_tread))
+					when Sk_uint16 then
+						create {DEBUG_BASIC_VALUE [NATURAL_16]} attr.make_attribute (sk_type, attr_name, e_class, to_natural_16 (c_tread))
+					when Sk_uint32 then
+						create {DEBUG_BASIC_VALUE [NATURAL_32]} attr.make_attribute (sk_type, attr_name, e_class, to_natural_32 (c_tread))
+					when Sk_uint64 then
+						create {DEBUG_BASIC_VALUE [NATURAL_64]} attr.make_attribute (sk_type, attr_name, e_class, to_natural_64 (c_tread))
+					when Sk_int8 then
+						create {DEBUG_BASIC_VALUE [INTEGER_8]} attr.make_attribute (sk_type, attr_name, e_class, to_integer_8 (c_tread))
+					when Sk_int16 then
+						create {DEBUG_BASIC_VALUE [INTEGER_16]} attr.make_attribute (sk_type, attr_name, e_class, to_integer_16 (c_tread))
+					when Sk_int32 then
+						create {DEBUG_BASIC_VALUE [INTEGER]} attr.make_attribute (sk_type, attr_name, e_class, to_integer_32 (c_tread))
+					when Sk_int64 then
+						create {DEBUG_BASIC_VALUE [INTEGER_64]} attr.make_attribute (sk_type, attr_name, e_class, to_integer_64 (c_tread))
+					when Sk_real32 then
+						create {DEBUG_BASIC_VALUE [REAL]} attr.make_attribute (sk_type, attr_name, e_class, to_real_32 (c_tread))
+					when Sk_real64 then
+						create {DEBUG_BASIC_VALUE [DOUBLE]} attr.make_attribute (sk_type, attr_name, e_class, to_real_64 (c_tread))
+					when Sk_pointer then
+						create {DEBUG_BASIC_VALUE [POINTER]} attr.make_attribute (sk_type, attr_name, e_class, to_pointer (c_tread))
+					when Sk_bit then
+						create {BITS_VALUE} attr.make_attribute (attr_name, e_class, c_tread)
+					when Sk_exp then
+						type_id := to_integer_32 (c_tread) + 1;
+						if container_is_special then
+							--| If expanded contained in SPECIAL, it doesn't have a specific (hector) address
+							--| and is only addressed via the SPECIAL object and the index
+							--| Then in this case we receive its attributes right away
+							create exp_attr.make_attribute_of_special (attr_name, e_class, type_id)
+							attr := exp_attr
+							if Eiffel_system.valid_dynamic_id (type_id) then
+								recv_attributes (exp_attr.attributes, Eiffel_system.class_of_dynamic_id (type_id, False), False)
 							else
-								spec_attr.set_sp_bounds (sp_lower, sp_upper);
+								recv_attributes (exp_attr.attributes, Void, False)
 							end;
-							max_capacity := max_capacity.max (spec_attr.capacity);
-							attr := spec_attr;
-								-- We don't get anymore the special items at this step
+								--| FIXME JFIAT: we need to sort it right away to keep same behavior
+							sort_debug_values (exp_attr.attributes)
+						else
+							p := to_pointer (c_tread)
+							create {REFERENCE_VALUE} attr.make_attribute (attr_name, e_class, type_id, create {DBG_ADDRESS}.make_from_pointer (p));
+						end
+					when Sk_ref then
+							-- Is this a special object?
+						if to_boolean (c_tread) then
+								-- Is this a tuple object?
+							if to_boolean (c_tread) then
+								type_id := to_integer_32 (c_tread) + 1
+								create {REFERENCE_VALUE} attr.make_attribute (attr_name, e_class,
+									type_id, create {DBG_ADDRESS}.make_from_pointer (to_pointer (c_tread)))
+							else
+								debug("DEBUG_RECV")
+									io.error.put_string ("Creating SPECIAL object.%N")
+								end
+								p := to_pointer (c_tread)
+								i1 := to_integer_32 (c_tread)
+								i2 := to_integer_32 (c_tread)
+								create spec_attr.make_attribute (attr_name, e_class, create {DBG_ADDRESS}.make_from_pointer (p), i1, i2)
+								debug("DEBUG_RECV")
+									io.error.put_string ("Attribute name: ");
+									io.error.put_string (attr_name);
+									io.error.put_new_line;
+									if e_class /= Void then
+										io.error.put_string ("The eiffel class: ");
+										io.error.put_string (e_class.name_in_upper);
+										io.error.put_new_line
+									end
+								end;
+								if sp_upper = -1 then
+									spec_attr.set_sp_bounds (sp_lower, spec_attr.capacity);
+								else
+									spec_attr.set_sp_bounds (sp_lower, sp_upper);
+								end;
+								max_capacity := max_capacity.max (spec_attr.capacity);
+								attr := spec_attr;
+									-- We don't get anymore the special items at this step
+							end
+						else
+								-- Is this a void object?
+							if not to_boolean (c_tread) then
+								type_id := to_integer_32 (c_tread) + 1
+								create {REFERENCE_VALUE} attr.make_attribute (attr_name, e_class,
+															type_id, create {DBG_ADDRESS}.make_from_pointer (to_pointer (c_tread)))
+							else
+								create {REFERENCE_VALUE} attr.make_attribute (attr_name, e_class,
+															0, create {DBG_ADDRESS}.make_void)
+							end
 						end
 					else
-							-- Is this a void object?
-						if not to_boolean (c_tread) then
-							type_id := to_integer_32 (c_tread) + 1
-							create {REFERENCE_VALUE} attr.make_attribute (attr_name, e_class,
-														type_id, create {DBG_ADDRESS}.make_from_pointer (to_pointer (c_tread)))
-						else
-							create {REFERENCE_VALUE} attr.make_attribute (attr_name, e_class,
-														0, create {DBG_ADDRESS}.make_void)
+							-- We should never go through this path.
+						create {DUMMY_MESSAGE_DEBUG_VALUE} attr.make_with_details (attr_name, "Error while retrieving value's type", 0)
+						debug ("DEBUG_RECV")
+							io.error.put_string ("Should never go there!!")
 						end
 					end
-				else
-						-- We should never go through this path.
-					check False end
-					debug ("DEBUG_RECV")
-						io.error.put_string ("Should never go there!!")
+					if attr = Void then
+						create {DUMMY_MESSAGE_DEBUG_VALUE} attr.make_with_details (attr_name, "Error while retrieving value", 0)
 					end
+
+					debug("DEBUG_RECV")
+						io.error.put_string ("Putting `attr' in `attr_list'.%N")
+					end
+					attr.set_item_number (i-1)
+					attr_list.put_last (attr);
+--					attr_list.forth
+					i := i + 1
 				end
+			else
 				debug("DEBUG_RECV")
-					io.error.put_string ("Putting `attr' in `attr_list'.%N")
-				end;
-				attr.set_item_number(i-1)
-				attr_list.put_last (attr);
---				attr_list.forth
-				i := i + 1
+					io.error.put_string ("Error while retrieving attributes: invalid attribute count representation")
+					io.error.put_new_line
+				end
 			end
-		end;
+		end
 
 feature -- Special object properties
 
@@ -342,7 +371,7 @@ invariant
 	object_address_attached: object_address /= Void and then not object_address.is_void
 
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -355,22 +384,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class ATTR_REQUEST

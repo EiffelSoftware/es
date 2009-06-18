@@ -12,6 +12,8 @@ class
 inherit
 	SHARED_CODE_FILES
 
+	SHARED_COMPILER_PROFILE
+
 	COMPILER_EXPORTER
 
 	SHARED_GENERATION
@@ -465,7 +467,7 @@ feature -- Plug and Makefile file
 			buffer.put_string ("();%N")
 
 				-- Make STRING declaration
-			str_make_feat := string_cl.feature_table.item_id (Names_heap.make_name_id)
+			str_make_feat := string_cl.feature_table.item_id ({PREDEFINED_NAMES}.make_name_id)
 			str_make_name := Encoder.feature_name (str_make_feat.written_class.types.first.type_id,
 				str_make_feat.body_index).string
 			buffer.put_string ("extern void ")
@@ -497,7 +499,7 @@ feature -- Plug and Makefile file
 				arr_type_id := cl_type.type_id
 				creators := array_cl.creators
 				creators.start
-				creation_feature := array_cl.feature_table.item_id (Names_heap.make_name_id)
+				creation_feature := array_cl.feature_table.item_id ({PREDEFINED_NAMES}.make_name_id)
 				arr_make_name := Encoder.feature_name (id, creation_feature.body_index).string
 				if not final_mode then
 						-- Only store the name of the routine in workbench mode. Otherwise
@@ -929,6 +931,10 @@ feature -- Plug and Makefile file
 			buffer.put_string (";%N%Tegc_project_version = ")
 			buffer.put_integer (System.project_creation_time)
 
+			if is_experimental_mode then
+				buffer.put_string (";%N%Tegc_has_old_special_semantic = 0")
+			end
+
 				-- Generate the number of dynamic types.
 			buffer.put_string (";%N%Tscount = ")
 			buffer.put_integer (System.type_id_counter.value)
@@ -1243,7 +1249,7 @@ feature -- Plug and Makefile file
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -1256,22 +1262,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class AUXILIARY_FILES

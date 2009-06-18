@@ -849,6 +849,22 @@ feature -- Setting
 			is_ensure_then_set: is_ensure_then = b
 		end
 
+	frozen set_has_precondition (b: BOOLEAN)
+			-- Assign `b' to `has_precondition'.
+		do
+			feature_flags := feature_flags.set_bit_with_mask (b, has_precondition_mask)
+		ensure
+			has_precondition_set: has_precondition = b
+		end
+
+	frozen set_has_postcondition (b: BOOLEAN)
+			-- Assign `b' to `has_postcondition'.
+		do
+			feature_flags := feature_flags.set_bit_with_mask (b, has_postcondition_mask)
+		ensure
+			has_postcondition_set: has_postcondition = b
+		end
+
 	frozen set_is_fake_inline_agent (b: BOOLEAN)
 			-- Assign `b' to `is_fake_inline_agent'.
 		do
@@ -1890,7 +1906,6 @@ feature -- Signature instantiation
 				-- Instantiation of the arguments
 			from
 				i := 1
-				l_arguments := arguments
 				if l_arguments /= Void then
 					nb := l_arguments.count
 				end
@@ -2171,8 +2186,7 @@ end
 			if old_feature.is_attribute and then
 				(not is_attribute or else
 				old_feature.type.is_expanded /= type.is_expanded or else
-				old_feature.type.is_reference /= type.is_reference or else
-				old_feature.is_stable /= is_stable)
+				old_feature.type.is_reference /= type.is_reference)
 			then
 				create vdrd6
 				vdrd6.init (old_feature, Current)
@@ -2558,7 +2572,7 @@ end
 				create {VFAC1} vfac.make (system.current_class, Current)
 			elseif assigner.argument_count /= argument_count + 1 then
 				create {VFAC2} vfac.make (system.current_class, Current)
-			elseif not assigner.arguments.first.actual_type.same_as (type.actual_type) then
+			elseif not assigner.arguments.first.actual_type.conform_to (system.current_class, type.actual_type) then
 				create {VFAC3} vfac.make (system.current_class, Current)
 			elseif argument_count > 0 then
 				assigner_arguments := assigner.arguments
@@ -3183,22 +3197,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

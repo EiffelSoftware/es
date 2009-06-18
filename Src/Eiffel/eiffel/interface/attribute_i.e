@@ -13,7 +13,8 @@ inherit
 			assigner_name_id, transfer_to, unselected, extension,
 			new_attr_entry, new_rout_entry, melt, access_for_feature, generate, new_rout_id,
 			set_type, type, is_attribute, is_stable,
-			undefinable, check_expanded, transfer_from
+			undefinable, check_expanded, transfer_from,
+			assert_id_set, set_assert_id_set
 		end
 
 	SHARED_DECLARATIONS
@@ -85,6 +86,9 @@ feature
 			-- Do nothing
 		end
 
+	assert_id_set: ASSERT_ID_SET
+			-- Assertions
+
 feature -- Status report
 
 	is_attribute: BOOLEAN = True
@@ -140,6 +144,23 @@ feature -- Status setting
 		end
 
 feature -- Element Change
+
+	init_assertion_flags (content: ROUTINE_AS)
+			-- Initialize assertion flags with `content'.
+		require
+			content_not_void: content /= Void
+		do
+			set_is_require_else (content.is_require_else)
+			set_is_ensure_then (content.is_ensure_then)
+			set_has_precondition (content.has_precondition)
+			set_has_postcondition (content.has_postcondition)
+		end
+
+	set_assert_id_set (set: like assert_id_set)
+			-- Assign `set' to `assert_id_set'.
+		do
+			assert_id_set := set
+		end
 
 	set_extension (an_extension: like extension)
 			-- Set `extension' with `an_extension'.
@@ -466,6 +487,7 @@ feature -- Element Change
 			other.set_type (type, assigner_name_id)
 			other.set_has_function_origin (has_function_origin)
 			extension := other.extension
+			other.set_assert_id_set (assert_id_set)
 			if is_stable then
 				other.set_is_stable
 			end
@@ -479,6 +501,7 @@ feature -- Element Change
 			assigner_name_id := other.assigner_name_id
 				-- `has_function_origin' is set in FEATURE_I
 --			has_function_origin := other.has_function_origin
+			assert_id_set := other.assert_id_set
 			extension := other.extension
 			if other.is_stable then
 				set_is_stable
@@ -513,6 +536,7 @@ feature -- Element Change
 				l_byte_context.set_byte_code (byte_code)
 				l_byte_context.set_current_feature (Current)
 				byte_code.make_byte_code (ba)
+				l_byte_context.clear_feature_data
 			else
 					-- Once mark
 				ba.append ({BYTE_CODE}.once_mark_attribute)
@@ -583,7 +607,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -596,22 +620,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

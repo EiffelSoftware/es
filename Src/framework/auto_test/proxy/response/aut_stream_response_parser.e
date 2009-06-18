@@ -113,8 +113,6 @@ feature  -- Parsing
 				end
 			end
 			last_response_text := Void
-		ensure then
-			last_response_not_void: last_response /= Void
 		end
 
 

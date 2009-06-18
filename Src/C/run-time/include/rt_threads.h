@@ -160,7 +160,7 @@ rt_shared rt_uint_ptr dbg_switch_to_thread (rt_uint_ptr);
 #define EIF_COND_WAIT_WITH_TIMEOUT(result_success, pcond, pmutex, timeout, msg) \
 	{ \
 		int res = 0; \
-		time_t l_seconds = timeout / 1000;	/* `timeout' is in second */ \
+		time_t l_seconds = timeout / 1000;	/* `timeout' is in millisecond */ \
 		long l_nano_seconds = (timeout % 1000) * 1000000;	/* Reminder in nanoseconds */ \
 		struct timespec tspec; \
 		struct timeval now; \
@@ -356,7 +356,7 @@ rt_shared rt_uint_ptr dbg_switch_to_thread (rt_uint_ptr);
 #ifdef FIXME_LYNX
 #define EIF_THR_EXIT(arg) \
 	pthread_exit(NULL);\
-	pthread_detach (eif_thr_id) ;
+	pthread_detach (eif_thr_context->tid) ;
 #else /* POSIX_10034A */
 #define EIF_THR_EXIT(arg)           pthread_exit(NULL)
 #endif	/* POSIX_10034A */

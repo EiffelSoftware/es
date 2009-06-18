@@ -16,129 +16,14 @@ inherit
 
 	KL_SHARED_ARGUMENTS
 
-feature -- Status report
+create
+	make_with_arguments,
+	make_with_configuration
 
-	error_handler: detachable AUT_ERROR_HANDLER
-			-- Error handler
+feature{NONE} -- Initialization
 
-	output_dirname: STRING
-			-- Name of output directory
-
-	ecf_filename: STRING
-			-- Name of ecf file of input system
-
---	ecf_target: STRING
---			-- Name of target in file named `ecf_filename'; Void if no target was specified.
-
-	class_names: DS_LIST [STRING]
-			-- List of class names to be tested
-
-	time_out: DT_DATE_TIME_DURATION
-			-- Maximal time to test;
-			-- A timeout value of `0' means no time out.
-
-	is_debug_mode_enabled: BOOLEAN
-			-- Should the interpreter runtime be compiled with
-			-- assertion checking on?
-
-	just_test: BOOLEAN
-			-- Should generation and compilation of the interpreter be skipped
-
-	is_deep_relevancy_enabled: BOOLEAN
-			-- Should the manual testing strategy use deep dependence
-			-- checking when locating relevant manual unit tests?
-
-	is_manual_testing_enabled: BOOLEAN
-			-- Should the manual testing strategy be used?
-
-	is_automatic_testing_enabled: BOOLEAN
-			-- Should the automatic testing strategy be used?
-
-	is_minimization_enabled: BOOLEAN
-			-- Should bug reproducing examples be minimized?
-
-	is_text_statistics_format_enabled: BOOLEAN
-			-- Should statistics be output as plain text?
-
-	is_html_statistics_format_enabled: BOOLEAN
-			-- Should statistics be output static HTML?
-
-	is_slicing_enabled: BOOLEAN
-			-- Should test cases be minimized via slicing?
-
-	is_ddmin_enabled: BOOLEAN
-			-- Should test cases be minimized via ddmin?
-
-	proxy_time_out: INTEGER
-			-- Proxy time out in second
-
-	is_replay_enabled: BOOLEAN
-			-- Is log replay specified?
-
-	log_to_replay: STRING
-			-- File name of the log to be replayed.
-
-	should_display_help_message: BOOLEAN
-			-- Should help message be displayed?
-
-	help_message: STRING
-			-- Help message for command line arguments
-			-- This value is only set if help option presents.
-
-	log_file_path: detachable STRING
-			-- Full path of the log file to be loaded.
-
-	is_load_log_enabled: BOOLEAN
-			-- Is log load enabled?
-
-	object_state_config: AUT_OBJECT_STATE_CONFIG
-			-- Configuration related object state retrieval
-
-	is_precondition_checking_enabled: BOOLEAN
-			-- Should precondition evaluation be enabled?
-
-	is_linear_constraint_solving_enabled: BOOLEAN
-			-- Is linare constraint solving for integers enabled?
-
-	is_object_state_exploration_enabled: BOOLEAN
-			-- Is object state exploration enabled?
-
-	log_processor: detachable STRING
-			-- Name of the log processor
-
-	log_processor_output: detachable STRING
-			-- Name of the output file from log processor
-
-	max_precondition_search_tries: INTEGER
-			-- Max tries in the search to satisfy precondition of a feature
-			-- 0 means that search until a satisfying object comibination is found.
-
-	max_precondition_search_time: INTEGER
-			-- Maximal time (in second) that can be spent in searching for
-			-- objects satisfying precondition of a feature
-
-	is_seed_provided: BOOLEAN
-			-- Is seed to the random number generator provided?
-
-	seed: INTEGER
-			-- Provided seed
-			-- Only have effect if `is_seed_provided' is True.
-
-	prepare_citadel_tests: BOOLEAN
-			-- Should AutoTest prepare tests for CITADEL from a given proxy log file?
-
-feature -- Element change
-
-	set_error_handler (a_error_handler: like error_handler)
-			-- Set `error_handler' to `a_error_handler'.
-		do
-			error_handler := a_error_handler
-		end
-
-feature -- Parsing
-
-	process_arguments (a_arguments: DS_LIST [STRING])
-			-- Process `a_arguments'.
+	make_with_arguments (a_arguments: DS_LIST [STRING]; error_handler: AUT_ERROR_HANDLER)
+			-- Process `a_arguments'.		
 		require
 			a_arguments_attached: a_arguments /= Void
 			error_hadler_not_void: error_handler /= Void
@@ -146,9 +31,10 @@ feature -- Parsing
 			parser: AUT_AP_PARSER
 			version_option: AP_FLAG
 			quiet_option: AP_FLAG
+			debug_option: AP_FLAG
 			just_test_option: AP_FLAG
 --			ecf_target_option: AP_STRING_OPTION
-			deep_manual_option: AP_FLAG
+--			deep_manual_option: AP_FLAG
 			disable_manual_option: AP_FLAG
 			disable_auto_option: AP_FLAG
 			benchmark_option: AP_FLAG
@@ -157,6 +43,7 @@ feature -- Parsing
 			finalize_option: AP_FLAG
 			output_dir_option: AP_STRING_OPTION
 			time_out_option: AP_INTEGER_OPTION
+			test_count_option: AP_INTEGER_OPTION
 			seed_option: AP_INTEGER_OPTION
 			statistics_format_op: AP_STRING_OPTION
 			time: TIME
@@ -172,7 +59,7 @@ feature -- Parsing
 			l_log_processor_op: AP_STRING_OPTION
 			l_log_processor_output_op: AP_STRING_OPTION
 			l_max_precondition_tries_op: AP_INTEGER_OPTION
-			l_max_precondition_time_op: AP_INTEGER_OPTION			
+			l_max_precondition_time_op: AP_INTEGER_OPTION
 			l_prepare_citadel_tests_option: AP_STRING_OPTION
 		do
 			create parser.make_empty
@@ -187,6 +74,10 @@ feature -- Parsing
 			quiet_option.set_description ("Be quiet.")
 			parser.options.force_last (quiet_option)
 
+			create debug_option.make ('d', "debug")
+			debug_option.set_description ("Append debugging output to log.")
+			parser.options.force_last (debug_option)
+
 			create just_test_option.make ('j', "just-test")
 			just_test_option.set_description ("Skip compilation and generation of interpreter and go right to testing.")
 			parser.options.force_last (just_test_option)
@@ -195,9 +86,9 @@ feature -- Parsing
 --			ecf_target_option.set_description ("Target (from supplied ECF file) that should be used for testing.")
 --			parser.options.force_last (ecf_target_option)
 
-			create deep_manual_option.make ('d', "deep-manual")
-			deep_manual_option.set_description ("Enable deep relevancy check for manual strategy.")
-			parser.options.force_last (deep_manual_option)
+--			create deep_manual_option.make ('d', "deep-manual")
+--			deep_manual_option.set_description ("Enable deep relevancy check for manual strategy.")
+--			parser.options.force_last (deep_manual_option)
 
 			create disable_manual_option.make ('m', "disable-manual")
 			disable_manual_option.set_description ("Disable manual testing strategy.")
@@ -219,9 +110,9 @@ feature -- Parsing
 			minimize_option.set_description ("Minimize with a certain algorithm.")
 			parser.options.force_last (minimize_option)
 
-			create finalize_option.make ('f', "finalize")
-			finalize_option.set_description ("Use finalized intepreter. (Better performance, but no melting)")
-			parser.options.force_last (finalize_option)
+--			create finalize_option.make ('f', "finalize")
+--			finalize_option.set_description ("Use finalized intepreter. (Better performance, but no melting)")
+--			parser.options.force_last (finalize_option)
 
 			create output_dir_option.make ('o', "output-dir")
 			output_dir_option.set_description ("Output directory for reflection library")
@@ -230,6 +121,10 @@ feature -- Parsing
 			create time_out_option.make ('t', "time-out")
 			time_out_option.set_description ("Time used for testing (in minutes). Default is 15 minutes.")
 			parser.options.force_last (time_out_option)
+
+			create test_count_option.make ('c', "count")
+			test_count_option.set_description ("Maximum number of tests to be executed, 0 means no restriction. Default is 0.")
+			parser.options.force_last (test_count_option)
 
 			create seed_option.make ('e', "seed")
 			seed_option.set_description ("Integer seed to initialize pseudo-random number generation with. If not specified seed is intialized with current time.")
@@ -304,6 +199,10 @@ feature -- Parsing
 				error_handler.enable_verbose
 			end
 
+			if debug_option.was_found then
+				is_debugging := True
+			end
+
 			just_test := just_test_option.was_found
 
 --			if ecf_target_option.was_found then
@@ -311,10 +210,10 @@ feature -- Parsing
 --			end
 
 			is_manual_testing_enabled := not disable_manual_option.was_found
-			is_deep_relevancy_enabled := deep_manual_option.was_found
+			is_deep_relevancy_enabled := False -- deep_manual_option.was_found
 			is_automatic_testing_enabled := not disable_auto_option.was_found
 			is_minimization_enabled := not disable_minimize_option.was_found
-			is_debug_mode_enabled := not finalize_option.was_found
+--			is_debug_mode_enabled := not finalize_option.was_found
 
 			if benchmark_option.was_found then
 				error_handler.enable_benchmarking
@@ -349,8 +248,16 @@ feature -- Parsing
 					output_dirname := output_dir_option.parameter
 				end
 
-				if time_out_option.was_found then
+				if time_out_option.was_found and then time_out_option.parameter >= 0 then
 					create time_out.make (0, 0 ,0, 0, time_out_option.parameter, 0)
+				else
+					create time_out.make (0, 0, 0, 0, default_time_out.as_integer_32, 0)
+				end
+
+				if test_count_option.was_found then
+					if test_count_option.parameter > 0 then
+						test_count := test_count_option.parameter.as_natural_32
+					end
 				end
 
 				if seed_option.was_found then
@@ -359,6 +266,7 @@ feature -- Parsing
 					create time.make_now
 					random.set_seed (time.milli_second)
 				end
+				random.start
 
 				if statistics_format_op.was_found then
 					if statistics_format_op.parameter.is_equal ("text") then
@@ -482,6 +390,156 @@ feature -- Parsing
 		ensure
 			help_message_set_when_required: should_display_help_message implies help_message /= Void
 		end
+
+	make_with_configuration (a_conf: TEST_GENERATOR_CONF_I; error_handler: AUT_ERROR_HANDLER)
+			-- use `configuration' to initialize AutoTest settings
+		do
+			is_slicing_enabled := a_conf.is_slicing_enabled
+			is_ddmin_enabled := a_conf.is_ddmin_enabled
+			is_minimization_enabled := is_slicing_enabled or is_ddmin_enabled
+
+			create time_out.make (0, 0, 0, 0, a_conf.time_out.as_integer_32, 0)
+			test_count := a_conf.test_count
+
+			if a_conf.seed > 0 then
+				random.set_seed (a_conf.seed.to_integer_32)
+			else
+				random.set_seed ((create {TIME}.make_now).milli_second)
+			end
+			random.start
+
+			is_text_statistics_format_enabled := True
+			is_html_statistics_format_enabled := a_conf.is_html_output
+
+			proxy_time_out := a_conf.proxy_time_out.as_integer_32
+
+			create {DS_ARRAYED_LIST [attached STRING]} class_names.make_from_linear (a_conf.types)
+		end
+
+feature -- Status report
+
+	output_dirname: STRING
+			-- Name of output directory
+
+	ecf_filename: STRING
+			-- Name of ecf file of input system
+
+--	ecf_target: STRING
+--			-- Name of target in file named `ecf_filename'; Void if no target was specified.
+
+	class_names: DS_LIST [STRING]
+			-- List of class names to be tested
+
+	time_out: DT_DATE_TIME_DURATION
+			-- Maximal time to test;
+			-- A timeout value of `0' means no time out.
+
+	test_count: NATURAL
+			-- Maximum number of tests to be executed
+			--
+			-- Note: a value of `0' means no upper limit
+
+--	is_debug_mode_enabled: BOOLEAN
+			-- Should the interpreter runtime be compiled with
+			-- assertion checking on?
+
+	just_test: BOOLEAN
+			-- Should generation and compilation of the interpreter be skipped
+
+	is_deep_relevancy_enabled: BOOLEAN
+			-- Should the manual testing strategy use deep dependence
+			-- checking when locating relevant manual unit tests?
+
+	is_manual_testing_enabled: BOOLEAN
+			-- Should the manual testing strategy be used?
+
+	is_automatic_testing_enabled: BOOLEAN
+			-- Should the automatic testing strategy be used?
+
+	is_minimization_enabled: BOOLEAN
+			-- Should bug reproducing examples be minimized?
+
+	is_text_statistics_format_enabled: BOOLEAN
+			-- Should statistics be output as plain text?
+
+	is_html_statistics_format_enabled: BOOLEAN
+			-- Should statistics be output static HTML?
+
+	is_slicing_enabled: BOOLEAN
+			-- Should test cases be minimized via slicing?
+
+	is_ddmin_enabled: BOOLEAN
+			-- Should test cases be minimized via ddmin?
+
+	proxy_time_out: INTEGER
+			-- Proxy time out in second
+
+	is_replay_enabled: BOOLEAN
+			-- Is log replay specified?
+
+	log_to_replay: STRING
+			-- File name of the log to be replayed.
+
+	should_display_help_message: BOOLEAN
+			-- Should help message be displayed?
+
+	help_message: STRING
+			-- Help message for command line arguments
+			-- This value is only set if help option presents.
+
+	is_debugging: BOOLEAN
+			-- True if debugging output should be written to log.
+
+	is_debug_mode_enabled: BOOLEAN
+			-- Should the interpreter runtime be compiled with
+			-- assertion checking on?
+
+	log_file_path: detachable STRING
+			-- Full path of the log file to be loaded.
+
+	is_load_log_enabled: BOOLEAN
+			-- Is log load enabled?
+
+	object_state_config: AUT_OBJECT_STATE_CONFIG
+			-- Configuration related object state retrieval
+
+	is_precondition_checking_enabled: BOOLEAN
+			-- Should precondition evaluation be enabled?
+
+	is_linear_constraint_solving_enabled: BOOLEAN
+			-- Is linare constraint solving for integers enabled?
+
+	is_object_state_exploration_enabled: BOOLEAN
+			-- Is object state exploration enabled?
+
+	log_processor: detachable STRING
+			-- Name of the log processor
+
+	log_processor_output: detachable STRING
+			-- Name of the output file from log processor
+
+	max_precondition_search_tries: INTEGER
+			-- Max tries in the search to satisfy precondition of a feature
+			-- 0 means that search until a satisfying object comibination is found.
+
+	max_precondition_search_time: INTEGER
+			-- Maximal time (in second) that can be spent in searching for
+			-- objects satisfying precondition of a feature
+
+	is_seed_provided: BOOLEAN
+			-- Is seed to the random number generator provided?
+
+	seed: INTEGER
+			-- Provided seed
+			-- Only have effect if `is_seed_provided' is True.
+
+	prepare_citadel_tests: BOOLEAN
+			-- Should AutoTest prepare tests for CITADEL from a given proxy log file?
+
+feature {NONE} -- Constants
+
+	default_time_out: NATURAL = 5
+			-- Default value for `time_out' in minutes
 
 invariant
 	minimization_is_either_slicing_or_ddmin: is_minimization_enabled implies (is_slicing_enabled xor is_ddmin_enabled)

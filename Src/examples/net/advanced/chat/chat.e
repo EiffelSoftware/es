@@ -32,13 +32,16 @@ feature
 	max_to_poll: INTEGER
 
 	message_out: MESSAGE
-	received: ?MESSAGE
+	received: detachable MESSAGE
 
 	poll: MEDIUM_POLLER
 
 	make_chat (argv: ARRAY [STRING])
 		local
 			l_port: INTEGER
+			l_message_out: detachable like message_out
+			l_connections: detachable like connections
+			l_in: detachable like in
 		do
 			if argv.count /= 2 then
 				io.error.put_string ("Usage: ")
@@ -53,25 +56,34 @@ feature
 			max_to_poll := 1
 			create poll.make_read_only
 			in.set_non_blocking
-			create message_out.make
-			create connections.make
+			l_in := in
+			create l_message_out.make
+			message_out := l_message_out
+			create l_connections.make
+			connections := l_connections
 			connections.compare_objects
 			execute
 		rescue
 			io.error.putstring ("IN RESCUE%N")
-			message_out.extend ("The server is down. ")
-			message_out.extend ("See you later...%N")
-			message_out.set_over (True)
-			from
-				connections.start
-			until
-				connections.after
-			loop
-				message_out.independent_store (connections.item.active_medium)
-				connections.item.active_medium.close
-				connections.forth
+			if l_message_out /= Void then
+				l_message_out.extend ("The server is down. ")
+				l_message_out.extend ("See you later...%N")
+				l_message_out.set_over (True)
+				if l_connections /= Void then
+					from
+						l_connections.start
+					until
+						l_connections.after
+					loop
+						l_message_out.independent_store (l_connections.item.active_medium)
+						l_connections.item.active_medium.close
+						l_connections.forth
+					end
+				end
+				if l_in /= Void and then not l_in.is_closed then
+					l_in.close
+				end
 			end
-			cleanup
 		end
 
 	process_message
@@ -87,7 +99,7 @@ feature
 				connections.after or stop
 			loop
 				if connections.item.is_waiting then
-					if {l_message_in: MESSAGE} retrieved (connections.item.active_medium) then
+					if attached {MESSAGE} retrieved (connections.item.active_medium) as l_message_in then
 						if l_message_in.new then
 							connections.item.set_client_name (l_message_in.client_name)
 							create message_out.make
@@ -123,7 +135,7 @@ feature
 
 	broadcast
 		local
-			client_name: ?STRING
+			client_name: detachable STRING
 		do
 			client_name := message_out.client_name
 			if client_name /= Void then
@@ -185,7 +197,7 @@ feature
 
 	send_already_connected
 		local
-			l_name: ?STRING
+			l_name: detachable STRING
 			l_flow: like outflow
 		do
 			create message_out.make

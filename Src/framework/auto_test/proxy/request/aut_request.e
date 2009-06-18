@@ -10,6 +10,9 @@ note
 
 deferred class AUT_REQUEST
 
+inherit
+	AUT_PROXY_EVENT
+
 feature {NONE} -- Initialization
 
 	make (a_system: like system)
@@ -132,6 +135,14 @@ feature -- Change
 			end_time_internal := a_end_time
 		ensure
 			end_time_internal_set: end_time_internal = a_end_time
+		end
+
+feature {AUT_PROXY_EVENT_PRODUCER} -- Basic operations
+
+	publish (a_producer: AUT_PROXY_EVENT_PRODUCER; a_observer: AUT_PROXY_EVENT_OBSERVER)
+			-- <Precursor>
+		do
+			a_observer.report_request (a_producer, Current)
 		end
 
 feature -- Processing

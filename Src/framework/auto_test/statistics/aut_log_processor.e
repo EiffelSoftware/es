@@ -12,6 +12,9 @@ feature -- Access
 	configuration: TEST_GENERATOR_CONF_I
 			-- Configuration of current AutoTest run
 
+	session: AUT_SESSION
+			-- Current AutoTest session
+
 feature -- Status report
 
 	is_log_provided: BOOLEAN is

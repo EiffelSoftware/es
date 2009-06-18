@@ -121,12 +121,14 @@ feature -- Analyzis
 				if workbench_mode then
 					l_context.add_dt_current
 				end
+				l_context.set_assertion_type (In_precondition)
 				if inh_assert.has_precondition then
 					inh_assert.analyze_precondition
 				end
 				if precondition /= Void then
 					precondition.analyze
 				end
+				l_context.set_assertion_type (0)
 			end
 
 				-- Analyze postconditions
@@ -134,6 +136,7 @@ feature -- Analyzis
 				if workbench_mode then
 					l_context.add_dt_current
 				end
+				l_context.set_assertion_type (In_postcondition)
 				if old_expressions /= Void then
 					from
 						old_expressions.start
@@ -151,6 +154,7 @@ feature -- Analyzis
 				if inh_assert.has_postcondition then
 					inh_assert.analyze_old_expressions
 				end
+				l_context.set_assertion_type (0)
 			end
 
 				-- If result is expanded or a bit, we need to create it anyway
@@ -176,6 +180,7 @@ feature -- Analyzis
 			end
 				-- Analyze postconditions
 			if have_postcond then
+				l_context.set_assertion_type (In_postcondition)
 				if workbench_mode then
 					l_context.add_dt_current
 				end
@@ -185,6 +190,7 @@ feature -- Analyzis
 				if inh_assert.has_postcondition then
 					inh_assert.analyze_postcondition
 				end
+				l_context.set_assertion_type (0)
 			end
 			if rescue_clause /= Void then
 				rescue_clause.analyze
@@ -712,12 +718,12 @@ end
 						end
 						l_class_type.generate_expanded_overhead_size (buf)
 							-- We reset the flags since now we have an expanded on the C stack,
-							-- thus it cannot move hence the EO_C flag.
+							-- thus it cannot move hence the EO_STACK flag.
 						buf.put_string (");")
 						buf.put_new_line
 						buf.put_string ("sarg")
 						buf.put_integer (i)
-						buffer.put_string (".overhead.ov_flags = EO_EXP | EO_C")
+						buffer.put_string (".overhead.ov_flags = EO_EXP | EO_STACK")
 						if l_class_type.has_creation_routine then
 								-- Class has an expanded attribute we need to give it the EO_COMP flag.							
 							buffer.put_string (" | EO_COMP;")
@@ -755,6 +761,7 @@ end
 						l_loc_name.append ("sloc")
 						l_loc_name.append_integer (i)
 
+						buf.put_new_line
 						buf.put_string ("memset (&")
 						buf.put_string (l_loc_name)
 						buf.put_string (".overhead, 0, OVERHEAD + ")
@@ -765,7 +772,6 @@ end
 							l_class_type.skeleton.generate_size (buf, True)
 						end
 						buf.put_string (");")
-						buf.put_new_line
 
 							-- Then we update the type information
 						l_class_type.generate_expanded_type_initialization (buf, l_loc_name, l_type, context.class_type)
@@ -1047,6 +1053,7 @@ end
 					buf.put_character ('}')
 				end
 			end
+			context.set_assertion_type (0)
 		end
 
 	generate_postcondition
@@ -1079,6 +1086,7 @@ end
 					buf.exdent
 					buf.put_new_line
 					buf.put_character ('}')
+					context.set_assertion_type (0)
 				end
 				generate_invariant_after
 			end
@@ -1467,7 +1475,6 @@ feature -- Byte code generation
 	make_body_code (ba: BYTE_ARRAY; a_generator: MELTED_GENERATOR)
 			-- Generate compound byte code
 		local
-			have_assert, has_old: BOOLEAN
 			inh_assert: INHERITED_ASSERTION
 		do
 				-- Allocate memory for once manifest strings if required
@@ -1477,17 +1484,11 @@ feature -- Byte code generation
 			make_catcall_check (ba)
 
 			inh_assert := Context.inherited_assertion
-			if Context.origin_has_precondition then
-				have_assert := (precondition /= Void or else inh_assert.has_precondition)
-			end
-
-			if have_assert then
+			if Context.origin_has_precondition and then (precondition /= Void or else inh_assert.has_precondition) then
 				context.set_assertion_type (In_precondition)
 				ba.append (Bc_precond)
 				ba.mark_forward
-			end
 
-			if Context.origin_has_precondition then
 				if inh_assert.has_precondition then
 					inh_assert.make_precondition_byte_code (a_generator, ba)
 				end
@@ -1496,9 +1497,7 @@ feature -- Byte code generation
 					Context.set_new_precondition_block (True)
 					a_generator.generate (ba, precondition)
 				end
-			end
 
-			if have_assert then
 				from
 				until
 					ba.forward_marks4.count = 0
@@ -1515,45 +1514,40 @@ feature -- Byte code generation
 					end
 				end
 				ba.write_forward
+				context.set_assertion_type (0)
 			end
 
-			has_old := (old_expressions /= Void) or else (inh_assert.has_old_expression)
-			if has_old then
+			if old_expressions /= Void or else inh_assert.has_old_expression then
+				context.set_assertion_type (In_postcondition)
 				ba.append (Bc_start_eval_old)
 					-- Mark offset for the end of old expression evaluation.
 				ba.mark_forward
 					-- Mark offset for next BC_OLD
 				ba.mark_forward
-			end
 
-			if postcondition /= Void and then
-				old_expressions /= Void then
-					-- Make byte code for old expression
-					--! Order is important since interpretor pops expression
-					--! bottom up.
-				from
-					old_expressions.start
-				until
-					old_expressions.after
-				loop
-					a_generator.generate_old_expression_initialization (ba, old_expressions.item)
-					old_expressions.forth
+				if postcondition /= Void and then old_expressions /= Void then
+						-- Make byte code for old expression
+						--! Order is important since interpretor pops expression
+						--! bottom up.
+					from
+						old_expressions.start
+					until
+						old_expressions.after
+					loop
+						a_generator.generate_old_expression_initialization (ba, old_expressions.item)
+						old_expressions.forth
+					end
 				end
-			end
 
-				-- Make byte code for inherited old expressions
-			have_assert := postcondition /= Void or else inh_assert.has_postcondition
-			if have_assert then
 				if inh_assert.has_postcondition then
 					inh_assert.make_old_exp_byte_code (a_generator, ba)
 				end
-			end
 
-			if has_old then
 					-- Write position for the last old expression evaluation.
 				ba.write_forward
 				ba.append (Bc_end_eval_old)
 				ba.write_forward
+				context.set_assertion_type (0)
 			end
 				-- Go to point for old expressions
 
@@ -1562,22 +1556,18 @@ feature -- Byte code generation
 			end
 
 				-- Make byte code for postcondition
-			if have_assert then
+			if postcondition /= Void or else inh_assert.has_postcondition then
 				context.set_assertion_type (In_postcondition)
 				ba.append (Bc_postcond)
 				ba.mark_forward
-			end
-
-			if inh_assert.has_postcondition then
-				inh_assert.make_postcondition_byte_code (a_generator, ba)
-			end
-
-			if postcondition /= Void then
-				a_generator.generate (ba, postcondition)
-			end
-
-			if have_assert then
+				if inh_assert.has_postcondition then
+					inh_assert.make_postcondition_byte_code (a_generator, ba)
+				end
+				if postcondition /= Void then
+					a_generator.generate (ba, postcondition)
+				end
 				ba.write_forward
+				context.set_assertion_type (0)
 			end
 		end
 
@@ -1771,7 +1761,7 @@ feature {NONE} -- Convenience
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

@@ -24,7 +24,16 @@ feature -- Access
 	time_out: NATURAL
 			-- Time in minutes used for testing.
 			--
-			-- Note: is zero, default will be used.
+			-- Note: if zero, default will be used.
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	test_count: NATURAL
+			-- Maximum number of tests that will be executed.
+			--
+			-- Note: if zero, no restriction will be applied.
 		require
 			usable: is_interface_usable
 		deferred
@@ -108,6 +117,13 @@ feature -- Status report
 		deferred
 		end
 
+	is_debugging: BOOLEAN
+			-- Should debugging output be printed to log?
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
 	is_load_log_enabled: BOOLEAN is
 			-- Should a specified load file be loaded?
 		require
@@ -181,13 +197,13 @@ feature -- Object State Exploration
 
 feature -- Types under test
 
-	types_under_test: DS_ARRAYED_LIST [TYPE_A]
+	types_under_test: DS_LIST [CL_TYPE_A]
 			-- Types under test
 
 	set_types_under_test (a_types: like types_under_test) is
 			-- Set `types_under_test' with `a_types'.
 		do
-			create types_under_test.make (a_types.count)
+			create {DS_ARRAYED_LIST [CL_TYPE_A]} types_under_test.make (a_types.count)
 			types_under_test.append_last (a_types)
 		end
 
@@ -200,4 +216,35 @@ feature -- CITADEL
 		deferred
 		end
 
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

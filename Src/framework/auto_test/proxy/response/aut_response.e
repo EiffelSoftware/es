@@ -10,6 +10,9 @@ note
 
 deferred class AUT_RESPONSE
 
+inherit
+	AUT_PROXY_EVENT
+
 feature {NONE} -- Initialization
 
 	make (a_response_text: like raw_text)
@@ -77,7 +80,6 @@ feature -- Access
 		ensure
 			result_attached: Result /= Void
 		end
-
 	time: DT_DATE_TIME_DURATION
 			-- Time (in seconds) elapsed since the beginning of the testing session when this response was received
 			-- (NOTE: is currently only recorded for thrown exceptions)
@@ -92,6 +94,14 @@ feature -- Access
 			time_set: time = a_time
 		end
 
+feature {AUT_PROXY_EVENT_PRODUCER} -- Basic operations
+
+	publish (a_producer: AUT_PROXY_EVENT_PRODUCER; a_observer: AUT_PROXY_EVENT_OBSERVER)
+			-- <Precursor>
+		do
+			a_observer.report_response (a_producer, Current)
+		end
+
 feature -- Process
 
 	process (a_visitor: AUT_RESPONSE_VISITOR)
@@ -101,7 +111,7 @@ feature -- Process
 		deferred
 		end
 
-feature{NONE} -- Implementation
+feature {NONE} -- Implementation
 
 		raw_text: STRING
 				-- Text associated with Current response

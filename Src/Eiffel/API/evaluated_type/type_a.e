@@ -844,6 +844,25 @@ feature -- Attachment properties
 			result_not_attached: not Result.is_attached
 		end
 
+	as_attached_in (c: CLASS_C): like Current
+			-- Attached or implicitly attached variant of current type depending on the void safety status of contextual class `c'.
+		require
+			c_attached: c /= Void
+		do
+			Result := Current
+			if not is_attached then
+				if c.lace_class.is_void_safe_conformance then
+					Result := as_attached_type
+				elseif not is_implicitly_attached then
+					Result := as_implicitly_attached
+				end
+			end
+		ensure
+			result_attached: Result /= Void
+			result_is_attached: c.lace_class.is_void_safe_conformance implies Result.is_attached
+			result_is_implicitly_attached: Result.is_attached or else Result.is_implicitly_attached
+		end
+
 	as_implicitly_detachable: like Current
 			-- Implicitly detachable type
 		do
@@ -1145,6 +1164,9 @@ feature -- Access
 			a_arg_types_not_void: a_arg_types /= Void
 		do
 			Result := Current
+		ensure
+			actual_argument_type_attached: Result /= Void
+			actual_argument_type_maintained: has_like_argument xor Result = Current
 		end
 
 	formal_instantiation_in (type: TYPE_A; constraint: TYPE_A; written_id: INTEGER): TYPE_A
@@ -1496,22 +1518,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class TYPE_A

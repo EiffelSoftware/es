@@ -20,6 +20,8 @@ inherit
 			report_info_message
 		end
 
+	AUT_PROXY_EVENT_OBSERVER
+
 	AUT_SHARED_TYPE_FORMATTER
 
 	AUT_SHARED_INTERPRETER_INFO
@@ -35,10 +37,13 @@ feature{NONE} -- Initialization
 		require
 			a_system_attached: a_system /= Void
 		do
-			system := a_system
 			make_standard
+			debug_file := null_output_stream
+			system := a_system
 			set_info_null
 			set_warning_null
+			create request_printer.make
+			create response_printer.make
 		ensure
 			error_file_set: error_file = std.error
 			warning_file_set: warning_file = null_output_stream
@@ -53,6 +58,12 @@ feature -- Status report
 		do
 			Result := (info_file /= null_output_stream) and
 						(warning_file /= null_output_stream)
+		end
+
+	is_debugging: BOOLEAN
+			-- Is `debug_file' set to something other than the null output stream?
+		do
+			Result := debug_file /= null_output_stream
 		end
 
 	has_error: BOOLEAN
@@ -75,7 +86,7 @@ feature -- Access
 			Result := "1.3.2"
 		end
 
-	remaining_time: DT_DATE_TIME_DURATION
+	remaining_time: detachable DT_DATE_TIME_DURATION
 			-- Remaining time for testing
 
 	start_time: DT_DATE_TIME
@@ -100,8 +111,27 @@ feature -- Access
 	system: SYSTEM_I
 			-- System
 
+	start_count: like counter
+			-- Initial value for `counter'
+
 	counter: NATURAL
 			-- Counter indicating how many subtasks have been executed so far
+
+	debug_file: KI_TEXT_OUTPUT_STREAM
+			-- File where debug information is logged
+			--
+			-- Note: default value is `null_output_stream'
+
+feature {NONE} -- Access
+
+	request_printer: AUT_SIMPLE_REQUEST_PRINTER
+			-- Printer used for formatting requests in log messages
+
+	response_printer: AUT_SIMPLE_RESPONSE_PRINTER
+			-- Printer used for formatting responses in log messages
+
+	last_testing_request: detachable AUT_REQUEST
+			-- Last request processed by `report_request'
 
 feature -- Status setting
 
@@ -121,6 +151,13 @@ feature -- Status setting
 			info_file := null_output_stream
 		ensure
 			not_verbose: not is_verbose
+		end
+
+	reset_counters (a_start_count: like start_count)
+			-- Set `start_count' and `counter' to `a_start_count'.
+		do
+			start_count := a_start_count
+			counter := a_start_count
 		end
 
 	set_start_time (a_start_time: like start_time)
@@ -153,18 +190,136 @@ feature -- Status setting
 			benchmarking_enabled: is_benchmarking
 		end
 
-	decrease_counter
-			-- Increase `counter' by one.
+	set_debug_null
+			-- Set `debug_file' to null stream.
 		do
-			if counter > 0 then
-				counter := counter - 1
+			debug_file := null_output_stream
+		ensure
+			debug_file_set: debug_file = Void
+		end
+
+	set_debug_standard
+			-- Set `debug_file' to standard output
+		do
+			debug_file := std.error
+		ensure
+			debug_file_set: debug_file = std.error
+		end
+
+	set_debug_to_file (a_file: like debug_file)
+			-- Set `debug_file' to given output stream.
+			--
+			-- `a_file': File to be used for debugging output.
+		do
+			debug_file := a_file
+		ensure
+			debug_file_set: debug_file = a_file
+		end
+
+feature -- Basic operations
+
+	report_error_message (an_error: STRING)
+			-- Report `an_error'.
+		do
+			Precursor (an_error)
+			error_file.flush
+			has_error := True
+		ensure then
+			has_error: has_error
+		end
+
+	report_warning_message (a_warning: STRING_8)
+			-- <Precursor>
+		do
+			Precursor (a_warning)
+			warning_file.flush
+		end
+
+	report_info_message (an_info: STRING_8)
+			-- <Precursor>
+		do
+			Precursor (an_info)
+			info_file.flush
+		end
+
+	report_debug_message (a_debug_info: STRING_8)
+			-- Report a debug information
+		local
+			l_any: ANY
+		do
+			l_any := Current
+			debug_file.put_string ("debug: ")
+			debug_file.put_line (a_debug_info)
+			debug_file.flush
+		end
+
+feature -- Report events
+
+	report_request (a_producer: AUT_PROXY_EVENT_PRODUCER; a_request: AUT_REQUEST)
+			-- <Precursor>
+		local
+			l_msg: STRING
+		do
+			last_testing_request := Void
+			if a_producer.is_executing and then not a_producer.is_replaying then
+				last_testing_request := a_request
+			end
+			if is_debugging then
+				create l_msg.make (100)
+				a_request.process (request_printer)
+				l_msg.append_string (request_printer.last_string)
+				if a_producer.is_executing then
+					if a_producer.is_replaying then
+						l_msg.append_string (" [replaying]")
+					else
+						l_msg.append_string (" [testing]")
+					end
+				else
+					l_msg.append_string (" [parsed]")
+				end
+				report_debug_message (l_msg)
 			end
 		end
 
-	set_counter (a_value: like counter)
-			-- Set `counter' to 0
+	report_response (a_producer: AUT_PROXY_EVENT_PRODUCER; a_response: AUT_RESPONSE)
+			-- <Precursor>
+		local
+			l_msg: STRING
 		do
-			counter := a_value
+			-- TODO: possible info/debug output describing the received response?
+			if attached {AUT_CALL_BASED_REQUEST} last_testing_request as l_caller then
+				create l_msg.make (100)
+				if attached remaining_time as l_time then
+					l_time.time_duration.append_to_string (l_msg)
+					l_msg.append_string (": ")
+				end
+				if start_count > 0 then
+					l_msg.append_natural_32 (counter)
+					l_msg.append_string (": ")
+				end
+				if attached {AUT_CREATE_OBJECT_REQUEST} l_caller then
+					l_msg.append_string ("create ")
+				end
+				l_msg.append_string (type_name (l_caller.target_type, l_caller.feature_to_call))
+				l_msg.append_character ('.')
+				l_msg.append_string (l_caller.feature_to_call.feature_name)
+				l_msg.append_character (' ')
+				a_response.process (response_printer)
+				l_msg.append_string (response_printer.last_string)
+				report_info_message (l_msg)
+
+					-- Decrement test counter
+				if counter > 0 then
+					counter := counter - 1
+				end
+			end
+			last_testing_request := Void
+		end
+
+	report_comment_line (a_producer: AUT_PROXY_EVENT_PRODUCER; a_line: STRING) is
+			-- Report comment line `a_line'.
+		do
+			-- Do nothing.		
 		end
 
 feature -- Reporting messages
@@ -254,18 +409,14 @@ feature -- Reporting messages
 		local
 			text: STRING
 		do
-			create text.make (100)
-			if remaining_time /= Void then
-				remaining_time.time_duration.append_to_string (text)
-				text.append_string (": ")
-			else
-				text.append_natural_32 (counter)
-				text.append_string (": ")
+			if is_debugging then
+				create text.make (100)
+				text.append_string ("selected ")
+				text.append_string (type_name (a_type, a_feature))
+				text.append_string (".")
+				text.append_string (a_feature.feature_name)
+				report_debug_message (text)
 			end
-			text.append_string (type_name (a_type, a_feature))
-			text.append_string (".")
-			text.append_string (a_feature.feature_name)
-			report_info_message (text)
 		end
 
 	report_no_time_for_testing (a_time_out: DT_TIME_DURATION)
@@ -285,7 +436,11 @@ feature -- Reporting messages
 	report_minimization_task
 			-- Report that auto_test is now minimizing a witness.
 		do
-			report_info_message ("Minimizing a bug reproducing example (this can take overtime, to disable use '--disable-minimize').")
+			if attached remaining_time then
+				report_info_message ("Minimizing a bug reproducing example (this will affect the remaining time AutoTest can execute tests, to disable use '--disable-minimize').")
+			else
+				report_info_message ("Minimizing a bug reproducing example (to disable use '--disable-minimize').")
+			end
 		end
 
 	report_manual_testing
@@ -298,6 +453,19 @@ feature -- Reporting messages
 			-- Report that auto_test is now using the ranomd testing strategy.
 		do
 			report_info_message ("Executing automatically generated tests")
+		end
+
+	report_test_synthesis (a_class: CLASS_I)
+			-- Report that AutoTest has created a bug reproducing test case.
+		require
+			a_class_attached: a_class /= Void
+		local
+			l_string: STRING
+		do
+			create l_string.make (100)
+			l_string.append_string ("Created new test class ")
+			l_string.append_string (a_class.name)
+			report_info_message (l_string)
 		end
 
 feature -- Reporting errors
@@ -373,30 +541,6 @@ feature -- Reporting errors
 			-- Report that a fatal error during file generation happened.
 		do
 			report_error_message ("A fatal error happened during file generation")
-		end
-
-	report_error_message (an_error: STRING)
-			-- Report `an_error'.
-		do
-			precursor (an_error)
-			error_file.flush
-			has_error := True
-		ensure then
-			has_error: has_error
-		end
-
-	report_warning_message (a_warning: STRING_8)
-			-- <Precursor>
-		do
-			Precursor (a_warning)
-			warning_file.flush
-		end
-
-	report_info_message (an_info: STRING_8)
-			-- <Precursor>
-		do
-			Precursor (an_info)
-			info_file.flush
 		end
 
 	report_invalid_time_out_value (a_value: STRING)
@@ -507,10 +651,10 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

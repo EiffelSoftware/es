@@ -18,11 +18,12 @@ inherit
 	AUT_SHARED_INTERPRETER_INFO
 
 feature{NONE} -- Initialization
+
 	make
 			-- Create new parser.
 		do
 			create last_string.make (200)
-			create last_argument_list.make_with_capacity (100)
+			create last_argument_list.make (100)
 		end
 
 feature -- Access
@@ -188,7 +189,7 @@ feature -- Parsing
 
 feature {NONE} -- Handlers
 
-	report_create_request (a_type_name: STRING; a_target_variable_name: STRING; a_creation_procedure_name: STRING; an_argument_list: ERL_LIST [ITP_EXPRESSION])
+	report_create_request (a_type_name: STRING; a_target_variable_name: STRING; a_creation_procedure_name: STRING; an_argument_list: DS_ARRAYED_LIST [ITP_EXPRESSION])
 			-- Report "create" request. Note that a void `a_creation_procedure_name'
 			-- represents the default creation procedure.
 		require
@@ -201,7 +202,7 @@ feature {NONE} -- Handlers
 		deferred
 		end
 
-	report_invoke_request (a_target_variable_name: STRING; a_feature_name: STRING; an_argument_list: ERL_LIST [ITP_EXPRESSION])
+	report_invoke_request (a_target_variable_name: STRING; a_feature_name: STRING; an_argument_list: DS_ARRAYED_LIST [ITP_EXPRESSION])
 			-- Report an "invoke" request.
 		require
 			a_target_variable_name_not_void: a_target_variable_name /= Void
@@ -211,7 +212,7 @@ feature {NONE} -- Handlers
 		deferred
 		end
 
-	report_invoke_and_assign_request (a_left_hand_variable_name: STRING; a_target_variable_name: STRING; a_feature_name: STRING; an_argument_list: ERL_LIST [ITP_EXPRESSION])
+	report_invoke_and_assign_request (a_left_hand_variable_name: STRING; a_target_variable_name: STRING; a_feature_name: STRING; an_argument_list: DS_ARRAYED_LIST [ITP_EXPRESSION])
 			-- Report an "invoke_and_assign" request.
 		require
 			a_left_hand_variable_name_not_void: a_left_hand_variable_name /= Void
@@ -315,7 +316,7 @@ feature {NONE} -- Parsing
 							report_create_request (a_type_name,
 													a_target_variable_name,
 													Void,
-													create {ERL_LIST [ITP_EXPRESSION]}.make)
+													create {DS_ARRAYED_LIST [ITP_EXPRESSION]}.make (0))
 						else
 							if item /= '.' then
 								report_and_set_error_at_position ("Expected '.', but got '" + item.out + "'.", position)
@@ -1129,7 +1130,7 @@ feature {NONE} -- Implementation
 
 	last_expression: ITP_EXPRESSION
 
-	last_argument_list: ERL_LIST [ITP_EXPRESSION]
+	last_argument_list: DS_ARRAYED_LIST [ITP_EXPRESSION]
 
 	forth
 			-- Move position one character forth

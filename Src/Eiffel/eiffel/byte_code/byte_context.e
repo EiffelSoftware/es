@@ -47,7 +47,8 @@ feature -- Initialization
 			create class_type_stack.make (10)
 			create generated_inlines.make (5)
 			create generic_wrappers.make (0)
-			create object_test_local_offset.make (0)
+			create precondition_object_test_local_offset.make (0)
+			create postcondition_object_test_local_offset.make (0)
 		end
 
 feature -- Access
@@ -964,7 +965,7 @@ feature {NONE} -- Registers: implementation
 			-- Names of registers indexed by their level
 		once
 				-- `c_void' is not used.
-			create Result.make (c_nb_types * 2)
+			create Result.make_filled (Void, c_nb_types * 2)
 				-- Simple registers.
 			Result.put ("ti1_", c_int8)
 			Result.put ("ti2_", c_int16)
@@ -1708,7 +1709,8 @@ feature -- Access
 			local_index_table := saved_context.local_index_table
 			local_index_counter := saved_context.local_index_counter
 			associated_register_table := saved_context.associated_register_table
-			object_test_local_offset := saved_context.object_test_local_offset
+			precondition_object_test_local_offset := saved_context.precondition_object_test_local_offset
+			postcondition_object_test_local_offset := saved_context.postcondition_object_test_local_offset
 		end
 
 	generate_dtype_declaration (is_once: BOOLEAN)
@@ -1881,8 +1883,7 @@ feature -- Access
 	generate_gc_hooks (compound_or_post: BOOLEAN)
 			-- In case there are some local reference variables,
 			-- generate the hooks for the GC by filling the local variable
-			-- array. Unfortunately, I cannot use bzero() on the array, in
-			-- case it would be a function call--RAM.
+			-- array.
 			--| `compound_or_post' indicate the generation of hooks
 			--| for the compound or post- pre- or invariant routine. -- FREDD
 		local
@@ -1926,25 +1927,15 @@ feature -- Access
 						reference_type: not reg.is_current implies reg.c_type.is_pointer
 					end
 
-					if
-						((reg.is_predefined or reg.is_temporary)
-						and not (reg.is_current or reg.is_argument)
-						and not (reg.is_result and compound_or_post))
-					then
-						buf.put_local_registration (position, rname)
-					else
-						if (reg.c_type.is_bit) and (reg.is_argument) then
-								-- Clone argument if it is bit
-							buf.put_local_registration (position, rname)
-							buf.put_new_line
-							buf.put_string (rname)
-							buf.put_string (once " = RTCB(")
-							buf.put_string (rname)
-							buf.put_character (')')
-							buf.put_character (';')
-						else
-							buf.put_local_registration (position, rname)
-						end
+					buf.put_local_registration (position, rname)
+					if (reg.c_type.is_bit) and (reg.is_argument) then
+							-- Clone argument if it is bit
+						buf.put_new_line
+						buf.put_string (rname)
+						buf.put_string (once " = RTCB(")
+						buf.put_string (rname)
+						buf.put_character (')')
+						buf.put_character (';')
 					end
 					position := position + 1
 					l_table.forth
@@ -2383,13 +2374,20 @@ feature -- C code generation: locals
 
 feature -- Object test code generation
 
-	add_object_test_locals (types: ARRAY [TYPE_A]; body_id: INTEGER; c: CLASS_TYPE)
-			-- Add object test locals of types `types' from feature
-			-- of body id `body_id' in class type `c'.
+	add_object_test_locals (types: ARRAY [TYPE_A]; body_id: INTEGER; c: CLASS_TYPE; is_precondition: BOOLEAN)
+			-- Add object test locals from a precondition (if `is_precondition') or from a postcondition (otherwise)
+			-- of types `types' from feature of body id `body_id' in class type `c'.
 		require
 			different_body_id: body_id /= current_feature.body_index
 			c_attached: c /= Void
+		local
+			object_test_local_offset: HASH_TABLE [INTEGER, INTEGER]
 		do
+			if is_precondition then
+				object_test_local_offset := precondition_object_test_local_offset
+			else
+				object_test_local_offset := postcondition_object_test_local_offset
+			end
 			if types /= Void and then not object_test_local_offset.has (body_id) then
 				object_test_local_offset.force (local_list.count - types.lower + 1, body_id)
 				types.do_all (
@@ -2406,27 +2404,41 @@ feature -- Object test code generation
 			-- Position of a given object test local `l' in the list of locals.
 		require
 			l_attached: l /= Void
+		local
+			offset: INTEGER_32
 		do
 			if assertion_type = in_invariant then
 					-- Object test is declared in class invariant.
-					-- There is no dedicated byte code.
-				Result := l.position
+					-- There is no dedicated byte code, so there is no offset for object test locals.
+					-- offset := 0
 			elseif l.body_id = byte_code.body_index then
 					-- Object test is declared in the current feature.
-				Result := byte_code.local_count + l.position
-			else
-					-- Object test is in the inherited code.
+					-- Object test locals come right after the regular locals.
+				offset := byte_code.local_count
+			elseif assertion_type = in_precondition then
+					-- Object test is in the inherited precondition.
 				check
-					code_id_registered: object_test_local_offset.has (l.body_id)
+					code_id_registered: precondition_object_test_local_offset.has (l.body_id)
 				end
-				Result := object_test_local_offset [l.body_id] + l.position
+				offset := precondition_object_test_local_offset [l.body_id]
+			else
+				check assertion_type = in_postcondition end
+					-- Object test is in the inherited postcondition.
+				check
+					code_id_registered: postcondition_object_test_local_offset.has (l.body_id)
+				end
+				offset := postcondition_object_test_local_offset [l.body_id]
 			end
+			Result := offset + l.position
 		end
 
 feature {BYTE_CONTEXT} -- Object test code generation
 
-	object_test_local_offset: HASH_TABLE [INTEGER, INTEGER]
-			-- Offset of inherited object test locals indexed by code_id
+	precondition_object_test_local_offset: HASH_TABLE [INTEGER, INTEGER]
+			-- Offset of inherited precondition object test locals indexed by code_id
+
+	postcondition_object_test_local_offset: HASH_TABLE [INTEGER, INTEGER]
+			-- Offset of inherited postcondition object test locals indexed by code_id
 
 feature -- External features
 
@@ -2566,7 +2578,8 @@ feature -- Clearing
 				-- This should not be necessary but may limit the
 				-- effect of bugs in register allocation (if any).
 			register_server.clear_all
-			object_test_local_offset.wipe_out
+			precondition_object_test_local_offset.wipe_out
+			postcondition_object_test_local_offset.wipe_out
 		end
 
 	clear_class_type_data
@@ -2801,10 +2814,11 @@ invariant
 	once_manifest_string_table_not_void: once_manifest_string_table /= Void
 	class_type_valid_with_current_type: class_type /= Void implies class_type.type = current_type
 	class_type_stack_not_void: class_type_stack /= Void
-	object_test_local_offset_attached: object_test_local_offset /= Void
+	precondition_object_test_local_offset_attached: precondition_object_test_local_offset /= Void
+	postconditionobject_test_local_offset_attached: postcondition_object_test_local_offset /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

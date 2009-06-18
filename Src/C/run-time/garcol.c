@@ -62,7 +62,6 @@ doc:<file name="garcol.c" header="eif_garcol.h" version="$Id$" summary="Garbage 
 #include "rt_gen_types.h"	/* For tuple marking */
 #include "eif_cecil.h"
 #include "rt_struct.h"
-#include "eif_size.h"		/* For macro LNGPAD */
 #ifdef VXWORKS
 #include <string.h>
 #endif
@@ -116,7 +115,9 @@ rt_shared struct gacinfo rt_g_data = {			/* Global status */
 	0L,			/* nb_full */
 	0L,			/* nb_partial */
 	0L,			/* mem_used */
-	0,			/* gc_to */
+	0L,			/* mem_copied */
+	0L,			/* mem_move */
+	0L,			/* gc_to */
 	(char) 0,	/* status */
 };
 
@@ -430,6 +431,21 @@ doc:	</attribute>
 */
 rt_shared uint32 overflow_stack_limit = 0;
 
+/*
+doc:	<attribute name="c_stack_object_set" return_type="struct stack" export="private">
+doc:		<summary>Stack containing all objects whose memory is allocated on the stack. They are added during marking and unmarked at the end of a GC cycle.</summary>
+doc:		<thread_safety>Safe</thread_safety>
+doc:		<synchronization>eif_gc_mutex</synchronization>
+doc:	</attribute>
+*/
+rt_private struct stack c_stack_object_set = {
+	(struct stchunk *) 0,	/* st_hd */
+	(struct stchunk *) 0,	/* st_tl */
+	(struct stchunk *) 0,	/* st_cur */
+	(EIF_REFERENCE *) 0,	/* st_top */
+	(EIF_REFERENCE *) 0,	/* st_end */
+};
+
 
 	/* Signature of marking functions. They take the address where
 	 * reference is stored (to be updated by `mark_overflow_stack'
@@ -521,36 +537,6 @@ doc:		<synchronization>Under `trigger_gc_mutex' or `eiffel_usage_mutex' or GC sy
 doc:	</attribute>
 */
 rt_shared long force_plsc = 0;
-
-/*
-doc:	<attribute name="gc_running" return_type="int" export="public">
-doc:		<summary>Is GC running?</summary>
-doc:		<thread_safety>Safe</thread_safety>
-doc:		<synchronization>None</synchronization>
-doc:		<fixme>Does not seem to be used anymore apart in `option.c' for profiling but we don't even know why? We might want to get rid of it.</fixme>
-doc:	</attribute>
-*/
-rt_public int gc_running = 0;			/* Is the GC running */ 
-
-/*
-doc:	<attribute name="last_gc_time" return_type="double" export="public">
-doc:		<summary>Last time spent on last collect, sweep or whatever the GC did.</summary>
-doc:		<thread_safety>Safe</thread_safety>
-doc:		<synchronization>None</synchronization>
-doc:		<fixme>As with `gc_running' we don't know when it is really used.</fixme>
-doc:	</attribute>
-*/
-rt_public double last_gc_time = 0;
-
-/*
-doc:	<attribute name="gc_ran" return_type="int" export="public">
-doc:		<summary>Has the GC been running?</summary>
-doc:		<thread_safety>Not safe</thread_safety>
-doc:		<synchronization>None</synchronization>
-doc:		<fixme>Same as `gc_running'. There is a mistery to solve.</fixme>
-doc:	</attribute>
-*/
-rt_public int gc_ran = 0;				/* Has the GC been running */ 
 
 /*
 doc:	<attribute name="clsc_per" return_type="EIF_INTEGER" export="public">
@@ -668,6 +654,7 @@ rt_private void internal_marking(MARKER marking, int moving);
 rt_private void full_mark(EIF_CONTEXT_NOARG);			/* Marks all reachable objects */
 rt_private void full_sweep(void);			/* Removes all un-marked objects */
 rt_private void run_collector(void);		/* Wrapper for full collections */
+rt_private void unmark_c_stack_objects (void);
 
 /* Stack markers */
 rt_private void mark_simple_stack(struct stack *stk, MARKER marker, int move);	/* Marks a collector's stack */
@@ -739,20 +726,10 @@ rt_private void mark_op_stack(struct opstack *stk, MARKER marker, int move);		/*
 #endif
 
 #ifdef DEBUG
-#define NB_FULL		0
-#define NB_PARTIAL	1
-
-#define debug_ok(n)	( \
-	(n) & DEBUG || \
-	(rt_g_data.nb_full == NB_FULL && fdone || rt_g_data.nb_partial == NB_PARTIAL) \
-	)
-#define dprintf(n)	\
-	if ( \
-			DEBUG & (n) && debug_ok(n)\
-	) printf 
-#define flush			fflush(stdout);
-
 static int fdone = 0;	/* Tracing flag to only get the last full collect */
+#define debug_ok(n)	((n) & DEBUG || fdone)
+#define dprintf(n)	if (DEBUG & (n) && debug_ok(n)) printf 
+#define flush		fflush(stdout);
 #endif
 
 
@@ -872,6 +849,27 @@ rt_shared int acollect(void)
 }
 
 /*
+doc:	<routine name="rt_average" return_type="rt_uint_ptr" export="private">
+doc:		<summary>Compute an average without overflow as long as the sum of the two input does not cause an overflow .</summary>
+doc:		<param name="average" type="rt_uint_ptr">Value of average so far for the `n - 1' iterations.</param>
+doc:		<param name="value" type="rt_uint_ptr">New computed value to take into account in average.</param>
+doc:		<param name="n" type="rt_uint_ptr">Number of iteration so far. Assumes `n > 0'.</param>
+doc:		<return>Return the new average</return>
+doc:		<thread_safety>Safe</thread_safety>
+doc:		<synchronization>Performs a GC synchronization before executing itself.</synchronization>
+doc:	</routine>
+*/
+#define RT_AVERAGE(average, value, n) ((average) + (((value) - (average)) / (n)))
+rt_private rt_uint_ptr rt_average (rt_uint_ptr average, rt_uint_ptr value, rt_uint_ptr n)
+{
+	if (value > average) {
+		return average + ((value - average) / n);
+	} else {
+		return average - ((average - value) / n);
+	}
+}
+
+/*
 doc:	<routine name="scollect" return_type="int" export="shared">
 doc:		<summary>Run a garbage collection cycle with statistics updating. We monitor both the time spent in the collection and the memory released, if any, as well as time between two collections... </summary>
 doc:		<param name="gc_func" type="int (*) (void)">Collection function to be called.</param>
@@ -885,12 +883,12 @@ doc:	</routine>
 rt_shared int scollect(int (*gc_func) (void), int i)
 {
 	RT_GET_CONTEXT
-	static uint32 nb_stats[GST_NBR];	/* For average computation */
-#ifndef FAST_RUNTIME
+	static rt_uint_ptr nb_stats[GST_NBR];	/* For average computation */
+#ifndef NO_GC_STATISTICS
 	static Timeval lastreal[GST_NBR];	/* Last real time of invocation */
 	Timeval realtime, realtime2;		/* Real time stamps */
-	double usertime, systime;			/* CPU stats before collection */
-	double usertime2, systime2;			/* CPU usage after collection */
+	double usertime = 0, systime = 0;			/* CPU stats before collection */
+	double usertime2 = 0, systime2 = 0;			/* CPU usage after collection */
 	static double lastuser[GST_NBR];	/* Last CPU time for last call */
 	static double lastsys[GST_NBR];		/* Last kernel time for last call */
 #endif
@@ -898,8 +896,8 @@ rt_shared int scollect(int (*gc_func) (void), int i)
 	rt_uint_ptr e_mem_used_before, e_mem_used_after;
 	int status;							/* Status reported by GC function */
 	struct gacstat *gstat = &rt_g_stat[i];	/* Address where stats are kept */
-	int nbstat;							/* Current number of statistics */
-	unsigned long nb_full;
+	rt_uint_ptr nbstat;			/* Current number of statistics */
+	rt_uint_ptr nb_full;
 
 	if (rt_g_data.status & GC_STOP)
 		return -1;						/* Garbage collection stopped */
@@ -910,7 +908,17 @@ rt_shared int scollect(int (*gc_func) (void), int i)
 	nb_full = rt_g_data.nb_full;
 	mem_used = rt_m_data.ml_used + rt_m_data.ml_over;		/* Count overhead */
 	e_mem_used_before = rt_e_data.ml_used + rt_e_data.ml_over;
-	nbstat = ++nb_stats[i];							/* One more computation */
+		/* One more GC cycle. */
+	if (nb_stats [i] == 0) {
+			/* This is the first GC collection ever for `i'. */
+		nbstat = nb_stats [i] = 1;
+	} else {
+		nbstat = ++nb_stats[i];
+		 	/* If we overflow `nbstat' we restart the processing of the average calculation. */
+		if (nbstat == 0) {
+			nbstat = 3;
+		}
+	}
 
 	/* Reset scavenging-related figures, since those will be updated by the
 	 * scavenging routines when needed.
@@ -919,7 +927,7 @@ rt_shared int scollect(int (*gc_func) (void), int i)
 	rt_g_data.mem_move = 0;				/* Memory subject to scavenging */
 	rt_g_data.mem_copied = 0;				/* Amount of that memory which moved */
 
-#ifndef FAST_RUNTIME
+#ifndef NO_GC_STATISTICS
 	/* Get the current time before CPU time, because the accuracy of the
 	 * real time clock is usually less important than the one used for CPU
 	 * accounting.
@@ -947,7 +955,7 @@ rt_shared int scollect(int (*gc_func) (void), int i)
 #endif
 #endif
 
-#ifndef FAST_RUNTIME
+#ifndef NO_GC_STATISTICS
 	/* Get CPU time before real time, so that we have a more precise figure
 	 * (gettime uses a system call)--RAM.
 	 */
@@ -955,6 +963,8 @@ rt_shared int scollect(int (*gc_func) (void), int i)
 	if (gc_monitor) {
 		getcputime(&usertime2, &systime2);	/* Current CPU usage */
 		gettime(&realtime2);				/* Get current time stamp */
+	} else {
+		memset(&realtime2, 0, sizeof(Timeval));
 	}
 #endif
 
@@ -975,10 +985,9 @@ rt_shared int scollect(int (*gc_func) (void), int i)
 	} else {
 		gstat->mem_collect = 0;
 	}
-	gstat->mem_collect +=		/* Memory freed by scavenging (with overhead) */
-		rt_g_data.mem_copied - rt_g_data.mem_move;
-	gstat->mem_avg = ((gstat->mem_avg * (nbstat - 1)) +
-		gstat->mem_collect) / nbstat;					/* Average mem freed */
+		/* Memory freed by scavenging (with overhead) */
+	gstat->mem_collect += rt_g_data.mem_copied - rt_g_data.mem_move;
+	gstat->mem_avg = rt_average(gstat->mem_avg, gstat->mem_collect, nbstat); /* Average mem freed */
 
 	if (nb_full != rt_g_data.nb_full) {
 			/* We are during a full collection cycle. This is were we
@@ -1058,7 +1067,7 @@ rt_shared int scollect(int (*gc_func) (void), int i)
 		}
 	}
 			
-#ifndef FAST_RUNTIME
+#ifndef NO_GC_STATISTICS
 	if (gc_monitor) {
 		gstat->real_time = elapsed(&realtime, &realtime2);
 		gstat->cpu_time = usertime2 - usertime;			/* CPU time (user) */
@@ -1070,18 +1079,13 @@ rt_shared int scollect(int (*gc_func) (void), int i)
 		gstat->cpu_time = gstat->cpu_avg;		/* will not change the */
 		gstat->sys_time = gstat->sys_avg;		/* computation done so far */
 	}
-	gstat->real_avg = ((gstat->real_avg * (nbstat - 1)) +
-		gstat->real_time) / nbstat;						/* Average real time */
-	gstat->cpu_avg = ((gstat->cpu_avg * (nbstat - 1)) +
-		gstat->cpu_time) / nbstat;						/* Average user time */
-	gstat->sys_avg = ((gstat->sys_avg * (nbstat - 1)) +
-		gstat->sys_time) / nbstat;						/* Average sys time */
+	gstat->real_avg = rt_average(gstat->real_avg, gstat->real_time, nbstat);	/* Average real time */
+	gstat->cpu_avg = RT_AVERAGE(gstat->cpu_avg, gstat->cpu_time, nbstat);		/* Average user time */
+	gstat->sys_avg = RT_AVERAGE(gstat->sys_avg, gstat->sys_time, nbstat);		/* Average sys time */
 
 
-	/* If it is not the first time, update the statistics. First compute the
-	 * time elapsed since last call, then update the average accordingly.
-	 */
-
+		/* If it is not the first time, update the statistics. First compute the
+		 * time elapsed since last call, then update the average accordingly. */
 	if (lastuser[i] != 0) {
 		if (gc_monitor) {
 			gstat->cpu_itime = usertime - lastuser[i];
@@ -1092,12 +1096,9 @@ rt_shared int scollect(int (*gc_func) (void), int i)
 			gstat->sys_itime = gstat->sys_iavg;		/* does not change the */
 			gstat->real_itime = gstat->real_iavg;	/* data we already have */
 		}
-		gstat->real_iavg = ((gstat->real_iavg * (nbstat - 2)) +
-			gstat->real_itime) / (nbstat - 1);
-		gstat->cpu_iavg = ((gstat->cpu_iavg * (nbstat - 2)) +
-			gstat->cpu_itime) / (nbstat - 1);
-		gstat->sys_iavg = ((gstat->sys_iavg * (nbstat - 2)) +
-			gstat->sys_itime) / (nbstat - 1);
+		gstat->real_iavg = rt_average(gstat->real_iavg, gstat->real_itime, nbstat - 1);
+		gstat->cpu_iavg = RT_AVERAGE(gstat->cpu_iavg, gstat->cpu_itime, nbstat - 1);
+		gstat->sys_iavg = RT_AVERAGE(gstat->sys_iavg, gstat->sys_itime, nbstat - 1);
 	}
 
 	/* Record current times for next invokation */
@@ -1107,7 +1108,7 @@ rt_shared int scollect(int (*gc_func) (void), int i)
 		lastsys[i] = systime2;			/* System time after last GC */
 		memcpy (&lastreal[i], &realtime2, sizeof(Timeval));
 	}
-#endif /* ifndef FAST_RUNTIME */
+#endif
 
 #ifdef DEBUG
 	dprintf(1)("scollect: statistics for %s\n",
@@ -1329,8 +1330,9 @@ rt_public void reclaim(void)
 #endif
 
 #ifdef EIF_THREADS 
-			CHECK ("Root thread", eif_thr_is_root ());
-			eif_thread_cleanup ();
+			if (eif_thr_is_root ()) {
+				eif_thread_cleanup ();
+			}
 #endif	/* EIF_THREADS */
 
 #ifdef ISE_GC
@@ -1386,7 +1388,7 @@ rt_private void run_collector(void)
 	rt_g_data.nb_full++;	/* One more full collection */
 
 #ifdef DEBUG
-	fdone = rt_g_data.nb_full == NB_FULL;
+	fdone = 1;
 	dprintf(1)("run_collector: gen_scavenge: 0x%lx, status: 0x%lx\n",
 		gen_scavenge, rt_g_data.status);
 	flush;
@@ -1402,6 +1404,7 @@ rt_private void run_collector(void)
 	full_mark(MTC_NOARG);		/* Mark phase */
 	full_update();		/* Update moved and remembered set (BEFORE sweep) */
 	full_sweep();			/* Sweep phase */
+	unmark_c_stack_objects ();
 
 	/* After a full collection (this routine is only called for a full mark
 	 * and sweep or a partial scavenging), give generation scavenging a try
@@ -2124,6 +2127,44 @@ rt_private void mark_overflow_stack(MARKER marker, int move)
 	ENSURE ("Overflow stack empty", overflow_stack_count == 0);
 }
 
+/*
+doc:	<routine name="unmark_c_stack_objects" return_type="void" export="private">
+doc:		<summary>When objects are allocated on the C stack, we need to unmark them at the end of a GC cycle, because none of the existing code will unmark it since they are only referenced usually through `loc_set' or `loc_stack'. At the end of this routine, the stack is emptied.</summary>
+doc:		<thread_safety>Safe with synchronization</thread_safety>
+doc:		<synchronization>Through `eif_gc_mutex'.</synchronization>
+doc:	</routine>
+*/
+
+rt_private void unmark_c_stack_objects (void)
+{
+	EIF_REFERENCE *object;		/* For looping over subsidiary roots */
+	rt_uint_ptr roots;			/* Number of roots in each chunk */
+	struct stchunk *s;			/* To walk through each stack's chunk */
+	int done;					/* Top of stack not reached yet */
+
+		/* Only do some processing if the stack was created. */
+	if (c_stack_object_set.st_top) {
+		done = 0;
+		for (s = c_stack_object_set.st_hd; s && !done; s = s->sk_next) {
+			object = s->sk_arena;					/* Start of stack */
+			if (s != c_stack_object_set.st_cur)		/* Before current pos? */
+				roots = s->sk_end - object;			/* The whole chunk */
+			else {
+				roots = c_stack_object_set.st_top - object;		/* Stop at the top */
+				done = 1;							/* Reached end of stack */
+			}
+			for (; roots > 0; roots--, object++) {
+				CHECK("Object is marked", HEADER(*object)->ov_flags & EO_MARK);
+				CHECK("Object is on C stack", HEADER(*object)->ov_flags & EO_STACK);
+				HEADER(*object)->ov_flags &= ~EO_MARK;
+			}
+		}
+
+			/* Reset the content of the stack. This is not great for performance since
+			 * we will most likely reallocate the stack at the next GC cycle. */
+		st_reset(&c_stack_object_set);
+	}
+}
 
 rt_private EIF_REFERENCE hybrid_mark(EIF_REFERENCE *a_root)
 {
@@ -2153,10 +2194,13 @@ rt_private EIF_REFERENCE hybrid_mark(EIF_REFERENCE *a_root)
 		/* Stack overflow protection */
 	overflow_stack_depth++;
 	if (overflow_stack_depth > overflow_stack_limit) {
-		epush(&overflow_stack_set, a_root);
-		overflow_stack_count++;
-		overflow_stack_depth--;
-		return root;
+			/* If we can add to the stack overflow recursion, then we do it, otherwise
+			 * we hope we will have enough stack to complete the GC cycle. */
+		if (epush(&overflow_stack_set, a_root) != -1) {
+			overflow_stack_count++;
+			overflow_stack_depth--;
+			return root;
+		}
 	}
 
 	/* Initialize the variables for the loop */
@@ -2221,8 +2265,8 @@ rt_private EIF_REFERENCE hybrid_mark(EIF_REFERENCE *a_root)
 				goto done;				/* So it has been already processed */
 			}
 
-			if (flags & (EO_MARK | EO_C))	/* Already marked or C object */
-				goto done;				/* Object processed and did not move */
+			if (flags & EO_MARK)	/* Already marked */
+				goto done;			/* Object processed and did not move */
 
 			if (offset & GC_GEN && !(size & B_BUSY)) {
 				current = scavenge(current, &sc_to.sc_top);	/* Simple scavenging */
@@ -2261,20 +2305,24 @@ rt_private EIF_REFERENCE hybrid_mark(EIF_REFERENCE *a_root)
 		 */
 
 		/* If current object is already marked, it has been (or is)
-		 * studied. So return immediately. Idem if object is a C one.
+		 * studied. So return immediately.
 		 */
-		if (flags & (EO_MARK | EO_C))
+		if (flags & EO_MARK)
 			goto done;
 
-
-		/* Expanded objects have no 'ov_size' field. Instead, they have a
-		 * pointer to the object which holds them. This is needed by the
-		 * scavenging process, so that we can update the internal references
-		 * to the expanded in the scavenged object.
-		 * It's useless to mark an expanded, because it has only one reference
-		 * on itself, in the object which holds it.
-		 */
+			/* Expanded objects have no 'ov_size' field. Instead, they have a
+			 * pointer to the object which holds them. This is needed by the
+			 * scavenging process, so that we can update the internal references
+			 * to the expanded in the scavenged object.
+			 * It's useless to mark an expanded, because it has only one reference
+			 * on itself, in the object which holds it.
+			 */
 		if (!eif_is_nested_expanded(flags)) {
+			if (flags & EO_STACK) {
+					/* Object is on the C stack, so we need to record it to unmark it later. */
+					/* FIXME: Manu 2009/04/29: Code is not safe if `epush' returns -1. */
+				epush(&c_stack_object_set, current);
+			}
 			flags |= EO_MARK;
 			zone->ov_flags = flags;
 		}
@@ -2290,8 +2338,6 @@ marked: /* Goto label needed to avoid code duplication */
 		 */
 
 		if (flags & EO_SPEC) {
-			EIF_REFERENCE o_ref;
-
 			/* Special objects may have no references (e.g. an array of
 			 * integer or a string), so we have to skip those.
 			 */
@@ -2305,8 +2351,7 @@ marked: /* Goto label needed to avoid code duplication */
 			 * second is the size of each item (for expandeds, the overhead of
 			 * the header is not taken into account).
 			 */
-			o_ref = RT_SPECIAL_INFO_WITH_ZONE(current, zone);
-			count = offset = RT_SPECIAL_COUNT_WITH_INFO(o_ref);	/* Get # of items */
+			count = offset = RT_SPECIAL_COUNT(current);	/* Get # of items */
 
 			if (flags & EO_TUPLE) {
 				EIF_TYPED_VALUE *l_item = (EIF_TYPED_VALUE *) current;
@@ -2344,7 +2389,7 @@ marked: /* Goto label needed to avoid code duplication */
 				 * because we have to increment our pointers by size and I do not
 				 * want to to slow down the normal loop--RAM.
 				 */
-				size = RT_SPECIAL_ELEM_SIZE_WITH_INFO(o_ref);	/* Item's size */
+				size = RT_SPECIAL_ELEM_SIZE(current);	/* Item's size */
 				if (rt_g_data.status & (GC_PART | GC_GEN)) {	/* Moving objects */
 					object = (EIF_REFERENCE *) (current + OVERHEAD);/* First expanded */
 					for (; offset > 1; offset--) {		/* Loop over array */
@@ -2468,63 +2513,47 @@ rt_private void full_sweep(void)
 		for (
 			zone = (union overhead *) arena;
 			(EIF_REFERENCE) zone < end;
-			zone = (union overhead *) (((EIF_REFERENCE) zone) + size + OVERHEAD)
+			zone = (union overhead *) (((EIF_REFERENCE) zone) + (size & B_SIZE) + OVERHEAD)
 		) {
 			size = zone->ov_size;			/* Size and flags */
-
 			if (!(size & B_BUSY)) {
-				/* Object belongs to the free list (not busy).
-				 */
-				size &= B_SIZE;				/* Keep only pure size */
-				continue;					/* Skip block */
-			}
-
-
-			if (size & B_C) {
+					/* Object belongs to the free list (not busy).  */
+			} else if (size & B_C) {
 				/* Object is a C one.
-				 * However, any Eiffel object (i.e. any object not bearing
-				 * the EO_C mark) is marked during the marking phase and has
+				 * However, any Eiffel object is marked during the marking phase and has
 				 * to be unmarked now. It is not freed however, since it is
 				 * marked B_C and hence is under user control. Moreover, we
 				 * would not be able to remove the reference from hector.
 				 */
-				size &= B_SIZE;				/* Keep only pure size */
 				zone->ov_flags &= ~EO_MARK;	/* Unconditionally unmark it */
-				continue;					/* Skip block */
-			}
-
-			size &= B_SIZE;					/* Remove block flags */
-			flags = zone->ov_flags;			/* Fetch Eiffel flags */
-
-			if (flags & EO_MARK) { 					/* Object is marked */
-				zone->ov_flags = flags & ~EO_MARK;	/* Unmark it */
-				continue;							/* And skip it */
-			}
-
-			/* Expanded objects are within normal objects and therefore
-			 * cannot be explicitely removed. I assume it is impossible
-			 * to reference an expanded object directly (via another object
-			 * reference)--RAM.
-			 */
-
-			gfree(zone);		/* Object is freed */
+			} else {
+				flags = zone->ov_flags;			/* Fetch Eiffel flags */
+				if (flags & EO_MARK) { 					/* Object is marked */
+					zone->ov_flags = flags & ~EO_MARK;	/* Unmark it */
+				} else {
+						/* Expanded objects are within normal objects and therefore
+						 * cannot be explicitely removed. I assume it is impossible
+						 * to reference an expanded object directly (via another object
+						 * reference)--RAM.
+						 */
+					gfree(zone);		/* Object is freed */
 #ifdef FULL_SWEEP_DEBUG
-		printf("FULL_SWEEP: Removing 0x%x (type %d, %d bytes) %s %s %s %s %s %s %s, age %ld\n",
-			(union overhead *) zone + 1,
-			HEADER( (union overhead *) zone + 1 )->ov_dftype,
-			zone->ov_size & B_SIZE,
-			((union overhead *) zone + 1),
-			zone->ov_size & B_FWD ? "forwarded" : "",
-			zone->ov_flags & EO_MARK ? "marked" : "",
-			zone->ov_flags & EO_REF ? "ref" : "",
-			zone->ov_flags & EO_COMP ? "cmp" : "",
-			zone->ov_flags & EO_SPEC ? "spec" : "",
-			zone->ov_flags & EO_NEW ? "new" : "",
-			zone->ov_flags & EO_OLD ? "old" : "",
-			((zone->ov_flags & EO_AGE) >> 24) / 2);
-		
-
+				printf("FULL_SWEEP: Removing 0x%x (type %d, %d bytes) %s %s %s %s %s %s %s, age %ld\n",
+					(union overhead *) zone + 1,
+					HEADER( (union overhead *) zone + 1 )->ov_dftype,
+					zone->ov_size & B_SIZE,
+					((union overhead *) zone + 1),
+					zone->ov_size & B_FWD ? "forwarded" : "",
+					zone->ov_flags & EO_MARK ? "marked" : "",
+					zone->ov_flags & EO_REF ? "ref" : "",
+					zone->ov_flags & EO_COMP ? "cmp" : "",
+					zone->ov_flags & EO_SPEC ? "spec" : "",
+					zone->ov_flags & EO_NEW ? "new" : "",
+					zone->ov_flags & EO_OLD ? "old" : "",
+					((zone->ov_flags & EO_AGE) >> 24) / 2);
 #endif	/* FULL_SWEEP_DEBUG */
+				}
+			}
 		}
 	}
 
@@ -3392,17 +3421,39 @@ rt_private EIF_REFERENCE scavenge(register EIF_REFERENCE root, char **top)
 
 	zone = HEADER(root);
 
-	/* Expanded objects are held in one object, and a pseudo-reference field
-	 * in the father object points to them. However, the scavenging process
-	 * does not update this reference. Instead, the expanded header knows how to
-	 * reach the header of the father object. If scavenging is on, we reach the
-	 * expanded once the father has been scavenged, and we get the new address
-	 * by following the forwarding pointer left behind. Nearly a kludge.
-	 * Let A be the address of the original object (zone below) and A' (new) the
-	 * address of the scavenged object (given by following the forwarding
-	 * pointer left) and P the pointed expanded object in the original (root).
-	 * Then the address of the scavenged expanded is A'+(P-A).
-	 */
+		/* If object has the EO_STACK mark, then it means that it cannot move. So we have
+		 * to return immediately. */
+	if (zone->ov_flags & EO_STACK) {
+		CHECK ("EO_STACK not in Generation Scavenge From zone",
+			!((rt_g_data.status & GC_GEN) &&
+			(root > sc_from.sc_arena) && 
+			(root <= sc_from.sc_end)));
+		CHECK ("EO_STACK not in Generation Scavenge TO zone",
+			!((rt_g_data.status & GC_GEN) &&
+			(root > sc_to.sc_arena) && 
+			(root <= sc_to.sc_end)));				
+		CHECK ("EO_STACK not in Partial Scavenge From zone.",
+			!((rt_g_data.status & GC_PART) &&
+			(root > ps_from.sc_active_arena) && 
+			(root <= ps_from.sc_end)));
+		CHECK ("EO_STACK not in Partial Scavenge TO zone.",
+			!((rt_g_data.status & GC_PART) &&
+			(root > ps_to.sc_active_arena) && 
+			(root <= ps_to.sc_end)));
+		return root;
+	}
+
+		/* Expanded objects are held in one object, and a pseudo-reference field
+		 * in the father object points to them. However, the scavenging process
+		 * does not update this reference. Instead, the expanded header knows how to
+		 * reach the header of the father object. If scavenging is on, we reach the
+		 * expanded once the father has been scavenged, and we get the new address
+		 * by following the forwarding pointer left behind. Nearly a kludge.
+		 * Let A be the address of the original object (zone below) and A' (new) the
+		 * address of the scavenged object (given by following the forwarding
+		 * pointer left) and P the pointed expanded object in the original (root).
+		 * Then the address of the scavenged expanded is A'+(P-A).
+		 */
 	if (eif_is_nested_expanded(zone->ov_flags)) {
 			/* Compute original object's address (before scavenge) */
 		EIF_REFERENCE exp;					/* Expanded data space */
@@ -3467,9 +3518,8 @@ rt_private EIF_REFERENCE scavenge(register EIF_REFERENCE root, char **top)
 	 * marked. Besides, we need to cut recursion to prevent loops.
 	 */
 	if (zone->ov_size & B_C) {
-		if (!(zone->ov_flags & EO_C))	/* Not a C object */
-			zone->ov_flags |= EO_MARK;	/* Mark it */
-		return root;					/* Leave object where it is */
+		zone->ov_flags |= EO_MARK;	/* Mark it */
+		return root;				/* Leave object where it is */
 	}
 
 	root = *top;						/* New location in 'to' space */
@@ -3549,6 +3599,7 @@ rt_private int generational_collect(void)
 
 	mark_new_generation(MTC_NOARG);		/* Mark all new reachable objects */
 	full_update();				/* Sweep the youngest generation */
+	unmark_c_stack_objects ();			/* Unmark all objects allocated on C stack. */
 	if (gen_scavenge & GS_ON)
 		swap_gen_zones();		/* Swap generation scavenging spaces */
 
@@ -3698,10 +3749,13 @@ rt_private EIF_REFERENCE hybrid_gen_mark(EIF_REFERENCE *a_root)
 		/* Stack overflow protection */
 	overflow_stack_depth++;
 	if (overflow_stack_depth > overflow_stack_limit) {
-		epush(&overflow_stack_set, a_root);
-		overflow_stack_count++;
-		overflow_stack_depth--;
-		return root;
+			/* If we can add to the stack overflow recursion, then we do it, otherwise
+			 * we hope we will have enough stack to complete the GC cycle. */
+		if (epush(&overflow_stack_set, a_root) != -1) {
+			overflow_stack_count++;
+			overflow_stack_depth--;
+			return root;
+		}
 	}
 
 	/* Initialize the variables for the loop */
@@ -3750,7 +3804,7 @@ rt_private EIF_REFERENCE hybrid_gen_mark(EIF_REFERENCE *a_root)
 		}
 
 		flags = zone->ov_flags;			/* Fetch Eiffel flags */
-		if (flags & (EO_MARK | EO_C))	/* Object has been already processed? */
+		if (flags & EO_MARK)			/* Object has been already processed? */
 			goto done;					/* Exit the procedure */
 
 		if (flags & EO_OLD) {			/* Old object unmarked */
@@ -3758,6 +3812,13 @@ rt_private EIF_REFERENCE hybrid_gen_mark(EIF_REFERENCE *a_root)
 				zone->ov_flags = flags | EO_MARK;
 			} else						/* Old object is not remembered */
 				goto done;				/* Skip it--object did not move */
+		}
+
+		if (flags & EO_STACK) {
+				/* Object is on the C stack, so we need to record it to unmark it later. */
+				/* FIXME: Manu 2009/04/29: Code is not safe if `epush' returns -1. */
+			epush(&c_stack_object_set, current);
+			zone->ov_flags = flags | EO_MARK;
 		}
 
 		/* If we reach an expanded object, then we already dealt with the object
@@ -3775,10 +3836,9 @@ rt_private EIF_REFERENCE hybrid_gen_mark(EIF_REFERENCE *a_root)
 				*prev = current;
 		}
 
-		/* It's useless to mark an expanded, because it has only one reference
-		 * on itself, in the object which holds it. Scavengend objects need not
-		 * any mark either, as the forwarding mark tells that they are alive.
-		 */
+			/* It's useless to mark an expanded which has a prent object since the later is marked.
+			 * Scavengend objects need not any mark either, as the forwarding mark
+			 * tells that they are alive. */
 		if (!eif_is_nested_expanded(flags) && (flags & EO_NEW)) {
 			flags |= EO_MARK;
 			zone->ov_flags = flags;
@@ -3792,8 +3852,6 @@ rt_private EIF_REFERENCE hybrid_gen_mark(EIF_REFERENCE *a_root)
 		 * required. Special objects full of references are also explored.
 		 */
 		if (flags & EO_SPEC) {				/* Special object */
-			EIF_REFERENCE o_ref;
-
 			/* Special objects may have no references (e.g. an array of
 			 * integer or a string), so we have to skip those.
 			 */
@@ -3806,8 +3864,7 @@ rt_private EIF_REFERENCE hybrid_gen_mark(EIF_REFERENCE *a_root)
 			 * second is the size of each item (for expandeds, the overhead of
 			 * the header is not taken into account).
 			 */
-			o_ref = RT_SPECIAL_INFO_WITH_ZONE(current, zone);
-			count = offset = RT_SPECIAL_COUNT_WITH_INFO(o_ref);	/* Get # items */
+			count = offset = RT_SPECIAL_COUNT(current);	/* Get # items */
 
 			if (flags & EO_TUPLE) {
 				EIF_TYPED_VALUE *l_item = (EIF_TYPED_VALUE *) current;
@@ -3842,7 +3899,7 @@ rt_private EIF_REFERENCE hybrid_gen_mark(EIF_REFERENCE *a_root)
 				 * way of looping over the array (we must take the size of each item
 				 * into account).
 				 */
-				size = RT_SPECIAL_ELEM_SIZE_WITH_INFO(o_ref);	/* Item's size */
+				size = RT_SPECIAL_ELEM_SIZE(current);	/* Item's size */
 				if (gen_scavenge & GS_ON) {					/* Moving objects */
 					object = (EIF_REFERENCE *) (current + OVERHEAD);/* First expanded */
 					for (; offset > 1; offset--) {		/* Loop over array */
@@ -3936,7 +3993,7 @@ rt_private EIF_REFERENCE gscavenge(EIF_REFERENCE root)
 			return root;				/* Do nothing for expanded objects */
 	}
 
-	if (zone->ov_size & B_C)	/* Eiffel object not under GC control */
+	if ((flags & EO_STACK) || (zone->ov_size & B_C))	/* Eiffel object not under GC control */
 		return root;			/* Leave it alone */
 
 	/* Get the age of the object, update it and fill in the age table.
@@ -4055,8 +4112,8 @@ rt_private EIF_REFERENCE gscavenge(EIF_REFERENCE root)
 				/* This code is commented because not necessary. I'm leaving it there
 				 * to show that there is indeed no need to clean the extra memory because
 				 * in theory it should never be accessed. */
-				memset (new + size - LNGPAD_2, 0xFFFFFFFF , (zone->ov_size & B_SIZE) - size);
-				memcpy (new + (zone->ov_size & B_SIZE) - LNGPAD_2, root + size - LNGPAD_2, LNGPAD_2);
+				memset (new + size - RT_SPECIAL_PADDED_DATA_SIZE, 0xFFFFFFFF , (zone->ov_size & B_SIZE) - size);
+				memcpy (new + (zone->ov_size & B_SIZE) - RT_SPECIAL_PADDED_DATA_SIZE, root + size - RT_SPECIAL_PADDED_DATA_SIZE, RT_SPECIAL_PADDED_DATA_SIZE);
 			}
 
 #ifdef DEBUG
@@ -4148,8 +4205,10 @@ rt_private void update_moved_set(void)
 				if (zone->ov_size & B_FWD) {		/* Object forwarded? */
 					zone = HEADER(zone->ov_fwd);	/* Look at fwd object */
 					if (zone->ov_flags & EO_NEW)	/* It's a new one */
+							/* FIXME: Manu 2009/04/29: Code is not safe if `epush' returns -1. */
 						epush(&new_stack, (EIF_REFERENCE)(zone+1));	/* Update reference */
 				} else if (EO_MOVED == (zone->ov_flags & EO_MOVED))
+						/* FIXME: Manu 2009/04/29: Code is not safe if `epush' returns -1. */
 					epush(&new_stack, (EIF_REFERENCE)(zone+1));	/* Remain as is */
 			}
 		}
@@ -4167,6 +4226,7 @@ rt_private void update_moved_set(void)
 				flags = zone->ov_flags;			/* Get Eiffel flags */
 				if (flags & EO_MARK) {			/* Object is alive? */
 					if (flags & EO_NEW) {				/* Not tenrured */
+							/* FIXME: Manu 2009/04/29: Code is not safe if `epush' returns -1. */
 						epush(&new_stack, (EIF_REFERENCE)(zone+1));		/* Remains "as is" */
 						zone->ov_flags &= ~EO_MARK;		/* Unmark object */
 					} else if (!(flags & EO_REM))		/* Not remembered */
@@ -4187,6 +4247,7 @@ rt_private void update_moved_set(void)
 			for (; i > 0; i--, obj++) {			/* Stack viewed as an array */
 				zone = HEADER(*obj);			/* Referenced object */
 				if (EO_MOVED == (zone->ov_flags & EO_MOVED))
+						/* FIXME: Manu 2009/04/29: Code is not safe if `epush' returns -1. */
 					epush(&new_stack,(EIF_REFERENCE)(zone+1));	/* Remains "as is" */
 			}
 		}
@@ -4303,6 +4364,7 @@ rt_private void update_rem_set(void)
 			 */
 
 			if (refers_new_object(current))	/* Object deserves remembering? */
+					/* FIXME: Manu 2009/04/29: Code is not safe if `epush' returns -1. */
 				epush(&new_stack, current);	/* Save it for posterity */
 			else
 				HEADER(current)->ov_flags &= ~EO_REM;	/* Not remembered */
@@ -4414,8 +4476,7 @@ rt_private void update_memory_set (void)
 			 * dispose routine on it and remove it from the stack. 
 			 */
 
-			if (zone->ov_size & B_FWD)	/* Object survived GS collection. */
-			{
+			if (zone->ov_size & B_FWD) {	/* Object survived GS collection. */
 				current = zone->ov_fwd;		/* Update entry. */
 
 				CHECK ("Has dispose routine", Disp_rout (Dtype (HEADER (current) + 1)));
@@ -4423,10 +4484,10 @@ rt_private void update_memory_set (void)
 
 				if (!(HEADER (current)->ov_flags & (EO_OLD | EO_NEW)))
 										/* Forwarded object is still in GSZ. */
+						/* FIXME: Manu 2009/04/29: Code is not safe if `epush' returns -1. */
 					epush(&new_stack, current);		/* Save it in the stack. */
-			}
-			else 									/* Object is dead. */
-			{										/* Call dispose routine.*/
+			} else {
+					/* Object is dead, we call dispose routine.*/
 				CHECK ("Objects not in GSZ", !(zone->ov_flags & (EO_OLD | EO_NEW | EO_MARK | EO_SPEC)));	
 
 				dtype = zone->ov_dtype;	/* Need it for dispose.	*/ 
@@ -4502,11 +4563,9 @@ rt_shared int refers_new_object(register EIF_REFERENCE object)
 	size = REFSIZ;
 	flags = HEADER(object)->ov_flags;	/* Fetch Eiffel flags */
 	if (flags & EO_SPEC) {				/* Special object */
-		EIF_REFERENCE o_ref;
 		if (!(flags & EO_REF))			/* (see hybrid_mark() for details) */
 			return 0;					/* No references at all */
-		o_ref = RT_SPECIAL_INFO(object);
-		refs = RT_SPECIAL_COUNT_WITH_INFO(o_ref);
+		refs = RT_SPECIAL_COUNT(object);
 		if (flags & EO_TUPLE) {
 			EIF_TYPED_VALUE *l_item = (EIF_TYPED_VALUE *) object;
 			l_item ++;
@@ -4524,7 +4583,7 @@ rt_shared int refers_new_object(register EIF_REFERENCE object)
 				/* Job is now done */
 			return 0;
 		} else if (flags & EO_COMP) {			/* Composite object = has expandeds */
-			size = RT_SPECIAL_ELEM_SIZE_WITH_INFO(o_ref);
+			size = RT_SPECIAL_ELEM_SIZE(object);
 			object += OVERHEAD;
 				/* Recurse here on each element.
 				 * The loop for normal objects cannot be used
@@ -4874,16 +4933,14 @@ rt_public ONCE_INDEX once_index (BODY_INDEX code_id)
 {
 	BODY_INDEX * p = EIF_once_indexes;
 	ONCE_INDEX i = 0;
-	while (1)
-	{
+	int done = 0;
+	while (!done) {
 		BODY_INDEX index = p [i];
 		if (index == code_id) {
 				/* Once routine with this `code_id' is found. */
 				/* Use it. */
 			break;
-		}
-		else if (index == 0)
-		{
+		} else if (index == 0) {
 				/* Once routine with this `code_id' is not found. */
 				/* Add it. */
 			p [i] = code_id;
@@ -4910,16 +4967,14 @@ rt_public ONCE_INDEX process_once_index (BODY_INDEX code_id)
 {
 	BODY_INDEX * p = EIF_process_once_indexes;
 	ONCE_INDEX i = 0;
-	while (1)
-	{
+	int done = 0;
+	while (!done) {
 		BODY_INDEX index = p [i];
 		if (index == code_id) {
 				/* Once routine with this `code_id' is found. */
 				/* Use it. */
 			break;
-		}
-		else if (index == 0)
-		{
+		} else if (index == 0) {
 				/* Once routine with this `code_id' is not found. */
 				/* Add it. */
 			p [i] = code_id;
