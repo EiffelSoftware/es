@@ -1953,8 +1953,33 @@ feature -- Predicate evaluation
 			a_predicate_attached: a_predicate /= Void
 			a_arguments_attached: a_arguments /= Void
 			a_arguments_valid: a_arguments.count = a_predicate.arity
+		local
+			l_arguments: ARRAY [ITP_VARIABLE]
 		do
-			to_implement ("To implement")
+			l_arguments := variable_from_index (a_arguments)
+			predicate_pool.update_predicate_valuation (a_predicate, l_arguments, a_result)
+		end
+
+	variable_from_index (a_indexes: LIST [INTEGER]): ARRAY [ITP_VARIABLE] is
+			-- Variables from object indexes
+		require
+			a_indexes_attached: a_indexes /= Void
+		local
+			i: INTEGER
+		do
+			create Result.make (1, a_indexes.count)
+			from
+				i := 1
+				a_indexes.start
+			until
+				a_indexes.after
+			loop
+				Result.put (create {ITP_VARIABLE}.make (a_indexes.item), i)
+				i := i + 1
+				a_indexes.forth
+			end
+		ensure
+			result_attached: Result /= Void
 		end
 
 feature -- Object State Exploration

@@ -65,8 +65,8 @@ feature -- Status
 			Result := interpreter.is_running and interpreter.is_ready and not steps_completed
 		end
 
-	has_precondition: BOOLEAN
-			-- Does `feature_to_call' have precondition?
+--	has_precondition: BOOLEAN
+--			-- Does `feature_to_call' have precondition?
 
 feature -- Access
 
@@ -116,7 +116,6 @@ feature -- Change
 			class_has_feature: has_feature (a_type.associated_class, a_feature)
 		do
 			feature_to_call := a_feature
-			has_precondition := not precondition_of_feature (feature_to_call, feature_to_call.written_class).is_empty
 			type := a_type
 		ensure
 			feature_set: feature_to_call = a_feature
@@ -169,42 +168,16 @@ feature -- Execution
 				argument_creator.step
 			elseif feature_caller /= Void and then feature_caller.has_next_step then
 				feature_caller.step
---			elseif has_precondition and then precondition_evaluator = Void then
---					create_precondition_evaluator
---			elseif has_precondition and then precondition_evaluator /= Void and then precondition_evaluator.has_next_step then
---				precondition_evaluator.step
+			elseif precondition_evaluator = Void then
+					create_precondition_evaluator
+			elseif precondition_evaluator /= Void and then precondition_evaluator.has_next_step then
+				precondition_evaluator.step
 			else
 				if not target_creator.has_error then
---					if not has_precondition then
-						if argument_creator /= Void and then argument_creator.receivers /= Void then
-							arguments := argument_creator.receivers
-						else
-							create {DS_LINKED_LIST [ITP_EXPRESSION]} arguments.make
-						end
+					if precondition_evaluator.is_last_precondition_evaluation_satisfied then
+						set_target_and_argument_after_precondition_evaluation
 						l_call := True
---					elseif precondition_evaluator.is_precondition_satisfied then
---						create {DS_LINKED_LIST [ITP_EXPRESSION]} arguments.make_from_array (precondition_evaluator.variables)
---						target ?= arguments.first
---						arguments.start
---						arguments.remove_at
---						recheck_type_and_feature
---						l_call := True
---					end
-
---						-- Log precondition evaluation statistics.
---					if
---						interpreter.configuration.is_precondition_checking_enabled and then
---						precondition_evaluator /= Void
---					then
---						interpreter.log_precondition_evaluation (
---							type,
---							feature_to_call,
---							precondition_evaluator.tried_count,
---							precondition_evaluator.worst_case_search_count,
---							precondition_evaluator.start_time,
---							precondition_evaluator.end_time,
---							precondition_evaluator.is_precondition_satisfied)
---					end
+					end
 
 					if l_call and then arguments.count = feature_to_call.argument_count then
 						invoke
@@ -361,7 +334,6 @@ feature {NONE} -- Implementation
 			if count > 0 then
 				i := (random.item  \\ count) + 1
 				feature_to_call := l_feature_table.item (class_).item (i)
-				has_precondition := not precondition_of_feature (feature_to_call, feature_to_call.written_class).is_empty
 			else
 				steps_completed := True
 			end
@@ -441,10 +413,8 @@ feature {NONE} -- Implementation
 
 feature -- Precondition evaluation
 
-	precondition_evaluator: AUT_PRECONDITION_EVALUATION_TASK
+	precondition_evaluator: AUT_PRECONDITION_SATISFACTION_TASK
 			-- Precondition evaluator
-
-	precondition_satisfaction_evaluator: AUT_PRECONDITION_SATISFACTION_TASK
 
 	create_precondition_evaluator is
 			-- Create `precondition_evaluator'.
@@ -458,6 +428,31 @@ feature -- Precondition evaluation
 			end
 			create precondition_evaluator.make (create {AUT_FEATURE_OF_TYPE}.make (feature_to_call, type), l_vars, interpreter)
 			precondition_evaluator.start
+		end
+
+
+	set_target_and_argument_after_precondition_evaluation is
+			-- Set `target' and `arguments' after precondition evaluation.
+		do
+			create {DS_LINKED_LIST [ITP_EXPRESSION]} arguments.make_from_array (precondition_evaluator.last_evaluated_variables)
+			target ?= arguments.first
+			arguments.start
+			arguments.remove_at
+			recheck_type_and_feature
+--						-- Log precondition evaluation statistics.
+--					if
+--						interpreter.configuration.is_precondition_checking_enabled and then
+--						precondition_evaluator /= Void
+--					then
+--						interpreter.log_precondition_evaluation (
+--							type,
+--							feature_to_call,
+--							precondition_evaluator.tried_count,
+--							precondition_evaluator.worst_case_search_count,
+--							precondition_evaluator.start_time,
+--							precondition_evaluator.end_time,
+--							precondition_evaluator.is_precondition_satisfied)
+--					end
 		end
 
 invariant

@@ -96,7 +96,18 @@ feature -- Access
 	end_time: INTEGER
 			-- End time (in millisecond) when current precondition evauation ends.
 
+	constraint: AUT_PREDICATE_CONSTRAINT
+			-- Constraint for argument mapping
+
 feature -- Status report
+
+	has_precondition: BOOLEAN is
+			-- Does `feature_' have precondition?
+		do
+			Result := has_normal_precondition or has_linear_solvable_precondition
+		ensure
+			good_result: Result = has_normal_precondition or has_linear_solvable_precondition
+		end
 
 	has_normal_precondition: BOOLEAN is
 			-- Does `feature_' have normal precondition?
@@ -110,7 +121,7 @@ feature -- Status report
 			Result := not linear_solvable_preconditions.is_empty
 		end
 
-	last_precondition_evaluation_satisfied: BOOLEAN
+	is_last_precondition_evaluation_satisfied: BOOLEAN
 			-- Does `last_evaluated_variables' satisfy the precondition of `feature_'?
 
 feature -- Status
@@ -149,12 +160,12 @@ feature -- Execution
 		do
 			set_start_time (interpreter.duration_until_now.millisecond_count)
 
-			if interpreter.configuration.is_precondition_checking_enabled then
+			if interpreter.configuration.is_precondition_checking_enabled and then has_precondition then
 
 					-- Evaluate precondition satisfaction on `initial_variables'.
 				evaluate_precondition (initial_variables)
 
-				if last_precondition_evaluation_satisfied then
+				if is_last_precondition_evaluation_satisfied then
 						-- The initial assigned variables satisfy the precondition of `feature_'.					
 					steps_completed := True
 					set_end_time (interpreter.duration_until_now.millisecond_count)
@@ -164,6 +175,9 @@ feature -- Execution
 					load_candidates
 				end
 			else
+					-- If no precondition evaluation is enabled, we assume that `initial_variables'
+					-- satisfy the precondition.
+				is_last_precondition_evaluation_satisfied := True
 				steps_completed := True
 				last_evaluated_variables := initial_variables
 				set_end_time (interpreter.duration_until_now.millisecond_count)
@@ -195,8 +209,8 @@ feature -- Execution
 				end
 
 				if l_satisfied then
-					last_precondition_evaluation_satisfied := not last_evaluated_variables.has (Void)
-					steps_completed := last_precondition_evaluation_satisfied
+					is_last_precondition_evaluation_satisfied := not last_evaluated_variables.has (Void)
+					steps_completed := is_last_precondition_evaluation_satisfied
 				end
 			end
 
@@ -219,15 +233,22 @@ feature{NONE} -- Implementation
 
 	load_candidates is
 			-- Load candidate variables satisfying preconditions of `feature_'
-			-- into `candidate_queue'.
+			-- into `candidate_variables'.
+		require
+			precondition_to_be_evaluated: interpreter.configuration.is_precondition_checking_enabled
+		local
+			l_list: DS_LINKED_LIST [like initial_variables]
 		do
-				-- Every candidate in `candidate_queue' should contain all variables needed to call `feature_',
-				-- except for linearly constrained variables.			
+				-- Every candidate in `candidate_variables' should contain all variables needed to call `feature_',
+				-- except for linearly constrained variables.
+			l_list := predicate_pool.candidates (constraint, 5)
+			create candidate_variables.make (l_list.count)
+			candidate_variables.append_last (l_list)
 		end
 
 	evaluate_precondition (a_variables: like initial_variables) is
 			-- Evalute precondition of `feature_' on `a_variables'.
-			-- Set `last_precondition_evaluation_satisfied',
+			-- Set `is_last_precondition_evaluation_satisfied',
 			-- and put variable that satisfied the precondition into
 			-- `last_evaluated_variables'.
 		require
@@ -240,6 +261,7 @@ feature{NONE} -- Implementation
 				-- Evaluate normal preconditions using predicate pool
 			if has_normal_precondition then
 				-- Check if `a_variables' satisfy `normal_preconditions'.
+				l_satisfied := predicate_pool.is_candidate_satisfied (constraint, last_evaluated_variables)
 			end
 
 				-- Check if linearly solvable arguments has solutions.
@@ -251,7 +273,7 @@ feature{NONE} -- Implementation
 
 				-- Check if all arguments are assigned.
 			if l_satisfied then
-				last_precondition_evaluation_satisfied := not last_evaluated_variables.has (Void)
+				is_last_precondition_evaluation_satisfied := not last_evaluated_variables.has (Void)
 			end
 		end
 
@@ -268,7 +290,7 @@ feature{NONE} -- Implementation
 			create access_pattern.make (5)
 			access_pattern.set_key_equality_tester (predicate_equality_tester)
 
-			if preconditions_of_feature.has (feature_) then
+			if interpreter.configuration.is_precondition_checking_enabled and then preconditions_of_feature.has (feature_) then
 				from
 					l_cursor := preconditions_of_feature.item (feature_).new_cursor
 					l_cursor.start
@@ -288,6 +310,7 @@ feature{NONE} -- Implementation
 				end
 
 				precondition_access_pattern.item (feature_).do_all (agent (a: AUT_PREDICATE_ACCESS_PATTERN) do access_pattern.put_last (a, a.predicate) end)
+				create constraint.make_with_precondition (feature_, normal_preconditions)
 			end
 		ensure
 			normal_preconditions_attached: normal_preconditions /= Void

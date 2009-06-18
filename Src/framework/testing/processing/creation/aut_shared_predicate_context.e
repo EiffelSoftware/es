@@ -128,6 +128,14 @@ feature -- Access
 			create Result.put (Void)
 		end
 
+	predicate_pool: AUT_PREDICATE_POOL is
+			-- Predicate pool
+		once
+			create Result
+		ensure
+			result_attached: Result /= Void
+		end
+
 feature -- Basic operations
 
 	put_predicate (a_predicate: AUT_PREDICATE) is
