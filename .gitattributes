@@ -3090,6 +3090,7 @@ eweasel/doc/notes-5.0.001 -text
 eweasel/doc/output-5.0.001 -text
 eweasel/doc/proposed.doc -text
 eweasel/doc/summary.doc -text
+eweasel/results/classic/iphone-arm -text
 eweasel/source/gui/build_project.bpr -text
 eweasel/source/gui/readme.txt -text
 eweasel/source/gui/system_interface.xml -text
@@ -3115,6 +3116,7 @@ eweasel/tests/attach042/Ace -text
 eweasel/tests/attach043/Ace -text
 eweasel/tests/attach051/Ace -text
 eweasel/tests/attach052/Ace -text
+eweasel/tests/attach064/Ace -text
 eweasel/tests/ccomp001/notes -text
 eweasel/tests/ccomp002/notes -text
 eweasel/tests/ccomp003/notes -text
@@ -3903,6 +3905,7 @@ eweasel/tests/melt070/test.e-rev1 -text
 eweasel/tests/melt071/notes -text
 eweasel/tests/melt072/notes -text
 eweasel/tests/melt073/notes -text
+eweasel/tests/melt091/Ace -text
 eweasel/tests/replication002/Ace -text
 eweasel/tests/store001/notes -text
 eweasel/tests/store002/bad_file -text
@@ -4104,6 +4107,7 @@ eweasel/tests/term134/notes -text
 eweasel/tests/term137/notes -text
 eweasel/tests/term163/Ace -text
 eweasel/tests/thread002/Ace -text
+eweasel/tests/thread010/Ace -text
 eweasel/tests/valid001/notes -text
 eweasel/tests/valid002/notes -text
 eweasel/tests/valid003/notes -text

@@ -1,4 +1,4 @@
-indexing
+note
 	description: "[
 					Inherit this class to replace old eweasel test control file (tcf)
 																							]"
@@ -20,13 +20,13 @@ create
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Creation method
 		do
 			create instructions.make
 		end
 
-	init_command (a_test_instruction: EW_TEST_INSTRUCTION; a_name: STRING; a_argument: STRING) is
+	init_command (a_test_instruction: EW_TEST_INSTRUCTION; a_name: STRING; a_argument: STRING)
 			-- Initialize `a_test_instruction'
 		require
 			not_void: a_test_instruction /= Void
@@ -41,7 +41,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Implementation
 
-	execute_inst (a_inst: EW_TEST_INSTRUCTION) is
+	execute_inst (a_inst: EW_TEST_INSTRUCTION)
 			-- Modified base on {EW_EIFFEL_EWEASEL_TEST}.execute
 		require
 			not_void: a_inst /= Void
@@ -81,7 +81,7 @@ feature {NONE} -- Implementation
 
 feature -- Command
 
-	Abort_compile is
+	Abort_compile
 			--	Abort a suspended Eiffel compilation so that another
 			--	compilation can be started from scratch.  There can be at most
 			--	one Eiffel compilation in progress at a time.  This
@@ -95,7 +95,7 @@ feature -- Command
 			execute_inst (l_inst)
 		end
 
-	Ace is
+	Ace
 			-- Ace command
 		local
 			l_inst: EW_TEST_INSTRUCTION
@@ -370,6 +370,20 @@ feature -- Command
 		do
 			l_inst := test_command_table.item (Copy_bin_keyword)
 			init_command (l_inst, "copy_bin", a_source_file + " " + a_dest_directory + " " + a_dest_file)
+			execute_inst (l_inst)
+		end
+
+	Copy_file (a_source_file, a_dest_directory, a_dest_file: STRING)
+			--	Similar to `copy_bin' except that it lets you copy file from anywhere to anywhere.
+		require
+			not_void: a_source_file /= Void
+			not_void: a_dest_directory /= Void
+			not_void: a_dest_file /= Void
+		local
+			l_inst: EW_TEST_INSTRUCTION
+		do
+			l_inst := test_command_table.item (Copy_file_keyword)
+			init_command (l_inst, "copy_file", a_source_file + " " + a_dest_directory + " " + a_dest_file)
 			execute_inst (l_inst)
 		end
 
@@ -853,7 +867,7 @@ feature -- Query
 	instructions: LINKED_LIST [EW_TEST_INSTRUCTION]
 			-- All instructions
 
-;indexing
+;note
 	copyright: "[
 			Copyright (c) 1984-2007, University of Southern California and contributors.
 			All rights reserved.
