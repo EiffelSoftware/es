@@ -1,41 +1,44 @@
 indexing
-	description: "Summary description for {PROOF_ASSISTANT_TOOL}."
+	description: "Summary description for {ES_PROOF_ASSISTANT_TOOL_PANEL}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-
 class
-	PROOF_ASSISTANT_TOOL
+	ES_PROOF_ASSISTANT_TOOL_PANEL
 
 inherit
-	EV_FRAME
+
+	ES_DOCKABLE_STONABLE_TOOL_PANEL [EV_TEXT]
 
 create
 	make
 
-feature -- Creation
+feature
 
-	make (proof_assistant_tool_panel: ES_PROOF_ASSISTANT_TOOL_PANEL; develop_window: EB_DEVELOPMENT_WINDOW) is
-			-- Initialize GUI.
+	create_widget: EV_TEXT
 		do
-			default_create
-			create output_log
-			extend (output_log)
-			proof_assistant_tool_panel.setup_drop_action (output_log.drop_actions)
+			create Result
 		end
 
-	drop_class (cst: !CLASSC_STONE)
+	build_tool_interface (root_widget: EV_TEXT)
 		do
-			output_log.set_text ("")
-			output_log.append_text ("Class " + cst.class_name + " dropped!")
-			--feature_formatter.set_stone (cst)
-			--feature_formatter.format
+			propagate_drop_actions (Void)
 		end
 
-feature {NONE} -- Implementation
+	create_tool_bar_items: ?DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+		do
+			Result := Void
+		end
 
-	output_log: EV_TEXT
+feature {NONE}
+
+	on_stone_changed (a_old_stone: ?like stone)
+		do
+			if {st: !CLASSC_STONE} stone then
+				user_widget.append_text (st.class_name)
+			end
+		end
 
 ;indexing
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

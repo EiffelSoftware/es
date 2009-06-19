@@ -9,7 +9,7 @@ class
 	ES_PROOF_ASSISTANT_TOOL
 
 inherit
-	ES_TOOL [ES_PROOF_ASSISTANT_TOOL_PANEL]
+	ES_STONABLE_TOOL [ES_PROOF_ASSISTANT_TOOL_PANEL]
 
 create {NONE}
 	default_create
@@ -43,6 +43,11 @@ feature {NONE} -- Factory
 			-- Creates the tool for first use on the development `window'
 		do
 			create Result.make (window, Current)
+		end
+
+	internal_is_stone_usable (a_stone: !like stone): BOOLEAN
+		do
+			Result := {st: !CLASSC_STONE} a_stone and then st.is_storable
 		end
 
 indexing
