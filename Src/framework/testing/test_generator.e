@@ -849,7 +849,6 @@ feature -- Precondition satisfaction
 	find_types_under_test is
 			-- Find types under test and add them into `configuration'.`types_under_test'.
 		do
-			fixme ("The creation of a strategy here is just to get the types under test. Remove it if when we can get the types before `compile_project'. 17.06.2009 Jasonw")
 			configuration.set_types_under_test (types_under_test (session.options.class_names, system.root_type.associated_class))
 		end
 
@@ -866,6 +865,9 @@ feature -- Precondition satisfaction
 
 					-- Find out relevant predicates for every feature in `features_under_test'.
 				find_relevant_predicates
+
+					-- Setup predicate pool.	
+				predicate_pool.setup_predicates (predicates)
 			end
 		end
 

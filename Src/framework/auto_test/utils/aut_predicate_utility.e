@@ -56,6 +56,14 @@ feature -- Access
 			create Result.make (agent (a, b: STRING): BOOLEAN do Result := a.is_equal (b) end)
 		end
 
+	hashable_variable_array_equality_tester: AGENT_BASED_EQUALITY_TESTER [AUT_HASHABLE_ITP_VARIABLE_ARRAY] is
+			-- Equality for hashable variable array
+		do
+			create Result.make (agent (a, b: AUT_HASHABLE_ITP_VARIABLE_ARRAY): BOOLEAN do Result := a.is_equal (b) end)
+		end
+
+feature -- Access
+
 	sovled_linear_model_loader: AUT_SOLVED_LINEAR_MODEL_LOADER is
 			-- Loader of a solved linear model
 		do

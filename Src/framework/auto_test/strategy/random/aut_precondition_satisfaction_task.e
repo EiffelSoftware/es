@@ -231,6 +231,10 @@ feature{NONE} -- Implementation
 	untried_candidate_count: INTEGER
 			-- Number of candidates that have not been tried in `candidate_variables'.
 
+	to_be_retrieved_candidate_count: INTEGER is 100
+			-- Max number of candidates that are to be retrieved.
+			-- The actual retrieved candidates can be fewer than this.
+
 	load_candidates is
 			-- Load candidate variables satisfying preconditions of `feature_'
 			-- into `candidate_variables'.
@@ -241,7 +245,7 @@ feature{NONE} -- Implementation
 		do
 				-- Every candidate in `candidate_variables' should contain all variables needed to call `feature_',
 				-- except for linearly constrained variables.
-			l_list := predicate_pool.candidates (constraint, 5)
+			l_list := predicate_pool.candidates (constraint, to_be_retrieved_candidate_count)
 			create candidate_variables.make (l_list.count)
 			candidate_variables.append_last (l_list)
 		end

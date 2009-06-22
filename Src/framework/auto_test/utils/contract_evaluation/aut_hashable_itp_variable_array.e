@@ -22,6 +22,7 @@ feature -- Initialization
 			-- Initialize with a twin of `a'.
 		require
 			a_array_attached: a_array /= Void
+			index_of_a_array_is_valid: a_array.lower = 1
 			a_array_valid: not a_array.has (Void)
 		do
 			internal_variables_array := a_array.twin
@@ -48,6 +49,24 @@ feature -- Access
 			-- DO NOT MODIFY THE RETURNED ARRAY, will invalidate hash_code
 		do
 			Result := internal_variables_array
+		end
+
+	count: INTEGER is
+			-- Number of variables in Current
+		do
+			Result := internal_variables_array.count
+		ensure
+			good_result: Result = internal_variables_array.count
+		end
+
+	item (i: INTEGER): ITP_VARIABLE is
+			-- Variable at `i'-th position
+		require
+			i_valid: i > 0 and then i <= count
+		do
+			Result := internal_variables_array.item (i)
+		ensure
+			result_attached: Result /= Void
 		end
 
 feature -- Comparison

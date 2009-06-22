@@ -54,6 +54,39 @@ feature -- Access
 	distinct_argument_count: INTEGER
 			-- Number of different arguments
 
+	index_of_predicate_argument (a_predicate: AUT_PREDICATE; a_predicate_argument_index: INTEGER): INTEGER is
+			-- 0-based feature call index of argument in 1-based position `a_predicate_argument_index' in `a_predicate'
+		require
+			a_predicate_attached: a_predicate /= Void
+			a_predicate_in_current: has_predicate (a_predicate)
+			a_predicate_argument_index_valid: a_predicate_argument_index >= 1 and then a_predicate_argument_index <= a_predicate.arity
+		do
+			Result := argument_mapping.item (a_predicate).item (a_predicate_argument_index)
+		ensure
+			good_result: Result = argument_mapping.item (a_predicate).item (a_predicate_argument_index)
+		end
+
+	associated_predicates: DS_LINKED_LIST [AUT_PREDICATE] is
+			-- Predicates associated in `argument_mapping'.
+		do
+			create Result.make_from_linear (argument_mapping.keys)
+		ensure
+			result_attached: Result /= Void
+			good_result: argument_mapping.keys.for_all (agent Result.has)
+		end
+
+feature -- Status report
+
+	has_predicate (a_predicate: AUT_PREDICATE): BOOLEAN is
+			-- Is `a_predicate' contained in current constraint?
+		require
+			a_predicate_attached: a_predicate /= Void
+		do
+			Result := argument_mapping.has (a_predicate)
+		ensure
+			good_result: Result = argument_mapping.has (a_predicate)
+		end
+
 feature{NONE} -- Implementation
 
 	table_with_value_key_swapped (a_table: DS_HASH_TABLE [INTEGER, INTEGER]): like a_table is

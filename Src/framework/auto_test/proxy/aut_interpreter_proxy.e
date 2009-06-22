@@ -1956,11 +1956,11 @@ feature -- Predicate evaluation
 		local
 			l_arguments: ARRAY [ITP_VARIABLE]
 		do
-			l_arguments := variable_from_index (a_arguments)
+			l_arguments := variables_from_indexes (a_arguments)
 			predicate_pool.update_predicate_valuation (a_predicate, l_arguments, a_result)
 		end
 
-	variable_from_index (a_indexes: LIST [INTEGER]): ARRAY [ITP_VARIABLE] is
+	variables_from_indexes (a_indexes: LIST [INTEGER]): ARRAY [ITP_VARIABLE] is
 			-- Variables from object indexes
 		require
 			a_indexes_attached: a_indexes /= Void

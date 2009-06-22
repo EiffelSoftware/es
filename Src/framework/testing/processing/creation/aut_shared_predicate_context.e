@@ -131,7 +131,7 @@ feature -- Access
 	predicate_pool: AUT_PREDICATE_POOL is
 			-- Predicate pool
 		once
-			create Result
+			create Result.make
 		ensure
 			result_attached: Result /= Void
 		end

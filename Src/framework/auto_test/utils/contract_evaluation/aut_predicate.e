@@ -80,9 +80,11 @@ feature -- Access
 	hash_code: INTEGER
 			-- Hash code value
 		do
-			Result := text.hash_code
-		ensure then
-			good_result: Result = text.hash_code
+			Result := internal_hash_code
+			if internal_hash_code = 0 then
+				internal_hash_code := (context_class.name_in_upper + text).hash_code
+				Result := internal_hash_code
+			end
 		end
 
 feature -- Equality
@@ -131,6 +133,30 @@ feature -- Status report
 		deferred
 		end
 
+	is_nullary: BOOLEAN is
+			-- Does current predicate have no argument?
+		do
+			Result := arity = 0
+		ensure
+			good_result: Result = (arity = 0)
+		end
+
+	is_unary: BOOLEAN is
+			-- Is current a unary predicate?
+		do
+			Result := arity = 1
+		ensure
+			good_result: Result = (arity = 1)
+		end
+
+	is_binary: BOOLEAN is
+			-- Is Current a binary predicate?
+		do
+			Result := arity = 2
+		ensure
+			good_result: Result = (arity = 2)
+		end
+
 feature -- Setting
 
 	set_id (a_id: like id)
@@ -147,6 +173,9 @@ feature{NONE} -- Implementation
 
 	context_class_internal: like context_class
 			-- Storage for `context_class'
+
+	internal_hash_code: like hash_code
+		-- Cache `hash_code'
 
 invariant
 	id_positive: id > 0
