@@ -187,6 +187,20 @@ feature -- Basic operations
 			precondition_access_pattern.force_last (a_access_patterns.twin, a_feature)
 		end
 
+	put_precondition_of_feature (a_feature: AUT_FEATURE_OF_TYPE; a_preconditions: DS_LINKED_LIST [AUT_PREDICATE]) is
+			-- Put `a_preconditions' into `preconditions_of_feature' for `a_feature'.
+		require
+			a_feature_attached: a_feature /= Void
+			a_preconditions_attached: a_preconditions /= Void
+		local
+			l_set: DS_HASH_SET [AUT_PREDICATE]
+		do
+			create l_set.make (a_preconditions.count)
+			l_set.set_equality_tester (predicate_equality_tester)
+			a_preconditions.do_all (agent l_set.force_last)
+			preconditions_of_feature.force_last (l_set, a_feature)
+		end
+
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

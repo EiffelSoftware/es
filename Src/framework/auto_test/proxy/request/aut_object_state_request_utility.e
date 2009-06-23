@@ -83,9 +83,8 @@ feature -- Access
 			a_feature_name_attached: a_feature_name /= Void
 			a_written_class_attached: a_written_class /= Void
 			a_context_class_attached: a_context_class /= Void
-			a_feature_exists: a_written_class.feature_named (a_feature_name) /= Void
 		local
-			l_feature: FEATURE_I
+			l_feature: detachable FEATURE_I
 		do
 			l_feature := a_written_class.feature_named (a_feature_name)
 			if l_feature /= Void then

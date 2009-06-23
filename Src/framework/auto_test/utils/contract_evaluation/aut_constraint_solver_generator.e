@@ -299,7 +299,7 @@ feature{NONE} -- Generation
 				l_feature := a_feature
 				l_arg_count := l_feature.argument_count
 			until
-				l_round <= 2 or else Result > 0
+				l_round > 2 or else Result > 0
 			loop
 				from
 					i := 1

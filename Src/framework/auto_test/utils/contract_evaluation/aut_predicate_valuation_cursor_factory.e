@@ -27,6 +27,8 @@ feature -- Basic operation
 			a_partial_candidate_valid: a_partial_candidate.lower = 0 and then a_partial_candidate.count = a_constraint.distinct_argument_count
 			a_valuation_valid: a_constraint.has_predicate (a_valuation.predicate)
 		do
+			constraint := a_constraint
+			partial_candidate := a_partial_candidate
 			a_valuation.process (Current)
 		ensure
 			last_cursor_generated: last_cursor /= void

@@ -72,7 +72,6 @@ feature {NONE} -- Initialization
 				die (1)
 			end
 
-
 				-- Initialize precondition table.
 			initialize_precondition_table
 
@@ -501,7 +500,7 @@ feature {NONE} -- Parsing
 						report_precondition_evaluation_request
 
 					when predicate_evaluation_request_flag then
-						report_predicate_evaluate_requrest
+						report_predicate_evaluate_request
 
 					when quit_request_flag then
 						report_quit_request
@@ -619,6 +618,7 @@ feature {NONE} -- Byte code
 				if not has_error then
 					parse
 				end
+				has_error := False
 			end
 		end
 
@@ -675,7 +675,6 @@ feature{NONE} -- Object state checking
 				else
 					last_response := [Void, output_buffer, error_buffer]
 				end
-				log_message ("Pre: " + (l_result /= Void).out + "%N")
 				refresh_last_response_flag
 				send_response_to_socket
 			else
@@ -1040,7 +1039,7 @@ feature -- Predicate evaluation
 			retry
 		end
 
-	report_predicate_evaluate_requrest is
+	report_predicate_evaluate_request is
 			-- Report a predicate evaluation request.
 		local
 			l_checking: BOOLEAN
@@ -1079,8 +1078,12 @@ feature -- Predicate evaluation
 --						(l_arity > 0 implies l_objects.count \\ l_arity = 0) and then
 --						(l_arity = 0 implies l_objects.count = 0)
 --					end
-					create l_pred_response.make (l_count)
 					l_args := l_argument_holder.item (l_arity)
+					if l_arity = 0 then
+						create l_pred_response.make (1)
+					else
+						create l_pred_response.make (l_count // l_arity)
+					end
 					j := 0
 					if l_arity = 0 then
 						l_pred_response.put (evaluated_predicate_result (l_pred_id, l_args), j)
@@ -1111,7 +1114,7 @@ feature -- Predicate evaluation
 				send_response_to_socket
 			else
 				report_error (invalid_predicate_evaluation_request)
-				last_response := [Void, output_buffer, error_buffer]
+				report_error (last_request.generating_type)
 				refresh_last_response_flag
 				send_response_to_socket
 			end

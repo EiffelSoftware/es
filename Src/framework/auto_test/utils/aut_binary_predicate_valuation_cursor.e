@@ -15,7 +15,7 @@ inherit
 
 create
 	make
-	
+
 feature -- Status report
 
 	after: BOOLEAN
@@ -36,9 +36,10 @@ feature -- Cursor movement
 			l_mapping: DS_HASH_TABLE [INTEGER, INTEGER]
 			l_bounded_var_tbl: DS_HASH_TABLE [DS_HASH_SET [INTEGER], INTEGER]
 		do
+			before := False
 			l_free_vars := free_variables
 			l_mapping := constraint.argument_mapping.item (container.predicate)
-			if l_free_vars.is_empty then
+			if l_free_vars.count = 2 then
 					-- Both arguments are free.
 				main_cursor := container.first_argument_table.new_cursor
 				main_cursor.start
@@ -73,7 +74,7 @@ feature -- Cursor movement
 				after := True
 			else
 				if barrel_cursor /= Void then
-					if barrel_cursor.after then
+					if barrel_cursor.is_last then
 						if main_cursor = Void then
 							after := True
 						else
@@ -98,26 +99,25 @@ feature -- Basic operations
 			-- Update `candidate' with objects at the position of current cursor.
 		local
 			l_free_vars: like free_variables
-			l_bounded_var_index: INTEGER
+			l_free_var_index: INTEGER
 			l_mapping: DS_HASH_TABLE [INTEGER, INTEGER]
-			l_var_index: INTEGER
 			l_candidate: like candidate
 		do
+			l_free_vars := free_variables
 			if not l_free_vars.is_empty then
 				l_free_vars := free_variables
 				l_mapping := constraint.argument_mapping.item (container.predicate)
 				l_candidate := candidate
 				l_free_vars.start
-				if
-				l_free_vars.count = 1 then
-					l_bounded_var_index := l_candidate.item (l_mapping.item (l_free_vars.key_for_iteration)).index
-					l_candidate.put (variable_from_index (barrel_cursor.item), l_bounded_var_index)
+				if l_free_vars.count = 1 then
+					l_free_var_index := l_candidate.item (l_mapping.item (l_free_vars.key_for_iteration)).index
+					l_candidate.put (variable_from_index (barrel_cursor.item), l_free_var_index)
 				elseif l_free_vars.count = 2 then
-					l_var_index := l_candidate.item (l_mapping.item (l_free_vars.key_for_iteration)).index
-					l_candidate.put (variable_from_index (main_cursor.key), l_var_index)
+					l_free_var_index := l_mapping.item (l_free_vars.key_for_iteration)
+					l_candidate.put (variable_from_index (main_cursor.key), l_free_var_index)
 					l_free_vars.forth
-					l_var_index := l_candidate.item (l_mapping.item (l_free_vars.key_for_iteration)).index
-					l_candidate.put (variable_from_index (barrel_cursor.item), l_var_index)
+					l_free_var_index := l_mapping.item (l_free_vars.key_for_iteration)
+					l_candidate.put (variable_from_index (barrel_cursor.item), l_free_var_index)
 				end
 			end
 		end

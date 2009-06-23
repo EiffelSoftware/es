@@ -43,9 +43,9 @@ feature -- Status report
 	off: BOOLEAN is
 			-- Is there a valid position under current cursor?
 		do
-			Result := not (before or after)
+			Result := before or after
 		ensure
-			good_result: Result = not (before or after)
+			good_result: Result = (before or after)
 		end
 
 feature -- Access

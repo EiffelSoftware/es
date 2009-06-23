@@ -95,6 +95,7 @@ feature{NONE} -- Implementation
 			a_table_attached: a_table /= Void
 		do
 			to_implement ("Refactoring: consider swap the value and key in {AUT_PREDICATE_ACCESS_PATTERN}.access_pattern so we don't need current feature anymore.")
+			create Result.make (a_table.count)
 			a_table.do_all_with_key (
 				agent (v: INTEGER; k: INTEGER; tbl: DS_HASH_TABLE [INTEGER, INTEGER])
 					do

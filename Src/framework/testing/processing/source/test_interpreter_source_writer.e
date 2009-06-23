@@ -274,7 +274,7 @@ feature -- Object state retrieval
 			l_sorter: DS_TOPOLOGICAL_SORTER [CLASS_C]
 			l_sorted_classes: DS_ARRAYED_LIST [CLASS_C]
 		do
-			if configuration.is_object_state_retrieval_enabled or else configuration.is_linear_constraint_solving_enabled then
+			if configuration.is_object_state_retrieval_enabled or else configuration.is_precondition_checking_enabled then
 					-- Get the list of classes whose state should be recorded.
 				create l_processed.make (50)
 				l_processed.set_equality_tester (create {AGENT_BASED_EQUALITY_TESTER [CLASS_C]}.make (
@@ -697,31 +697,13 @@ feature -- Precondition satisfaction
 	put_precondition_checking_routine (a_feature: AUT_FEATURE_OF_TYPE) is
 			-- Generate routine to evaluate the precondition of `a_feature'.
 		local
-			l_visitor: AUT_PRECONDITION_ANALYZER
 			l_predicates: DS_ARRAYED_LIST [AUT_PREDICATE_ACCESS_PATTERN]
-			l_patterns: DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN]
 		do
-			create l_visitor.make
-			l_visitor.generate_precondition_predicates (a_feature)
-
-			if not l_visitor.last_predicates.is_empty then
-					-- Extract precondition predicates.
-				create l_predicates.make_from_linear (l_visitor.last_predicate_access_patterns)
-
+			if preconditions_of_feature.has (a_feature) then
 					-- Generate routine to check precondition of `a_feature'.
+				create l_predicates.make (5)
+				precondition_access_pattern.item (a_feature).do_all (agent l_predicates.force_last)
 				generate_precondition_checker (a_feature, l_predicates)
-
-
-					-- Setup precondition information.
-				features_with_precondition.force_last (a_feature)
-
-				if precondition_access_pattern.has (a_feature) then
-					l_patterns := precondition_access_pattern.item (a_feature)
-				else
-					create l_patterns.make
-					precondition_access_pattern.force_last (l_patterns, a_feature)
-				end
-				l_patterns.extend_last (l_predicates)
 			end
 		end
 

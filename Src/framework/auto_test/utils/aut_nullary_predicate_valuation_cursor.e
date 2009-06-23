@@ -31,6 +31,7 @@ feature -- Cursor movement
 	start is
 			-- Move cursor to first position.
 		do
+			before := False
 			after := not container.value
 		end
 

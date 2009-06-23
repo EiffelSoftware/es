@@ -108,25 +108,23 @@ feature -- Basic operations
 			a_table_attached: a_table /= Void
 		local
 			l_set: DS_HASH_SET [INTEGER]
-			l_index1: INTEGER
-			l_index2: INTEGER
 		do
 			if a_value then
-				a_table.search (l_index1)
+				a_table.search (a_index1)
 				if a_table.found then
 					l_set := a_table.found_item
 				else
 					create l_set.make (barrel_set_initial_capacity)
-					a_table.force_last (l_set, l_index1)
+					a_table.force_last (l_set, a_index1)
 				end
-				l_set.force_last (l_index2)
+				l_set.force_last (a_index2)
 			else
-				a_table.search (l_index1)
+				a_table.search (a_index1)
 				if a_table.found then
 					l_set := a_table.found_item
-					l_set.remove (l_index2)
+					l_set.remove (a_index2)
 					if l_set.is_empty then
-						a_table.remove (l_index1)
+						a_table.remove (a_index1)
 					end
 				end
 			end

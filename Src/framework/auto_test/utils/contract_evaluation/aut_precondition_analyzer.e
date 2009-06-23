@@ -362,6 +362,7 @@ feature{NONE} -- Process
 			l_text: STRING
 			l_arg_index: INTEGER
 			i: INTEGER
+			l_type: TYPE_A
 		do
 				-- Check if current assertion is linearly constraint solvable.
 			if is_linear_solvable then
@@ -389,8 +390,9 @@ feature{NONE} -- Process
 				end
 
 				if l_arg_index > 0 then
-					accessed_variables.force_last (
-						current_feature.feature_.arguments.i_th (l_arg_index).instantiation_in (current_feature.type, current_feature.associated_class.class_id), l_arg_index)
+					l_type := current_feature.feature_.arguments.i_th (l_arg_index).instantiation_in (current_feature.type, current_feature.associated_class.class_id)
+					check not l_type.actual_type.is_like end
+					accessed_variables.force_last (l_type.actual_type, l_arg_index)
 					text.append (place_holder (l_arg_index))
 				else
 					l_feat := final_feature (a_name, current_assertion.written_class, current_feature.type.associated_class)

@@ -43,6 +43,7 @@ feature -- Cursor movement
 	start is
 			-- Move cursor to first position.
 		do
+			before := False
 			storage_cursor := container.storage.new_cursor
 			forth_until_found
 		end

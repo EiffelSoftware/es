@@ -169,16 +169,24 @@ feature -- Execution
 			elseif feature_caller /= Void and then feature_caller.has_next_step then
 				feature_caller.step
 			elseif precondition_evaluator = Void then
+				if argument_creator /= Void and then (argument_creator.receivers = Void or else argument_creator.receivers.count /= feature_to_call.argument_count) then
+					cancel
+				else
 					create_precondition_evaluator
+				end
 			elseif precondition_evaluator /= Void and then precondition_evaluator.has_next_step then
 				precondition_evaluator.step
 			else
 				if not target_creator.has_error then
 					if precondition_evaluator.is_last_precondition_evaluation_satisfied then
-						set_target_and_argument_after_precondition_evaluation
+						set_target_and_arguments_from_array (precondition_evaluator.last_evaluated_variables)
+						l_call := True
+					else
+						set_target_and_argument_with_partial_candidate
+							-- We call the feature with the initially assigned target and argument anyway.
 						l_call := True
 					end
-
+					log_precondition_evaluation_overhead
 					if l_call and then arguments.count = feature_to_call.argument_count then
 						invoke
 					else
@@ -278,6 +286,7 @@ feature {NONE} -- Steps
 			list: DS_LIST [ITP_EXPRESSION]
 			normal_response: AUT_NORMAL_RESPONSE
 		do
+			io.put_string (feature_to_call.feature_name + "%N")
 			if argument_creator /= Void and then not argument_creator.receivers.is_empty then
 				list := argument_creator.receivers
 			else
@@ -430,29 +439,83 @@ feature -- Precondition evaluation
 			precondition_evaluator.start
 		end
 
-
-	set_target_and_argument_after_precondition_evaluation is
-			-- Set `target' and `arguments' after precondition evaluation.
+	log_precondition_evaluation_overhead is
+			-- Log overhead of current precondition evaluation task.
 		do
-			create {DS_LINKED_LIST [ITP_EXPRESSION]} arguments.make_from_array (precondition_evaluator.last_evaluated_variables)
+			if
+				interpreter.configuration.is_precondition_checking_enabled and then
+				precondition_evaluator /= Void and then
+				precondition_evaluator.has_precondition
+			then
+				interpreter.log_precondition_evaluation (
+					type,
+					feature_to_call,
+					precondition_evaluator.tried_count,
+					precondition_evaluator.worst_case_search_count,
+					precondition_evaluator.start_time,
+					precondition_evaluator.end_time,
+					precondition_evaluator.is_last_precondition_evaluation_satisfied)
+			end
+		end
+
+	set_target_and_arguments_from_array (a_variables: ARRAY [ITP_EXPRESSION]) is
+			-- Set `target' and `arguments' from `a_variables'.
+		require
+			a_variables_attached: a_variables /= Void
+			a_variables_index_valid: a_variables.lower = 0 and then a_variables.upper = feature_to_call.argument_count
+		do
+			create {DS_LINKED_LIST [ITP_EXPRESSION]} arguments.make_from_array (a_variables)
 			target ?= arguments.first
 			arguments.start
 			arguments.remove_at
 			recheck_type_and_feature
---						-- Log precondition evaluation statistics.
---					if
---						interpreter.configuration.is_precondition_checking_enabled and then
---						precondition_evaluator /= Void
---					then
---						interpreter.log_precondition_evaluation (
---							type,
---							feature_to_call,
---							precondition_evaluator.tried_count,
---							precondition_evaluator.worst_case_search_count,
---							precondition_evaluator.start_time,
---							precondition_evaluator.end_time,
---							precondition_evaluator.is_precondition_satisfied)
---					end
+		end
+
+	set_target_and_argument_with_partial_candidate is
+			-- Set `target' and `arguments' with `precondition_evaluator'.`partial_candidate'.		
+		local
+			i: INTEGER
+			l_upper: INTEGER
+			l_vars: ARRAY [ITP_EXPRESSION]
+			l_var_count: INTEGER
+			l_cursor: DS_LIST_CURSOR [ITP_VARIABLE]
+		do
+			l_var_count := feature_to_call.argument_count + 1
+			create l_vars.make (0, l_var_count - 1)
+			if target_creator.receivers /= Void and then not target_creator.receivers.is_empty then
+				l_vars.put (target_creator.receivers.first, 0)
+			end
+
+			if argument_creator /= Void and then argument_creator.receivers /= Void then
+				from
+					l_cursor := argument_creator.receivers.new_cursor
+					i := 1
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					l_vars.put (l_cursor.item, i)
+					i := i + 1
+					l_cursor.forth
+				end
+			end
+
+				-- Take partial candidate into account.
+			if attached {ARRAY [detachable ITP_VARIABLE]} precondition_evaluator.partial_candidate as l_partial then
+				from
+					i := l_partial.lower
+					l_upper := l_partial.upper
+				until
+					i > l_upper
+				loop
+					if attached {ITP_VARIABLE} l_partial.item (i) as l_variable then
+						l_vars.put (l_variable, i)
+					end
+					i := i + 1
+				end
+			end
+
+			set_target_and_arguments_from_array (l_vars)
 		end
 
 invariant

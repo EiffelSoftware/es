@@ -897,6 +897,7 @@ feature -- Precondition satisfaction
 					l_visitor.last_predicates.do_if (agent put_predicate, agent (a_pred: AUT_PREDICATE): BOOLEAN do Result := not predicates.has (a_pred) end (?))
 					put_predicate_access_pattern (l_feature, l_visitor.last_predicate_access_patterns)
 					put_precondition_access_pattern (l_feature, l_visitor.last_predicate_access_patterns)
+					put_precondition_of_feature (l_feature, l_visitor.last_predicates)
 				end
 				l_features.forth
 			end

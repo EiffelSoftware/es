@@ -71,6 +71,8 @@ inherit
 			system
 		end
 
+	AUT_SHARED_RANDOM
+
 create
 	make
 
@@ -118,8 +120,8 @@ feature {NONE} -- Initialization
 			request_printer.extend (socket_data_printer)
 
 				-- Ilinca, "number of faults law" experiment
---			create failure_log_stream.make_empty
---			create failure_request_printer.make (system, failure_log_stream)
+			create failure_log_stream.make_empty
+			create failure_request_printer.make (system, failure_log_stream)
 
 			executable_file_name := an_executable_file_name
 			melt_path := file_system.dirname (executable_file_name)
@@ -294,6 +296,7 @@ feature -- Execution
 			l_listener: AUT_SOCKET_LISTENER
 		do
 			log_time_stamp ("start")
+			log_seed
 			create {AUT_START_REQUEST} last_request.make (system)
 			variable_table.wipe_out
 
@@ -1513,8 +1516,9 @@ feature -- Precondition satisfaction
 		do
 			create l_pool.make (system, configuration.types_under_test)
 			variable_table.set_defining_variable_action (agent l_pool.put_variable)
-			variable_table.set_wipe_out_action (agent l_pool.wipe_out)
+			variable_table.wipe_out_actions.extend (agent l_pool.wipe_out)
 			typed_object_pool_cell.put (l_pool)
+			variable_table.wipe_out_actions.extend (agent predicate_pool.wipe_out)
 		end
 
 	is_precondition_satisfied (a_feature: AUT_FEATURE_OF_TYPE; a_variables: DS_LIST [ITP_VARIABLE]): BOOLEAN is
@@ -1750,36 +1754,40 @@ feature -- Predicate evaluation
 		do
 			if configuration.is_precondition_checking_enabled then
 					-- When there is a precondition violation, we first update the predicate pool.
+
 				if last_response.is_precondition_violation then
 					if attached {AUT_NORMAL_RESPONSE} last_response as l_normal_response then
-						l_bp_slot := l_normal_response.exception.break_point_slot
-						l_preconditions := preconditions_of_feature.item (a_feature)
-						l_access_patterns := precondition_access_pattern.item (a_feature)
-						l_pattern_cursor := l_access_patterns.new_cursor
-						from
-							l_pattern_cursor.start
-						until
-							l_pattern_cursor.after or else l_done
-						loop
-							if l_pattern_cursor.item.break_point_slot = l_bp_slot then
-								l_done := True
-								l_failed_predicate := l_pattern_cursor.item.predicate
-								create l_pred_args.make
-								from
-									l_pattern := l_pattern_cursor.item.access_pattern
-									l_ptn_cursor := l_pattern.new_cursor
-								until
-									l_ptn_cursor.after
-								loop
-									l_pred_args.extend (a_related_objects.item (l_ptn_cursor.key).index)
-									l_ptn_cursor.forth
+						if l_normal_response.exception /= Void and then l_normal_response.exception.is_test_invalid then
+							increase_failed_precondition_count
+							l_bp_slot := l_normal_response.exception.break_point_slot
+							l_preconditions := preconditions_of_feature.item (a_feature)
+							l_access_patterns := precondition_access_pattern.item (a_feature)
+							l_pattern_cursor := l_access_patterns.new_cursor
+							from
+								l_pattern_cursor.start
+							until
+								l_pattern_cursor.after or else l_done
+							loop
+								if l_pattern_cursor.item.break_point_slot = l_bp_slot then
+									l_done := True
+									l_failed_predicate := l_pattern_cursor.item.predicate
+									create l_pred_args.make
+									from
+										l_pattern := l_pattern_cursor.item.access_pattern
+										l_ptn_cursor := l_pattern.new_cursor
+									until
+										l_ptn_cursor.after
+									loop
+										l_pred_args.extend (a_related_objects.item (l_ptn_cursor.key).index)
+										l_ptn_cursor.forth
+									end
 								end
+								l_pattern_cursor.forth
 							end
-							l_pattern_cursor.forth
-						end
 
-							-- Update predicate: Set `l_failed_predicate' with `l_pred_args' with value False.
-						update_predicate (l_failed_predicate, l_pred_args, False)
+								-- Update predicate: Set `l_failed_predicate' with `l_pred_args' with value False.
+							update_predicate (l_failed_predicate, l_pred_args, False)
+						end
 					end
 				end
 			end
@@ -1844,6 +1852,7 @@ feature -- Predicate evaluation
 					update_predicate_pool (last_request)
 				end
 			end
+			log_precondition_evaluation_failure_rate
 		end
 
 	relevant_objects (a_target: ITP_VARIABLE; a_arguments: DS_LINEAR [ITP_EXPRESSION]; a_result: detachable ITP_VARIABLE): ARRAY [ITP_VARIABLE] is
@@ -1920,22 +1929,25 @@ feature -- Predicate evaluation
 							l_evaluation := l_result.item_for_iteration.evaluation
 
 								-- Check if the number of evaluation request and the number of results are consistant.
-							if l_arguments.count = l_evaluation.count * l_arity then
-								l_count := l_arguments.count
+							if l_arity = 0 and then l_evaluation.count = 1 then
+								create l_pred_args.make
+								update_predicate (l_predicate, l_pred_args, l_evaluation.item (0) = 0)
+							elseif l_arguments.count = l_evaluation.count * l_arity then
+								l_count := l_evaluation.count
 								create l_pred_args.make
 								from
 									i := 0
 									j := 0
 								until
-									i = l_count
+									j = l_count
 								loop
 									l_pred_args.extend (l_arguments.item (i))
+									i := i + 1
 									if i \\ l_arity = 0 then
 										update_predicate (l_predicate, l_pred_args, (l_evaluation.item (j) = 0))
 										l_pred_args.wipe_out
 										j := j + 1
 									end
-									i := i + 1
 								end
 							end
 							l_predicate_request.forth
@@ -1981,6 +1993,46 @@ feature -- Predicate evaluation
 		ensure
 			result_attached: Result /= Void
 		end
+
+	log_seed is
+			-- Log seed.
+		do
+			log_line ("-- Seed: " + random.seed.out)
+		end
+
+	failed_precondition_count: INTEGER
+			-- Number of times when precondition fails
+			-- on feature whose target and arguments are suggensted
+			-- by precondition satisfaction strategy
+
+	suggested_precondition_count: INTEGER
+			-- Number of times when objects that seems to satisfy
+			-- precodition of a feature is suggested.
+
+	increase_failed_precondition_count is
+			-- Increase `failed_precondition_count' by 1.
+		do
+			failed_precondition_count := failed_precondition_count + 1
+		ensure
+			failed_precondition_count_increase: failed_precondition_count = old failed_precondition_count + 1
+		end
+
+	increase_suggested_precondition_count is
+			-- Increase `suggested_precondition_count' by 1.
+		do
+			suggested_precondition_count := suggested_precondition_count + 1
+		ensure
+			suggested_precondition_count_increase: suggested_precondition_count = old suggested_precondition_count + 1
+		end
+
+	log_precondition_evaluation_failure_rate is
+			-- Log failure rate of precondition satisfaction.
+		do
+			if configuration.is_precondition_checking_enabled and then suggested_precondition_count > 0 and then suggested_precondition_count \\ 100 = 0 then
+				log_line ("-- Precondition satisfactoin: suggested " + suggested_precondition_count.out + "; " + "failed " + failed_precondition_count.out)
+			end
+		end
+
 
 feature -- Object State Exploration
 

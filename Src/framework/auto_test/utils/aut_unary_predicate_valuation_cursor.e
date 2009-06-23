@@ -31,6 +31,7 @@ feature -- Cursor movement
 	start is
 			-- Move cursor to first position.
 		do
+			before := False
 			if free_variables.is_empty then
 				after := not container.item (<<create {ITP_VARIABLE}.make (constraint.argument_mapping.item (container.predicate).item (1))>>)
 			else

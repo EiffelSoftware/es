@@ -223,9 +223,7 @@ feature -- Removal
 		do
 			create name_generator.make_with_string_stream (variable_name_prefix)
 			variable_type_table.wipe_out
-			if wipe_out_action /= Void then
-				wipe_out_action.call (Void)
-			end
+			wipe_out_actions.do_all (agent {PROCEDURE [ANY, TUPLE]}.call (Void))
 		ensure
 			variable_type_table_empty: variable_type_table.is_empty
 		end
@@ -274,8 +272,16 @@ feature -- Actions
 	defining_variable_action: detachable PROCEDURE [ANY, TUPLE [ITP_VARIABLE, TYPE_A]]
 			-- Action to be called if a new variable is defined
 
-	wipe_out_action: detachable PROCEDURE [ANY, TUPLE]
+	wipe_out_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE]] is
 			-- Action to be performed when current is wiped out
+		do
+			if internal_wipe_out_actions = Void then
+				create internal_wipe_out_actions.make
+			end
+			Result := internal_wipe_out_actions
+		ensure
+			result_attached: Result /= Void
+		end
 
 	set_defining_variable_action (a_action: like defining_variable_action) is
 			-- Set `defining_variable_action' with `a_action'.
@@ -283,13 +289,10 @@ feature -- Actions
 			defining_variable_action := a_action
 		end
 
-	set_wipe_out_action (a_action: like wipe_out_action) is
-			-- Set `wipe_out_action' with `a_action'.
-		do
-			wipe_out_action := a_action
-		ensure
-			wipe_out_action_set: wipe_out_action = a_action
-		end
+feature{NONE} -- Implementation
+
+	internal_wipe_out_actions: like wipe_out_actions
+			-- Cache for `wipe_out_actions'
 
 invariant
 

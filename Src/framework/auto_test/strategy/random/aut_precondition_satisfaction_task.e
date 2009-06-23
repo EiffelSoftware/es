@@ -90,6 +90,9 @@ feature -- Access
 	candidate_variables: DS_ARRAYED_LIST [like initial_variables]
 			-- Queue for variable candidcate to execute `feature_'
 
+	partial_candidate: detachable ARRAY [detachable ITP_VARIABLE]
+			-- Partial candidate
+
 	start_time: INTEGER
 			-- Start time (in millisecond) when current precondition evaluation starts
 
@@ -98,6 +101,14 @@ feature -- Access
 
 	constraint: AUT_PREDICATE_CONSTRAINT
 			-- Constraint for argument mapping
+
+	tried_count: INTEGER
+			-- Number of object combinations that were tried so far
+			-- to satisfying the precondition of `feature_'
+
+	worst_case_search_count: INTEGER
+			-- Number of object combinations that need to be
+			-- tried out in the worst case
 
 feature -- Status report
 
@@ -173,6 +184,7 @@ feature -- Execution
 						-- `initial_variables' DO NOT satisfy the precondition of `feature_',
 						-- new search is needed.
 					load_candidates
+					steps_completed := candidate_variables.is_empty
 				end
 			else
 					-- If no precondition evaluation is enabled, we assume that `initial_variables'
@@ -197,7 +209,7 @@ feature -- Execution
 					-- store the candidate in `last_evaluated_variables'.
 					-- Those arguments in the candidate should already satisfy all normal preconditions.
 				random.forth
-				l_candidate_index := random.item // untried_candidate_count + 1
+				l_candidate_index := random.item \\ untried_candidate_count + 1
 				last_evaluated_variables := candidate_variables.item (l_candidate_index)
 				candidate_variables.swap (l_candidate_index, untried_candidate_count)
 				untried_candidate_count := untried_candidate_count - 1
@@ -206,6 +218,8 @@ feature -- Execution
 				if has_linear_solvable_precondition then
 					choose_constraint_arguments
 					l_satisfied := has_constraint_model
+				else
+					l_satisfied := True
 				end
 
 				if l_satisfied then
@@ -216,6 +230,10 @@ feature -- Execution
 
 			if not has_next_step then
 				set_end_time (interpreter.duration_until_now.millisecond_count)
+			end
+
+			if is_last_precondition_evaluation_satisfied then
+				interpreter.increase_suggested_precondition_count
 			end
 		end
 
@@ -245,9 +263,12 @@ feature{NONE} -- Implementation
 		do
 				-- Every candidate in `candidate_variables' should contain all variables needed to call `feature_',
 				-- except for linearly constrained variables.
-			l_list := predicate_pool.candidates (constraint, to_be_retrieved_candidate_count)
+			predicate_pool.generate_candidates (constraint, to_be_retrieved_candidate_count)
+			l_list := predicate_pool.last_candidates
 			create candidate_variables.make (l_list.count)
 			candidate_variables.append_last (l_list)
+			untried_candidate_count := candidate_variables.count
+			partial_candidate := predicate_pool.last_partial_candidate
 		end
 
 	evaluate_precondition (a_variables: like initial_variables) is
@@ -336,7 +357,7 @@ feature{NONE} -- Implementation
 		do
 				-- Ask for states of the target object.
 				-- the value of constraining queries are in the retrieved states.
-			l_state := interpreter.object_state (last_evaluated_variables.item (1))
+			l_state := interpreter.object_state (last_evaluated_variables.item (0))
 			has_constraint_model := not l_state.is_empty
 
 				-- Generate linear constraint solving proof obligation.
