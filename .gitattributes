@@ -192,6 +192,9 @@ Delivery/studio/config/windows/msc/appl.ico -text
 Delivery/studio/eifinit/libraries.cfg -text
 Delivery/studio/eifinit/precompile.cfg -text
 Delivery/studio/help/defaults/eiffel_unit_test_tcf_template.txt -text
+Delivery/studio/help/errors/VRVA -text
+Delivery/studio/help/errors/short/VRVA1 -text
+Delivery/studio/help/errors/short/VRVA2 -text
 Delivery/studio/lang/mo_files/de_DE.mo -text
 Delivery/studio/lang/mo_files/en_US.mo -text
 Delivery/studio/lang/mo_files/fr_FR.mo -text
