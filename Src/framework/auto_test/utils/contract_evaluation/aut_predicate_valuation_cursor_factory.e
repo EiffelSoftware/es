@@ -17,18 +17,21 @@ feature -- Access
 
 feature -- Basic operation
 
-	generate_cursor (a_valuation: AUT_PREDICATE_VALUATION; a_constraint: like constraint; a_partial_candidate: like partial_candidate) is
+	generate_cursor (a_valuation: AUT_PREDICATE_VALUATION; a_pattern: like predicate_access_pattern; a_constraint: like constraint; a_partial_candidate: like partial_candidate) is
 			-- Generate cursor for `a_valuation' and
 			-- store generated cursor in `last_cursor'.
 		require
 			a_valuation_attached: a_valuation /= Void
+			a_pattern_attached: a_pattern /= Void
+			a_pattern_valid: a_pattern.predicate.is_equal (a_valuation.predicate)
 			a_constraint_attached: a_constraint /= Void
 			a_partial_candidate_attached: a_partial_candidate /= Void
-			a_partial_candidate_valid: a_partial_candidate.lower = 0 and then a_partial_candidate.count = a_constraint.distinct_argument_count
-			a_valuation_valid: a_constraint.has_predicate (a_valuation.predicate)
+			a_partial_candidate_valid: a_partial_candidate.lower = 0 and then a_partial_candidate.count = a_constraint.operand_count
+--			a_valuation_valid: a_constraint.has_predicate (a_valuation.predicate)
 		do
 			constraint := a_constraint
 			partial_candidate := a_partial_candidate
+			predicate_access_pattern := a_pattern
 			a_valuation.process (Current)
 		ensure
 			last_cursor_generated: last_cursor /= void
@@ -39,47 +42,54 @@ feature -- Process
 	process_nullary_predicate_valuation (a_valuation: AUT_NULLARY_PREDICATE_VALUATION) is
 			-- Process `a_valuation'.
 		do
-			create {AUT_NULLARY_PREDICATE_VALUATION_CURSOR} last_cursor.make (a_valuation, constraint, partial_candidate)
+			create {AUT_NULLARY_PREDICATE_VALUATION_CURSOR} last_cursor.make (a_valuation, predicate_access_pattern, constraint, partial_candidate)
 		ensure then
 			last_cursor_attached: last_cursor /= Void
 			last_cursor_container_valid: last_cursor.container = a_valuation
 			last_cursor_constraint_valid: last_cursor.constraint = constraint
+			last_cursor_predicate_access_pattern_valid: last_cursor.predicate_access_pattern = predicate_access_pattern
 		end
 
 	process_unary_predicate_valuation (a_valuation: AUT_UNARY_PREDICATE_VALUATION) is
 			-- Process `a_valuation'.
 		do
-			create {AUT_UNARY_PREDICATE_VALUATION_CURSOR} last_cursor.make (a_valuation, constraint, partial_candidate)
+			create {AUT_UNARY_PREDICATE_VALUATION_CURSOR} last_cursor.make (a_valuation, predicate_access_pattern, constraint, partial_candidate)
 		ensure then
 			last_cursor_attached: last_cursor /= Void
 			last_cursor_container_valid: last_cursor.container = a_valuation
 			last_cursor_constraint_valid: last_cursor.constraint = constraint
+			last_cursor_predicate_access_pattern_valid: last_cursor.predicate_access_pattern = predicate_access_pattern
 		end
 
 	process_binary_predicate_valuation (a_valuation: AUT_BINARY_PREDICATE_VALUATION) is
 			-- Process `a_valuation'.
 		do
-			create {AUT_BINARY_PREDICATE_VALUATION_CURSOR} last_cursor.make (a_valuation, constraint, partial_candidate)
+			create {AUT_BINARY_PREDICATE_VALUATION_CURSOR} last_cursor.make (a_valuation, predicate_access_pattern, constraint, partial_candidate)
 		ensure then
 			last_cursor_attached: last_cursor /= Void
 			last_cursor_container_valid: last_cursor.container = a_valuation
 			last_cursor_constraint_valid: last_cursor.constraint = constraint
+			last_cursor_predicate_access_pattern_valid: last_cursor.predicate_access_pattern = predicate_access_pattern
 		end
 
 	process_nnary_predicate_valuation (a_valuation: AUT_NNARY_PREDICATE_VALUATION) is
 			-- Process `a_valuation'.
 		do
-			create {AUT_NNARY_PREDICATE_VALUATION_CURSOR} last_cursor.make (a_valuation, constraint, partial_candidate)
+			create {AUT_NNARY_PREDICATE_VALUATION_CURSOR} last_cursor.make (a_valuation, predicate_access_pattern, constraint, partial_candidate)
 		ensure then
 			last_cursor_attached: last_cursor /= Void
 			last_cursor_container_valid: last_cursor.container = a_valuation
 			last_cursor_constraint_valid: last_cursor.constraint = constraint
+			last_cursor_predicate_access_pattern_valid: last_cursor.predicate_access_pattern = predicate_access_pattern
 		end
 
 feature{NONE} -- Implementation
 
 	constraint: detachable AUT_PREDICATE_CONSTRAINT
 			-- Predicate constraint
+
+	predicate_access_pattern: AUT_PREDICATE_ACCESS_PATTERN
+			-- Predicate access pattern
 
 	partial_candidate: detachable ARRAY [detachable ITP_VARIABLE];
 			-- Partial candidate

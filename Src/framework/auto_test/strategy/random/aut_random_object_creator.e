@@ -150,9 +150,24 @@ feature -- Execution
 				input_creator.step
 			elseif input_creator.has_error then
 				cancel
+			elseif precondition_evaluator = Void then
+				if input_creator /= Void and then (input_creator.receivers = Void or else input_creator.receivers.count /= creation_procedure.argument_count) then
+					cancel
+				else
+					create_precondition_evaluator
+				end
+			elseif precondition_evaluator /= Void and then precondition_evaluator.has_next_step then
+				precondition_evaluator.step
 			else
+				if precondition_evaluator.is_last_precondition_evaluation_satisfied then
+					set_arguments_from_candidate (precondition_evaluator.last_evaluated_variables)
+				else
+					set_arguments_from_candidate (precondition_evaluator.partial_candidate)
+				end
+				interpreter.log_precondition_evaluation_overhead (precondition_evaluator, type, creation_procedure)
+
 				receiver := interpreter.variable_table.new_variable
-				interpreter.create_object (receiver, type, creation_procedure, input_creator.receivers)
+				interpreter.create_object (receiver, type, creation_procedure, arguments)
 				if queue /= Void then
 					if attached {TYPE_A} interpreter.variable_table.variable_type (receiver) as l_receiver then
 						queue.mark (create {AUT_FEATURE_OF_TYPE}.make_as_creator (creation_procedure, l_receiver))
@@ -812,6 +827,83 @@ feature {NONE} -- Steps
 	queue: detachable AUT_DYNAMIC_PRIORITY_QUEUE
 			-- Queue
 
+feature -- Precondition satisfaction
+
+	precondition_evaluator: AUT_PRECONDITION_SATISFACTION_TASK
+			-- Precondition evaluator
+
+	create_precondition_evaluator is
+			-- Create `precondition_evaluator'.
+		local
+			l_vars: DS_LINKED_LIST [detachable ITP_VARIABLE]
+		do
+			create l_vars.make
+			l_vars.force_last (Void)
+			if input_creator /= Void and then input_creator.receivers /= Void then
+				l_vars.append_last (input_creator.receivers)
+			end
+			create precondition_evaluator.make (create {AUT_FEATURE_OF_TYPE}.make (creation_procedure, type), l_vars, interpreter)
+			precondition_evaluator.start
+		end
+
+	arguments: DS_LINKED_LIST [ITP_EXPRESSION]
+			-- Arguments used for `creation_procedure'
+
+	set_arguments_from_array (a_variables: ARRAY [ITP_EXPRESSION]) is
+			-- Set `target' and `arguments' from `a_variables'.
+		require
+			a_variables_attached: a_variables /= Void
+			a_variables_index_valid: a_variables.lower = 0 and then a_variables.upper = creation_procedure.argument_count
+		do
+			create {DS_LINKED_LIST [ITP_EXPRESSION]} arguments.make_from_array (a_variables)
+			arguments.start
+			arguments.remove_at
+		end
+
+	set_arguments_from_candidate (a_candidate: detachable ARRAY [detachable ITP_VARIABLE]) is
+			-- Set `arguments' with `a_candidate'.
+		local
+			i: INTEGER
+			l_upper: INTEGER
+			l_vars: ARRAY [detachable ITP_EXPRESSION]
+			l_var_count: INTEGER
+			l_cursor: DS_LIST_CURSOR [ITP_VARIABLE]
+		do
+			l_var_count := creation_procedure.argument_count + 1
+			create l_vars.make (0, l_var_count - 1)
+			l_vars.put (Void, 0)
+
+			if input_creator /= Void and then input_creator.receivers /= Void then
+				from
+					l_cursor := input_creator.receivers.new_cursor
+					i := 1
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					l_vars.put (l_cursor.item, i)
+					i := i + 1
+					l_cursor.forth
+				end
+			end
+
+				-- Take partial candidate into account.
+			if a_candidate /= Void then
+				from
+					i := a_candidate.lower
+					l_upper := a_candidate.upper
+				until
+					i > l_upper
+				loop
+					if attached {ITP_VARIABLE} a_candidate.item (i) as l_variable then
+						l_vars.put (l_variable, i)
+					end
+					i := i + 1
+				end
+			end
+
+			set_arguments_from_array (l_vars)
+		end
 invariant
 	system_not_void: system /= Void
 	interpreter_not_void: interpreter /= Void

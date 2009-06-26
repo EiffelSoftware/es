@@ -20,10 +20,10 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_container: like container; a_constraint: like constraint; a_partical_candidate: like candidate) is
+	make (a_container: like container; a_predicate_access_pattern: like predicate_access_pattern; a_constraint: like constraint; a_partical_candidate: like candidate) is
 			-- Initialize.
 		do
-			Precursor (a_container, a_constraint, a_partical_candidate)
+			Precursor (a_container, a_predicate_access_pattern, a_constraint, a_partical_candidate)
 			create predicate_arguments.make (1, container.arity)
 			set_bounded_arguments
 		end
@@ -93,9 +93,9 @@ feature{NONE} -- Implementation
 			l_args: like predicate_arguments
 		do
 			l_args := predicate_arguments
-			l_mapping := constraint.argument_mapping.item (container.predicate)
+			l_mapping := constraint.argument_operand_mapping.item (predicate_access_pattern)
 			from
-				l_cursor := constraint.argument_mapping.item (container.predicate).new_cursor
+				l_cursor := l_mapping.new_cursor
 				l_cursor.start
 			until
 				l_cursor.after

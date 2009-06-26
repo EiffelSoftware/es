@@ -48,43 +48,6 @@ feature -- Access
 			Result := storage.has (l_hashable_array)
 		end
 
-feature -- Status report
-
-	is_satisfying_combination (a_partial_solution: like partial_solution_anchor; a_constraint: AUT_PREDICATE_CONSTRAINT): BOOLEAN is
-			-- Is `a_partial_solution' a object combination satisfying `predicate' under `a_constraint'?
-		local
-			l_mapping: DS_HASH_TABLE [INTEGER, INTEGER]
-			l_satisfied: BOOLEAN
-			l_cursor: DS_HASH_TABLE_CURSOR [INTEGER, INTEGER]
-			l_array: ARRAY [ITP_VARIABLE]
-			i: INTEGER
-			l_var: detachable ITP_VARIABLE
-		do
-			l_mapping := a_constraint.argument_mapping.item (predicate)
-			l_satisfied := True
-			create l_array.make (1, arity)
-			from
-				i := 1
-				l_cursor := l_mapping.new_cursor
-				l_cursor.start
-			until
-				l_cursor.after or not l_satisfied
-			loop
-				l_var := a_partial_solution.item (l_cursor.item)
-				if l_var /= Void then
-					l_array.put (l_var, i)
-				else
-					l_satisfied := False
-				end
-				i := i + 1
-				l_cursor.forth
-			end
-
-			if l_satisfied then
-				Result := item (l_array)
-			end
-		end
-
 feature -- Basic operations
 
 	put (a_arguments: ARRAY [ITP_VARIABLE]; a_value: BOOLEAN) is

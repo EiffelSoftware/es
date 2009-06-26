@@ -35,10 +35,11 @@ feature -- Cursor movement
 			l_bounded_var_index: INTEGER
 			l_mapping: DS_HASH_TABLE [INTEGER, INTEGER]
 			l_bounded_var_tbl: DS_HASH_TABLE [DS_HASH_SET [INTEGER], INTEGER]
+			l_bound_var_index: INTEGER
 		do
 			before := False
 			l_free_vars := free_variables
-			l_mapping := constraint.argument_mapping.item (container.predicate)
+			l_mapping := constraint.argument_operand_mapping.item (predicate_access_pattern)
 			if l_free_vars.count = 2 then
 					-- Both arguments are free.
 				main_cursor := container.first_argument_table.new_cursor
@@ -54,8 +55,12 @@ feature -- Cursor movement
 					-- One argument is free.
 				main_cursor := Void
 				l_free_vars.start
-				l_bounded_var_tbl := container.argument_tables.item (l_free_vars.key_for_iteration)
-				l_bounded_var_index := candidate.item (l_mapping.item (l_free_vars.key_for_iteration)).index
+
+				bound_variables.start
+				l_bound_var_index := bound_variables.key_for_iteration
+
+				l_bounded_var_tbl := container.argument_tables.item (l_bound_var_index)
+				l_bounded_var_index := candidate.item (l_mapping.item (l_bound_var_index)).index
 				barrel_cursor := l_bounded_var_tbl.item (l_bounded_var_index).new_cursor
 				barrel_cursor.start
 				after := barrel_cursor.after
@@ -106,11 +111,11 @@ feature -- Basic operations
 			l_free_vars := free_variables
 			if not l_free_vars.is_empty then
 				l_free_vars := free_variables
-				l_mapping := constraint.argument_mapping.item (container.predicate)
+				l_mapping := constraint.argument_operand_mapping.item (predicate_access_pattern)
 				l_candidate := candidate
 				l_free_vars.start
 				if l_free_vars.count = 1 then
-					l_free_var_index := l_candidate.item (l_mapping.item (l_free_vars.key_for_iteration)).index
+					l_free_var_index := l_mapping.item (l_free_vars.key_for_iteration)
 					l_candidate.put (variable_from_index (barrel_cursor.item), l_free_var_index)
 				elseif l_free_vars.count = 2 then
 					l_free_var_index := l_mapping.item (l_free_vars.key_for_iteration)

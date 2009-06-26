@@ -46,17 +46,6 @@ feature -- Access
 			good_result: Result = storage.has (a_arguments.item (1).index)
 		end
 
-feature -- Status report
-
-	is_satisfying_combination (a_partial_solution: like partial_solution_anchor; a_constraint: AUT_PREDICATE_CONSTRAINT): BOOLEAN is
-			-- Is `a_partial_solution' a object combination satisfying `predicate' under `a_constraint'?
-		local
-			l_variable: detachable ITP_VARIABLE
-		do
-			 l_variable := a_partial_solution.item (a_constraint.index_of_predicate_argument (predicate, 1))
-			 Result := l_variable /= Void and then storage.has (l_variable.index)
-		end
-
 feature -- Basic operations
 
 	put (a_arguments: ARRAY [ITP_VARIABLE]; a_value: BOOLEAN) is

@@ -34,7 +34,6 @@ feature{NONE} -- Initialization
 		require
 			a_feature_attached: a_feature /= Void
 			a_vars_attached: a_vars /= Void
-			a_vars_valid: not a_vars.has (Void)
 		local
 			i: INTEGER
 		do
@@ -71,17 +70,15 @@ feature -- Access
 	feature_: AUT_FEATURE_OF_TYPE
 			-- Feature whose precondition is to be evaluated
 
-	normal_preconditions: DS_LINKED_LIST [AUT_NORMAL_PREDICATE]
+	normal_preconditions: DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN]
 			-- Normal precondition predicates for `feature_'
 
-	linear_solvable_preconditions: DS_LINKED_LIST [AUT_LINEAR_SOLVABLE_PREDICATE]
+	linear_solvable_preconditions: DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN]
 			-- Linearly solvable precondition predicates for `feature_'
-
-	access_pattern: DS_HASH_TABLE [AUT_PREDICATE_ACCESS_PATTERN, AUT_PREDICATE]
-			-- Predicate access pattern
 
 	initial_variables: ARRAY [detachable ITP_VARIABLE]
 			-- Initial variables as candidates
+			-- Index in `initial_variables' is 0-based.
 
 	last_evaluated_variables: like initial_variables
 			-- Variables used to evaluate the precondition of `feature_'
@@ -90,7 +87,7 @@ feature -- Access
 	candidate_variables: DS_ARRAYED_LIST [like initial_variables]
 			-- Queue for variable candidcate to execute `feature_'
 
-	partial_candidate: detachable ARRAY [detachable ITP_VARIABLE]
+	partial_candidate: detachable like initial_variables
 			-- Partial candidate
 
 	start_time: INTEGER
@@ -223,7 +220,7 @@ feature -- Execution
 				end
 
 				if l_satisfied then
-					is_last_precondition_evaluation_satisfied := not last_evaluated_variables.has (Void)
+					is_last_precondition_evaluation_satisfied := constraint.is_constraint_operand_bound (last_evaluated_variables)
 					steps_completed := is_last_precondition_evaluation_satisfied
 				end
 			end
@@ -305,36 +302,29 @@ feature{NONE} -- Implementation
 	setup_precondition_predicates is
 			-- Set `normal_preconditions' and `linear_solvable_preconditions' for `feature_'.
 		local
-			l_cursor: DS_HASH_SET_CURSOR [AUT_PREDICATE]
-			l_predicate: AUT_PREDICATE
-			l_normal_pred: AUT_NORMAL_PREDICATE
-			l_linear_pred: AUT_LINEAR_SOLVABLE_PREDICATE
+			l_cursor: DS_HASH_SET_CURSOR [AUT_PREDICATE_ACCESS_PATTERN]
+			l_predicate_pattern: AUT_PREDICATE_ACCESS_PATTERN
 		do
 			create normal_preconditions.make
 			create linear_solvable_preconditions.make
-			create access_pattern.make (5)
-			access_pattern.set_key_equality_tester (predicate_equality_tester)
 
-			if interpreter.configuration.is_precondition_checking_enabled and then preconditions_of_feature.has (feature_) then
+			if interpreter.configuration.is_precondition_checking_enabled and then precondition_access_pattern.has (feature_) then
 				from
-					l_cursor := preconditions_of_feature.item (feature_).new_cursor
+					l_cursor := precondition_access_pattern.item (feature_).new_cursor
 					l_cursor.start
 				until
 					l_cursor.after
 				loop
-					l_predicate := l_cursor.item
+					l_predicate_pattern := l_cursor.item
 
-					if l_predicate.is_linear_solvable then
-						l_linear_pred ?= l_predicate
-						linear_solvable_preconditions.force_last (l_linear_pred)
+					if l_predicate_pattern.predicate.is_linear_solvable then
+						linear_solvable_preconditions.force_last (l_predicate_pattern)
 					else
-						l_normal_pred ?= l_predicate
-						normal_preconditions.force_last (l_normal_pred)
+						normal_preconditions.force_last (l_predicate_pattern)
 					end
 					l_cursor.forth
 				end
 
-				precondition_access_pattern.item (feature_).do_all (agent (a: AUT_PREDICATE_ACCESS_PATTERN) do access_pattern.put_last (a, a.predicate) end)
 				create constraint.make_with_precondition (feature_, normal_preconditions)
 			end
 		ensure
@@ -354,16 +344,22 @@ feature{NONE} -- Implementation
 			l_constraining_queries: DS_HASH_SET [STRING]
 			l_new_query_name: STRING
 			l_query_name: detachable STRING
+			l_pattern_table: DS_HASH_TABLE [AUT_PREDICATE_ACCESS_PATTERN, AUT_PREDICATE]
 		do
 				-- Ask for states of the target object.
 				-- the value of constraining queries are in the retrieved states.
-			l_state := interpreter.object_state (last_evaluated_variables.item (0))
-			has_constraint_model := not l_state.is_empty
+			if last_evaluated_variables.item (0) /= Void then
+				l_state := interpreter.object_state (last_evaluated_variables.item (0))
+				has_constraint_model := not l_state.is_empty
+			else
+				create l_state.make (0)
+				has_constraint_model := True
+			end
 
 				-- Generate linear constraint solving proof obligation.
 			if has_constraint_model then
 				create l_smt_generator
-				l_smt_generator.generate_smtlib (feature_, precondition_access_pattern.item (feature_))
+				l_smt_generator.generate_smtlib (feature_, linear_solvable_preconditions)
 				linear_solvable_argument_names := l_smt_generator.constrained_arguments
 				check l_smt_generator.has_linear_constraints end
 				l_proof_obligation := l_smt_generator.last_smtlib.twin
@@ -454,6 +450,11 @@ feature{NONE} -- Implementation
 					-- Store that model in `last_solved_arguments'.
 				if has_constraint_model then
 					l_valuation := l_model_loader.valuation
+					if l_valuation.count = 1 then
+						l_valuation.start
+						random.forth
+						l_valuation.replace (random.item.abs + 1, l_valuation.key_for_iteration)
+					end
 					create last_solved_arguments.make (l_valuation.count)
 					from
 						l_valuation.start
@@ -507,10 +508,30 @@ feature{NONE} -- Implementation
 			-- [argument value, argument index]
 			-- Argument index is 1-based.
 
+	bounded_variable_count (a_variables: like last_evaluated_variables): INTEGER is
+			-- Number of bounded variables in `a_variables'.
+		require
+			a_variables_attached: a_variables /= Void
+		local
+			i: INTEGER
+			l_count: INTEGER
+		do
+			from
+				i := a_variables.lower
+				l_count := a_variables.upper
+			until
+				i > l_count
+			loop
+				if a_variables.item (i) /= Void then
+					Result := Result + 1
+				end
+				i := i + 1
+			end
+		end
+
 invariant
 	normal_preconditions_attached: normal_preconditions /= Void
 	linear_solvable_preconditions_attached: linear_solvable_preconditions /= Void
-	precondition_access_pattern_attached: access_pattern /= Void
 	candicate_queue_attached: candidate_variables /= Void
 
 note

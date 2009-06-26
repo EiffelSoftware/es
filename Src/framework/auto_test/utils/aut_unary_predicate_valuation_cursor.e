@@ -33,7 +33,7 @@ feature -- Cursor movement
 		do
 			before := False
 			if free_variables.is_empty then
-				after := not container.item (<<create {ITP_VARIABLE}.make (constraint.argument_mapping.item (container.predicate).item (1))>>)
+				after := not container.item (<<create {ITP_VARIABLE}.make (constraint.argument_operand_mapping.item (predicate_access_pattern).item (1))>>)
 			else
 				storage_cursor := container.storage.new_cursor
 				storage_cursor.start

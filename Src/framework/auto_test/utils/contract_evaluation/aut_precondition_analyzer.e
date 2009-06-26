@@ -59,16 +59,16 @@ feature{NONE} -- Initialization
 			-- Initialize.
 		do
 			create {DS_HASH_TABLE [STRING, INTEGER]} constrained_variables.make (2)
-			create integer_arguments.make (2)
-			create arguments.make (2)
+			create integer_operands.make (2)
+			create operands.make (2)
 			create constraining_queries.make (2)
 			create accessed_variables.make (2)
 			create last_predicates.make
 			create last_predicate_access_patterns.make
 			create type_checker
 
-			integer_arguments.set_key_equality_tester (string_equal_tester)
-			arguments.set_key_equality_tester (string_equal_tester)
+			integer_operands.set_key_equality_tester (string_equal_tester)
+			operands.set_key_equality_tester (string_equal_tester)
 			constraining_queries.set_equality_tester (string_equal_tester)
 		end
 
@@ -360,16 +360,16 @@ feature{NONE} -- Process
 		local
 			l_feat: FEATURE_I
 			l_text: STRING
-			l_arg_index: INTEGER
+			l_operand_index: INTEGER
 			i: INTEGER
 			l_type: TYPE_A
 		do
 				-- Check if current assertion is linearly constraint solvable.
 			if is_linear_solvable then
-				if integer_arguments.has (a_name) then
-					is_integer_argument_mentioned := True
-					constrained_variables.force_last (a_name, integer_arguments.item (a_name))
-				elseif arguments.has (a_name) then
+				if integer_operands.has (a_name) then
+					is_integer_operand_mentioned := True
+					constrained_variables.force_last (a_name, integer_operands.item (a_name))
+				elseif operands.has (a_name) then
 					is_linear_solvable := False
 				else
 					l_feat := final_feature (a_name, current_assertion.written_class, current_feature.type.associated_class)
@@ -382,18 +382,18 @@ feature{NONE} -- Process
 
 				-- Check which variable is accessed, either the target object, or an argument.
 			if nested_list.last.is_empty or else (nested_list.last.count = 1 and then nested_list.last.item) then
-				l_arg_index := 0
-				if arguments.has (a_name) then
-					l_arg_index := arguments.item (a_name)
+				l_operand_index := 0
+				if operands.has (a_name) then
+					l_operand_index := operands.item (a_name)
 				else
-					l_arg_index := final_argument_index (a_name, current_assertion, current_feature.feature_)
+					l_operand_index := operand_index (a_name, current_assertion, current_feature.feature_)
 				end
 
-				if l_arg_index > 0 then
-					l_type := current_feature.feature_.arguments.i_th (l_arg_index).instantiation_in (current_feature.type, current_feature.associated_class.class_id)
+				if l_operand_index > 0 then
+					l_type := current_feature.feature_.arguments.i_th (l_operand_index).instantiation_in (current_feature.type, current_feature.associated_class.class_id)
 					check not l_type.actual_type.is_like end
-					accessed_variables.force_last (l_type.actual_type, l_arg_index)
-					text.append (place_holder (l_arg_index))
+					accessed_variables.force_last (l_type.actual_type, l_operand_index)
+					text.append (place_holder (l_operand_index))
 				else
 					l_feat := final_feature (a_name, current_assertion.written_class, current_feature.type.associated_class)
 					if l_feat /= Void then
@@ -410,25 +410,34 @@ feature{NONE} -- Process
 			end
 		end
 
-	final_argument_index (a_name: STRING; a_assertion: AUT_EXPRESSION; a_feature: FEATURE_I): INTEGER is
-			--
+	operand_index (a_name: STRING; a_assertion: AUT_EXPRESSION; a_feature: FEATURE_I): INTEGER is
+			-- 0-based operand index of an operand with `a_name' in `a_assertion' of `a_feature'.
+			-- Operand index here can only be larger than 0 because target is not included, so
+			-- if current feature returns 0, it means that `a_name' is not an argument name.
+		require
+			a_name_attached: a_name /= Void
+			not_a_name_is_empty: not a_name.is_empty
+			a_assertion_attached: a_assertion /= Void
+			a_feature_attached: a_feature /= Void
 		local
 			l_feature: FEATURE_I
 			i: INTEGER
-			l_arg_count: INTEGER
+			l_operand_count: INTEGER
 		do
 			l_feature := a_assertion.written_class.feature_of_rout_id_set (a_feature.rout_id_set)
 			from
-				l_arg_count := l_feature.argument_count
+				l_operand_count := l_feature.argument_count
 				i := 1
 			until
-				i > l_arg_count or Result > 0
+				i > l_operand_count or Result > 0
 			loop
 				if l_feature.arguments.item_name (i).is_case_insensitive_equal (a_name) then
 					Result := i
 				end
 				i := i + 1
 			end
+		ensure
+			good_result: Result >= 0 and then Result <= a_feature.argument_count
 		end
 
 feature{NONE} -- Implementation
@@ -460,25 +469,29 @@ feature{NONE} -- Implementation
 			Result := match_list_server.item (current_assertion.written_class.class_id)
 		end
 
-	integer_arguments: DS_HASH_TABLE [INTEGER, STRING];
-			-- Table of the arguments in the feature
+	integer_operands: DS_HASH_TABLE [INTEGER, STRING];
+			-- Table of integer operands in the feature
 			-- where currently processed assertion is
 			-- written.
-			-- [argument index, argument name]
-			-- argument index is 1-based.
+			-- [operand index, operand name]
+			-- Operand index is 0-based, but indexes here can
+			-- only be larger than 0, because we integer object as target
+			-- is not supported.
 
-	arguments: DS_HASH_TABLE [INTEGER, STRING]
+	operands: DS_HASH_TABLE [INTEGER, STRING]
 			-- Set of argument names for `current_feature'
+			-- [operand index, operand name]
+			-- Operand index is 0-based, but indexes here can
+			-- only be larger than 0, because target is not included here.
 
-	is_integer_argument_mentioned: BOOLEAN
-			-- Is some argument of integer type mentioned in
-			-- `current_assertion? An assertion needs
-			-- linearly constraint solving only when its integer arguments
-			-- are mentioned in the assertion.
+	is_integer_operand_mentioned: BOOLEAN
+			-- Is some integer operand mentioned in `current_assertion?
+			-- An assertion needs linearly constraint solving only when
+			-- its integer operands are mentioned.
 
-	find_integer_arguments is
+	find_integer_operands is
 			-- Find arguments of integer type in the feature where `current_assertion'
-			-- is written and put them into `integer_arguments'.
+			-- is written and put them into `integer_operands'.
 		require
 			current_assertion_attached: current_assertion /= Void
 			current_feature_attached: current_feature /= Void
@@ -497,13 +510,21 @@ feature{NONE} -- Implementation
 					i > l_arg_count
 				loop
 					l_arg_name := l_feature.arguments.item_name (i).as_lower
-					arguments.force_last (i, l_arg_name)
+					operands.force_last (i, l_arg_name)
 					if l_feature.arguments.i_th (i).is_integer then
-						integer_arguments.force_last (i, l_arg_name)
+						integer_operands.force_last (i, l_arg_name)
 					end
 					i := i + 1
 				end
 			end
+		ensure
+			integer_operands_attached: integer_operands /= Void
+			integer_operands_valid: integer_operands.for_all (
+				agent (a_index: INTEGER): BOOLEAN
+					do
+						Result := a_index > 0 and then a_index <= current_feature.argument_count
+					end (?)
+				)
 		end
 
 --	is_top_level_nested_as (a_nested_as: NESTED_AS): BOOLEAN is
@@ -592,10 +613,17 @@ feature{NONE} -- Implementation
 					-- Although the the indexes of `l_sorted_args' is 0-based,
 					-- the indexes of the predicate is 1-based.
 				replace_text (l_sorted_args.item_for_iteration, i)
-				l_access_pattern.put (i, l_sorted_args.item_for_iteration)
+				l_access_pattern.put (l_sorted_args.item_for_iteration, i)
 				i := i + 1
 				l_sorted_args.forth
 			end
+			check
+				l_access_pattern.for_all_with_key (
+					agent (a_item, a_key: INTEGER): BOOLEAN
+						do
+							Result := a_item >= 0 and then a_item <= current_feature.argument_count and then a_key > 0
+						end)
+					end
 
 				-- Generate predicate.
 			if is_linear_solvable then
@@ -628,10 +656,13 @@ feature{NONE} -- Implementation
 					current_assertion)
 			end
 
-			create l_predicate_of_feat.make (current_feature, l_predicate, l_access_pattern)
-			l_predicate_of_feat.set_break_point_slot (current_break_point_slot)
-			last_predicates.force_last (l_predicate)
-			last_predicate_access_patterns.force_last (l_predicate_of_feat)
+				-- We ignore precontions in creation procedures which contains unqualified calls.
+			if not (is_exported_creator (current_feature.feature_, current_context_class.actual_type) and then l_access_pattern.has_item (0)) then
+				create l_predicate_of_feat.make (current_feature, l_predicate, l_access_pattern)
+				l_predicate_of_feat.set_break_point_slot (current_break_point_slot)
+				last_predicates.force_last (l_predicate)
+				last_predicate_access_patterns.force_last (l_predicate_of_feat)
+			end
 		end
 
 	check_assertion (a_assertion: AUT_EXPRESSION; a_context_feature: AUT_FEATURE_OF_TYPE) is
@@ -643,10 +674,10 @@ feature{NONE} -- Implementation
 			-- Also, put every accessed variables into `accessed_variables'.
 		do
 			is_linear_solvable := True
-			is_integer_argument_mentioned := False
+			is_integer_operand_mentioned := False
 			constrained_variables.wipe_out
-			arguments.wipe_out
-			integer_arguments.wipe_out
+			operands.wipe_out
+			integer_operands.wipe_out
 			accessed_variables.wipe_out
 			create nested_list.make
 			nested_list.force_last (create {DS_LINKED_STACK [BOOLEAN]}.make)
@@ -655,9 +686,9 @@ feature{NONE} -- Implementation
 				-- Find integer argument in `a_context_feature'.
 			current_assertion := a_assertion
 			current_feature := a_context_feature
-			find_integer_arguments
+			find_integer_operands
 			current_assertion.ast.process (Current)
-			is_linear_solvable := is_linear_solvable and then is_integer_argument_mentioned
+			is_linear_solvable := is_linear_solvable and then is_integer_operand_mentioned
 
 				-- Analyze just created predicate.
 			analyze_predicate

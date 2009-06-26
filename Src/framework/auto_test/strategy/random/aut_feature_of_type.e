@@ -16,6 +16,8 @@ inherit
 
 	HASHABLE
 
+	DEBUG_OUTPUT
+
 create
 
 	make,
@@ -74,6 +76,31 @@ feature -- Access
 			Result := type.associated_class
 		ensure
 			good_result: Result = type.associated_class
+		end
+
+	feature_name: STRING is
+			-- Name of current feature
+		do
+			Result := feature_.feature_name
+		ensure
+			result_attached: Result /= Void
+			good_result: Result.is_equal (feature_.feature_name)
+		end
+
+	argument_count: INTEGER is
+			-- Number of arguments in `feature_'
+		do
+			Result := feature_.argument_count
+		ensure
+			good_result: Result = feature_.argument_count
+		end
+
+feature -- Status report
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			Result := type.associated_class.name + "." + feature_.feature_name
 		end
 
 feature -- Status report

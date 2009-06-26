@@ -76,7 +76,9 @@ feature -- Basic operations
 					until
 						l_cursor.after
 					loop
-						constrained_arguments.force_last (normalized_argument_name (l_cursor.key))
+						if l_cursor.item > 0 then
+							constrained_arguments.force_last (normalized_argument_name (l_cursor.item))
+						end
 						l_cursor.forth
 					end
 					l_linear_pred.constraining_queries.do_all (agent constraining_queries.force_last)

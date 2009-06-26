@@ -18,6 +18,11 @@ inherit
 			is_equal
 		end
 
+	DEBUG_OUTPUT
+		undefine
+			is_equal
+		end
+
 feature{NONE} -- Initialization
 
 	make (a_types: DS_LIST [TYPE_A]; a_text: STRING; a_context_class: like context_class; a_expression: like expression) is
@@ -81,7 +86,7 @@ feature -- Access
 			-- Hash code value
 		do
 			Result := internal_hash_code
-			if internal_hash_code = 0 then
+			if Result = 0 then
 				internal_hash_code := (context_class.name_in_upper + text).hash_code
 				Result := internal_hash_code
 			end
@@ -94,6 +99,7 @@ feature -- Equality
 			-- equal to current object?
 		local
 			l_cur, l_other_cur: DS_LINKED_LIST_CURSOR [TYPE_A]
+--			l_feat1, l_feat2: FEATURE_I
 		do
 				-- Two predicate are considered to be equal iff:
 				-- 1. They come from the same class
@@ -123,6 +129,14 @@ feature -- Equality
 					l_cur.forth
 					l_other_cur.forth
 				end
+
+--				if Result then
+--					l_feat1 := expression.context_feature
+--					l_feat2 := other.expression.context_feature
+--					if l_feat1 /= Void and then l_feat2 /= Void then
+--						Result := (l_feat1.body_index = l_feat2.body_index) implies expression.line_number /= other.expression.line_number
+--					end
+--				end
 			end
 		end
 
@@ -155,6 +169,14 @@ feature -- Status report
 			Result := arity = 2
 		ensure
 			good_result: Result = (arity = 2)
+		end
+
+feature -- Status report
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			Result := text
 		end
 
 feature -- Setting

@@ -22,6 +22,7 @@ feature{NONE} -- Initialization
 				-- Uses `equal' for key comparison
 			create valuation_table.make_default
 			create valuation_cursor_factory
+			set_is_partial_satisfaction_enabled (True)
 		end
 
 feature -- Access
@@ -39,27 +40,27 @@ feature -- Status report
 		require
 			a_constraint_attached: a_constraint /= Void
 			a_arguments_attached: a_arguments /= Void
-			a_arguments_valid: a_constraint.distinct_argument_count = a_arguments.count and then a_arguments.lower = 0
+			a_arguments_valid: a_constraint.operand_count = a_arguments.count and then a_arguments.lower = 0
 		local
-			l_cursor: DS_LINKED_LIST_CURSOR [AUT_PREDICATE]
+			l_cursor: DS_LINKED_LIST_CURSOR [AUT_PREDICATE_ACCESS_PATTERN]
 			l_valuation_tbl: like valuation_table
 			l_pred_args: ARRAY [ITP_VARIABLE]
-			l_predicate: AUT_PREDICATE
+			l_pattern: AUT_PREDICATE_ACCESS_PATTERN
 			l_mapping: DS_HASH_TABLE_CURSOR [INTEGER, INTEGER]
 			l_variable: detachable ITP_VARIABLE
 		do
 			l_valuation_tbl := valuation_table
 			Result := True
 			from
-				l_cursor := a_constraint.associated_predicates.new_cursor
+				l_cursor := a_constraint.access_patterns.new_cursor
 				l_cursor.start
 			until
 				l_cursor.after or not Result
 			loop
-				l_predicate := l_cursor.item
-				create l_pred_args.make (1, l_predicate.arity)
+				l_pattern := l_cursor.item
+				create l_pred_args.make (1, l_pattern.predicate.arity)
 				from
-					l_mapping := a_constraint.argument_mapping.item (l_predicate).new_cursor
+					l_mapping := a_constraint.argument_operand_mapping.item (l_pattern).new_cursor
 					l_mapping.start
 				until
 					l_mapping.after or not Result
@@ -72,7 +73,7 @@ feature -- Status report
 					end
 					l_mapping.forth
 				end
-				Result := l_valuation_tbl.item (l_predicate).item (l_pred_args)
+				Result := l_valuation_tbl.item (l_pattern.predicate).item (l_pred_args)
 				l_cursor.forth
 			end
 		end
@@ -315,13 +316,27 @@ feature -- Basic operations
 			create last_candidates.make
 			l_last_candidates := last_candidates
 				-- Get sorted cursors for predicates valuations.						
-			create l_candidate.make (0, a_constraint.distinct_argument_count - 1)
+			create l_candidate.make (0, a_constraint.operand_count - 1)
 			l_cursors := sorted_valuation_cursors (a_constraint, l_candidate)
 			if l_cursors.is_empty then
 				last_partial_candidate := Void
 			else
 				l_is_partial_satisfaction_enabled := is_partial_satisfaction_enabled
 				if l_is_partial_satisfaction_enabled or else l_cursors.first.container.count > 0 then
+					if l_is_partial_satisfaction_enabled then
+						from
+							l_cursors.start
+						until
+							l_cursors.after
+						loop
+							if l_cursors.item_for_iteration.container.is_empty then
+								l_cursors.remove_at
+							else
+								l_cursors.forth
+							end
+						end
+					end
+
 						-- Search for candidates.
 					if not l_cursors.is_empty then
 						from
@@ -370,6 +385,7 @@ feature -- Basic operations
 										-- move forward.
 									l_cursors.forth
 									l_cursor := l_cursors.item_for_iteration
+									l_cursor.calculate_free_variables
 									l_cursor.start
 								end
 							end
@@ -406,25 +422,25 @@ feature{NONE} -- Implementation
 			a_constraint_attached: a_constraint /= Void
 			a_candidate_attached: a_candidate /= Void
 			a_candidate_valid: a_candidate.lower = 0
-			a_constraint_valid: a_constraint.distinct_argument_count = a_candidate.count
+			a_constraint_valid: a_constraint.operand_count = a_candidate.count
 		local
 			l_cursors: DS_ARRAYED_LIST [AUT_PREDICATE_VALUATION_CURSOR]
 			l_sorter: DS_QUICK_SORTER [AUT_PREDICATE_VALUATION_CURSOR]
-			l_pred_cursor: DS_LINKED_LIST_CURSOR [AUT_PREDICATE]
+			l_pred_cursor: DS_LINKED_LIST_CURSOR [AUT_PREDICATE_ACCESS_PATTERN]
 			l_cursor_factory: like valuation_cursor_factory
 			l_valuation_tbl: like valuation_table
 		do
 				-- Get cursors for all predicate valuations.
-			create l_cursors.make (a_constraint.argument_mapping.count)
+			create l_cursors.make (a_constraint.argument_operand_mapping.count)
 			from
 				l_valuation_tbl := valuation_table
 				l_cursor_factory := valuation_cursor_factory
-				l_pred_cursor := a_constraint.associated_predicates.new_cursor
+				l_pred_cursor := a_constraint.access_patterns.new_cursor
 				l_pred_cursor.start
 			until
 				l_pred_cursor.after
 			loop
-				l_cursor_factory.generate_cursor (l_valuation_tbl.item (l_pred_cursor.item), a_constraint, a_candidate)
+				l_cursor_factory.generate_cursor (l_valuation_tbl.item (l_pred_cursor.item.predicate), l_pred_cursor.item, a_constraint, a_candidate)
 				l_cursors.force_last (l_cursor_factory.last_cursor)
 				l_pred_cursor.forth
 			end

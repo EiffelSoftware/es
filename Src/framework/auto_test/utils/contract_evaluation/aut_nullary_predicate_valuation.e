@@ -45,17 +45,7 @@ feature -- Access
 		ensure then
 			good_result: Result = value
 		end
-
-feature -- Status report
-
-	is_satisfying_combination (a_partial_solution: like partial_solution_anchor; a_constraint: AUT_PREDICATE_CONSTRAINT): BOOLEAN is
-			-- <Precursor>
-		do
-			Result := value
-		ensure then
-			good_result: Result = value
-		end
-
+		
 feature -- Basic operations
 
 	put (a_arguments: ARRAY [ITP_VARIABLE]; a_value: BOOLEAN) is

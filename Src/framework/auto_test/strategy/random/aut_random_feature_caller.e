@@ -65,9 +65,6 @@ feature -- Status
 			Result := interpreter.is_running and interpreter.is_ready and not steps_completed
 		end
 
---	has_precondition: BOOLEAN
---			-- Does `feature_to_call' have precondition?
-
 feature -- Access
 
 	feature_to_call: FEATURE_I
@@ -157,7 +154,10 @@ feature -- Execution
 				target_creator.step
 			elseif not is_feature_and_type_rechecked then
 				is_feature_and_type_rechecked := True
-					-- Recheck `type' and `feature'.
+					-- Recheck `type' and `feature'.	
+				if not target_creator.receivers.is_empty then
+					target := target_creator.receivers.first
+				end
 				recheck_type_and_feature
 
 					-- Create or select objects as arguments of the feature call.
@@ -179,19 +179,18 @@ feature -- Execution
 			else
 				if not target_creator.has_error then
 					if precondition_evaluator.is_last_precondition_evaluation_satisfied then
-						set_target_and_arguments_from_array (precondition_evaluator.last_evaluated_variables)
+						set_target_and_argument_from_candiate (precondition_evaluator.last_evaluated_variables)
 						l_call := True
 					else
-						set_target_and_argument_with_partial_candidate
+						set_target_and_argument_from_candiate (precondition_evaluator.partial_candidate)
 							-- We call the feature with the initially assigned target and argument anyway.
 						l_call := True
 					end
-					log_precondition_evaluation_overhead
+					interpreter.log_precondition_evaluation_overhead (precondition_evaluator, type, feature_to_call)
 					if l_call and then arguments.count = feature_to_call.argument_count then
 						invoke
 					else
-						queue.mark (create {AUT_FEATURE_OF_TYPE}.make (feature_to_call, interpreter.variable_table.variable_type (target)))
-						cancel
+						internal_finish
 					end
 				end
 
@@ -200,14 +199,14 @@ feature -- Execution
 				then
 					target_creator := Void
 				else
-					steps_completed := True
+					internal_finish
 				end
 			end
 		end
 
 	cancel
 		do
-			steps_completed := True
+			internal_finish
 		end
 
 feature {NONE} -- Implementation
@@ -286,9 +285,8 @@ feature {NONE} -- Steps
 			list: DS_LIST [ITP_EXPRESSION]
 			normal_response: AUT_NORMAL_RESPONSE
 		do
-			io.put_string (feature_to_call.feature_name + "%N")
 			if argument_creator /= Void and then not argument_creator.receivers.is_empty then
-				list := argument_creator.receivers
+				list := arguments
 			else
 				create {DS_LINKED_LIST [ITP_EXPRESSION]} list.make
 			end
@@ -323,6 +321,17 @@ feature {NONE} -- Steps
 			end
 		end
 
+	internal_finish is
+			-- Finish curent task.
+		do
+			if target /= Void and then interpreter.variable_table.is_variable_defined (target) then
+				queue.mark (create {AUT_FEATURE_OF_TYPE}.make (feature_to_call, interpreter.variable_table.variable_type (target)))
+			end
+			steps_completed := True
+		ensure
+			good_result: not has_next_step
+		end
+
 feature {NONE} -- Implementation
 
 	choose_feature
@@ -344,7 +353,7 @@ feature {NONE} -- Implementation
 				i := (random.item  \\ count) + 1
 				feature_to_call := l_feature_table.item (class_).item (i)
 			else
-				steps_completed := True
+				internal_finish
 			end
 		ensure
 			end_or_feature_not_void: not has_next_step xor (feature_to_call /= Void)
@@ -407,12 +416,11 @@ feature {NONE} -- Implementation
 		local
 			l_target_type: TYPE_A
 		do
-			if not target_creator.receivers.is_empty and then attached {ITP_VARIABLE} target_creator.receivers.first as l_target then
-				l_target_type := interpreter.variable_table.variable_type (l_target)
+			if target /= Void then
+				l_target_type := interpreter.variable_table.variable_type (target)
 				if l_target_type.is_none then
 					cancel
 				else
-					target := l_target
 					set_feature_and_type (l_target_type.associated_class.feature_with_rout_id (feature_to_call.rout_id_set.first).associated_feature_i, l_target_type)
 				end
 			else
@@ -439,25 +447,6 @@ feature -- Precondition evaluation
 			precondition_evaluator.start
 		end
 
-	log_precondition_evaluation_overhead is
-			-- Log overhead of current precondition evaluation task.
-		do
-			if
-				interpreter.configuration.is_precondition_checking_enabled and then
-				precondition_evaluator /= Void and then
-				precondition_evaluator.has_precondition
-			then
-				interpreter.log_precondition_evaluation (
-					type,
-					feature_to_call,
-					precondition_evaluator.tried_count,
-					precondition_evaluator.worst_case_search_count,
-					precondition_evaluator.start_time,
-					precondition_evaluator.end_time,
-					precondition_evaluator.is_last_precondition_evaluation_satisfied)
-			end
-		end
-
 	set_target_and_arguments_from_array (a_variables: ARRAY [ITP_EXPRESSION]) is
 			-- Set `target' and `arguments' from `a_variables'.
 		require
@@ -471,8 +460,8 @@ feature -- Precondition evaluation
 			recheck_type_and_feature
 		end
 
-	set_target_and_argument_with_partial_candidate is
-			-- Set `target' and `arguments' with `precondition_evaluator'.`partial_candidate'.		
+	set_target_and_argument_from_candiate (a_candidate: detachable ARRAY [detachable ITP_VARIABLE]) is
+			-- Set `target' and `arguments' with `a_candidate'.		
 		local
 			i: INTEGER
 			l_upper: INTEGER
@@ -500,15 +489,14 @@ feature -- Precondition evaluation
 				end
 			end
 
-				-- Take partial candidate into account.
-			if attached {ARRAY [detachable ITP_VARIABLE]} precondition_evaluator.partial_candidate as l_partial then
+			if a_candidate /= Void then
 				from
-					i := l_partial.lower
-					l_upper := l_partial.upper
+					i := a_candidate.lower
+					l_upper := a_candidate.upper
 				until
 					i > l_upper
 				loop
-					if attached {ITP_VARIABLE} l_partial.item (i) as l_variable then
+					if attached {ITP_VARIABLE} a_candidate.item (i) as l_variable then
 						l_vars.put (l_variable, i)
 					end
 					i := i + 1

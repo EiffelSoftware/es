@@ -52,19 +52,6 @@ feature -- Access
 
 feature -- Status report
 
-	is_satisfying_combination (a_partial_solution: like partial_solution_anchor; a_constraint: AUT_PREDICATE_CONSTRAINT): BOOLEAN is
-			-- Is `a_partial_solution' a object combination satisfying `predicate' under `a_constraint'?
-		local
-			l_index1: INTEGER
-			l_index2: INTEGER
-		do
-			l_index1 := a_constraint.index_of_predicate_argument (predicate, 1)
-			l_index2 := a_constraint.index_of_predicate_argument (predicate, 2)
-			if a_partial_solution.item (l_index1) /= Void and then a_partial_solution.item (l_index2) /= Void then
-				Result := item (<<a_partial_solution.item (l_index1), a_partial_solution.item (l_index2)>>)
-			end
-		end
-
 	is_predicate_valid (a_predicate: like predicate): BOOLEAN is
 			-- Is `a_predicate' a valid predicate for current valuation?
 			-- Check the arity of `a_predicate'.

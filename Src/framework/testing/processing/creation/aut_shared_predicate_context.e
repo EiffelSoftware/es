@@ -42,18 +42,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	preconditions_of_feature: DS_HASH_TABLE [DS_HASH_SET [AUT_PREDICATE], AUT_FEATURE_OF_TYPE] is
-			-- Precondition predicates of features which are under test
-			-- [Precondition predicate set, feature]
-		once
-			create Result.make (100)
-			Result.set_key_equality_tester (feature_of_type_loose_equality_tester)
-		ensure
-			result_attached: Result /= Void
-			good_result: not Result.has (Void)
-		end
-
-	precondition_access_pattern: DS_HASH_TABLE [DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN], AUT_FEATURE_OF_TYPE] is
+	precondition_access_pattern: DS_HASH_TABLE [DS_HASH_SET [AUT_PREDICATE_ACCESS_PATTERN], AUT_FEATURE_OF_TYPE] is
 			-- Precondition predicate access patterns of features
 			-- Only predicates appearing in preconditions should be stored here.
 			-- This should be a subset of `predicate_access_pattern'.
@@ -66,31 +55,42 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	predicate_access_pattern: DS_HASH_TABLE [DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN], AUT_FEATURE_OF_TYPE] is
-			-- Predicate access patterns associated with a feature.
-			-- Predicates associated with a feature can be preconditions, postconditions and all "interesting" predcates
-			-- extracted from the code or provided by programmers.
-			-- [Access pattern, feature]
-			-- Note: Should be modified only by `put_predicate_access_pattern'.
-		once
-			create Result.make (100)
-			Result.set_key_equality_tester (feature_of_type_loose_equality_tester)
-		ensure
-			result_attached: Result /= Void
-		end
+--	predicate_access_pattern: DS_HASH_TABLE [DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN], AUT_FEATURE_OF_TYPE] is
+--			-- Predicate access patterns associated with a feature.
+--			-- Predicates associated with a feature can be preconditions, postconditions and all "interesting" predcates
+--			-- extracted from the code or provided by programmers.
+--			-- [Access pattern, feature]
+--			-- Note: Should be modified only by `put_predicate_access_pattern'.
+--		once
+--			create Result.make (100)
+--			Result.set_key_equality_tester (feature_of_type_loose_equality_tester)
+--		ensure
+--			result_attached: Result /= Void
+--		end
 
-	predicate_access_pattern_table: DS_HASH_TABLE [DS_HASH_TABLE [AUT_PREDICATE_ACCESS_PATTERN, AUT_PREDICATE], AUT_FEATURE_OF_TYPE] is
-			-- Table of predicate access patterns associated with a feature.
-			-- Predicates associated with a feature can be preconditions, postconditions and all "interesting" predcates
-			-- extracted from the code or provided by programmers.
-			-- [[Access pattern, predicate], feature]
-			-- Note: Should be modified only by `put_predicate_access_pattern'.
-		once
-			create Result.make (100)
-			Result.set_key_equality_tester (feature_of_type_loose_equality_tester)
-		ensure
-			result_attached: Result /= Void
-		end
+--	preconditions_of_feature: DS_HASH_TABLE [DS_HASH_SET [AUT_PREDICATE], AUT_FEATURE_OF_TYPE] is
+--			-- Precondition predicates of features which are under test
+--			-- [Precondition predicate set, feature]
+--		once
+--			create Result.make (100)
+--			Result.set_key_equality_tester (feature_of_type_loose_equality_tester)
+--		ensure
+--			result_attached: Result /= Void
+--			good_result: not Result.has (Void)
+--		end
+
+--	predicate_access_pattern_table: DS_HASH_TABLE [DS_HASH_TABLE [AUT_PREDICATE_ACCESS_PATTERN, AUT_PREDICATE], AUT_FEATURE_OF_TYPE] is
+--			-- Table of predicate access patterns associated with a feature.
+--			-- Predicates associated with a feature can be preconditions, postconditions and all "interesting" predcates
+--			-- extracted from the code or provided by programmers.
+--			-- [[Access pattern, predicate], feature]
+--			-- Note: Should be modified only by `put_predicate_access_pattern'.
+--		once
+--			create Result.make (100)
+--			Result.set_key_equality_tester (feature_of_type_loose_equality_tester)
+--		ensure
+--			result_attached: Result /= Void
+--		end
 
 	relevant_predicates_of_feature: DS_HASH_TABLE [DS_HASH_TABLE [DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]], AUT_PREDICATE], AUT_FEATURE_OF_TYPE] is
 			-- Relevant predicates of features which are under test
@@ -158,23 +158,23 @@ feature -- Basic operations
 			a_access_patterns_attached: a_access_patterns /= Void
 			a_access_patterns_not_has_void: not a_access_patterns.has (Void)
 		local
-			l_cursor: DS_LINKED_LIST_CURSOR [AUT_PREDICATE_ACCESS_PATTERN]
-			l_table: DS_HASH_TABLE [AUT_PREDICATE_ACCESS_PATTERN, AUT_PREDICATE]
+--			l_cursor: DS_LINKED_LIST_CURSOR [AUT_PREDICATE_ACCESS_PATTERN]
+--			l_table: DS_HASH_TABLE [AUT_PREDICATE_ACCESS_PATTERN, AUT_PREDICATE]
 		do
-			predicate_access_pattern.force_last (a_access_patterns.twin, a_feature)
-			create l_table.make (a_access_patterns.count)
-			l_table.set_key_equality_tester (predicate_equality_tester)
+--			predicate_access_pattern.force_last (a_access_patterns.twin, a_feature)
+--			create l_table.make (a_access_patterns.count)
+--			l_table.set_key_equality_tester (predicate_equality_tester)
 
-			from
-				l_cursor := a_access_patterns.new_cursor
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				l_table.force_last (l_cursor.item, l_cursor.item.predicate)
-				l_cursor.forth
-			end
-			predicate_access_pattern_table.force_last (l_table, a_feature)
+--			from
+--				l_cursor := a_access_patterns.new_cursor
+--				l_cursor.start
+--			until
+--				l_cursor.after
+--			loop
+--				l_table.force_last (l_cursor.item, l_cursor.item.predicate)
+--				l_cursor.forth
+--			end
+--			predicate_access_pattern_table.force_last (l_table, a_feature)
 		end
 
 	put_precondition_access_pattern (a_feature: AUT_FEATURE_OF_TYPE; a_access_patterns: DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN]) is
@@ -183,8 +183,12 @@ feature -- Basic operations
 			a_feature_attached: a_feature /= Void
 			a_access_patterns_attached: a_access_patterns /= Void
 			a_access_patterns_not_has_void: not a_access_patterns.has (Void)
+		local
+			l_patterns: DS_HASH_SET [AUT_PREDICATE_ACCESS_PATTERN]
 		do
-			precondition_access_pattern.force_last (a_access_patterns.twin, a_feature)
+			create l_patterns.make (a_access_patterns.count)
+			a_access_patterns.do_all (agent l_patterns.force_last)
+			precondition_access_pattern.force_last (l_patterns, a_feature)
 		end
 
 	put_precondition_of_feature (a_feature: AUT_FEATURE_OF_TYPE; a_preconditions: DS_LINKED_LIST [AUT_PREDICATE]) is
@@ -198,7 +202,7 @@ feature -- Basic operations
 			create l_set.make (a_preconditions.count)
 			l_set.set_equality_tester (predicate_equality_tester)
 			a_preconditions.do_all (agent l_set.force_last)
-			preconditions_of_feature.force_last (l_set, a_feature)
+--			preconditions_of_feature.force_last (l_set, a_feature)
 		end
 
 note

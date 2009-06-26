@@ -7,26 +7,32 @@ note
 deferred class
 	AUT_PREDICATE_VALUATION_CURSOR
 
+inherit
+	DEBUG_OUTPUT
+
 feature{NONE} -- Initialization
 
-	make (a_container: like container; a_constraint: like constraint; a_partical_candidate: like candidate) is
+	make (a_container: like container; a_access_pattern: like predicate_access_pattern; a_constraint: like constraint; a_partical_candidate: like candidate) is
 			-- Initialize.
 		require
 			a_container_attached: a_container /= Void
+			a_access_pattern_attached: a_access_pattern /= void
+			a_access_pattern_valid: a_access_pattern.predicate.is_equal (a_container.predicate)
 			a_constraint_attached: a_constraint /= Void
 			a_partical_candidate_attached: a_partical_candidate /= Void
-			a_constraint_valid: a_constraint.has_predicate (a_container.predicate)
-			a_partial_candidate_valid: a_partical_candidate.lower = 0 and then a_partical_candidate.count = a_constraint.distinct_argument_count
+			a_partial_candidate_valid: a_partical_candidate.lower = 0 and then a_partical_candidate.count = a_constraint.operand_count
 		do
 			container := a_container
 			constraint := a_constraint
 			candidate := a_partical_candidate
+			predicate_access_pattern := a_access_pattern
 			before := True
 			calculate_free_variables
 		ensure
 			container_set: container = a_container
 			constraint_set: constraint = a_constraint
 			candidate_set: candidate = a_partical_candidate
+			predicate_access_pattern_set: predicate_access_pattern = a_access_pattern
 			is_before: before
 		end
 
@@ -53,6 +59,9 @@ feature -- Access
 	container: AUT_PREDICATE_VALUATION
 			-- Predicate valuation associated with current cursor
 
+	predicate_access_pattern: AUT_PREDICATE_ACCESS_PATTERN
+			-- Predicate access pattern for `container'.`predicate'
+
 	candidate: ARRAY [detachable ITP_VARIABLE]
 			-- Candidate object combination
 			-- Void item in the array is item that are not chosen yet.
@@ -66,6 +75,21 @@ feature -- Access
 			-- Free variables are variables in `candidate' which are not chosen yet.
 			-- Current cursor can choose any object that satisfies `container' for free variables.
 			-- [0-based feature call object index, 1-based predicate argument index]
+
+	bound_variables: DS_HASH_TABLE [INTEGER, INTEGER]
+			-- Mapping of bound variables for current cursor
+			-- Bound variables are variables in `candidate' which are already chosen.
+			-- [0-based operand index, 1-based predicate argument index]
+
+
+feature -- Status report
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			create Result.make (64)
+			Result.append (predicate_access_pattern.debug_output)
+		end
 
 feature -- Cursor movement
 
@@ -100,17 +124,16 @@ feature -- Basic operations
 			candidate_updated: free_variables.for_all (agent (ind: INTEGER): BOOLEAN do Result := candidate.item (ind) = Void end)
 		end
 
-feature{NONE} -- Implementation
-
 	calculate_free_variables is
 			-- Calculate `free_variables' from `candidate'.
 		local
 			l_cursor: DS_HASH_TABLE_CURSOR [INTEGER, INTEGER]
 			l_candidate: like candidate
 		do
-			create free_variables.make (constraint.distinct_argument_count)
+			create free_variables.make (constraint.operand_count)
+			create bound_variables.make (constraint.operand_count)
 			from
-				l_cursor := constraint.argument_mapping.item (container.predicate).new_cursor
+				l_cursor := constraint.argument_operand_mapping.item (predicate_access_pattern).new_cursor
 				l_candidate := candidate
 				l_cursor.start
 			until
@@ -118,10 +141,14 @@ feature{NONE} -- Implementation
 			loop
 				if l_candidate.item (l_cursor.item) = Void then
 					free_variables.put_last (l_cursor.item, l_cursor.key)
+				else
+					bound_variables.put_last (l_cursor.item, l_cursor.key)
 				end
 				l_cursor.forth
 			end
 		end
+
+feature{NONE} -- Implementation
 
 	variable_from_index (a_index: INTEGER): ITP_VARIABLE is
 			-- Interpreter variable from `a_index'.
@@ -134,10 +161,11 @@ feature{NONE} -- Implementation
 invariant
 	container_attached: container /= Void
 	constraint_attached: constraint /= Void
-	constraint_valid: constraint.has_predicate (container.predicate)
 	candidate_attached: candidate /= Void
-	candidate_valid: candidate.lower = 0 and then candidate.count = constraint.distinct_argument_count
+	candidate_valid: candidate.lower = 0 and then candidate.count = constraint.operand_count
 	free_variables_attached: free_variables /= Void
+	predicate_access_pattern_attached: predicate_access_pattern /= Void
+	predicate_access_pattern_valid: predicate_access_pattern.predicate.is_equal (container.predicate)
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

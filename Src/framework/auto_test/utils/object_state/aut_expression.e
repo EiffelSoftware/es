@@ -16,6 +16,10 @@ inherit
 
 	SHARED_SERVER
 
+	REFACTORING_HELPER
+
+	DEBUG_OUTPUT
+
 create
 	make
 
@@ -62,6 +66,14 @@ feature -- Status report
 
 	is_require_else: BOOLEAN
 			-- Is current expression from a require else clause?
+
+feature -- Status report
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			Result := text
+		end
 
 feature -- Access/Internal
 

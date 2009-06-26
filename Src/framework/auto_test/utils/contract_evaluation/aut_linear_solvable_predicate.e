@@ -49,27 +49,10 @@ feature -- Access
 	constrained_arguments: DS_HASH_SET [INTEGER]
 			-- Table of 1-based index of constrained arguments of the predicate
 
-	constraining_queries: DS_HASH_SET [STRING]
+	constraining_queries: DS_HASH_SET [STRING];
 			-- List of queries that constrains the arguments
 			-- in `constrained_arguments'.
-			-- Query names are final names (feature renaming has been resolved)
-
-	constrained_argument_indexes (a_pattern: AUT_PREDICATE_ACCESS_PATTERN): DS_HASH_SET [INTEGER] is
-			-- Set of 1-based indexes of arguments that are linearly solvable in `a_pattern'
-		local
-			l_constrained_args: like constrained_arguments
-		do
-			l_constrained_args := constrained_arguments
-			create Result.make (l_constrained_args.count)
-			from
-				l_constrained_args.start
-			until
-				l_constrained_args.after
-			loop
-				Result.force_last (a_pattern.access_pattern.item (l_constrained_args.item_for_iteration))
-				l_constrained_args.forth
-			end
-		end
+			-- Query names are final names (feature renaming has been resolved)			
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

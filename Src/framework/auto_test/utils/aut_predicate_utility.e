@@ -28,7 +28,7 @@ feature -- Access
 	predicate_equality_tester: AGENT_BASED_EQUALITY_TESTER [AUT_PREDICATE] is
 			-- Equality tester for predicate
 		do
-			create Result.make (agent (a, b: AUT_PREDICATE): BOOLEAN do Result := a.is_equal (b) end)
+			create Result.make (agent (a, b: AUT_PREDICATE): BOOLEAN do Result := a = b or else a.is_equal (b) end)
 		end
 
 	feature_of_type_equality_tester: AUT_FEATURE_OF_TYPE_EQUALITY_TESTER is
@@ -45,21 +45,27 @@ feature -- Access
 		end
 
 	feature_of_type_name_equality_tester (a_system: SYSTEM_I): AUT_FEATURE_OF_TYPE_NAME_EQUALITY_TEST is
-			-- Equality test for feature of type based on feature names
+			-- Equality tester for feature of type based on feature names
 		do
 			create Result.make (a_system)
 		end
 
 	string_equality_tester: AGENT_BASED_EQUALITY_TESTER [STRING] is
-			-- Equality test for string
+			-- Equality tester for string
 		do
 			create Result.make (agent (a, b: STRING): BOOLEAN do Result := a.is_equal (b) end)
 		end
 
 	hashable_variable_array_equality_tester: AGENT_BASED_EQUALITY_TESTER [AUT_HASHABLE_ITP_VARIABLE_ARRAY] is
-			-- Equality for hashable variable array
+			-- Equality tester for hashable variable array
 		do
 			create Result.make (agent (a, b: AUT_HASHABLE_ITP_VARIABLE_ARRAY): BOOLEAN do Result := a.is_equal (b) end)
+		end
+
+	predicate_access_pattern_equality_tester: AGENT_BASED_EQUALITY_TESTER [AUT_PREDICATE_ACCESS_PATTERN] is
+			-- Equality test for predicate access pattern
+		do
+			create Result.make (agent (a, b: AUT_PREDICATE_ACCESS_PATTERN): BOOLEAN do Result := a.is_equal (b) end)
 		end
 
 feature -- Access

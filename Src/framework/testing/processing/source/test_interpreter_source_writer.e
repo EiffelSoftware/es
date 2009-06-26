@@ -494,7 +494,8 @@ feature -- Object state retrieval
 				a_type.is_real_64 or else
 				a_type.is_character or else
 				a_type.is_boolean or else
-				a_type.is_character_32
+				a_type.is_character_32 or else
+				a_type.is_pointer
 			then
 				stream.put_line ("record_object_state_basic (o)")
 			else
@@ -657,31 +658,27 @@ feature -- Precondition satisfaction
 		end
 
 	predicate_text (a_predicate: AUT_PREDICATE_ACCESS_PATTERN): STRING is
-			--
+			-- Name of predicate
 		local
-			l_arg_count: INTEGER
-			i: INTEGER
-			j: INTEGER
 			l_text: STRING
+			l_cursor: DS_HASH_TABLE_CURSOR [INTEGER, INTEGER]
 		do
-			l_arg_count := a_predicate.feature_.feature_.argument_count
 			l_text := a_predicate.predicate.text.twin
+
 			from
-				i := 0
+				l_cursor := a_predicate.access_pattern.new_cursor
+				l_cursor.start
 			until
-				i > l_arg_count
+				l_cursor.after
 			loop
-				if a_predicate.access_pattern.has (i) then
-					j := a_predicate.access_pattern.item (i)
-					l_text.replace_substring_all ("{" + j.out + "}", argument_name (i))
-				end
-				i := i + 1
+				l_text.replace_substring_all ("{" + l_cursor.key.out + "}", argument_name (l_cursor.item))
+				l_cursor.forth
 			end
 			Result := l_text
 		end
 
 	argument_name (a_index: INTEGER): STRING is
-			--
+			-- Name of argument with `a_index'
 		do
 			Result := "l_arg" + a_index.out
 		end
@@ -699,7 +696,7 @@ feature -- Precondition satisfaction
 		local
 			l_predicates: DS_ARRAYED_LIST [AUT_PREDICATE_ACCESS_PATTERN]
 		do
-			if preconditions_of_feature.has (a_feature) then
+			if precondition_access_pattern.has (a_feature) then
 					-- Generate routine to check precondition of `a_feature'.
 				create l_predicates.make (5)
 				precondition_access_pattern.item (a_feature).do_all (agent l_predicates.force_last)

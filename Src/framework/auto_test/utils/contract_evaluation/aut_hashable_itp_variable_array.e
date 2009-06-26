@@ -90,7 +90,7 @@ feature {NONE} -- Implementation
 		local
 			i: INTEGER
 		do
-			string_representation.wipe_out
+			create string_representation.make (20)
 
 			from
 				i := internal_variables_array.lower

@@ -20,6 +20,11 @@ inherit
 			is_equal
 		end
 
+	DEBUG_OUTPUT
+		undefine
+			is_equal
+		end
+
 create
 	make
 
@@ -68,6 +73,14 @@ feature -- Access
 
 	index: INTEGER
 			-- Index of current variable
+
+feature -- Status report
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			Result := index.out
+		end
 
 feature -- Processing
 

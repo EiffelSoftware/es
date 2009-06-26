@@ -798,6 +798,9 @@ feature -- Execution
 
 	retrieve_object_state (a_variable: ITP_VARIABLE) is
 			-- Retrieve the state of variable `a_variable'.
+		require
+			a_variable_attached: a_variable /= Void
+			a_variable_defined: variable_table.is_variable_defined (a_variable)
 		local
 			l_type: TYPE_A
 			l_request: AUT_OBJECT_STATE_REQUEST
@@ -1743,9 +1746,9 @@ feature -- Predicate evaluation
 			-- Update predicate pool if there is a precondition violation when `a_feature' was executed with `a_related_objects'.
 		local
 			l_bp_slot: INTEGER
-			l_preconditions: DS_HASH_SET [AUT_PREDICATE]
-			l_pattern_cursor: DS_LINKED_LIST_CURSOR [AUT_PREDICATE_ACCESS_PATTERN]
-			l_access_patterns: DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN]
+--			l_preconditions: DS_HASH_SET [AUT_PREDICATE]
+			l_pattern_cursor: DS_HASH_SET_CURSOR [AUT_PREDICATE_ACCESS_PATTERN]
+			l_access_patterns: DS_HASH_SET [AUT_PREDICATE_ACCESS_PATTERN]
 			l_done: BOOLEAN
 			l_pred_args: LINKED_LIST [INTEGER]
 			l_pattern: DS_HASH_TABLE [INTEGER, INTEGER]
@@ -1760,7 +1763,6 @@ feature -- Predicate evaluation
 						if l_normal_response.exception /= Void and then l_normal_response.exception.is_test_invalid then
 							increase_failed_precondition_count
 							l_bp_slot := l_normal_response.exception.break_point_slot
-							l_preconditions := preconditions_of_feature.item (a_feature)
 							l_access_patterns := precondition_access_pattern.item (a_feature)
 							l_pattern_cursor := l_access_patterns.new_cursor
 							from
@@ -1778,7 +1780,7 @@ feature -- Predicate evaluation
 									until
 										l_ptn_cursor.after
 									loop
-										l_pred_args.extend (a_related_objects.item (l_ptn_cursor.key).index)
+										l_pred_args.extend (a_related_objects.item (l_ptn_cursor.item).index)
 										l_ptn_cursor.forth
 									end
 								end
@@ -2033,6 +2035,27 @@ feature -- Predicate evaluation
 			end
 		end
 
+	log_precondition_evaluation_overhead (a_precondition_evaluatior: AUT_PRECONDITION_SATISFACTION_TASK; a_type: TYPE_A; a_feature_to_call: FEATURE_I) is
+			-- Log overhead of current precondition evaluation task.
+		require
+			a_preconditior_evaluation_attached: a_precondition_evaluatior /= Void
+			a_type_attached: a_type /= Void
+			a_feature_to_call_attached: a_feature_to_call /= Void
+		do
+			if
+				configuration.is_precondition_checking_enabled and then
+				a_precondition_evaluatior.has_precondition
+			then
+				log_precondition_evaluation (
+					a_type,
+					a_feature_to_call,
+					a_precondition_evaluatior.tried_count,
+					a_precondition_evaluatior.worst_case_search_count,
+					a_precondition_evaluatior.start_time,
+					a_precondition_evaluatior.end_time,
+					a_precondition_evaluatior.is_last_precondition_evaluation_satisfied)
+			end
+		end
 
 feature -- Object State Exploration
 
