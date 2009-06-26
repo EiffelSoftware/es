@@ -450,11 +450,11 @@ feature{NONE} -- Implementation
 					-- Store that model in `last_solved_arguments'.
 				if has_constraint_model then
 					l_valuation := l_model_loader.valuation
-					if l_valuation.count = 1 then
-						l_valuation.start
-						random.forth
-						l_valuation.replace (random.item.abs + 1, l_valuation.key_for_iteration)
-					end
+--					if l_valuation.count = 1 then
+--						l_valuation.start
+--						random.forth
+--						l_valuation.replace (random.item.abs + 1, l_valuation.key_for_iteration)
+--					end
 					create last_solved_arguments.make (l_valuation.count)
 					from
 						l_valuation.start
