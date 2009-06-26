@@ -169,7 +169,7 @@ else
 
 		remtrace Enterprise edition for EiffelStudio
 		cdd %EIFFEL_SRC\Eiffel\API\constants
-		sed -e "s/Version_type_name:\ STRING\ is\ \"GPL\ Edition\"/Version_type_name:\ STRING\ is\ \"Enterprise\ Edition\"/g" system_constants.e >> new_system_constants.e
+		sed -e "s/Version_type_name:\ STRING\ =\ \"GPL\ Edition\"/Version_type_name:\ STRING\ =\ \"Enterprise\ Edition\"/g" system_constants.e >> new_system_constants.e
 		move new_system_constants.e system_constants.e
 		cdd %FINALIZATION_DIR
 		clean_project
