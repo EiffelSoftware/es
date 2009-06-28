@@ -132,6 +132,16 @@ feature -- Access
 			good_result: max_precondition_search_time = max_precondition_search_time_cache
 		end
 
+	max_candidate_count: INTEGER
+			-- Max number of returned candidates that satisfy the precondition
+			-- of the feature to call.
+			-- 0 means no limit.
+		do
+			Result := max_candidate_count_cache
+		ensure then
+			good_result: Result = max_candidate_count_cache
+		end
+
 feature -- Access: cache
 
 	types_cache: attached DS_HASH_SET [attached STRING]
@@ -189,6 +199,15 @@ feature -- Access: cache
 
 	is_citadel_test_generation_enabled_cache: like is_citadel_test_generation_enabled assign set_is_citadel_test_generation_enabled
 			-- Cache for `is_citadel_test_generation_enabled'
+
+	is_object_state_request_logged_cache: like is_object_state_request_logged
+			-- Cache for `is_object_state_request_logged'
+
+	max_candidate_count_cache: like max_candidate_count
+			-- Cache for `max_candidate_count'
+
+	is_pool_statistics_logged_cache: like is_pool_statistics_logged
+			-- Cache for `is_pool_statistics_logged'
 
 feature -- Status report
 
@@ -263,6 +282,14 @@ feature -- Object state retrieval
 			Result := object_state_config /= Void and then object_state_config.is_query_result_object_state_retrieval_enabled
 		end
 
+	is_object_state_request_logged: BOOLEAN
+			-- Should object state request be logged?
+		do
+			Result := is_object_state_request_logged_cache
+		ensure then
+			good_result: Result = is_object_state_request_logged_cache
+		end
+
 feature -- Precondition satisfaction
 
 	is_precondition_checking_enabled: BOOLEAN is
@@ -281,6 +308,15 @@ feature -- Precondition satisfaction
 			good_result: Result = linear_solving_cache
 		end
 
+	is_pool_statistics_logged: BOOLEAN is
+			-- Should statistics of object pool and predicate be logged?
+			-- Default: False
+		do
+			Result := is_pool_statistics_logged_cache
+		ensure then
+			good_result: Result = is_pool_statistics_logged_cache
+		end
+
 feature -- Object State Exploration
 
 	is_object_state_exploration_enabled: BOOLEAN is
@@ -290,7 +326,6 @@ feature -- Object State Exploration
 		ensure then
 			good_result: Result = object_state_exploration_cache
 		end
-
 
 	is_citadel_test_generation_enabled: BOOLEAN
 			-- Is random testing enabled?
@@ -458,6 +493,31 @@ feature -- Status setting
 		ensure
 			good_result: max_precondition_search_time = a_time
 		end
+
+	set_is_state_request_logged (b: BOOLEAN) is
+			-- Set `is_object_state_request_logged' with `b'.
+		do
+			is_object_state_request_logged_cache := b
+		ensure
+			is_state_request_logged_cache_set: is_object_state_request_logged_cache = b
+		end
+
+	set_max_candidate_count (a_count: like max_candidate_count) is
+			-- Set `is_object_state_request_logged' with `a_count'.
+		do
+			max_candidate_count_cache := a_count
+		ensure
+			max_candidate_count_cache_set: max_candidate_count_cache = a_count
+		end
+
+	set_is_pool_statistics_logged (b: like is_pool_statistics_logged) is
+			-- Set `is_pool_statistics_logged' with `b'.
+		do
+			is_pool_statistics_logged_cache := b
+		ensure
+			is_pool_statistics_logged_set: is_pool_statistics_logged_cache = b
+		end
+
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

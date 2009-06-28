@@ -41,18 +41,18 @@ feature{NONE} -- Initialization
 			interpreter := a_interpreter
 			steps_completed := True
 
-			create initial_variables.make (0, a_vars.count - 1)
+			create initial_operands.make (0, a_vars.count - 1)
 			from
 				i := 0
 				a_vars.start
 			until
 				a_vars.after
 			loop
-				initial_variables.put (a_vars.item_for_iteration, i)
+				initial_operands.put (a_vars.item_for_iteration, i)
 				i := i + 1
 				a_vars.forth
 			end
-			create candidate_variables.make (100)
+			create operand_candidates.make (100)
 			setup_precondition_predicates
 		end
 
@@ -76,18 +76,18 @@ feature -- Access
 	linear_solvable_preconditions: DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN]
 			-- Linearly solvable precondition predicates for `feature_'
 
-	initial_variables: ARRAY [detachable ITP_VARIABLE]
-			-- Initial variables as candidates
-			-- Index in `initial_variables' is 0-based.
+	initial_operands: ARRAY [detachable ITP_VARIABLE]
+			-- Initial operands as candidates
+			-- Index in `initial_operands' is 0-based.
 
-	last_evaluated_variables: like initial_variables
-			-- Variables used to evaluate the precondition of `feature_'
-			-- Index in `last_evaluated_variables' is 0-based, the first item is the target of the feature call.
+	last_evaluated_operands: like initial_operands
+			-- Operands used to evaluate the precondition of `feature_'
+			-- Index in `last_evaluated_operands' is 0-based, the first item is the target of the feature call.
 
-	candidate_variables: DS_ARRAYED_LIST [like initial_variables]
-			-- Queue for variable candidcate to execute `feature_'
+	operand_candidates: DS_ARRAYED_LIST [like initial_operands]
+			-- Queue for operand candidcate to execute `feature_'
 
-	partial_candidate: detachable like initial_variables
+	partial_candidate: detachable like initial_operands
 			-- Partial candidate
 
 	start_time: INTEGER
@@ -130,7 +130,7 @@ feature -- Status report
 		end
 
 	is_last_precondition_evaluation_satisfied: BOOLEAN
-			-- Does `last_evaluated_variables' satisfy the precondition of `feature_'?
+			-- Does `last_evaluated_operands' satisfy the precondition of `feature_'?
 
 feature -- Status
 
@@ -170,27 +170,37 @@ feature -- Execution
 
 			if interpreter.configuration.is_precondition_checking_enabled and then has_precondition then
 
-					-- Evaluate precondition satisfaction on `initial_variables'.
-				evaluate_precondition (initial_variables)
+					-- Evaluate precondition satisfaction on `initial_operands'.
+				if not has_linear_solvable_precondition then
+					evaluate_precondition (initial_operands)
+				else
+						-- In case that `feature_' has linearly solvable constraints, we always
+						-- use the constraint solver.
+					is_last_precondition_evaluation_satisfied := False
+				end
 
 				if is_last_precondition_evaluation_satisfied then
-						-- The initial assigned variables satisfy the precondition of `feature_'.					
+						-- The initially assigned operands satisfy the precondition of `feature_'.					
 					steps_completed := True
-					set_end_time (interpreter.duration_until_now.millisecond_count)
 				else
-						-- `initial_variables' DO NOT satisfy the precondition of `feature_',
+						-- `initial_operands' DO NOT satisfy the precondition of `feature_',
 						-- new search is needed.
 					load_candidates
-					steps_completed := candidate_variables.is_empty
+					steps_completed := operand_candidates.is_empty
 				end
 			else
-					-- If no precondition evaluation is enabled, we assume that `initial_variables'
+					-- If no precondition evaluation is enabled, we assume that `initial_operands'
 					-- satisfy the precondition.
 				is_last_precondition_evaluation_satisfied := True
 				steps_completed := True
-				last_evaluated_variables := initial_variables
+				last_evaluated_operands := initial_operands
+			end
+
+			if steps_completed then
 				set_end_time (interpreter.duration_until_now.millisecond_count)
 			end
+		ensure then
+			time_valid_if_finished: steps_completed implies (end_time >= start_time)
 		end
 
 	step is
@@ -202,25 +212,25 @@ feature -- Execution
 			if untried_candidate_count = 0 then
 				steps_completed := True
 			else
-					-- Get the next candidate from `candidate_variables',
-					-- store the candidate in `last_evaluated_variables'.
+					-- Get the next candidate from `operand_candidates',
+					-- store the candidate in `last_evaluated_operands'.
 					-- Those arguments in the candidate should already satisfy all normal preconditions.
 				random.forth
 				l_candidate_index := random.item \\ untried_candidate_count + 1
-				last_evaluated_variables := candidate_variables.item (l_candidate_index)
-				candidate_variables.swap (l_candidate_index, untried_candidate_count)
+				last_evaluated_operands := operand_candidates.item (l_candidate_index)
+				operand_candidates.swap (l_candidate_index, untried_candidate_count)
 				untried_candidate_count := untried_candidate_count - 1
 
 					-- Check if linearly solvable arguments have solution.
 				if has_linear_solvable_precondition then
-					choose_constraint_arguments
-					l_satisfied := has_constraint_model
+					solve_linear_constraint
+					l_satisfied := last_linear_constraint_solving_successful
 				else
 					l_satisfied := True
 				end
 
 				if l_satisfied then
-					is_last_precondition_evaluation_satisfied := constraint.is_constraint_operand_bound (last_evaluated_variables)
+					is_last_precondition_evaluation_satisfied := constraint.is_constraint_operand_bound (last_evaluated_operands)
 					steps_completed := is_last_precondition_evaluation_satisfied
 				end
 			end
@@ -229,9 +239,15 @@ feature -- Execution
 				set_end_time (interpreter.duration_until_now.millisecond_count)
 			end
 
-			if is_last_precondition_evaluation_satisfied then
-				interpreter.increase_suggested_precondition_count
+			if steps_completed then
+				if is_last_precondition_evaluation_satisfied then
+					interpreter.increase_suggested_precondition_count
+				elseif partial_candidate /= Void then
+					interpreter.increase_suggested_precondition_count_partial
+				end
 			end
+		ensure then
+			time_valid_if_finished: steps_completed implies (end_time >= start_time)
 		end
 
 	cancel
@@ -239,63 +255,66 @@ feature -- Execution
 		do
 			steps_completed := True
 			set_end_time (interpreter.duration_until_now.millisecond_count)
+		ensure then
+			time_valid_if_finished: end_time >= start_time
 		end
 
 feature{NONE} -- Implementation
 
 	untried_candidate_count: INTEGER
-			-- Number of candidates that have not been tried in `candidate_variables'.
+			-- Number of candidates that have not been tried in `operand_candidates'.
 
-	to_be_retrieved_candidate_count: INTEGER is 100
+	to_be_retrieved_candidate_count: INTEGER is
 			-- Max number of candidates that are to be retrieved.
 			-- The actual retrieved candidates can be fewer than this.
+		do
+			Result := interpreter.configuration.max_candidate_count
+		ensure
+			good_result: Result = interpreter.configuration.max_candidate_count
+		end
 
 	load_candidates is
-			-- Load candidate variables satisfying preconditions of `feature_'
-			-- into `candidate_variables'.
+			-- Load candidate operands satisfying preconditions of `feature_'
+			-- into `operand_candidates'.
 		require
 			precondition_to_be_evaluated: interpreter.configuration.is_precondition_checking_enabled
 		local
-			l_list: DS_LINKED_LIST [like initial_variables]
+			l_list: DS_LINKED_LIST [like initial_operands]
 		do
-				-- Every candidate in `candidate_variables' should contain all variables needed to call `feature_',
-				-- except for linearly constrained variables.
+				-- Every candidate in `operand_candidates' should contain all operands needed to call `feature_',
+				-- except for linearly constrained operands.
 			predicate_pool.generate_candidates (constraint, to_be_retrieved_candidate_count)
 			l_list := predicate_pool.last_candidates
-			create candidate_variables.make (l_list.count)
-			candidate_variables.append_last (l_list)
-			untried_candidate_count := candidate_variables.count
+			create operand_candidates.make (l_list.count)
+			operand_candidates.append_last (l_list)
+			untried_candidate_count := operand_candidates.count
 			partial_candidate := predicate_pool.last_partial_candidate
 		end
 
-	evaluate_precondition (a_variables: like initial_variables) is
-			-- Evalute precondition of `feature_' on `a_variables'.
+	evaluate_precondition (a_operands: like initial_operands) is
+			-- Evalute precondition of `feature_' on `a_operands'.
 			-- Set `is_last_precondition_evaluation_satisfied',
-			-- and put variable that satisfied the precondition into
-			-- `last_evaluated_variables'.
+			-- and put operands that satisfied the precondition into
+			-- `last_evaluated_operands'.
 		require
-			a_variables_attached: a_variables /= Void
+			a_operands_attached: a_operands /= Void
+			no_liear_solvable_preconditions: not has_linear_solvable_precondition
 		local
 			l_satisfied: BOOLEAN
 		do
-			last_evaluated_variables := a_variables.twin
+			last_evaluated_operands := a_operands.twin
 
 				-- Evaluate normal preconditions using predicate pool
 			if has_normal_precondition then
-				-- Check if `a_variables' satisfy `normal_preconditions'.
-				l_satisfied := predicate_pool.is_candidate_satisfied (constraint, last_evaluated_variables)
-			end
-
-				-- Check if linearly solvable arguments has solutions.
-			if l_satisfied and then has_linear_solvable_precondition then
-					-- Check if `a_variables' satisfy `linear_solvable_preconditions'.
-				choose_constraint_arguments
-				l_satisfied := has_constraint_model
+				-- Check if `a_operands' satisfy `normal_preconditions'.
+				l_satisfied := predicate_pool.is_candidate_satisfied (constraint, last_evaluated_operands)
+			else
+				l_satisfied := True
 			end
 
 				-- Check if all arguments are assigned.
 			if l_satisfied then
-				is_last_precondition_evaluation_satisfied := not last_evaluated_variables.has (Void)
+				is_last_precondition_evaluation_satisfied := not last_evaluated_operands.has (Void)
 			end
 		end
 
@@ -332,11 +351,17 @@ feature{NONE} -- Implementation
 			linear_solvable_preconditions_attached: linear_solvable_preconditions /= Void
 		end
 
-	choose_constraint_arguments is
-			-- Choose values for constraint arguments.
-			-- Set those arguments directly in `last_evaluated_variables'.
-			-- If there is no model for the constraint arguments,
-			-- set `has_constraint_model' to True, other set it to False.
+feature{NONE} -- Linear constraint solving
+
+	last_linear_constraint_solving_successful: BOOLEAN
+			-- Is last linear constraint solving successfult?
+
+	solve_linear_constraint is
+			-- Solve linear constraints defined in `linear_solvable_preconditions'.
+			-- If there is a solution, update `last_evaluated_operands' and set
+			-- `last_linear_constraint_solving_successful' to True,
+			-- otherwise, don't change `last_evaluated_operands' and set
+			-- `last_linear_constraint_solving_successful' to False.
 		local
 			l_state: HASH_TABLE [STRING, STRING]
 			l_smt_generator: AUT_CONSTRAINT_SOLVER_GENERATOR
@@ -345,194 +370,62 @@ feature{NONE} -- Implementation
 			l_new_query_name: STRING
 			l_query_name: detachable STRING
 			l_pattern_table: DS_HASH_TABLE [AUT_PREDICATE_ACCESS_PATTERN, AUT_PREDICATE]
+
+			l_solver: AUT_LINEAR_CONSTRAINT_SOLVER
 		do
 				-- Ask for states of the target object.
 				-- the value of constraining queries are in the retrieved states.
-			if last_evaluated_variables.item (0) /= Void then
-				l_state := interpreter.object_state (last_evaluated_variables.item (0))
-				has_constraint_model := not l_state.is_empty
+			if last_evaluated_operands.item (0) /= Void then
+				l_state := interpreter.object_state (last_evaluated_operands.item (0))
 			else
 				create l_state.make (0)
-				has_constraint_model := True
 			end
 
-				-- Generate linear constraint solving proof obligation.
-			if has_constraint_model then
-				create l_smt_generator
-				l_smt_generator.generate_smtlib (feature_, linear_solvable_preconditions)
-				linear_solvable_argument_names := l_smt_generator.constrained_arguments
-				check l_smt_generator.has_linear_constraints end
-				l_proof_obligation := l_smt_generator.last_smtlib.twin
+				-- Solve linear constraints.
+			create l_solver.make (feature_, linear_solvable_preconditions, l_state)
+			l_solver.solve
+			last_linear_constraint_solving_successful := l_solver.has_last_solution
 
-					-- Replace constraining queires by their actual value.
-				from
-					l_constraining_queries := l_smt_generator.constraining_queries
-					l_constraining_queries.start
-				until
-					l_constraining_queries.after or else not has_constraint_model
-				loop
-					l_query_name := l_state.item (l_constraining_queries.item_for_iteration)
-					if l_query_name = Void then
-							-- If the value of some constraining query cannot be retrieved,
-							-- the model for constrained arguments doesn't exist.
-						has_constraint_model := False
-					else
-						l_new_query_name := "$" + l_constraining_queries.item_for_iteration + "$"
-						l_proof_obligation.replace_substring_all (l_new_query_name, l_query_name)
-					end
-					l_constraining_queries.forth
-				end
-			end
-
-				-- Launch constraint solver to solve constrained arguments.
-			if has_constraint_model then
-				generate_smtlib_file (l_proof_obligation)
-				solve_arguments
-			end
-
-			if has_constraint_model then
-				insert_integers_in_pool
+			if last_linear_constraint_solving_successful then
+				insert_integers_in_pool (l_solver.last_solution)
 			end
 		end
 
-	has_constraint_model: BOOLEAN
-			-- It there is model for constraint arguments?
-
-	linear_solvable_argument_names: DS_HASH_SET [STRING]
-			-- Names of linearly solvable arguments
-
-	smtlib_file_path: FILE_NAME is
-			-- Full path for the generated SMT-LIB file
-		do
-			create Result.make_from_string (universe.project_location.workbench_path)
-			Result.set_file_name ("linear.smt")
-		end
-
-	generate_smtlib_file (a_content: STRING) is
-			-- Generate SMT-LIB file with `a_content'
-			-- at location `smtlib_file_path'.
-		local
-			l_file: PLAIN_TEXT_FILE
-		do
-			create l_file.make_create_read_write (smtlib_file_path)
-			l_file.put_string (a_content)
-			l_file.close
-		end
-
-	solve_arguments is
-			-- Solve linear constraints for constrained argument.
-			-- Store result in `last_solver_output'.
-		local
-			l_prc_factory: PROCESS_FACTORY
-			l_prc: PROCESS
-			l_model_loader: AUT_SOLVED_LINEAR_MODEL_LOADER
-			l_stream: KL_STRING_INPUT_STREAM
-			l_valuation: HASH_TABLE [INTEGER, STRING]
-			l_arg_name: STRING
-		do
-			create l_prc_factory
-			create last_solver_output.make (1024)
-			l_prc := l_prc_factory.process_launcher_with_command_line (linear_constraint_solver_command (smtlib_file_path), Void)
-			l_prc.redirect_output_to_agent (agent append_solver_output)
-			l_prc.redirect_error_to_same_as_output
-			l_prc.launch
-			if l_prc.launched then
-				l_prc.wait_for_exit
-				last_solver_output.replace_substring_all ("%R", "")
-				create l_stream.make (last_solver_output)
-				l_model_loader := sovled_linear_model_loader
-				l_model_loader.set_constrained_arguments (linear_solvable_argument_names)
-				l_model_loader.set_input_stream (l_stream)
-				l_model_loader.load_model
-				has_constraint_model := l_model_loader.has_model
-
-					-- We found a model for the constrained arguments.
-					-- Store that model in `last_solved_arguments'.
-				if has_constraint_model then
-					l_valuation := l_model_loader.valuation
---					if l_valuation.count = 1 then
---						l_valuation.start
---						random.forth
---						l_valuation.replace (random.item.abs + 1, l_valuation.key_for_iteration)
---					end
-					create last_solved_arguments.make (l_valuation.count)
-					from
-						l_valuation.start
-					until
-						l_valuation.after
-					loop
-						l_arg_name := l_valuation.key_for_iteration.twin
-						l_arg_name.replace_substring_all (normalized_argument_name_prefix, "")
-
-						last_solved_arguments.force (l_valuation.item_for_iteration, l_arg_name.to_integer)
-						l_valuation.forth
-					end
-				end
-			else
-				has_constraint_model := False
-			end
-		end
-
-	insert_integers_in_pool is
-			-- Insert model in `last_solved_arguments' in object pool.
-			-- Update arguments in `last_evaluated_variables' accordingly.
+	insert_integers_in_pool (a_integers: DS_HASH_TABLE [INTEGER, INTEGER]) is
+			-- Insert linearly solved integers in `a_integers' into object pool.
+			-- Update arguments in `last_evaluated_operands' accordingly.
+		require
+			a_integers_attached: a_integers /= Void
 		local
 			l_constant: ITP_CONSTANT
-			l_variable: ITP_VARIABLE
+			l_variable: detachable ITP_VARIABLE
+			l_constant_pool: like constant_pool
+			l_cursor: DS_HASH_TABLE_CURSOR [INTEGER, INTEGER]
 		do
+			l_constant_pool := constant_pool
 			from
-				last_solved_arguments.start
+				l_cursor := a_integers.new_cursor
+				l_cursor.start
 			until
-				last_solved_arguments.after
+				l_cursor.after
 			loop
-				create l_constant.make (last_solved_arguments.item_for_iteration)
-				l_variable := interpreter.variable_table.new_variable
-				interpreter.assign_expression (l_variable, l_constant)
-				last_evaluated_variables.put (l_variable, last_solved_arguments.key_for_iteration)
-
-				last_solved_arguments.forth
-			end
-		end
-
-	last_solver_output: STRING
-			-- Output from last launched solver
-
-	append_solver_output (a_string: STRING) is
-			-- Append `a_string' at the end of `last_solver_output'.
-		do
-			last_solver_output.append (a_string)
-		end
-
-	last_solved_arguments: HASH_TABLE [INTEGER, INTEGER]
-			-- Table of last linearly sovled arguments
-			-- [argument value, argument index]
-			-- Argument index is 1-based.
-
-	bounded_variable_count (a_variables: like last_evaluated_variables): INTEGER is
-			-- Number of bounded variables in `a_variables'.
-		require
-			a_variables_attached: a_variables /= Void
-		local
-			i: INTEGER
-			l_count: INTEGER
-		do
-			from
-				i := a_variables.lower
-				l_count := a_variables.upper
-			until
-				i > l_count
-			loop
-				if a_variables.item (i) /= Void then
-					Result := Result + 1
+				create l_constant.make (l_cursor.item)
+				l_variable := l_constant_pool.variable (l_constant)
+				if l_variable = Void then
+					l_variable := interpreter.variable_table.new_variable
+					interpreter.assign_expression (l_variable, l_constant)
+					l_constant_pool.put (l_constant, l_variable)
 				end
-				i := i + 1
+				last_evaluated_operands.put (l_variable, l_cursor.key)
+
+				l_cursor.forth
 			end
 		end
 
 invariant
 	normal_preconditions_attached: normal_preconditions /= Void
 	linear_solvable_preconditions_attached: linear_solvable_preconditions /= Void
-	candicate_queue_attached: candidate_variables /= Void
+	candicate_queue_attached: operand_candidates /= Void
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

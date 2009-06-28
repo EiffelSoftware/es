@@ -69,12 +69,14 @@ feature -- Process
 			create invalid_witness_observer.make (system)
 			create number_of_valid_test_case_observer.make (system, 1000 * 60)
 			create precondition_evaluation_observer.make (system)
+			create precondition_satisfaction_failure_rate_observer.make (system)
 
 			l_log_publisher.register_witness_observer (basic_witness_observer)
 			l_log_publisher.register_witness_observer (faulty_witness_observer)
 			l_log_publisher.register_witness_observer (invalid_witness_observer)
 			l_log_publisher.register_witness_observer (number_of_valid_test_case_observer)
 			l_log_publisher.register_witness_observer (precondition_evaluation_observer)
+			l_log_publisher.register_witness_observer (precondition_satisfaction_failure_rate_observer)
 			l_log_publisher.register_witness_observer (Current)
 
 				-- Load log file.
@@ -94,6 +96,7 @@ feature -- Process
 			print_test_case_generation_speed (l_output_file)
 			print_untested_features (l_output_file)
 			print_precondition_evaluation_overhead (l_output_file)
+			print_precondition_satisfaction_failure_rate (l_output_file)
 			print_fault_detail (l_output_file)
 			l_output_file.close
 		end
@@ -109,6 +112,8 @@ feature{NONE} -- Implementation
 	number_of_valid_test_case_observer: AUT_NUMBER_OF_VALID_TEST_CASE_OBSERVER
 
 	precondition_evaluation_observer: AUT_PRECONDITION_EVALUATION_OVERHEAD_OBSERVER
+
+	precondition_satisfaction_failure_rate_observer: AUT_PREDICATION_EVALUATION_FAILURE_RATE_OBSERVER
 
 feature -- Result printing
 
@@ -505,6 +510,46 @@ feature -- Result printing
 				l_faults.forth
 			end
 			a_output_stream.put_string ("%N")
+		end
+
+	print_precondition_satisfaction_failure_rate (a_output_stream: KI_TEXT_OUTPUT_STREAM) is
+			-- Print precondition satisfaction failure rate statistics into `a_output_stream'.
+		local
+			l_data: TUPLE [time_in_second: INTEGER; full_suggested: INTEGER; full_failed: INTEGER; partial_suggested: INTEGER; partial_failed: INTEGER]
+			l_cursor: DS_LINKED_LIST_CURSOR [TUPLE [time_in_second: INTEGER; full_suggested: INTEGER; full_failed: INTEGER; partial_suggested: INTEGER; partial_failed: INTEGER]]
+		do
+			a_output_stream.put_string ("--[Precondition satisfaction failure rate]%N")
+			a_output_stream.put_string ("Time(s)%T")
+			a_output_stream.put_string ("Full_suggested%T")
+			a_output_stream.put_string ("Full_failed%T")
+			a_output_stream.put_string ("Partial_suggested%T")
+			a_output_stream.put_string ("Partial_failed%N")
+			from
+				l_cursor := precondition_satisfaction_failure_rate_observer.statistics.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_data := l_cursor.item
+				a_output_stream.put_integer (l_data.time_in_second)
+				a_output_stream.put_character ('%T')
+
+				a_output_stream.put_integer (l_data.full_suggested)
+				a_output_stream.put_character ('%T')
+
+				a_output_stream.put_integer (l_data.full_failed)
+				a_output_stream.put_character ('%T')
+
+				a_output_stream.put_integer (l_data.partial_suggested)
+				a_output_stream.put_character ('%T')
+
+				a_output_stream.put_integer (l_data.partial_failed)
+				a_output_stream.put_character ('%N')
+
+				l_cursor.forth
+			end
+			
+			a_output_stream.put_character ('%N')
 		end
 
 feature -- Process

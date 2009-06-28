@@ -101,6 +101,7 @@ feature -- Generation
 					session.error_handler,
 					a_config)
 				l_new.add_observer (session.error_handler)
+				l_new.set_timeout (session.options.proxy_time_out)
 			end
 			last_interpreter := l_new
 		end

@@ -25,19 +25,22 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_system: like system; an_output_stream: like output_stream)
+	make (a_system: like system; an_output_stream: like output_stream; a_config: like configuration)
 			-- Create new request.
 		require
 			a_system_not_void: a_system /= Void
 			an_output_stream_not_void: an_output_stream /= Void
 			an_output_stream_is_writable: an_output_stream.is_open_write
+			a_config_attached: a_config /= Void
 		do
 			system := a_system
 			set_output_stream (an_output_stream)
+			configuration := a_config
 			create expression_printer.make (output_stream)
 		ensure
 			system_set: system = a_system
 			output_stream_set: output_stream = an_output_stream
+			configuration_set: configuration = a_config
 		end
 
 feature -- Access
@@ -47,6 +50,9 @@ feature -- Access
 
 	output_stream: KI_TEXT_OUTPUT_STREAM
 			-- Stream that printer writes to
+
+	configuration: TEST_GENERATOR_CONF_I
+			-- Configuration
 
 feature -- Setting
 
@@ -125,8 +131,10 @@ feature {AUT_REQUEST} -- Processing
 	process_object_state_request (a_request: AUT_OBJECT_STATE_REQUEST)
 			-- Process `a_request'.
 		do
-			output_stream.put_string (":state ")
-			output_stream.put_line (a_request.variable.name (variable_name_prefix))
+			if configuration.is_object_state_request_logged then
+				output_stream.put_string (":state ")
+				output_stream.put_line (a_request.variable.name (variable_name_prefix))
+			end
 		end
 
 	process_precodition_evaluation_request (a_request: AUT_PRECONDITION_EVALUATION_REQUEST)

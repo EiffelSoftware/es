@@ -178,8 +178,9 @@ feature -- Execution
 				precondition_evaluator.step
 			else
 				if not target_creator.has_error then
+					interpreter.set_is_last_suggestion_partial ((not precondition_evaluator.is_last_precondition_evaluation_satisfied) and then precondition_evaluator.partial_candidate /= Void)
 					if precondition_evaluator.is_last_precondition_evaluation_satisfied then
-						set_target_and_argument_from_candiate (precondition_evaluator.last_evaluated_variables)
+						set_target_and_argument_from_candiate (precondition_evaluator.last_evaluated_operands)
 						l_call := True
 					else
 						set_target_and_argument_from_candiate (precondition_evaluator.partial_candidate)

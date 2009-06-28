@@ -1,11 +1,11 @@
 note
-	description: "Summary description for {AUT_PRECONDITION_EVALUATION_OVERHEAD_OBSERVER}."
+	description: "Summary description for {AUT_PREDICATION_EVALUATION_FAILURE_RATE_OBSERVER}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AUT_PRECONDITION_EVALUATION_OVERHEAD_OBSERVER
+	AUT_PREDICATION_EVALUATION_FAILURE_RATE_OBSERVER
 
 inherit
 	AUT_WITNESS_OBSERVER
@@ -32,7 +32,7 @@ feature -- Access
 	statistics: DS_LINKED_LIST [like data_anchor_type]
 			-- Precondition evaluation statistics
 
-	data_anchor_type: TUPLE [evaluated_times: INTEGER; worst_case_times: INTEGER; start_time: INTEGER; end_time: INTEGER; succeeded: BOOLEAN; class_name: STRING; feature_name: STRING]
+	data_anchor_type: TUPLE [time_in_second: INTEGER; full_suggested: INTEGER; full_failed: INTEGER; partial_suggested: INTEGER; partial_failed: INTEGER]
 			-- Anchor type for data describing precondition evaluation overhead
 
 feature -- Process
@@ -58,11 +58,11 @@ feature -- Process
 				l_str.right_justify
 				l_parts := l_str.split (';')
 
-				l_data := [0, 0, 0, 0, False, "", ""]
+				l_data := [0, 0, 0, 0, 0]
 				from
 					i := 1
 				until
-					i > 4
+					i > 5
 				loop
 					l_part_str := l_parts.i_th (i).twin
 					l_part_str.remove_head (l_part_str.index_of (':', 1))
@@ -71,18 +71,6 @@ feature -- Process
 					l_data.put_integer (l_part_str.to_integer, i)
 					i := i + 1
 				end
-
-				l_parts.i_th (5).left_adjust
-				l_data.put_boolean (l_parts.i_th (5).to_boolean, 5)
-
-				l_parts := l_parts.i_th (6).split ('.')
-				l_class_name := l_parts.i_th (1)
-				l_class_name.left_adjust
-
-				l_feature_name := l_parts.i_th (2)
-				l_feature_name.left_adjust
-				l_data.put_reference (l_class_name, 6)
-				l_data.put_reference (l_feature_name, 7)
 				statistics.force_last (l_data)
 			end
 		end
@@ -94,14 +82,16 @@ feature -- Process
 
 feature{NONE} -- Implementation
 
-	precondition_eval_header: STRING is "-- Precondition_evaluation: "
+	precondition_eval_header: STRING is
 			-- Header of precondition evaluation comment
+		do
+			Result := {AUT_INTERPRETER_PROXY}.precondition_satisfaction_failure_rate_header
+		end
 
 	system: SYSTEM_I;
 			-- System under which the tests are performed
 
-
-;note
+note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

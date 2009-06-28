@@ -61,6 +61,9 @@ feature{NONE} -- Initialization
 			l_max_precondition_tries_op: AP_INTEGER_OPTION
 			l_max_precondition_time_op: AP_INTEGER_OPTION
 			l_prepare_citadel_tests_option: AP_STRING_OPTION
+			l_object_state_logged_option: AP_FLAG
+			l_candidate_count_option: AP_INTEGER_OPTION
+			l_pool_statistics_logged_option: AP_FLAG
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -185,6 +188,18 @@ feature{NONE} -- Initialization
 			create l_prepare_citadel_tests_option.make_with_long_form ("citadel")
 			l_prepare_citadel_tests_option.set_description ("Generate, from an existing proxy log given as next parameter, tests which CITADEL can use.")
 			parser.options.force_last (l_prepare_citadel_tests_option)
+
+			create l_object_state_logged_option.make_with_long_form ("object-state-logged")
+			l_object_state_logged_option.set_description ("Should object state request be logged. Default: False.")
+			parser.options.force_last (l_object_state_logged_option)
+
+			create l_candidate_count_option.make_with_long_form ("max-candidates")
+			l_candidate_count_option.set_description ("Max number of candidates that satisfy the precondition of the feature to call. 0 means no limit, default is 100.")
+			parser.options.force_last (l_candidate_count_option)
+
+			create l_pool_statistics_logged_option.make_with_long_form ("pool-statistics-logged")
+			l_pool_statistics_logged_option.set_description ("Should statistics of object pool and predicate pool be logged? Default: False")
+			parser.options.force_last (l_pool_statistics_logged_option)
 
 			parser.parse_list (a_arguments)
 
@@ -367,6 +382,22 @@ feature{NONE} -- Initialization
 				end
 			end
 
+			if not error_handler.has_error then
+				is_object_state_request_logged := l_object_state_logged_option.was_found
+			end
+
+			if not error_handler.has_error then
+				if l_candidate_count_option.was_found then
+					max_candidate_count := l_candidate_count_option.parameter
+				else
+					max_candidate_count := 100
+				end
+			end
+
+			if not error_handler.has_error then
+				is_pool_statistics_logged := l_pool_statistics_logged_option.was_found
+			end
+
 --			if parser.parameters.count = 0 then
 --				error_handler.report_missing_ecf_filename_error
 --				-- TODO: Display usage_instruction (currently not exported, find better way to do it.)
@@ -535,6 +566,19 @@ feature -- Status report
 
 	prepare_citadel_tests: BOOLEAN
 			-- Should AutoTest prepare tests for CITADEL from a given proxy log file?
+
+	is_object_state_request_logged: BOOLEAN
+			-- Should object state request be logged?
+			-- Default: False
+
+	max_candidate_count: INTEGER
+			-- Max number of candidates that satisfy the precondition of
+			-- the feature to call.
+			-- 0 means no limit. Default is 100.
+
+	is_pool_statistics_logged: BOOLEAN
+			-- Should statistics of object pool and predicate pool be logged?
+			-- Default: False
 
 feature {NONE} -- Constants
 

@@ -35,6 +35,7 @@ feature -- Cursor movement
 			l_bounded_var_index: INTEGER
 			l_mapping: DS_HASH_TABLE [INTEGER, INTEGER]
 			l_bounded_var_tbl: DS_HASH_TABLE [DS_HASH_SET [INTEGER], INTEGER]
+			l_set: DS_HASH_SET [INTEGER]
 			l_bound_var_index: INTEGER
 		do
 			before := False
@@ -61,10 +62,15 @@ feature -- Cursor movement
 
 				l_bounded_var_tbl := container.argument_tables.item (l_bound_var_index)
 				l_bounded_var_index := candidate.item (l_mapping.item (l_bound_var_index)).index
-				barrel_cursor := l_bounded_var_tbl.item (l_bounded_var_index).new_cursor
-				barrel_cursor.start
-				after := barrel_cursor.after
 
+				l_set := l_bounded_var_tbl.item (l_bounded_var_index)
+				if l_set /= Void then
+					barrel_cursor := l_set.new_cursor
+					barrel_cursor.start
+					after := barrel_cursor.after
+				else
+					after := True
+				end
 			else
 					-- Both arguments are bounded.
 				after := container.item (<<variable_from_index (candidate.item (free_variables.item (1)).index),

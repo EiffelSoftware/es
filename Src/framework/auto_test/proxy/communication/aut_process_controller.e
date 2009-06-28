@@ -223,7 +223,7 @@ feature {NONE} -- Implementation
 		do
 			if process.is_running then
 				if not process.force_terminated then
---					process.terminate_tree
+					process.terminate_tree
 				end
 				process.wait_for_exit
 			else

@@ -17,7 +17,8 @@ inherit
 			process_start_request,
 			process_create_object_request,
 			process_invoke_feature_request,
-			report_comment_line
+			report_comment_line,
+			report_request
 		end
 
 create
@@ -48,6 +49,16 @@ feature -- Access
 			Result := comment_processors_internal
 		end
 
+feature -- Report
+
+	report_request (a_producer: AUT_PROXY_EVENT_PRODUCER; a_request: AUT_REQUEST)
+			-- <Precursor>
+		do
+			Precursor (a_producer, a_request)
+			a_request.set_test_case_index (last_test_case_index)
+			a_request.set_start_time (last_test_case_start_time)
+		end
+
 feature{NONE} -- Processing
 
 	process_start_request (a_request: AUT_START_REQUEST)
@@ -61,20 +72,22 @@ feature{NONE} -- Processing
 
 	process_create_object_request (a_request: AUT_CREATE_OBJECT_REQUEST)
 		do
-			if last_test_case_request /= Void then
-				last_test_case_request.set_end_time (last_test_case_end_time)
-			end
-			a_request.set_start_time (last_test_case_start_time)
+--			if last_test_case_request /= Void then
+--				last_test_case_request.set_end_time (last_test_case_end_time)
+--			end
+--			a_request.set_start_time (last_test_case_start_time)
+			a_request.set_end_time (last_test_case_end_time)
 			Precursor (a_request)
 			update_result_repository
 		end
 
 	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)
 		do
-			if last_test_case_request /= Void then
-				last_test_case_request.set_end_time (last_test_case_end_time)
-			end
-			a_request.set_start_time (last_test_case_start_time)
+--			if last_test_case_request /= Void then
+--				last_test_case_request.set_end_time (last_test_case_end_time)
+--			end
+--			a_request.set_start_time (last_test_case_start_time)
+			a_request.set_end_time (last_test_case_end_time)
 			Precursor (a_request)
 			update_result_repository
 		end
@@ -112,8 +125,8 @@ feature {NONE} -- Implementation
 		do
 			create witness.make (request_history, last_start_index, request_history.count)
 			result_repository.add_witness (witness)
-			last_test_case_request := witness.item (witness.count)
-			last_test_case_request.set_test_case_index (last_test_case_index)
+--			last_test_case_request := witness.item (witness.count)
+--			last_test_case_request.set_test_case_index (last_test_case_index)
 		end
 
 feature -- Time measurement
@@ -184,8 +197,8 @@ feature -- Time measurement
 			end
 		end
 
-	last_test_case_request: detachable AUT_REQUEST
-			-- Request of the last met test case
+--	last_test_case_request: detachable AUT_REQUEST
+--			-- Request of the last met test case
 
 	last_test_case_index: INTEGER
 			-- Last met test case index

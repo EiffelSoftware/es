@@ -107,8 +107,8 @@ feature{NONE} -- Implementation
 			fixme ("The following 4 lines are copied from the Precursor version, should be refactored.")
 			create witness.make (request_history, last_start_index, request_history.count)
 			result_repository.add_witness (witness)
-			last_test_case_request := witness.item (witness.count)
-			last_test_case_request.set_test_case_index (last_test_case_index)
+--			last_test_case_request := witness.item (witness.count)
+--			last_test_case_request.set_test_case_index (last_test_case_index)
 
 				-- Add the new witness to the end of `unprocessed_witnesses'.
 			if witness_veto_function = Void or else witness_veto_function.item ([witness]) then

@@ -159,8 +159,9 @@ feature -- Execution
 			elseif precondition_evaluator /= Void and then precondition_evaluator.has_next_step then
 				precondition_evaluator.step
 			else
+				interpreter.set_is_last_suggestion_partial (precondition_evaluator.is_last_precondition_evaluation_satisfied)
 				if precondition_evaluator.is_last_precondition_evaluation_satisfied then
-					set_arguments_from_candidate (precondition_evaluator.last_evaluated_variables)
+					set_arguments_from_candidate (precondition_evaluator.last_evaluated_operands)
 				else
 					set_arguments_from_candidate (precondition_evaluator.partial_candidate)
 				end

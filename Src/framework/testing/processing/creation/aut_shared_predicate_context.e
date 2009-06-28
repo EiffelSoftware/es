@@ -136,6 +136,14 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
+	constant_pool: AUT_CONSTANT_POOL is
+			-- Constant pool
+		once
+			create Result.make
+		ensure
+			result_attached: Result /= Void
+		end
+
 feature -- Basic operations
 
 	put_predicate (a_predicate: AUT_PREDICATE) is

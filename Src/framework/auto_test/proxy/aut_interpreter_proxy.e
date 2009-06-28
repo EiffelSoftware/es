@@ -73,6 +73,8 @@ inherit
 
 	AUT_SHARED_RANDOM
 
+	AUT_SHARED_TYPE_FORMATTER
+
 create
 	make
 
@@ -116,12 +118,12 @@ feature {NONE} -- Initialization
 				-- but we also want the test cases to be readable, so we use a text printer to print those
 				-- test cases into plain text.
 			create request_printer.make
-			request_printer.extend (create {AUT_REQUEST_TEXT_PRINTER}.make (system, log_stream))
+			request_printer.extend (create {AUT_REQUEST_TEXT_PRINTER}.make (system, log_stream, configuration))
 			request_printer.extend (socket_data_printer)
 
 				-- Ilinca, "number of faults law" experiment
 			create failure_log_stream.make_empty
-			create failure_request_printer.make (system, failure_log_stream)
+			create failure_request_printer.make (system, failure_log_stream, configuration)
 
 			executable_file_name := an_executable_file_name
 			melt_path := file_system.dirname (executable_file_name)
@@ -1103,7 +1105,7 @@ feature{NONE} -- Process scheduling
 					log (log_stream.string)
 --					failure_log (failure_log_stream.string) -- Ilinca, "number of faults law" experiment
 					request_count := request_count + 1
-					process.set_timeout (timeout+100000)
+					process.set_timeout (timeout)
 					if socket /= Void and then socket.is_open_write and socket.extendible then
 						l_last_bc_request := socket_data_printer.last_request
 						socket.put_natural_32 (l_last_bc_request.flag)
@@ -1475,6 +1477,8 @@ feature{NONE} -- Speed logging
 						log_line ("-- testing speed: " + l_speed.out + " test cases per minute.")
 						test_case_log_count := 0
 						last_speed_check_time := l_time_now
+
+						log_pool_statistics
 					else
 						test_case_log_count := test_case_log_count + 1
 					end
@@ -1522,6 +1526,7 @@ feature -- Precondition satisfaction
 			variable_table.wipe_out_actions.extend (agent l_pool.wipe_out)
 			typed_object_pool_cell.put (l_pool)
 			variable_table.wipe_out_actions.extend (agent predicate_pool.wipe_out)
+			variable_table.wipe_out_actions.extend (agent constant_pool.wipe_out)
 		end
 
 	is_precondition_satisfied (a_feature: AUT_FEATURE_OF_TYPE; a_variables: DS_LIST [ITP_VARIABLE]): BOOLEAN is
@@ -1650,24 +1655,39 @@ feature -- Precondition satisfaction
 			-- `a_start_time' is the start time in millisecond when the precondition evaluation started.
 			-- `a_end_time' is the end time in millisecond when the precondition evaluation ended.
 			-- `a_succeed' is whether an object combination satisfying `a_feature''s precondition is found.
+		require
+			a_type_attached: a_type /= Void
+			a_type_valid: a_type.has_associated_class
+			a_feature_attached: a_feature /= Void
+			a_tried_count_non_negative: a_tried_count >= 0
+			a_worst_case_count_non_negative: a_worst_case_count >= 0
+			a_worst_case_count_valid: a_tried_count <= a_worst_case_count
+			a_start_time_non_negative: a_start_time >= 0
+			a_end_time_non_negative: a_end_time >= 0
+			a_time_valid: a_end_time >= a_start_time
 		local
 			l_text: STRING
 		do
 			create l_text.make (128)
-			l_text.append ("-- Precondition_eval: ")
+			l_text.append ("-- Precondition_evaluation: ")
 
+			l_text.append ("tried_times: ")
 			l_text.append (a_tried_count.out)
 			l_text.append ("; ")
 
+			l_text.append ("max_times: ")
 			l_text.append (a_worst_case_count.out)
 			l_text.append ("; ")
 
+			l_text.append ("start time: ")
 			l_text.append (a_start_time.out)
 			l_text.append ("; ")
 
+			l_text.append ("end time: ")
 			l_text.append (a_end_time.out)
 			l_text.append ("; ")
 
+			l_text.append ("Succeeded: ")
 			l_text.append (a_succeeded.out)
 			l_text.append ("; ")
 
@@ -1761,7 +1781,7 @@ feature -- Predicate evaluation
 				if last_response.is_precondition_violation then
 					if attached {AUT_NORMAL_RESPONSE} last_response as l_normal_response then
 						if l_normal_response.exception /= Void and then l_normal_response.exception.is_test_invalid then
-							increase_failed_precondition_count
+							increase_failed_precondition_count (is_last_suggestion_partial)
 							l_bp_slot := l_normal_response.exception.break_point_slot
 							l_access_patterns := precondition_access_pattern.item (a_feature)
 							l_pattern_cursor := l_access_patterns.new_cursor
@@ -2007,16 +2027,42 @@ feature -- Predicate evaluation
 			-- on feature whose target and arguments are suggensted
 			-- by precondition satisfaction strategy
 
+	failed_precondition_count_partial: INTEGER
+			-- Number of times when precondition fails
+			-- on feature whose target and arguments are partially suggested
+
 	suggested_precondition_count: INTEGER
 			-- Number of times when objects that seems to satisfy
 			-- precodition of a feature is suggested.
 
-	increase_failed_precondition_count is
-			-- Increase `failed_precondition_count' by 1.
+	suggested_precondition_count_partial: INTEGER
+			-- Number of times when objects that seems to satisfy
+			-- precondition of a feautre is suggested.
+			-- These objects candidates are partial, meaning according to
+			-- the predicate pool, they only satisfy part of the feature's
+			-- precondition, not all of them.
+
+	is_last_suggestion_partial: BOOLEAN
+			-- Is the last suggested object combination to satisfy the precondition
+			-- of the feature to be called partial?
+
+	set_is_last_suggestion_partial (b: BOOLEAN) is
+			-- Set `is_last_suggestion_partial' with `b'.
 		do
-			failed_precondition_count := failed_precondition_count + 1
+			is_last_suggestion_partial := b
 		ensure
-			failed_precondition_count_increase: failed_precondition_count = old failed_precondition_count + 1
+			is_last_suggestion_partial_set: is_last_suggestion_partial = b
+		end
+
+	increase_failed_precondition_count (is_partial: BOOLEAN) is
+			-- Increase `failed_precondition_count' by 1 if `is_partial' is False,
+			-- otherwise, increase `failed_precondition_count_partial' by 1.
+		do
+			if is_last_suggestion_partial then
+				failed_precondition_count_partial := failed_precondition_count_partial + 1
+			else
+				failed_precondition_count := failed_precondition_count + 1
+			end
 		end
 
 	increase_suggested_precondition_count is
@@ -2027,11 +2073,38 @@ feature -- Predicate evaluation
 			suggested_precondition_count_increase: suggested_precondition_count = old suggested_precondition_count + 1
 		end
 
+	increase_suggested_precondition_count_partial is
+			-- Increase `suggested_precondition_count_partial' by 1.
+		do
+			suggested_precondition_count_partial := suggested_precondition_count_partial + 1
+		ensure
+			suggested_precondition_count_partial_increase: suggested_precondition_count_partial = old suggested_precondition_count_partial + 1
+		end
+
+	precondition_satisfaction_failure_rate_header: STRING is "-- Precondition satisfactoin failure rate:"
+			-- Header for precondition satisfaction failure rate logging
+
 	log_precondition_evaluation_failure_rate is
 			-- Log failure rate of precondition satisfaction.
+		local
+			time_now: DT_DATE_TIME
+			duration: DT_DATE_TIME_DURATION
 		do
-			if configuration.is_precondition_checking_enabled and then suggested_precondition_count > 0 and then suggested_precondition_count \\ 100 = 0 then
-				log_line ("-- Precondition satisfactoin: suggested " + suggested_precondition_count.out + "; " + "failed " + failed_precondition_count.out)
+			if
+				configuration.is_precondition_checking_enabled and then
+				(suggested_precondition_count > 0 or suggested_precondition_count_partial > 0) and then
+				((suggested_precondition_count + suggested_precondition_count_partial) \\ 10 = 0)
+			then
+				time_now := system_clock.date_time_now
+				duration := time_now.duration (proxy_start_time)
+				duration.set_time_canonical
+				log_line (
+					precondition_satisfaction_failure_rate_header +
+					" second: " + duration.second_count.out +
+					"; full_suggested: " + suggested_precondition_count.out +
+					"; full_failed: " + failed_precondition_count.out +
+					"; partial_suggested: " + suggested_precondition_count_partial.out +
+					"; partial_failed: " + failed_precondition_count_partial.out)
 			end
 		end
 
@@ -2054,6 +2127,45 @@ feature -- Predicate evaluation
 					a_precondition_evaluatior.start_time,
 					a_precondition_evaluatior.end_time,
 					a_precondition_evaluatior.is_last_precondition_evaluation_satisfied)
+			end
+		end
+
+	log_pool_statistics is
+			-- Log statistics about predicate pool.
+		local
+			l_context_class: CLASS_C
+			l_var_table_cursor: DS_HASH_TABLE_CURSOR [DS_ARRAYED_LIST [ITP_VARIABLE], TYPE_A]
+			l_pred_table_cursor: DS_HASH_TABLE_CURSOR [AUT_PREDICATE_VALUATION, AUT_PREDICATE]
+		do
+			if configuration.is_pool_statistics_logged then
+				l_context_class := interpreter_class
+				check l_context_class /= Void end
+
+					-- Log statistics of object pool: which is the number of objects of each type.
+				if typed_object_pool /= Void then
+					log_line ("-- Object pool statistics:")
+					from
+						l_var_table_cursor := typed_object_pool.variable_table.new_cursor
+						l_var_table_cursor.start
+					until
+						l_var_table_cursor.after
+					loop
+						log_line ("--   " + type_name_with_context (l_var_table_cursor.key, l_context_class, Void) + ": " + l_var_table_cursor.item.count.out)
+						l_var_table_cursor.forth
+					end
+				end
+
+					-- Log statistics of predicate pool: which is the number of valuations for each predicate.
+				log_line ("-- Predicate pool statistics:")
+				from
+					l_pred_table_cursor := predicate_pool.valuation_table.new_cursor
+					l_pred_table_cursor.start
+				until
+					l_pred_table_cursor.after
+				loop
+					log_line ("--   " + l_pred_table_cursor.key.text + ": " + l_pred_table_cursor.item.count.out)
+					l_pred_table_cursor.forth
+				end
 			end
 		end
 

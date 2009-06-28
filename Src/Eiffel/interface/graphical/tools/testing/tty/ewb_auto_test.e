@@ -78,7 +78,6 @@ feature -- Execution
 			l_type: STRING
 			l_root_group: CONF_GROUP
 			l_project: E_PROJECT
-			l_state_config: AUT_OBJECT_STATE_CONFIG
 		do
 			l_args := auto_test_arguments
 			if l_args /= Void then
@@ -164,6 +163,14 @@ feature -- Execution
 					l_conf.set_seed ((-l_ap.random.seed).to_natural_32)
 				end
 
+					-- Should object state request be logged?
+				l_conf.set_is_state_request_logged (l_ap.is_object_state_request_logged)
+
+					-- Set max candidates count for precondition evaluation
+				l_conf.set_max_candidate_count (l_ap.max_candidate_count)
+
+					-- Should statistics of object pool and predicate pool be logged?
+				l_conf.set_is_pool_statistics_logged (l_ap.is_pool_statistics_logged)
 
 				if l_root_group.is_cluster then
 					if attached {CONF_CLUSTER} l_root_group as l_cluster then

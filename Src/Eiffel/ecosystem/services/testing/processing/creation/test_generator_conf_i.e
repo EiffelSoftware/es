@@ -94,6 +94,15 @@ feature -- Access
 		deferred
 		end
 
+	max_candidate_count: INTEGER
+			-- Max number of returned candidates that satisfy the precondition
+			-- of the feature to call.
+			-- 0 means no limit.
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
 feature -- Status report
 
 	is_slicing_enabled: BOOLEAN
@@ -176,15 +185,34 @@ feature -- Object state retrieval
 					is_query_result_state_retrieved
 		end
 
+	is_object_state_request_logged: BOOLEAN
+			-- Should object state request be logged?
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
 feature -- Precondition satisfaction
 
 	is_precondition_checking_enabled: BOOLEAN is
 			-- Is precondition checking before feature call enabled?
+			-- Default: False
+		require
+			usable: is_interface_usable
 		deferred
 		end
 
 	is_linear_constraint_solving_enabled: BOOLEAN is
 			-- Is linear constraint solving for integers enabled?
+			-- Default: False
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	is_pool_statistics_logged: BOOLEAN is
+			-- Should statistics of object pool and predicate be logged?
+			-- Default: False
 		deferred
 		end
 

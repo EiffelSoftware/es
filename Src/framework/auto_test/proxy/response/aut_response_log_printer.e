@@ -53,6 +53,19 @@ feature -- Access
 	output_stream: KI_CHARACTER_OUTPUT_STREAM
 			-- Stream where output fron `Current' printer should go to
 
+	configuration: detachable TEST_GENERATOR_CONF_I
+			-- Configuration
+
+feature -- Setting
+
+	set_configuration (a_config: like configuration) is
+			-- Set `configuration' with `a_config'.
+		do
+			configuration := a_config
+		ensure
+			configuration_set: configuration = a_config
+		end
+
 feature -- Process
 
 	process_normal_response (a_response: AUT_NORMAL_RESPONSE)
@@ -104,44 +117,46 @@ feature -- Process
 			l_value: STRING
 			l_state: STRING
 		do
-			l_void := object_state_void_value
-			print_line (multi_line_value_start_tag)
-			l_results := a_response.query_results
-			if not a_response.is_void and then not a_response.is_class_invariant_violated then
-				create l_state.make (64)
-				from
-					l_results.start
-				until
-					l_results.after
-				loop
-						-- Print out query name in a line.
-					l_state.wipe_out
-					l_state.append (l_results.key_for_iteration)
-					l_state.append_character (':')
+			if configuration /= Void and then configuration.is_object_state_request_logged then
+				l_void := object_state_void_value
+				print_line (multi_line_value_start_tag)
+				l_results := a_response.query_results
+				if not a_response.is_void and then not a_response.is_class_invariant_violated then
+					create l_state.make (64)
+					from
+						l_results.start
+					until
+						l_results.after
+					loop
+							-- Print out query name in a line.
+						l_state.wipe_out
+						l_state.append (l_results.key_for_iteration)
+						l_state.append_character (':')
 
-						-- Print out query value (possibly in multiple lines).
-					if l_results.item_for_iteration = Void then
-						l_value := l_void
-					else
-						l_value := l_results.item_for_iteration
-						l_value.replace_substring_all ("%N", "%%N")
+							-- Print out query value (possibly in multiple lines).
+						if l_results.item_for_iteration = Void then
+							l_value := l_void
+						else
+							l_value := l_results.item_for_iteration
+							l_value.replace_substring_all ("%N", "%%N")
+						end
+						l_state.append (l_value)
+						l_state.append_character ('%N')
+
+						print_lines_with_prefix (l_state, <<response_prefix, object_state_query_prefix>>)
+						l_results.forth
 					end
-					l_state.append (l_value)
-					l_state.append_character ('%N')
-
-					print_lines_with_prefix (l_state, <<response_prefix, object_state_query_prefix>>)
-					l_results.forth
 				end
+				print_line (multi_line_value_end_tag)
+				if a_response.is_class_invariant_violated then
+					print_line (object_state_invariant_violation)
+				elseif a_response.is_void then
+					print_line (object_is_void)
+				else
+					print_line (interpreter_success_message)
+				end
+				print_line (interpreter_done_message)
 			end
-			print_line (multi_line_value_end_tag)
-			if a_response.is_class_invariant_violated then
-				print_line (object_state_invariant_violation)
-			elseif a_response.is_void then
-				print_line (object_is_void)
-			else
-				print_line (interpreter_success_message)
-			end
-			print_line (interpreter_done_message)
 		end
 
 	process_precondition_evaluation_response (a_response: AUT_PRECONDITION_EVALUATION_RESPONSE)
