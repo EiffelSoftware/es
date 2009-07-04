@@ -70,26 +70,6 @@ feature -- Access
 
 feature -- Access
 
-	sovled_linear_model_loader: AUT_SOLVED_LINEAR_MODEL_LOADER is
-			-- Loader of a solved linear model
-		do
-			if {PLATFORM}.is_windows then
-				create {AUT_Z3_SOLVED_LINEAR_MODEL_LOADER} Result
-			else
-				create {AUT_CVC3_SOLVED_LINEAR_MODEL_LOADER} Result
-			end
-		end
-
-	linear_constraint_solver_command (a_smtlib_file_path: STRING): STRING is
-			-- Command to sovle linear constraints, with input file `a_smtlib_file_path'
-		do
-			if {PLATFORM}.is_windows then
-				Result := "z3 /m /smt " + a_smtlib_file_path
-			else
-				Result := "/bin/sh -c %"cvc3 +model -lang smt " + a_smtlib_file_path + "%""
-			end
-		end
-
 	testable_features_from_type (a_type: TYPE_A; a_system: SYSTEM_I): DS_LINKED_LIST [AUT_FEATURE_OF_TYPE] is
 			-- Features in `a_type' in `a_system' which are testable by AutoTest
 		require
@@ -156,6 +136,93 @@ feature -- Access
 
 	normalized_argument_name_prefix: STRING is "a_arg_";
 		-- Prefix for normalized argument name
+
+feature -- Constraint solving related
+
+	constrained_operands_from_access_patterns (a_patterns: DS_LINEAR [AUT_PREDICATE_ACCESS_PATTERN]): DS_HASH_SET [STRING] is
+			-- Names of contrained arguments in `a_patterns'
+		require
+			a_patterns_attached: a_patterns /= Void
+		local
+			l_ptn_cursor: DS_LINEAR_CURSOR [AUT_PREDICATE_ACCESS_PATTERN]
+			l_cursor: DS_HASH_TABLE_CURSOR [INTEGER, INTEGER]
+		do
+			create Result.make (5)
+			Result.set_equality_tester (string_equality_tester)
+
+			from
+				l_ptn_cursor := a_patterns.new_cursor
+				l_ptn_cursor.start
+			until
+				l_ptn_cursor.after
+			loop
+				if attached {AUT_LINEAR_SOLVABLE_PREDICATE} l_ptn_cursor.item.predicate as l_linear_pred then
+					from
+						l_cursor := l_ptn_cursor.item.access_pattern.new_cursor
+						l_cursor.start
+					until
+						l_cursor.after
+					loop
+						if l_cursor.item > 0 then
+							Result.force_last (normalized_argument_name (l_cursor.item))
+						end
+						l_cursor.forth
+					end
+				end
+				l_ptn_cursor.forth
+			end
+		ensure
+			result_attached: Result /= Void
+		end
+
+	constraining_queries_from_access_patterns (a_patterns: DS_LINEAR [AUT_PREDICATE_ACCESS_PATTERN]): DS_HASH_SET [STRING] is
+			-- Names of constraining queries in `a_patterns'
+		require
+			a_patterns_attached: a_patterns /= Void
+		local
+			l_ptn_cursor: DS_LINEAR_CURSOR [AUT_PREDICATE_ACCESS_PATTERN]
+		do
+			create Result.make (5)
+			Result.set_equality_tester (string_equality_tester)
+
+			from
+				l_ptn_cursor := a_patterns.new_cursor
+				l_ptn_cursor.start
+			until
+				l_ptn_cursor.after
+			loop
+				if attached {AUT_LINEAR_SOLVABLE_PREDICATE} l_ptn_cursor.item.predicate as l_linear_pred then
+					l_linear_pred.constraining_queries.do_all (agent Result.force_last)
+				end
+				l_ptn_cursor.forth
+			end
+		ensure
+			result_attached: Result /= Void
+		end
+
+	assertions_from_access_patterns (a_patterns: DS_LINEAR [AUT_PREDICATE_ACCESS_PATTERN]): DS_LINKED_LIST [AUT_EXPRESSION] is
+			-- Predicate assertions in `a_patterns'
+		require
+			a_patterns_attached: a_patterns /= Void
+		local
+			l_ptn_cursor: DS_LINEAR_CURSOR [AUT_PREDICATE_ACCESS_PATTERN]
+		do
+			create Result.make
+
+			from
+				l_ptn_cursor := a_patterns.new_cursor
+				l_ptn_cursor.start
+			until
+				l_ptn_cursor.after
+			loop
+				if attached {AUT_LINEAR_SOLVABLE_PREDICATE} l_ptn_cursor.item.predicate as l_linear_pred then
+					Result.force_last (l_linear_pred.expression)
+				end
+				l_ptn_cursor.forth
+			end
+		ensure
+			result_attached: Result /= Void
+		end
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

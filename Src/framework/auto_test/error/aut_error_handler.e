@@ -622,6 +622,14 @@ feature -- Reporting errors
 			report_error_message ("Could not create file '" + a_filename + "' for writing.")
 		end
 
+	report_linear_constraint_solver_name_error (a_name: STRING)
+			-- Report invalid `a_name' for linear constraint solver.
+		require
+			a_name_attached: a_name /= Void
+		do
+			report_error_message ("Linear constraint solver name %"" + a_name + "%" is not supported.")
+		end
+
 invariant
 	remaining_time_not_negative: remaining_time /= Void implies remaining_time.second_count >= 0
 	system_attached: system /= Void

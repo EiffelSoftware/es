@@ -172,6 +172,10 @@ feature -- Execution
 					-- Should statistics of object pool and predicate pool be logged?
 				l_conf.set_is_pool_statistics_logged (l_ap.is_pool_statistics_logged)
 
+					-- Set linear constraint solver to be used.
+				l_conf.set_is_smt_linear_constraint_solver_enabled (l_ap.is_smt_linear_constraint_solver_enabled)
+				l_conf.set_is_lpsolve_linear_constraint_solver_enabled (l_ap.is_lpsolve_contraint_linear_solver_enabled)
+
 				if l_root_group.is_cluster then
 					if attached {CONF_CLUSTER} l_root_group as l_cluster then
 						l_conf.set_cluster (l_cluster)

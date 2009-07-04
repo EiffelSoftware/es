@@ -5,16 +5,19 @@ note
 	revision: "$Revision$"
 
 class
-	AUT_Z3_SOLVED_LINEAR_MODEL_LOADER
+	AUT_Z3_LINEAR_MODEL_LOADER
 
 inherit
-	AUT_SOLVED_LINEAR_MODEL_LOADER
+	AUT_SAT_BASED_LINEAR_MODEL_LOADER
+
+create
+	make
 
 feature -- Basic operations
 
 	load_model is
 			-- Load model from `input_stream'.
-			-- If there is a model for `constrained_arguments', set `has_model' to True,
+			-- If there is a model for `constrained_operands', set `has_model' to True,
 			-- and then load valuations of constrained arguments into `valuation'.
 		local
 			l_line: STRING
@@ -33,11 +36,11 @@ feature -- Basic operations
 		do
 			create valuation.make (2)
 			valuation.compare_objects
-			
+
 			input_stream.read_line
 			l_line := input_stream.last_string
 
-				-- if the first line is `partitions_line', there is a model for `constrained_arguments'.
+				-- if the first line is `partitions_line', there is a model for `constrained_operands'.
 			has_model := l_line.is_equal (partitions_line)
 
 			if has_model then
@@ -67,7 +70,7 @@ feature -- Basic operations
 						until
 							l_vars.after
 						loop
-							if not l_vars.item_for_iteration.is_empty and then constrained_arguments.has (l_vars.item_for_iteration) then
+							if not l_vars.item_for_iteration.is_empty and then constrained_operands.has (l_vars.item_for_iteration) then
 								valuation.force (l_value, l_vars.item_for_iteration)
 							end
 							l_vars.forth

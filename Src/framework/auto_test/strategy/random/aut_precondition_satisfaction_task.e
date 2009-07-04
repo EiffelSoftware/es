@@ -364,7 +364,6 @@ feature{NONE} -- Linear constraint solving
 			-- `last_linear_constraint_solving_successful' to False.
 		local
 			l_state: HASH_TABLE [STRING, STRING]
-			l_smt_generator: AUT_CONSTRAINT_SOLVER_GENERATOR
 			l_proof_obligation: STRING
 			l_constraining_queries: DS_HASH_SET [STRING]
 			l_new_query_name: STRING
@@ -382,13 +381,29 @@ feature{NONE} -- Linear constraint solving
 			end
 
 				-- Solve linear constraints.
-			create l_solver.make (feature_, linear_solvable_preconditions, l_state)
+			l_solver := linear_constraint_solver (l_state)
 			l_solver.solve
 			last_linear_constraint_solving_successful := l_solver.has_last_solution
 
 			if last_linear_constraint_solving_successful then
 				insert_integers_in_pool (l_solver.last_solution)
 			end
+		end
+
+	linear_constraint_solver (a_state: HASH_TABLE [STRING, STRING]): AUT_LINEAR_CONSTRAINT_SOLVER is
+			-- Linear constraint solver with context queries stored in `a_state'
+		require
+			a_state_attached: a_state /= void
+		do
+			if interpreter.configuration.is_smt_linear_constraint_solver_enabled then
+				create {AUT_SAT_BASED_LINEAR_CONSTRAINT_SOLVER} Result.make (feature_, linear_solvable_preconditions, a_state)
+			elseif interpreter.configuration.is_lpsolve_linear_constraint_solver_enabled then
+				create {AUT_LP_BASED_LINEAR_CONSTRAINT_SOLVER} Result.make (feature_, linear_solvable_preconditions, a_state)
+			else
+				check should_not_be_here: False end
+			end
+		ensure
+			result_attached: Result /= Void
 		end
 
 	insert_integers_in_pool (a_integers: DS_HASH_TABLE [INTEGER, INTEGER]) is

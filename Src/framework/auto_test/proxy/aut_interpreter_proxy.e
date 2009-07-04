@@ -119,6 +119,7 @@ feature {NONE} -- Initialization
 				-- test cases into plain text.
 			create request_printer.make
 			request_printer.extend (create {AUT_REQUEST_TEXT_PRINTER}.make (system, log_stream, configuration))
+			request_printer.extend (create {AUT_CONSOLE_REQUEST_PRINTER})
 			request_printer.extend (socket_data_printer)
 
 				-- Ilinca, "number of faults law" experiment

@@ -136,7 +136,7 @@ feature -- Process
 			a_visitor.process_binary_predicate_valuation (Current)
 		end
 
-feature{AUT_BINARY_PREDICATE_VALUATION_CURSOR} -- Implementation
+feature{AUT_PREDICATE_VALUATION_CURSOR} -- Implementation
 
 	first_argument_table: DS_HASH_TABLE [DS_HASH_SET [INTEGER], INTEGER]
 			-- Table for the first argument

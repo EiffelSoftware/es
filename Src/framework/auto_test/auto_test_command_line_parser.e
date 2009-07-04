@@ -64,6 +64,7 @@ feature{NONE} -- Initialization
 			l_object_state_logged_option: AP_FLAG
 			l_candidate_count_option: AP_INTEGER_OPTION
 			l_pool_statistics_logged_option: AP_FLAG
+			l_linear_constraint_solver_option: AP_STRING_OPTION
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -200,6 +201,10 @@ feature{NONE} -- Initialization
 			create l_pool_statistics_logged_option.make_with_long_form ("pool-statistics-logged")
 			l_pool_statistics_logged_option.set_description ("Should statistics of object pool and predicate pool be logged? Default: False")
 			parser.options.force_last (l_pool_statistics_logged_option)
+
+			create l_linear_constraint_solver_option.make_with_long_form ("linear-constraint-solver")
+			l_linear_constraint_solver_option.set_description ("Linear constraint solver to be used, can be either %"smt%" or %"lpsolve%". Default is %"smt%".")
+			parser.options.force_last (l_linear_constraint_solver_option)
 
 			parser.parse_list (a_arguments)
 
@@ -398,6 +403,20 @@ feature{NONE} -- Initialization
 				is_pool_statistics_logged := l_pool_statistics_logged_option.was_found
 			end
 
+			if not error_handler.has_error then
+				if l_linear_constraint_solver_option.was_found then
+					if l_linear_constraint_solver_option.parameter.is_equal ("smt") then
+						is_smt_linear_constraint_solver_enabled := True
+					elseif l_linear_constraint_solver_option.parameter.is_equal ("lpsolve") then
+						is_lpsolve_contraint_linear_solver_enabled := True
+					else
+						error_handler.report_linear_constraint_solver_name_error (l_linear_constraint_solver_option.parameter)
+					end
+				else
+					is_smt_linear_constraint_solver_enabled := True
+				end
+			end
+
 --			if parser.parameters.count = 0 then
 --				error_handler.report_missing_ecf_filename_error
 --				-- TODO: Display usage_instruction (currently not exported, find better way to do it.)
@@ -578,6 +597,14 @@ feature -- Status report
 
 	is_pool_statistics_logged: BOOLEAN
 			-- Should statistics of object pool and predicate pool be logged?
+			-- Default: False
+
+	is_smt_linear_constraint_solver_enabled: BOOLEAN
+			-- Is SMT based linear constraint solver enabled?
+			-- Default: True
+
+	is_lpsolve_contraint_linear_solver_enabled: BOOLEAN
+			-- Is lp_solve based linear constraint solver enabled?
 			-- Default: False
 
 feature {NONE} -- Constants

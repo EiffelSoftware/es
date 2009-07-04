@@ -5,16 +5,19 @@ note
 	revision: "$Revision$"
 
 class
-	AUT_CVC3_SOLVED_LINEAR_MODEL_LOADER
+	AUT_CVC3_LINEAR_MODEL_LOADER
 
 inherit
-	AUT_SOLVED_LINEAR_MODEL_LOADER
+	AUT_SAT_BASED_LINEAR_MODEL_LOADER
+
+create
+	make
 
 feature -- Basic operations
 
 	load_model is
 			-- Load model from `input_stream'.
-			-- If there is a model for `constrained_arguments', set `has_model' to True,
+			-- If there is a model for `constrained_operands', set `has_model' to True,
 			-- and then load valuations of constrained arguments into `valuation'.
 		local
 			l_line: detachable STRING
@@ -49,7 +52,7 @@ feature -- Basic operations
 						l_variable_name := l_parts.first
 						l_value := l_parts.last.to_integer
 
-						if constrained_arguments.has (l_variable_name) then
+						if constrained_operands.has (l_variable_name) then
 							valuation.force (l_value, l_variable_name)
 						end
 					end

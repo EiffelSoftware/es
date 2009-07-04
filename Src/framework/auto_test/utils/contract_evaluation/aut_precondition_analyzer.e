@@ -732,7 +732,7 @@ feature{NONE} -- Implmentation
 			-- Accessed variables in the last processed assertion
 			-- variables is either the target object or an argument.
 			-- The value is the type of the varaible,
-			-- the key is its index. The index is 0-based,
+			-- the key is its operand index. The index is 0-based,
 			-- the 0-th variable is the target, the 1-th variable is
 			-- the first argument, and so on.
 

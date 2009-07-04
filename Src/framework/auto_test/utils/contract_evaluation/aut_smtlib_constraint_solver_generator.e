@@ -1,11 +1,11 @@
 note
-	description: "Summary description for {AUT_CONSTRAINT_SOLVER_GENERATOR}."
+	description: "SMT-LIB based linear constraint solver generator"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AUT_CONSTRAINT_SOLVER_GENERATOR
+	AUT_SMTLIB_CONSTRAINT_SOLVER_GENERATOR
 
 inherit
 	AUT_PREDICATE_UTILITY
@@ -27,11 +27,11 @@ feature -- Access
 	constraining_queries: DS_HASH_SET [STRING]
 			-- List of constraining query names.
 
-	constrained_arguments: DS_HASH_SET [STRING]
-			-- Set of name of constrained arguments
+	constrained_operands: DS_HASH_SET [STRING]
+			-- Set of name of constrained operands
 			-- The names are arguments of the feature (not predicate argument names).
 
-	assertions: LINKED_LIST [AUT_EXPRESSION]
+	assertions: DS_LINKED_LIST [AUT_EXPRESSION]
 			-- Assertions of all the linearly solvable preconditions
 
 	last_smtlib: STRING
@@ -55,37 +55,12 @@ feature -- Basic operations
 		do
 			current_feature := a_feature
 			access_patterns := a_patterns
-			create constraining_queries.make (5)
-			create constrained_arguments.make (5)
-			create assertions.make
-			constraining_queries.set_equality_tester (string_equality_tester)
-			constrained_arguments.set_equality_tester (string_equality_tester)
-			has_linear_constraints := False
 
-				-- Collect constrained arguments and constraing queries.
-			from
-				a_patterns.start
-			until
-				a_patterns.after
-			loop
-				if attached {AUT_LINEAR_SOLVABLE_PREDICATE} a_patterns.item_for_iteration.predicate as l_linear_pred then
-					has_linear_constraints := True
-					l_cursor := a_patterns.item_for_iteration.access_pattern.new_cursor
-					from
-						l_cursor.start
-					until
-						l_cursor.after
-					loop
-						if l_cursor.item > 0 then
-							constrained_arguments.force_last (normalized_argument_name (l_cursor.item))
-						end
-						l_cursor.forth
-					end
-					l_linear_pred.constraining_queries.do_all (agent constraining_queries.force_last)
-					assertions.extend (l_linear_pred.expression)
-				end
-				a_patterns.forth
-			end
+				-- Collect constrained arguments, constraing queries and assertion predicates.
+			constrained_operands := constrained_operands_from_access_patterns (a_patterns)
+			constraining_queries :=  constraining_queries_from_access_patterns (a_patterns)
+			assertions := assertions_from_access_patterns (a_patterns)
+			has_linear_constraints := not constrained_operands.is_empty
 
 			if has_linear_constraints then
 				create last_smtlib.make (1024)
@@ -141,12 +116,9 @@ feature{NONE} -- Process
 
 			last_smtlib.append (l_operator)
 			last_smtlib.append (" ")
---			last_smtlib.append (" (")
 			l_as.left.process (Current)
---			last_smtlib.append (") (")
 			last_smtlib.append (" ")
 			l_as.right.process (Current)
---			last_smtlib.append_character (')')
 			last_smtlib.append_character (')')
 			if l_is_ne then
 				last_smtlib.append_character (')')
@@ -194,7 +166,6 @@ feature{NONE} -- Generation
 	generate_formula is
 			-- Generate the formula part of the SMT-LIB.
 		do
---			last_smtlib.append ("#Formula%N%N")
 			last_smtlib.append (":formula (%N")
 			last_smtlib.append ("and%N")
 			from
@@ -234,9 +205,8 @@ feature{NONE} -- Generation
 			l_is_windows := {PLATFORM}.is_windows
 			create l_names.make
 			constraining_queries.do_all (agent l_names.extend)
-			constrained_arguments.do_all (agent l_names.extend)
+			constrained_operands.do_all (agent l_names.extend)
 
---			last_smtlib.append ("#Extra functions%N")
 			from
 				l_names.start
 			until

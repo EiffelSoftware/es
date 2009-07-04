@@ -90,7 +90,7 @@ feature -- Process
 			a_visitor.process_nnary_predicate_valuation (Current)
 		end
 
-feature{AUT_NNARY_PREDICATE_VALUATION_CURSOR} -- Implementation
+feature{AUT_PREDICATE_VALUATION_CURSOR} -- Implementation
 
 	storage: DS_HASH_SET [AUT_HASHABLE_ITP_VARIABLE_ARRAY]
 			-- Storage for valuation

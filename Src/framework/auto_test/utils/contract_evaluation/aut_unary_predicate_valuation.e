@@ -84,7 +84,7 @@ feature -- Process
 			a_visitor.process_unary_predicate_valuation (Current)
 		end
 
-feature{AUT_UNARY_PREDICATE_VALUATION_CURSOR}  -- Storage
+feature{AUT_PREDICATE_VALUATION_CURSOR}  -- Storage
 
 	storage: DS_HASH_SET [INTEGER]
 			-- Indexes of objects that satisfy `precdicate'

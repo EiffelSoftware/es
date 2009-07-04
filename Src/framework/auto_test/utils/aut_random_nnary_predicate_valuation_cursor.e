@@ -1,11 +1,11 @@
 note
-	description: "Summary description for {AUT_NNARY_PREDICATE_VALUATION_CURSOR}."
+	description: "Summary description for {AUT_RANDOM_NNARY_PREDICATE_VALUATION_CURSOR}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AUT_NNARY_PREDICATE_VALUATION_CURSOR
+	AUT_RANDOM_NNARY_PREDICATE_VALUATION_CURSOR
 
 inherit
 	AUT_PREDICATE_VALUATION_CURSOR
@@ -13,6 +13,8 @@ inherit
 			make,
 			container
 		end
+
+	AUT_SHARED_RANDOM
 
 create
 	make
@@ -43,7 +45,7 @@ feature -- Cursor movement
 			-- Move cursor to first position.
 		do
 			before := False
-			storage_cursor := container.storage.new_cursor
+			create storage_cursor.make (container.storage.to_array, random)
 			forth_until_found
 		end
 
@@ -81,9 +83,6 @@ feature{NONE} -- Implementation
 			-- Arguments for predicate
 			-- Array index is 1-based.
 
-	storage_cursor: detachable DS_HASH_SET_CURSOR [AUT_HASHABLE_ITP_VARIABLE_ARRAY]
-			-- Cursor of `container'.`storage'
-
 	set_bound_arguments is
 			-- Set bound arguments from `candidate' into `predicate_arguments'.
 		local
@@ -117,18 +116,15 @@ feature{NONE} -- Implementation
 			l_cursor := storage_cursor
 			if l_cursor.before then
 				l_cursor.start
-				if not l_cursor.after then
-					l_found := is_predicate_argument_matched (l_cursor.item)
-				end
 			end
 
 			from
 			until
-				l_cursor.after or else l_found
+				after or else l_found
 			loop
-				l_cursor.forth
-				if not l_cursor.after then
-					l_found := is_predicate_argument_matched (l_cursor.item)
+				l_found := is_predicate_argument_matched (l_cursor.item)
+				if not l_found then
+					l_cursor.forth
 				end
 			end
 			after := l_cursor.after
@@ -158,9 +154,13 @@ feature{NONE} -- Implementation
 			end
 		end
 
+	storage_cursor: AUT_RANDOM_CURSOR [AUT_HASHABLE_ITP_VARIABLE_ARRAY]
+			-- Storage of items
+
 invariant
 	predicate_arguments_attached: predicate_arguments /= Void
 	predicate_arguments_valid: predicate_arguments.lower = 1 and then predicate_arguments.count = container.arity
+
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

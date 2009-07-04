@@ -5,19 +5,16 @@ note
 	revision: "$Revision$"
 
 deferred class
-	AUT_SOLVED_LINEAR_MODEL_LOADER
+	AUT_LINEAR_MODEL_LOADER
 
 feature -- Access
 
-	constrained_arguments: DS_HASH_SET [STRING]
+	constrained_operands: DS_HASH_SET [STRING]
 			-- List of names of constrained arguments
 
 	valuation: HASH_TABLE [INTEGER, STRING]
 			-- Valuation of arguments
 			-- Has effect only if `has_model' is True
-
-	input_stream: detachable KL_STRING_INPUT_STREAM
-			-- Input stream of model
 
 feature -- Status report
 
@@ -27,28 +24,20 @@ feature -- Status report
 feature -- Basic operations
 
 	load_model is
-			-- Load model from `input_stream'.
-			-- If there is a model for `constrained_arguments', set `has_model' to True,
+			-- Load model.
+			-- If there is a model for `constrained_operands', set `has_model' to True,
 			-- and then load valuations of constrained arguments into `valuation'.
 		deferred
 		end
 
 feature -- Setting
 
-	set_constrained_arguments (a_args: like constrained_arguments) is
-			-- Set `constrained_arguments' with `a_args'.
+	set_constrained_arguments (a_args: like constrained_operands) is
+			-- Set `constrained_operands' with `a_args'.
 		do
-			create constrained_arguments.make (a_args.count)
-			constrained_arguments.set_equality_tester (create {KL_STRING_EQUALITY_TESTER})
-			a_args.do_all (agent constrained_arguments.force_last)
-		end
-
-	set_input_stream (a_stream: like input_stream) is
-			-- Set `input_stream' with `a_stream'.
-		do
-			input_stream := a_stream
-		ensure
-			input_stream_set: input_stream = a_stream
+			create constrained_operands.make (a_args.count)
+			constrained_operands.set_equality_tester (create {KL_STRING_EQUALITY_TESTER})
+			a_args.do_all (agent constrained_operands.force_last)
 		end
 
 ;note

@@ -209,6 +209,12 @@ feature -- Access: cache
 	is_pool_statistics_logged_cache: like is_pool_statistics_logged
 			-- Cache for `is_pool_statistics_logged'
 
+	is_lpsolve_linear_constraint_solver_enabled_cache: like is_lpsolve_linear_constraint_solver_enabled
+			-- Cache for `is_lpsolve_linear_constraint_solver_enabled'
+
+	is_smt_linear_constraint_solver_enabled_cache: like is_smt_linear_constraint_solver_enabled
+			-- Cache for `is_smt_linear_constraint_solver_enabled'
+
 feature -- Status report
 
 	is_new_class: BOOLEAN = True
@@ -315,6 +321,24 @@ feature -- Precondition satisfaction
 			Result := is_pool_statistics_logged_cache
 		ensure then
 			good_result: Result = is_pool_statistics_logged_cache
+		end
+
+	is_smt_linear_constraint_solver_enabled: BOOLEAN is
+			-- Is SMT-LIB based linear constraint solver enabled?
+			-- Default: True
+		do
+			Result := is_smt_linear_constraint_solver_enabled_cache
+		ensure then
+			good_result: Result = is_smt_linear_constraint_solver_enabled_cache
+		end
+
+	is_lpsolve_linear_constraint_solver_enabled: BOOLEAN is
+			-- Is lp_solve based linear constraint solver enabled?
+			-- Default: False
+		do
+			Result := is_lpsolve_linear_constraint_solver_enabled_cache
+		ensure then
+			good_result: Result = is_lpsolve_linear_constraint_solver_enabled_cache
 		end
 
 feature -- Object State Exploration
@@ -518,6 +542,21 @@ feature -- Status setting
 			is_pool_statistics_logged_set: is_pool_statistics_logged_cache = b
 		end
 
+	set_is_smt_linear_constraint_solver_enabled (b: BOOLEAN) is
+			-- Set `is_smt_linear_constraint_solver_enabled' with `b'.
+		do
+			is_smt_linear_constraint_solver_enabled_cache := b
+		ensure
+			is_smt_linear_constraint_solver_enabled_set: is_smt_linear_constraint_solver_enabled = b
+		end
+
+	set_is_lpsolve_linear_constraint_solver_enabled (b: BOOLEAN) is
+			-- Set `is_lpsolve_linear_constraint_solver_enabled' with `b'.
+		do
+			is_lpsolve_linear_constraint_solver_enabled_cache := b
+		ensure
+			is_lpsolve_linear_constraint_solver_enabled_set: is_lpsolve_linear_constraint_solver_enabled = b
+		end
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

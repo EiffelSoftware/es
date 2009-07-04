@@ -4,7 +4,7 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	AUT_LINEAR_CONSTRAINT_SOLVER
 
 inherit
@@ -13,9 +13,6 @@ inherit
 	AUT_PREDICATE_UTILITY
 
 	AUT_SHARED_RANDOM
-
-create
-	make
 
 feature{NONE} -- Initialization
 
@@ -30,10 +27,12 @@ feature{NONE} -- Initialization
 			feature_ := a_feature
 			linear_solvable_predicates := a_linear_solvable_predicates
 			context_queries := a_context_queries
+			linear_solvable_operands := constrained_operands_from_access_patterns (linear_solvable_predicates)
 		ensure
 			feature__set: feature_ = a_feature
 			linear_solvable_predicates_set: linear_solvable_predicates = a_linear_solvable_predicates
 			constraining_queries_set: context_queries = a_context_queries
+			linear_solvable_operands_set: linear_solvable_operands /= Void
 		end
 
 feature -- Access
@@ -47,6 +46,8 @@ feature -- Access
 	context_queries: HASH_TABLE [STRING, STRING]
 			-- Table of contraining queries and their values
 			-- [Query value, query name]
+			-- For example, in precondition "0 < i and then i < count",
+			-- query "count" is a context query'.
 
 	last_solution: DS_HASH_TABLE [INTEGER, INTEGER]
 			-- Table of last linearly sovled operands
@@ -64,148 +65,38 @@ feature -- Basic operations
 
 	solve is
 			-- Try to solve constraints defined in `linear_solvable_predicates' and `context_queries'.
-		local
-			l_state: HASH_TABLE [STRING, STRING]
-			l_smt_generator: AUT_CONSTRAINT_SOLVER_GENERATOR
-			l_proof_obligation: STRING
-			l_constraining_queries: DS_HASH_SET [STRING]
-			l_new_query_name: STRING
-			l_query_name: detachable STRING
-			l_pattern_table: DS_HASH_TABLE [AUT_PREDICATE_ACCESS_PATTERN, AUT_PREDICATE]
-
-		do
-			has_last_solution := True
-			l_state := context_queries
-
-				-- Generate linear constraint solving proof obligation.
-			create l_smt_generator
-			l_smt_generator.generate_smtlib (feature_, linear_solvable_predicates)
-			linear_solvable_argument_names := l_smt_generator.constrained_arguments
-			check l_smt_generator.has_linear_constraints end
-			l_proof_obligation := l_smt_generator.last_smtlib.twin
-
-				-- Replace constraining queires by their actual value.
-			from
-				l_constraining_queries := l_smt_generator.constraining_queries
-				l_constraining_queries.start
-			until
-				l_constraining_queries.after or else not has_last_solution
-			loop
-				l_query_name := l_state.item (l_constraining_queries.item_for_iteration)
-				if l_query_name = Void then
-						-- If the value of some constraining query cannot be retrieved,
-						-- the model for constrained arguments doesn't exist.
-					has_last_solution := False
-				else
-					l_new_query_name := "$" + l_constraining_queries.item_for_iteration + "$"
-					l_proof_obligation.replace_substring_all (l_new_query_name, l_query_name)
-				end
-				l_constraining_queries.forth
-			end
-
-				-- Launch constraint solver to solve constrained arguments.
-			if has_last_solution then
-				generate_smtlib_file (l_proof_obligation)
-				solve_arguments
-			end
-
---			if has_last_solution then
---				insert_integers_in_pool
---			end
+			-- If there is a solution, set `has_last_solution' to True and put that solution into
+			-- `last_solution'. Otherwise, set `has_last_solution' to False.
+		deferred
 		end
 
 feature{NONE} -- Implementation
 
-	linear_solvable_argument_names: DS_HASH_SET [STRING]
+	linear_solvable_operands: DS_HASH_SET [STRING]
 			-- Names of linearly solvable arguments
 
-	smtlib_file_path: FILE_NAME is
-			-- Full path for the generated SMT-LIB file
-		do
-			create Result.make_from_string (universe.project_location.workbench_path)
-			Result.set_file_name ("linear.smt")
-		end
-
-	generate_smtlib_file (a_content: STRING) is
-			-- Generate SMT-LIB file with `a_content'
-			-- at location `smtlib_file_path'.
+	set_last_solution (a_valuation: HASH_TABLE [INTEGER, STRING]) is
+			-- Set `last_solution' with `a_valuation'.
+		require
+			a_valuation_attached: a_valuation /= Void
 		local
-			l_file: PLAIN_TEXT_FILE
-		do
-			create l_file.make_create_read_write (smtlib_file_path)
-			l_file.put_string (a_content)
-			l_file.close
-		end
-
-	solve_arguments is
-			-- Solve linear constraints for constrained argument.
-			-- Store result in `last_solver_output'.
-		local
-			l_prc_factory: PROCESS_FACTORY
-			l_prc: PROCESS
-			l_model_loader: AUT_SOLVED_LINEAR_MODEL_LOADER
-			l_stream: KL_STRING_INPUT_STREAM
-			l_valuation: HASH_TABLE [INTEGER, STRING]
 			l_arg_name: STRING
 		do
-			create l_prc_factory
-			create last_solver_output.make (1024)
-			l_prc := l_prc_factory.process_launcher_with_command_line (linear_constraint_solver_command (smtlib_file_path), Void)
-			l_prc.redirect_output_to_agent (agent append_solver_output)
-			l_prc.redirect_error_to_same_as_output
-			l_prc.launch
-			if l_prc.launched then
-				l_prc.wait_for_exit
-				last_solver_output.replace_substring_all ("%R", "")
-				create l_stream.make (last_solver_output)
-				l_model_loader := sovled_linear_model_loader
-				l_model_loader.set_constrained_arguments (linear_solvable_argument_names)
-				l_model_loader.set_input_stream (l_stream)
-				l_model_loader.load_model
-				has_last_solution := l_model_loader.has_model
+			create last_solution.make (a_valuation.count)
+			from
+				a_valuation.start
+			until
+				a_valuation.after
+			loop
+				l_arg_name := a_valuation.key_for_iteration.twin
+				l_arg_name.replace_substring_all (normalized_argument_name_prefix, "")
 
-					-- We found a model for the constrained arguments.
-					-- Store that model in `last_solved_operands'.
-				if has_last_solution then
-					l_valuation := l_model_loader.valuation
---					if l_valuation.count = 1 then
---						l_valuation.start
---						random.forth
---						l_valuation.replace (random.item.abs + 1, l_valuation.key_for_iteration)
---					end
-
-					create last_solution.make (l_valuation.count)
-					from
-						l_valuation.start
-					until
-						l_valuation.after
-					loop
-						l_arg_name := l_valuation.key_for_iteration.twin
-						l_arg_name.replace_substring_all (normalized_argument_name_prefix, "")
-
-						last_solution.force_last (l_valuation.item_for_iteration, l_arg_name.to_integer)
-						l_valuation.forth
-					end
-				end
-			else
-				has_last_solution := False
+				last_solution.force_last (a_valuation.item_for_iteration, l_arg_name.to_integer)
+				a_valuation.forth
 			end
+		ensure
+			last_solution_attached: last_solution /= Void
 		end
-
-	last_solver_output: STRING
-			-- Output from last launched solver
-
-	append_solver_output (a_string: STRING) is
-			-- Append `a_string' at the end of `last_solver_output'.
-		do
-			last_solver_output.append (a_string)
-		end
-
-invariant
-	feature__attached: feature_ /= Void
-	linear_solvable_predicates_attached: linear_solvable_predicates /= Void
-	not_linear_solvable_predicates_is_empty: not linear_solvable_predicates.is_empty
-	constraining_queries_attached: context_queries /= Void
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
@@ -239,4 +130,3 @@ note
 			Customer support http://support.eiffel.com
 		]"
 end
-

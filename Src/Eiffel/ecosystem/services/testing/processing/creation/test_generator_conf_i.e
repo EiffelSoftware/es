@@ -216,6 +216,18 @@ feature -- Precondition satisfaction
 		deferred
 		end
 
+	is_smt_linear_constraint_solver_enabled: BOOLEAN is
+			-- Is SMT-LIB based linear constraint solver enabled?
+			-- Default: True
+		deferred
+		end
+
+	is_lpsolve_linear_constraint_solver_enabled: BOOLEAN is
+			-- Is lp_solve based linear constraint solver enabled?
+			-- Default: False
+		deferred
+		end
+
 feature -- Object State Exploration
 
 	is_object_state_exploration_enabled: BOOLEAN is

@@ -1,17 +1,19 @@
 note
-	description: "Summary description for {AUT_UNARY_PREDICATE_VALUATION_CURSOR}."
+	description: "Summary description for {AUT_RANDOM_UNARY_PREDICATE_VALUATION_CURSOR}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AUT_UNARY_PREDICATE_VALUATION_CURSOR
+	AUT_RANDOM_UNARY_PREDICATE_VALUATION_CURSOR
 
 inherit
 	AUT_PREDICATE_VALUATION_CURSOR
 		redefine
 			container
 		end
+
+	AUT_SHARED_RANDOM
 
 create
 	make
@@ -30,26 +32,26 @@ feature -- Cursor movement
 
 	start is
 			-- Move cursor to first position.
+		local
+			l_index: INTEGER
 		do
 			before := False
 			if free_variables.is_empty then
 				after := not container.item (<<create {ITP_VARIABLE}.make (constraint.argument_operand_mapping.item (predicate_access_pattern).item (1))>>)
 			else
-				storage_cursor := container.storage.new_cursor
-				storage_cursor.start
-				after := storage_cursor.after
+				create cursor.make (container.storage.to_array, random)
+				cursor.start
+				after := cursor.after
 			end
-		ensure then
-			storage_cursor_valid: (not free_variables.is_empty) implies storage_cursor /= Void
 		end
 
 	forth is
 			-- Move cursor to next position.
 		do
 			check not free_variables.is_empty end
-			check storage_cursor /= Void end
-			storage_cursor.forth
-			after := storage_cursor.after
+			check cursor /= Void end
+			cursor.forth
+			after := cursor.after
 		end
 
 feature -- Basic operations
@@ -57,15 +59,13 @@ feature -- Basic operations
 	update_candidate_with_item is
 			-- Update `candidate' with objects at the position of current cursor.
 		do
-			if not free_variables.is_empty then
-				candidate.put (variable_from_index (storage_cursor.item), free_variables.item (1))
-			end
+			candidate.put (variable_from_index (cursor.item), free_variables.item (1))
 		end
 
 feature{NONE} -- Implementation
 
-	storage_cursor: detachable DS_HASH_SET_CURSOR [INTEGER]
-			-- Cursor for `container'.`storage'
+	cursor: AUT_RANDOM_CURSOR [INTEGER]
+			-- Random cursor
 
 invariant
 	free_variables_valid: free_variables.count = 0 or free_variables.count = 1
