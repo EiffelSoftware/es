@@ -23,6 +23,7 @@ feature
 
 	build_tool_interface (root_widget: EV_TEXT)
 		do
+			create jstar_proofs.make (agent user_widget.set_text)
 			propagate_drop_actions (Void)
 		end
 
@@ -35,10 +36,12 @@ feature {NONE}
 
 	on_stone_changed (a_old_stone: ?like stone)
 		do
-			if {st: !CLASSC_STONE} stone then
-				user_widget.append_text (st.class_name)
+			if {st: !CLASSC_STONE} stone and then {c: !CLASS_C} st.e_class then
+				jstar_proofs.prove (c)
 			end
 		end
+
+	jstar_proofs: JSTAR_PROOFS
 
 ;indexing
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
