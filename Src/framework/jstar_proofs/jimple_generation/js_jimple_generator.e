@@ -47,6 +47,8 @@ feature
 		do
 			output.reset
 
+			-- TODO: issue a warning if c uses inheritance
+
 			output.put_line ("class " + c.name_in_upper + " extends ANY {")
 			output.put_new_line
 
@@ -165,7 +167,7 @@ feature {NONE}
 				check l_feature /= Void end
 				l_attached_feature := l_feature
 
-					-- Only write attributes which are written in that class
+					-- Only write routines which are written in that class
 				if l_feature.is_routine and then l_feature.written_in = a_class.class_id then
 					process_routine (False, l_attached_feature)
 				end

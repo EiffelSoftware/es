@@ -121,4 +121,12 @@ feature {NONE}
 			l_exception.raise
 		end
 
+	error (message: STRING)
+		local
+			l_exception: JS_ERROR
+		do
+			create l_exception.make (message)
+			l_exception.raise
+		end
+
 end

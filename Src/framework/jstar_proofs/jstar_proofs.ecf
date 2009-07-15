@@ -20,10 +20,14 @@
 			</file_rule>
 			<file_rule>
 				<exclude>^/jimple_generation$</exclude>
-                <exclude>^/utilities$</exclude>
+				<exclude>^/utilities$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>^/spec_generation$</exclude>
 			</file_rule>
 			<cluster name="jimple_generation" location="$EIFFEL_SRC\framework\jstar_proofs\jimple_generation\"/>
-            <cluster name="utilities" location="$EIFFEL_SRC\framework\jstar_proofs\utilities\"/>
+			<cluster name="utilities" location="$EIFFEL_SRC\framework\jstar_proofs\utilities\"/>
+			<cluster name="spec_generation" location="$EIFFEL_SRC\framework\jstar_proofs\spec_generation\"/>
 		</cluster>
 	</target>
 </system>
