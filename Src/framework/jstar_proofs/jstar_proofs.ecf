@@ -25,13 +25,17 @@
 			<file_rule>
 				<exclude>^/spec_generation$</exclude>
 			</file_rule>
+			<file_rule>
+				<exclude>^/logic_and_abstraction$</exclude>
+			</file_rule>
 			<cluster name="jimple_generation" location="$EIFFEL_SRC\framework\jstar_proofs\jimple_generation\"/>
 			<cluster name="utilities" location="$EIFFEL_SRC\framework\jstar_proofs\utilities\"/>
 			<cluster name="spec_generation" location="$EIFFEL_SRC\framework\jstar_proofs\spec_generation\">
-				<cluster name="visitors" location="c:\users\stephan\data\eve\src\framework\jstar_proofs\spec_generation\visitors\"/>
-				<cluster name="parsing" location="c:\users\stephan\data\eve\src\framework\jstar_proofs\spec_generation\parsing\"/>
-				<cluster name="ast" location="c:\users\stephan\data\eve\src\framework\jstar_proofs\spec_generation\ast\"/>
+				<cluster name="visitors" location="$EIFFEL_SRC\framework\jstar_proofs\spec_generation\visitors\"/>
+				<cluster name="parsing" location="$EIFFEL_SRC\framework\jstar_proofs\spec_generation\parsing\"/>
+				<cluster name="ast" location="$EIFFEL_SRC\framework\jstar_proofs\spec_generation\ast\"/>
 			</cluster>
+			<cluster name="logic_and_abstraction" location="$EIFFEL_SRC\framework\jstar_proofs\logic_and_abstraction\"/>
 		</cluster>
 	</target>
 </system>
