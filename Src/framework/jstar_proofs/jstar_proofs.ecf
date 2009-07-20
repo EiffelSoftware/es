@@ -27,7 +27,11 @@
 			</file_rule>
 			<cluster name="jimple_generation" location="$EIFFEL_SRC\framework\jstar_proofs\jimple_generation\"/>
 			<cluster name="utilities" location="$EIFFEL_SRC\framework\jstar_proofs\utilities\"/>
-			<cluster name="spec_generation" location="$EIFFEL_SRC\framework\jstar_proofs\spec_generation\"/>
+			<cluster name="spec_generation" location="$EIFFEL_SRC\framework\jstar_proofs\spec_generation\">
+				<cluster name="visitors" location="c:\users\stephan\data\eve\src\framework\jstar_proofs\spec_generation\visitors\"/>
+				<cluster name="parsing" location="c:\users\stephan\data\eve\src\framework\jstar_proofs\spec_generation\parsing\"/>
+				<cluster name="ast" location="c:\users\stephan\data\eve\src\framework\jstar_proofs\spec_generation\ast\"/>
+			</cluster>
 		</cluster>
 	</target>
 </system>

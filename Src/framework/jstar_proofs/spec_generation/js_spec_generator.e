@@ -22,6 +22,10 @@ feature
 	make
 		do
 			create output.make
+			create predicate_definition_parser.make
+			create assertion_parser.make
+			create spec_adapter.make
+			create spec_printer.make
 		end
 
 	process_class (a_class: !CLASS_C)
@@ -62,6 +66,14 @@ feature {NONE}
 
 	match_list: LEAF_AS_LIST
 
+	predicate_definition_parser: JS_PREDICATE_DEFINITION_PARSER
+
+	assertion_parser: JS_ASSERTION_PARSER
+
+	spec_adapter: JS_SPEC_ADAPTER
+
+	spec_printer: JS_SPEC_PRINTER
+
 	collect_spec_of_class (a_class: !CLASS_C)
 			-- Collects the shallow spec of a class, i.e. the suppliers of `a_class' are not considered.
 		do
@@ -89,6 +101,7 @@ feature {NONE}
 	collect_predicates (a_indexing_clause: INDEXING_CLAUSE_AS)
 		local
 			l_content: STRING
+			l_predicate_def: JS_SPEC_NODE
 		do
 			-- TODO: implement a way to "define" or "export" a predicate,
 			--       possibly with tags, i.e. sl_predicate_export and sl_predicate_define
@@ -103,7 +116,24 @@ feature {NONE}
 						equal (l_index_as.tag.name.as_upper, "SL_PREDICATE")
 					then
 						l_content := l_index_as.content_as_string
-						output.put_line ("define " + l_content.substring (2, l_content.count - 1) + ";%N")
+						l_content := l_content.substring (2, l_content.count - 1)
+						predicate_definition_parser.reset
+						predicate_definition_parser.set_input_buffer (create {YY_BUFFER}.make (l_content))
+						predicate_definition_parser.parse
+						if predicate_definition_parser.error_count = 0 then
+							l_predicate_def := predicate_definition_parser.predicate_definition
+
+							-- Substitute types and Void.
+							spec_adapter.with_class_context
+							l_predicate_def.accept (spec_adapter)
+							
+							-- Now output the pretty printed definition
+							spec_printer.reset
+							l_predicate_def.accept (spec_printer)
+							output.put_line ("define " + spec_printer.output + ";%N")
+						else
+							error ("Error parsing predicate definition: " + l_content)
+						end
 					end
 					a_indexing_clause.forth
 				end
@@ -131,7 +161,7 @@ feature {NONE}
 					comments := match_list.extract_comment (region)
 
 					what := where + " SL precondition"
-					output.put_line ("{" + assertion_from_comments (comments, what) + "}")
+					output.put_line ("{" + assertion_from_comments (comments, what, a_feature_i) + "}")
 				else
 					error (where + ": SL precondition missing")
 				end
@@ -142,7 +172,7 @@ feature {NONE}
 					comments := match_list.extract_comment (region)
 
 					what := where + " SL postcondition"
-					output.put_line ("{" + assertion_from_comments (comments, what) + "};")
+					output.put_line ("{" + assertion_from_comments (comments, what, a_feature_i) + "};")
 				else
 					error (where + ": SL postcondition missing")
 				end
@@ -153,11 +183,12 @@ feature {NONE}
 			output.unindent
 		end
 
-	assertion_from_comments (a_comments: EIFFEL_COMMENTS; what: STRING): STRING
+	assertion_from_comments (a_comments: EIFFEL_COMMENTS; what: STRING; where: !FEATURE_I): STRING
 		local
 			sl_prefix: STRING
 			l_string: STRING
 			sl_assertion: STRING
+			l_assertion: JS_SPEC_NODE
 		do
 			sl_prefix := "SL--"
 
@@ -179,7 +210,23 @@ feature {NONE}
 			end
 
 			if sl_assertion /= Void then
-				Result := sl_assertion
+				assertion_parser.reset
+				assertion_parser.set_input_buffer (create {YY_BUFFER}.make (sl_assertion))
+				assertion_parser.parse
+				if assertion_parser.error_count = 0 then
+					l_assertion := assertion_parser.assertion
+
+					-- Substitute variables, types & void
+					spec_adapter.with_feature_context (where)
+					l_assertion.accept (spec_adapter)
+
+					-- Now pretty print the AST
+					spec_printer.reset
+					l_assertion.accept (spec_printer)
+					Result := spec_printer.output
+				else
+					error ("Error parsing " + what)
+				end
 			else
 				error (what + " missing")
 			end

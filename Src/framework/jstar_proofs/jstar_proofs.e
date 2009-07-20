@@ -30,6 +30,7 @@ feature
 			spec_generator.process_class (c)
 			specs := spec_generator.generated_specs
 			output_agent.call ([specs])
+--			output_agent.call ([c.file_name])
 		end
 
 feature {NONE}
