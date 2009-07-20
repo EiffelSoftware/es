@@ -28,6 +28,9 @@
 			<file_rule>
 				<exclude>^/logic_and_abstraction$</exclude>
 			</file_rule>
+			<file_rule>
+				<exclude>^/jstar_interaction$</exclude>
+			</file_rule>
 			<cluster name="jimple_generation" location="$EIFFEL_SRC\framework\jstar_proofs\jimple_generation\"/>
 			<cluster name="utilities" location="$EIFFEL_SRC\framework\jstar_proofs\utilities\"/>
 			<cluster name="spec_generation" location="$EIFFEL_SRC\framework\jstar_proofs\spec_generation\">
@@ -36,6 +39,7 @@
 				<cluster name="ast" location="$EIFFEL_SRC\framework\jstar_proofs\spec_generation\ast\"/>
 			</cluster>
 			<cluster name="logic_and_abstraction" location="$EIFFEL_SRC\framework\jstar_proofs\logic_and_abstraction\"/>
+			<cluster name="jstar_interaction" location="$EIFFEL_SRC\framework\jstar_proofs\jstar_interaction\"/>
 		</cluster>
 	</target>
 </system>
