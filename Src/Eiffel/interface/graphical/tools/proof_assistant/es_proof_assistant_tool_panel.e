@@ -11,6 +11,9 @@ inherit
 
 	ES_DOCKABLE_STONABLE_TOOL_PANEL [EV_TEXT]
 
+	EXCEPTIONS
+	export {NONE} all end
+
 create
 	make
 
@@ -35,10 +38,20 @@ feature
 feature {NONE}
 
 	on_stone_changed (a_old_stone: ?like stone)
+		local
+			l_retry: BOOLEAN
+			l_error_prompt: ES_ERROR_PROMPT
 		do
-			if {st: !CLASSC_STONE} stone and then {c: !CLASS_C} st.e_class then
-				jstar_proofs.prove (c)
+			if not l_retry then
+				if {st: !CLASSC_STONE} stone and then {c: !CLASS_C} st.e_class then
+					jstar_proofs.prove (c)
+				end
 			end
+		rescue
+			create l_error_prompt.make_standard (tag_name)
+			l_error_prompt.show_on_active_window
+			l_retry := True
+			retry
 		end
 
 	jstar_proofs: JSTAR_PROOFS
