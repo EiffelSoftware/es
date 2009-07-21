@@ -49,6 +49,7 @@ feature {NONE}
 			end
 		rescue
 			create l_error_prompt.make_standard (tag_name)
+			l_error_prompt.set_title ("Separation logic proof tool error")
 			l_error_prompt.show_on_active_window
 			l_retry := True
 			retry
