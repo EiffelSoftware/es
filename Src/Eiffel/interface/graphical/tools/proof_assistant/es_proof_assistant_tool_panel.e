@@ -31,8 +31,32 @@ feature
 		end
 
 	create_tool_bar_items: ?DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+		local
+			texts: ARRAY [STRING]
+			actions: ARRAY [PROCEDURE [ANY, TUPLE]]
+			button: SD_TOOL_BAR_BUTTON
+			i: INTEGER
 		do
-			Result := Void
+			texts := <<"Code", "Specs", "Logic", "Abs", "CFG", "Execution">>
+			actions := <<agent show_text_window ("Code", agent {JSTAR_PROOFS}.jimple_code),
+						 agent show_text_window ("Specs", agent {JSTAR_PROOFS}.specs),
+						 agent show_window_for_file ("Logic", agent {JSTAR_PROOFS}.logic_file_name),
+						 agent show_window_for_file ("Abstraction Rules", agent {JSTAR_PROOFS}.abs_file_name),
+						 Void, Void>>
+
+			from
+				create Result.make (texts.count)
+				create window_references.make
+				i := 1
+			until
+				i > texts.count
+			loop
+				create button.make
+				button.set_text (texts [i])
+				button.select_actions.extend (actions [i])
+				Result.put (button, i)
+				i := i + 1
+			end
 		end
 
 feature {NONE}
@@ -56,6 +80,69 @@ feature {NONE}
 		end
 
 	jstar_proofs: JSTAR_PROOFS
+
+	show_window_for_file (window_title: STRING; filename_agent: FUNCTION [ANY, TUPLE, STRING])
+		local
+			l_filename: STRING
+			l_text_file: PLAIN_TEXT_FILE
+			l_text: STRING
+			l_retried: BOOLEAN
+		do
+			if not l_retried then
+				l_filename := filename_agent.item ([jstar_proofs])
+				if l_filename = Void then
+					create_text_window (window_title, "Unavailable")
+				else
+					from
+						create l_text_file.make_open_read (l_filename)
+						l_text_file.start
+						l_text := ""
+					until
+						l_text_file.off
+					loop
+						l_text_file.read_line
+						if l_text.count > 0 then
+							l_text.append ("%N")
+						end
+						l_text.append (l_text_file.last_string)
+					end
+					create_text_window (window_title, l_text)
+				end
+			else
+				create_text_window (window_title, "Unavailable")
+			end
+		rescue
+			l_retried := True
+			retry
+		end
+
+	show_text_window (window_title: STRING; source: FUNCTION [ANY, TUPLE, STRING])
+		do
+			create_text_window (window_title, source.item ([jstar_proofs]))
+		end
+
+	create_text_window (window_title: STRING; text_content: STRING)
+		local
+			l_text_widget: EV_TEXT
+			l_window: EV_TITLED_WINDOW
+		do
+			create l_window.make_with_title (window_title)
+			create l_text_widget.make_with_text (text_content)
+			l_window.put (l_text_widget)
+			l_window.set_size (500, 300)
+			l_window.close_request_actions.put_front (agent close_window (l_window))
+			window_references.put_front (l_window)
+			l_window.show
+		end
+
+	close_window (a_window: EV_TITLED_WINDOW)
+		do
+			window_references.prune_all (a_window)
+			a_window.destroy
+		end
+
+	window_references: LINKED_LIST [EV_TITLED_WINDOW]
+		-- References to the displayed windows, so that they don't get garbage collected.
 
 ;indexing
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
