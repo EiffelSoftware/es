@@ -126,7 +126,7 @@ feature {NONE}
 							-- Substitute types and Void.
 							spec_adapter.with_class_context
 							l_predicate_def.accept (spec_adapter)
-							
+
 							-- Now output the pretty printed definition
 							spec_printer.reset
 							l_predicate_def.accept (spec_printer)
@@ -160,10 +160,10 @@ feature {NONE}
 					create region.make (pre.first_token (match_list).index, r.routine_body.first_token (match_list).index)
 					comments := match_list.extract_comment (region)
 
-					what := where + " SL precondition"
+					what := where + " precondition"
 					output.put_line ("{" + assertion_from_comments (comments, what, a_feature_i) + "}")
 				else
-					error (where + ": SL precondition missing")
+					error (where + ": precondition missing")
 				end
 
 					-- Get the postcondition
@@ -171,13 +171,13 @@ feature {NONE}
 					create region.make (post.first_token (match_list).index, r.end_keyword.first_token (match_list).index)
 					comments := match_list.extract_comment (region)
 
-					what := where + " SL postcondition"
+					what := where + " postcondition"
 					output.put_line ("{" + assertion_from_comments (comments, what, a_feature_i) + "};")
 				else
-					error (where + ": SL postcondition missing")
+					error (where + ": postcondition missing")
 				end
 			else
-				error (where + ": SL spec missing")
+				error (where + ": spec missing")
 			end
 
 			output.unindent
