@@ -1,6 +1,6 @@
 %{
-class JS_ASSERTION_PARSER
---class JS_PREDICATE_DEFINITION_PARSER
+--class JS_ASSERTION_PARSER
+class JS_PREDICATE_DEFINITION_PARSER
 
 inherit
     YY_PARSER_SKELETON
@@ -38,8 +38,8 @@ create
 -- TODO: %token <STRING> STRING_CONSTANT
 %token WAND
 
-%start formula
---%start predicate_definition
+--%start formula
+%start predicate_definition
 
 %type <JS_PRED_DEF_NODE> predicate_definition
 %type <LINKED_LIST [JS_PARAM_NODE]> param_list
@@ -149,7 +149,7 @@ combine: formula OROR formula       { create {JS_COMBINE_OROR_NODE} $$.make ($1,
        | formula WAND formula       { create {JS_COMBINE_WAND_NODE} $$.make ($1, $3) }
        ;
 
-field_signature: CMPLT IDENTIFIER DOT IDENTIFIER COLON type CMPGT      { create $$.make ($2, $4, $6) }
+field_signature: CMPLT IDENTIFIER DOT IDENTIFIER CMPGT      { create $$.make ($2, $4) }
                ;
 
 %%

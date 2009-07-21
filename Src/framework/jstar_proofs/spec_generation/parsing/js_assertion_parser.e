@@ -1187,13 +1187,12 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'parser.y' at line 152")
 end
 
-create yyval18.make (yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2), yyvs14.item (yyvsp14)) 
+create yyval18.make (yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2)) 
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 7
+	yyssp := yyssp - 5
 	yyvsp18 := yyvsp18 + 1
-	yyvsp1 := yyvsp1 -4
+	yyvsp1 := yyvsp1 -3
 	yyvsp2 := yyvsp2 -2
-	yyvsp14 := yyvsp14 -1
 	if yyvsp18 >= yyvsc18 then
 		if yyvs18 = Void then
 			debug ("GEYACC")
@@ -1226,7 +1225,7 @@ end
 			-- Execute error action.
 		do
 			inspect yy_act
-			when 76 then
+			when 74 then
 					-- End-of-file expected action.
 				report_eof_expected_error
 			else
@@ -1295,7 +1294,7 @@ feature {NONE} -- Table templates
 			    1,    1,    1,    6,   17,    1,    1,    1,    1,    1,
 			   10,   10,    1,    1,    1,   10,    1,   18,   16,   14,
 			    1,    1,    6,    6,    1,    2,    1,    1,    1,    1,
-			    9,    1,    2,    1,   14,    1,    6,    1,    1, yyDummy>>)
+			    9,    1,    2,    1,    6,    1,    1, yyDummy>>)
 		end
 
 	yytypes2_template: SPECIAL [INTEGER] is
@@ -1318,7 +1317,7 @@ feature {NONE} -- Table templates
 			   10,   15,    0,    0,    0,   10,    0,    0,    0,   23,
 			    0,   13,    2,    2,   34,    0,    0,    0,   31,   26,
 			    0,   15,   36,   35,   33,    0,    0,    0,   25,    0,
-			   32,   27,    0,    0,    0,   37,    0,    0,    0, yyDummy>>)
+			   32,   27,    0,   37,    0,    0,    0, yyDummy>>)
 		end
 
 	yydefgoto_template: SPECIAL [INTEGER] is
@@ -1333,50 +1332,50 @@ feature {NONE} -- Table templates
 			-- Template for `yypact'
 		once
 			Result := yyfixed_array (<<
-			   11,   57,   49, -32768,   50,   48, -32768,   47,   33, -32768,
-			 -32768,   52,   46,   38,    5,    0,   11,    5,   18,    5,
-			    5, -32768,   49,   44,   35, -32768,   45,   11,   42,   40,
-			 -32768, -32768,   30, -32768, -32768,   37, -32768, -32768, -32768, -32768,
-			    5,    9,    5,  -17,   27,    5,   43,    0,   18, -32768,
-			   26, -32768,   11,   11, -32768,   21,   34,   24, -32768,   36,
-			   19, -32768, -32768, -32768,   28,   25,    5,   18, -32768,   23,
-			 -32768, -32768,   22,   18,   17, -32768,    6,    3, -32768, yyDummy>>)
+			    9,   53,   46, -32768,   48,   43, -32768,   45,   31, -32768,
+			 -32768,   51,   37,   25,    3,   -2,    9,    3,   20,    3,
+			    3, -32768,   46,   41,   36, -32768,   44,    9,   35,   40,
+			 -32768, -32768,   38, -32768, -32768,   33, -32768, -32768, -32768, -32768,
+			    3,    8,    3,  -13,   23,    3,   42,   -2,   20, -32768,
+			   21, -32768,    9,    9, -32768,   19,   32,   22, -32768,   34,
+			   17, -32768, -32768, -32768,   26,   24,    3,   20, -32768,   16,
+			 -32768, -32768,   13, -32768,    4,    1, -32768, yyDummy>>)
 		end
 
 	yypgoto_template: SPECIAL [INTEGER] is
 			-- Template for `yypgoto'
 		once
 			Result := yyfixed_array (<<
-			    1, -32768,   53, -32768,  -26,   32,  -10, -32768,   51, -32768,
-			  -18, -32768,   29, -32768, -32768, -32768, -32768,   -4, yyDummy>>)
+			    0, -32768,   52, -32768,  -21,   28,  -12, -32768,   47, -32768,
+			   49, -32768,   18, -32768, -32768, -32768, -32768,   -1, yyDummy>>)
 		end
 
 	yytable_template: SPECIAL [INTEGER] is
 			-- Template for `yytable'
 		once
 			Result := yyfixed_array (<<
-			   36,   76,   53,   78,   26,   29,   77,   34,   52,   37,
-			   38,   28,    3,    2,   50,   27,   23,    3,    2,   55,
-			    1,   75,    4,    3,    2,    1,   -6,   -6,   73,   35,
-			   26,    1,   26,   69,   72,   26,  -15,   29,   19,   18,
-			   66,   68,   17,   67,   64,   65,   56,   47,   46,   61,
-			   54,   48,   42,   62,   63,   74,   70,   45,   41,   40,
-			   11,   20,   22,   71,   16,   14,   15,   21,   10,   33,
-			    0,    0,    0,   39,   51,    0,   58, yyDummy>>)
+			   74,   76,   26,   29,   75,   34,   53,   37,   38,   28,
+			    3,    2,   52,   27,   23,    3,    2,   73,    1,   50,
+			    4,    3,    2,    1,   55,   -6,   -6,   72,   26,    1,
+			   26,   35,   69,   26,  -15,   29,   19,   18,   66,   68,
+			   17,   67,   64,   65,   61,   56,   54,   48,   46,   22,
+			   45,   42,   62,   63,   70,   47,   40,   11,   21,   41,
+			   20,   15,   16,   14,   10,   58,   71,   36,   33,   39,
+			   51, yyDummy>>)
 		end
 
 	yycheck_template: SPECIAL [INTEGER] is
 			-- Template for `yycheck'
 		once
 			Result := yyfixed_array (<<
-			   18,    0,   19,    0,   14,   15,    0,   17,   25,   19,
-			   20,   11,   12,   13,   40,   15,   11,   12,   13,   45,
-			   20,    4,   11,   12,   13,   20,   17,   18,    6,   11,
-			   40,   20,   42,    8,   11,   45,    8,   47,    5,    6,
-			   16,   22,    9,    7,   23,   11,    3,   17,    8,   23,
-			   23,   14,    7,   52,   53,   73,   66,   15,   23,   15,
-			   11,    9,   24,   67,   17,   15,   18,   21,   11,   16,
-			   -1,   -1,   -1,   22,   42,   -1,   47, yyDummy>>)
+			    0,    0,   14,   15,    0,   17,   19,   19,   20,   11,
+			   12,   13,   25,   15,   11,   12,   13,    4,   20,   40,
+			   11,   12,   13,   20,   45,   17,   18,   11,   40,   20,
+			   42,   11,    8,   45,    8,   47,    5,    6,   16,   22,
+			    9,    7,   23,   11,   23,    3,   23,   14,    8,   24,
+			   15,    7,   52,   53,   66,   17,   15,   11,   21,   23,
+			    9,   18,   17,   15,   11,   47,   67,   18,   16,   22,
+			   42, yyDummy>>)
 		end
 
 feature {NONE} -- Semantic value stacks
@@ -1599,7 +1598,7 @@ feature {NONE} -- Semantic value stacks
 
 feature {NONE} -- Constants
 
-	yyFinal: INTEGER is 78
+	yyFinal: INTEGER is 76
 			-- Termination state id
 
 	yyFlag: INTEGER is -32768
@@ -1608,7 +1607,7 @@ feature {NONE} -- Constants
 	yyNtbase: INTEGER is 26
 			-- Number of tokens
 
-	yyLast: INTEGER is 76
+	yyLast: INTEGER is 70
 			-- Upper bound of `yytable' and `yycheck'
 
 	yyMax_token: INTEGER is 280

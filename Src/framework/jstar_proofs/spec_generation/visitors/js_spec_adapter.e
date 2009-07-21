@@ -10,6 +10,12 @@ class
 inherit
 	JS_SPEC_VISITOR
 
+	SHARED_WORKBENCH
+	export {NONE} all end
+
+	JS_HELPER_ROUTINES
+	export {NONE} all end
+
 create
 	make
 
@@ -86,9 +92,30 @@ feature -- Node processing
 		end
 
 	process_field_sig (field_sig: JS_FIELD_SIG_NODE)
+		local
+			l_classes: LIST [CLASS_I]
+			l_class: CLASS_C
+			l_feature: FEATURE_I
 		do
 			-- It's not necessary to adapt field_sig.class_name
-			field_sig.type.accept (Current)
+
+			-- Look up the type of the field
+			l_classes := universe.classes_with_name (field_sig.class_name)
+			if l_classes.count /= 1 then
+				error ("Two or more classes in the system are found with name " + field_sig.class_name)
+			end
+			l_class := l_classes.i_th (1).compiled_representation
+			if not l_class.has_feature_table then
+				error ("Attribute " + field_sig.class_name + "." + field_sig.field + " does not exist")
+			end
+			l_feature := l_class.feature_named (field_sig.field)
+			if l_feature = Void then
+				error ("Attribute " + field_sig.class_name + "." + field_sig.field + " does not exist")
+			end
+			if not l_feature.is_attribute then
+				error (field_sig.class_name + "." + field_sig.field + " is not an attribute")
+			end
+			field_sig.set_type (type_string (l_feature.type))
 		end
 
 	process_fld_eq_list_as_arg (fld_eq_list_as_arg: JS_FLD_EQ_LIST_AS_ARG_NODE)

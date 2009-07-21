@@ -52,9 +52,7 @@ feature -- Spec node processing
 
 	process_field_sig (field_sig: JS_FIELD_SIG_NODE)
 		do
-			append ("<" + field_sig.class_name + ": ")
-			field_sig.type.accept (Current)
-			append (" " + field_sig.field + ">")
+			append ("<" + field_sig.class_name + ": " + field_sig.type + " " + field_sig.field + ">")
 		end
 
 	process_fld_eq_list_as_arg (fld_eq_list_as_arg: JS_FLD_EQ_LIST_AS_ARG_NODE)
