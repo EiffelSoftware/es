@@ -463,7 +463,7 @@ feature -- Execution
 					if not normal_response.has_exception then
 						variable_table.define_variable (a_receiver, a_type)
 							-- Predicate evaluation.
-						evaluate_predicates_after_test_case (create {AUT_FEATURE_OF_TYPE}.make (a_procedure, a_type), relevant_objects (a_receiver, an_argument_list, Void))
+						evaluate_predicates_after_test_case (create {AUT_FEATURE_OF_TYPE}.make (a_procedure, a_type), a_receiver, an_argument_list, Void)
 
 							-- Ilinca, "number of faults law" experiment
 --						failure_log_test_case_index
@@ -591,15 +591,17 @@ feature -- Execution
 			log_speed
 
 				-- Predicate evaluation.
+
 			if
 				is_running and then
 				not (last_response.is_bad or last_response.is_error) and then
-				not (last_response.is_precondition_violation or
-					 last_response.is_class_invariant_violation_on_entry or
-					 last_response.is_class_invariant_violation_on_exit)
+				not (last_response.is_class_invariant_violation_on_entry or last_response.is_class_invariant_violation_on_exit)
 			then
-				evaluate_predicates_after_test_case (create {AUT_FEATURE_OF_TYPE}.make (a_feature, a_type), relevant_objects (a_target, an_argument_list, Void))
+
 			end
+
+				-- Precondition evaluation.
+			evaluate_predicates_after_test_case (create {AUT_FEATURE_OF_TYPE}.make (a_feature, a_type), a_target, an_argument_list, Void)
 
 				-- Object state retrieval.
 			if is_running and then is_state_recording_enabled then
@@ -703,15 +705,7 @@ feature -- Execution
 			log_speed
 
 				-- Predicate evaluation.
-			if
-				is_running and then
-				not (last_response.is_bad or last_response.is_error) and then
-				not (last_response.is_precondition_violation or
-					 last_response.is_class_invariant_violation_on_entry or
-					 last_response.is_class_invariant_violation_on_exit)
-			then
-				evaluate_predicates_after_test_case (create {AUT_FEATURE_OF_TYPE}.make (a_query, a_type), relevant_objects (a_target, an_argument_list, a_receiver))
-			end
+			evaluate_predicates_after_test_case (create {AUT_FEATURE_OF_TYPE}.make (a_query, a_type), a_target, an_argument_list, a_receiver)
 
 			if is_running and then is_state_recording_enabled then
 				l_var_set.wipe_out
@@ -1785,43 +1779,45 @@ feature -- Predicate evaluation
 							increase_failed_precondition_count (is_last_suggestion_partial)
 							l_bp_slot := l_normal_response.exception.break_point_slot
 							l_access_patterns := precondition_access_pattern.item (a_feature)
-							l_pattern_cursor := l_access_patterns.new_cursor
-							from
-								l_pattern_cursor.start
-							until
-								l_pattern_cursor.after or else l_done
-							loop
-								if l_pattern_cursor.item.break_point_slot = l_bp_slot then
-									l_done := True
-									l_failed_predicate := l_pattern_cursor.item.predicate
-									create l_pred_args.make
-									from
-										l_pattern := l_pattern_cursor.item.access_pattern
-										l_ptn_cursor := l_pattern.new_cursor
-									until
-										l_ptn_cursor.after
-									loop
-										l_pred_args.extend (a_related_objects.item (l_ptn_cursor.item).index)
-										l_ptn_cursor.forth
+							if l_access_patterns /= Void then
+								l_pattern_cursor := l_access_patterns.new_cursor
+								from
+									l_pattern_cursor.start
+								until
+									l_pattern_cursor.after or else l_done
+								loop
+									if l_pattern_cursor.item.break_point_slot = l_bp_slot then
+										l_done := True
+										l_failed_predicate := l_pattern_cursor.item.predicate
+										create l_pred_args.make
+										from
+											l_pattern := l_pattern_cursor.item.access_pattern
+											l_ptn_cursor := l_pattern.new_cursor
+											l_ptn_cursor.start
+										until
+											l_ptn_cursor.after
+										loop
+											l_pred_args.extend (a_related_objects.item (l_ptn_cursor.item).index)
+											l_ptn_cursor.forth
+										end
 									end
+									l_pattern_cursor.forth
 								end
-								l_pattern_cursor.forth
-							end
 
-								-- Update predicate: Set `l_failed_predicate' with `l_pred_args' with value False.
-							update_predicate (l_failed_predicate, l_pred_args, False)
+									-- Update predicate: Set `l_failed_predicate' with `l_pred_args' with value False.
+								update_predicate (l_failed_predicate, l_pred_args, False)
+							end
 						end
 					end
 				end
 			end
 		end
 
-	evaluate_predicates_after_test_case (a_feature: AUT_FEATURE_OF_TYPE; a_related_objects: ARRAY [ITP_VARIABLE]) is
-			-- Evaluate `relevant_predicates_of_feature' for `a_feature' with `a_related_objects'.
+	evaluate_predicates_after_test_case (a_feature: AUT_FEATURE_OF_TYPE; a_target: ITP_VARIABLE; a_arguments: DS_LINEAR [ITP_EXPRESSION]; a_result: detachable ITP_VARIABLE) is
+			-- Evaluate `relevant_predicates_of_feature' for `a_feature' with relevant objects consisting
+			-- `a_target', `a_arguments' and `a_result'.
 		require
 			a_feature_attached: a_feature /= Void
-			a_related_objects_attached: a_related_objects /= Void
-			a_related_objects_valid: a_related_objects.lower = 0
 		local
 			l_predicate_table: DS_HASH_TABLE [DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]], AUT_PREDICATE]
 			l_cursor: DS_HASH_TABLE_CURSOR [DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]], AUT_PREDICATE]
@@ -1833,46 +1829,56 @@ feature -- Predicate evaluation
 			l_arranger_cursor: DS_LINKED_LIST_CURSOR [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]]
 			l_args: ARRAY [AUT_FEATURE_SIGNATURE_TYPE]
 			l_arity: INTEGER
+			l_related_objects: ARRAY [ITP_VARIABLE]
 		do
-			if configuration.is_precondition_checking_enabled then
-				update_predicate_pool_on_precondition_violation (a_feature, a_related_objects)
-				create l_request_data.make
-				if relevant_predicates_of_feature.has (a_feature) then
-					l_predicate_table := relevant_predicates_of_feature.item (a_feature)
-					from
-						l_cursor := l_predicate_table.new_cursor
-						l_cursor.start
-					until
-						l_cursor.after
-					loop
-						l_predicate := l_cursor.key
-						l_arranger := l_cursor.item
-						l_arity := l_predicate.arity
-						create l_arguments.make (l_arranger.count * l_arity)
+			if
+				configuration.is_precondition_checking_enabled and then
+				is_running and then
+				not (last_response.is_bad or last_response.is_error) and then
+				not (last_response.is_class_invariant_violation_on_entry or last_response.is_class_invariant_violation_on_exit)
+			then
+				l_related_objects := relevant_objects (a_target, a_arguments, a_result)
+				if last_response.is_precondition_violation then
+					update_predicate_pool_on_precondition_violation (a_feature, l_related_objects)
+				else
+					create l_request_data.make
+					if relevant_predicates_of_feature.has (a_feature) then
+						l_predicate_table := relevant_predicates_of_feature.item (a_feature)
 						from
-							i := 0
-							l_arranger_cursor := l_arranger.new_cursor
-							l_arranger_cursor.start
+							l_cursor := l_predicate_table.new_cursor
+							l_cursor.start
 						until
-							l_arranger_cursor.after
+							l_cursor.after
 						loop
+							l_predicate := l_cursor.key
+							l_arranger := l_cursor.item
+							l_arity := l_predicate.arity
+							create l_arguments.make (l_arranger.count * l_arity)
 							from
-								l_args := l_arranger_cursor.item
-								j := 1
+								i := 0
+								l_arranger_cursor := l_arranger.new_cursor
+								l_arranger_cursor.start
 							until
-								j > l_arity
+								l_arranger_cursor.after
 							loop
-								l_arguments.put (a_related_objects.item (l_args.item (j).position).index, i)
-								i := i + 1
-								j := j + 1
+								from
+									l_args := l_arranger_cursor.item
+									j := 1
+								until
+									j > l_arity
+								loop
+									l_arguments.put (l_related_objects.item (l_args.item (j).position).index, i)
+									i := i + 1
+									j := j + 1
+								end
+								l_arranger_cursor.forth
 							end
-							l_arranger_cursor.forth
+							l_request_data.extend ([l_predicate.id, l_arguments])
+							l_cursor.forth
 						end
-						l_request_data.extend ([l_predicate.id, l_arguments])
-						l_cursor.forth
+						evaluate_predicates (l_request_data)
+						update_predicate_pool (last_request)
 					end
-					evaluate_predicates (l_request_data)
-					update_predicate_pool (last_request)
 				end
 			end
 			log_precondition_evaluation_failure_rate

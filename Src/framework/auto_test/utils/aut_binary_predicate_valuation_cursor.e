@@ -73,15 +73,15 @@ feature -- Cursor movement
 				end
 			else
 					-- Both arguments are bounded.
-				after := container.item (<<variable_from_index (candidate.item (free_variables.item (1)).index),
-										   variable_from_index (candidate.item (free_variables.item (2)).index)>>)
+				after := container.item (<<variable_in_candidate (free_variables.item (1)),
+										   variable_in_candidate (free_variables.item (2))>>)
 			end
 		end
 
 	forth is
 			-- Move cursor to next position.
 		do
-			if free_variables.count = 0 then
+			if free_variables.is_empty then
 				after := True
 			else
 				if barrel_cursor /= Void then

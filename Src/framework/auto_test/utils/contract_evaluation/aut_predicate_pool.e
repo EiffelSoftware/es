@@ -39,8 +39,9 @@ feature -- Access
 
 feature -- Status report
 
-	is_candidate_satisfied (a_constraint: AUT_PREDICATE_CONSTRAINT; a_arguments: ARRAY [detachable ITP_VARIABLE]): BOOLEAN is
+	is_candidate_satisfied (a_constraint: AUT_PREDICATE_CONSTRAINT; a_arguments: ARRAY [detachable ITP_VARIABLE]; a_predicate_veto_function: detachable PREDICATE [ANY, TUPLE [AUT_PREDICATE]]): BOOLEAN is
 			-- Is `a_arguments' satisfy `a_constraint'?
+			-- If `a_predicate_veto_function' is attached, only predicates that makes `a_preciate_veto_function' return True is evaluated.
 		require
 			a_constraint_attached: a_constraint /= Void
 			a_arguments_attached: a_arguments /= Void
@@ -77,26 +78,29 @@ feature -- Status report
 					end
 					l_mapping.forth
 				end
-				Result := l_valuation_tbl.item (l_pattern.predicate).item (l_pred_args)
+
+				if Result and then (a_predicate_veto_function = Void or else a_predicate_veto_function.item ([l_pattern.predicate])) then
+					Result := l_valuation_tbl.item (l_pattern.predicate).item (l_pred_args)
+				end
 				l_cursor.forth
 			end
 		end
 
-	is_predicate_satisfied (a_predicate: AUT_PREDICATE; a_arguments: ARRAY [ITP_VARIABLE]): BOOLEAN is
-			-- Is `a_arguments' satisfy `a_predicate'?
-		require
-			a_predicate_attached: a_predicate /= Void
-			a_predicate_exist: predicates.has (a_predicate)
-			a_arguments_attached: a_arguments /= Void
-			a_arguments_valid: a_predicate.arity = a_arguments.count and then a_arguments.lower = 1
-			a_arguments_items_attached: not a_arguments.has (Void)
-		do
-			if not valuation_table.has (a_predicate) then
-				Result := false
-			else
-				Result := valuation_table.item (a_predicate).item (a_arguments)
-			end
-		end
+--	is_predicate_satisfied (a_predicate: AUT_PREDICATE; a_arguments: ARRAY [ITP_VARIABLE]): BOOLEAN is
+--			-- Is `a_arguments' satisfy `a_predicate'?
+--		require
+--			a_predicate_attached: a_predicate /= Void
+--			a_predicate_exist: predicates.has (a_predicate)
+--			a_arguments_attached: a_arguments /= Void
+--			a_arguments_valid: a_predicate.arity = a_arguments.count and then a_arguments.lower = 1
+--			a_arguments_items_attached: not a_arguments.has (Void)
+--		do
+--			if not valuation_table.has (a_predicate) then
+--				Result := false
+--			else
+--				Result := valuation_table.item (a_predicate).item (a_arguments)
+--			end
+--		end
 
 	is_partial_satisfaction_enabled: BOOLEAN
 			-- In case when it is not possible to satisfy all required predicate,
@@ -296,13 +300,14 @@ feature -- Basic operations
 			valuation_set: valuation_table.item (a_predicate).item (a_arguments) = a_valuation
 		end
 
-	generate_candidates (a_constraint: AUT_PREDICATE_CONSTRAINT; a_max_solution_count: INTEGER) is
+	generate_candidates (a_constraint: AUT_PREDICATE_CONSTRAINT; a_max_solution_count: INTEGER; a_initial_candidate: ARRAY [detachable ITP_VARIABLE]) is
 			-- Generate candidate object combinations satisfy `a_constraint', and store result
 			-- in `last_candidates'.
 			-- If `a_max_solution_count' > 0, store at most `a_max_solution_count' candidates.		
-			-- If `a_max_solution_count' is 0, all satisfying candidates are storage.
+			-- If `a_max_solution_count' is 0, all satisfying candidates are stored.
 			-- If no candidate is found, but some partial candidate is found, store that
 			-- partial candidate in `last_partial_candidate'.
+			-- `a_initial_candidate' is used to provide candidate operands that are not bounded after candidate generation.
 		require
 			a_constraint_attached: a_constraint /= Void
 			a_max_solution_count_non_negative: a_max_solution_count >= 0
@@ -316,6 +321,7 @@ feature -- Basic operations
 			l_nb_bounded_var: INTEGER
 			l_is_partial_satisfaction_enabled: BOOLEAN
 			l_last_candidates: like last_candidates
+			l_last_candidate: ARRAY [detachable ITP_VARIABLE]
 		do
 			create last_candidates.make
 			l_last_candidates := last_candidates
@@ -364,6 +370,8 @@ feature -- Basic operations
 									l_cursor.forth
 								end
 							else
+									-- We successfully satisfied a new precondition assertion,
+									-- update free variables.
 								l_cursor.update_candidate_with_item
 
 									-- If a partial candidate with the most number of bounded arguments seen
@@ -379,7 +387,10 @@ feature -- Basic operations
 
 								if l_cursors.is_last then
 										-- We found one candidate.
-									l_last_candidates.force_last (l_candidate.twin)
+									l_last_candidate := l_candidate.twin
+									fix_free_variables (l_last_candidate, a_initial_candidate)
+									l_last_candidates.force_last (l_last_candidate)
+
 									l_count := l_count + 1
 									l_done := a_max_solution_count > 0 and then l_count > a_max_solution_count
 									l_cursor.update_candidate_with_free_variables
@@ -451,7 +462,12 @@ feature{NONE} -- Implementation
 			create l_sorter.make (create {AGENT_BASED_EQUALITY_TESTER [AUT_PREDICATE_VALUATION_CURSOR]}.make (
 				agent (a_cursor, b_cursor: AUT_PREDICATE_VALUATION_CURSOR): BOOLEAN
 					do
-						Result := a_cursor.container.count < b_cursor.container.count
+						if a_cursor.predicate_access_pattern.predicate.is_linear_solvable /= a_cursor.predicate_access_pattern.predicate.is_linear_solvable then
+								-- Make sure that linearly solvable predicates are at the end of the sorted list.
+							Result := not a_cursor.predicate_access_pattern.predicate.is_linear_solvable
+						else
+							Result := a_cursor.container.count < b_cursor.container.count
+						end
 					end
 			))
 			l_sorter.sort (l_cursors)
@@ -480,6 +496,25 @@ feature{NONE} -- Implementation
 		ensure
 			result_attached: Result /= Void
 			result_valid: Result.predicate = a_predicate
+		end
+
+	fix_free_variables (a_dest_candidate: ARRAY [detachable ITP_VARIABLE]; a_source_candidate: ARRAY [detachable ITP_VARIABLE]) is
+			-- Set corresponding variables in `a_source_candidate' into `a_dest_candidate' in case if that variable in `a_dest_candidate'
+			-- is free.
+		require
+			a_dest_candidate_attached: a_dest_candidate /= Void
+			a_source_candidate_attached: a_source_candidate /= Void
+		do
+			a_dest_candidate.do_if_with_index (
+				agent (a_var: ITP_VARIABLE; a_index: INTEGER; a_dest, a_source: ARRAY [detachable ITP_VARIABLE])
+					do
+						a_dest.put (a_source.item (a_index), a_index)
+					end (?, ?, a_dest_candidate, a_source_candidate),
+
+				agent (a_var: ITP_VARIABLE; a_index: INTEGER): BOOLEAN
+					do
+						Result := a_var = Void
+					end)
 		end
 
 invariant

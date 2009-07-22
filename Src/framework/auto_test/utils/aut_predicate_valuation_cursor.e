@@ -158,6 +158,17 @@ feature{NONE} -- Implementation
 			good_result: Result /= Void and then Result.index = a_index
 		end
 
+	variable_in_candidate (a_index: INTEGER): ITP_VARIABLE is
+			-- Variable at `a_index'-th position in `candidate'
+		require
+			a_index_valid: candidate.lower <= a_index and then a_index <= candidate.upper
+			a_variable_exists: candidate.item (a_index) /= Void
+		do
+			Result := variable_from_index (candidate.item (a_index).index)
+		ensure
+			result_attached: Result /= Void
+		end
+
 invariant
 	container_attached: container /= Void
 	constraint_attached: constraint /= Void

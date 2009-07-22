@@ -37,7 +37,8 @@ feature -- Cursor movement
 		do
 			before := False
 			if free_variables.is_empty then
-				after := not container.item (<<create {ITP_VARIABLE}.make (constraint.argument_operand_mapping.item (predicate_access_pattern).item (1))>>)
+				after := not container.item (<<variable_in_candidate (constraint.argument_operand_mapping.item (predicate_access_pattern).item (1))>>)
+--				after := not container.item (<<create {ITP_VARIABLE}.make (constraint.argument_operand_mapping.item (predicate_access_pattern).item (1))>>)
 			else
 				create cursor.make (container.storage.to_array, random)
 				cursor.start
@@ -48,10 +49,14 @@ feature -- Cursor movement
 	forth is
 			-- Move cursor to next position.
 		do
-			check not free_variables.is_empty end
-			check cursor /= Void end
-			cursor.forth
-			after := cursor.after
+			if free_variables.is_empty then
+				after := True
+			else
+				check not free_variables.is_empty end
+				check cursor /= Void end
+				cursor.forth
+				after := cursor.after
+			end
 		end
 
 feature -- Basic operations

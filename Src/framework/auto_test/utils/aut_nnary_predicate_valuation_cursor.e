@@ -109,7 +109,7 @@ feature{NONE} -- Implementation
 			-- is found or after.
 		require
 			not_after: not after
-			storage_cursor_not_off: not storage_cursor.off
+--			storage_cursor_not_off: not storage_cursor.off
 		local
 			l_found: BOOLEAN
 			l_cursor: like storage_cursor
