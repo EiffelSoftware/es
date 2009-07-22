@@ -79,7 +79,7 @@ feature -- Spec node processing
 
 	process_integer_as_arg (integer_as_arg: JS_INTEGER_AS_ARG_NODE)
 		do
-			append (integer_as_arg.value)
+			append ("numeric_const(" + integer_as_arg.value + ")")
 		end
 
 	process_param (param: JS_PARAM_NODE)

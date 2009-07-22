@@ -26,7 +26,7 @@ feature
 
 	build_tool_interface (root_widget: EV_TEXT)
 		do
-			create jstar_proofs.make (agent user_widget.set_text)
+			create jstar_proofs.make
 			propagate_drop_actions (Void)
 		end
 
@@ -37,12 +37,14 @@ feature
 			button: SD_TOOL_BAR_BUTTON
 			i: INTEGER
 		do
-			texts := <<"Code", "Specs", "Logic", "Abs", "CFG", "Execution">>
-			actions := <<agent show_text_window ("Code", agent {JSTAR_PROOFS}.jimple_code),
-						 agent show_text_window ("Specs", agent {JSTAR_PROOFS}.specs),
-						 agent show_window_for_file ("Logic", agent {JSTAR_PROOFS}.logic_file_name),
-						 agent show_window_for_file ("Abstraction Rules", agent {JSTAR_PROOFS}.abs_file_name),
-						 Void, Void>>
+			texts := <<"Code", "Specs", "Logic", "Abs", "CFG", "Execution", "Output">>
+			actions := <<agent show_external_editor ("Code", agent {JSTAR_PROOFS}.jimple_code_file_name),
+						 agent show_external_editor ("Specs", agent {JSTAR_PROOFS}.specs_file_name),
+						 agent show_external_editor ("Logic", agent {JSTAR_PROOFS}.logic_file_name),
+						 agent show_external_editor ("Abstraction Rules", agent {JSTAR_PROOFS}.abs_file_name),
+						 agent show_dot_file ("Control-flow graph", agent {JSTAR_PROOFS}.cfg_file_name),
+						 agent show_dot_file ("Execution graph", agent {JSTAR_PROOFS}.execution_file_name),
+						 agent show_external_editor ("JStar output", agent {JSTAR_PROOFS}.jstar_output_file_name)>>
 
 			from
 				create Result.make (texts.count)
@@ -67,8 +69,10 @@ feature {NONE}
 			l_error_prompt: ES_ERROR_PROMPT
 		do
 			if not l_retry then
+				user_widget.set_text ("")
 				if {st: !CLASSC_STONE} stone and then {c: !CLASS_C} st.e_class then
 					jstar_proofs.prove (c)
+					user_widget.set_text ("Done!")
 				end
 			end
 		rescue
@@ -80,6 +84,83 @@ feature {NONE}
 		end
 
 	jstar_proofs: JSTAR_PROOFS
+
+	show_external_editor (unavailable_title: STRING; source: FUNCTION [ANY, TUPLE, STRING])
+		local
+			filename: STRING
+		do
+			filename := source.item ([jstar_proofs])
+			if filename /= Void then
+				open_external_editor_for_file (filename)
+			else
+				create_text_window (unavailable_title, "Unavailable")
+			end
+		end
+
+	open_external_editor_for_file (a_file_name: STRING)
+		local
+			req: COMMAND_EXECUTOR
+		do
+			create req
+				-- Here, the 1 is the line number.
+			req.execute (preferences.misc_data.external_editor_cli (a_file_name, 1))
+		end
+
+	show_dot_file (window_title: STRING; filename_agent: FUNCTION [ANY, TUPLE, STRING])
+		local
+			l_filename: STRING
+			l_process_factory: PROCESS_FACTORY
+			l_arguments: ARRAYED_LIST [STRING]
+			l_process: PROCESS
+		do
+			l_filename := filename_agent.item ([jstar_proofs])
+
+			if l_filename = Void then
+				create_text_window (window_title, "Unavailable")
+			else
+				create l_process_factory
+				create l_arguments.make_from_array (<<l_filename>>)
+				l_process := l_process_factory.process_launcher ("dotty", l_arguments, jstar_proofs.dot_file_directory)
+				l_process.redirect_output_to_agent (agent (o: STRING) do end)
+				l_process.redirect_error_to_same_as_output
+				l_process.set_on_fail_launch_handler (agent cannot_start_dotty)
+				l_process.launch
+			end
+		end
+
+	cannot_start_dotty
+		local
+			l_error_prompt: ES_ERROR_PROMPT
+		do
+			create l_error_prompt.make_standard ("")
+			l_error_prompt.set_title ("Could not execute dotty - make sure it's in your PATH")
+			l_error_prompt.show_on_active_window
+		end
+
+	create_text_window (window_title: STRING; text_content: STRING)
+		local
+			l_text_widget: EV_TEXT
+			l_window: EV_TITLED_WINDOW
+		do
+			create l_window.make_with_title (window_title)
+			create l_text_widget.make_with_text (text_content)
+			l_window.put (l_text_widget)
+			l_window.set_size (500, 300)
+			l_window.close_request_actions.put_front (agent close_window (l_window))
+			window_references.put_front (l_window)
+			l_window.show
+		end
+
+	close_window (a_window: EV_TITLED_WINDOW)
+		do
+			window_references.prune_all (a_window)
+			a_window.destroy
+		end
+
+	window_references: LINKED_LIST [EV_TITLED_WINDOW]
+		-- References to the displayed windows, so that they don't get garbage collected.
+
+feature {NONE} -- Unused, but possibly handy
 
 	show_window_for_file (window_title: STRING; filename_agent: FUNCTION [ANY, TUPLE, STRING])
 		local
@@ -120,29 +201,6 @@ feature {NONE}
 		do
 			create_text_window (window_title, source.item ([jstar_proofs]))
 		end
-
-	create_text_window (window_title: STRING; text_content: STRING)
-		local
-			l_text_widget: EV_TEXT
-			l_window: EV_TITLED_WINDOW
-		do
-			create l_window.make_with_title (window_title)
-			create l_text_widget.make_with_text (text_content)
-			l_window.put (l_text_widget)
-			l_window.set_size (500, 300)
-			l_window.close_request_actions.put_front (agent close_window (l_window))
-			window_references.put_front (l_window)
-			l_window.show
-		end
-
-	close_window (a_window: EV_TITLED_WINDOW)
-		do
-			window_references.prune_all (a_window)
-			a_window.destroy
-		end
-
-	window_references: LINKED_LIST [EV_TITLED_WINDOW]
-		-- References to the displayed windows, so that they don't get garbage collected.
 
 ;indexing
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

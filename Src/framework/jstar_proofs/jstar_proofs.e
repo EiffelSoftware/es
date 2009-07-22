@@ -7,49 +7,68 @@ indexing
 class
 	JSTAR_PROOFS
 
+inherit
+	KL_SHARED_FILE_SYSTEM
+	export {NONE} all end
+
+	SHARED_SERVER
+	export {NONE} all end
+
 create
 	make
 
 feature
 
-	make (output: PROCEDURE [ANY, TUPLE [STRING_GENERAL]])
+	make
 		do
 			create jimple_code_generator
 			create spec_generator.make
 			create logic_and_abstraction_locator
 			create jstar_runner
-			output_agent := output
 
 			reset_results
 		end
 
 	prove (c: !CLASS_C)
+		local
+			l_jimple_code: STRING
+			l_specs: STRING
+			l_output_file_name: STRING
 		do
 			reset_results
-			output_agent.call ([""])
 
 			jimple_code_generator.process_class (c)
-			jimple_code := jimple_code_generator.jimple_code
+			l_jimple_code := jimple_code_generator.jimple_code
+			jimple_code_file_name := file_system.pathname (directory, "Code")
+			write_file (jimple_code_file_name, l_jimple_code)
 
 			spec_generator.process_class (c)
-			specs := spec_generator.generated_specs
+			l_specs := spec_generator.generated_specs
+			specs_file_name := file_system.pathname (directory, "Specs")
+			write_file (specs_file_name, l_specs)
 
 			logic_and_abstraction_locator.process_class (c)
 			logic_file_name := logic_and_abstraction_locator.logic_file_name
 			abs_file_name := logic_and_abstraction_locator.abstraction_file_name
 
-			jstar_runner.run (jimple_code, specs, logic_file_name, abs_file_name)
-			output_agent.call ([jstar_runner.output])
+			l_output_file_name := file_system.pathname (directory, "Output")
+			jstar_runner.run (dot_file_directory, jimple_code_file_name, specs_file_name, logic_file_name, abs_file_name, l_output_file_name)
+			jstar_output_file_name := l_output_file_name
+			cfg_file_name := "icfg.dot"
+			execution_file_name := "execution.dot"
 		end
 
 feature {NONE}
 
 	reset_results
 		do
-			jimple_code := "Unavailable"
-			specs := "Unavailable"
+			jimple_code_file_name := Void
+			specs_file_name := Void
 			logic_file_name := Void
 			abs_file_name := Void
+			cfg_file_name := Void
+			execution_file_name := Void
+			jstar_output_file_name := Void
 		end
 
 	jimple_code_generator: JS_JIMPLE_GENERATOR
@@ -60,16 +79,43 @@ feature {NONE}
 
 	jstar_runner: JS_JSTAR_RUNNER
 
-	output_agent: PROCEDURE [ANY, TUPLE [STRING_GENERAL]]
-
 feature -- Access
 
-	jimple_code: STRING
+	jimple_code_file_name: STRING
 
-	specs: STRING
+	specs_file_name: STRING
 
 	logic_file_name: STRING
 
 	abs_file_name: STRING
+
+	dot_file_directory: STRING
+		do
+			Result := directory
+		end
+
+	cfg_file_name: STRING
+
+	execution_file_name: STRING
+
+	jstar_output_file_name: STRING
+
+feature {NONE} -- Implementation
+
+	write_file (name: STRING; contents: STRING)
+		local
+			l_output_file: KL_TEXT_OUTPUT_FILE
+		do
+			create l_output_file.make (name)
+			l_output_file.open_write
+			l_output_file.put_string (contents)
+			l_output_file.close
+		end
+
+	directory: STRING
+			-- The directory where the jStar input and output files will be written
+		do
+			Result := system.eiffel_project.project_directory.target_path
+		end
 
 end
