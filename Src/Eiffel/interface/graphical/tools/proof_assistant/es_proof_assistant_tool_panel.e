@@ -72,7 +72,11 @@ feature {NONE}
 				user_widget.set_text ("")
 				if {st: !CLASSC_STONE} stone and then {c: !CLASS_C} st.e_class then
 					jstar_proofs.prove (c)
-					user_widget.set_text ("Done!")
+					if jstar_proofs.timed_out then
+						user_widget.set_text ("Timed out! Your logic and abstraction rules possibly cause looping.")
+					else
+						user_widget.set_text ("Done!")
+					end
 				end
 			end
 		rescue
