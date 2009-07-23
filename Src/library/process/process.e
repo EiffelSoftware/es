@@ -302,6 +302,7 @@ feature -- Control
 			-- Check `has_exited' after to see if launched process has exited.
 			-- Note: child processes of launched process are not guaranteed to have exited even `wait_for_exit_with_timeout' returns
 			-- with True.
+			-- After return, check `is_last_wait_timeout' for status.
 		require
 			thread_capable: {PLATFORM}.is_thread_capable
 			process_launched: launched
@@ -694,6 +695,9 @@ feature -- Status report
 	is_launched_in_new_process_group: BOOLEAN
 			-- Will process be launched in a new process group?
 			-- Only has effect on Windows.
+
+	is_last_wait_timeout: BOOLEAN
+			-- Did the last `wait_for_exit_with_timeout' time out?
 
 feature -- Validation checking
 

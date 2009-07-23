@@ -144,7 +144,8 @@ feature -- Control
 		local
 			l_timeout: BOOLEAN
 		do
-			l_timeout := not timer.wait (a_timeout)
+			l_timeout := timer.wait (a_timeout)
+			is_last_wait_timeout := l_timeout
 		end
 
 feature -- Interprocess data transmission

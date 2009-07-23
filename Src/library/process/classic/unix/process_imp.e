@@ -116,6 +116,7 @@ feature  -- Control
 			l_wait: BOOLEAN
 		do
 			l_wait := timer.wait (a_timeout)
+            is_last_wait_timeout := l_timeout
 		end
 
 	put_string (s: STRING) is
