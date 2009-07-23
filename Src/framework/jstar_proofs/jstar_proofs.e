@@ -58,6 +58,11 @@ feature
 			execution_file_name := "execution.dot"
 		end
 
+	timed_out: BOOLEAN
+		do
+			Result := jstar_runner.timed_out
+		end
+
 feature {NONE}
 
 	reset_results

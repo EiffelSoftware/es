@@ -23,6 +23,7 @@ feature
 			l_process: PROCESS
 			l_output_file_name: STRING
 		do
+			timed_out := False
 			create l_process_factory
 			create l_arguments.make_from_array (<<"-l", logic_file_name, "-a", abs_file_name, "-s", specs_file_name, "-f", jimple_code_file_name>>)
 			l_process := l_process_factory.process_launcher ("jstar", l_arguments, working_directory)
@@ -30,8 +31,15 @@ feature
 			l_process.redirect_error_to_same_as_output
 			l_process.set_on_fail_launch_handler (agent failed_jstar_launch)
 			l_process.launch
-			l_process.wait_for_exit
+			l_process.wait_for_exit_with_timeout (10 * 1000) -- Wait at most 10 seconds for jStar to finish
+			if not l_process.is_last_wait_timeout then
+				l_process.terminate
+				l_process.wait_for_exit
+				timed_out := True
+			end
 		end
+
+	timed_out: BOOLEAN
 
 feature {NONE} -- Implementation
 
