@@ -273,6 +273,7 @@ feature -- Object state retrieval
 			l_list: LIST [CLASS_C]
 			l_sorter: DS_TOPOLOGICAL_SORTER [CLASS_C]
 			l_sorted_classes: DS_ARRAYED_LIST [CLASS_C]
+			l_class_type: STRING
 		do
 			if configuration.is_object_state_retrieval_enabled or else configuration.is_precondition_checking_enabled then
 					-- Get the list of classes whose state should be recorded.
@@ -316,7 +317,12 @@ feature -- Object state retrieval
 				loop
 					l_class_name := l_sorted_classes.item_for_iteration.name_in_upper
 					l_type := l_sorted_classes.item_for_iteration.actual_type
-					l_class_info.extend ([l_class_name, l_type, full_type_name (l_class_name, root_class)])
+					l_class_type := full_type_name (l_class_name, root_class)
+					check l_class_name /= Void end
+					check l_type /= Void end
+					if l_class_type /= Void then
+						l_class_info.extend ([l_class_name, l_type, l_class_type])
+					end
 					l_sorted_classes.forth
 				end
 

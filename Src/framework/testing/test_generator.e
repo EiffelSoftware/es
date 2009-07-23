@@ -368,16 +368,18 @@ feature {NONE} -- Basic operations
 							end
 						else
 							if attached {AUT_RANDOM_STRATEGY} test_task as l_task then
-								generate_failure_statistics -- Ilinca, "number of faults law" experiment
+								is_finished := True
+								fixme ("Uncomment the following lines to enable statistics generation. I commented out because there is no way to avoid this and it takes a lot of time. Jasonw 2009.7.23")
+--								generate_failure_statistics -- Ilinca, "number of faults law" experiment
 
-								if session.options.is_text_statistics_format_enabled then
-									generate_text_statistics (session.result_repository_builder.result_repository, l_task.classes_under_test)
-								end
-								if session.options.is_html_statistics_format_enabled then
-									generate_html_statistics (session.result_repository_builder.result_repository, l_task.classes_under_test)
-								else
-									is_finished := True
-								end
+--								if session.options.is_text_statistics_format_enabled then
+--									generate_text_statistics (session.result_repository_builder.result_repository, l_task.classes_under_test)
+--								end
+--								if session.options.is_html_statistics_format_enabled then
+--									generate_html_statistics (session.result_repository_builder.result_repository, l_task.classes_under_test)
+--								else
+--									is_finished := True
+--								end
 							end
 						end
 					else
