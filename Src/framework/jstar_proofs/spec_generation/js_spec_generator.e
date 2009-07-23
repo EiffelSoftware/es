@@ -247,9 +247,11 @@ feature {NONE}
 					check l_feature /= Void end
 					l_attached_feature := l_feature
 
-						-- Only write routines which are written in that class
+						-- Only write routines which are written in that class, and that are not creation routines
 					if l_feature.is_routine and then l_feature.written_in = a_class.class_id and {body: !FEATURE_AS} l_attached_feature.body then
-						collect_spec_of_routine (False, body, l_attached_feature)
+						if (a_class.creators = Void) or else (not a_class.creators.has_key (l_attached_feature.feature_name)) then
+							collect_spec_of_routine (False, body, l_attached_feature)
+						end
 					end
 
 					a_class.feature_table.forth
