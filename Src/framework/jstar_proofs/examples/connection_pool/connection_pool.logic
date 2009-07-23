@@ -1,5 +1,42 @@
 import "field_logic";
 
+/*
+For boolean conditions
+*/
+
+rule eq_eq_true_left :
+  | builtin_eq(?x,?y) = numeric_const("1") | |- |
+without
+  ?x=?y
+if
+  | ?x=?y | |- |
+
+rule eq_neq_false_left :
+  | builtin_eq(?x,?y) != numeric_const("0") | |- |
+without
+  ?x=?y
+if
+  | ?x=?y | |- |
+
+rule eq_eq_false_left :
+  | builtin_eq(?x,?y) = numeric_const("0") | |- |
+without
+  ?x!=?y
+if
+  | ?x!=?y | |- |
+
+rule neq_false_left :
+  | builtin_eq(?x,?y) != numeric_const("1") | |- |
+without
+  ?x!=?y
+if
+  | ?x!=?y | |- | 
+
+
+/*
+For lists
+*/
+
 
 rule ls_val_exists :
 | | list(?x,?y,?v) |- | list(?x,?y,?v2)
