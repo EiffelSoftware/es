@@ -12,6 +12,8 @@ inherit
 
 	AUT_SHARED_TYPE_FORMATTER
 
+	AUT_SHARED_RANDOM
+
 create
 	make
 
@@ -25,7 +27,6 @@ feature{NONE} -- Initialization
 			system := a_system
 			l_types := suppliers_of_types (a_types_under_test)
 			sort_types (l_types)
-			sorted_types_cursor := sorted_types.new_cursor
 			create storage.make (1000)
 			storage.set_key_equality_tester (
 				create {AGENT_BASED_EQUALITY_TESTER [ITP_VARIABLE]}.make (
@@ -34,31 +35,6 @@ feature{NONE} -- Initialization
 							Result := a.index = b.index
 						end))
 			setup_variable_table
-		end
-
-	setup_variable_table is
-			-- Setup `variable_table'.
-		local
-			l_list: DS_ARRAYED_LIST [ITP_VARIABLE]
-		do
-			create variable_table.make (sorted_types.count)
-			variable_table.set_key_equality_tester (create {AGENT_BASED_EQUALITY_TESTER [TYPE_A]}.make (
-				agent (a_type, b_type: TYPE_A): BOOLEAN
-					do
-						Result :=
-							a_type.conform_to (system.root_type.associated_class, b_type) and then
-							b_type.conform_to (system.root_type.associated_class, a_type)
-					end
-			))
-			from
-				sorted_types.start
-			until
-				sorted_types.after
-			loop
-				create l_list.make (100)
-				variable_table.put (l_list, sorted_types.item_for_iteration)
-				sorted_types.forth
-			end
 		end
 
 feature -- Access
@@ -77,8 +53,11 @@ feature -- Access
 	sorted_types_cursor: DS_ARRAYED_LIST_CURSOR [TYPE_A]
 			-- Cursor to iterate `sorted_types'.
 
-	conforming_variables (a_type: TYPE_A): DS_ARRAYED_LIST [ITP_VARIABLE] is
-			-- List of variables whose type conforms to `a_type'
+	conforming_variables (a_context_class: CLASS_C; a_type: TYPE_A): DS_ARRAYED_LIST [ITP_VARIABLE] is
+			-- List of variables whose type conforms to `a_type' viewed fron `a_context_class'
+		require
+			a_context_class_attached: a_context_class /= Void
+			a_type_attached: a_type /= Void
 		local
 			l_var_table: like variable_table
 			l_type: TYPE_A
@@ -91,15 +70,16 @@ feature -- Access
 			if l_var_table.has (a_type) then
 				Result := l_var_table.item (a_type)
 			else
-				l_root_class := system.root_type.associated_class
+				l_root_class := a_context_class
 				l_storage := storage
+				create l_vlist.make (initial_object_list_capacity)
 				from
 					l_var_table.start
 				until
 					l_var_table.after
 				loop
 					l_type := l_var_table.key_for_iteration
-					create l_vlist.make (50)
+
 					if a_type.conform_to (l_root_class, l_type) then
 						l_list := l_var_table.item_for_iteration
 						from
@@ -116,8 +96,46 @@ feature -- Access
 					l_var_table.forth
 				end
 				l_var_table.force_last (l_vlist, a_type)
+				sort_types (l_var_table.keys)
 				Result := l_vlist
 			end
+		end
+
+	random_conforming_variable (a_context_class: CLASS_C; a_type: TYPE_A): detachable ITP_VARIABLE
+			-- Random variable of `conforming_variables (a_type)' or Void if list
+			-- is emtpy
+		require
+			a_context_class_not_Void: a_context_class /= Void
+			a_context_class_valid: a_context_class.is_valid
+			a_type_not_void: a_type /= Void
+		local
+			list: like conforming_variables
+			cs: DS_LINEAR_CURSOR [ITP_VARIABLE]
+			i: INTEGER
+			j: INTEGER
+			l_variable: detachable ITP_VARIABLE
+		do
+			list := conforming_variables (a_context_class, a_type)
+			if not list.is_empty then
+				random.forth
+				i := (random.item  \\ list.count) + 1
+				l_variable := list.item (i)
+				if l_variable /= Void and then is_variable_defined (l_variable) then
+					Result := l_variable
+				end
+			end
+		end
+
+feature -- Status report
+
+	is_variable_defined (a_variable: ITP_VARIABLE): BOOLEAN
+			-- Is variable `a_variable' defined in interpreter?
+		require
+			a_variable_not_void: a_variable /= Void
+		do
+			Result := storage.has (a_variable)
+		ensure
+			good_result: Result = storage.has (a_variable)
 		end
 
 feature -- Basic operations
@@ -168,7 +186,7 @@ feature{NONE} -- Implementation
 	storage: DS_HASH_TABLE [TYPE_A, ITP_VARIABLE]
 			-- Table of all variables along with their type
 
-	sort_types (a_types: DS_LIST [TYPE_A]) is
+	sort_types (a_types: DS_LINEAR [TYPE_A]) is
 			-- Sort types in `a_types' topologically
 			-- and store resultin `sorted_types'.
 			-- The most specific types appear at first in `sorted_types'.
@@ -208,6 +226,7 @@ feature{NONE} -- Implementation
 
 			create sorted_types.make (l_sorter.sorted_items.count)
 			l_sorter.sorted_items.do_all (agent sorted_types.force_last)
+			sorted_types_cursor := sorted_types.new_cursor
 		end
 
 	suppliers_of_types (a_types: DS_LIST [TYPE_A]): DS_LIST [TYPE_A] is
@@ -248,6 +267,34 @@ feature{NONE} -- Implementation
 			end
 			create {DS_LINKED_LIST [TYPE_A]} Result.make
 			l_type_set.do_all (agent Result.force_last)
+		end
+
+	initial_object_list_capacity: INTEGER is 500
+			-- Initial capacity for the list to store object of each type
+
+	setup_variable_table is
+			-- Setup `variable_table'.
+		local
+			l_list: DS_ARRAYED_LIST [ITP_VARIABLE]
+		do
+			create variable_table.make (sorted_types.count)
+			variable_table.set_key_equality_tester (create {AGENT_BASED_EQUALITY_TESTER [TYPE_A]}.make (
+				agent (a_type, b_type: TYPE_A): BOOLEAN
+					do
+						Result :=
+							a_type.conform_to (system.root_type.associated_class, b_type) and then
+							b_type.conform_to (system.root_type.associated_class, a_type)
+					end
+			))
+			from
+				sorted_types.start
+			until
+				sorted_types.after
+			loop
+				create l_list.make (initial_object_list_capacity)
+				variable_table.put (l_list, sorted_types.item_for_iteration)
+				sorted_types.forth
+			end
 		end
 
 ;note

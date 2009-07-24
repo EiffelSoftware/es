@@ -419,7 +419,7 @@ feature {NONE} -- Implementation
 		do
 			if target /= Void then
 				l_target_type := interpreter.variable_table.variable_type (target)
-				if l_target_type.is_none then
+				if l_target_type = Void or else l_target_type.is_none then
 					cancel
 				else
 					set_feature_and_type (l_target_type.associated_class.feature_with_rout_id (feature_to_call.rout_id_set.first).associated_feature_i, l_target_type)

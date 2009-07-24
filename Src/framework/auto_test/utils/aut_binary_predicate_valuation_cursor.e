@@ -73,8 +73,8 @@ feature -- Cursor movement
 				end
 			else
 					-- Both arguments are bounded.
-				after := container.item (<<variable_in_candidate (free_variables.item (1)),
-										   variable_in_candidate (free_variables.item (2))>>)
+				after := container.item (<<variable_in_candidate (bound_variables.item (1)),
+										   variable_in_candidate (bound_variables.item (2))>>)
 			end
 		end
 

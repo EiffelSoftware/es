@@ -824,9 +824,9 @@ feature {NONE} -- Factory
 			Result := l_itp_gen.last_interpreter
 			if Result /= Void then
 					-- Generate typed object pool for precondition evaluation.
-				if configuration.is_precondition_checking_enabled then
+--				if configuration.is_precondition_checking_enabled then
 					Result.generate_typed_object_pool
-				end
+--				end
 			end
 		end
 
