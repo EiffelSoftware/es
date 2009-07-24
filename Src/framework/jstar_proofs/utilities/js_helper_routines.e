@@ -80,7 +80,7 @@ feature {NONE}
 					l_argument_type := type_string (arguments.item.actual_type)
 
 					if at_least_one_arg then
-						Result := Result + " ,"
+						Result := Result + ", "
 					else
 						at_least_one_arg := True
 					end
