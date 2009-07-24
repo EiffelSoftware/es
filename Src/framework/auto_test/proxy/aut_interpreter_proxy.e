@@ -1805,7 +1805,9 @@ feature -- Predicate evaluation
 								end
 
 									-- Update predicate: Set `l_failed_predicate' with `l_pred_args' with value False.
-								update_predicate (l_failed_predicate, l_pred_args, False)
+								if l_done then
+									update_predicate (l_failed_predicate, l_pred_args, False)
+								end
 							end
 						end
 					end
