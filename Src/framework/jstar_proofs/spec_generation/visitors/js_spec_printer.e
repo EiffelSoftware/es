@@ -135,7 +135,7 @@ feature -- Spec node processing
 	process_spatial_combine (spatial_combine: JS_SPATIAL_COMBINE_NODE)
 		do
 			append ("(")
-			spatial_combine.accept (Current)
+			spatial_combine.combine_content.accept (Current)
 			append (")")
 		end
 
