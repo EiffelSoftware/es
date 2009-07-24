@@ -103,6 +103,15 @@ feature -- Access
 		deferred
 		end
 
+	object_selection_for_precondition_satisfaction_rate: INTEGER
+			-- Possibility under which smart object selection for precondition satisfaction
+			-- is used.
+			-- Only have effect when precondition evaluation is enabled.
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
 feature -- Status report
 
 	is_slicing_enabled: BOOLEAN

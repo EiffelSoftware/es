@@ -171,12 +171,39 @@ feature -- Setting
 
 feature -- Execution
 
+	should_use_precondition_satisfaction: BOOLEAN is
+			-- Should precondition satisfaction be used for `feature_'?
+		local
+			l_invalid_rate: TUPLE [failed_times: INTEGER; all_times: INTEGER]
+			l_rate: DOUBLE
+			l_set_rate: INTEGER
+		do
+			l_set_rate := configuration.object_selection_for_precondition_satisfaction_rate
+			if l_set_rate = 100 then
+				Result := True
+			else
+				l_invalid_rate := feature_invalid_test_case_rate.item (feature_)
+				if l_invalid_rate /= Void then
+					l_rate := l_invalid_rate.failed_times.to_double / l_invalid_rate.all_times
+					Result := is_within_probability (l_rate * (configuration.object_selection_for_precondition_satisfaction_rate.to_double / 100))
+				end
+			end
+		end
+
+	is_precondition_satisfaction_performed: BOOLEAN
+			-- Is precondition satisfaction performed the last when `start' is called?
+
 	start is
 			-- <Precursor>
 		do
 			set_start_time (interpreter.duration_until_now.millisecond_count)
 
-			if configuration.is_precondition_checking_enabled and then has_precondition then
+			if
+				configuration.is_precondition_checking_enabled and then
+				has_precondition and then
+				should_use_precondition_satisfaction
+			then
+				is_precondition_satisfaction_performed := True
 
 					-- Evaluate precondition satisfaction on `initial_operands'.
 				if not has_linear_solvable_precondition then
@@ -204,6 +231,7 @@ feature -- Execution
 			else
 					-- If no precondition evaluation is enabled, we assume that `initial_operands'
 					-- satisfy the precondition.
+				is_precondition_satisfaction_performed := False
 				is_last_precondition_evaluation_satisfied := True
 				steps_completed := True
 				last_evaluated_operands := initial_operands

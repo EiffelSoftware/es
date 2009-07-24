@@ -176,6 +176,9 @@ feature -- Execution
 				l_conf.set_is_smt_linear_constraint_solver_enabled (l_ap.is_smt_linear_constraint_solver_enabled)
 				l_conf.set_is_lpsolve_linear_constraint_solver_enabled (l_ap.is_lpsolve_contraint_linear_solver_enabled)
 
+					-- Set smart object selection rate
+				l_conf.set_object_selection_for_precondition_satisfaction_rate (l_ap.object_selection_for_precondition_satisfaction_rate)
+
 				if l_root_group.is_cluster then
 					if attached {CONF_CLUSTER} l_root_group as l_cluster then
 						l_conf.set_cluster (l_cluster)

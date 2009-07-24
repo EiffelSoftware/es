@@ -142,6 +142,16 @@ feature -- Access
 			good_result: Result = max_candidate_count_cache
 		end
 
+	object_selection_for_precondition_satisfaction_rate: INTEGER
+			-- Possibility under which smart object selection for precondition satisfaction
+			-- is used.
+			-- Only have effect when precondition evaluation is enabled.
+		do
+			Result := object_selection_for_precondition_satisfaction_rate_cache
+		ensure then
+			good_result: Result = object_selection_for_precondition_satisfaction_rate_cache
+		end
+
 feature -- Access: cache
 
 	types_cache: attached DS_HASH_SET [attached STRING]
@@ -214,6 +224,9 @@ feature -- Access: cache
 
 	is_smt_linear_constraint_solver_enabled_cache: like is_smt_linear_constraint_solver_enabled
 			-- Cache for `is_smt_linear_constraint_solver_enabled'
+
+	object_selection_for_precondition_satisfaction_rate_cache: INTEGER
+			-- Cache for `object_selection_for_precondition_satisfaction_rate'
 
 feature -- Status report
 
@@ -557,6 +570,15 @@ feature -- Status setting
 		ensure
 			is_lpsolve_linear_constraint_solver_enabled_set: is_lpsolve_linear_constraint_solver_enabled = b
 		end
+
+	set_object_selection_for_precondition_satisfaction_rate (a_value: INTEGER) is
+			-- Set `object_selection_for_precondition_satisfaction_rate' with `a_value'.
+		do
+			object_selection_for_precondition_satisfaction_rate_cache := a_value
+		ensure
+			object_selection_for_precondition_satisfaction_rate_set: object_selection_for_precondition_satisfaction_rate = a_value
+		end
+
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

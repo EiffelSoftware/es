@@ -144,6 +144,17 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
+	feature_invalid_test_case_rate: DS_HASH_TABLE [TUPLE [invalid_times: INTEGER; all_times: INTEGER], AUT_FEATURE_OF_TYPE] is
+			-- Table for invalid test case rate of features
+			-- `invalid_times' is the number of times which the feature fails because precondition violation.
+			-- `all_times' is the number of times that the feature has been tried to test
+		once
+			create Result.make (100)
+			Result.set_key_equality_tester (feature_of_type_loose_equality_tester)
+		ensure
+			result_attached: Result /= Void
+		end
+
 feature -- Basic operations
 
 	put_predicate (a_predicate: AUT_PREDICATE) is

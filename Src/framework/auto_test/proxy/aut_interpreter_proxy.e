@@ -474,6 +474,7 @@ feature -- Execution
 --						record_failure_time_stamp
 
 					else -- Ilinca, "number of faults law" experiment
+						evaluate_predicates_after_test_case (create {AUT_FEATURE_OF_TYPE}.make (a_procedure, a_type), Void, an_argument_list, Void)
 						if not normal_response.exception.is_invariant_violation_on_feature_entry and not normal_response.exception.is_test_invalid then
 --							failure_log_test_case_index
 --							last_request.process (failure_request_printer)
@@ -1815,6 +1816,27 @@ feature -- Predicate evaluation
 			end
 		end
 
+	calculate_feature_invalid_test_case_rate (a_feature: AUT_FEATURE_OF_TYPE) is
+			-- Calculate invalid test case rate for `a_feature' and store result in `feature_invalid_test_case_rate'.
+		require
+			a_feature_attached: a_feature /= Void
+		local
+			l_failure_rate: like feature_invalid_test_case_rate
+			l_rate: TUPLE [failed_times: INTEGER; all_times: INTEGER]
+		do
+			l_failure_rate := feature_invalid_test_case_rate
+			if not l_failure_rate.has (a_feature) then
+				l_rate := [0, 0]
+				l_failure_rate.force_last (l_rate, a_feature)
+			else
+				l_rate := l_failure_rate.item (a_feature)
+			end
+			if last_response.is_precondition_violation then
+				l_rate.put_integer (l_rate.failed_times + 1, 1)
+			end
+			l_rate.put_integer (l_rate.all_times + 1, 2)
+		end
+
 	evaluate_predicates_after_test_case (a_feature: AUT_FEATURE_OF_TYPE; a_target: ITP_VARIABLE; a_arguments: DS_LINEAR [ITP_EXPRESSION]; a_result: detachable ITP_VARIABLE) is
 			-- Evaluate `relevant_predicates_of_feature' for `a_feature' with relevant objects consisting
 			-- `a_target', `a_arguments' and `a_result'.
@@ -1833,6 +1855,7 @@ feature -- Predicate evaluation
 			l_arity: INTEGER
 			l_related_objects: ARRAY [ITP_VARIABLE]
 		do
+			calculate_feature_invalid_test_case_rate (a_feature)
 			if
 				configuration.is_precondition_checking_enabled and then
 				is_running and then
@@ -2126,7 +2149,8 @@ feature -- Predicate evaluation
 		do
 			if
 				configuration.is_precondition_checking_enabled and then
-				a_precondition_evaluatior.has_precondition
+				a_precondition_evaluatior.has_precondition and then
+				a_precondition_evaluatior.is_precondition_satisfaction_performed
 			then
 				log_precondition_evaluation (
 					a_type,

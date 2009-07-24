@@ -65,6 +65,7 @@ feature{NONE} -- Initialization
 			l_candidate_count_option: AP_INTEGER_OPTION
 			l_pool_statistics_logged_option: AP_FLAG
 			l_linear_constraint_solver_option: AP_STRING_OPTION
+			l_smart_selection_rate_option: AP_INTEGER_OPTION
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -205,6 +206,10 @@ feature{NONE} -- Initialization
 			create l_linear_constraint_solver_option.make_with_long_form ("linear-constraint-solver")
 			l_linear_constraint_solver_option.set_description ("Linear constraint solver to be used, can be either %"smt%" or %"lpsolve%". Default is %"smt%".")
 			parser.options.force_last (l_linear_constraint_solver_option)
+
+			create l_smart_selection_rate_option.make_with_long_form ("ps-selection-rate")
+			l_smart_selection_rate_option.set_description ("Rate under which smart selection of object to satisfy preconditions are used.")
+			parser.options.force_last (l_smart_selection_rate_option)
 
 			parser.parse_list (a_arguments)
 
@@ -417,6 +422,14 @@ feature{NONE} -- Initialization
 				end
 			end
 
+			if not error_handler.has_error then
+				if l_smart_selection_rate_option.was_found then
+					object_selection_for_precondition_satisfaction_rate := l_smart_selection_rate_option.parameter
+				else
+					object_selection_for_precondition_satisfaction_rate := 100
+				end
+			end
+
 --			if parser.parameters.count = 0 then
 --				error_handler.report_missing_ecf_filename_error
 --				-- TODO: Display usage_instruction (currently not exported, find better way to do it.)
@@ -606,6 +619,11 @@ feature -- Status report
 	is_lpsolve_contraint_linear_solver_enabled: BOOLEAN
 			-- Is lp_solve based linear constraint solver enabled?
 			-- Default: False
+
+	object_selection_for_precondition_satisfaction_rate: INTEGER
+			-- Possibility under which smart object selection for precondition satisfaction
+			-- is used.
+			-- Only have effect when precondition evaluation is enabled.
 
 feature {NONE} -- Constants
 
