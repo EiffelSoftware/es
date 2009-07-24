@@ -1,0 +1,61 @@
+import "field_logic";
+
+/*
+For boolean conditions
+*/
+
+rule eq_eq_true_left :
+  | builtin_eq(?x,?y) = numeric_const("1") | |- |
+without
+  ?x=?y
+if
+  | ?x=?y | |- |
+
+rule eq_neq_false_left :
+  | builtin_eq(?x,?y) != numeric_const("0") | |- |
+without
+  ?x=?y
+if
+  | ?x=?y | |- |
+
+rule eq_eq_false_left :
+  | builtin_eq(?x,?y) = numeric_const("0") | |- |
+without
+  ?x!=?y
+if
+  | ?x!=?y | |- |
+
+rule neq_false_left :
+  | builtin_eq(?x,?y) != numeric_const("1") | |- |
+without
+  ?x!=?y
+if
+  | ?x!=?y | |- | 
+
+
+// Others:
+
+rule dbset_empty:
+ | | |- | DBSet(setof(empty()), ?t)
+if
+ | | |- |
+
+rule dummy:
+ | | LList(?l, {list=?a1; lastremoved=?r1}) |- | LList(?l, {list=?a2; lastremoved=?r2})
+if
+ LList(?l, {list=?a1; lastremoved=?r1}) | | |- ?a1=?a2 * ?r1=?r2 |
+
+rule non_zero_length_list_is_a_cons:
+ | length(?l)!=numeric_const("0") | |- ?l=cons(?x, ?xs) |
+if
+ | length(?l)!=numeric_const("0") * ?l=cons(?x, ?xs) | |- |
+
+rule iterdbset_expand:
+ | | DBSet(setof(cons(?c, ?cs)), ?t) |- | DBSet(setof(?cs), ?t) * DBConnection(?c, {connection=?t})
+if
+ DBSet(setof(?cs), ?t) * DBConnection(?c, {connection=?t}) | | |- |
+
+rule iterdbset_contract:
+ | | DBSet(setof(?cs), ?t) * DBConnection(?c, {connection=?t}) |- | DBSet(setof(cons(?c, ?cs)), ?t)
+if
+ DBSet(setof(?cs), ?t) * DBConnection(?c, {connection=?t}) | | |- | 

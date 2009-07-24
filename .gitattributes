@@ -3526,6 +3526,12 @@ Src/framework/configuration/versioning/configuration-1-3-0.xsd -text
 Src/framework/jstar_proofs/examples/connection_pool/connection_pool.abs -text
 Src/framework/jstar_proofs/examples/connection_pool/connection_pool.logic -text
 Src/framework/jstar_proofs/examples/connection_pool/connection_pool.rc -text
+Src/framework/jstar_proofs/examples/connection_pool2/connection_pool.abs -text
+Src/framework/jstar_proofs/examples/connection_pool2/connection_pool.logic -text
+Src/framework/jstar_proofs/examples/connection_pool2/l_list.abs -text
+Src/framework/jstar_proofs/examples/connection_pool2/l_list.logic -text
+Src/framework/jstar_proofs/examples/connection_pool2/list_node.abs -text
+Src/framework/jstar_proofs/examples/connection_pool2/list_node.logic -text
 Src/framework/jstar_proofs/spec_generation/jstar_grammar.txt -text
 Src/framework/jstar_proofs/spec_generation/parsing/lexer.l -text
 Src/help/wizards/estore1/bmp/essai.bmp -text
