@@ -70,6 +70,7 @@ feature {NONE}
 		do
 			if not l_retry then
 				user_widget.set_text ("")
+				ev_application.process_events
 				if {st: !CLASSC_STONE} stone and then {c: !CLASS_C} st.e_class then
 					jstar_proofs.prove (c)
 					if jstar_proofs.timed_out then
