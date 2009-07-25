@@ -292,30 +292,32 @@ feature {NONE} -- Steps
 				create {DS_LINKED_LIST [ITP_EXPRESSION]} list.make
 			end
 
-				-- Before calling the routine, we make sure it's target is attached and input for the
-				-- arguments was succesfully created.
-			if
-				target /= Void and then not interpreter.variable_table.variable_type (target).is_none and then
-				feature_to_call.argument_count = list.count
-			then
-				if feature_to_call.type /= void_type then
-					receiver := interpreter.variable_table.new_variable
-					interpreter.invoke_and_assign_feature (receiver, type, feature_to_call, target, list)
-				else
-					interpreter.invoke_feature (type, feature_to_call, target, list)
-				end
-				queue.mark (create {AUT_FEATURE_OF_TYPE}.make (feature_to_call, interpreter.variable_table.variable_type (target)))
-				if not interpreter.last_response.is_bad and not interpreter.last_response.is_error then
-					normal_response ?= interpreter.last_response
-					if normal_response /= Void then
-						if normal_response.exception /= Void and then not normal_response.exception.is_test_invalid then
-							interpreter.log_line (exception_thrown_message + error_handler.duration_to_now.second_count.out)
-									-- Ilinca, "number of faults law" experiment
-							interpreter.failure_log_line (exception_thrown_message + error_handler.duration_to_now.second_count.out)
-						end
+			if is_variable_defined (target) and then list.for_all (agent is_variable_defined) then
+					-- Before calling the routine, we make sure it's target is attached and input for the
+					-- arguments was succesfully created.
+				if
+					target /= Void and then not interpreter.variable_table.variable_type (target).is_none and then
+					feature_to_call.argument_count = list.count
+				then
+					if feature_to_call.type /= void_type then
+						receiver := interpreter.variable_table.new_variable
+						interpreter.invoke_and_assign_feature (receiver, type, feature_to_call, target, list)
 					else
-						check
-							dead_end: False
+						interpreter.invoke_feature (type, feature_to_call, target, list)
+					end
+					queue.mark (create {AUT_FEATURE_OF_TYPE}.make (feature_to_call, interpreter.variable_table.variable_type (target)))
+					if not interpreter.last_response.is_bad and not interpreter.last_response.is_error then
+						normal_response ?= interpreter.last_response
+						if normal_response /= Void then
+							if normal_response.exception /= Void and then not normal_response.exception.is_test_invalid then
+								interpreter.log_line (exception_thrown_message + error_handler.duration_to_now.second_count.out)
+										-- Ilinca, "number of faults law" experiment
+								interpreter.failure_log_line (exception_thrown_message + error_handler.duration_to_now.second_count.out)
+							end
+						else
+							check
+								dead_end: False
+							end
 						end
 					end
 				end
@@ -505,6 +507,12 @@ feature -- Precondition evaluation
 			end
 
 			set_target_and_arguments_from_array (l_vars)
+		end
+
+	is_variable_defined (a_variable: detachable ITP_VARIABLE): BOOLEAN is
+			-- Is `a_variable' defined in object pool?
+		do
+			Result := a_variable /= Void and then interpreter.typed_object_pool.is_variable_defined (a_variable)
 		end
 
 invariant

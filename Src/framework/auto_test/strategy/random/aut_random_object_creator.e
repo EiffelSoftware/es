@@ -167,18 +167,23 @@ feature -- Execution
 				end
 				interpreter.log_precondition_evaluation_overhead (precondition_evaluator, type, creation_procedure)
 
-				receiver := interpreter.variable_table.new_variable
-				interpreter.create_object (receiver, type, creation_procedure, arguments)
-				if queue /= Void then
-					if attached {TYPE_A} interpreter.variable_table.variable_type (receiver) as l_receiver then
-						queue.mark (create {AUT_FEATURE_OF_TYPE}.make_as_creator (creation_procedure, l_receiver))
+				if arguments.for_all (agent is_variable_defined) then
+					receiver := interpreter.variable_table.new_variable
+
+					interpreter.create_object (receiver, type, creation_procedure, arguments)
+					if queue /= Void then
+						if attached {TYPE_A} interpreter.variable_table.variable_type (receiver) as l_receiver then
+							queue.mark (create {AUT_FEATURE_OF_TYPE}.make_as_creator (creation_procedure, l_receiver))
+						end
 					end
+					if not interpreter.variable_table.is_variable_defined (receiver) then
+						-- There was an error creating the object.
+						receiver := Void
+					end
+					steps_completed := True
+				else
+					cancel
 				end
-				if not interpreter.variable_table.is_variable_defined (receiver) then
-					-- There was an error creating the object.
-					receiver := Void
-				end
-				steps_completed := True
 			end
 		end
 
@@ -902,9 +907,15 @@ feature -- Precondition satisfaction
 					i := i + 1
 				end
 			end
-
 			set_arguments_from_array (l_vars)
 		end
+
+	is_variable_defined (a_variable: detachable ITP_VARIABLE): BOOLEAN is
+			-- Is `a_variable' defined in object pool?
+		do
+			Result := a_variable /= Void and then interpreter.typed_object_pool.is_variable_defined (a_variable)
+		end
+
 invariant
 	system_not_void: system /= Void
 	interpreter_not_void: interpreter /= Void

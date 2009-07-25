@@ -138,6 +138,14 @@ feature -- Status report
 			good_result: Result = storage.has (a_variable)
 		end
 
+	is_variable_defined_by_index (a_index: INTEGER): BOOLEAN is
+			-- Is variable with `a_index' defined?
+		require
+			a_index_valid: a_index > 0
+		do
+			Result := is_variable_defined (create {ITP_VARIABLE}.make (a_index))
+		end
+
 feature -- Basic operations
 
 	put_variable (a_variable: ITP_VARIABLE; a_type: TYPE_A) is

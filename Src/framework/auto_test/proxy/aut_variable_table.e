@@ -52,6 +52,14 @@ feature -- Status report
 			Result := variable_type_table.has (a_variable)
 		end
 
+	is_variable_defined_by_index (a_index: INTEGER): BOOLEAN is
+			-- Is variable with `a_index' defined?
+		require
+			a_index_valid: a_index > 0
+		do
+			Result := is_variable_defined (create {ITP_VARIABLE}.make (a_index))
+		end
+
 	are_expressions_valid (a_list: DS_LINEAR [ITP_EXPRESSION]): BOOLEAN
 			-- Are the expressions in `a_list' valid? I.e. are the variables in `a_list' defined?
 		require
