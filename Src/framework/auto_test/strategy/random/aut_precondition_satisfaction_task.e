@@ -184,12 +184,12 @@ feature -- Execution
 			else
 				l_invalid_rate := feature_invalid_test_case_rate.item (feature_)
 				if l_invalid_rate /= Void then
-					if l_invalid_rate.all_times > 0 and then l_invalid_rate.failed_times = l_invalid_rate.all_times then
-						Result := True
-					else
+--					if l_invalid_rate.all_times > 0 and then l_invalid_rate.failed_times = l_invalid_rate.all_times then
+--						Result := True
+--					else
 						l_rate := l_invalid_rate.failed_times.to_double / l_invalid_rate.all_times
 						Result := is_within_probability (l_rate * (configuration.object_selection_for_precondition_satisfaction_rate.to_double / 100))
-					end
+--					end
 				end
 			end
 		end

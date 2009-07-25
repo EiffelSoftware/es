@@ -353,7 +353,8 @@ feature -- Execution
 						is_ready := True
 					else
 						log_line ("-- Error: Interpreter was not able to connect.")
-						failure_log ("-- Error: Interpreter was not able to connect.%N")
+						is_ready := False
+--						failure_log ("-- Error: Interpreter was not able to connect.%N")
 					end
 				else
 					is_ready := False
@@ -361,6 +362,9 @@ feature -- Execution
 				end
 			else
 				log_line ("-- Error: Could not find available port for listening.")
+			end
+			if not is_ready then
+				stop
 			end
 		ensure
 			last_request_not_void: last_request /= Void
