@@ -1859,50 +1859,54 @@ feature -- Predicate evaluation
 			if
 				configuration.is_precondition_checking_enabled and then
 				is_running and then
-				not (last_response.is_bad or last_response.is_error) and then
-				not (last_response.is_class_invariant_violation_on_entry or last_response.is_class_invariant_violation_on_exit)
+--				not (last_response.is_bad or last_response.is_error) and then
+--				not (last_response.is_class_invariant_violation_on_entry or last_response.is_class_invariant_violation_on_exit)
+				last_response.is_normal
 			then
-				l_related_objects := relevant_objects (a_target, a_arguments, a_result)
-				if last_response.is_precondition_violation then
-					update_predicate_pool_on_precondition_violation (a_feature, l_related_objects)
-				else
-					create l_request_data.make
-					if relevant_predicates_of_feature.has (a_feature) then
-						l_predicate_table := relevant_predicates_of_feature.item (a_feature)
-						from
-							l_cursor := l_predicate_table.new_cursor
-							l_cursor.start
-						until
-							l_cursor.after
-						loop
-							l_predicate := l_cursor.key
-							l_arranger := l_cursor.item
-							l_arity := l_predicate.arity
-							create l_arguments.make (l_arranger.count * l_arity)
+				if attached {AUT_NORMAL_RESPONSE} last_response as l_normal_response and then l_normal_response.exception = Void then
+
+					l_related_objects := relevant_objects (a_target, a_arguments, a_result)
+					if last_response.is_precondition_violation then
+						update_predicate_pool_on_precondition_violation (a_feature, l_related_objects)
+					else
+						create l_request_data.make
+						if relevant_predicates_of_feature.has (a_feature) then
+							l_predicate_table := relevant_predicates_of_feature.item (a_feature)
 							from
-								i := 0
-								l_arranger_cursor := l_arranger.new_cursor
-								l_arranger_cursor.start
+								l_cursor := l_predicate_table.new_cursor
+								l_cursor.start
 							until
-								l_arranger_cursor.after
+								l_cursor.after
 							loop
+								l_predicate := l_cursor.key
+								l_arranger := l_cursor.item
+								l_arity := l_predicate.arity
+								create l_arguments.make (l_arranger.count * l_arity)
 								from
-									l_args := l_arranger_cursor.item
-									j := 1
+									i := 0
+									l_arranger_cursor := l_arranger.new_cursor
+									l_arranger_cursor.start
 								until
-									j > l_arity
+									l_arranger_cursor.after
 								loop
-									l_arguments.put (l_related_objects.item (l_args.item (j).position).index, i)
-									i := i + 1
-									j := j + 1
+									from
+										l_args := l_arranger_cursor.item
+										j := 1
+									until
+										j > l_arity
+									loop
+										l_arguments.put (l_related_objects.item (l_args.item (j).position).index, i)
+										i := i + 1
+										j := j + 1
+									end
+									l_arranger_cursor.forth
 								end
-								l_arranger_cursor.forth
+								l_request_data.extend ([l_predicate.id, l_arguments])
+								l_cursor.forth
 							end
-							l_request_data.extend ([l_predicate.id, l_arguments])
-							l_cursor.forth
+							evaluate_predicates (l_request_data)
+							update_predicate_pool (last_request)
 						end
-						evaluate_predicates (l_request_data)
-						update_predicate_pool (last_request)
 					end
 				end
 			end

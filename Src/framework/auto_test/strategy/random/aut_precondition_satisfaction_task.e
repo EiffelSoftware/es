@@ -184,8 +184,12 @@ feature -- Execution
 			else
 				l_invalid_rate := feature_invalid_test_case_rate.item (feature_)
 				if l_invalid_rate /= Void then
-					l_rate := l_invalid_rate.failed_times.to_double / l_invalid_rate.all_times
-					Result := is_within_probability (l_rate * (configuration.object_selection_for_precondition_satisfaction_rate.to_double / 100))
+					if l_invalid_rate.all_times > 0 and then l_invalid_rate.failed_times = l_invalid_rate.all_times then
+						Result := True
+					else
+						l_rate := l_invalid_rate.failed_times.to_double / l_invalid_rate.all_times
+						Result := is_within_probability (l_rate * (configuration.object_selection_for_precondition_satisfaction_rate.to_double / 100))
+					end
 				end
 			end
 		end
@@ -264,7 +268,7 @@ feature -- Execution
 
 					-- Check if linearly solvable arguments have solution if linearly constraint solving is enabled.
 				if has_linear_solvable_precondition and then configuration.is_linear_constraint_solving_enabled then
-					if is_within_probability (0.25) then
+					if is_within_probability (1) then
 							-- At the possibility of 0.25, we use linear constraint solver.
 						solve_linear_constraint
 						l_satisfied := last_linear_constraint_solving_successful
