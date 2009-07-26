@@ -296,7 +296,8 @@ feature {NONE} -- Steps
 					-- Before calling the routine, we make sure it's target is attached and input for the
 					-- arguments was succesfully created.
 				if
-					target /= Void and then not interpreter.variable_table.variable_type (target).is_none and then
+					target /= Void and then
+					not interpreter.variable_table.variable_type (target).is_none and then
 					feature_to_call.argument_count = list.count
 				then
 					if feature_to_call.type /= void_type then

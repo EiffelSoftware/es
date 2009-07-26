@@ -268,15 +268,8 @@ feature -- Execution
 
 					-- Check if linearly solvable arguments have solution if linearly constraint solving is enabled.
 				if has_linear_solvable_precondition and then configuration.is_linear_constraint_solving_enabled then
-					if is_within_probability (1) then
-							-- At the possibility of 0.25, we use linear constraint solver.
-						solve_linear_constraint
-						l_satisfied := last_linear_constraint_solving_successful
-					else
-							-- At the possibility of 0.75, we use originally randomly generated integers.
-						update_last_evaluated_operands_with_initial_operands
-						l_satisfied := True
-					end
+					solve_linear_constraint
+					l_satisfied := last_linear_constraint_solving_successful
 				else
 					l_satisfied := True
 				end
@@ -474,7 +467,7 @@ feature{NONE} -- Linear constraint solving
 		do
 				-- Ask for states of the target object.
 				-- the value of constraining queries are in the retrieved states.
-			if last_evaluated_operands.item (0) /= Void then
+			if last_evaluated_operands.item (0) /= Void and then interpreter.typed_object_pool.is_variable_defined (last_evaluated_operands.item (0)) then
 				l_state := interpreter.object_state (last_evaluated_operands.item (0))
 			else
 				create l_state.make (0)
@@ -487,6 +480,11 @@ feature{NONE} -- Linear constraint solving
 
 			if last_linear_constraint_solving_successful then
 				insert_integers_in_pool (l_solver.last_solution)
+			end
+
+				-- Constraint solving is marked as failed if the interpreter went wrong.		
+			if last_linear_constraint_solving_successful then
+				last_linear_constraint_solving_successful := interpreter.is_ready and then interpreter.is_running
 			end
 		end
 

@@ -187,6 +187,11 @@ feature -- Basic operations
 				l_vtable.item_for_iteration.wipe_out
 				l_vtable.forth
 			end
+			storage.wipe_out
+		ensure
+			variable_table_wiped_out: variable_table.for_all (agent (a_vars: DS_ARRAYED_LIST [ITP_VARIABLE]): BOOLEAN do Result := a_vars.is_empty end)
+			storage_wiped_out: storage.is_empty
+
 		end
 
 feature{NONE} -- Implementation
