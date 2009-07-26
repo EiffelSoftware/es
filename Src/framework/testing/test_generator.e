@@ -368,7 +368,7 @@ feature {NONE} -- Basic operations
 							end
 						else
 							if attached {AUT_RANDOM_STRATEGY} test_task as l_task then
-								is_finished := True
+								request_stop
 								fixme ("Uncomment the following lines to enable statistics generation. I commented out because there is no way to avoid this and it takes a lot of time. Jasonw 2009.7.23")
 --								generate_failure_statistics -- Ilinca, "number of faults law" experiment
 
