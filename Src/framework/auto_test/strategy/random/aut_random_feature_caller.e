@@ -422,10 +422,19 @@ feature {NONE} -- Implementation
 		do
 			if target /= Void then
 				l_target_type := interpreter.variable_table.variable_type (target)
-				if l_target_type = Void or else l_target_type.is_none then
+				fixme ("Rmove some of the Void tests and debug why there are some call on Void target. For the moment, I just cannot reproduce them. Jasonw 2009.7.27")
+				if l_target_type = Void or else l_target_type.is_none or else l_target_type.is_basic or else not l_target_type.has_associated_class then
 					cancel
 				else
-					set_feature_and_type (l_target_type.associated_class.feature_with_rout_id (feature_to_call.rout_id_set.first).associated_feature_i, l_target_type)
+					if attached {ROUT_ID_SET} feature_to_call.rout_id_set as l_rout_id_set then
+						if attached {E_FEATURE} l_target_type.associated_class.feature_with_rout_id (l_rout_id_set.first) as l_e_feature then
+							set_feature_and_type (l_e_feature.associated_feature_i, l_target_type)
+						else
+							cancel
+						end
+					else
+						cancel
+					end
 				end
 			else
 				cancel
