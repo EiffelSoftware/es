@@ -484,7 +484,7 @@ feature -- Status setting
 		do
 			linear_solving_cache := b
 		ensure
-			is_precondition_checking_enabled_set: is_precondition_checking_enabled = b
+			is_linear_solving_enabled_set: is_linear_constraint_solving_enabled = b
 		end
 
 	set_is_object_state_exploration_enabled (b: BOOLEAN) is
@@ -492,7 +492,7 @@ feature -- Status setting
 		do
 			object_state_exploration_cache := b
 		ensure
-			is_precondition_checking_enabled_set: is_precondition_checking_enabled = b
+			is_object_state_exploration_enabled_set: is_object_state_exploration_enabled = b
 		end
 
 	set_log_processor (a_processor: like log_processor) is
