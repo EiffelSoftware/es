@@ -180,9 +180,9 @@ feature{NONE} -- Generation
 			loop
 				last_smtlib.append ("%T")
 				l_data := assertions.item_for_iteration
-				current_written_class := l_data.assertion.written_class
-				current_context_class := l_data.assertion.context_class
 				current_access_pattern := l_data.pattern
+				current_written_class := current_access_pattern.assertion.written_class
+				current_context_class := current_access_pattern.assertion.context_class
 				current_match_list := match_list_server.item (current_written_class.class_id)
 				current_access_pattern.assertion.ast.process (Current)
 				last_smtlib.append ("%N")
