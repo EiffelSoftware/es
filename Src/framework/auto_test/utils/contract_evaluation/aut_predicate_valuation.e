@@ -77,6 +77,13 @@ feature -- Status report
 			good_result: Result = (count = 0)
 		end
 
+	has_variable (a_variable: ITP_VARIABLE): BOOLEAN is
+			-- Does `a_variable' exist in current valuation?
+		require
+			a_variable_attached: a_variable /= Void
+		deferred
+		end
+
 feature -- Status report
 
 	debug_output: STRING
@@ -102,6 +109,15 @@ feature -- Basic operations
 		deferred
 		ensure
 			valuations_wiped_out: count = 0
+		end
+
+	remove_variable (a_variable: ITP_VARIABLE) is
+			-- Remove all valuations related to `a_variable'.
+		require
+			a_variable_attached: a_variable /= Void
+		deferred
+		ensure
+			a_variable_removed: not has_variable (a_variable)
 		end
 
 feature -- Process

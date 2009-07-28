@@ -46,6 +46,14 @@ feature -- Access
 			good_result: Result = storage.has (a_arguments.item (1).index)
 		end
 
+feature -- Status report
+
+	has_variable (a_variable: ITP_VARIABLE): BOOLEAN is
+			-- Does `a_variable' exist in current valuation?
+		do
+			Result := storage.has (a_variable.index)
+		end
+
 feature -- Basic operations
 
 	put (a_arguments: ARRAY [ITP_VARIABLE]; a_value: BOOLEAN) is
@@ -74,6 +82,12 @@ feature -- Basic operations
 			storage.wipe_out
 		ensure then
 			storage_wiped_out: storage.is_empty
+		end
+
+	remove_variable (a_variable: ITP_VARIABLE) is
+			-- Remove all valuations related to `a_variable'.
+		do
+			storage.remove (a_variable.index)
 		end
 
 feature -- Process

@@ -14,17 +14,28 @@ inherit
 
 	AUT_SHARED_RANDOM
 
+	AUT_PREDICATE_UTILITY
+		undefine
+			system
+		end
+
 create
 	make
 
 feature{NONE} -- Initialization
 
-	make (a_system: like system; a_types_under_test: DS_LIST [TYPE_A]) is
+	make (a_system: like system; a_types_under_test: DS_LIST [TYPE_A]; a_root_class: CLASS_C) is
 			-- Initialize current.
+		require
+			a_system_attached: a_system /= Void
+			a_types_under_test_attached: a_types_under_test /= Void
+			a_root_class_attached: a_root_class /= Void
 		local
 			l_types: DS_LIST [TYPE_A]
+			l: ARRAY2 [INTEGER]
 		do
 			system := a_system
+			root_class := a_root_class
 			l_types := suppliers_of_types (a_types_under_test)
 			sort_types (l_types)
 			create storage.make (1000)
@@ -126,6 +137,9 @@ feature -- Access
 			end
 		end
 
+	root_class: CLASS_C
+			-- Root class of Current system
+
 feature -- Status report
 
 	is_variable_defined (a_variable: ITP_VARIABLE): BOOLEAN
@@ -191,7 +205,40 @@ feature -- Basic operations
 		ensure
 			variable_table_wiped_out: variable_table.for_all (agent (a_vars: DS_ARRAYED_LIST [ITP_VARIABLE]): BOOLEAN do Result := a_vars.is_empty end)
 			storage_wiped_out: storage.is_empty
+		end
 
+	mark_invalid_object (a_index: INTEGER; a_context_class: CLASS_C) is
+			-- Mark that object with index `a_index' violates it class invariant.
+		require
+			a_index_positive: a_index > 0
+		local
+			l_variable: ITP_VARIABLE
+			l_var_table_cursor: DS_HASH_TABLE_CURSOR [DS_ARRAYED_LIST [ITP_VARIABLE], TYPE_A]
+			l_type: TYPE_A
+			l_storage: like storage
+			l_var_table: like variable_table
+			l_list_type: TYPE_A
+			l_var_list: DS_ARRAYED_LIST [ITP_VARIABLE]
+		do
+			create l_variable.make (a_index)
+			l_storage := storage
+
+			l_type := l_storage.item (l_variable)
+			if l_type /= Void then
+				from
+					l_var_table_cursor := variable_table.new_cursor
+					l_var_table_cursor.start
+				until
+					l_var_table_cursor.after
+				loop
+					l_list_type := l_var_table_cursor.key
+					if l_type.conform_to (a_context_class, l_list_type) then
+						remove_variable_from_list (l_variable, l_var_table_cursor.item)
+					end
+					l_var_table_cursor.forth
+				end
+			end
+			l_storage.remove (l_variable)
 		end
 
 feature{NONE} -- Implementation
@@ -255,7 +302,12 @@ feature{NONE} -- Implementation
 			l_type_set.set_equality_tester (
 				create {AGENT_BASED_EQUALITY_TESTER [TYPE_A]}.make (
 					agent (a, b: TYPE_A): BOOLEAN
-						do Result := a.same_type (b) and then a.is_equivalent (b)
+					local
+						a_type, b_type: TYPE_A
+					do
+						a_type := a.actual_type
+						b_type := b.actual_type
+						Result := a_type.conform_to (root_class, b_type) and then b_type.conform_to (root_class, a_type)
 					end))
 			from
 				a_types.start
@@ -305,8 +357,32 @@ feature{NONE} -- Implementation
 				sorted_types.after
 			loop
 				create l_list.make (initial_object_list_capacity)
+				l_list.set_equality_tester (variable_equality_tester)
 				variable_table.put (l_list, sorted_types.item_for_iteration)
 				sorted_types.forth
+			end
+		end
+
+	remove_variable_from_list (a_variable: ITP_VARIABLE; a_var_list: DS_ARRAYED_LIST [ITP_VARIABLE]) is
+			-- Remove `a_variable' from `a_var_list'.
+		local
+			l_cursor: DS_ARRAYED_LIST_CURSOR [ITP_VARIABLE]
+			l_done: BOOLEAN
+			l_var_index: INTEGER
+		do
+			l_var_index := a_variable.index
+			from
+				l_cursor := a_var_list.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after or l_done
+			loop
+				if l_cursor.item.index = l_var_index then
+					a_var_list.remove_at_cursor (l_cursor)
+					l_done := True
+				else
+					l_cursor.forth
+				end
 			end
 		end
 

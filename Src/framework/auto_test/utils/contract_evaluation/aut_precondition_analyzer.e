@@ -658,7 +658,7 @@ feature{NONE} -- Implementation
 
 				-- We ignore precontions in creation procedures which contains unqualified calls.
 			if not (is_exported_creator (current_feature.feature_, current_context_class.actual_type) and then l_access_pattern.has_item (0)) then
-				create l_predicate_of_feat.make (current_feature, l_predicate, l_access_pattern)
+				create l_predicate_of_feat.make (current_feature, l_predicate, l_access_pattern, current_assertion)
 				l_predicate_of_feat.set_break_point_slot (current_break_point_slot)
 				last_predicates.force_last (l_predicate)
 				last_predicate_access_patterns.force_last (l_predicate_of_feat)

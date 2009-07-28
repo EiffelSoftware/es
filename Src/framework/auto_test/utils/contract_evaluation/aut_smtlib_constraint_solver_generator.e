@@ -31,7 +31,7 @@ feature -- Access
 			-- Set of name of constrained operands
 			-- The names are arguments of the feature (not predicate argument names).
 
-	assertions: DS_LINKED_LIST [AUT_EXPRESSION]
+	assertions: DS_LINKED_LIST [TUPLE [assertion: AUT_EXPRESSION; pattern: AUT_PREDICATE_ACCESS_PATTERN]]
 			-- Assertions of all the linearly solvable preconditions
 
 	last_smtlib: STRING
@@ -90,6 +90,9 @@ feature{NONE} -- Implementation
 			-- Access patterns of `current_feature'
 
 	current_name: STRING is "current"
+
+	current_access_pattern: AUT_PREDICATE_ACCESS_PATTERN
+			-- Access pattern for current processed predicate assertion
 
 feature{NONE} -- Process
 
@@ -165,6 +168,8 @@ feature{NONE} -- Generation
 
 	generate_formula is
 			-- Generate the formula part of the SMT-LIB.
+		local
+			l_data: TUPLE [assertion: AUT_EXPRESSION; pattern: AUT_PREDICATE_ACCESS_PATTERN]
 		do
 			last_smtlib.append (":formula (%N")
 			last_smtlib.append ("and%N")
@@ -174,10 +179,12 @@ feature{NONE} -- Generation
 				assertions.after
 			loop
 				last_smtlib.append ("%T")
-				current_written_class := assertions.item_for_iteration.written_class
-				current_context_class := assertions.item_for_iteration.context_class
+				l_data := assertions.item_for_iteration
+				current_written_class := l_data.assertion.written_class
+				current_context_class := l_data.assertion.context_class
+				current_access_pattern := l_data.pattern
 				current_match_list := match_list_server.item (current_written_class.class_id)
-				assertions.item_for_iteration.ast.process (Current)
+				current_access_pattern.assertion.ast.process (Current)
 				last_smtlib.append ("%N")
 				assertions.forth
 			end

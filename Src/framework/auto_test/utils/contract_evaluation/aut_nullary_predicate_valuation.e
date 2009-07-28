@@ -45,7 +45,15 @@ feature -- Access
 		ensure then
 			good_result: Result = value
 		end
-		
+
+feature -- Status report
+
+	has_variable (a_variable: ITP_VARIABLE): BOOLEAN is
+			-- Does `a_variable' exist in current valuation?
+		do
+			Result := False
+		end
+
 feature -- Basic operations
 
 	put (a_arguments: ARRAY [ITP_VARIABLE]; a_value: BOOLEAN) is
@@ -63,6 +71,12 @@ feature -- Basic operations
 			value := False
 		ensure then
 			good_result: value = False
+		end
+
+	remove_variable (a_variable: ITP_VARIABLE) is
+			-- Remove all valuations related to `a_variable'.
+		do
+			-- Do nothing
 		end
 
 feature -- Process

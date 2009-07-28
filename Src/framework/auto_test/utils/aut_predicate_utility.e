@@ -68,6 +68,11 @@ feature -- Access
 			create Result.make (agent (a, b: AUT_PREDICATE_ACCESS_PATTERN): BOOLEAN do Result := a.is_equal (b) end)
 		end
 
+	variable_equality_tester: AGENT_BASED_EQUALITY_TESTER [ITP_VARIABLE] is
+			-- Equality test for predicate access pattern
+		do
+			create Result.make (agent (a, b: ITP_VARIABLE): BOOLEAN do Result := a.index = b.index end)
+		end
 feature -- Access
 
 	testable_features_from_type (a_type: TYPE_A; a_system: SYSTEM_I): DS_LINKED_LIST [AUT_FEATURE_OF_TYPE] is
@@ -200,7 +205,7 @@ feature -- Constraint solving related
 			result_attached: Result /= Void
 		end
 
-	assertions_from_access_patterns (a_patterns: DS_LINEAR [AUT_PREDICATE_ACCESS_PATTERN]): DS_LINKED_LIST [AUT_EXPRESSION] is
+	assertions_from_access_patterns (a_patterns: DS_LINEAR [AUT_PREDICATE_ACCESS_PATTERN]): DS_LINKED_LIST [TUPLE [assertion: AUT_EXPRESSION; pattern: AUT_PREDICATE_ACCESS_PATTERN]] is
 			-- Predicate assertions in `a_patterns'
 		require
 			a_patterns_attached: a_patterns /= Void
@@ -216,7 +221,7 @@ feature -- Constraint solving related
 				l_ptn_cursor.after
 			loop
 				if attached {AUT_LINEAR_SOLVABLE_PREDICATE} l_ptn_cursor.item.predicate as l_linear_pred then
-					Result.force_last (l_linear_pred.expression)
+					Result.force_last ([l_linear_pred.expression, l_ptn_cursor.item])
 				end
 				l_ptn_cursor.forth
 			end

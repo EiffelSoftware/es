@@ -61,6 +61,12 @@ feature -- Status report
 			good_result: Result = a_predicate.is_binary
 		end
 
+	has_variable (a_variable: ITP_VARIABLE): BOOLEAN is
+			-- Does `a_variable' exist in current valuation?
+		do
+			Result := first_argument_table.has (a_variable.index) or second_argument_table.has (a_variable.index)
+		end
+
 feature -- Basic operations
 
 	put (a_arguments: ARRAY [ITP_VARIABLE]; a_value: BOOLEAN) is
@@ -126,6 +132,13 @@ feature -- Basic operations
 		ensure then
 			first_argument_table_wiped_out: first_argument_table.is_empty
 			second_argument_table_wiped_out: second_argument_table.is_empty
+		end
+
+	remove_variable (a_variable: ITP_VARIABLE) is
+			-- Remove all valuations related to `a_variable'.
+		do
+			first_argument_table.remove (a_variable.index)
+			second_argument_table.remove (a_variable.index)
 		end
 
 feature -- Process

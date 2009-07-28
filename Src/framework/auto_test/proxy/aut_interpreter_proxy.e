@@ -595,16 +595,6 @@ feature -- Execution
 			stop_process_on_problems (last_response)
 			log_speed
 
-				-- Predicate evaluation.
-
-			if
-				is_running and then
-				not (last_response.is_bad or last_response.is_error) and then
-				not (last_response.is_class_invariant_violation_on_entry or last_response.is_class_invariant_violation_on_exit)
-			then
-
-			end
-
 				-- Precondition evaluation.
 			evaluate_predicates_after_test_case (create {AUT_FEATURE_OF_TYPE}.make (a_feature, a_type), a_target, an_argument_list, Void)
 
@@ -1233,7 +1223,8 @@ feature -- Socket IPC
 						l_response_flag = {AUT_SHARED_CONSTANTS}.invariant_violation_on_entry_response_flag and then
 						l_data.invariant_violating_object_index > 0
 					then
-						variable_table.mark_invalid_object (l_data.invariant_violating_object_index)
+--						variable_table.mark_invalid_object (l_data.invariant_violating_object_index)
+						mark_invalid_object (l_data.invariant_violating_object_index)
 					end
 				else
 					last_raw_response := Void
@@ -1521,7 +1512,7 @@ feature -- Precondition satisfaction
 		local
 			l_pool: AUT_TYPED_OBJECT_POOL
 		do
-			create l_pool.make (system, configuration.types_under_test)
+			create l_pool.make (system, configuration.types_under_test, interpreter_class)
 			variable_table.set_defining_variable_action (agent l_pool.put_variable)
 			variable_table.wipe_out_actions.extend (agent l_pool.wipe_out)
 			typed_object_pool_cell.put (l_pool)
@@ -2207,6 +2198,20 @@ feature -- Predicate evaluation
 					log_line ("--   " + l_pred_table_cursor.key.text + ": " + l_pred_table_cursor.item.count.out)
 					l_pred_table_cursor.forth
 				end
+			end
+		end
+
+	mark_invalid_object (a_index: INTEGER) is
+			-- Mark object with `a_index' as invalid, because its class invariants are violated.
+		require
+			a_index_valid: a_index > 0
+		local
+			l_class: CLASS_C
+		do
+			l_class := interpreter_root_class
+			typed_object_pool.mark_invalid_object (a_index, l_class)
+			if configuration.is_precondition_checking_enabled then
+				predicate_pool.remove_variable (create {ITP_VARIABLE}.make (a_index))
 			end
 		end
 

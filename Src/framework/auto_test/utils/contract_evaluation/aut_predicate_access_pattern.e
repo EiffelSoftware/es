@@ -42,21 +42,24 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_feature: like feature_; a_predicate: like predicate; a_access_pattern: like access_pattern) is
+	make (a_feature: like feature_; a_predicate: like predicate; a_access_pattern: like access_pattern; a_assertion: AUT_EXPRESSION) is
 			-- Initialize current.
 		require
 			a_feature_attached: a_feature /= Void
 			a_predicate_attached: a_predicate /= Void
 			a_access_pattern_attached: a_access_pattern /= Void
 			a_access_pattern_valid: is_argument_operand_mapping_valid (a_access_pattern, a_predicate, a_feature)
+			a_assertion_attached: a_assertion /= Void
 		do
 			feature_ := a_feature
 			predicate := a_predicate
 			access_pattern := a_access_pattern
+			assertion := a_assertion
 		ensure
 			feature_set: feature_ = a_feature
 			predicate_set: predicate = a_predicate
 			access_pattern_set: access_pattern = a_access_pattern
+			assertion_set: assertion = a_assertion
 		end
 
 feature -- Access
@@ -103,6 +106,9 @@ feature -- Access
 				Result := internal_hash_code
 			end
 		end
+
+	assertion: AUT_EXPRESSION
+			-- Associated assertion expression
 
 feature -- Status report
 

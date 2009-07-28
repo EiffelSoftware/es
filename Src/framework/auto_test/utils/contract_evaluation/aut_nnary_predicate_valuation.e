@@ -48,6 +48,37 @@ feature -- Access
 			Result := storage.has (l_hashable_array)
 		end
 
+feature -- Status report
+
+	has_variable (a_variable: ITP_VARIABLE): BOOLEAN is
+			-- Does `a_variable' exist in current valuation?
+		local
+			l_cursor: DS_HASH_SET_CURSOR [AUT_HASHABLE_ITP_VARIABLE_ARRAY]
+			l_vars: AUT_HASHABLE_ITP_VARIABLE_ARRAY
+			i, l_upper: INTEGER
+			l_index: INTEGER
+		do
+			l_index := a_variable.index
+			from
+				l_cursor := storage.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after or else Result
+			loop
+				l_vars := l_cursor.item
+				from
+					i := 1
+					l_upper := l_vars.count
+				until
+					i > l_upper or else Result
+				loop
+					Result := l_vars.item (i).index = l_index
+					i := i + 1
+				end
+				l_cursor.forth
+			end
+		end
+
 feature -- Basic operations
 
 	put (a_arguments: ARRAY [ITP_VARIABLE]; a_value: BOOLEAN) is
@@ -80,6 +111,47 @@ feature -- Basic operations
 			count := 0
 		ensure then
 			storage_wiped_out: storage.is_empty
+		end
+
+	remove_variable (a_variable: ITP_VARIABLE) is
+			-- Remove all valuations related to `a_variable'.
+		local
+			l_cursor: DS_HASH_SET_CURSOR [AUT_HASHABLE_ITP_VARIABLE_ARRAY]
+			l_vars: AUT_HASHABLE_ITP_VARIABLE_ARRAY
+			i, l_upper: INTEGER
+			l_index: INTEGER
+			l_found: BOOLEAN
+			l_storage: like storage
+			l_found_items: DS_LINKED_LIST [AUT_HASHABLE_ITP_VARIABLE_ARRAY]
+		do
+			l_index := a_variable.index
+			l_storage := storage
+			create l_found_items.make
+			from
+				l_cursor := l_storage.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_vars := l_cursor.item
+				from
+					i := 1
+					l_upper := l_vars.count
+					l_found := False
+				until
+					i > l_upper or else l_found
+				loop
+					if l_vars.item (i).index = l_index then
+						l_found_items.force_last (l_vars)
+						l_found := True
+					else
+						i := i + 1
+					end
+				end
+				l_cursor.forth
+			end
+
+			l_found_items.do_all (agent storage.remove)
 		end
 
 feature -- Process

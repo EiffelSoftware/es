@@ -174,8 +174,10 @@ feature -- Access
 		local
 			cs: DS_HASH_TABLE_CURSOR [TYPE_A, ITP_VARIABLE]
 			l_type: TYPE_A
+			l_invalid_objects: like invalid_objects
 		do
 			create {DS_ARRAYED_LIST [ITP_VARIABLE]} Result.make (variable_type_table.count)
+			l_invalid_objects := invalid_objects
 			from
 				cs := variable_type_table.new_cursor
 				cs.start
@@ -184,7 +186,7 @@ feature -- Access
 			loop
 				l_type := cs.item.actual_type
 					-- We only allow Void conforms to a non expanded type.
-				if l_type.is_conformant_to (a_context_class, a_type) and then not (a_type.is_expanded and then l_type.is_none) then
+				if l_type.is_conformant_to (a_context_class, a_type) and then not (a_type.is_expanded and then l_type.is_none) and then not l_invalid_objects.has (cs.key.index) then
 					Result.force_last (cs.key)
 				end
 				cs.forth
@@ -231,8 +233,10 @@ feature -- Removal
 		do
 			create name_generator.make_with_string_stream (variable_name_prefix)
 			variable_type_table.wipe_out
+			invalid_objects.wipe_out
 			wipe_out_actions.do_all (agent {PROCEDURE [ANY, TUPLE]}.call (Void))
 		ensure
+			invalid_objects_wiped_out: invalid_objects.is_empty
 			variable_type_table_empty: variable_type_table.is_empty
 		end
 

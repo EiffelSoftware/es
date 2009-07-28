@@ -422,6 +422,14 @@ feature -- Basic operations
 			valuation_table.do_all (agent {AUT_PREDICATE_VALUATION}.wipe_out)
 		end
 
+	remove_variable (a_variable: ITP_VARIABLE) is
+			-- Remove all predicate valuations related to `a_variable'.
+		require
+			a_variable_attached: a_variable /= Void
+		do
+			valuation_table.do_all (agent {AUT_PREDICATE_VALUATION}.remove_variable (a_variable))
+		end
+
 feature{NONE} -- Implementation
 
 	valuation_cursor_factory: AUT_PREDICATE_VALUATION_CURSOR_FACTORY
