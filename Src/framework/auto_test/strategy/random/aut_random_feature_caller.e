@@ -45,6 +45,7 @@ feature {NONE} -- Initialization
 			error_handler := a_error_handler
 			steps_completed := True
 			feature_table := a_feature_table
+			any_class := system.any_class.compiled_representation
 		ensure
 			system_set: system = a_system
 			interpreter_set: interpreter = an_interpreter
@@ -52,6 +53,7 @@ feature {NONE} -- Initialization
 			error_handler_set: error_handler = a_error_handler
 			steps_completed: steps_completed
 			feature_table_set: feature_table = a_feature_table
+			any_class_set: any_class = system.any_class.compiled_representation
 		end
 
 feature -- Status
@@ -428,7 +430,11 @@ feature {NONE} -- Implementation
 				else
 					if attached {ROUT_ID_SET} feature_to_call.rout_id_set as l_rout_id_set then
 						if attached {E_FEATURE} l_target_type.associated_class.feature_with_rout_id (l_rout_id_set.first) as l_e_feature then
-							set_feature_and_type (l_e_feature.associated_feature_i, l_target_type)
+							if l_e_feature.is_exported_to (any_class) then
+								set_feature_and_type (l_e_feature.associated_feature_i, l_target_type)
+							else
+								cancel
+							end
 						else
 							cancel
 						end
@@ -440,6 +446,9 @@ feature {NONE} -- Implementation
 				cancel
 			end
 		end
+
+	any_class: CLASS_C
+			-- Class for {ANY}
 
 feature -- Precondition evaluation
 

@@ -204,6 +204,7 @@ feature -- Execution
 			set_start_time (interpreter.duration_until_now.millisecond_count)
 
 			if
+				features_under_test.has (feature_) and then
 				configuration.is_precondition_checking_enabled and then
 				has_precondition and then
 				should_use_precondition_satisfaction
@@ -234,7 +235,8 @@ feature -- Execution
 					steps_completed := operand_candidates.is_empty
 				end
 			else
-					-- If no precondition evaluation is enabled, we assume that `initial_operands'
+					-- If `feature_' is not marked as under test or
+					-- precondition evaluation is not enabled, we assume that `initial_operands'
 					-- satisfy the precondition.
 				is_precondition_satisfaction_performed := False
 				is_last_precondition_evaluation_satisfied := True
