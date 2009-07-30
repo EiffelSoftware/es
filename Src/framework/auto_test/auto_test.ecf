@@ -51,5 +51,6 @@
 				</condition>
 			</file_rule>
 		</cluster>
+		<external_include location="$EIFFEL_SRC\framework\auto_test\Clib\lp_solve\"/>
 	</target>
 </system>

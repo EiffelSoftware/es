@@ -19,10 +19,164 @@ feature -- Basic operations
 			-- Try to solve constraints defined in `linear_solvable_predicates' and `context_queries'.
 			-- If there is a solution, set `has_last_solution' to True and put that solution into
 			-- `last_solution'. Otherwise, set `has_last_solution' to False.
+		local
+			l_state: HASH_TABLE [STRING, STRING]
+			l_lpsolve_generator: AUT_LPSOLVE_CONSTRAINT_SOLVER_GENERATOR
+			l_proof_obligation: STRING
+			l_constraining_queries: DS_HASH_SET [STRING]
+			l_new_query_name: STRING
+			l_query_name: detachable STRING
+			l_pattern_table: DS_HASH_TABLE [AUT_PREDICATE_ACCESS_PATTERN, AUT_PREDICATE]
+
+			l_valuation: HASH_TABLE[INTEGER, STRING]
+			l_abstract_integer: AUT_ABSTRACT_INTEGER
+			l_lower_bound: REAL_64
+			l_upper_bound: REAL_64
 		do
-			to_implement ("To impliment")
-			check to_implement: False end
+			has_last_solution := True
+			l_state := context_queries
+
+				-- Generate linear constraint solving proof obligation.
+			create l_lpsolve_generator
+			l_lpsolve_generator.generate_lpsolve (feature_, linear_solvable_predicates)
+			check l_lpsolve_generator.has_linear_constraints end
+			l_proof_obligation := l_lpsolve_generator.last_lpsolve.twin
+
+				-- Replace constraining queries by their actual value.
+			from
+				l_constraining_queries := l_lpsolve_generator.constraining_queries
+				l_constraining_queries.start
+			until
+				l_constraining_queries.after or else not has_last_solution
+			loop
+				l_query_name := l_state.item (l_constraining_queries.item_for_iteration)
+				if l_query_name = Void then
+						-- If the value of some constraining query cannot be retrieved,
+						-- the model for constrained arguments doesn't exist.
+					has_last_solution := False
+				else
+					l_new_query_name := l_constraining_queries.item_for_iteration
+					l_proof_obligation.replace_substring_all (l_new_query_name, l_query_name)
+				end
+				l_constraining_queries.forth
+			end
+
+				-- Launch constraint solver to solve constrained arguments
+				-- and put them into `last_solution' solver solution.
+			if has_last_solution then
+				create l_valuation.make (l_lpsolve_generator.constrained_operands.count)
+
+				from
+					l_lpsolve_generator.constrained_operands.start
+				until
+					l_lpsolve_generator.constrained_operands.after or else not has_last_solution
+				loop
+					solve_argument ("min: " + l_lpsolve_generator.constrained_operands.item_for_iteration + ";%N%N" + l_proof_obligation)
+					if has_last_solver_solution then
+						l_lower_bound := last_solver_solution
+					else
+						has_last_solution := False
+					end
+
+					solve_argument ("max: " + l_lpsolve_generator.constrained_operands.item_for_iteration + ";%N%N" + l_proof_obligation)
+					if has_last_solver_solution then
+						l_upper_bound := last_solver_solution
+					else
+						has_last_solution := False
+					end
+
+					if has_last_solution then
+						create l_abstract_integer.make (l_lower_bound.truncated_to_integer, l_upper_bound.truncated_to_integer)
+						l_valuation.put (l_abstract_integer.random_element, l_lpsolve_generator.constrained_operands.item_for_iteration)
+					end
+					l_lpsolve_generator.constrained_operands.forth
+				end
+
+				set_last_solution (l_valuation)
+			end
 		end
+
+feature{NONE} -- Implementation
+
+	lpsolve_file_path: FILE_NAME is
+			-- Full path for the generated lpsolve file
+		do
+			create Result.make_from_string (universe.project_location.workbench_path)
+			Result.set_file_name ("lpsolve.lp")
+		end
+
+	generate_lpsolve_file (a_content: STRING) is
+			-- Generate lpsolve file with `a_content'
+			-- at location `lpsolve_file_path'.
+		local
+			l_file: PLAIN_TEXT_FILE
+		do
+			create l_file.make_create_read_write (lpsolve_file_path)
+			l_file.put_string (a_content)
+			l_file.close
+		end
+
+	solve_argument (a_proof_obligation: STRING) is
+			-- Solve linear constraints for constrained argument.
+		local
+			c_filename: C_STRING
+			c_out_solution: MANAGED_POINTER
+		do
+			create c_filename.make (lpsolve_file_path)
+			create c_out_solution.make (8)
+
+			generate_lpsolve_file (a_proof_obligation)
+
+			if get_lpsolve_solution (c_filename.item, c_out_solution.item) then
+				last_solver_solution := c_out_solution.read_real_64 (0)
+				has_last_solver_solution := True
+			else
+				has_last_solver_solution := False
+			end
+		end
+
+	get_lpsolve_solution (a_filename, a_out_solution: POINTER): BOOLEAN is
+			-- Call to external lp_solve API.
+			-- Reads `a_filename' into model, solves it and writes solution to `a_out_solution'
+			-- Returns success/failure
+		external
+			"C inline use %"lp_lib.modified.h%""
+		alias
+			"[
+			  {
+				lprec *lp;
+				
+				/* read LP model */
+				lp = read_LP ((char *)$a_filename, NORMAL, "Solve model");
+				if (lp == NULL) {
+					return (FALSE);
+				}
+
+				/* solve the model */
+				if (solve(lp) != OPTIMAL) {
+					return (FALSE);
+				}
+				
+				/* write result in `a_out_solution' */
+				*((REAL *)$a_out_solution) = get_objective (lp);
+
+				delete_lp (lp);
+				return (TRUE);
+			  }
+			]"
+		end
+
+	last_solver_solution: REAL_64
+			-- Solution from last launched solver
+
+	has_last_solver_solution: BOOLEAN
+			-- Did the last launched solver have a solution?
+
+invariant
+	feature__attached: feature_ /= Void
+	linear_solvable_predicates_attached: linear_solvable_predicates /= Void
+	not_linear_solvable_predicates_is_empty: not linear_solvable_predicates.is_empty
+	constraining_queries_attached: context_queries /= Void
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
