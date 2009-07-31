@@ -467,6 +467,7 @@ feature{NONE} -- Linear constraint solving
 			l_pattern_table: DS_HASH_TABLE [AUT_PREDICATE_ACCESS_PATTERN, AUT_PREDICATE]
 
 			l_solver: AUT_LINEAR_CONSTRAINT_SOLVER
+			l_smt_solver: AUT_SAT_BASED_LINEAR_CONSTRAINT_SOLVER
 		do
 			last_linear_constraint_solving_successful := False
 
@@ -489,7 +490,9 @@ feature{NONE} -- Linear constraint solving
 				not last_linear_constraint_solving_successful and then
 				configuration.is_smt_linear_constraint_solver_enabled
 			then
-				l_solver := smt_linear_constraint_solver (l_state)
+				l_smt_solver := smt_linear_constraint_solver (l_state)
+				l_smt_solver.set_enforce_used_value_rate (configuration.smt_enforce_old_value_rate)
+				l_solver := l_smt_solver
 				l_solver.solve
 				last_linear_constraint_solving_successful := l_solver.has_last_solution
 			end
@@ -504,7 +507,7 @@ feature{NONE} -- Linear constraint solving
 			end
 		end
 
-	smt_linear_constraint_solver (a_state: HASH_TABLE [STRING, STRING]): AUT_LINEAR_CONSTRAINT_SOLVER is
+	smt_linear_constraint_solver (a_state: HASH_TABLE [STRING, STRING]): AUT_SAT_BASED_LINEAR_CONSTRAINT_SOLVER is
 			-- SMT-based linear constraint solver with context queries stored in `a_state'
 		require
 			a_state_attached: a_state /= void
@@ -586,7 +589,7 @@ feature{NONE} -- Linear constraint solving
 				a_integers.keys.do_all (agent l_operand_indexes.force_last)
 				create l_sorter.make (create {AGENT_BASED_EQUALITY_TESTER [INTEGER]}.make (agent (a, b: INTEGER): BOOLEAN do Result := a < b end))
 				l_sorter.sort (l_operand_indexes)
-				
+
 				create l_values.make (1, a_integers.count)
 				from
 					l_operand_indexes.start

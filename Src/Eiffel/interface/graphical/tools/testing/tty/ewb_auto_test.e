@@ -179,6 +179,9 @@ feature -- Execution
 					-- Set smart object selection rate
 				l_conf.set_object_selection_for_precondition_satisfaction_rate (l_ap.object_selection_for_precondition_satisfaction_rate)
 
+				l_conf.set_smt_enforce_old_value_rate (l_ap.smt_enforce_old_value_rate)
+				l_conf.set_smt_use_predefined_value_rate (l_ap.smt_use_predefined_value_rate)
+
 				if l_root_group.is_cluster then
 					if attached {CONF_CLUSTER} l_root_group as l_cluster then
 						l_conf.set_cluster (l_cluster)

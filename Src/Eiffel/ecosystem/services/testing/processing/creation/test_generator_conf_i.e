@@ -104,9 +104,25 @@ feature -- Access
 		end
 
 	object_selection_for_precondition_satisfaction_rate: INTEGER
-			-- Possibility under which smart object selection for precondition satisfaction
+			-- Possibility [0-100] under which smart object selection for precondition satisfaction
 			-- is used.
 			-- Only have effect when precondition evaluation is enabled.
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	smt_enforce_old_value_rate: INTEGER is
+			-- Possibility [0-100] to enforce SMT solver to choose an already used value.
+			-- Default is 25
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	smt_use_predefined_value_rate: INTEGER is
+			-- Possibility [0-100] to for the SMT solver to choose a predefined value for integers.
+			-- Default is 25
 		require
 			usable: is_interface_usable
 		deferred

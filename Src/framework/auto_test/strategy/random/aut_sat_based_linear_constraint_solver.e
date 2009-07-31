@@ -21,6 +21,28 @@ feature -- Status report
 			-- Should used values be avoided when trying to solve
 			-- linear constraints for the same feature?
 
+feature -- Access
+
+	use_predefined_value_rate: REAL
+			-- Possibility to use predefined values
+
+	enforce_used_value_rate: REAL
+			-- Possibility to enforce generation of used values
+
+feature -- Setting
+
+	set_use_predefined_value_rate (a_rate: INTEGER) is
+			-- Set `use_predefined_value_rate'.
+		do
+			use_predefined_value_rate := a_rate.to_real / 100
+		end
+
+	set_enforce_used_value_rate (a_rate: INTEGER) is
+			-- Set `enforce_used_value_rate' with `a_rate'.
+		do
+			enforce_used_value_rate := a_rate.to_real / 100
+		end
+
 feature -- Basic operations
 
 	solve is
@@ -33,7 +55,7 @@ feature -- Basic operations
 
 				-- Try to solve constraints within used values.			
 			l_value_set := used_integer_values.item (feature_)
-			if is_within_probability (0.25) and then l_value_set /= Void then
+			if is_within_probability (enforce_used_value_rate) and then l_value_set /= Void then
 				l_tried := True
 				internal_solve (l_value_set, True)
 			end

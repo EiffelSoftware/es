@@ -152,6 +152,24 @@ feature -- Access
 			good_result: Result = object_selection_for_precondition_satisfaction_rate_cache
 		end
 
+	smt_enforce_old_value_rate: INTEGER is
+			-- Possibility [0-100] to enforce SMT solver to choose an already used value.
+			-- Default is 25
+		do
+			Result := smt_enforce_old_value_rate_cache
+		ensure then
+			good_result: Result = smt_enforce_old_value_rate_cache
+		end
+
+	smt_use_predefined_value_rate: INTEGER is
+			-- Possibility [0-100] to for the SMT solver to choose a predefined value for integers.
+			-- Default is 25
+		do
+			Result := smt_use_predefined_value_rate_cache
+		ensure then
+			good_result: Result = smt_use_predefined_value_rate_cache
+		end
+
 feature -- Access: cache
 
 	types_cache: attached DS_HASH_SET [attached STRING]
@@ -227,6 +245,12 @@ feature -- Access: cache
 
 	object_selection_for_precondition_satisfaction_rate_cache: INTEGER
 			-- Cache for `object_selection_for_precondition_satisfaction_rate'
+
+	smt_enforce_old_value_rate_cache: INTEGER
+			-- Cache for `smt_enforce_old_value_rate'
+
+	smt_use_predefined_value_rate_cache: INTEGER
+			-- Cache for `smt_use_predefined_value_rate'
 
 feature -- Status report
 
@@ -579,7 +603,22 @@ feature -- Status setting
 			object_selection_for_precondition_satisfaction_rate_set: object_selection_for_precondition_satisfaction_rate = a_value
 		end
 
+	set_smt_enforce_old_value_rate (a_rate: INTEGER) is
+			-- Set `smt_enforce_old_value_rate' with `a_rate'.
+		do
+			smt_enforce_old_value_rate_cache := a_rate
+		ensure
+			smt_enforce_old_value_rate_set: smt_enforce_old_value_rate_cache = a_rate
+		end
 
+	set_smt_use_predefined_value_rate (a_rate: INTEGER) is
+			-- Set `smt_use_predefined_value_rate' with `a_rate'.
+			do
+				smt_use_predefined_value_rate_cache := a_rate
+			ensure
+				good_result: smt_use_predefined_value_rate = a_rate
+			end
+	
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

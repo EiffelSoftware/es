@@ -66,6 +66,8 @@ feature{NONE} -- Initialization
 			l_pool_statistics_logged_option: AP_FLAG
 			l_linear_constraint_solver_option: AP_STRING_OPTION
 			l_smart_selection_rate_option: AP_INTEGER_OPTION
+			l_smt_old_value_rate_option: AP_INTEGER_OPTION
+			l_smt_use_predefined_value_rate_option: AP_INTEGER_OPTION
 			l_solvers: LIST [STRING]
 		do
 			create parser.make_empty
@@ -211,6 +213,14 @@ feature{NONE} -- Initialization
 			create l_smart_selection_rate_option.make_with_long_form ("ps-selection-rate")
 			l_smart_selection_rate_option.set_description ("Rate under which smart selection of object to satisfy preconditions are used.")
 			parser.options.force_last (l_smart_selection_rate_option)
+
+			create l_smt_old_value_rate_option.make_with_long_form ("smt-enforce-old-value-rate")
+			l_smt_old_value_rate_option.set_description ("Possibility [0-100] to enforce SMT solver to choose an already used value. Default is 25")
+			parser.options.force_last (l_smt_old_value_rate_option)
+
+			create l_smt_use_predefined_value_rate_option.make_with_long_form ("smt-predefined-value-rate")
+			l_smt_use_predefined_value_rate_option.set_description ("Possibility [0-100] to for the SMT solver to choose a predefined value for integers. Default is 25")
+			parser.options.force_last (l_smt_use_predefined_value_rate_option)
 
 			parser.parse_list (a_arguments)
 
@@ -432,6 +442,22 @@ feature{NONE} -- Initialization
 				end
 			end
 
+			if not error_handler.has_error then
+				if l_smt_old_value_rate_option.was_found then
+					smt_enforce_old_value_rate := l_smt_old_value_rate_option.parameter
+				else
+					smt_enforce_old_value_rate := 25
+				end
+			end
+
+			if not error_handler.has_error then
+				if l_smt_use_predefined_value_rate_option.was_found then
+					smt_use_predefined_value_rate := l_smt_use_predefined_value_rate_option.parameter
+				else
+					smt_use_predefined_value_rate := 25
+				end
+			end
+
 --			if parser.parameters.count = 0 then
 --				error_handler.report_missing_ecf_filename_error
 --				-- TODO: Display usage_instruction (currently not exported, find better way to do it.)
@@ -623,9 +649,17 @@ feature -- Status report
 			-- Default: False
 
 	object_selection_for_precondition_satisfaction_rate: INTEGER
-			-- Possibility under which smart object selection for precondition satisfaction
+			-- Possibility [0-100] under which smart object selection for precondition satisfaction
 			-- is used.
 			-- Only have effect when precondition evaluation is enabled.
+
+	smt_enforce_old_value_rate: INTEGER
+			-- Possibility [0-100] to enforce SMT solver to choose an already used value
+			-- Default is 25
+
+	smt_use_predefined_value_rate: INTEGER
+			-- Possibility [0-100] to for the SMT solver to choose a predefined value for integers
+			-- Default is 25
 
 feature {NONE} -- Constants
 
