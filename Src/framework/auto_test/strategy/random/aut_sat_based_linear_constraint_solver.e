@@ -10,13 +10,50 @@ class
 inherit
 	AUT_LINEAR_CONSTRAINT_SOLVER
 
+	AUT_SHARED_PREDICATE_CONTEXT
+
 create
 	make
+
+feature -- Status report
+
+	should_avoid_used_values: BOOLEAN
+			-- Should used values be avoided when trying to solve
+			-- linear constraints for the same feature?
 
 feature -- Basic operations
 
 	solve is
 			-- Try to solve constraints defined in `linear_solvable_predicates' and `context_queries'.
+		local
+			l_value_set: detachable AUT_INTEGER_VALUE_SET
+			l_tried: BOOLEAN
+		do
+			has_last_solution := False
+
+				-- Try to solve constraints within used values.			
+			l_value_set := used_integer_values.item (feature_)
+			if is_within_probability (0.25) and then l_value_set /= Void then
+				l_tried := True
+				internal_solve (l_value_set, True)
+			end
+
+				-- Trye to solve constraints with avoiding used values.
+			if (not l_tried) or else not has_last_solution then
+				if l_value_set = Void then
+					create{AUT_UNARY_INTEGER_VALUE_SET} l_value_set.make
+				end
+				internal_solve (l_value_set, False)
+			end
+		end
+
+	internal_solve (a_used_values: AUT_INTEGER_VALUE_SET; a_enforce_used_values: BOOLEAN) is
+			-- Solve linear constraints.
+			-- `a_used_values' are used values for `feature_'.
+			-- If `a_enforce_used_values' is True, the generated solution only contains values from `a_used_values',
+			-- otherwise, the generated solution doesn't contain values from `a_used_values'.			
+		require
+			a_used_values_attached: a_used_values /= Void
 		local
 			l_state: HASH_TABLE [STRING, STRING]
 			l_smt_generator: AUT_SMTLIB_CONSTRAINT_SOLVER_GENERATOR
@@ -31,6 +68,9 @@ feature -- Basic operations
 
 				-- Generate linear constraint solving proof obligation.
 			create l_smt_generator
+			l_smt_generator.set_used_values (a_used_values)
+			l_smt_generator.set_is_used_value_enforced (a_enforce_used_values)
+
 			l_smt_generator.generate_smtlib (feature_, linear_solvable_predicates)
 			check l_smt_generator.has_linear_constraints end
 			l_proof_obligation := l_smt_generator.last_smtlib.twin

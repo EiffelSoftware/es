@@ -22,6 +22,10 @@ inherit
 
 	AUT_OBJECT_STATE_REQUEST_UTILITY
 
+	AUT_SHARED_RANDOM
+
+	AUT_SHARED_PREDICATE_CONTEXT
+
 feature -- Access
 
 	constraining_queries: DS_HASH_SET [STRING]
@@ -38,10 +42,19 @@ feature -- Access
 			-- SMT-LIB file from the last `generate_smtlib'
 			-- Only has effect if `has_linear_constraints' is True.
 
+	used_values: AUT_INTEGER_VALUE_SET
+			-- Used values for feature whose linear constraints should be solved
+
 feature -- Status report
 
 	has_linear_constraints: BOOLEAN
 			-- Does the last feature processed by `generate_smtlib' has linear constraints?
+
+	predefined_values_probability: REAL is 0.25
+			-- Probability in which predefined values for integers are used
+
+	is_used_values_enforced: BOOLEAN
+			-- Should the generated solution contain only used values?
 
 feature -- Basic operations
 
@@ -69,6 +82,22 @@ feature -- Basic operations
 				generate_assumptions
 				generate_formula
 			end
+		end
+
+feature -- Setting
+
+	set_used_values (a_used_values: like used_values) is
+			-- Set `used_values' with `a_used_values'.
+		do
+			used_values := a_used_values
+		end
+
+	set_is_used_value_enforced (b: BOOLEAN) is
+			-- Set `is_used_value_enforced' with `b'.
+		do
+			is_used_values_enforced := b
+		ensure
+			is_used_values_enforced_set: is_used_values_enforced = b
 		end
 
 feature{NONE} -- Implementation
@@ -188,7 +217,132 @@ feature{NONE} -- Generation
 				last_smtlib.append ("%N")
 				assertions.forth
 			end
+
+				-- Generate constraints for constrained operands to use predefined values.
+			if not is_used_values_enforced then
+				constrained_operands.do_all (agent generate_predefined_value_constraint)
+			end
+
+				-- Generate constraints for `used_values'
+			generate_constraints_for_used_values
+
 			last_smtlib.append ("%N))")
+		end
+
+	generate_predefined_value_constraint (a_operand: STRING) is
+			-- Generate constraints for `a_operand' to have predefined values and
+			-- store result in `last_smtlib'.
+		require
+			a_operand_attached: a_operand /= Void
+			not_a_operand_is_empty: not a_operand.is_empty
+		local
+			l_smtlib: like last_smtlib
+			l_predefined_values: like predefined_integers
+		do
+			l_smtlib := last_smtlib
+			if is_within_probability (predefined_values_probability) then
+				l_smtlib.append ("%T(or%N")
+				from
+					l_predefined_values := predefined_integers
+					l_predefined_values.start
+				until
+					l_predefined_values.after
+				loop
+					l_smtlib.append ("%T%T(= ")
+					l_smtlib.append (a_operand)
+					l_smtlib.append_character (' ')
+					l_smtlib.append (l_predefined_values.item_for_iteration.out)
+					l_smtlib.append (")%N")
+					l_predefined_values.forth
+				end
+				l_smtlib.append ("%T)%N")
+			end
+		end
+
+	generate_constraints_for_used_values is
+			-- Generate constraints for used values.
+			-- If `is_used_values_enforced' is True, the generated solution only contains
+			-- values that are already in `used_values', otherwise, the generated solution
+			-- only contains values that are not in `used_values'.
+		local
+			l_used_values: like used_values
+			l_smtlib: like last_smtlib
+			l_operands: DS_ARRAYED_LIST [STRING]
+			l_sorter: DS_QUICK_SORTER [STRING]
+		do
+			l_used_values := used_values
+			if not l_used_values.is_empty then
+				create l_operands.make (constrained_operands.count)
+				constrained_operands.do_all (agent l_operands.force_last)
+				create l_sorter.make (create {AGENT_BASED_EQUALITY_TESTER [STRING]}.make (agent (a, b: STRING): BOOLEAN do Result := a < b end))
+				l_sorter.sort (l_operands)
+				l_smtlib := last_smtlib
+
+				if is_used_values_enforced then
+					l_smtlib.append ("%T(or%N")
+					from
+						l_used_values.start
+					until
+						l_used_values.after
+					loop
+						l_smtlib.append ("%T%T(")
+						generate_used_values (l_used_values.item, l_operands)
+						l_smtlib.append (")%N")
+						l_used_values.forth
+					end
+					l_smtlib.append ("%T)%N")
+				else
+					from
+						l_used_values.start
+					until
+						l_used_values.after
+					loop
+						l_smtlib.append ("%T(not (")
+						generate_used_values (l_used_values.item, l_operands)
+						l_smtlib.append ("))%N")
+						l_used_values.forth
+					end
+				end
+			end
+		end
+
+	generate_used_values (a_values: ARRAY [INTEGER]; a_operands: DS_ARRAYED_LIST [STRING]) is
+			-- Generate used values `a_values' in `last_smtlib'.
+		require
+			operand_number_valid: a_values.count = a_operands.count
+		local
+			l_used_values: like used_values
+			l_smtlib: like last_smtlib
+			i: INTEGER
+			l_upper: INTEGER
+		do
+			l_smtlib := last_smtlib
+			if a_values.count = 1 then
+				l_smtlib.append ("= " + a_values.item (a_values.lower).out + " " + a_operands.first)
+			else
+				l_smtlib.append ("and (")
+				from
+					i := a_values.lower
+					l_upper := a_values.upper
+					a_operands.start
+				until
+					i > l_upper
+				loop
+					l_smtlib.append ("(")
+					l_smtlib.append ("= ")
+					l_smtlib.append (a_values.item (i).out)
+					l_smtlib.append_character (' ')
+					l_smtlib.append (a_operands.item_for_iteration)
+					if i = l_upper then
+						l_smtlib.append (")")
+					else
+						l_smtlib.append (") ")
+					end
+					i := i + 1
+					a_operands.forth
+				end
+				l_smtlib.append (")")
+			end
 		end
 
 	generate_header is

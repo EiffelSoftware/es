@@ -66,6 +66,7 @@ feature{NONE} -- Initialization
 			l_pool_statistics_logged_option: AP_FLAG
 			l_linear_constraint_solver_option: AP_STRING_OPTION
 			l_smart_selection_rate_option: AP_INTEGER_OPTION
+			l_solvers: LIST [STRING]
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -410,12 +411,13 @@ feature{NONE} -- Initialization
 
 			if not error_handler.has_error then
 				if l_linear_constraint_solver_option.was_found then
-					if l_linear_constraint_solver_option.parameter.is_equal ("smt") then
+					l_solvers := l_linear_constraint_solver_option.parameter.as_lower.split (',')
+					l_solvers.compare_objects
+					if l_solvers.has ("smt") then
 						is_smt_linear_constraint_solver_enabled := True
-					elseif l_linear_constraint_solver_option.parameter.is_equal ("lpsolve") then
+					end
+					if l_solvers.has ("lpsolve") then
 						is_lpsolve_contraint_linear_solver_enabled := True
-					else
-						error_handler.report_linear_constraint_solver_name_error (l_linear_constraint_solver_option.parameter)
 					end
 				else
 					is_smt_linear_constraint_solver_enabled := True

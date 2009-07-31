@@ -153,6 +153,7 @@ feature{NONE} -- Implementation
 				}
 
 				/* solve the model */
+				set_verbose (lp, NEUTRAL);
 				if (solve(lp) != OPTIMAL) {
 					return (FALSE);
 				}

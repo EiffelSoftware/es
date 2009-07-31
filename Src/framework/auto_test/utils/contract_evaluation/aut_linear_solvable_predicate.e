@@ -20,12 +20,16 @@ create
 
 feature{NONE} -- Initializaiton
 
-	make (a_types: DS_LIST [TYPE_A]; a_text: STRING; a_context_class: like context_class; a_expression: like expression; a_constrained_arguments: like constrained_arguments; a_constraining_queries: like constraining_queries) is
+	make (a_types: DS_LIST [TYPE_A]; a_text: STRING; a_context_class: like context_class; a_constrained_arguments: like constrained_arguments; a_constraining_queries: like constraining_queries) is
 			-- Initialize current.
 		require
-			a_context_class_valid: a_context_class.class_id = a_expression.context_class.class_id
+			a_types_attached: a_types /= Void
+			a_text_attached: a_text /= Void
+			a_context_class_attached: a_context_class /= Void
+			a_constrained_arguments_attached: a_constrained_arguments /= Void
+			a_constraining_queries_attached: a_constraining_queries /= Void
 		do
-			old_make (a_types, a_text, a_context_class, a_expression)
+			old_make (a_types, a_text, a_context_class)
 
 				-- Setup `constrained_arguments'.
 			create constrained_arguments.make (a_constrained_arguments.count)

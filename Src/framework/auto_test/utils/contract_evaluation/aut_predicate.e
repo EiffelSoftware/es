@@ -25,10 +25,9 @@ inherit
 
 feature{NONE} -- Initialization
 
-	make (a_types: DS_LIST [TYPE_A]; a_text: STRING; a_context_class: like context_class; a_expression: like expression) is
+	make (a_types: DS_LIST [TYPE_A]; a_text: STRING; a_context_class: like context_class) is
 			-- Initialize current.
 		require
-			a_context_class_valid: a_context_class.class_id = a_expression.context_class.class_id
 			a_types_attached: a_types /= Void
 			a_types_valid: not a_types.there_exists (agent (a: TYPE_A): BOOLEAN do Result := a.is_like end)
 		do
@@ -37,7 +36,6 @@ feature{NONE} -- Initialization
 
 			text := a_text.twin
 			context_class_internal := a_context_class
-			expression := a_expression
 		end
 
 feature -- Access
@@ -46,9 +44,6 @@ feature -- Access
 			-- 1-based Idendity of current predicate
 			-- Used for fast identification
 			-- Note: this id is not used in equality comparison
-
-	expression: AUT_EXPRESSION
-			-- Assertion associated with current predicates
 
 	context_class: CLASS_C is
 			-- Class where current predicate is viewed

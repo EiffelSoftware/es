@@ -468,6 +468,8 @@ feature{NONE} -- Linear constraint solving
 
 			l_solver: AUT_LINEAR_CONSTRAINT_SOLVER
 		do
+			last_linear_constraint_solving_successful := False
+
 				-- Ask for states of the target object.
 				-- the value of constraining queries are in the retrieved states.
 			if last_evaluated_operands.item (0) /= Void and then interpreter.typed_object_pool.is_variable_defined (last_evaluated_operands.item (0)) then
@@ -477,9 +479,20 @@ feature{NONE} -- Linear constraint solving
 			end
 
 				-- Solve linear constraints.
-			l_solver := linear_constraint_solver (l_state)
-			l_solver.solve
-			last_linear_constraint_solving_successful := l_solver.has_last_solution
+			if configuration.is_lpsolve_linear_constraint_solver_enabled then
+				l_solver := lp_constraint_solver (l_state)
+				l_solver.solve
+				last_linear_constraint_solving_successful := l_solver.has_last_solution
+			end
+
+			if
+				not last_linear_constraint_solving_successful and then
+				configuration.is_smt_linear_constraint_solver_enabled
+			then
+				l_solver := smt_linear_constraint_solver (l_state)
+				l_solver.solve
+				last_linear_constraint_solving_successful := l_solver.has_last_solution
+			end
 
 			if last_linear_constraint_solving_successful then
 				insert_integers_in_pool (l_solver.last_solution)
@@ -491,18 +504,24 @@ feature{NONE} -- Linear constraint solving
 			end
 		end
 
-	linear_constraint_solver (a_state: HASH_TABLE [STRING, STRING]): AUT_LINEAR_CONSTRAINT_SOLVER is
-			-- Linear constraint solver with context queries stored in `a_state'
+	smt_linear_constraint_solver (a_state: HASH_TABLE [STRING, STRING]): AUT_LINEAR_CONSTRAINT_SOLVER is
+			-- SMT-based linear constraint solver with context queries stored in `a_state'
 		require
 			a_state_attached: a_state /= void
+			smt_linear_constraint_solving_enabled: configuration.is_smt_linear_constraint_solver_enabled
 		do
-			if configuration.is_smt_linear_constraint_solver_enabled then
-				create {AUT_SAT_BASED_LINEAR_CONSTRAINT_SOLVER} Result.make (feature_, linear_solvable_preconditions, a_state)
-			elseif configuration.is_lpsolve_linear_constraint_solver_enabled then
-				create {AUT_LP_BASED_LINEAR_CONSTRAINT_SOLVER} Result.make (feature_, linear_solvable_preconditions, a_state)
-			else
-				check should_not_be_here: False end
-			end
+			create {AUT_SAT_BASED_LINEAR_CONSTRAINT_SOLVER} Result.make (feature_, linear_solvable_preconditions, a_state)
+		ensure
+			result_attached: Result /= Void
+		end
+
+	lp_constraint_solver (a_state: HASH_TABLE [STRING, STRING]): AUT_LINEAR_CONSTRAINT_SOLVER is
+			-- lpsolve linear constraint solver with context queries stored in `a_state'
+		require
+			a_state_attached: a_state /= void
+			lp_linear_constraint_solving_enabled: configuration.is_lpsolve_linear_constraint_solver_enabled
+		do
+			create {AUT_LP_BASED_LINEAR_CONSTRAINT_SOLVER} Result.make (feature_, linear_solvable_preconditions, a_state)
 		ensure
 			result_attached: Result /= Void
 		end
@@ -533,8 +552,58 @@ feature{NONE} -- Linear constraint solving
 					l_constant_pool.put (l_constant, l_variable)
 				end
 				last_evaluated_operands.put (l_variable, l_cursor.key)
-
 				l_cursor.forth
+			end
+
+				-- Store `a_integers' as used values.
+			store_used_values (a_integers)
+		end
+
+	store_used_values (a_integers: DS_HASH_TABLE [INTEGER, INTEGER]) is
+			-- Store `a_integers' as used values for `feature_'.
+		require
+			a_integers_attached: a_integers /= Void
+			not_a_integers_is_empty: not a_integers.is_empty
+		local
+			l_operand_indexes: DS_ARRAYED_LIST [INTEGER]
+			l_sorter: DS_QUICK_SORTER [INTEGER]
+			l_single_value_set: AUT_UNARY_INTEGER_VALUE_SET
+			l_multi_value_set: AUT_MULTI_INTEGER_VALUE_SET
+			l_values: ARRAY [INTEGER]
+		do
+			if a_integers.count = 1 then
+				if not used_integer_values.has (feature_) then
+					create l_single_value_set.make
+					used_integer_values.force_last (l_single_value_set, feature_)
+				else
+					l_single_value_set ?= used_integer_values.item (feature_)
+				end
+				a_integers.start
+				l_single_value_set.put (<<a_integers.item_for_iteration>>)
+
+			else
+				create l_operand_indexes.make (a_integers.count)
+				a_integers.keys.do_all (agent l_operand_indexes.force_last)
+				create l_sorter.make (create {AGENT_BASED_EQUALITY_TESTER [INTEGER]}.make (agent (a, b: INTEGER): BOOLEAN do Result := a < b end))
+				l_sorter.sort (l_operand_indexes)
+				
+				create l_values.make (1, a_integers.count)
+				from
+					l_operand_indexes.start
+				until
+					l_operand_indexes.after
+				loop
+					l_values.put (a_integers.item (l_operand_indexes.item_for_iteration), l_operand_indexes.index)
+					l_operand_indexes.forth
+				end
+
+				if not used_integer_values.has (feature_) then
+					create l_multi_value_set.make (a_integers.count)
+					used_integer_values.force_last (l_multi_value_set, feature_)
+				else
+					l_multi_value_set ?= used_integer_values.item (feature_)
+				end
+				l_multi_value_set.put (l_values)
 			end
 		end
 

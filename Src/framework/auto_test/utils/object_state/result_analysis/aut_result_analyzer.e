@@ -437,7 +437,7 @@ feature -- Result printing
 			a_output_stream.put_string ("#Wrost_case_evaluation%T")
 			a_output_stream.put_string ("Start_time%T")
 			a_output_stream.put_string ("End_time%T")
-			a_output_stream.put_string ("Duration%T")
+			a_output_stream.put_string ("Duration(ms)%T")
 			a_output_stream.put_string ("Succeeded%N")
 
 			l_stat := precondition_evaluation_observer.statistics
@@ -467,7 +467,7 @@ feature -- Result printing
 				a_output_stream.put_string ("%T")
 
 				l_time := l_time + (l_data.end_time - l_data.start_time)
-				a_output_stream.put_integer ((l_data.end_time - l_data.start_time) // 1000)
+				a_output_stream.put_integer ((l_data.end_time - l_data.start_time))
 				a_output_stream.put_string ("%T")
 
 				a_output_stream.put_boolean (l_data.succeeded)
@@ -548,7 +548,7 @@ feature -- Result printing
 
 				l_cursor.forth
 			end
-			
+
 			a_output_stream.put_character ('%N')
 		end
 

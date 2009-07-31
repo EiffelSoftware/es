@@ -36,13 +36,13 @@ feature -- Basic operations
 			next_predicate_id := 1
 		end
 
-	normal_predicate (a_types: DS_LIST [TYPE_A]; a_text: STRING; a_context_class: CLASS_C; a_expression: AUT_EXPRESSION): AUT_NORMAL_PREDICATE is
-			-- If there is no normal predicate which has the same setting with `a_types', `a_text', `a_context_class' and `a_expression',
+	normal_predicate (a_types: DS_LIST [TYPE_A]; a_text: STRING; a_context_class: CLASS_C): AUT_NORMAL_PREDICATE is
+			-- If there is no normal predicate which has the same setting with `a_types', `a_text', `a_context_class',
 			-- create one and put it into `predicates' and then return that predicate.
 			-- Otherwise return the existing predicate.
 		do
 			if attached {AUT_NORMAL_PREDICATE}
-				actual_predicate (create {AUT_NORMAL_PREDICATE}.make (a_types, a_text, a_context_class, a_expression)) as l_pred
+				actual_predicate (create {AUT_NORMAL_PREDICATE}.make (a_types, a_text, a_context_class)) as l_pred
 			then
 				Result := l_pred
 			else
@@ -50,13 +50,13 @@ feature -- Basic operations
 			end
 		end
 
-	linear_solvable_predicate (a_types: DS_LIST [TYPE_A]; a_text: STRING; a_context_class: CLASS_C; a_expression: AUT_EXPRESSION; a_constrained_arguments: DS_HASH_SET [INTEGER]; a_constraining_queries: DS_HASH_SET [STRING]): AUT_LINEAR_SOLVABLE_PREDICATE is
-			-- If there is no normal predicate which has the same setting with `a_types', `a_text', `a_context_class' and `a_expression',
+	linear_solvable_predicate (a_types: DS_LIST [TYPE_A]; a_text: STRING; a_context_class: CLASS_C; a_constrained_arguments: DS_HASH_SET [INTEGER]; a_constraining_queries: DS_HASH_SET [STRING]): AUT_LINEAR_SOLVABLE_PREDICATE is
+			-- If there is no normal predicate which has the same setting with `a_types', `a_text', `a_context_class',
 			-- create one and put it into `predicates' and then return that predicate.
 			-- Otherwise return the existing predicate.
 		do
 			if attached {AUT_LINEAR_SOLVABLE_PREDICATE}
-				actual_predicate (create {AUT_LINEAR_SOLVABLE_PREDICATE}.make (a_types, a_text, a_context_class, a_expression, a_constrained_arguments, a_constraining_queries)) as l_pred
+				actual_predicate (create {AUT_LINEAR_SOLVABLE_PREDICATE}.make (a_types, a_text, a_context_class, a_constrained_arguments, a_constraining_queries)) as l_pred
 			then
 				Result := l_pred
 			else

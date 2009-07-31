@@ -221,7 +221,7 @@ feature -- Constraint solving related
 				l_ptn_cursor.after
 			loop
 				if attached {AUT_LINEAR_SOLVABLE_PREDICATE} l_ptn_cursor.item.predicate as l_linear_pred then
-					Result.force_last ([l_linear_pred.expression, l_ptn_cursor.item])
+					Result.force_last ([l_ptn_cursor.item.assertion, l_ptn_cursor.item])
 				end
 				l_ptn_cursor.forth
 			end

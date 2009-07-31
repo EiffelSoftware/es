@@ -1518,6 +1518,7 @@ feature -- Precondition satisfaction
 			typed_object_pool_cell.put (l_pool)
 			variable_table.wipe_out_actions.extend (agent predicate_pool.wipe_out)
 			variable_table.wipe_out_actions.extend (agent constant_pool.wipe_out)
+			variable_table.wipe_out_actions.extend (agent used_integer_values.wipe_out)
 		end
 
 	is_precondition_satisfied (a_feature: AUT_FEATURE_OF_TYPE; a_variables: DS_LIST [ITP_VARIABLE]): BOOLEAN is

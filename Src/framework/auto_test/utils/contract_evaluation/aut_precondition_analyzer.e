@@ -94,6 +94,7 @@ feature -- Basic operation
 			l_assertion: AUT_EXPRESSION
 			l_solvables: DS_LINKED_LIST [AUT_PREDICATE]
 			l_unsolvables: DS_LINKED_LIST [AUT_PREDICATE]
+			l_not_void_pred: like target_not_void_predicate_and_access_pattern
 		do
 			last_predicates.wipe_out
 			last_predicate_access_patterns.wipe_out
@@ -117,6 +118,16 @@ feature -- Basic operation
 					check_assertion (l_assertion, a_feature)
 				end
 				l_asserts.forth
+			end
+
+			if
+				last_predicates.there_exists (agent is_linear_solvable_predicate) and then
+				(not last_predicate_access_patterns.there_exists (agent has_target_operand)) and then
+				last_predicates.there_exists (agent has_constraining_query)
+			then
+				l_not_void_pred := target_not_void_predicate_and_access_pattern (current_feature.type)
+				last_predicates.force_last (l_not_void_pred.predicate)
+				last_predicate_access_patterns.force_last (l_not_void_pred.access_pattern)
 			end
 		end
 
@@ -645,15 +656,13 @@ feature{NONE} -- Implementation
 					l_pred_types,
 					text,
 					current_feature.associated_class,
-					current_assertion,
 					l_constrained_args,
 					constraining_queries)
 			else
 				l_predicate := predicate_factory.normal_predicate (
 					l_pred_types,
 					text,
-					current_feature.associated_class,
-					current_assertion)
+					current_feature.associated_class)
 			end
 
 				-- We ignore precontions in creation procedures which contains unqualified calls.
@@ -754,6 +763,73 @@ feature{NONE} -- Implmentation
 			create l_sorter.make (create {AGENT_BASED_EQUALITY_TESTER [INTEGER]}.make (agent (a,b: INTEGER): BOOLEAN do Result := a < b end))
 			l_sorter.sort (l_keys)
 			Result := l_keys
+		end
+
+	target_not_void_predicate_and_access_pattern (a_type: TYPE_A): TUPLE [predicate: AUT_PREDICATE; access_pattern: AUT_PREDICATE_ACCESS_PATTERN] is
+			-- "not_void" predicate for `a_type' and its access pattern.
+		require
+			a_type_attached: a_type /= Void
+		local
+			l_types: DS_LINKED_LIST [TYPE_A]
+			l_predicate: AUT_PREDICATE
+			l_access_pattern: AUT_PREDICATE_ACCESS_PATTERN
+			l_pattern_table: DS_HASH_TABLE [INTEGER, INTEGER]
+			l_assertion: AUT_EXPRESSION
+			l_target: ID_AS
+			l_void: VOID_AS
+			l_ne_binary: BIN_NE_AS
+			l_ne_operator: SYMBOL_AS
+		do
+			create l_types.make
+			l_types.force_last (a_type)
+			l_predicate := predicate_factory.normal_predicate (l_types, "{1} /= Void", a_type.associated_class)
+			create l_pattern_table.make (1)
+			l_pattern_table.put_last (0, 1)
+
+			create l_void.make_with_location (0, 0, 0, 0)
+			create l_target.initialize ("a__target")
+			create l_ne_binary.initialize (l_target, l_void, l_ne_operator)
+			create l_ne_operator.make ({EIFFEL_TOKENS}.TE_NE, 0, 0, 0, 0)
+			create l_assertion.make (l_ne_binary, current_context_class, current_written_class)
+			create l_access_pattern.make (current_feature, l_predicate, l_pattern_table, l_assertion)
+
+			Result := [l_predicate, l_access_pattern]
+		ensure
+			result_attached: Result /= Void
+		end
+
+feature -- Status report
+
+	is_linear_solvable_predicate (a_predicate: AUT_PREDICATE): BOOLEAN is
+			-- Is `a_predicate' linearly solvable?
+		require
+			a_predicate_attached: a_predicate /= Void
+		do
+			Result := a_predicate.is_linear_solvable
+		ensure
+			good_result: Result = a_predicate.is_linear_solvable
+		end
+
+	has_target_operand (a_access_pattern: AUT_PREDICATE_ACCESS_PATTERN): BOOLEAN is
+			-- Does `a_access_pattern' contain a normal predicate and then
+			-- access the target operand (the 0-th) object of a feature call?
+		require
+			a_access_pattern_attached: a_access_pattern /= Void
+		do
+			if attached {AUT_NORMAL_PREDICATE} a_access_pattern.predicate as normal_pred then
+				Result := a_access_pattern.access_pattern.has_item (0)
+			end
+		end
+
+	has_constraining_query (a_predicate: AUT_PREDICATE): BOOLEAN is
+			-- Is `a_predicate' a linear solvable predicate containing
+			-- constraining queries?
+		require
+			a_predicate_attached: a_predicate /= Void
+		do
+			if attached {AUT_LINEAR_SOLVABLE_PREDICATE} a_predicate as linear_pred then
+				Result := not linear_pred.constraining_queries.is_empty
+			end
 		end
 
 note

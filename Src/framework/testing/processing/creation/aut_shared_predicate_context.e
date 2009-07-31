@@ -55,6 +55,19 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
+	predicate_feature_table: DS_HASH_TABLE [DS_HASH_SET [AUT_FEATURE_OF_TYPE], AUT_PREDICATE] is
+			-- Table from predicates to features.
+			-- [List of features which have the predicate as precondition, predicate]
+			-- Note: Should only be modified by `put_predicate_in_feature_table'.
+		once
+			create Result.make (100)
+			Result.set_key_equality_tester (predicate_equality_tester)
+		ensure
+			result_attached: Result /= Void
+		end
+
+
+
 --	predicate_access_pattern: DS_HASH_TABLE [DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN], AUT_FEATURE_OF_TYPE] is
 --			-- Predicate access patterns associated with a feature.
 --			-- Predicates associated with a feature can be preconditions, postconditions and all "interesting" predcates
@@ -155,6 +168,48 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
+	used_integer_values: DS_HASH_TABLE [AUT_INTEGER_VALUE_SET, AUT_FEATURE_OF_TYPE] is
+			-- Used integers from linear constraint solver for features
+		once
+			create Result.make (50)
+			Result.set_key_equality_tester (feature_of_type_loose_equality_tester)
+		ensure
+			result_attached: Result /= Void
+		end
+
+	predefined_integers: LINKED_LIST [INTEGER] is
+			-- Predefined integers
+		once
+			create Result.make
+			Result.extend (0)
+			Result.extend (1)
+			Result.extend (2)
+			Result.extend (3)
+			Result.extend (4)
+			Result.extend (5)
+			Result.extend (6)
+			Result.extend (7)
+			Result.extend (8)
+			Result.extend (9)
+			Result.extend (10)
+			Result.extend (-1)
+			Result.extend (-2)
+			Result.extend (-3)
+			Result.extend (-4)
+			Result.extend (-5)
+			Result.extend (-6)
+			Result.extend (-7)
+			Result.extend (-8)
+			Result.extend (-9)
+			Result.extend (-10)
+			Result.extend (100)
+			Result.extend (-100)
+--			Result.extend ({INTEGER}.Min_value)
+--			Result.extend ({INTEGER}.Max_value)
+		ensure
+			result_attached: Result /= Void
+		end
+
 feature -- Basic operations
 
 	put_predicate (a_predicate: AUT_PREDICATE) is
@@ -168,32 +223,6 @@ feature -- Basic operations
 		ensure
 			predicate_put: predicates.has (a_predicate)
 			predicate_table_put: predicate_table.has (a_predicate.id) and then predicate_table.item (a_predicate.id) = a_predicate
-		end
-
-	put_predicate_access_pattern (a_feature: AUT_FEATURE_OF_TYPE; a_access_patterns: DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN]) is
-			-- Put `a_access_patterns' for `a_feature' into `predicate_access_pattern' and `predicate_access_pattern_table'.
-		require
-			a_feature_attached: a_feature /= Void
-			a_access_patterns_attached: a_access_patterns /= Void
-			a_access_patterns_not_has_void: not a_access_patterns.has (Void)
-		local
---			l_cursor: DS_LINKED_LIST_CURSOR [AUT_PREDICATE_ACCESS_PATTERN]
---			l_table: DS_HASH_TABLE [AUT_PREDICATE_ACCESS_PATTERN, AUT_PREDICATE]
-		do
---			predicate_access_pattern.force_last (a_access_patterns.twin, a_feature)
---			create l_table.make (a_access_patterns.count)
---			l_table.set_key_equality_tester (predicate_equality_tester)
-
---			from
---				l_cursor := a_access_patterns.new_cursor
---				l_cursor.start
---			until
---				l_cursor.after
---			loop
---				l_table.force_last (l_cursor.item, l_cursor.item.predicate)
---				l_cursor.forth
---			end
---			predicate_access_pattern_table.force_last (l_table, a_feature)
 		end
 
 	put_precondition_access_pattern (a_feature: AUT_FEATURE_OF_TYPE; a_access_patterns: DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN]) is
@@ -222,6 +251,27 @@ feature -- Basic operations
 			l_set.set_equality_tester (predicate_equality_tester)
 			a_preconditions.do_all (agent l_set.force_last)
 --			preconditions_of_feature.force_last (l_set, a_feature)
+		end
+
+	put_predicate_in_feature_table (a_predicate: AUT_PREDICATE; a_feature: AUT_FEATURE_OF_TYPE) is
+			-- Put `a_feature' with `a_predicate' into `predicate_feature_table'.
+		require
+			a_predicate_attached: a_predicate /= Void
+			a_feature_attached: a_feature /= Void
+		local
+			l_table: like predicate_feature_table
+			l_features: DS_HASH_SET [AUT_FEATURE_OF_TYPE]
+		do
+			l_table := predicate_feature_table
+			l_table.search (a_predicate)
+			if l_table.found then
+				l_features := l_table.found_item
+			else
+				create l_features.make (20)
+				l_features.set_equality_tester (feature_of_type_loose_equality_tester)
+				l_table.force_last (l_features, a_predicate)
+			end
+			l_features.force_last (a_feature)
 		end
 
 note
