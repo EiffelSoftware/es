@@ -23,10 +23,10 @@ feature -- Status report
 
 feature -- Access
 
-	use_predefined_value_rate: REAL
+	use_predefined_value_rate: DOUBLE
 			-- Possibility to use predefined values
 
-	enforce_used_value_rate: REAL
+	enforce_used_value_rate: DOUBLE
 			-- Possibility to enforce generation of used values
 
 feature -- Setting
@@ -34,13 +34,13 @@ feature -- Setting
 	set_use_predefined_value_rate (a_rate: INTEGER) is
 			-- Set `use_predefined_value_rate'.
 		do
-			use_predefined_value_rate := a_rate.to_real / 100
+			use_predefined_value_rate := a_rate.to_double / 100
 		end
 
 	set_enforce_used_value_rate (a_rate: INTEGER) is
 			-- Set `enforce_used_value_rate' with `a_rate'.
 		do
-			enforce_used_value_rate := a_rate.to_real / 100
+			enforce_used_value_rate := a_rate.to_double / 100
 		end
 
 feature -- Basic operations
@@ -176,6 +176,7 @@ feature{NONE} -- Implementation
 			create l_smt_generator
 			l_smt_generator.set_used_values (a_used_values)
 			l_smt_generator.set_is_used_value_enforced (a_enforce_used_values)
+			l_smt_generator.set_use_predefined_values_rate (use_predefined_value_rate)
 
 			l_smt_generator.generate_smtlib (feature_, linear_solvable_predicates)
 			check l_smt_generator.has_linear_constraints end

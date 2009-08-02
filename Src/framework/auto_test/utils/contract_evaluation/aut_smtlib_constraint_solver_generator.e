@@ -50,7 +50,7 @@ feature -- Status report
 	has_linear_constraints: BOOLEAN
 			-- Does the last feature processed by `generate_smtlib' has linear constraints?
 
-	predefined_values_probability: REAL is 0.25
+	use_predefined_values_rate: DOUBLE
 			-- Probability in which predefined values for integers are used
 
 	is_used_values_enforced: BOOLEAN
@@ -98,6 +98,12 @@ feature -- Setting
 			is_used_values_enforced := b
 		ensure
 			is_used_values_enforced_set: is_used_values_enforced = b
+		end
+
+	set_use_predefined_values_rate (a_rate: REAL) is
+			-- Set `use_predefined_values_rate' with `a_rate'.
+		do
+			use_predefined_values_rate := a_rate
 		end
 
 feature{NONE} -- Implementation
@@ -240,7 +246,7 @@ feature{NONE} -- Generation
 			l_predefined_values: like predefined_integers
 		do
 			l_smtlib := last_smtlib
-			if is_within_probability (predefined_values_probability) then
+			if is_within_probability (use_predefined_values_rate) then
 				l_smtlib.append ("%T(or%N")
 				from
 					l_predefined_values := predefined_integers
@@ -279,28 +285,30 @@ feature{NONE} -- Generation
 				l_smtlib := last_smtlib
 
 				if is_used_values_enforced then
-					l_smtlib.append ("%T(or%N")
-					from
-						l_used_values.start
-					until
-						l_used_values.after
-					loop
-						l_smtlib.append ("%T%T(")
-						generate_used_values (l_used_values.item, l_operands)
-						l_smtlib.append (")%N")
-						l_used_values.forth
-					end
-					l_smtlib.append ("%T)%N")
-				else
-					from
-						l_used_values.start
-					until
-						l_used_values.after
-					loop
-						l_smtlib.append ("%T(not (")
-						generate_used_values (l_used_values.item, l_operands)
-						l_smtlib.append ("))%N")
-						l_used_values.forth
+					if is_within_probability (0.5) then
+						l_smtlib.append ("%T(or%N")
+						from
+							l_used_values.start
+						until
+							l_used_values.after
+						loop
+							l_smtlib.append ("%T%T(")
+							generate_used_values (l_used_values.item, l_operands)
+							l_smtlib.append (")%N")
+							l_used_values.forth
+						end
+						l_smtlib.append ("%T)%N")
+					else
+						from
+							l_used_values.start
+						until
+							l_used_values.after
+						loop
+							l_smtlib.append ("%T(not (")
+							generate_used_values (l_used_values.item, l_operands)
+							l_smtlib.append ("))%N")
+							l_used_values.forth
+						end
 					end
 				end
 			end
@@ -315,6 +323,7 @@ feature{NONE} -- Generation
 			l_smtlib: like last_smtlib
 			i: INTEGER
 			l_upper: INTEGER
+			l_done: BOOLEAN
 		do
 			l_smtlib := last_smtlib
 			if a_values.count = 1 then
@@ -328,6 +337,7 @@ feature{NONE} -- Generation
 				until
 					i > l_upper
 				loop
+					l_done := True
 					l_smtlib.append ("(")
 					l_smtlib.append ("= ")
 					generate_integer_value (a_values.item (i))

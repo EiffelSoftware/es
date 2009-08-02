@@ -274,6 +274,68 @@ feature -- Basic operations
 			l_features.force_last (a_feature)
 		end
 
+feature -- Feature selection
+
+	high_priority_features: LINKED_QUEUE [AUT_FEATURE_OF_TYPE] is
+			-- Features that are to be selected first
+			-- because part of their preconditions assertions
+			-- are observed to be True
+		once
+			create Result.make
+		end
+
+	high_priority_feature_set: DS_HASH_SET [AUT_FEATURE_OF_TYPE] is
+			-- Set storage of `high_priority_features' for fast lookup
+		do
+			create Result.make (10)
+			Result.set_equality_tester (feature_of_type_loose_equality_tester)
+		end
+
+	mark_feature_as_high_priority (a_feature: AUT_FEATURE_OF_TYPE) is
+			-- Mark `a_feature' as high priority for test
+		require
+			a_feature_attached: a_feature /= Void
+		do
+			if not high_priority_feature_set.has (a_feature) and then high_priority_features.count < max_feature_as_high_priority then
+				high_priority_feature_set.force_last (a_feature)
+				high_priority_features.extend (a_feature)
+			end
+		end
+
+	unmark_feature_as_high_priority is
+			-- Unmark `a_feature' as high priority for test
+		local
+			l_feature: AUT_FEATURE_OF_TYPE
+		do
+			if not high_priority_features.is_empty then
+				l_feature := high_priority_features.item
+				high_priority_features.remove
+				high_priority_feature_set.remove (l_feature)
+			end
+		end
+
+	max_feature_as_high_priority: INTEGER is 2
+			-- Max number of features in `high_priority_features'
+
+
+	enforce_precondition_satisfaction: BOOLEAN is
+			-- Should precondition satisfaction be enforced for the next feature?
+		do
+			Result := enforce_precondition_satisfaction_cell.item
+		end
+
+	enforce_precondition_satisfaction_cell: CELL [BOOLEAN] is
+			-- Cell to store value for `enforce_precondition_satisfaction'
+		once
+			create Result.put (False)
+		end
+
+	set_enforce_precondition_satisfaction (b: BOOLEAN) is
+			-- Set `enforce_precondition_satisfaction' with `b'.
+		do
+			enforce_precondition_satisfaction_cell.put (b)
+		end
+
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

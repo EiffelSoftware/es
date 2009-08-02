@@ -218,7 +218,7 @@ feature{NONE} -- Initialization
 			l_smt_old_value_rate_option.set_description ("Possibility [0-100] to enforce SMT solver to choose an already used value. Default is 25")
 			parser.options.force_last (l_smt_old_value_rate_option)
 
-			create l_smt_use_predefined_value_rate_option.make_with_long_form ("smt-predefined-value-rate")
+			create l_smt_use_predefined_value_rate_option.make_with_long_form ("smt-use-predefined-value-rate")
 			l_smt_use_predefined_value_rate_option.set_description ("Possibility [0-100] to for the SMT solver to choose a predefined value for integers. Default is 25")
 			parser.options.force_last (l_smt_use_predefined_value_rate_option)
 

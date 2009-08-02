@@ -73,7 +73,7 @@ feature -- Cursor movement
 				end
 			else
 					-- Both arguments are bounded.
-				after := container.item (<<variable_in_candidate (bound_variables.item (1)),
+				after := not container.item (<<variable_in_candidate (bound_variables.item (1)),
 										   variable_in_candidate (bound_variables.item (2))>>)
 			end
 		end

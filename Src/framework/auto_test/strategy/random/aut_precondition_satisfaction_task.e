@@ -178,19 +178,23 @@ feature -- Execution
 			l_rate: DOUBLE
 			l_set_rate: INTEGER
 		do
-			l_set_rate := configuration.object_selection_for_precondition_satisfaction_rate
-			if l_set_rate = 100 then
-					-- Always use precondition satisfaction
+			if enforce_precondition_satisfaction then
 				Result := True
 			else
-				l_rate := l_set_rate.to_double / 100
-				l_invalid_rate := feature_invalid_test_case_rate.item (feature_)
-				if l_invalid_rate /= Void  and then (l_invalid_rate.failed_times < l_invalid_rate.all_times) then
-						-- If `feature_' has been tested, the probability of using precondition satisfaction for it
-						-- goes down when the number of successful test cases increases proportionally.
-					l_rate := l_invalid_rate.failed_times / l_invalid_rate.all_times * l_rate
+				l_set_rate := configuration.object_selection_for_precondition_satisfaction_rate
+				if l_set_rate = 100 then
+						-- Always use precondition satisfaction
+					Result := True
+				else
+					l_rate := l_set_rate.to_double / 100
+					l_invalid_rate := feature_invalid_test_case_rate.item (feature_)
+					if l_invalid_rate /= Void  and then (l_invalid_rate.failed_times < l_invalid_rate.all_times) then
+							-- If `feature_' has been tested, the probability of using precondition satisfaction for it
+							-- goes down when the number of successful test cases increases proportionally.
+						l_rate := l_invalid_rate.failed_times / l_invalid_rate.all_times * l_rate
+					end
+					Result := is_within_probability (l_rate)
 				end
-				Result := is_within_probability (l_rate)
 			end
 		end
 
@@ -467,7 +471,9 @@ feature{NONE} -- Linear constraint solving
 
 			l_solver: AUT_LINEAR_CONSTRAINT_SOLVER
 			l_smt_solver: AUT_SAT_BASED_LINEAR_CONSTRAINT_SOLVER
+			l_config: like configuration
 		do
+			l_config := configuration
 			last_linear_constraint_solving_successful := False
 
 				-- Ask for states of the target object.
@@ -479,7 +485,7 @@ feature{NONE} -- Linear constraint solving
 			end
 
 				-- Solve linear constraints.
-			if configuration.is_lpsolve_linear_constraint_solver_enabled then
+			if l_config.is_lpsolve_linear_constraint_solver_enabled then
 				l_solver := lp_constraint_solver (l_state)
 				l_solver.solve
 				last_linear_constraint_solving_successful := l_solver.has_last_solution
@@ -487,10 +493,11 @@ feature{NONE} -- Linear constraint solving
 
 			if
 				not last_linear_constraint_solving_successful and then
-				configuration.is_smt_linear_constraint_solver_enabled
+				l_config.is_smt_linear_constraint_solver_enabled
 			then
 				l_smt_solver := smt_linear_constraint_solver (l_state)
-				l_smt_solver.set_enforce_used_value_rate (configuration.smt_enforce_old_value_rate)
+				l_smt_solver.set_enforce_used_value_rate (l_config.smt_enforce_old_value_rate)
+				l_smt_solver.set_use_predefined_value_rate (l_config.smt_use_predefined_value_rate)
 				l_solver := l_smt_solver
 				l_solver.solve
 				last_linear_constraint_solving_successful := l_solver.has_last_solution
@@ -533,6 +540,7 @@ feature{NONE} -- Linear constraint solving
 			-- Update arguments in `last_evaluated_operands' accordingly.
 		require
 			a_integers_attached: a_integers /= Void
+			not_a_integers_is_empty: not a_integers.is_empty
 		local
 			l_constant: ITP_CONSTANT
 			l_variable: detachable ITP_VARIABLE
@@ -558,7 +566,9 @@ feature{NONE} -- Linear constraint solving
 			end
 
 				-- Store `a_integers' as used values.
-			store_used_values (a_integers)
+			if not a_integers.is_empty then
+				store_used_values (a_integers)
+			end
 		end
 
 	max_used_value_cache: INTEGER is 30

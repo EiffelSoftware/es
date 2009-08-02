@@ -30,6 +30,16 @@ inherit
 			{NONE} all
 		end
 
+	AUT_PREDICATE_UTILITY
+		undefine
+			system
+		end
+
+	AUT_SHARED_PREDICATE_CONTEXT
+		undefine
+			system
+		end
+
 create
 
 	make
@@ -206,7 +216,14 @@ feature {NONE} -- Implementation
 			l_selected_type: TYPE_A
 			l_selected_feature: FEATURE_I
 		do
-			queue.select_next
+			if interpreter.configuration.is_precondition_checking_enabled and then not high_priority_features.is_empty then
+				selected_feature := high_priority_features.item
+				set_enforce_precondition_satisfaction (True)
+				unmark_feature_as_high_priority
+			else
+				set_enforce_precondition_satisfaction (False)
+				queue.select_next
+			end
 
 			selected_feature := queue.last_feature
 			l_selected_feature := selected_feature.feature_
