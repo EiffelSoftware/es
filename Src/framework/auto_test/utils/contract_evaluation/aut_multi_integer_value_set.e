@@ -85,6 +85,12 @@ feature -- Basic operations
 			end
 		end
 
+	wipe_out is
+			-- Wipe out current.
+		do
+			storage.wipe_out
+		end
+
 feature{NONE} -- Implementation
 
 	storage: LINKED_LIST [ARRAY [INTEGER]];

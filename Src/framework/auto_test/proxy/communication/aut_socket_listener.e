@@ -182,7 +182,7 @@ feature {NONE} -- Constants
 
 	min_port: INTEGER = 49157
 	max_port: INTEGER = 65535
-	max_attempts: NATURAL = 50
+	max_attempts: NATURAL = 100
 
 invariant
 	current_port_not_negative: current_port >= 0

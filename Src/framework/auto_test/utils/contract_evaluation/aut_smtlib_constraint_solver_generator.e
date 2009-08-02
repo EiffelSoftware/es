@@ -251,7 +251,7 @@ feature{NONE} -- Generation
 					l_smtlib.append ("%T%T(= ")
 					l_smtlib.append (a_operand)
 					l_smtlib.append_character (' ')
-					l_smtlib.append (l_predefined_values.item_for_iteration.out)
+					generate_integer_value (l_predefined_values.item_for_iteration)
 					l_smtlib.append (")%N")
 					l_predefined_values.forth
 				end
@@ -320,7 +320,7 @@ feature{NONE} -- Generation
 			if a_values.count = 1 then
 				l_smtlib.append ("= " + a_values.item (a_values.lower).out + " " + a_operands.first)
 			else
-				l_smtlib.append ("and (")
+				l_smtlib.append ("and ")
 				from
 					i := a_values.lower
 					l_upper := a_values.upper
@@ -330,7 +330,7 @@ feature{NONE} -- Generation
 				loop
 					l_smtlib.append ("(")
 					l_smtlib.append ("= ")
-					l_smtlib.append (a_values.item (i).out)
+					generate_integer_value (a_values.item (i))
 					l_smtlib.append_character (' ')
 					l_smtlib.append (a_operands.item_for_iteration)
 					if i = l_upper then
@@ -341,7 +341,21 @@ feature{NONE} -- Generation
 					i := i + 1
 					a_operands.forth
 				end
-				l_smtlib.append (")")
+			end
+		end
+
+	generate_integer_value (a_value: INTEGER) is
+			-- Generate `a_value' into `last_smtlib'.
+		local
+			l_smtlib: like last_smtlib
+		do
+			l_smtlib := last_smtlib
+			if a_value >= 0 then
+				l_smtlib.append (a_value.out)
+			else
+				l_smtlib.append_character ('(')
+				l_smtlib.append (a_value.out)
+				l_smtlib.append_character (')')
 			end
 		end
 

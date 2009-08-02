@@ -80,6 +80,13 @@ feature -- Basic operations
 		deferred
 		end
 
+	wipe_out is
+			-- Wipe out current.
+		deferred
+		ensure
+			is_empty: is_empty
+		end
+
 invariant
 	arity_positive: arity > 0
 

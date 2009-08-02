@@ -180,18 +180,17 @@ feature -- Execution
 		do
 			l_set_rate := configuration.object_selection_for_precondition_satisfaction_rate
 			if l_set_rate = 100 then
+					-- Always use precondition satisfaction
 				Result := True
 			else
-				Result := is_within_probability (configuration.object_selection_for_precondition_satisfaction_rate.to_double / 100)
---				l_invalid_rate := feature_invalid_test_case_rate.item (feature_)
---				if l_invalid_rate /= Void then
---					if l_invalid_rate.all_times > 0 and then l_invalid_rate.failed_times = l_invalid_rate.all_times then
---						Result := True
---					else
---						l_rate := l_invalid_rate.failed_times.to_double / l_invalid_rate.all_times
---						Result := is_within_probability (l_rate * (configuration.object_selection_for_precondition_satisfaction_rate.to_double / 100))
---					end
---				end
+				l_rate := l_set_rate.to_double / 100
+				l_invalid_rate := feature_invalid_test_case_rate.item (feature_)
+				if l_invalid_rate /= Void  and then (l_invalid_rate.failed_times < l_invalid_rate.all_times) then
+						-- If `feature_' has been tested, the probability of using precondition satisfaction for it
+						-- goes down when the number of successful test cases increases proportionally.
+					l_rate := l_invalid_rate.failed_times / l_invalid_rate.all_times * l_rate
+				end
+				Result := is_within_probability (l_rate)
 			end
 		end
 
@@ -562,6 +561,10 @@ feature{NONE} -- Linear constraint solving
 			store_used_values (a_integers)
 		end
 
+	max_used_value_cache: INTEGER is 30
+			-- Max number of cached used integer values for a linearly solvable operand
+			-- of a feature.
+
 	store_used_values (a_integers: DS_HASH_TABLE [INTEGER, INTEGER]) is
 			-- Store `a_integers' as used values for `feature_'.
 		require
@@ -580,6 +583,9 @@ feature{NONE} -- Linear constraint solving
 					used_integer_values.force_last (l_single_value_set, feature_)
 				else
 					l_single_value_set ?= used_integer_values.item (feature_)
+				end
+				if l_single_value_set.count = max_used_value_cache then
+					l_single_value_set.wipe_out
 				end
 				a_integers.start
 				l_single_value_set.put (<<a_integers.item_for_iteration>>)
@@ -605,6 +611,9 @@ feature{NONE} -- Linear constraint solving
 					used_integer_values.force_last (l_multi_value_set, feature_)
 				else
 					l_multi_value_set ?= used_integer_values.item (feature_)
+				end
+				if l_multi_value_set.count = max_used_value_cache then
+					l_multi_value_set.wipe_out
 				end
 				l_multi_value_set.put (l_values)
 			end

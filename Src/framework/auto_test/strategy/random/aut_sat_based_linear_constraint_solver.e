@@ -49,77 +49,20 @@ feature -- Basic operations
 			-- Try to solve constraints defined in `linear_solvable_predicates' and `context_queries'.
 		local
 			l_value_set: detachable AUT_INTEGER_VALUE_SET
-			l_tried: BOOLEAN
 		do
 			has_last_solution := False
 
 				-- Try to solve constraints within used values.			
 			l_value_set := used_integer_values.item (feature_)
+
 			if is_within_probability (enforce_used_value_rate) and then l_value_set /= Void then
-				l_tried := True
 				internal_solve (l_value_set, True)
-			end
-
-				-- Trye to solve constraints with avoiding used values.
-			if (not l_tried) or else not has_last_solution then
-				if l_value_set = Void then
-					create{AUT_UNARY_INTEGER_VALUE_SET} l_value_set.make
-				end
-				internal_solve (l_value_set, False)
-			end
-		end
-
-	internal_solve (a_used_values: AUT_INTEGER_VALUE_SET; a_enforce_used_values: BOOLEAN) is
-			-- Solve linear constraints.
-			-- `a_used_values' are used values for `feature_'.
-			-- If `a_enforce_used_values' is True, the generated solution only contains values from `a_used_values',
-			-- otherwise, the generated solution doesn't contain values from `a_used_values'.			
-		require
-			a_used_values_attached: a_used_values /= Void
-		local
-			l_state: HASH_TABLE [STRING, STRING]
-			l_smt_generator: AUT_SMTLIB_CONSTRAINT_SOLVER_GENERATOR
-			l_proof_obligation: STRING
-			l_constraining_queries: DS_HASH_SET [STRING]
-			l_new_query_name: STRING
-			l_query_name: detachable STRING
-			l_pattern_table: DS_HASH_TABLE [AUT_PREDICATE_ACCESS_PATTERN, AUT_PREDICATE]
-		do
-			has_last_solution := True
-			l_state := context_queries
-
-				-- Generate linear constraint solving proof obligation.
-			create l_smt_generator
-			l_smt_generator.set_used_values (a_used_values)
-			l_smt_generator.set_is_used_value_enforced (a_enforce_used_values)
-
-			l_smt_generator.generate_smtlib (feature_, linear_solvable_predicates)
-			check l_smt_generator.has_linear_constraints end
-			l_proof_obligation := l_smt_generator.last_smtlib.twin
-
-				-- Replace constraining queires by their actual value.
-			from
-				l_constraining_queries := l_smt_generator.constraining_queries
-				l_constraining_queries.start
-			until
-				l_constraining_queries.after or else not has_last_solution
-			loop
-				l_query_name := l_state.item (l_constraining_queries.item_for_iteration)
-				if l_query_name = Void then
-						-- If the value of some constraining query cannot be retrieved,
-						-- the model for constrained arguments doesn't exist.
-					has_last_solution := False
+			else
+				if l_value_set /= Void then
+					internal_solve (l_value_set, False)
 				else
-					l_new_query_name := "$" + l_constraining_queries.item_for_iteration + "$"
-					l_proof_obligation.replace_substring_all (l_new_query_name, l_query_name)
+					internal_solve (empty_used_value_set, False)
 				end
-				l_constraining_queries.forth
-			end
-
-				-- Launch constraint solver to solve constrained arguments.
-			if has_last_solution then
-				generate_smtlib_file (l_proof_obligation)
-				solve_arguments
 			end
 		end
 
@@ -208,6 +151,68 @@ feature{NONE} -- Implementation
 			else
 				Result := "/bin/sh -c %"cvc3 +model -lang smt " + a_smtlib_file_path + "%""
 			end
+		end
+
+	internal_solve (a_used_values: AUT_INTEGER_VALUE_SET; a_enforce_used_values: BOOLEAN) is
+			-- Solve linear constraints.
+			-- `a_used_values' are used values for `feature_'.
+			-- If `a_enforce_used_values' is True, the generated solution only contains values from `a_used_values',
+			-- otherwise, the generated solution doesn't contain values from `a_used_values'.			
+		require
+			a_used_values_attached: a_used_values /= Void
+		local
+			l_state: HASH_TABLE [STRING, STRING]
+			l_smt_generator: AUT_SMTLIB_CONSTRAINT_SOLVER_GENERATOR
+			l_proof_obligation: STRING
+			l_constraining_queries: DS_HASH_SET [STRING]
+			l_new_query_name: STRING
+			l_query_name: detachable STRING
+			l_pattern_table: DS_HASH_TABLE [AUT_PREDICATE_ACCESS_PATTERN, AUT_PREDICATE]
+		do
+			has_last_solution := True
+			l_state := context_queries
+
+				-- Generate linear constraint solving proof obligation.
+			create l_smt_generator
+			l_smt_generator.set_used_values (a_used_values)
+			l_smt_generator.set_is_used_value_enforced (a_enforce_used_values)
+
+			l_smt_generator.generate_smtlib (feature_, linear_solvable_predicates)
+			check l_smt_generator.has_linear_constraints end
+			l_proof_obligation := l_smt_generator.last_smtlib.twin
+
+				-- Replace constraining queires by their actual value.
+			from
+				l_constraining_queries := l_smt_generator.constraining_queries
+				l_constraining_queries.start
+			until
+				l_constraining_queries.after or else not has_last_solution
+			loop
+				l_query_name := l_state.item (l_constraining_queries.item_for_iteration)
+				if l_query_name = Void then
+						-- If the value of some constraining query cannot be retrieved,
+						-- the model for constrained arguments doesn't exist.
+					has_last_solution := False
+				else
+					l_new_query_name := "$" + l_constraining_queries.item_for_iteration + "$"
+					l_proof_obligation.replace_substring_all (l_new_query_name, l_query_name)
+				end
+				l_constraining_queries.forth
+			end
+
+				-- Launch constraint solver to solve constrained arguments.
+			if has_last_solution then
+				generate_smtlib_file (l_proof_obligation)
+				solve_arguments
+			end
+		end
+
+	empty_used_value_set: AUT_INTEGER_VALUE_SET
+			-- Emtpy used value set
+		once
+			create {AUT_UNARY_INTEGER_VALUE_SET} Result.make
+		ensure
+			good_result: Result /= Void
 		end
 
 invariant
