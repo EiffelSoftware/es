@@ -425,7 +425,7 @@ feature {NONE} -- Implementation
 			if target /= Void then
 				l_target_type := interpreter.variable_table.variable_type (target)
 				fixme ("Rmove some of the Void tests and debug why there are some call on Void target. For the moment, I just cannot reproduce them. Jasonw 2009.7.27")
-				if l_target_type = Void or else l_target_type.is_none or else l_target_type.is_basic or else not l_target_type.has_associated_class then
+				if l_target_type = Void or else l_target_type.is_none or else l_target_type.is_basic or else not l_target_type.has_associated_class or else not l_target_type.conform_to (interpreter.interpreter_root_class, type) then
 					cancel
 				else
 					if attached {ROUT_ID_SET} feature_to_call.rout_id_set as l_rout_id_set then
