@@ -140,8 +140,6 @@ feature -- Execution
 		end
 
 	step
-		local
-			l_call: BOOLEAN
 		do
 			if type = Void then
 				-- 1st step in diversify mode
@@ -180,17 +178,9 @@ feature -- Execution
 				precondition_evaluator.step
 			else
 				if not target_creator.has_error then
-					interpreter.set_is_last_suggestion_partial ((not precondition_evaluator.is_last_precondition_evaluation_satisfied) and then precondition_evaluator.partial_candidate /= Void)
-					if precondition_evaluator.is_last_precondition_evaluation_satisfied then
-						set_target_and_argument_from_candiate (precondition_evaluator.last_evaluated_operands)
-						l_call := True
-					else
-						set_target_and_argument_from_candiate (precondition_evaluator.partial_candidate)
-							-- We call the feature with the initially assigned target and argument anyway.
-						l_call := True
-					end
+					set_target_and_argument_from_candiate (precondition_evaluator.last_evaluated_operands)
 					interpreter.log_precondition_evaluation_overhead (precondition_evaluator, type, feature_to_call)
-					if l_call and then arguments.count = feature_to_call.argument_count then
+					if arguments.count = feature_to_call.argument_count then
 						invoke
 					else
 						internal_finish
@@ -302,6 +292,7 @@ feature {NONE} -- Steps
 					not interpreter.variable_table.variable_type (target).is_none and then
 					feature_to_call.argument_count = list.count
 				then
+					interpreter.set_precondition_evaluator (precondition_evaluator)
 					if feature_to_call.type /= void_type then
 						receiver := interpreter.variable_table.new_variable
 						interpreter.invoke_and_assign_feature (receiver, type, feature_to_call, target, list)

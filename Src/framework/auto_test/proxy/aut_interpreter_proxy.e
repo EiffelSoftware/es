@@ -1470,6 +1470,7 @@ feature{NONE} -- Speed logging
 						last_speed_check_time := l_time_now
 
 						log_pool_statistics
+						log_precondition_evaluation_failure_rate
 					else
 						test_case_log_count := test_case_log_count + 1
 					end
@@ -1638,7 +1639,7 @@ feature -- Precondition satisfaction
 			Result.set_time_canonical
 		end
 
-	log_precondition_evaluation (a_type: TYPE_A; a_feature: FEATURE_I; a_tried_count: INTEGER; a_worst_case_count: INTEGER; a_start_time: INTEGER; a_end_time: INTEGER; a_succeeded: BOOLEAN) is
+	log_precondition_evaluation (a_type: TYPE_A; a_feature: FEATURE_I; a_tried_count: INTEGER; a_worst_case_count: INTEGER; a_start_time: INTEGER; a_end_time: INTEGER; a_succeed_level: INTEGER) is
 			-- Log precondition evaluation statistics.
 			-- `a_feature' is the feature whose preconditions are evaluated.
 			-- `a_type' is where `a_feature' is from.
@@ -1680,7 +1681,7 @@ feature -- Precondition satisfaction
 			l_text.append ("; ")
 
 			l_text.append ("Succeeded: ")
-			l_text.append (a_succeeded.out)
+			l_text.append (a_succeed_level.out)
 			l_text.append ("; ")
 
 			l_text.append (a_type.associated_class.name_in_upper)
@@ -1758,7 +1759,6 @@ feature -- Predicate evaluation
 			-- Update predicate pool if there is a precondition violation when `a_feature' was executed with `a_related_objects'.
 		local
 			l_bp_slot: INTEGER
---			l_preconditions: DS_HASH_SET [AUT_PREDICATE]
 			l_pattern_cursor: DS_HASH_SET_CURSOR [AUT_PREDICATE_ACCESS_PATTERN]
 			l_access_patterns: DS_HASH_SET [AUT_PREDICATE_ACCESS_PATTERN]
 			l_done: BOOLEAN
@@ -1770,41 +1770,39 @@ feature -- Predicate evaluation
 			if configuration.is_precondition_checking_enabled then
 					-- When there is a precondition violation, we first update the predicate pool.
 
-				if last_response.is_precondition_violation then
-					if attached {AUT_NORMAL_RESPONSE} last_response as l_normal_response then
-						if l_normal_response.exception /= Void and then l_normal_response.exception.is_test_invalid then
-							increase_failed_precondition_count (is_last_suggestion_partial)
-							l_bp_slot := l_normal_response.exception.break_point_slot
-							l_access_patterns := precondition_access_pattern.item (a_feature)
-							if l_access_patterns /= Void then
-								l_pattern_cursor := l_access_patterns.new_cursor
-								from
-									l_pattern_cursor.start
-								until
-									l_pattern_cursor.after or else l_done
-								loop
-									if l_pattern_cursor.item.break_point_slot = l_bp_slot then
-										l_done := True
-										l_failed_predicate := l_pattern_cursor.item.predicate
-										create l_pred_args.make
-										from
-											l_pattern := l_pattern_cursor.item.access_pattern
-											l_ptn_cursor := l_pattern.new_cursor
-											l_ptn_cursor.start
-										until
-											l_ptn_cursor.after
-										loop
-											l_pred_args.extend (a_related_objects.item (l_ptn_cursor.item).index)
-											l_ptn_cursor.forth
-										end
+				if attached {AUT_NORMAL_RESPONSE} last_response as l_normal_response then
+					if l_normal_response.exception /= Void and then l_normal_response.exception.is_test_invalid then
+						increase_failed_precondition_count
+						l_bp_slot := l_normal_response.exception.break_point_slot
+						l_access_patterns := precondition_access_pattern.item (a_feature)
+						if l_access_patterns /= Void then
+							l_pattern_cursor := l_access_patterns.new_cursor
+							from
+								l_pattern_cursor.start
+							until
+								l_pattern_cursor.after or else l_done
+							loop
+								if l_pattern_cursor.item.break_point_slot = l_bp_slot then
+									l_done := True
+									l_failed_predicate := l_pattern_cursor.item.predicate
+									create l_pred_args.make
+									from
+										l_pattern := l_pattern_cursor.item.access_pattern
+										l_ptn_cursor := l_pattern.new_cursor
+										l_ptn_cursor.start
+									until
+										l_ptn_cursor.after
+									loop
+										l_pred_args.extend (a_related_objects.item (l_ptn_cursor.item).index)
+										l_ptn_cursor.forth
 									end
-									l_pattern_cursor.forth
 								end
+								l_pattern_cursor.forth
+							end
 
-									-- Update predicate: Set `l_failed_predicate' with `l_pred_args' with value False.
-								if l_done then
-									update_predicate (l_failed_predicate, l_pred_args, False)
-								end
+								-- Update predicate: Set `l_failed_predicate' with `l_pred_args' with value False.
+							if l_done then
+								update_predicate (l_failed_predicate, l_pred_args, False)
 							end
 						end
 					end
@@ -1812,13 +1810,18 @@ feature -- Predicate evaluation
 			end
 		end
 
-	calculate_feature_invalid_test_case_rate (a_feature: AUT_FEATURE_OF_TYPE) is
+	calculate_feature_invalid_test_case_rate (a_feature: AUT_FEATURE_OF_TYPE; a_related_objects: ARRAY [ITP_VARIABLE]) is
 			-- Calculate invalid test case rate for `a_feature' and store result in `feature_invalid_test_case_rate'.
 		require
 			a_feature_attached: a_feature /= Void
+			a_related_objects_attached: a_related_objects /= Void
 		local
 			l_failure_rate: like feature_invalid_test_case_rate
 			l_rate: TUPLE [failed_times: INTEGER; all_times: INTEGER]
+			l_table: like predicate_feature_table
+			l_cursor: DS_HASH_TABLE_CURSOR [DS_HASH_SET [AUT_FEATURE_OF_TYPE], AUT_PREDICATE]
+			l_features: DS_HASH_SET [AUT_FEATURE_OF_TYPE]
+			l_predicates: LINKED_LIST [AUT_PREDICATE]
 		do
 			l_failure_rate := feature_invalid_test_case_rate
 			if not l_failure_rate.has (a_feature) then
@@ -1829,6 +1832,26 @@ feature -- Predicate evaluation
 			end
 			if last_response.is_precondition_violation then
 				l_rate.put_integer (l_rate.failed_times + 1, 1)
+				update_predicate_pool_on_precondition_violation (a_feature, a_related_objects)
+			else
+--				if is_eager_feature_selection_enabled then
+--					create l_predicates.make
+--					l_table := predicate_feature_table
+--					from
+--						l_cursor := l_table.new_cursor
+--						l_cursor.start
+--					until
+--						l_cursor.after
+--					loop
+--						l_features := l_cursor.item
+--						l_features.remove (a_feature)
+--						if l_features.is_empty then
+--							l_predicates.extend (l_cursor.key)
+--						end
+--						l_cursor.forth
+--					end
+--					l_predicates.do_all (agent l_table.remove)
+--				end
 			end
 			l_rate.put_integer (l_rate.all_times + 1, 2)
 		end
@@ -1851,7 +1874,8 @@ feature -- Predicate evaluation
 			l_arity: INTEGER
 			l_related_objects: ARRAY [ITP_VARIABLE]
 		do
-			calculate_feature_invalid_test_case_rate (a_feature)
+			l_related_objects := relevant_objects (a_target, a_arguments, a_result)
+			calculate_feature_invalid_test_case_rate (a_feature, l_related_objects)
 			if
 				configuration.is_precondition_checking_enabled and then
 				is_running and then
@@ -1860,53 +1884,46 @@ feature -- Predicate evaluation
 				last_response.is_normal
 			then
 				if attached {AUT_NORMAL_RESPONSE} last_response as l_normal_response and then l_normal_response.exception = Void then
-
-					l_related_objects := relevant_objects (a_target, a_arguments, a_result)
-					if last_response.is_precondition_violation then
-						update_predicate_pool_on_precondition_violation (a_feature, l_related_objects)
-					else
-						create l_request_data.make
-						if relevant_predicates_of_feature.has (a_feature) then
-							l_predicate_table := relevant_predicates_of_feature.item (a_feature)
+					create l_request_data.make
+					if relevant_predicates_of_feature.has (a_feature) then
+						l_predicate_table := relevant_predicates_of_feature.item (a_feature)
+						from
+							l_cursor := l_predicate_table.new_cursor
+							l_cursor.start
+						until
+							l_cursor.after
+						loop
+							l_predicate := l_cursor.key
+							l_arranger := l_cursor.item
+							l_arity := l_predicate.arity
+							create l_arguments.make (l_arranger.count * l_arity)
 							from
-								l_cursor := l_predicate_table.new_cursor
-								l_cursor.start
+								i := 0
+								l_arranger_cursor := l_arranger.new_cursor
+								l_arranger_cursor.start
 							until
-								l_cursor.after
+								l_arranger_cursor.after
 							loop
-								l_predicate := l_cursor.key
-								l_arranger := l_cursor.item
-								l_arity := l_predicate.arity
-								create l_arguments.make (l_arranger.count * l_arity)
 								from
-									i := 0
-									l_arranger_cursor := l_arranger.new_cursor
-									l_arranger_cursor.start
+									l_args := l_arranger_cursor.item
+									j := 1
 								until
-									l_arranger_cursor.after
+									j > l_arity
 								loop
-									from
-										l_args := l_arranger_cursor.item
-										j := 1
-									until
-										j > l_arity
-									loop
-										l_arguments.put (l_related_objects.item (l_args.item (j).position).index, i)
-										i := i + 1
-										j := j + 1
-									end
-									l_arranger_cursor.forth
+									l_arguments.put (l_related_objects.item (l_args.item (j).position).index, i)
+									i := i + 1
+									j := j + 1
 								end
-								l_request_data.extend ([l_predicate.id, l_arguments])
-								l_cursor.forth
+								l_arranger_cursor.forth
 							end
-							evaluate_predicates (l_request_data)
-							update_predicate_pool (last_request)
+							l_request_data.extend ([l_predicate.id, l_arguments])
+							l_cursor.forth
 						end
+						evaluate_predicates (l_request_data)
+						update_predicate_pool (last_request)
 					end
 				end
 			end
-			log_precondition_evaluation_failure_rate
 		end
 
 	relevant_objects (a_target: ITP_VARIABLE; a_arguments: DS_LINEAR [ITP_EXPRESSION]; a_result: detachable ITP_VARIABLE): ARRAY [ITP_VARIABLE] is
@@ -2024,6 +2041,7 @@ feature -- Predicate evaluation
 		do
 			l_arguments := variables_from_indexes (a_arguments)
 			predicate_pool.update_predicate_valuation (a_predicate, l_arguments, a_result)
+
 		end
 
 	variables_from_indexes (a_indexes: LIST [INTEGER]): ARRAY [ITP_VARIABLE] is
@@ -2074,26 +2092,18 @@ feature -- Predicate evaluation
 			-- the predicate pool, they only satisfy part of the feature's
 			-- precondition, not all of them.
 
-	is_last_suggestion_partial: BOOLEAN
-			-- Is the last suggested object combination to satisfy the precondition
-			-- of the feature to be called partial?
-
-	set_is_last_suggestion_partial (b: BOOLEAN) is
-			-- Set `is_last_suggestion_partial' with `b'.
+	increase_failed_precondition_count is
+			-- Increase the number of failed preconditions.
+		local
+			l_evaluator: like precondition_evaluator
 		do
-			is_last_suggestion_partial := b
-		ensure
-			is_last_suggestion_partial_set: is_last_suggestion_partial = b
-		end
-
-	increase_failed_precondition_count (is_partial: BOOLEAN) is
-			-- Increase `failed_precondition_count' by 1 if `is_partial' is False,
-			-- otherwise, increase `failed_precondition_count_partial' by 1.
-		do
-			if is_last_suggestion_partial then
-				failed_precondition_count_partial := failed_precondition_count_partial + 1
-			else
-				failed_precondition_count := failed_precondition_count + 1
+			l_evaluator := precondition_evaluator
+			if l_evaluator /= Void and then l_evaluator.is_precondition_satisfaction_performed then
+				if l_evaluator.last_precondition_satisfaction_level = {AUT_PRECONDITION_SATISFACTION_TASK}.precondition_satisfaction_satisfied then
+					failed_precondition_count := failed_precondition_count + 1
+				elseif l_evaluator.last_precondition_satisfaction_level = {AUT_PRECONDITION_SATISFACTION_TASK}.precondition_satisfaction_partially_satisfied then
+					failed_precondition_count_partial := failed_precondition_count_partial + 1
+				end
 			end
 		end
 
@@ -2122,11 +2132,7 @@ feature -- Predicate evaluation
 			time_now: DT_DATE_TIME
 			duration: DT_DATE_TIME_DURATION
 		do
-			if
-				configuration.is_precondition_checking_enabled and then
-				(suggested_precondition_count > 0 or suggested_precondition_count_partial > 0) and then
-				((suggested_precondition_count + suggested_precondition_count_partial) \\ 10 = 0)
-			then
+			if configuration.is_precondition_checking_enabled then
 				time_now := system_clock.date_time_now
 				duration := time_now.duration (proxy_start_time)
 				duration.set_time_canonical
@@ -2159,7 +2165,7 @@ feature -- Predicate evaluation
 					a_precondition_evaluatior.worst_case_search_count,
 					a_precondition_evaluatior.start_time,
 					a_precondition_evaluatior.end_time,
-					a_precondition_evaluatior.is_last_precondition_evaluation_satisfied)
+					a_precondition_evaluatior.last_precondition_satisfaction_level)
 			end
 		end
 
@@ -2214,6 +2220,17 @@ feature -- Predicate evaluation
 			if configuration.is_precondition_checking_enabled then
 				predicate_pool.remove_variable (create {ITP_VARIABLE}.make (a_index))
 			end
+		end
+
+	precondition_evaluator: detachable AUT_PRECONDITION_SATISFACTION_TASK
+			-- Last used precondition evaluator
+
+	set_precondition_evaluator (a_evaluator: like precondition_evaluator) is
+			-- Set `precondition_evaluator' with `a_evaluator'.
+		do
+			precondition_evaluator := a_evaluator
+		ensure
+			precondition_evaluator_set: precondition_evaluator = a_evaluator
 		end
 
 feature -- Object State Exploration

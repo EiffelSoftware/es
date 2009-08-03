@@ -73,7 +73,11 @@ feature -- Process
 				end
 
 				l_parts.i_th (5).left_adjust
-				l_data.put_boolean (l_parts.i_th (5).to_boolean, 5)
+				l_part_str := l_parts.i_th (5).split (':').last
+				l_part_str.left_adjust
+				l_part_str.right_adjust
+
+				l_data.put_boolean (l_part_str.to_boolean, 5)
 
 				l_parts := l_parts.i_th (6).split ('.')
 				l_class_name := l_parts.i_th (1)

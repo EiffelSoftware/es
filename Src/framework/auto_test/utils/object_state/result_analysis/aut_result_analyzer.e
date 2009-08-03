@@ -378,7 +378,8 @@ feature -- Result printing
 			a_output_stream.put_line ("--[Untested features] " + l_untested_features.count.out)
 			a_output_stream.put_string ("Class%T")
 			a_output_stream.put_string ("Feature%T")
-			a_output_stream.put_string ("Failed_assert")
+			a_output_stream.put_string ("Arguments%T")
+			a_output_stream.put_string ("Failed_assertions(s)")
 			a_output_stream.put_string ("%N")
 
 			create l_feats.make (l_untested_features.count)

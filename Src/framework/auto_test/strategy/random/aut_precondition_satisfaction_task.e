@@ -87,9 +87,6 @@ feature -- Access
 	operand_candidates: DS_ARRAYED_LIST [like initial_operands]
 			-- Queue for operand candidcate to execute `feature_'
 
-	partial_candidate: detachable like initial_operands
-			-- Partial candidate
-
 	start_time: INTEGER
 			-- Start time (in millisecond) when current precondition evaluation starts
 
@@ -137,8 +134,38 @@ feature -- Status report
 			Result := not linear_solvable_preconditions.is_empty
 		end
 
-	is_last_precondition_evaluation_satisfied: BOOLEAN
-			-- Does `last_evaluated_operands' satisfy the precondition of `feature_'?
+--	is_last_precondition_evaluation_satisfied: BOOLEAN
+--			-- Does `last_evaluated_operands' satisfy the precondition of `feature_'?
+
+--	is_last_precondition_evaluation_partially_satisfied: BOOLEAN is
+--			-- Did last precondition evaluation result in a partial solution?
+--		do
+----			Result := is_last_precondition_evaluation_satisfied =
+--		end
+
+	set_last_precondition_satisfaction_level (a_level: INTEGER) is
+			-- Set `last_precondition_satisfaction_level' with `a_leve'.
+		require
+			a_level_valid: is_valid_precondition_satisfaction_level (a_level)
+		do
+			last_precondition_satisfaction_level := a_level
+		ensure
+			last_precondition_satisfaction_level_set: last_precondition_satisfaction_level = a_level
+		end
+
+feature -- Constants
+
+	precondition_satisfaction_not_satisfied: INTEGER is 0
+			-- Flag to indicate that `last_evaluated_operands' does not satisfy `feature_''s precondition
+
+	precondition_satisfaction_satisfied: INTEGER is 1
+			-- Flag to indicate that `last_evaluated_operands' satisfy `feature_''s precondition
+
+	precondition_satisfaction_partially_satisfied: INTEGER is 2
+			-- Flag to indicate that `last_evaluated_operands' partially satisfy `feature_''s precondition
+
+	last_precondition_satisfaction_level: INTEGER
+			-- To which level `last_evaluated_operands' satisfy `feature_''s precondition.
 
 feature -- Status
 
@@ -149,6 +176,15 @@ feature -- Status
 			-- Is there a next step to execute?
 		do
 			Result := interpreter.is_running and interpreter.is_ready and not steps_completed
+		end
+
+	is_valid_precondition_satisfaction_level (a_level: INTEGER): BOOLEAN is
+			-- Is `a_level' a valid precondition satisfaction level?
+		do
+			Result :=
+				a_level = precondition_satisfaction_not_satisfied or
+				a_level = precondition_satisfaction_partially_satisfied or
+				a_level = precondition_satisfaction_satisfied
 		end
 
 feature -- Setting
@@ -220,15 +256,15 @@ feature -- Execution
 				else
 					if configuration.is_linear_constraint_solving_enabled then
 							-- In case that `feature_' has linearly solvable constraints and constraint solving is enabled, we always
-							-- use the constraint solver.					
-						is_last_precondition_evaluation_satisfied := False
+							-- use the constraint solver.			
+						set_last_precondition_satisfaction_level (precondition_satisfaction_not_satisfied)
 					else
 							-- We only evaluate normal preconditions ASSUMING that linearly constraint prconditions are satisfied.
 						evaluate_precondition (initial_operands, True)
 					end
 				end
 
-				if is_last_precondition_evaluation_satisfied then
+				if last_precondition_satisfaction_level = precondition_satisfaction_satisfied then
 						-- The initially assigned operands satisfy the precondition of `feature_'.					
 					steps_completed := True
 				else
@@ -242,7 +278,7 @@ feature -- Execution
 					-- precondition evaluation is not enabled, we assume that `initial_operands'
 					-- satisfy the precondition.
 				is_precondition_satisfaction_performed := False
-				is_last_precondition_evaluation_satisfied := True
+				last_precondition_satisfaction_level := precondition_satisfaction_satisfied
 				steps_completed := True
 				last_evaluated_operands := initial_operands
 			end
@@ -281,8 +317,13 @@ feature -- Execution
 				end
 
 				if l_satisfied then
-					is_last_precondition_evaluation_satisfied := constraint.is_constraint_operand_bound (last_evaluated_operands)
-					steps_completed := is_last_precondition_evaluation_satisfied
+					if constraint.is_constraint_operand_bound (last_evaluated_operands) then
+						last_precondition_satisfaction_level := precondition_satisfaction_satisfied
+						steps_completed := True
+					else
+						last_precondition_satisfaction_level := precondition_satisfaction_not_satisfied
+						steps_completed := False
+					end
 				end
 			end
 
@@ -291,10 +332,14 @@ feature -- Execution
 			end
 
 			if steps_completed then
-				if is_last_precondition_evaluation_satisfied then
+				if last_precondition_satisfaction_level = precondition_satisfaction_satisfied then
 					interpreter.increase_suggested_precondition_count
 				elseif partial_candidate /= Void then
+					last_precondition_satisfaction_level := precondition_satisfaction_partially_satisfied
+					last_evaluated_operands := partial_candidate
 					interpreter.increase_suggested_precondition_count_partial
+				else
+					last_precondition_satisfaction_level := precondition_satisfaction_not_satisfied
 				end
 			end
 		ensure then
@@ -378,7 +423,11 @@ feature{NONE} -- Implementation
 
 				-- Check if all arguments are assigned.
 			if l_satisfied then
-				is_last_precondition_evaluation_satisfied := not last_evaluated_operands.has (Void)
+				if not last_evaluated_operands.has (Void) then
+					last_precondition_satisfaction_level := precondition_satisfaction_satisfied
+				else
+					last_precondition_satisfaction_level := precondition_satisfaction_not_satisfied
+				end
 			end
 		end
 
@@ -449,6 +498,9 @@ feature{NONE} -- Implementation
 				i := i + 1
 			end
 		end
+
+	partial_candidate: detachable like initial_operands
+			-- Partial candidate
 
 feature{NONE} -- Linear constraint solving
 
@@ -634,6 +686,7 @@ invariant
 	normal_preconditions_attached: normal_preconditions /= Void
 	linear_solvable_preconditions_attached: linear_solvable_preconditions /= Void
 	candicate_queue_attached: operand_candidates /= Void
+	last_precondition_satisfaction_level_valid: is_valid_precondition_satisfaction_level (last_precondition_satisfaction_level)
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

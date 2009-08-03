@@ -159,17 +159,12 @@ feature -- Execution
 			elseif precondition_evaluator /= Void and then precondition_evaluator.has_next_step then
 				precondition_evaluator.step
 			else
-				interpreter.set_is_last_suggestion_partial (precondition_evaluator.is_last_precondition_evaluation_satisfied)
-				if precondition_evaluator.is_last_precondition_evaluation_satisfied then
-					set_arguments_from_candidate (precondition_evaluator.last_evaluated_operands)
-				else
-					set_arguments_from_candidate (precondition_evaluator.partial_candidate)
-				end
+				set_arguments_from_candidate (precondition_evaluator.last_evaluated_operands)
 				interpreter.log_precondition_evaluation_overhead (precondition_evaluator, type, creation_procedure)
 
 				if arguments.for_all (agent is_variable_defined) then
 					receiver := interpreter.variable_table.new_variable
-
+					interpreter.set_precondition_evaluator (precondition_evaluator)
 					interpreter.create_object (receiver, type, creation_procedure, arguments)
 					if queue /= Void then
 						if attached {TYPE_A} interpreter.variable_table.variable_type (receiver) as l_receiver then
