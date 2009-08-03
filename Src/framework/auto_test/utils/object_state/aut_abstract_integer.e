@@ -34,19 +34,67 @@ feature -- Access
 			-- upper bound of the abstract integer
 
 	size: INTEGER
-			-- how many elements in the range of the abstract integer?
+			-- how many elements in the bounds of the abstract integer?
 		once
 			Result := upper_bound - lower_bound + 1
 		end
 
 	random_element: INTEGER
-			-- get a random element in the range of the abstract integer
+			-- get a random element in the bounds of the abstract integer
 		do
 			random.forth
-			Result := lower_bound + (random.item \\ size)
+			if random.item \\ 4 = 0 then
+					-- with a 0.25 probability, choose a random integer from predefined values
+				random.forth
+				Result := predefined_values_in_bounds.lower + (random.item \\ predefined_values_in_bounds.count)
+			else
+				random.forth
+				Result := lower_bound + (random.item \\ size)
+			end
 		ensure
 			valid_result: Result >= lower_bound and then Result <= upper_bound
 		end
+
+feature {NONE} -- Implementation
+
+	predefined_values: ARRAY[INTEGER] is
+			-- Array of predefined values (must be sorted)
+		once
+			Result := <<{INTEGER}.min_value,-100,-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10,100,{INTEGER}.max_value>>
+		end
+
+	predefined_values_in_bounds: ARRAY[INTEGER] is
+			-- Return those predefined_values that are inside the range of the abstract integer
+		local
+			i: INTEGER
+			lower_range_index: INTEGER
+			lower_range_index_found: BOOLEAN
+			upper_range_index: INTEGER
+			upper_range_index_found: BOOLEAN
+		once
+			from
+				i := predefined_values.lower
+				lower_range_index_found := False
+				upper_range_index_found := False
+			until
+				i > predefined_values.upper or else (lower_range_index_found and upper_range_index_found)
+			loop
+				if not lower_range_index_found and then lower_bound <= predefined_values.at (i) then
+					lower_range_index := i
+					lower_range_index_found := True
+				end
+
+				if not upper_range_index_found and then upper_bound >= predefined_values.at (i) then
+					upper_range_index := i
+					upper_range_index_found := True
+				end
+
+				i := i + 1
+			end
+
+			Result := predefined_values.subarray (lower_range_index, upper_range_index)
+		end
+
 
 invariant
 	lower_bound_smaller_equal_upper_bound: lower_bound <= upper_bound

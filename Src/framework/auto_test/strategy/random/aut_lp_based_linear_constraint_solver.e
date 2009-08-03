@@ -9,6 +9,7 @@ class
 
 inherit
 	AUT_LINEAR_CONSTRAINT_SOLVER
+	AUT_SHARED_RANDOM
 
 create
 	make
@@ -81,6 +82,11 @@ feature -- Basic operations
 					solve_argument ("max: " + l_lpsolve_generator.constrained_operands.item_for_iteration + ";%N%N" + l_proof_obligation)
 					if has_last_solver_solution then
 						l_upper_bound := last_solver_solution
+								-- make INTEGER_16 highest value with 0.99 probability
+						random.forth
+						if l_upper_bound > {INTEGER_16}.max_value and then random.item \\ 100 /= 0 then
+							l_upper_bound := {INTEGER_16}.max_value
+						end
 					else
 						has_last_solution := False
 					end
