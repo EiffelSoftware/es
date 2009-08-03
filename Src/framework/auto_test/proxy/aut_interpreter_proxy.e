@@ -1817,7 +1817,7 @@ feature -- Predicate evaluation
 			a_related_objects_attached: a_related_objects /= Void
 		local
 			l_failure_rate: like feature_invalid_test_case_rate
-			l_rate: TUPLE [failed_times: INTEGER; all_times: INTEGER]
+			l_rate: TUPLE [failed_times: INTEGER; all_times: INTEGER; last_tested_time: INTEGER]
 			l_table: like predicate_feature_table
 			l_cursor: DS_HASH_TABLE_CURSOR [DS_HASH_SET [AUT_FEATURE_OF_TYPE], AUT_PREDICATE]
 			l_features: DS_HASH_SET [AUT_FEATURE_OF_TYPE]
@@ -1825,7 +1825,7 @@ feature -- Predicate evaluation
 		do
 			l_failure_rate := feature_invalid_test_case_rate
 			if not l_failure_rate.has (a_feature) then
-				l_rate := [0, 0]
+				l_rate := [0, 0, 0]
 				l_failure_rate.force_last (l_rate, a_feature)
 			else
 				l_rate := l_failure_rate.item (a_feature)
@@ -1834,6 +1834,7 @@ feature -- Predicate evaluation
 				l_rate.put_integer (l_rate.failed_times + 1, 1)
 				update_predicate_pool_on_precondition_violation (a_feature, a_related_objects)
 			else
+				l_rate.put_integer (duration_until_now.second_count, 3)
 --				if is_eager_feature_selection_enabled then
 --					create l_predicates.make
 --					l_table := predicate_feature_table

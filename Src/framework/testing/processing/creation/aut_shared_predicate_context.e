@@ -157,10 +157,12 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	feature_invalid_test_case_rate: DS_HASH_TABLE [TUPLE [invalid_times: INTEGER; all_times: INTEGER], AUT_FEATURE_OF_TYPE] is
+	feature_invalid_test_case_rate: DS_HASH_TABLE [TUPLE [invalid_times: INTEGER; all_times: INTEGER; last_tested_time: INTEGER], AUT_FEATURE_OF_TYPE] is
 			-- Table for invalid test case rate of features
 			-- `invalid_times' is the number of times which the feature fails because precondition violation.
 			-- `all_times' is the number of times that the feature has been tried to test
+			-- `last_tested_time' is the number of second (from the start of the current test sesseion)
+			--  when the feature is tested for the last time.
 		once
 			create Result.make (100)
 			Result.set_key_equality_tester (feature_of_type_loose_equality_tester)

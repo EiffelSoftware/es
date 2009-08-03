@@ -210,9 +210,10 @@ feature -- Execution
 	should_use_precondition_satisfaction: BOOLEAN is
 			-- Should precondition satisfaction be used for `feature_'?
 		local
-			l_invalid_rate: TUPLE [failed_times: INTEGER; all_times: INTEGER]
+			l_invalid_rate: TUPLE [failed_times: INTEGER; all_times: INTEGER; last_tested_time: INTEGER]
 			l_rate: DOUBLE
 			l_set_rate: INTEGER
+			l_second_until_now: INTEGER
 		do
 			if enforce_precondition_satisfaction then
 				Result := True
@@ -224,10 +225,9 @@ feature -- Execution
 				else
 					l_rate := l_set_rate.to_double / 100
 					l_invalid_rate := feature_invalid_test_case_rate.item (feature_)
-					if l_invalid_rate /= Void  and then (l_invalid_rate.failed_times < l_invalid_rate.all_times) then
-							-- If `feature_' has been tested, the probability of using precondition satisfaction for it
-							-- goes down when the number of successful test cases increases proportionally.
-						l_rate := l_invalid_rate.failed_times / l_invalid_rate.all_times * l_rate
+					if l_invalid_rate /= Void then
+						l_second_until_now := interpreter.duration_until_now.second_count
+						l_rate := (l_second_until_now - l_invalid_rate.last_tested_time).to_double / l_second_until_now * l_rate
 					end
 					Result := is_within_probability (l_rate)
 				end
