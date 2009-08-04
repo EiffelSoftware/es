@@ -72,7 +72,6 @@
 			</file_rule>
 			<file_rule>
 				<exclude>/Clib$</exclude>
-				<exclude>/spec$</exclude>
 			</file_rule>
 		</cluster>
 	</target>
