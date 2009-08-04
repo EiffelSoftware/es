@@ -66,6 +66,7 @@ feature -- Basic operations
 
 			if has_linear_constraints then
 				create last_lpsolve.make (1024)
+				generate_feature_comment (a_feature)
 				generate_constraints
 				generate_var_declarations
 			end
@@ -102,7 +103,10 @@ feature{NONE} -- Process
 		do
 				-- Get operator for current binary expression.
 			l_operator := normalized_string (l_as.operator (current_match_list).text (current_match_list))
-			if l_operator.is_equal ("and then") then
+			if
+				l_operator.is_equal ("and then") or else
+				l_operator.is_equal ("and")
+			then
 					-- lines are always ANDed
 				l_operator := ";%N"
 			elseif
@@ -156,6 +160,13 @@ feature{NONE} -- Process
 		end
 
 feature{NONE} -- Generation
+
+	generate_feature_comment (a_feature: AUT_FEATURE_OF_TYPE) is
+			-- Generate a simple comment indicating which feature on which type the predicates belong to
+		do
+			last_lpsolve.append ("%N/* " + a_feature.debug_output + " */%N")
+		end
+
 
 	generate_constraints is
 			-- Generate the constraints part of the lpsolve format.
