@@ -35,6 +35,7 @@ feature -- Basic operations
 			l_upper_bound: REAL_64
 		do
 			has_last_solution := True
+			is_input_format_correct := True
 			l_state := context_queries
 
 				-- Generate linear constraint solving proof obligation.
@@ -127,13 +128,17 @@ feature{NONE} -- Implementation
 		local
 			c_filename: C_STRING
 			c_out_solution: MANAGED_POINTER
+			l_return_value: INTEGER
 		do
 			create c_filename.make (lpsolve_file_path)
 			create c_out_solution.make (8)
 
 			generate_lpsolve_file (a_proof_obligation)
 
-			if get_lpsolve_solution (c_filename.item, c_out_solution.item) then
+			l_return_value := get_lpsolve_solution (c_filename.item, c_out_solution.item)
+			if l_return_value = -1 then
+				is_input_format_correct := False
+			elseif l_return_value = 0 then
 				last_solver_solution := c_out_solution.read_real_64 (0)
 				has_last_solver_solution := True
 			else
@@ -141,10 +146,13 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	get_lpsolve_solution (a_filename, a_out_solution: POINTER): BOOLEAN is
+	get_lpsolve_solution (a_filename, a_out_solution: POINTER): INTEGER is
 			-- Call to external lp_solve API.
 			-- Reads `a_filename' into model, solves it and writes solution to `a_out_solution'
-			-- Returns success/failure
+			-- Return value:
+			--  -1 if there is something wrong with the format of the input file or something wrong when reading the input file.
+			--  0  if there is a solved solution.
+			--  1  if there is no solution.
 		external
 			"C inline use %"lp_lib.modified.h%""
 		alias
@@ -153,22 +161,22 @@ feature{NONE} -- Implementation
 				lprec *lp;
 				
 				/* read LP model */
-				lp = read_LP ((char *)$a_filename, NORMAL, "Solve model");
+				lp = read_LP ((char *)$a_filename, NEUTRAL, NULL);
 				if (lp == NULL) {
-					return (FALSE);
+					return (-1);
 				}
 
 				/* solve the model */
-				set_verbose (lp, NEUTRAL);
 				if (solve(lp) != OPTIMAL) {
-					return (FALSE);
+					delete_lp (lp);
+					return (1);
 				}
 				
 				/* write result in `a_out_solution' */
 				*((REAL *)$a_out_solution) = get_objective (lp);
 
 				delete_lp (lp);
-				return (TRUE);
+				return (0);
 			  }
 			]"
 		end

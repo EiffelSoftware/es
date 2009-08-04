@@ -61,6 +61,9 @@ feature -- Status report
 	has_last_solution: BOOLEAN
 			-- Does last call to `solve' generated a solution?
 
+	is_input_format_correct: BOOLEAN
+			-- Is the last generated linear solver of the correct format?
+
 feature -- Basic operations
 
 	solve is

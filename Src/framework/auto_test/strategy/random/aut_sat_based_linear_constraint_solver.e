@@ -119,6 +119,9 @@ feature{NONE} -- Implementation
 			else
 				has_last_solution := False
 			end
+
+			fixme ("We assume that the input file for SMT based solve is always of the correct format. Change this by take the output of the SMT solver into account. Jason 2009.8.4.")
+			is_input_format_correct := True
 		end
 
 	last_solver_output: STRING

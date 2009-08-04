@@ -187,6 +187,12 @@ feature -- Status
 				a_level = precondition_satisfaction_satisfied
 		end
 
+	is_lp_linear_solvable_model_correct: BOOLEAN
+			-- Is the generated linearly solvable model of correct format?
+			-- This is introduced because for the moment, the we only generated models
+			-- for lpsolver in a simple form. This means that there are cases where the model cannot
+			-- be handled by lpsolve while it can be handled by SMT based solver.
+
 feature -- Setting
 
 	set_start_time (a_start_time: INTEGER) is
@@ -285,6 +291,8 @@ feature -- Execution
 
 			if steps_completed then
 				set_end_time (interpreter.duration_until_now.millisecond_count)
+			else
+				is_lp_linear_solvable_model_correct := True
 			end
 		ensure then
 			time_valid_if_finished: steps_completed implies (end_time >= start_time)
@@ -524,6 +532,7 @@ feature{NONE} -- Linear constraint solving
 			l_solver: AUT_LINEAR_CONSTRAINT_SOLVER
 			l_smt_solver: AUT_SAT_BASED_LINEAR_CONSTRAINT_SOLVER
 			l_config: like configuration
+			l_lp_solve_enabled: BOOLEAN
 		do
 			l_config := configuration
 			last_linear_constraint_solving_successful := False
@@ -537,15 +546,24 @@ feature{NONE} -- Linear constraint solving
 			end
 
 				-- Solve linear constraints.
-			if l_config.is_lpsolve_linear_constraint_solver_enabled then
+			l_lp_solve_enabled := l_config.is_lpsolve_linear_constraint_solver_enabled
+			if
+				l_lp_solve_enabled and then
+				is_lp_linear_solvable_model_correct
+			then
 				l_solver := lp_constraint_solver (l_state)
 				l_solver.solve
 				last_linear_constraint_solving_successful := l_solver.has_last_solution
+				is_lp_linear_solvable_model_correct := l_solver.is_input_format_correct
 			end
 
 			if
+				l_config.is_smt_linear_constraint_solver_enabled and then
 				not last_linear_constraint_solving_successful and then
-				l_config.is_smt_linear_constraint_solver_enabled
+				(l_lp_solve_enabled implies not is_lp_linear_solvable_model_correct) -- Only in case when lp_solve model input is of wrong format,
+																					 -- we need smt solve, because if lp_solve model is correct,
+																					 -- and lpsolve cannot generate solution, then SMT solver cannot
+																					 -- generate a solution either, becaue there is no valid solution.
 			then
 				l_smt_solver := smt_linear_constraint_solver (l_state)
 				l_smt_solver.set_enforce_used_value_rate (l_config.smt_enforce_old_value_rate)
