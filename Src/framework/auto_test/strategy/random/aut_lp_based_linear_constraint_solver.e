@@ -154,7 +154,7 @@ feature{NONE} -- Implementation
 			--  0  if there is a solved solution.
 			--  1  if there is no solution.
 		external
-			"C inline use %"lp_lib.modified.h%""
+			"C inline use %"lp_lib.h%""
 		alias
 			"[
 			  {

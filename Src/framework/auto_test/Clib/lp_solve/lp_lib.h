@@ -1215,7 +1215,7 @@ struct _lprec
   is_binary_func                *is_binary;
   is_break_at_first_func        *is_break_at_first;
   is_constr_type_func           *is_constr_type;
-  is_debug_func                 *is_debug;
+  is_debug_func                 *is_debug_;
   is_feasible_func              *is_feasible;
   is_infinite_func              *is_infinite;
   is_int_func                   *is_int;
