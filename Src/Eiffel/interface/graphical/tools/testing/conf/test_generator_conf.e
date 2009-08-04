@@ -170,6 +170,24 @@ feature -- Access
 			good_result: Result = smt_use_predefined_value_rate_cache
 		end
 
+	integer_lower_bound: INTEGER is
+			-- Lower bound for integer arguments that are to be solved by a linear constraint solver.
+			-- Default is -512.
+		do
+			Result := integer_lower_bound_cache
+		ensure then
+			good_result: Result = integer_lower_bound_cache
+		end
+
+	integer_upper_bound: INTEGER is
+			-- Upper bound for integer arguments that are to be solved by a linear constraint solver.
+			-- Default is 512.
+		do
+			Result := integer_upper_bound_cache
+		ensure then
+			good_result: Result = integer_upper_bound_cache
+		end
+
 feature -- Access: cache
 
 	types_cache: attached DS_HASH_SET [attached STRING]
@@ -251,6 +269,12 @@ feature -- Access: cache
 
 	smt_use_predefined_value_rate_cache: INTEGER
 			-- Cache for `smt_use_predefined_value_rate'
+
+	integer_lower_bound_cache: INTEGER
+			-- Cache for `integer_lower_bound'
+
+	integer_upper_bound_cache: INTEGER
+			-- Cache for `integer_upper_bound'
 
 feature -- Status report
 
@@ -613,12 +637,28 @@ feature -- Status setting
 
 	set_smt_use_predefined_value_rate (a_rate: INTEGER) is
 			-- Set `smt_use_predefined_value_rate' with `a_rate'.
-			do
-				smt_use_predefined_value_rate_cache := a_rate
-			ensure
-				good_result: smt_use_predefined_value_rate = a_rate
-			end
-	
+		do
+			smt_use_predefined_value_rate_cache := a_rate
+		ensure
+			good_result: smt_use_predefined_value_rate = a_rate
+		end
+
+	set_integer_lower_bound (a_bound: INTEGER) is
+			-- Set `integer_lower_bound' with `a_bound'.
+		do
+			integer_lower_bound_cache := a_bound
+		ensure
+			integer_lower_bound_set: integer_lower_bound = a_bound
+		end
+
+	set_integer_upper_bound (a_bound: INTEGER) is
+			-- Set `integer_upper_bound' with `a_bound'.
+		do
+			integer_upper_bound_cache := a_bound
+		ensure
+			integer_upper_bound_set: integer_upper_bound = a_bound
+		end
+
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

@@ -182,6 +182,10 @@ feature -- Execution
 				l_conf.set_smt_enforce_old_value_rate (l_ap.smt_enforce_old_value_rate)
 				l_conf.set_smt_use_predefined_value_rate (l_ap.smt_use_predefined_value_rate)
 
+					-- Set lower/upper bound for linearly solvable arguments.
+				l_conf.set_integer_lower_bound (l_ap.integer_lower_bound)
+				l_conf.set_integer_upper_bound (l_ap.integer_upper_bound)
+
 				if l_root_group.is_cluster then
 					if attached {CONF_CLUSTER} l_root_group as l_cluster then
 						l_conf.set_cluster (l_cluster)

@@ -68,7 +68,8 @@ feature{NONE} -- Initialization
 			l_smart_selection_rate_option: AP_INTEGER_OPTION
 			l_smt_old_value_rate_option: AP_INTEGER_OPTION
 			l_smt_use_predefined_value_rate_option: AP_INTEGER_OPTION
-			l_solvers: LIST [STRING]
+			l_integer_bound_option: AP_STRING_OPTION
+			l_strs: LIST [STRING]
 		do
 			create parser.make_empty
 			parser.set_application_description ("auto_test is a contract-based automated testing tool for Eiffel systems.")
@@ -221,6 +222,10 @@ feature{NONE} -- Initialization
 			create l_smt_use_predefined_value_rate_option.make_with_long_form ("smt-use-predefined-value-rate")
 			l_smt_use_predefined_value_rate_option.set_description ("Possibility [0-100] to for the SMT solver to choose a predefined value for integers. Default is 25")
 			parser.options.force_last (l_smt_use_predefined_value_rate_option)
+
+			create l_integer_bound_option.make_with_long_form ("integer-bounds")
+			l_integer_bound_option.set_description ("Lower and upper bounds for integer arguments that are to be solved by a linear constraint solver. In form of %"lower,upper%"")
+			parser.options.force_last (l_integer_bound_option)
 
 			parser.parse_list (a_arguments)
 
@@ -421,12 +426,12 @@ feature{NONE} -- Initialization
 
 			if not error_handler.has_error then
 				if l_linear_constraint_solver_option.was_found then
-					l_solvers := l_linear_constraint_solver_option.parameter.as_lower.split (',')
-					l_solvers.compare_objects
-					if l_solvers.has ("smt") then
+					l_strs := l_linear_constraint_solver_option.parameter.as_lower.split (',')
+					l_strs.compare_objects
+					if l_strs.has ("smt") then
 						is_smt_linear_constraint_solver_enabled := True
 					end
-					if l_solvers.has ("lpsolve") then
+					if l_strs.has ("lpsolve") then
 						is_lpsolve_contraint_linear_solver_enabled := True
 					end
 				else
@@ -455,6 +460,17 @@ feature{NONE} -- Initialization
 					smt_use_predefined_value_rate := l_smt_use_predefined_value_rate_option.parameter
 				else
 					smt_use_predefined_value_rate := 25
+				end
+			end
+
+			if not error_handler.has_error then
+				if l_integer_bound_option.was_found then
+					l_strs := l_integer_bound_option.parameter.split (',')
+					integer_lower_bound := l_strs.first.to_integer
+					integer_upper_bound := l_strs.last.to_integer
+				else
+					integer_lower_bound := -512
+					integer_upper_bound := 512
 				end
 			end
 
@@ -660,6 +676,14 @@ feature -- Status report
 	smt_use_predefined_value_rate: INTEGER
 			-- Possibility [0-100] to for the SMT solver to choose a predefined value for integers
 			-- Default is 25
+
+	integer_lower_bound: INTEGER
+			-- Lower bound (min value) for integer arguments that are to be solved by a linear constraint solver
+			-- Default is -512.
+
+	integer_upper_bound: INTEGER
+			-- Upper bound (max value) for integer arguments that are to be solved by a linear constraint solver
+			-- Default is 512.
 
 feature {NONE} -- Constants
 

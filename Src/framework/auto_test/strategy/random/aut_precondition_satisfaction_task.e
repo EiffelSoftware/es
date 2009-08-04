@@ -589,7 +589,7 @@ feature{NONE} -- Linear constraint solving
 			a_state_attached: a_state /= void
 			smt_linear_constraint_solving_enabled: configuration.is_smt_linear_constraint_solver_enabled
 		do
-			create {AUT_SAT_BASED_LINEAR_CONSTRAINT_SOLVER} Result.make (feature_, linear_solvable_preconditions, a_state)
+			create {AUT_SAT_BASED_LINEAR_CONSTRAINT_SOLVER} Result.make (feature_, linear_solvable_preconditions, a_state, interpreter.configuration)
 		ensure
 			result_attached: Result /= Void
 		end
@@ -600,7 +600,7 @@ feature{NONE} -- Linear constraint solving
 			a_state_attached: a_state /= void
 			lp_linear_constraint_solving_enabled: configuration.is_lpsolve_linear_constraint_solver_enabled
 		do
-			create {AUT_LP_BASED_LINEAR_CONSTRAINT_SOLVER} Result.make (feature_, linear_solvable_preconditions, a_state)
+			create {AUT_LP_BASED_LINEAR_CONSTRAINT_SOLVER} Result.make (feature_, linear_solvable_preconditions, a_state, interpreter.configuration)
 		ensure
 			result_attached: Result /= Void
 		end

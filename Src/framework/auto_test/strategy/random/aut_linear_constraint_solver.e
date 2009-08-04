@@ -16,23 +16,26 @@ inherit
 
 feature{NONE} -- Initialization
 
-	make (a_feature: like feature_; a_linear_solvable_predicates: like linear_solvable_predicates; a_context_queries: like context_queries) is
+	make (a_feature: like feature_; a_linear_solvable_predicates: like linear_solvable_predicates; a_context_queries: like context_queries; a_config: like configuration) is
 			-- Initialize.
 		require
 			a_feature_attached: a_feature /= Void
 			a_linear_solvable_predicates_attached: a_linear_solvable_predicates /= Void
 			not_a_linear_solvable_predicates_is_empty: not a_linear_solvable_predicates.is_empty
 			a_context_queries_attached: a_context_queries /= Void
+			a_config_attached: a_config /= Void
 		do
 			feature_ := a_feature
 			linear_solvable_predicates := a_linear_solvable_predicates
 			context_queries := a_context_queries
 			linear_solvable_operands := constrained_operands_from_access_patterns (linear_solvable_predicates)
+			configuration := a_config
 		ensure
 			feature__set: feature_ = a_feature
 			linear_solvable_predicates_set: linear_solvable_predicates = a_linear_solvable_predicates
 			constraining_queries_set: context_queries = a_context_queries
 			linear_solvable_operands_set: linear_solvable_operands /= Void
+			configuration_set: configuration = a_config
 		end
 
 feature -- Access
@@ -55,6 +58,9 @@ feature -- Access
 			-- Operand index is 0-based, but in here the operand is already larger than 0,
 			-- because linear constraint solving for target operand is not supported.
 			-- Only has effect if `has_last_solution' is True
+
+	configuration: TEST_GENERATOR_CONF_I
+			-- Configuration of current test session
 
 feature -- Status report
 

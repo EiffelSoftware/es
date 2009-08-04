@@ -128,6 +128,22 @@ feature -- Access
 		deferred
 		end
 
+	integer_lower_bound: INTEGER is
+			-- Lower bound for integer arguments that are to be solved by a linear constraint solver.
+			-- Default is -512.
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
+	integer_upper_bound: INTEGER is
+			-- Upper bound for integer arguments that are to be solved by a linear constraint solver.
+			-- Default is 512.
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
 feature -- Status report
 
 	is_slicing_enabled: BOOLEAN
