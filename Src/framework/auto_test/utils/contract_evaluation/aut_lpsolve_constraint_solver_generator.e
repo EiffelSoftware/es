@@ -22,6 +22,8 @@ inherit
 
 	AUT_OBJECT_STATE_REQUEST_UTILITY
 
+	AUT_SHARED_RANDOM
+
 	REFACTORING_HELPER
 
 feature -- Access
@@ -47,9 +49,10 @@ feature -- Status report
 
 feature -- Basic operations
 
-	generate_lpsolve (a_feature: AUT_FEATURE_OF_TYPE; a_patterns: like access_patterns) is
+	generate_lpsolve (a_feature: AUT_FEATURE_OF_TYPE; a_patterns: like access_patterns; a_solver_config: TEST_GENERATOR_CONF_I) is
 			-- Generate lpsolve format to solve linear constrains in preconditions in `a_feature'.
 			-- `a_patterns' are access patterns of preconditions for that feature.
+			-- `a_solver_config' is the configuration of the solver
 			-- If there is any linear constraints for `a_feature', set `has_linear_constraints' to True and then
 			-- generate the lpsolve format into `last_lpsolve'.
 		local
@@ -57,6 +60,7 @@ feature -- Basic operations
 		do
 			current_feature := a_feature
 			access_patterns := a_patterns
+			solver_configuration := a_solver_config
 
 				-- Collect constrained operands, constraining queries and assertion predicates.
 			constrained_operands := constrained_operands_from_access_patterns (a_patterns)
@@ -73,6 +77,9 @@ feature -- Basic operations
 		end
 
 feature{NONE} -- Implementation
+
+	solver_configuration: TEST_GENERATOR_CONF_I
+			-- Configuration of the solver
 
 	current_feature: AUT_FEATURE_OF_TYPE
 			-- Current feature whose linearly solvable precondition
@@ -172,6 +179,8 @@ feature{NONE} -- Generation
 			-- Generate the constraints part of the lpsolve format.
 		local
 			l_data: TUPLE [assertion: AUT_EXPRESSION; pattern: AUT_PREDICATE_ACCESS_PATTERN]
+			l_integer_lower_bound: INTEGER_32
+			l_integer_upper_bound: INTEGER_32
 		do
 			from
 				assertions.start
@@ -186,6 +195,27 @@ feature{NONE} -- Generation
 				current_access_pattern.assertion.ast.process (Current)
 				last_lpsolve.append (";%N")
 				assertions.forth
+			end
+			last_lpsolve.append ("%N")
+
+			from
+				constrained_operands.start
+			until
+				constrained_operands.after
+			loop
+				random.forth
+				if random.item \\ 100 = 0 then
+						-- with 0.01 probability choose {INTEGER_16} boundaries
+					l_integer_lower_bound := {INTEGER_16}.min_value
+					l_integer_upper_bound := {INTEGER_16}.max_value
+				else
+						-- with 0.99 probability choose command line boundaries
+					l_integer_lower_bound := solver_configuration.integer_lower_bound
+					l_integer_upper_bound := solver_configuration.integer_upper_bound
+				end
+
+				last_lpsolve.append (l_integer_lower_bound.out + " <= " + constrained_operands.item_for_iteration + " <= " + l_integer_upper_bound.out + ";%N")
+				constrained_operands.forth
 			end
 			last_lpsolve.append ("%N")
 		end

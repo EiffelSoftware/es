@@ -40,7 +40,7 @@ feature -- Basic operations
 
 				-- Generate linear constraint solving proof obligation.
 			create l_lpsolve_generator
-			l_lpsolve_generator.generate_lpsolve (feature_, linear_solvable_predicates)
+			l_lpsolve_generator.generate_lpsolve (feature_, linear_solvable_predicates, configuration)
 			check l_lpsolve_generator.has_linear_constraints end
 			l_proof_obligation := l_lpsolve_generator.last_lpsolve.twin
 
@@ -83,11 +83,6 @@ feature -- Basic operations
 					solve_argument ("max: " + l_lpsolve_generator.constrained_operands.item_for_iteration + ";%N%N" + l_proof_obligation)
 					if has_last_solver_solution then
 						l_upper_bound := last_solver_solution
-								-- make INTEGER_16 highest value with 0.99 probability
-						random.forth
-						if l_upper_bound > {INTEGER_16}.max_value and then random.item \\ 100 /= 0 then
-							l_upper_bound := {INTEGER_16}.max_value
-						end
 					else
 						has_last_solution := False
 					end
