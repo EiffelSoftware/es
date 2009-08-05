@@ -37,13 +37,15 @@ feature -- Access
 			-- how many elements in the bounds of the abstract integer?
 		once
 			Result := upper_bound - lower_bound + 1
+		ensure
+			result_positive: Result > 0
 		end
 
 	random_element: INTEGER
 			-- get a random element in the bounds of the abstract integer
 		do
 			random.forth
-			if random.item \\ 4 = 0 then
+			if random.item \\ 4 = 0 and then predefined_values_in_bounds.count > 0 then
 					-- with a 0.25 probability, choose a random integer from predefined values
 				random.forth
 				Result := predefined_values_in_bounds.lower + (random.item \\ predefined_values_in_bounds.count)
@@ -60,39 +62,86 @@ feature {NONE} -- Implementation
 	predefined_values: ARRAY[INTEGER] is
 			-- Array of predefined values (must be sorted)
 		once
-			Result := <<{INTEGER}.min_value,-100,-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10,100,{INTEGER}.max_value>>
+			Result := <<{INTEGER_32}.min_value,-100,-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10,100,{INTEGER_32}.max_value>>
 		end
 
 	predefined_values_in_bounds: ARRAY[INTEGER] is
 			-- Return those predefined_values that are inside the range of the abstract integer
 		local
 			i: INTEGER
-			lower_range_index: INTEGER
-			lower_range_index_found: BOOLEAN
-			upper_range_index: INTEGER
-			upper_range_index_found: BOOLEAN
+			l_lower_range_index: INTEGER
+			l_lower_range_index_found: BOOLEAN
+			l_upper_range_index: INTEGER
+			l_upper_range_index_found: BOOLEAN
 		once
+			l_lower_range_index_found := False
+			l_upper_range_index_found := False
+
+			if
+					-- no overlap
+				predefined_values.at (predefined_values.upper) < lower_bound or else
+				predefined_values.at (predefined_values.lower) > upper_bound
+			then
+				-- lower - upper = 1  ==>  make empty array
+				l_lower_range_index := 2
+				l_lower_range_index_found := True
+				l_upper_range_index := 1
+				l_upper_range_index_found := True
+
+			elseif
+					-- partial overlap with predefined_values on the lower end
+				predefined_values.at (predefined_values.lower) < lower_bound and then
+				predefined_values.at (predefined_values.upper) <= upper_bound
+			then
+				l_upper_range_index := predefined_values.upper
+				l_upper_range_index_found := True
+
+			elseif
+					-- partial overlap with predefined_values on the upper end
+				predefined_values.at (predefined_values.lower) >= lower_bound and then
+				predefined_values.at (predefined_values.upper) > upper_bound
+			then
+				l_lower_range_index := predefined_values.lower
+				l_lower_range_index_found := True
+
+			elseif
+					-- predefined_values is a subset of abstract integer
+				predefined_values.at (predefined_values.lower) >= lower_bound and then
+				predefined_values.at (predefined_values.upper) <= upper_bound
+			then
+				l_lower_range_index := predefined_values.lower
+				l_lower_range_index_found := True
+				l_upper_range_index := predefined_values.upper
+				l_upper_range_index_found := True
+
+			else
+					-- abstract integer is a subset of predefined_values
+					-- do nothing, l_lower_range_index and l_upper_range_index will be set below
+			end
+
+			-- compute l_lower_range_index and l_upper_range_index if not already set
 			from
 				i := predefined_values.lower
-				lower_range_index_found := False
-				upper_range_index_found := False
 			until
-				i > predefined_values.upper or else (lower_range_index_found and upper_range_index_found)
+				i > predefined_values.upper or else
+				(l_lower_range_index_found and l_upper_range_index_found)
 			loop
-				if not lower_range_index_found and then lower_bound <= predefined_values.at (i) then
-					lower_range_index := i
-					lower_range_index_found := True
+				if not l_lower_range_index_found and then predefined_values.at (i) >= lower_bound then
+					l_lower_range_index := i
+					l_lower_range_index_found := True
 				end
 
-				if not upper_range_index_found and then upper_bound >= predefined_values.at (i) then
-					upper_range_index := i
-					upper_range_index_found := True
+				if not l_upper_range_index_found and then upper_bound >= predefined_values.at (i) then
+					l_upper_range_index := i
+					l_upper_range_index_found := True
 				end
 
 				i := i + 1
 			end
 
-			Result := predefined_values.subarray (lower_range_index, upper_range_index)
+			Result := predefined_values.subarray (l_lower_range_index, l_upper_range_index)
+		ensure
+			result_attached: Result /= Void
 		end
 
 
