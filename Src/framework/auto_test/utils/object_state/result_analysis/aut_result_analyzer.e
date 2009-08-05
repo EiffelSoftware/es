@@ -70,6 +70,8 @@ feature -- Process
 			create number_of_valid_test_case_observer.make (system, 1000 * 60)
 			create precondition_evaluation_observer.make (system)
 			create precondition_satisfaction_failure_rate_observer.make (system)
+			create failed_predicate_proposal_observer.make (system)
+			create incorrect_lpsolve_file_observer.make (system)
 
 			l_log_publisher.register_witness_observer (basic_witness_observer)
 			l_log_publisher.register_witness_observer (faulty_witness_observer)
@@ -77,6 +79,8 @@ feature -- Process
 			l_log_publisher.register_witness_observer (number_of_valid_test_case_observer)
 			l_log_publisher.register_witness_observer (precondition_evaluation_observer)
 			l_log_publisher.register_witness_observer (precondition_satisfaction_failure_rate_observer)
+			l_log_publisher.register_witness_observer (failed_predicate_proposal_observer)
+			l_log_publisher.register_witness_observer (incorrect_lpsolve_file_observer)
 			l_log_publisher.register_witness_observer (Current)
 
 				-- Load log file.
@@ -97,6 +101,8 @@ feature -- Process
 			print_untested_features (l_output_file)
 			print_precondition_evaluation_overhead (l_output_file)
 			print_precondition_satisfaction_failure_rate (l_output_file)
+			print_failed_precondition_proposal (l_output_file)
+			print_incorrect_lpsolve_file (l_output_file)
 			print_fault_detail (l_output_file)
 			l_output_file.close
 		end
@@ -114,6 +120,10 @@ feature{NONE} -- Implementation
 	precondition_evaluation_observer: AUT_PRECONDITION_EVALUATION_OVERHEAD_OBSERVER
 
 	precondition_satisfaction_failure_rate_observer: AUT_PREDICATION_EVALUATION_FAILURE_RATE_OBSERVER
+
+	failed_predicate_proposal_observer: AUT_FAILED_PRECONDITION_PROPOSAL_OBSERVER
+
+	incorrect_lpsolve_file_observer: AUT_INCORRECT_LPSOLVE_FILE_OBSERVER
 
 feature -- Result printing
 
@@ -426,8 +436,8 @@ feature -- Result printing
 	print_precondition_evaluation_overhead (a_output_stream: KI_TEXT_OUTPUT_STREAM) is
 			-- Print precondition evaluation overhead into `a_output_stream'.
 		local
-			l_stat: DS_LINKED_LIST [TUPLE [evaluated_times: INTEGER; worst_case_times: INTEGER; start_time: INTEGER; end_time: INTEGER; succeeded: BOOLEAN; class_name: STRING; feature_name: STRING]]
-			l_data: TUPLE [evaluated_times: INTEGER; worst_case_times: INTEGER; start_time: INTEGER; end_time: INTEGER; succeeded: BOOLEAN; class_name: STRING; feature_name: STRING]
+			l_stat: DS_LINKED_LIST [TUPLE [evaluated_times: INTEGER; worst_case_times: INTEGER; start_time: INTEGER; end_time: INTEGER; succeeded: INTEGER; class_name: STRING; feature_name: STRING]]
+			l_data: TUPLE [evaluated_times: INTEGER; worst_case_times: INTEGER; start_time: INTEGER; end_time: INTEGER; succeeded: INTEGER; class_name: STRING; feature_name: STRING]
 			l_time: INTEGER
 			l_ratio: DOUBLE
 		do
@@ -471,7 +481,7 @@ feature -- Result printing
 				a_output_stream.put_integer ((l_data.end_time - l_data.start_time))
 				a_output_stream.put_string ("%T")
 
-				a_output_stream.put_boolean (l_data.succeeded)
+				a_output_stream.put_integer (l_data.succeeded)
 				a_output_stream.put_string ("%N")
 
 				l_stat.forth
@@ -552,6 +562,75 @@ feature -- Result printing
 
 			a_output_stream.put_character ('%N')
 		end
+
+	print_failed_precondition_proposal (a_output_stream: KI_TEXT_OUTPUT_STREAM) is
+			-- Print failed precondition proposal statistics into `a_output_stream'.
+		local
+			l_data: TUPLE [class_name: STRING; feature_name: STRING; predicate: STRING; time: INTEGER]
+			l_cursor: DS_LINKED_LIST_CURSOR [TUPLE [class_name: STRING; feature_name: STRING; predicate: STRING; time: INTEGER]]
+		do
+			a_output_stream.put_string ("--[Failed precondition proposal]%N")
+			a_output_stream.put_string ("Class%T")
+			a_output_stream.put_string ("Feature%T")
+			a_output_stream.put_string ("Predicate%T")
+			a_output_stream.put_string ("time(s)%N")
+			from
+				l_cursor := failed_predicate_proposal_observer.statistics.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_data := l_cursor.item
+				a_output_stream.put_string (l_data.class_name)
+				a_output_stream.put_character ('%T')
+
+				a_output_stream.put_string (l_data.feature_name)
+				a_output_stream.put_character ('%T')
+
+				a_output_stream.put_string (l_data.predicate)
+				a_output_stream.put_character ('%T')
+
+				a_output_stream.put_integer (l_data.time // 1000)
+				a_output_stream.put_character ('%N')
+
+				l_cursor.forth
+			end
+
+			a_output_stream.put_character ('%N')
+		end
+
+	print_incorrect_lpsolve_file (a_output_stream: KI_TEXT_OUTPUT_STREAM) is
+			-- Print incorrect lpsolve file statistics into `a_output_stream'.
+		local
+			l_data: TUPLE [class_name: STRING; feature_name: STRING; time: INTEGER]
+			l_cursor: DS_LINKED_LIST_CURSOR [TUPLE [class_name: STRING; feature_name: STRING; time: INTEGER]]
+		do
+			a_output_stream.put_string ("--[Incorrect lpsolve file]%N")
+			a_output_stream.put_string ("Class%T")
+			a_output_stream.put_string ("Feature%T")
+			a_output_stream.put_string ("time(s)%N")
+			from
+				l_cursor := incorrect_lpsolve_file_observer.statistics.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_data := l_cursor.item
+				a_output_stream.put_string (l_data.class_name)
+				a_output_stream.put_character ('%T')
+
+				a_output_stream.put_string (l_data.feature_name)
+				a_output_stream.put_character ('%T')
+
+				a_output_stream.put_integer (l_data.time // 1000)
+				a_output_stream.put_character ('%N')
+
+				l_cursor.forth
+			end
+
+			a_output_stream.put_character ('%N')
+		end
+
 
 feature -- Process
 

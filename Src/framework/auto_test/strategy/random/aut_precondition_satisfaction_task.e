@@ -291,9 +291,9 @@ feature -- Execution
 
 			if steps_completed then
 				set_end_time (interpreter.duration_until_now.millisecond_count)
-			else
-				is_lp_linear_solvable_model_correct := True
 			end
+			
+			is_lp_linear_solvable_model_correct := True
 		ensure then
 			time_valid_if_finished: steps_completed implies (end_time >= start_time)
 		end

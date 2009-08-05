@@ -32,7 +32,7 @@ feature -- Access
 	statistics: DS_LINKED_LIST [like data_anchor_type]
 			-- Precondition evaluation statistics
 
-	data_anchor_type: TUPLE [evaluated_times: INTEGER; worst_case_times: INTEGER; start_time: INTEGER; end_time: INTEGER; succeeded: BOOLEAN; class_name: STRING; feature_name: STRING]
+	data_anchor_type: TUPLE [evaluated_times: INTEGER; worst_case_times: INTEGER; start_time: INTEGER; end_time: INTEGER; succeeded: INTEGER; class_name: STRING; feature_name: STRING]
 			-- Anchor type for data describing precondition evaluation overhead
 
 feature -- Process
@@ -58,7 +58,7 @@ feature -- Process
 				l_str.right_justify
 				l_parts := l_str.split (';')
 
-				l_data := [0, 0, 0, 0, False, "", ""]
+				l_data := [0, 0, 0, 0, 0, "", ""]
 				from
 					i := 1
 				until
@@ -77,7 +77,7 @@ feature -- Process
 				l_part_str.left_adjust
 				l_part_str.right_adjust
 
-				l_data.put_boolean (l_part_str.to_boolean, 5)
+				l_data.put_integer (l_part_str.to_integer, 5)
 
 				l_parts := l_parts.i_th (6).split ('.')
 				l_class_name := l_parts.i_th (1)

@@ -1803,10 +1803,37 @@ feature -- Predicate evaluation
 								-- Update predicate: Set `l_failed_predicate' with `l_pred_args' with value False.
 							if l_done then
 								update_predicate (l_failed_predicate, l_pred_args, False)
+								log_failed_precondition_satisfaction_proposal (a_feature, l_failed_predicate)
 							end
 						end
 					end
 				end
+			end
+		end
+
+	log_failed_precondition_satisfaction_proposal (a_feature: AUT_FEATURE_OF_TYPE; a_failed_predicate: AUT_PREDICATE) is
+			-- Log a message saying that the precondition satisfaction propsal for `a_failed_predicate' in `a_feature' is wrong.
+		require
+			a_feature_attached: a_feature /= Void
+			a_failed_predicate_attached: a_failed_predicate /= Void
+		local
+			l_message: STRING
+		do
+			if
+				attached {AUT_PRECONDITION_SATISFACTION_TASK} precondition_evaluator as l_evaluator and then
+				l_evaluator.is_precondition_satisfaction_performed and then
+				l_evaluator.last_precondition_satisfaction_level /= {AUT_PRECONDITION_SATISFACTION_TASK}.precondition_satisfaction_not_satisfied
+			then
+				create l_message.make (128)
+				l_message.append ("-- Failed predicate: ")
+				l_message.append (a_feature.type.associated_class.name_in_upper)
+				l_message.append_character ('.')
+				l_message.append (a_feature.feature_name)
+				l_message.append ("; ")
+				l_message.append (a_failed_predicate.text)
+				l_message.append ("; time(ms): ")
+				l_message.append (duration_until_now.millisecond_count.out)
+				log_line (l_message)
 			end
 		end
 
@@ -2167,7 +2194,32 @@ feature -- Predicate evaluation
 					a_precondition_evaluatior.start_time,
 					a_precondition_evaluatior.end_time,
 					a_precondition_evaluatior.last_precondition_satisfaction_level)
+
+						-- If there is an incorrect lpsolve input file, log it.
+				if not a_precondition_evaluatior.is_lp_linear_solvable_model_correct then
+					log_lpsolve_input_file_error (a_precondition_evaluatior, a_type, a_feature_to_call)
+				end
 			end
+		end
+
+	log_lpsolve_input_file_error (a_precondition_evaluatior: AUT_PRECONDITION_SATISFACTION_TASK; a_type: TYPE_A; a_feature: FEATURE_I) is
+			-- Log that there is an incorrect lpsolve input file generated for `a_feature' in `a_type'.
+		require
+			a_precondition_evaluatior_attached: a_precondition_evaluatior /= Void
+			a_type_attached: a_type /= Void
+			a_type_valid: a_type.has_associated_class
+			a_feature_attached: a_feature /= Void
+		local
+			l_message: STRING
+		do
+			create l_message.make (64)
+			l_message.append ("-- Incorrect lpsolve file: ")
+			l_message.append (a_type.associated_class.name_in_upper)
+			l_message.append_character ('.')
+			l_message.append (a_feature.feature_name)
+			l_message.append ("; time: ")
+			l_message.append (duration_until_now.millisecond_count.out)
+			log_line (l_message)
 		end
 
 	log_pool_statistics is
