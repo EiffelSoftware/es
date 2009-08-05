@@ -47,6 +47,10 @@ feature -- Status report
 	has_linear_constraints: BOOLEAN
 			-- Does the last feature processed by `generate' have linear constraints?
 
+	has_unsupported_expression: BOOLEAN
+			-- Do the analysis assertions cantains unsupported expressions for lpsolve?
+			-- For example "*", "/".
+
 feature -- Basic operations
 
 	generate_lpsolve (a_feature: AUT_FEATURE_OF_TYPE; a_patterns: like access_patterns; a_solver_config: TEST_GENERATOR_CONF_I) is
@@ -58,6 +62,7 @@ feature -- Basic operations
 		local
 			l_cursor: DS_HASH_TABLE_CURSOR [INTEGER, INTEGER]
 		do
+			has_unsupported_expression := False
 			current_feature := a_feature
 			access_patterns := a_patterns
 			solver_configuration := a_solver_config
@@ -121,10 +126,13 @@ feature{NONE} -- Process
 				l_operator.is_equal ("<=") or else
 				l_operator.is_equal ("=") or else
 				l_operator.is_equal (">") or else
-				l_operator.is_equal (">=")
+				l_operator.is_equal (">=") or else
+				l_operator.is_equal ("-") or else
+				l_operator.is_equal ("+")
 			then
 					-- do nothing
 			else
+				has_unsupported_expression := True
 				fixme ("unsupported operator: " + l_operator)
 			end
 
@@ -138,6 +146,7 @@ feature{NONE} -- Process
 			l_operator: STRING
 		do
 			l_operator := normalized_string (l_as.operator (current_match_list).text (current_match_list))
+			has_unsupported_expression := True
 			fixme ("unsupported operator: " + l_operator)
 		end
 

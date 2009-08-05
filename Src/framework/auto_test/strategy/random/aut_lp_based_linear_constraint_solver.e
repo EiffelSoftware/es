@@ -41,60 +41,65 @@ feature -- Basic operations
 				-- Generate linear constraint solving proof obligation.
 			create l_lpsolve_generator
 			l_lpsolve_generator.generate_lpsolve (feature_, linear_solvable_predicates, configuration)
-			check l_lpsolve_generator.has_linear_constraints end
-			l_proof_obligation := l_lpsolve_generator.last_lpsolve.twin
+--			is_input_format_correct := not l_lpsolve_generator.has_unsupported_expression
+			if is_input_format_correct then
+				check l_lpsolve_generator.has_linear_constraints end
+				l_proof_obligation := l_lpsolve_generator.last_lpsolve.twin
 
-				-- Replace constraining queries by their actual value.
-			from
-				l_constraining_queries := l_lpsolve_generator.constraining_queries
-				l_constraining_queries.start
-			until
-				l_constraining_queries.after or else not has_last_solution
-			loop
-				l_query_name := l_state.item (l_constraining_queries.item_for_iteration)
-				if l_query_name = Void then
-						-- If the value of some constraining query cannot be retrieved,
-						-- the model for constrained arguments doesn't exist.
-					has_last_solution := False
-				else
-					l_new_query_name := l_constraining_queries.item_for_iteration
-					l_proof_obligation.replace_substring_all (l_new_query_name, l_query_name)
-				end
-				l_constraining_queries.forth
-			end
-
-				-- Launch constraint solver to solve constrained arguments
-				-- and put them into `last_solution' solver solution.
-			if has_last_solution then
-				create l_valuation.make (l_lpsolve_generator.constrained_operands.count)
-
+					-- Replace constraining queries by their actual value.
 				from
-					l_lpsolve_generator.constrained_operands.start
+					l_constraining_queries := l_lpsolve_generator.constraining_queries
+					l_constraining_queries.start
 				until
-					l_lpsolve_generator.constrained_operands.after or else not has_last_solution
+					l_constraining_queries.after or else not has_last_solution
 				loop
-					solve_argument ("min: " + l_lpsolve_generator.constrained_operands.item_for_iteration + ";%N%N" + l_proof_obligation)
-					if has_last_solver_solution then
-						l_lower_bound := last_solver_solution
-					else
+					l_query_name := l_state.item (l_constraining_queries.item_for_iteration)
+					if l_query_name = Void then
+							-- If the value of some constraining query cannot be retrieved,
+							-- the model for constrained arguments doesn't exist.
 						has_last_solution := False
-					end
-
-					solve_argument ("max: " + l_lpsolve_generator.constrained_operands.item_for_iteration + ";%N%N" + l_proof_obligation)
-					if has_last_solver_solution then
-						l_upper_bound := last_solver_solution
 					else
-						has_last_solution := False
+						l_new_query_name := l_constraining_queries.item_for_iteration
+						l_proof_obligation.replace_substring_all (l_new_query_name, l_query_name)
 					end
-
-					if has_last_solution then
-						create l_abstract_integer.make (l_lower_bound.truncated_to_integer, l_upper_bound.truncated_to_integer)
-						l_valuation.put (l_abstract_integer.random_element, l_lpsolve_generator.constrained_operands.item_for_iteration)
-					end
-					l_lpsolve_generator.constrained_operands.forth
+					l_constraining_queries.forth
 				end
 
-				set_last_solution (l_valuation)
+					-- Launch constraint solver to solve constrained arguments
+					-- and put them into `last_solution' solver solution.
+				if has_last_solution then
+					create l_valuation.make (l_lpsolve_generator.constrained_operands.count)
+
+					from
+						l_lpsolve_generator.constrained_operands.start
+					until
+						l_lpsolve_generator.constrained_operands.after or else not has_last_solution
+					loop
+						solve_argument ("min: " + l_lpsolve_generator.constrained_operands.item_for_iteration + ";%N%N" + l_proof_obligation)
+						if has_last_solver_solution then
+							l_lower_bound := last_solver_solution
+						else
+							has_last_solution := False
+						end
+
+						solve_argument ("max: " + l_lpsolve_generator.constrained_operands.item_for_iteration + ";%N%N" + l_proof_obligation)
+						if has_last_solver_solution then
+							l_upper_bound := last_solver_solution
+						else
+							has_last_solution := False
+						end
+
+						if has_last_solution then
+							create l_abstract_integer.make (l_lower_bound.truncated_to_integer, l_upper_bound.truncated_to_integer)
+							l_valuation.put (l_abstract_integer.random_element, l_lpsolve_generator.constrained_operands.item_for_iteration)
+						end
+						l_lpsolve_generator.constrained_operands.forth
+					end
+
+					set_last_solution (l_valuation)
+				end
+			else
+				has_last_solution := False
 			end
 		end
 
