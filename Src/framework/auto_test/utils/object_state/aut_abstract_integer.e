@@ -43,12 +43,15 @@ feature -- Access
 
 	random_element: INTEGER
 			-- get a random element in the bounds of the abstract integer
+		local
+			l_values_in_bounds: like predefined_values_in_bounds
 		do
+			l_values_in_bounds := predefined_values_in_bounds
 			random.forth
-			if random.item \\ 4 = 0 and then predefined_values_in_bounds.count > 0 then
+			if random.item \\ 4 = 0 and then l_values_in_bounds.count > 0 then
 					-- with a 0.25 probability, choose a random integer from predefined values
 				random.forth
-				Result := predefined_values_in_bounds.lower + (random.item \\ predefined_values_in_bounds.count)
+				Result := l_values_in_bounds.lower + (random.item \\ l_values_in_bounds.count)
 			else
 				random.forth
 				Result := lower_bound + (random.item \\ size)
@@ -73,7 +76,7 @@ feature {NONE} -- Implementation
 			l_lower_range_index_found: BOOLEAN
 			l_upper_range_index: INTEGER
 			l_upper_range_index_found: BOOLEAN
-		once
+		do
 			l_lower_range_index_found := False
 			l_upper_range_index_found := False
 
