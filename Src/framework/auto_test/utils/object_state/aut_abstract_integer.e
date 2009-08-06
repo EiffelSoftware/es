@@ -51,7 +51,7 @@ feature -- Access
 			if random.item \\ 4 = 0 and then l_values_in_bounds.count > 0 then
 					-- with a 0.25 probability, choose a random integer from predefined values
 				random.forth
-				Result := l_values_in_bounds.lower + (random.item \\ l_values_in_bounds.count)
+				Result := l_values_in_bounds.at (l_values_in_bounds.lower + (random.item \\ l_values_in_bounds.count))
 			else
 				random.forth
 				Result := lower_bound + (random.item \\ size)
