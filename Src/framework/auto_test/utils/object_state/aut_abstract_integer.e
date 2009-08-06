@@ -35,10 +35,11 @@ feature -- Access
 
 	size: INTEGER
 			-- how many elements in the bounds of the abstract integer?
-		once
+		do
 			Result := upper_bound - lower_bound + 1
 		ensure
 			result_positive: Result > 0
+			result_correct: Result = upper_bound - lower_bound + 1
 		end
 
 	random_element: INTEGER
