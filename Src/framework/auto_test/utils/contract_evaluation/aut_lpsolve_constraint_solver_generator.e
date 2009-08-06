@@ -77,6 +77,7 @@ feature -- Basic operations
 				create last_lpsolve.make (1024)
 				generate_feature_comment (a_feature)
 				generate_constraints
+				generate_bound_var_placeholders
 				generate_var_declarations
 			end
 		end
@@ -223,9 +224,26 @@ feature{NONE} -- Generation
 					l_integer_upper_bound := solver_configuration.integer_upper_bound
 				end
 
-				last_lpsolve.append (l_integer_lower_bound.out + " <= " + constrained_operands.item_for_iteration + " <= " + l_integer_upper_bound.out + ";%N")
+				last_lpsolve.append (l_integer_lower_bound.out + "<=" + constrained_operands.item_for_iteration + "<=" + l_integer_upper_bound.out + ";%N")
 				constrained_operands.forth
 			end
+			last_lpsolve.append ("%N")
+		end
+
+	generate_bound_var_placeholders is
+			-- Generate placeholders that will get replaced when variables are bound
+		do
+			from
+				constrained_operands.start
+			until
+				constrained_operands.after
+			loop
+				last_lpsolve.append ("/*placeholder_")
+				last_lpsolve.append (constrained_operands.item_for_iteration)
+				last_lpsolve.append ("*/%N")
+				constrained_operands.forth
+			end
+
 			last_lpsolve.append ("%N")
 		end
 

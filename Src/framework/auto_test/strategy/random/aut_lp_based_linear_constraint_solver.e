@@ -28,9 +28,11 @@ feature -- Basic operations
 			l_new_query_name: STRING
 			l_query_name: detachable STRING
 			l_pattern_table: DS_HASH_TABLE [AUT_PREDICATE_ACCESS_PATTERN, AUT_PREDICATE]
+			l_iter_operand: STRING
 
 			l_valuation: HASH_TABLE[INTEGER, STRING]
 			l_abstract_integer: AUT_ABSTRACT_INTEGER
+			l_concrete_integer: INTEGER
 			l_lower_bound: REAL_64
 			l_upper_bound: REAL_64
 		do
@@ -75,24 +77,35 @@ feature -- Basic operations
 					until
 						l_lpsolve_generator.constrained_operands.after or else not has_last_solution
 					loop
-						solve_argument ("min: " + l_lpsolve_generator.constrained_operands.item_for_iteration + ";%N%N" + l_proof_obligation)
+						l_iter_operand := l_lpsolve_generator.constrained_operands.item_for_iteration
+
+							-- compute lower bound of variable
+						solve_argument ("min: " + l_iter_operand + ";%N%N" + l_proof_obligation)
 						if has_last_solver_solution then
 							l_lower_bound := last_solver_solution
 						else
 							has_last_solution := False
 						end
 
-						solve_argument ("max: " + l_lpsolve_generator.constrained_operands.item_for_iteration + ";%N%N" + l_proof_obligation)
+							-- compute upper bound of variable
+						solve_argument ("max: " + l_iter_operand + ";%N%N" + l_proof_obligation)
 						if has_last_solver_solution then
 							l_upper_bound := last_solver_solution
 						else
 							has_last_solution := False
 						end
 
+							-- insert random integer between lower and upper into valuation list
+							-- and set the variable to its concrete value in the proof obligation
 						if has_last_solution then
 							create l_abstract_integer.make (l_lower_bound.truncated_to_integer, l_upper_bound.truncated_to_integer)
-							l_valuation.put (l_abstract_integer.random_element, l_lpsolve_generator.constrained_operands.item_for_iteration)
+							l_concrete_integer := l_abstract_integer.random_element
+							l_valuation.put (l_concrete_integer, l_iter_operand)
+							l_proof_obligation.replace_substring_all (
+									"/*placeholder_" + l_iter_operand + "*/",
+									l_iter_operand + "=" + l_concrete_integer.out + ";")
 						end
+
 						l_lpsolve_generator.constrained_operands.forth
 					end
 
