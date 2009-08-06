@@ -65,7 +65,7 @@ feature {NONE} -- Implementation
 	predefined_values: ARRAY[INTEGER] is
 			-- Array of predefined values (must be sorted)
 		once
-			Result := <<{INTEGER_32}.min_value,-100,-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10,100,{INTEGER_32}.max_value>>
+			Result := <<{INTEGER_32}.min_value,{INTEGER_16}.min_value, -100,-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10,100,{INTEGER_16}.max_value,{INTEGER_32}.max_value>>
 		end
 
 	predefined_values_in_bounds: ARRAY[INTEGER] is
@@ -129,13 +129,21 @@ feature {NONE} -- Implementation
 				i > predefined_values.upper or else
 				(l_lower_range_index_found and l_upper_range_index_found)
 			loop
-				if not l_lower_range_index_found and then predefined_values.at (i) >= lower_bound then
+				if
+					not l_lower_range_index_found and then
+					predefined_values.at (i) >= lower_bound
+				then
 					l_lower_range_index := i
 					l_lower_range_index_found := True
 				end
 
-				if not l_upper_range_index_found and then upper_bound >= predefined_values.at (i) then
-					l_upper_range_index := i
+				if
+					not l_upper_range_index_found and then
+					l_lower_range_index_found and then
+					i >= l_lower_range_index and then
+					predefined_values.at (i) >= upper_bound
+				then
+					l_upper_range_index := i - 1
 					l_upper_range_index_found := True
 				end
 
@@ -145,6 +153,7 @@ feature {NONE} -- Implementation
 			Result := predefined_values.subarray (l_lower_range_index, l_upper_range_index)
 		ensure
 			result_attached: Result /= Void
+			correct_bounds: Result.at (Result.lower) >= lower_bound and then Result.at (Result.upper) <= upper_bound
 		end
 
 
