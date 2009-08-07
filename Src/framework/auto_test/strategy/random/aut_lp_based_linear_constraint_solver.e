@@ -43,7 +43,7 @@ feature -- Basic operations
 				-- Generate linear constraint solving proof obligation.
 			create l_lpsolve_generator
 			l_lpsolve_generator.generate_lpsolve (feature_, linear_solvable_predicates, configuration)
---			is_input_format_correct := not l_lpsolve_generator.has_unsupported_expression
+			is_input_format_correct := not l_lpsolve_generator.has_unsupported_expression
 			if is_input_format_correct then
 				check l_lpsolve_generator.has_linear_constraints end
 				l_proof_obligation := l_lpsolve_generator.last_lpsolve.twin

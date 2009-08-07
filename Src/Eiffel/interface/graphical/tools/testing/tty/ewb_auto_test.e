@@ -78,7 +78,10 @@ feature -- Execution
 			l_type: STRING
 			l_root_group: CONF_GROUP
 			l_project: E_PROJECT
+--			l_profiler: PROFILING_SETTING
 		do
+--			create l_profiler.make
+--			l_profiler.start_profiling
 			l_args := auto_test_arguments
 			if l_args /= Void then
 				l_project := a_test_suite.eiffel_project
@@ -186,6 +189,8 @@ feature -- Execution
 				l_conf.set_integer_lower_bound (l_ap.integer_lower_bound)
 				l_conf.set_integer_upper_bound (l_ap.integer_upper_bound)
 
+				l_conf.set_is_random_cursor_used (l_ap.is_random_cursor_used)
+
 				if l_root_group.is_cluster then
 					if attached {CONF_CLUSTER} l_root_group as l_cluster then
 						l_conf.set_cluster (l_cluster)
@@ -198,6 +203,7 @@ feature -- Execution
 			else
 
 			end
+--			l_profiler.stop_profiling
 		end
 
 	auto_test_arguments: detachable DS_LIST [STRING]

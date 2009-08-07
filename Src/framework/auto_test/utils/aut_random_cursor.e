@@ -32,7 +32,7 @@ feature -- Access
 		require
 			not off
 		do
-
+			Result := item_cache
 		end
 
 feature -- Status report
@@ -90,6 +90,7 @@ feature{NONE} -- Implementation
 		local
 			l_index: INTEGER
 			l_var: G
+			l_item: G
 			l_storage: like storage
 		do
 			if unvisited_item_count = 0 then
@@ -99,11 +100,16 @@ feature{NONE} -- Implementation
 				random.forth
 				l_index := (random.item \\ unvisited_item_count) + 1
 				l_var := l_storage.item (unvisited_item_count)
-				l_storage.put (l_storage.item (l_index), unvisited_item_count)
+				l_item := l_storage.item (l_index)
+				l_storage.put (l_item, unvisited_item_count)
 				l_storage.put (l_var, l_index)
 				unvisited_item_count := unvisited_item_count - 1
+				item_cache := l_item
 			end
 		end
+
+	item_cache: like item
+			-- Cache for `item'
 
 invariant
 	storage_attached: storage /= Void

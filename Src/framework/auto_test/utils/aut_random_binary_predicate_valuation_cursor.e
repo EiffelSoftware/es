@@ -46,14 +46,15 @@ feature -- Cursor movement
 			if l_free_vars.count = 2 then
 					-- Both arguments are free.
 				main_storage := container.first_argument_table
-				create main_cursor.make (main_storage.keys.to_array, random)
+--				create main_cursor.make (main_storage.keys.to_array, random)
+				create main_cursor.make (container.first_argument_array_representation, random)
 
 				main_cursor.start
 				after := main_cursor.after
 
 				if not after then
 					barrel_storage := main_storage.item (main_cursor.item)
-					create barrel_cursor.make (barrel_storage.to_array, random)
+					barrel_cursor := barrel_storage.new_cursor
 					barrel_cursor.start
 					after := barrel_cursor.after
 				end
@@ -72,7 +73,7 @@ feature -- Cursor movement
 				l_set := l_bounded_var_tbl.item (l_bounded_var_index)
 				if l_set /= Void then
 					barrel_storage := l_set
-					create barrel_cursor.make (barrel_storage.to_array, random)
+					barrel_cursor := barrel_storage.new_cursor
 					barrel_cursor.start
 					after := barrel_cursor.after
 				else
@@ -80,8 +81,8 @@ feature -- Cursor movement
 				end
 			else
 					-- Both arguments are bounded.
-				after := container.item (<<variable_in_candidate (free_variables.item (1)),
-										   variable_in_candidate (free_variables.item (2))>>)
+				after := not container.item (<<variable_in_candidate (bound_variables.item (1)),
+										   variable_in_candidate (bound_variables.item (2))>>)
 			end
 		end
 
@@ -100,7 +101,7 @@ feature -- Cursor movement
 							after := main_cursor.after
 							if not after then
 								barrel_storage := main_storage.item (main_cursor.item)
-								create barrel_cursor.make (barrel_storage.to_array, random)
+								barrel_cursor := barrel_storage.new_cursor
 								barrel_cursor.start
 								after := barrel_cursor.after
 							end
@@ -152,7 +153,7 @@ feature{NONE} -- Implementation
 	main_cursor: detachable AUT_RANDOM_CURSOR [INTEGER]
 			--- Cursor to iterate through the first indexed arguments
 
-	barrel_cursor: detachable AUT_RANDOM_CURSOR [INTEGER]
+	barrel_cursor: detachable DS_HASH_SET_CURSOR [INTEGER]
 			-- Cursor to iterate through the second indexed arguments
 
 invariant

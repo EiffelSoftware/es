@@ -37,10 +37,9 @@ feature -- Cursor movement
 		do
 			before := False
 			if free_variables.is_empty then
-				after := not container.item (<<variable_in_candidate (constraint.argument_operand_mapping.item (predicate_access_pattern).item (1))>>)
---				after := not container.item (<<create {ITP_VARIABLE}.make (constraint.argument_operand_mapping.item (predicate_access_pattern).item (1))>>)
+				after := not container.item (<<variable_in_candidate (bound_variables.item (1))>>)
 			else
-				create cursor.make (container.storage.to_array, random)
+				create cursor.make (container.array_represention, random)
 				cursor.start
 				after := cursor.after
 			end
@@ -64,7 +63,9 @@ feature -- Basic operations
 	update_candidate_with_item is
 			-- Update `candidate' with objects at the position of current cursor.
 		do
-			candidate.put (variable_from_index (cursor.item), free_variables.item (1))
+			if not free_variables.is_empty then
+				candidate.put (variable_from_index (cursor.item), free_variables.item (1))
+			end
 		end
 
 feature{NONE} -- Implementation

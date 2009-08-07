@@ -188,6 +188,15 @@ feature -- Access
 			good_result: Result = integer_upper_bound_cache
 		end
 
+	is_random_cursor_used: BOOLEAN is
+			-- When searching in predicate pool, should random cursor be used?
+			-- Default: False
+		do
+			Result := is_random_cursor_used_cache
+		ensure then
+			good_result: Result = is_random_cursor_used_cache
+		end
+
 feature -- Access: cache
 
 	types_cache: attached DS_HASH_SET [attached STRING]
@@ -275,6 +284,9 @@ feature -- Access: cache
 
 	integer_upper_bound_cache: INTEGER
 			-- Cache for `integer_upper_bound'
+
+	is_random_cursor_used_cache: BOOLEAN
+			-- Cache for `is_random_cursor_used'			
 
 feature -- Status report
 
@@ -657,6 +669,14 @@ feature -- Status setting
 			integer_upper_bound_cache := a_bound
 		ensure
 			integer_upper_bound_set: integer_upper_bound = a_bound
+		end
+
+	set_is_random_cursor_used (b: BOOLEAN) is
+			-- Set `is_random_cursor_used' with `b'.
+		do
+			is_random_cursor_used_cache := b
+		ensure
+			is_random_cursor_used_set: is_random_cursor_used = b
 		end
 
 note

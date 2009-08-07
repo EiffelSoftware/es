@@ -84,7 +84,7 @@ feature -- Access
 			-- Operands used to evaluate the precondition of `feature_'
 			-- Index in `last_evaluated_operands' is 0-based, the first item is the target of the feature call.
 
-	operand_candidates: DS_ARRAYED_LIST [like initial_operands]
+	operand_candidates: DS_ARRAYED_LIST [TUPLE [operands: ARRAY [ITP_VARIABLE]; constraints: DS_HASH_TABLE [INTEGER, INTEGER]]]
 			-- Queue for operand candidcate to execute `feature_'
 
 	start_time: INTEGER
@@ -133,15 +133,6 @@ feature -- Status report
 		do
 			Result := not linear_solvable_preconditions.is_empty
 		end
-
---	is_last_precondition_evaluation_satisfied: BOOLEAN
---			-- Does `last_evaluated_operands' satisfy the precondition of `feature_'?
-
---	is_last_precondition_evaluation_partially_satisfied: BOOLEAN is
---			-- Did last precondition evaluation result in a partial solution?
---		do
-----			Result := is_last_precondition_evaluation_satisfied =
---		end
 
 	set_last_precondition_satisfaction_level (a_level: INTEGER) is
 			-- Set `last_precondition_satisfaction_level' with `a_leve'.
@@ -292,7 +283,7 @@ feature -- Execution
 			if steps_completed then
 				set_end_time (interpreter.duration_until_now.millisecond_count)
 			end
-			
+
 			is_lp_linear_solvable_model_correct := True
 		ensure then
 			time_valid_if_finished: steps_completed implies (end_time >= start_time)
@@ -302,7 +293,7 @@ feature -- Execution
 			-- <Precursor>
 		local
 			l_candidate_index: INTEGER
-			l_satisfied: BOOLEAN
+			l_solved_arguments: detachable DS_HASH_TABLE [INTEGER, INTEGER]
 		do
 			if untried_candidate_count = 0 then
 				steps_completed := True
@@ -312,26 +303,22 @@ feature -- Execution
 					-- Those arguments in the candidate should already satisfy all normal preconditions.
 				random.forth
 				l_candidate_index := random.item \\ untried_candidate_count + 1
-				last_evaluated_operands := operand_candidates.item (l_candidate_index)
+				last_evaluated_operands := operand_candidates.item (l_candidate_index).operands
+				l_solved_arguments := operand_candidates.item (l_candidate_index).constraints
 				operand_candidates.swap (l_candidate_index, untried_candidate_count)
 				untried_candidate_count := untried_candidate_count - 1
 
-					-- Check if linearly solvable arguments have solution if linearly constraint solving is enabled.
-				if has_linear_solvable_precondition and then configuration.is_linear_constraint_solving_enabled then
-					solve_linear_constraint
-					l_satisfied := last_linear_constraint_solving_successful
-				else
-					l_satisfied := True
+					-- There is a solution for constraint arguments, we need to update `last_evaluated_operands'.
+				if l_solved_arguments /= Void then
+					insert_integers_in_pool (l_solved_arguments)
 				end
 
-				if l_satisfied then
-					if constraint.is_constraint_operand_bound (last_evaluated_operands) then
-						last_precondition_satisfaction_level := precondition_satisfaction_satisfied
-						steps_completed := True
-					else
-						last_precondition_satisfaction_level := precondition_satisfaction_not_satisfied
-						steps_completed := False
-					end
+				if constraint.is_constraint_operand_bound (last_evaluated_operands) then
+					last_precondition_satisfaction_level := precondition_satisfaction_satisfied
+					steps_completed := True
+				else
+					last_precondition_satisfaction_level := precondition_satisfaction_not_satisfied
+					steps_completed := False
 				end
 			end
 
@@ -383,18 +370,18 @@ feature{NONE} -- Implementation
 		require
 			precondition_to_be_evaluated: configuration.is_precondition_checking_enabled
 		local
-			l_list: DS_LINKED_LIST [like initial_operands]
+			l_list: DS_LINKED_LIST [TUPLE [operands: ARRAY [ITP_VARIABLE]; constraints: detachable DS_HASH_TABLE [INTEGER, INTEGER]]]
 		do
 				-- Every candidate in `operand_candidates' should contain all operands needed to call `feature_',
 				-- except for linearly constrained operands.
-			predicate_pool.generate_candidates (constraint, to_be_retrieved_candidate_count, initial_operands)
+			predicate_pool.generate_candidates (constraint, to_be_retrieved_candidate_count, initial_operands, feature_, linear_solvable_preconditions, interpreter)
 			l_list := predicate_pool.last_candidates
 
 				-- It is possible that a feature only has linearly solvable preconditions,
 				-- in that case, we use the initial assigned operands and try to solve the constraints on
 				-- those operands.
 			if l_list.is_empty and then has_linear_solvable_precondition and then configuration.is_linear_constraint_solving_enabled then
-				l_list.force_last (initial_operands)
+				l_list.force_last ([initial_operands, Void])
 			end
 
 			create operand_candidates.make (l_list.count)
@@ -511,99 +498,6 @@ feature{NONE} -- Implementation
 			-- Partial candidate
 
 feature{NONE} -- Linear constraint solving
-
-	last_linear_constraint_solving_successful: BOOLEAN
-			-- Is last linear constraint solving successfult?
-
-	solve_linear_constraint is
-			-- Solve linear constraints defined in `linear_solvable_preconditions'.
-			-- If there is a solution, update `last_evaluated_operands' and set
-			-- `last_linear_constraint_solving_successful' to True,
-			-- otherwise, don't change `last_evaluated_operands' and set
-			-- `last_linear_constraint_solving_successful' to False.
-		local
-			l_state: HASH_TABLE [STRING, STRING]
-			l_proof_obligation: STRING
-			l_constraining_queries: DS_HASH_SET [STRING]
-			l_new_query_name: STRING
-			l_query_name: detachable STRING
-			l_pattern_table: DS_HASH_TABLE [AUT_PREDICATE_ACCESS_PATTERN, AUT_PREDICATE]
-
-			l_solver: AUT_LINEAR_CONSTRAINT_SOLVER
-			l_smt_solver: AUT_SAT_BASED_LINEAR_CONSTRAINT_SOLVER
-			l_config: like configuration
-			l_lp_solve_enabled: BOOLEAN
-		do
-			l_config := configuration
-			last_linear_constraint_solving_successful := False
-
-				-- Ask for states of the target object.
-				-- the value of constraining queries are in the retrieved states.
-			if last_evaluated_operands.item (0) /= Void and then interpreter.typed_object_pool.is_variable_defined (last_evaluated_operands.item (0)) then
-				l_state := interpreter.object_state (last_evaluated_operands.item (0))
-			else
-				create l_state.make (0)
-			end
-
-				-- Solve linear constraints.
-			l_lp_solve_enabled := l_config.is_lpsolve_linear_constraint_solver_enabled
-			if
-				l_lp_solve_enabled and then
-				is_lp_linear_solvable_model_correct
-			then
-				l_solver := lp_constraint_solver (l_state)
-				l_solver.solve
-				last_linear_constraint_solving_successful := l_solver.has_last_solution
-				is_lp_linear_solvable_model_correct := l_solver.is_input_format_correct
-			end
-
-			if
-				l_config.is_smt_linear_constraint_solver_enabled and then
-				not last_linear_constraint_solving_successful and then
-				(l_lp_solve_enabled implies not is_lp_linear_solvable_model_correct) -- Only in case when lp_solve model input is of wrong format,
-																					 -- we need smt solve, because if lp_solve model is correct,
-																					 -- and lpsolve cannot generate solution, then SMT solver cannot
-																					 -- generate a solution either, becaue there is no valid solution.
-			then
-				l_smt_solver := smt_linear_constraint_solver (l_state)
-				l_smt_solver.set_enforce_used_value_rate (l_config.smt_enforce_old_value_rate)
-				l_smt_solver.set_use_predefined_value_rate (l_config.smt_use_predefined_value_rate)
-				l_solver := l_smt_solver
-				l_solver.solve
-				last_linear_constraint_solving_successful := l_solver.has_last_solution
-			end
-
-			if last_linear_constraint_solving_successful then
-				insert_integers_in_pool (l_solver.last_solution)
-			end
-
-				-- Constraint solving is marked as failed if the interpreter went wrong.		
-			if last_linear_constraint_solving_successful then
-				last_linear_constraint_solving_successful := interpreter.is_ready and then interpreter.is_running
-			end
-		end
-
-	smt_linear_constraint_solver (a_state: HASH_TABLE [STRING, STRING]): AUT_SAT_BASED_LINEAR_CONSTRAINT_SOLVER is
-			-- SMT-based linear constraint solver with context queries stored in `a_state'
-		require
-			a_state_attached: a_state /= void
-			smt_linear_constraint_solving_enabled: configuration.is_smt_linear_constraint_solver_enabled
-		do
-			create {AUT_SAT_BASED_LINEAR_CONSTRAINT_SOLVER} Result.make (feature_, linear_solvable_preconditions, a_state, interpreter.configuration)
-		ensure
-			result_attached: Result /= Void
-		end
-
-	lp_constraint_solver (a_state: HASH_TABLE [STRING, STRING]): AUT_LINEAR_CONSTRAINT_SOLVER is
-			-- lpsolve linear constraint solver with context queries stored in `a_state'
-		require
-			a_state_attached: a_state /= void
-			lp_linear_constraint_solving_enabled: configuration.is_lpsolve_linear_constraint_solver_enabled
-		do
-			create {AUT_LP_BASED_LINEAR_CONSTRAINT_SOLVER} Result.make (feature_, linear_solvable_preconditions, a_state, interpreter.configuration)
-		ensure
-			result_attached: Result /= Void
-		end
 
 	insert_integers_in_pool (a_integers: DS_HASH_TABLE [INTEGER, INTEGER]) is
 			-- Insert linearly solved integers in `a_integers' into object pool.

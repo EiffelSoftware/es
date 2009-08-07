@@ -1458,6 +1458,7 @@ feature{NONE} -- Speed logging
 			l_time_now: DT_DATE_TIME
 			l_speed: INTEGER
 			l_second_count: INTEGER
+			l_duration: like duration_until_now
         do
 			if is_speed_logging_enabled then
 				l_time_now := system_clock.date_time_now
@@ -1468,9 +1469,10 @@ feature{NONE} -- Speed logging
 						log_line ("-- testing speed: " + l_speed.out + " test cases per minute.")
 						test_case_log_count := 0
 						last_speed_check_time := l_time_now
-
-						log_pool_statistics
-						log_precondition_evaluation_failure_rate
+						
+						l_duration := duration_until_now
+						log_pool_statistics (l_duration)
+						log_precondition_evaluation_failure_rate (l_duration)
 					else
 						test_case_log_count := test_case_log_count + 1
 					end
@@ -2154,19 +2156,16 @@ feature -- Predicate evaluation
 	precondition_satisfaction_failure_rate_header: STRING is "-- Precondition satisfactoin failure rate:"
 			-- Header for precondition satisfaction failure rate logging
 
-	log_precondition_evaluation_failure_rate is
+	log_precondition_evaluation_failure_rate (a_duration: DT_DATE_TIME_DURATION) is
 			-- Log failure rate of precondition satisfaction.
-		local
-			time_now: DT_DATE_TIME
-			duration: DT_DATE_TIME_DURATION
+			-- `a_duration' is the duration relative to the starting of current test run.
+		require
+			a_duration_attached: a_duration /= Void
 		do
 			if configuration.is_precondition_checking_enabled then
-				time_now := system_clock.date_time_now
-				duration := time_now.duration (proxy_start_time)
-				duration.set_time_canonical
 				log_line (
 					precondition_satisfaction_failure_rate_header +
-					" second: " + duration.second_count.out +
+					" second: " + a_duration.second_count.out +
 					"; full_suggested: " + suggested_precondition_count.out +
 					"; full_failed: " + failed_precondition_count.out +
 					"; partial_suggested: " + suggested_precondition_count_partial.out +
@@ -2222,40 +2221,44 @@ feature -- Predicate evaluation
 			log_line (l_message)
 		end
 
-	log_pool_statistics is
+	log_pool_statistics (a_duration: DT_DATE_TIME_DURATION) is
 			-- Log statistics about predicate pool.
+			-- `a_duration' is the time duration relative to the starting of current test run
 		local
 			l_context_class: CLASS_C
 			l_var_table_cursor: DS_HASH_TABLE_CURSOR [DS_ARRAYED_LIST [ITP_VARIABLE], TYPE_A]
 			l_pred_table_cursor: DS_HASH_TABLE_CURSOR [AUT_PREDICATE_VALUATION, AUT_PREDICATE]
+			l_stat_object_pool: STRING
+			l_stat_predicate_pool: STRING
 		do
 			if configuration.is_pool_statistics_logged then
 				l_context_class := interpreter_class
 				check l_context_class /= Void end
 
 					-- Log statistics of object pool: which is the number of objects of each type.
+				log_line ("-- Pool statistics: " + a_duration.millisecond_count.out)
 				if typed_object_pool /= Void then
-					log_line ("-- Object pool statistics:")
+					l_stat_object_pool := "-- object_pool: "
 					from
 						l_var_table_cursor := typed_object_pool.variable_table.new_cursor
 						l_var_table_cursor.start
 					until
 						l_var_table_cursor.after
 					loop
-						log_line ("--   " + type_name_with_context (l_var_table_cursor.key, l_context_class, Void) + ": " + l_var_table_cursor.item.count.out)
+						log_line (l_stat_object_pool + type_name_with_context (l_var_table_cursor.key, l_context_class, Void) + ": " + l_var_table_cursor.item.count.out)
 						l_var_table_cursor.forth
 					end
 				end
 
 					-- Log statistics of predicate pool: which is the number of valuations for each predicate.
-				log_line ("-- Predicate pool statistics:")
+				l_stat_predicate_pool := "-- predicate_pool: "
 				from
 					l_pred_table_cursor := predicate_pool.valuation_table.new_cursor
 					l_pred_table_cursor.start
 				until
 					l_pred_table_cursor.after
 				loop
-					log_line ("--   " + l_pred_table_cursor.key.text + ": " + l_pred_table_cursor.item.count.out)
+					log_line (l_stat_predicate_pool + l_pred_table_cursor.key.text_with_type_name + ": " + l_pred_table_cursor.item.count.out)
 					l_pred_table_cursor.forth
 				end
 			end

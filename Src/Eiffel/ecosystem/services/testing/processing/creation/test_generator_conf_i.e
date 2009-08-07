@@ -144,6 +144,14 @@ feature -- Access
 		deferred
 		end
 
+	is_random_cursor_used: BOOLEAN is
+			-- When searching in predicate pool, should random cursor be used?
+			-- Default: False
+		require
+			usable: is_interface_usable
+		deferred
+		end
+
 feature -- Status report
 
 	is_slicing_enabled: BOOLEAN

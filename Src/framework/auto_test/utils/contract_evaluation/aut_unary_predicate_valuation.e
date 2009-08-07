@@ -46,6 +46,18 @@ feature -- Access
 			good_result: Result = storage.has (a_arguments.item (1).index)
 		end
 
+	array_represention: ARRAY [INTEGER]
+			-- Array of variable indexes that satisfy `predicate'
+		do
+			if array_represention_cache = Void then
+				array_represention_cache := storage.to_array
+			end
+			Result := array_represention_cache
+		ensure
+			result_attached: result /= Void
+			result_valid: Result.count = storage.count
+		end
+
 feature -- Status report
 
 	has_variable (a_variable: ITP_VARIABLE): BOOLEAN is
@@ -65,10 +77,18 @@ feature -- Basic operations
 		do
 			l_storage := storage
 			l_obj_index := a_arguments.item (1).index
-			if a_value then
-				l_storage.force_last (l_obj_index)
+
+			l_storage.search (l_obj_index)
+			if l_storage.found then
+				if not a_value then
+					l_storage.remove_found_item
+					array_represention_cache := Void
+				end
 			else
-				l_storage.remove (l_obj_index)
+				if a_value then
+					l_storage.force_last (l_obj_index)
+					array_represention_cache := Void
+				end
 			end
 		ensure then
 			good_result:
@@ -80,6 +100,7 @@ feature -- Basic operations
 			-- Wipe out current all valuations.
 		do
 			storage.wipe_out
+			array_represention_cache := Void
 		ensure then
 			storage_wiped_out: storage.is_empty
 		end
@@ -88,6 +109,7 @@ feature -- Basic operations
 			-- Remove all valuations related to `a_variable'.
 		do
 			storage.remove (a_variable.index)
+			array_represention_cache := Void
 		end
 
 feature -- Process
@@ -107,6 +129,9 @@ feature{NONE} -- Implementation
 
 	initial_storage_capacity: INTEGER is 1000
 			-- Initial capacity for `storage'
+
+	array_represention_cache: detachable like array_represention
+			-- Cache for `array_represention'
 
 invariant
 	storage_attached: storage /= Void

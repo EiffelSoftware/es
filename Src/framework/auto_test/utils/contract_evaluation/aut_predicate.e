@@ -77,6 +77,33 @@ feature -- Access
 			-- And all the calls are changed to qualified.
 			-- "{1}" means the first argument of the predicate.
 
+	text_with_type_name: STRING is
+			-- Text of Current predicate with type name.
+		local
+			l_text: STRING
+			l_cursor: DS_LINKED_LIST_CURSOR [TYPE_A]
+			i: INTEGER
+		do
+			if text_with_type_name_cache = Void then
+				create l_text.make (64)
+				l_text.append (text)
+				from
+					l_cursor := argument_types.new_cursor
+					i := 1
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					l_text.replace_substring_all ("{" + i.out + "}", "{" + l_cursor.item.actual_type.name + "}")
+					i := i + 1
+					l_cursor.forth
+				end
+
+				text_with_type_name_cache := l_text
+			end
+			Result := text_with_type_name_cache
+		end
+
 	hash_code: INTEGER
 			-- Hash code value
 		do
@@ -193,6 +220,9 @@ feature{NONE} -- Implementation
 
 	internal_hash_code: like hash_code
 		-- Cache `hash_code'
+
+	text_with_type_name_cache: detachable STRING
+			-- Cache for `text_with_type_name'
 
 invariant
 	id_positive: id > 0

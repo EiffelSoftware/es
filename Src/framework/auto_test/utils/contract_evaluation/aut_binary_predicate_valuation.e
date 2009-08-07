@@ -50,6 +50,28 @@ feature -- Access
 			end
 		end
 
+	first_argument_array_representation: ARRAY [INTEGER]
+			-- Array representation of the indexes of the first argument which satisfies `predicate'
+		do
+			if first_argument_array_representation_cache = Void then
+				first_argument_array_representation_cache := first_argument_table.keys.to_array
+			else
+				Result := Void
+			end
+			Result := first_argument_array_representation_cache
+		end
+
+--	second_argument_array_representation: ARRAY [INTEGER]
+--			-- Array representation of the indexes of the second argument which satisfies `predicate'
+--		do
+--			if second_argument_array_representation_cache = Void then
+--				second_argument_array_representation_cache := second_argument_table.keys.to_array
+--			else
+--				Result := Void
+--			end
+--			Result := second_argument_array_representation_cache
+--		end
+
 feature -- Status report
 
 	is_predicate_valid (a_predicate: like predicate): BOOLEAN is
@@ -83,8 +105,8 @@ feature -- Basic operations
 					-- Update storage table.
 				l_index1 := a_arguments.item (1).index
 				l_index2 := a_arguments.item (2).index
-				put_valuation (first_argument_table, l_index1, l_index2, a_value)
-				put_valuation (second_argument_table, l_index2, l_index1, a_value)
+				put_valuation (first_argument_table, l_index1, l_index2, a_value, True)
+				put_valuation (second_argument_table, l_index2, l_index1, a_value, False)
 
 					-- Update `count'.
 				if l_has then
@@ -95,13 +117,15 @@ feature -- Basic operations
 			end
 		end
 
-	put_valuation (a_table: like first_argument_table; a_index1, a_index2: INTEGER; a_value: BOOLEAN) is
+	put_valuation (a_table: like first_argument_table; a_index1, a_index2: INTEGER; a_value: BOOLEAN; a_is_first: BOOLEAN) is
 			-- Put valuation `a_value' for object combination (a_index1, a_index2) into `a_table'.
+			-- If `a_is_first' is True, `a_table' is `first_argument_table', otherwise, `a_table' is `second_argument_table'.
 		require
 			a_table_attached: a_table /= Void
 		local
 			l_set: DS_HASH_SET [INTEGER]
 		do
+			check a_table_valid: (a_is_first implies a_table = first_argument_table) and (not a_is_first implies a_table = second_argument_table) end
 			if a_value then
 				a_table.search (a_index1)
 				if a_table.found then
@@ -109,6 +133,12 @@ feature -- Basic operations
 				else
 					create l_set.make (barrel_set_initial_capacity)
 					a_table.force_last (l_set, a_index1)
+
+					if a_is_first then
+						first_argument_array_representation_cache := Void
+--					else
+--						second_argument_array_representation_cache := Void
+					end
 				end
 				l_set.force_last (a_index2)
 			else
@@ -118,6 +148,11 @@ feature -- Basic operations
 					l_set.remove (a_index2)
 					if l_set.is_empty then
 						a_table.remove (a_index1)
+						if a_is_first then
+							first_argument_array_representation_cache := Void
+--						else
+--							second_argument_array_representation_cache := Void
+						end
 					end
 				end
 			end
@@ -128,6 +163,8 @@ feature -- Basic operations
 		do
 			first_argument_table.wipe_out
 			second_argument_table.wipe_out
+			first_argument_array_representation_cache := Void
+--			second_argument_array_representation_cache := Void
 			count := 0
 		ensure then
 			first_argument_table_wiped_out: first_argument_table.is_empty
@@ -136,9 +173,22 @@ feature -- Basic operations
 
 	remove_variable (a_variable: ITP_VARIABLE) is
 			-- Remove all valuations related to `a_variable'.
+		local
+			l_var_index: INTEGER
 		do
-			first_argument_table.remove (a_variable.index)
-			second_argument_table.remove (a_variable.index)
+			l_var_index := a_variable.index
+
+			first_argument_table.search (l_var_index)
+			if first_argument_table.found then
+				first_argument_table.remove_found_item
+				first_argument_array_representation_cache := Void
+			end
+
+			second_argument_table.search (l_var_index)
+			if second_argument_table.found then
+				second_argument_table.remove_found_item
+--				second_argument_array_representation_cache := Void
+			end
 		end
 
 feature -- Process
@@ -168,6 +218,12 @@ feature{NONE} -- Implementation
 
 	barrel_set_initial_capacity: INTEGER is 10
 			-- Initial capacity for second indexed arguments
+
+	first_argument_array_representation_cache: detachable like first_argument_array_representation
+			-- Cache for `first_argument_array_representation'
+
+--	second_argument_array_representation_cache: detachable like second_argument_array_representation
+--			-- Cache for `second_argument_array_representation'
 
 invariant
 	first_argument_table_attached: first_argument_table /= Void

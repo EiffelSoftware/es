@@ -117,14 +117,15 @@ feature{NONE} -- Implementation
 			if l_cursor.before then
 				l_cursor.start
 			end
-
-			from
-			until
-				after or else l_found
-			loop
-				l_found := is_predicate_argument_matched (l_cursor.item)
-				if not l_found then
-					l_cursor.forth
+			if not l_cursor.after then
+				from
+				until
+					l_cursor.after or else l_found
+				loop
+					l_found := is_predicate_argument_matched (l_cursor.item)
+					if not l_found then
+						l_cursor.forth
+					end
 				end
 			end
 			after := l_cursor.after

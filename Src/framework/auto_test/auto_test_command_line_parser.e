@@ -69,6 +69,7 @@ feature{NONE} -- Initialization
 			l_smt_old_value_rate_option: AP_INTEGER_OPTION
 			l_smt_use_predefined_value_rate_option: AP_INTEGER_OPTION
 			l_integer_bound_option: AP_STRING_OPTION
+			l_use_random_cursor_option: AP_FLAG
 			l_strs: LIST [STRING]
 		do
 			create parser.make_empty
@@ -226,6 +227,10 @@ feature{NONE} -- Initialization
 			create l_integer_bound_option.make_with_long_form ("integer-bounds")
 			l_integer_bound_option.set_description ("Lower and upper bounds for integer arguments that are to be solved by a linear constraint solver. In form of %"lower,upper%"")
 			parser.options.force_last (l_integer_bound_option)
+
+			create l_use_random_cursor_option.make_with_long_form ("use-random-cursor")
+			l_use_random_cursor_option.set_description ("When searching in predicate pool, should random cursor be used? Default is False.")
+			parser.options.force_last (l_use_random_cursor_option)
 
 			parser.parse_list (a_arguments)
 
@@ -474,6 +479,10 @@ feature{NONE} -- Initialization
 				end
 			end
 
+			if not error_handler.has_error then
+				is_random_cursor_used := l_use_random_cursor_option.was_found
+			end
+
 --			if parser.parameters.count = 0 then
 --				error_handler.report_missing_ecf_filename_error
 --				-- TODO: Display usage_instruction (currently not exported, find better way to do it.)
@@ -684,6 +693,10 @@ feature -- Status report
 	integer_upper_bound: INTEGER
 			-- Upper bound (max value) for integer arguments that are to be solved by a linear constraint solver
 			-- Default is 512.
+
+	is_random_cursor_used: BOOLEAN
+			-- When searching in predicate pool, should random cursor be used?
+			-- Default: False
 
 feature {NONE} -- Constants
 
