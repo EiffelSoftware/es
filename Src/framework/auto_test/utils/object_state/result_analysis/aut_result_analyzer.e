@@ -72,6 +72,7 @@ feature -- Process
 			create precondition_satisfaction_failure_rate_observer.make (system)
 			create failed_predicate_proposal_observer.make (system)
 			create incorrect_lpsolve_file_observer.make (system)
+			create pool_statistics_observer.make (system)
 
 			l_log_publisher.register_witness_observer (basic_witness_observer)
 			l_log_publisher.register_witness_observer (faulty_witness_observer)
@@ -81,6 +82,7 @@ feature -- Process
 			l_log_publisher.register_witness_observer (precondition_satisfaction_failure_rate_observer)
 			l_log_publisher.register_witness_observer (failed_predicate_proposal_observer)
 			l_log_publisher.register_witness_observer (incorrect_lpsolve_file_observer)
+			l_log_publisher.register_witness_observer (pool_statistics_observer)
 			l_log_publisher.register_witness_observer (Current)
 
 				-- Load log file.
@@ -103,6 +105,7 @@ feature -- Process
 			print_precondition_satisfaction_failure_rate (l_output_file)
 			print_failed_precondition_proposal (l_output_file)
 			print_incorrect_lpsolve_file (l_output_file)
+			print_pool_statistics (l_output_file)
 			print_fault_detail (l_output_file)
 			l_output_file.close
 		end
@@ -124,6 +127,8 @@ feature{NONE} -- Implementation
 	failed_predicate_proposal_observer: AUT_FAILED_PRECONDITION_PROPOSAL_OBSERVER
 
 	incorrect_lpsolve_file_observer: AUT_INCORRECT_LPSOLVE_FILE_OBSERVER
+
+	pool_statistics_observer: AUT_POOL_STATISTICS_OBSERVER
 
 feature -- Result printing
 
@@ -626,6 +631,100 @@ feature -- Result printing
 				a_output_stream.put_character ('%N')
 
 				l_cursor.forth
+			end
+
+			a_output_stream.put_character ('%N')
+		end
+
+	print_pool_statistics (a_output_stream: KI_TEXT_OUTPUT_STREAM) is
+			-- Print pool statistics into `a_output_stream'.
+		local
+			l_data: DS_ARRAYED_LIST [TUPLE [type_name: STRING; time: INTEGER; size: INTEGER]]
+			l_predicate_data: DS_ARRAYED_LIST [TUPLE [predicate_name: STRING; time: INTEGER; size: INTEGER]]
+		do
+				-- Object pool
+			a_output_stream.put_string ("--[Object pool by type]%N")
+			a_output_stream.put_string ("Type%T")
+			a_output_stream.put_string ("Time(s)%T")
+			a_output_stream.put_string ("Size%N")
+			l_data := pool_statistics_observer.sorted_object_pool_data (pool_statistics_observer.type_time_tester)
+
+			from
+				l_data.start
+			until
+				l_data.after
+			loop
+				a_output_stream.put_string (l_data.item_for_iteration.type_name)
+				a_output_stream.put_character ('%T')
+				a_output_stream.put_integer (l_data.item_for_iteration.time // 1000)
+				a_output_stream.put_character ('%T')
+				a_output_stream.put_integer (l_data.item_for_iteration.size)
+				a_output_stream.put_character ('%N')
+				l_data.forth
+			end
+			a_output_stream.put_new_line
+
+			a_output_stream.put_string ("--[Object pool by time]%N")
+			a_output_stream.put_string ("Time(s)%T")
+			a_output_stream.put_string ("Type%T")
+			a_output_stream.put_string ("Size%N")
+			l_data := pool_statistics_observer.sorted_object_pool_data (pool_statistics_observer.time_type_tester)
+
+			from
+				l_data.start
+			until
+				l_data.after
+			loop
+				a_output_stream.put_integer (l_data.item_for_iteration.time // 1000)
+				a_output_stream.put_character ('%T')
+				a_output_stream.put_string (l_data.item_for_iteration.type_name)
+				a_output_stream.put_character ('%T')
+				a_output_stream.put_integer (l_data.item_for_iteration.size)
+				a_output_stream.put_character ('%N')
+				l_data.forth
+			end
+			a_output_stream.put_new_line
+
+				-- Predicate pool
+			a_output_stream.put_string ("--[Predicate pool by predicate]%N")
+			a_output_stream.put_string ("Predicate%T")
+			a_output_stream.put_string ("Time(s)%T")
+			a_output_stream.put_string ("Size%N")
+			l_predicate_data := pool_statistics_observer.sorted_predicate_pool_data (pool_statistics_observer.predicate_time_tester)
+
+			from
+				l_predicate_data.start
+			until
+				l_predicate_data.after
+			loop
+				a_output_stream.put_string (l_predicate_data.item_for_iteration.predicate_name)
+				a_output_stream.put_character ('%T')
+				a_output_stream.put_integer (l_predicate_data.item_for_iteration.time // 1000)
+				a_output_stream.put_character ('%T')
+				a_output_stream.put_integer (l_predicate_data.item_for_iteration.size)
+				a_output_stream.put_character ('%N')
+				l_predicate_data.forth
+			end
+			a_output_stream.put_new_line
+
+			a_output_stream.put_string ("--[Predicate pool by time]%N")
+			a_output_stream.put_string ("Time(s)%T")
+			a_output_stream.put_string ("Predicate%T")
+			a_output_stream.put_string ("Size%N")
+			l_predicate_data := pool_statistics_observer.sorted_predicate_pool_data (pool_statistics_observer.time_predicate_tester)
+
+			from
+				l_predicate_data.start
+			until
+				l_predicate_data.after
+			loop
+				a_output_stream.put_integer (l_predicate_data.item_for_iteration.time // 1000)
+				a_output_stream.put_character ('%T')
+				a_output_stream.put_string (l_predicate_data.item_for_iteration.predicate_name)
+				a_output_stream.put_character ('%T')
+				a_output_stream.put_integer (l_predicate_data.item_for_iteration.size)
+				a_output_stream.put_character ('%N')
+				l_predicate_data.forth
 			end
 
 			a_output_stream.put_character ('%N')
