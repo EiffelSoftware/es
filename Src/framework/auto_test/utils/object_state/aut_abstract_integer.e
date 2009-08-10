@@ -46,6 +46,7 @@ feature -- Access
 			-- get a random element in the bounds of the abstract integer
 		local
 			l_values_in_bounds: like predefined_values_in_bounds
+			l_remainder: INTEGER
 		do
 			l_values_in_bounds := predefined_values_in_bounds
 			random.forth
@@ -55,7 +56,15 @@ feature -- Access
 				Result := l_values_in_bounds.at (l_values_in_bounds.lower + (random.item \\ l_values_in_bounds.count))
 			else
 				random.forth
-				Result := lower_bound + (random.item \\ size)
+				l_remainder := random.item \\ 8
+				if l_remainder = 0 then
+					Result := lower_bound
+				elseif l_remainder = 1 then
+					Result := upper_bound
+				else
+					random.forth
+					Result := lower_bound + (random.item \\ size)
+				end
 			end
 		ensure
 			valid_result: Result >= lower_bound and then Result <= upper_bound

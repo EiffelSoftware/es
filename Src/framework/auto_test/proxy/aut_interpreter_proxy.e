@@ -297,74 +297,83 @@ feature -- Execution
 			not_running: not is_running
 		local
 			l_listener: AUT_SOCKET_LISTENER
+			l_tried_times: INTEGER
+			l_max_tring_times: INTEGER
 		do
-			log_time_stamp ("start")
-			log_seed
-			create {AUT_START_REQUEST} last_request.make (system)
-			variable_table.wipe_out
+			from
+				l_max_tring_times := 5
+			until
+				l_tried_times = l_max_tring_times or else is_ready
+			loop
+				log_time_stamp ("start")
+				log_seed
+				create {AUT_START_REQUEST} last_request.make (system)
+				variable_table.wipe_out
 
-				-- Create socket and start listening on `port'.
-			if socket /= Void and then socket.exists and then not socket.is_closed then
-				socket.cleanup
-			end
+					-- Create socket and start listening on `port'.
+				if socket /= Void and then socket.exists and then not socket.is_closed then
+					socket.cleanup
+				end
 
---				-- Initialize a new socket for IPC.
---				-- Fixeme: port number is increased every time when we try to launch the interpreter
---				-- It should be possible to reuse port number, but when I tried it, I always got
---				-- socket connection problems. Jason 2008.10.21
---			fixme ("Try to reuse port number.")
---			port := next_port_number
---			create l_socket.make_server_by_port (port)
---			l_socket.set_blocking
---			l_socket.listen (1)
+	--				-- Initialize a new socket for IPC.
+	--				-- Fixeme: port number is increased every time when we try to launch the interpreter
+	--				-- It should be possible to reuse port number, but when I tried it, I always got
+	--				-- socket connection problems. Jason 2008.10.21
+	--			fixme ("Try to reuse port number.")
+	--			port := next_port_number
+	--			create l_socket.make_server_by_port (port)
+	--			l_socket.set_blocking
+	--			l_socket.listen (1)
 
-			create l_listener.make
-			l_listener.open_new_socket
-			if l_listener.is_listening then
-				port := l_listener.current_port
+				create l_listener.make
+				l_listener.open_new_socket
+				if l_listener.is_listening then
+					port := l_listener.current_port
 
-					-- Launch interpreter process.			
-				launch_process
+						-- Launch interpreter process.			
+					launch_process
 
-				if is_running then
-						-- Get socket to communicate with interpreter.
---					l_socket.accept
---					fixme ("If interpreter process dies now, current thread will be blocked forever.")
---					(create {EXECUTION_ENVIRONMENT}).sleep (1000000000)
---					socket := l_socket.accepted
-					if attached {like socket} l_listener.wait_for_connection (5000) as l_socket then
-						socket := l_socket
-						process.set_timeout (timeout)
-						log_stream.string.wipe_out
---						failure_log_stream.string.wipe_out -- Ilinca, "number of faults law" experiment
-						last_request.process (request_printer)
---						last_request.process (failure_request_printer) -- Ilinca, "number of faults law" experiment
-						flush_process
-						log_line (proxy_has_started_and_connected_message)
-						log_line (itp_start_time_message + error_handler.duration_to_now.second_count.out)
---						failure_log (proxy_has_started_and_connected_message + "%N") -- Ilinca, "number of faults law" experiment
---						failure_log (itp_start_time_message + error_handler.duration_to_now.second_count.out + "%N") -- Ilinca, "number of faults law" experiment
---						record_failure_time_stamp -- Ilinca, "number of faults law" experiment
-						parse_start_response
-						last_request.set_response (last_response)
-						if last_response.is_bad then
-							log_bad_response
+					if is_running then
+							-- Get socket to communicate with interpreter.
+	--					l_socket.accept
+	--					fixme ("If interpreter process dies now, current thread will be blocked forever.")
+	--					(create {EXECUTION_ENVIRONMENT}).sleep (1000000000)
+	--					socket := l_socket.accepted
+						if attached {like socket} l_listener.wait_for_connection (5000) as l_socket then
+							socket := l_socket
+							process.set_timeout (timeout)
+							log_stream.string.wipe_out
+	--						failure_log_stream.string.wipe_out -- Ilinca, "number of faults law" experiment
+							last_request.process (request_printer)
+	--						last_request.process (failure_request_printer) -- Ilinca, "number of faults law" experiment
+							flush_process
+							log_line (proxy_has_started_and_connected_message)
+							log_line (itp_start_time_message + error_handler.duration_to_now.second_count.out)
+	--						failure_log (proxy_has_started_and_connected_message + "%N") -- Ilinca, "number of faults law" experiment
+	--						failure_log (itp_start_time_message + error_handler.duration_to_now.second_count.out + "%N") -- Ilinca, "number of faults law" experiment
+	--						record_failure_time_stamp -- Ilinca, "number of faults law" experiment
+							parse_start_response
+							last_request.set_response (last_response)
+							if last_response.is_bad then
+								log_bad_response
+							end
+							is_ready := True
+						else
+							log_line ("-- Error: Interpreter was not able to connect.")
+							is_ready := False
+	--						failure_log ("-- Error: Interpreter was not able to connect.%N")
 						end
-						is_ready := True
 					else
-						log_line ("-- Error: Interpreter was not able to connect.")
 						is_ready := False
---						failure_log ("-- Error: Interpreter was not able to connect.%N")
+						log_line ("-- Error: Could not start and connect to interpreter.")
 					end
 				else
-					is_ready := False
-					log_line ("-- Error: Could not start and connect to interpreter.")
+					log_line ("-- Error: Could not find available port for listening.")
 				end
-			else
-				log_line ("-- Error: Could not find available port for listening.")
-			end
-			if not is_ready then
-				stop
+				if not is_ready then
+					stop
+				end
+				l_tried_times := l_tried_times + 1
 			end
 		ensure
 			last_request_not_void: last_request /= Void
@@ -1469,7 +1478,7 @@ feature{NONE} -- Speed logging
 						log_line ("-- testing speed: " + l_speed.out + " test cases per minute.")
 						test_case_log_count := 0
 						last_speed_check_time := l_time_now
-						
+
 						l_duration := duration_until_now
 						log_pool_statistics (l_duration)
 						log_precondition_evaluation_failure_rate (l_duration)

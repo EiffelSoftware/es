@@ -107,6 +107,14 @@ feature -- Status report
 			-- is a candidate which only satisfies part of the required predicate to be returned?			
 			-- Default: True
 
+	has_valuation (a_predicate: AUT_PREDICATE): BOOLEAN is
+			-- Is there a True valuation for `a_predicate'?
+		require
+			a_predicate_attached: a_predicate /= Void
+		do
+			Result := not valuation_table.item (a_predicate).is_empty
+		end
+
 feature -- Setting
 
 	set_is_partial_satisfaction_enabled (b: BOOLEAN) is

@@ -73,8 +73,11 @@ feature -- Access
 	normal_preconditions: DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN]
 			-- Normal precondition predicates for `feature_'
 
-	linear_solvable_preconditions: DS_LINKED_LIST [AUT_PREDICATE_ACCESS_PATTERN]
+	linear_solvable_preconditions: like normal_preconditions
 			-- Linearly solvable precondition predicates for `feature_'
+
+	full_preconditions: like normal_preconditions
+			-- All precondition predicates, including `normal_preconditions' and `linear_solvable_preconditions'
 
 	initial_operands: ARRAY [detachable ITP_VARIABLE]
 			-- Initial operands as candidates
@@ -93,8 +96,11 @@ feature -- Access
 	end_time: INTEGER
 			-- End time (in millisecond) when current precondition evauation ends.
 
-	constraint: AUT_PREDICATE_CONSTRAINT
-			-- Constraint for argument mapping
+	normal_constraint: AUT_PREDICATE_CONSTRAINT
+			-- Constraint for argument mapping for `normal_preconditions'
+
+	full_constraint: like normal_constraint
+			-- Constraint for argument mapping for `full_preconditions'
 
 	tried_count: INTEGER
 			-- Number of object combinations that were tried so far
@@ -231,6 +237,38 @@ feature -- Execution
 			end
 		end
 
+	should_use_constraint_solver: BOOLEAN is
+			-- Is constraint solver be used for linearly solvable preconditions of `feature_'?
+		local
+			l_invalid_rate: TUPLE [failed_times: INTEGER; all_times: INTEGER; last_tested_time: INTEGER]
+			l_rate: DOUBLE
+			l_set_rate: INTEGER
+			l_second_until_now: INTEGER
+		do
+			if configuration.is_linear_constraint_solving_enabled and then not linear_solvable_preconditions.is_empty then
+				l_set_rate := configuration.object_selection_for_precondition_satisfaction_rate
+				l_rate := l_set_rate.to_double / 100
+				l_invalid_rate := feature_invalid_test_case_rate.item (feature_)
+				if l_invalid_rate = Void or else l_invalid_rate.all_times - l_invalid_rate.failed_times = 0 then
+						-- If `feature_' has not been tested
+					Result := True
+				else
+					if linear_solvable_preconditions.for_all (
+						agent (a_pattern: AUT_PREDICATE_ACCESS_PATTERN): BOOLEAN
+							do
+								Result := predicate_pool.has_valuation (a_pattern.predicate)
+							end)
+					then
+						l_second_until_now := interpreter.duration_until_now.second_count
+						l_rate := (l_second_until_now - l_invalid_rate.last_tested_time).to_double / l_second_until_now * 0.5
+						Result := is_within_probability (l_rate)
+					else
+						Result := True
+					end
+				end
+			end
+		end
+
 	is_precondition_satisfaction_performed: BOOLEAN
 			-- Is precondition satisfaction performed the last when `start' is called?
 
@@ -313,7 +351,7 @@ feature -- Execution
 					insert_integers_in_pool (l_solved_arguments)
 				end
 
-				if constraint.is_constraint_operand_bound (last_evaluated_operands) then
+				if normal_constraint.is_constraint_operand_bound (last_evaluated_operands) then
 					last_precondition_satisfaction_level := precondition_satisfaction_satisfied
 					steps_completed := True
 				else
@@ -371,21 +409,27 @@ feature{NONE} -- Implementation
 			precondition_to_be_evaluated: configuration.is_precondition_checking_enabled
 		local
 			l_list: DS_LINKED_LIST [TUPLE [operands: ARRAY [ITP_VARIABLE]; constraints: detachable DS_HASH_TABLE [INTEGER, INTEGER]]]
+			l_should_use_constraint_solver: BOOLEAN
 		do
 				-- Every candidate in `operand_candidates' should contain all operands needed to call `feature_',
 				-- except for linearly constrained operands.
-			predicate_pool.generate_candidates (constraint, to_be_retrieved_candidate_count, initial_operands, feature_, linear_solvable_preconditions, interpreter)
+			if should_use_constraint_solver then
+				predicate_pool.generate_candidates (full_constraint, to_be_retrieved_candidate_count, initial_operands, feature_, create {like normal_preconditions}.make, interpreter)
+			else
+				predicate_pool.generate_candidates (normal_constraint, to_be_retrieved_candidate_count, initial_operands, feature_, linear_solvable_preconditions, interpreter)
+			end
 			l_list := predicate_pool.last_candidates
 
 				-- It is possible that a feature only has linearly solvable preconditions,
 				-- in that case, we use the initial assigned operands and try to solve the constraints on
 				-- those operands.
-			if l_list.is_empty and then has_linear_solvable_precondition and then configuration.is_linear_constraint_solving_enabled then
-				l_list.force_last ([initial_operands, Void])
+			if l_list.is_empty then
+				create operand_candidates.make (0)
+			else
+				create operand_candidates.make (l_list.count)
+				operand_candidates.append_last (l_list)
 			end
 
-			create operand_candidates.make (l_list.count)
-			operand_candidates.append_last (l_list)
 			untried_candidate_count := operand_candidates.count
 			partial_candidate := predicate_pool.last_partial_candidate
 		end
@@ -411,7 +455,7 @@ feature{NONE} -- Implementation
 				if a_ignore_linearly_constraint_predicates then
 					l_veto_function := agent (a_pred: AUT_PREDICATE): BOOLEAN do Result := not a_pred.is_linear_solvable end
 				end
-				l_satisfied := predicate_pool.is_candidate_satisfied (constraint, last_evaluated_operands, l_veto_function)
+				l_satisfied := predicate_pool.is_candidate_satisfied (normal_constraint, last_evaluated_operands, l_veto_function)
 			else
 				l_satisfied := True
 			end
@@ -431,12 +475,11 @@ feature{NONE} -- Implementation
 		local
 			l_cursor: DS_HASH_SET_CURSOR [AUT_PREDICATE_ACCESS_PATTERN]
 			l_predicate_pattern: AUT_PREDICATE_ACCESS_PATTERN
-			l_preconditions: like normal_preconditions
 			l_constraint_solving_enabled: BOOLEAN
 		do
 			create normal_preconditions.make
 			create linear_solvable_preconditions.make
-			create l_preconditions.make
+			create full_preconditions.make
 
 			if configuration.is_precondition_checking_enabled and then precondition_access_pattern.has (feature_) then
 				l_constraint_solving_enabled := configuration.is_linear_constraint_solving_enabled
@@ -448,23 +491,17 @@ feature{NONE} -- Implementation
 				loop
 					l_predicate_pattern := l_cursor.item
 
-					if l_predicate_pattern.predicate.is_linear_solvable then
+					if l_predicate_pattern.predicate.is_linear_solvable and then l_constraint_solving_enabled then
 						linear_solvable_preconditions.force_last (l_predicate_pattern)
-
-							-- If linear constraint solving is not enabled, there is 1/4 of possibility that
-							-- we look into predicate pool, and 3/4 of possibility that we use the initially generated
-							-- integers as candidate operands.
-						if (not l_constraint_solving_enabled) and then is_within_probability (0.25) then
-							l_preconditions.force_last (l_predicate_pattern)
-						end
 					else
 						normal_preconditions.force_last (l_predicate_pattern)
-						l_preconditions.force_last (l_predicate_pattern)
 					end
+					full_preconditions.force_last (l_predicate_pattern)
 					l_cursor.forth
 				end
 
-				create constraint.make_with_precondition (feature_, l_preconditions)
+				create normal_constraint.make_with_precondition (feature_, normal_preconditions)
+				create full_constraint.make_with_precondition (feature_, full_preconditions)
 			end
 		ensure
 			normal_preconditions_attached: normal_preconditions /= Void
