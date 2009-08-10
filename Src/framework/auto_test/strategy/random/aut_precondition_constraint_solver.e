@@ -7,23 +7,28 @@ note
 class
 	AUT_PRECONDITION_CONSTRAINT_SOLVER
 
+inherit
+	AUT_SHARED_PREDICATE_CONTEXT
+
 create
 	make
 
 feature -- Initialization
 
-	make, initialize (a_feature: like feature_; a_solvable_preconditions: like linear_solvable_preconditions; a_operands: like operand_candidate; a_interpreter: like interpreter) is
+	make, initialize (a_feature: like feature_; a_solvable_preconditions: like linear_solvable_preconditions; a_operands: like operand_candidate; a_interpreter: like interpreter; a_tried_context: like tried_context) is
 			-- Initialize.
 		require
 			a_feature_attached: a_feature /= Void
 			a_solvable_preconditions_attached: a_solvable_preconditions /= Void
 			a_operands_attached: a_operands /= Void
 			a_interpreter_attached: a_interpreter /= Void
+			a_tried_context_attached: a_tried_context /= Void
 		do
 			feature_ := a_feature
 			linear_solvable_preconditions := a_solvable_preconditions
 			operand_candidate := a_operands
 			interpreter := a_interpreter
+			tried_context := a_tried_context
 		end
 
 feature -- Access
@@ -43,6 +48,11 @@ feature -- Access
 			-- Operand index is 0-based, but in here the operand is already larger than 0,
 			-- because linear constraint solving for target operand is not supported.
 			-- Only has effect if `has_last_solution' is True
+
+	tried_context: DS_HASH_SET [STRING]
+			-- Context where linear constraint solving has been tried on
+			-- The items in this set is a string representation of all the values of the
+			-- constraining queries of `feature_'
 
 feature -- Status report
 
@@ -68,6 +78,7 @@ feature -- Basic operations
 			l_config: like configuration
 			l_lp_solve_enabled: BOOLEAN
 			l_target_var: ITP_VARIABLE
+			l_context: like context_representation
 		do
 			l_config := configuration
 			has_solution := False
@@ -82,41 +93,46 @@ feature -- Basic operations
 				create l_state.make (0)
 			end
 
-				-- Solve linear constraints.
-			l_lp_solve_enabled := l_config.is_lpsolve_linear_constraint_solver_enabled
-			if
-				l_lp_solve_enabled and then
-				is_lp_linear_solvable_model_correct
-			then
-				l_solver := lp_constraint_solver (l_state)
-				l_solver.solve
-				has_solution := l_solver.has_last_solution
-				is_lp_linear_solvable_model_correct := l_solver.is_input_format_correct
-			end
+			l_context := context_representation (l_state)
+				-- Only when linear constraint solving has not been done on the same context, we continue doing the solving.
+			if not tried_context.has (l_context) then
+				tried_context.force_last (l_context)
+					-- Solve linear constraints.
+				l_lp_solve_enabled := l_config.is_lpsolve_linear_constraint_solver_enabled
+				if
+					l_lp_solve_enabled and then
+					is_lp_linear_solvable_model_correct
+				then
+					l_solver := lp_constraint_solver (l_state)
+					l_solver.solve
+					has_solution := l_solver.has_last_solution
+					is_lp_linear_solvable_model_correct := l_solver.is_input_format_correct
+				end
 
-			if
-				l_config.is_smt_linear_constraint_solver_enabled and then
-				not has_solution and then
-				(l_lp_solve_enabled implies not is_lp_linear_solvable_model_correct) -- Only in case when lp_solve model input is of wrong format,
-																					 -- we need smt solve, because if lp_solve model is correct,
-																					 -- and lpsolve cannot generate solution, then SMT solver cannot
-																					 -- generate a solution either, becaue there is no valid solution.
-			then
-				l_smt_solver := smt_linear_constraint_solver (l_state)
-				l_smt_solver.set_enforce_used_value_rate (l_config.smt_enforce_old_value_rate)
-				l_smt_solver.set_use_predefined_value_rate (l_config.smt_use_predefined_value_rate)
-				l_solver := l_smt_solver
-				l_solver.solve
-				has_solution := l_solver.has_last_solution
-			end
+				if
+					l_config.is_smt_linear_constraint_solver_enabled and then
+					not has_solution and then
+					(l_lp_solve_enabled implies not is_lp_linear_solvable_model_correct) -- Only in case when lp_solve model input is of wrong format,
+																						 -- we need smt solve, because if lp_solve model is correct,
+																						 -- and lpsolve cannot generate solution, then SMT solver cannot
+																						 -- generate a solution either, becaue there is no valid solution.
+				then
+					l_smt_solver := smt_linear_constraint_solver (l_state)
+					l_smt_solver.set_enforce_used_value_rate (l_config.smt_enforce_old_value_rate)
+					l_smt_solver.set_use_predefined_value_rate (l_config.smt_use_predefined_value_rate)
+					l_solver := l_smt_solver
+					l_solver.solve
+					has_solution := l_solver.has_last_solution
+				end
 
-			if has_solution then
-				solution := l_solver.last_solution
-			end
+				if has_solution then
+					solution := l_solver.last_solution
+				end
 
-				-- Constraint solving is marked as failed if the interpreter went wrong.		
-			if is_lp_linear_solvable_model_correct then
-				is_lp_linear_solvable_model_correct := interpreter.is_ready and then interpreter.is_running
+					-- Constraint solving is marked as failed if the interpreter went wrong.		
+				if is_lp_linear_solvable_model_correct then
+					is_lp_linear_solvable_model_correct := interpreter.is_ready and then interpreter.is_running
+				end
 			end
 		end
 
@@ -161,6 +177,40 @@ feature{NONE} -- Implementation
 			-- This is introduced because for the moment, the we only generated models
 			-- for lpsolver in a simple form. This means that there are cases where the model cannot
 			-- be handled by lpsolve while it can be handled by SMT based solver.		
+
+	context_representation (a_state: HASH_TABLE [STRING, STRING]): STRING is
+			-- Context representation for `tried_context'
+		require
+			a_state_attached: a_state /= Void
+		local
+			l_context_queries: like constraining_queries_from_access_patterns
+			l_queries: DS_ARRAYED_LIST [STRING]
+			l_sorter: DS_QUICK_SORTER [STRING]
+		do
+			l_context_queries := constraining_queries_from_access_patterns (linear_solvable_preconditions)
+			create l_queries.make_from_linear (l_context_queries)
+			create l_sorter.make (string_equality_tester)
+			l_sorter.sort (l_queries)
+			create Result.make (64)
+			from
+				l_queries.start
+			until
+				l_queries.after
+			loop
+				a_state.search (l_queries.item_for_iteration)
+				if a_state.found then
+					Result.append (a_state.found_item)
+				else
+					Result.append_character ('_')
+				end
+				if not l_queries.is_last then
+					Result.append_character (',')
+				end
+				l_queries.forth
+			end
+		ensure
+			result_attached: Result /= Void
+		end
 
 ;note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

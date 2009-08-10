@@ -340,6 +340,7 @@ feature -- Basic operations
 			l_linear_solver: AUT_PRECONDITION_CONSTRAINT_SOLVER
 			l_should_linear_solving: BOOLEAN
 			l_linear_solution: DS_HASH_TABLE [INTEGER, INTEGER]
+			l_tried_linear_context: DS_HASH_SET [STRING]
 		do
 			create last_candidates.make
 			l_last_candidates := last_candidates
@@ -411,10 +412,14 @@ feature -- Basic operations
 									l_last_candidate := l_candidate.twin
 									fix_free_variables (l_last_candidate, a_initial_candidate)
 									if l_should_linear_solving then
+										if l_tried_linear_context = Void then
+											create l_tried_linear_context.make (50)
+											l_tried_linear_context.set_equality_tester (string_equality_tester)
+										end
 										if l_linear_solver = Void then
-											create l_linear_solver.make (a_feature, a_linear_solvable_constraints, l_last_candidate, a_interpreter)
+											create l_linear_solver.make (a_feature, a_linear_solvable_constraints, l_last_candidate, a_interpreter, l_tried_linear_context)
 										else
-											l_linear_solver.initialize (a_feature, a_linear_solvable_constraints, l_last_candidate, a_interpreter)
+											l_linear_solver.initialize (a_feature, a_linear_solvable_constraints, l_last_candidate, a_interpreter, l_tried_linear_context)
 										end
 										l_linear_solver.solve
 										if l_linear_solver.has_solution then

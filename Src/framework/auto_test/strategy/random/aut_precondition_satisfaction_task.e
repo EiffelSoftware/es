@@ -260,7 +260,7 @@ feature -- Execution
 							end)
 					then
 						l_second_until_now := interpreter.duration_until_now.second_count
-						l_rate := (l_second_until_now - l_invalid_rate.last_tested_time).to_double / l_second_until_now * 0.5
+						l_rate := (l_second_until_now - l_invalid_rate.last_tested_time).to_double / l_second_until_now * l_rate
 						Result := is_within_probability (l_rate)
 					else
 						Result := True
@@ -414,9 +414,9 @@ feature{NONE} -- Implementation
 				-- Every candidate in `operand_candidates' should contain all operands needed to call `feature_',
 				-- except for linearly constrained operands.
 			if should_use_constraint_solver then
-				predicate_pool.generate_candidates (full_constraint, to_be_retrieved_candidate_count, initial_operands, feature_, create {like normal_preconditions}.make, interpreter)
-			else
 				predicate_pool.generate_candidates (normal_constraint, to_be_retrieved_candidate_count, initial_operands, feature_, linear_solvable_preconditions, interpreter)
+			else
+				predicate_pool.generate_candidates (full_constraint, to_be_retrieved_candidate_count, initial_operands, feature_, create {like normal_preconditions}.make, interpreter)
 			end
 			l_list := predicate_pool.last_candidates
 
