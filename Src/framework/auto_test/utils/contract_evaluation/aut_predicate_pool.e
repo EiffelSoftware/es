@@ -341,6 +341,7 @@ feature -- Basic operations
 			l_should_linear_solving: BOOLEAN
 			l_linear_solution: DS_HASH_TABLE [INTEGER, INTEGER]
 			l_tried_linear_context: DS_HASH_SET [STRING]
+			l_fixed_vars: like fixed_operand_indexes
 		do
 			create last_candidates.make
 			l_last_candidates := last_candidates
@@ -410,16 +411,17 @@ feature -- Basic operations
 								if l_cursors.is_last then
 										-- We found one candidate.
 									l_last_candidate := l_candidate.twin
+									l_fixed_vars := fixed_operand_indexes (l_candidate)
 									fix_free_variables (l_last_candidate, a_initial_candidate)
-									if l_should_linear_solving then
+									if l_should_linear_solving and then l_fixed_vars.count < a_initial_candidate.count then
 										if l_tried_linear_context = Void then
 											create l_tried_linear_context.make (50)
 											l_tried_linear_context.set_equality_tester (string_equality_tester)
 										end
 										if l_linear_solver = Void then
-											create l_linear_solver.make (a_feature, a_linear_solvable_constraints, l_last_candidate, a_interpreter, l_tried_linear_context)
+											create l_linear_solver.make (a_feature, a_linear_solvable_constraints, l_last_candidate, a_interpreter, l_tried_linear_context, l_fixed_vars)
 										else
-											l_linear_solver.initialize (a_feature, a_linear_solvable_constraints, l_last_candidate, a_interpreter, l_tried_linear_context)
+											l_linear_solver.initialize (a_feature, a_linear_solvable_constraints, l_last_candidate, a_interpreter, l_tried_linear_context, l_fixed_vars)
 										end
 										l_linear_solver.solve
 										if l_linear_solver.has_solution then
@@ -567,6 +569,29 @@ feature{NONE} -- Implementation
 					do
 						Result := a_var = Void
 					end)
+		end
+
+	fixed_operand_indexes (a_candidate: ARRAY [detachable ITP_VARIABLE]): HASH_TABLE [ITP_VARIABLE, INTEGER] is
+			-- Table of variables that are fixed
+			-- [Variable, its 0-based operand index in `a_candidates']
+		local
+			i: INTEGER
+			l_upper: INTEGER
+			l_var: detachable ITP_VARIABLE
+		do
+			create Result.make (a_candidate.count)
+			from
+				i := a_candidate.lower
+				l_upper := a_candidate.upper
+			until
+				i > l_upper
+			loop
+				l_var := a_candidate.item (i)
+				if l_var /= Void then
+					Result.put (l_var, i)
+				end
+				i := i + 1
+			end
 		end
 
 invariant

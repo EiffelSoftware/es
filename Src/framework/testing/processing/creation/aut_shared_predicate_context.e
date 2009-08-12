@@ -212,6 +212,22 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
+	feature_id_table: DS_HASH_TABLE [INTEGER, STRING] is
+			-- Table of feature id
+			-- [Feature ID, feature_name]
+			-- feature_name is in the form of "CLASS_NAME.feature_name'.
+		once
+			create Result.make (200)
+			Result.set_key_equality_tester (string_equality_tester)
+		end
+
+	relevant_predicate_with_operand_table: DS_HASH_TABLE [ARRAY [TUPLE [predicate_id: INTEGER; operand_indexes: SPECIAL [INTEGER]]], INTEGER]
+			-- Table of predicates that are to be evaluated after the execution of some feature.
+			-- Key is feature id.
+		once
+			create Result.make (200)
+		end
+
 feature -- Basic operations
 
 	put_predicate (a_predicate: AUT_PREDICATE) is

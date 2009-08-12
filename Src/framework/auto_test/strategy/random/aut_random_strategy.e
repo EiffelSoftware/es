@@ -234,7 +234,7 @@ feature {NONE} -- Implementation
 				creator.set_creation_procedure (l_selected_feature)
 				sub_task := creator
 			else
-				create caller.make (system, interpreter, queue, error_handler, feature_table)
+				create caller.make (system, interpreter, queue, error_handler, feature_table, selected_feature)
 				caller.set_feature_and_type (l_selected_feature, l_selected_type)
 				sub_task := caller
 			end

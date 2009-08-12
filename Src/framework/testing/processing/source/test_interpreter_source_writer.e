@@ -810,7 +810,6 @@ feature -- Precondition satisfaction
 					a_features.forth
 				end
 				stream.dedent
-
 			end
 
 			stream.put_line ("end")

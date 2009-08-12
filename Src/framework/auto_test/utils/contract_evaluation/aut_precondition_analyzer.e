@@ -405,10 +405,16 @@ feature{NONE} -- Process
 					check not l_type.actual_type.is_like end
 					accessed_variables.force_last (l_type.actual_type, l_operand_index)
 					text.append (place_holder (l_operand_index))
+
+						-- The accessed entity is used as the target of a nested message.
+					if not nested_list.last.is_empty then
+						current_targets.force_last (l_operand_index)
+					end
 				else
 					l_feat := final_feature (a_name, current_assertion.written_class, current_feature.type.associated_class)
 					if l_feat /= Void then
 						accessed_variables.force_last (current_feature.type, 0)
+						current_targets.force_last (0)
 						text.append (place_holder (0))
 						text.append_character ('.')
 						text.append (l_feat.feature_name)
@@ -470,6 +476,10 @@ feature{NONE} -- Implementation
 		do
 			Result := current_feature.feature_.written_class
 		end
+
+	current_targets: DS_HASH_SET [INTEGER]
+			-- Indexes of predicate arguments (1-based) that are used as target
+			-- of some feature call
 
 	current_break_point_slot: INTEGER
 			-- Current break point slot
@@ -595,6 +605,7 @@ feature{NONE} -- Implementation
 			l_predicate: AUT_PREDICATE
 			l_constrained_args: DS_HASH_SET [INTEGER]
 			i: INTEGER
+			l_args_as_target: DS_HASH_SET [INTEGER]
 		do
 				-- Sorted indexes of entity objects that are accessed in current analyzed
 				-- AST node. index 0 means the target object, index 1 means the first argument,
@@ -603,12 +614,18 @@ feature{NONE} -- Implementation
 
 				-- Decide argument types for the predicate.
 			create l_pred_types.make
+			create l_args_as_target.make (current_targets.count)
 			from
+				i := 1
 				l_sorted_args.start
 			until
 				l_sorted_args.after
 			loop
 				l_pred_types.force_last (accessed_variables.item (l_sorted_args.item_for_iteration))
+				if current_targets.has (l_sorted_args.item_for_iteration) then
+					l_args_as_target.force_last (i)
+				end
+				i := i + 1
 				l_sorted_args.forth
 			end
 
@@ -671,6 +688,7 @@ feature{NONE} -- Implementation
 				l_predicate_of_feat.set_break_point_slot (current_break_point_slot)
 				last_predicates.force_last (l_predicate)
 				last_predicate_access_patterns.force_last (l_predicate_of_feat)
+				l_predicate.set_arguments_as_target (l_args_as_target)
 			end
 		end
 
@@ -689,6 +707,7 @@ feature{NONE} -- Implementation
 			integer_operands.wipe_out
 			accessed_variables.wipe_out
 			create nested_list.make
+			create current_targets.make (2)
 			nested_list.force_last (create {DS_LINKED_STACK [BOOLEAN]}.make)
 			create text.make (64)
 

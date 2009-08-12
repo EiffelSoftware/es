@@ -139,7 +139,7 @@ feature {AUT_REQUEST} -- Processing
 	process_create_object_request (a_request: AUT_CREATE_OBJECT_REQUEST)
 		do
 			if a_request.argument_list /= Void and then interpreter.variable_table.are_expressions_valid (a_request.argument_list) then
-				interpreter.create_object (a_request.target, a_request.target_type, a_request.creation_procedure, a_request.argument_list)
+				interpreter.create_object (a_request.target, a_request.target_type, a_request.creation_procedure, a_request.argument_list, Void)
 				a_request.set_response (interpreter.last_request.response)
 			else
 				has_error := True
@@ -159,10 +159,10 @@ feature {AUT_REQUEST} -- Processing
 				not l_variable_table.variable_type (a_request.target).associated_class.name.is_equal (none_type_name)
 			 then
 			 	if a_request.is_feature_query then
-					interpreter.invoke_and_assign_feature (a_request.receiver, a_request.target_type, a_request.feature_to_call, a_request.target, a_request.argument_list)
+					interpreter.invoke_and_assign_feature (a_request.receiver, a_request.target_type, a_request.feature_to_call, a_request.target, a_request.argument_list, Void)
 					a_request.set_response (interpreter.last_request.response)
 				else
-					interpreter.invoke_feature (a_request.target_type, a_request.feature_to_call, a_request.target, a_request.argument_list)
+					interpreter.invoke_feature (a_request.target_type, a_request.feature_to_call, a_request.target, a_request.argument_list, Void)
 					a_request.set_response (interpreter.last_request.response)
 				end
 			else

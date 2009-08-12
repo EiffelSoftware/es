@@ -108,6 +108,9 @@ feature -- Access
 	interpreter: AUT_INTERPRETER_PROXY
 			-- Proxy to the interpreter used to execute call
 
+	feature_: AUT_FEATURE_OF_TYPE
+			-- Feature to be called as creation procedure
+
 feature -- Change
 
 	set_creation_procedure (a_creation_procedure: like creation_procedure)
@@ -116,6 +119,7 @@ feature -- Change
 			a_creation_procedure_not_void: a_creation_procedure /= Void
 		do
 			creation_procedure := a_creation_procedure
+			create feature_.make (creation_procedure, type)
 		ensure
 			creation_procedure_set: creation_procedure = a_creation_procedure
 		end
@@ -165,7 +169,7 @@ feature -- Execution
 				if arguments.for_all (agent is_variable_defined) then
 					receiver := interpreter.variable_table.new_variable
 					interpreter.set_precondition_evaluator (precondition_evaluator)
-					interpreter.create_object (receiver, type, creation_procedure, arguments)
+					interpreter.create_object (receiver, type, creation_procedure, arguments, feature_)
 					if queue /= Void then
 						if attached {TYPE_A} interpreter.variable_table.variable_type (receiver) as l_receiver then
 							queue.mark (create {AUT_FEATURE_OF_TYPE}.make_as_creator (creation_procedure, l_receiver))
@@ -227,6 +231,7 @@ feature {NONE} -- Steps
 			random.forth
 			i := (random.item  \\ count) + 1
 			creation_procedure := class_.feature_named (l_exported_creators.i_th (i))
+			create feature_.make (creation_procedure, type)
 		ensure
 			has_creation_procedure: creation_procedure /= Void
 		end

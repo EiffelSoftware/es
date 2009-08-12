@@ -36,6 +36,7 @@ feature{NONE} -- Initialization
 
 			text := a_text.twin
 			context_class_internal := a_context_class
+			create targets.make (2)
 		end
 
 feature -- Access
@@ -113,6 +114,10 @@ feature -- Access
 				Result := internal_hash_code
 			end
 		end
+
+	targets: DS_HASH_SET [INTEGER]
+			-- Positions of arguments (1-based) that are used as target
+			-- of some feature call.
 
 feature -- Equality
 
@@ -193,6 +198,15 @@ feature -- Status report
 			good_result: Result = (arity = 2)
 		end
 
+	is_argument_used_as_target (i: INTEGER): BOOLEAN is
+			-- Is the `i'-th argument used as a target of a feature
+			-- call in Current?
+		require
+			i_valid: i >= 1 and i <= arity
+		do
+			Result := targets.has (i)
+		end
+
 feature -- Status report
 
 	debug_output: STRING
@@ -213,6 +227,13 @@ feature -- Setting
 			id_set: id = a_id
 		end
 
+	set_arguments_as_target (a_targets: like targets) is
+			-- Set `targets' with `a_targets'.
+		do
+			targets.wipe_out
+			targets.append_last (a_targets)
+		end
+
 feature{NONE} -- Implementation
 
 	context_class_internal: like context_class
@@ -226,6 +247,7 @@ feature{NONE} -- Implementation
 
 invariant
 	id_positive: id > 0
+	targets_attached: targets /= Void
 
 note
 	copyright: "Copyright (c) 1984-2009, Eiffel Software"

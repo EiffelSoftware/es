@@ -24,9 +24,8 @@ inherit
 	ERL_G_TYPE_ROUTINES
 
 	SHARED_SERVER
-		rename
-			universe as system_universe,
-			system as system_system
+		undefine
+			universe, system
 		end
 
 	AUT_BYTE_NODE_FACTORY
@@ -38,16 +37,22 @@ inherit
 
 	ITP_SHARED_CONSTANTS
 
+	AUT_SHARED_PREDICATE_CONTEXT
+		undefine
+			system
+		end
+
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make (a_system: like system; a_variable_table: like variable_table)
+	make (a_system: like system; a_variable_table: like variable_table; a_interpreter: like interpreter)
 			-- Create new request.
 		require
 			a_system_not_void: a_system /= Void
 			a_variable_table_attached: a_variable_table /= Void
+			a_interpreter_attached: a_interpreter /= Void
 		do
 			system := a_system
 			variable_table := a_variable_table
@@ -59,6 +64,8 @@ feature {NONE} -- Initialization
 
 			create expression_type_visitor.make (system, variable_table)
 			create expression_b_visitor.make (system, load_object_feature)
+
+			interpreter := a_interpreter
 		ensure
 			system_set: system = a_system
 		end
@@ -75,6 +82,9 @@ feature -- Access
 			-- Last request
 			-- `flag' indicates the type of current request, possible
 			-- values are defined in `ITP_SHARED_CONSTANTS'.			
+
+	interpreter: AUT_INTERPRETER_PROXY
+			-- Proxy
 
 feature {AUT_REQUEST} -- Processing
 
@@ -137,7 +147,7 @@ feature {AUT_REQUEST} -- Processing
 			l_compound.extend (new_store_variable_byte_code (1, a_request.target.index))
 
 				-- Print request into `output_stream'.
-			print_execute_request (l_compound, execute_request_flag, Void)
+			print_execute_request (l_compound, execute_request_flag, extra_data_for_predicate_evaluation (a_request))
 		end
 
 	process_invoke_feature_request (a_request: AUT_INVOKE_FEATURE_REQUEST)
@@ -156,11 +166,13 @@ feature {AUT_REQUEST} -- Processing
 			l_local_count: INTEGER
 			l_receiver_index: INTEGER
 			l_extra_local_count: INTEGER
+			l_receiver_var: detachable ITP_VARIABLE
 		do
 				-- If the to be called feature is a query, we need one more instruction
 				-- at the end to store the result in object pool
 			if a_request.is_feature_query then
 				l_extra_local_count := 1
+				l_receiver_var := a_request.receiver
 			else
 				l_local_count := l_argument_count + 1
 			end
@@ -224,7 +236,7 @@ feature {AUT_REQUEST} -- Processing
 			end
 
 				-- Dump request into `output_stream'.
-			print_execute_request (l_compound, execute_request_flag, Void)
+			print_execute_request (l_compound, execute_request_flag, extra_data_for_predicate_evaluation (a_request))
 		end
 
 	process_assign_expression_request (a_request: AUT_ASSIGN_EXPRESSION_REQUEST)
@@ -556,7 +568,7 @@ feature {NONE} -- Byte code generation
 			l_feature: like feature_for_byte_code_injection
 			l_byte_array: BYTE_ARRAY
 			l_byte_code_data: STRING
-			l_extra: STRING
+			l_extra: detachable ANY
 		do
 			l_feature := feature_for_byte_code_injection
 
@@ -578,7 +590,7 @@ feature {NONE} -- Byte code generation
 			if a_extra_data = Void then
 				l_extra := ""
 			else
-				l_extra := a_extra_data.out
+				l_extra := a_extra_data
 			end
 			last_request := [a_request_flag, [l_byte_code_data, l_extra]]
 		end
@@ -608,6 +620,28 @@ feature{NONE} -- Implementation
 
 	check_object_invariant_feature_name: STRING = "check_invariant"
 			-- Name of feature to check invariant of an object in interpreter.
+
+feature{NONE} -- Precondition satisfaction
+
+	extra_data_for_predicate_evaluation (a_request: AUT_CALL_BASED_REQUEST): TUPLE [feature_id: INTEGER; operands: SPECIAL [INTEGER]] is
+			-- Extra data used for predicate evaluation.
+		local
+			i: INTEGER
+			l_count: INTEGER
+			l_cursor: DS_LINEAR_CURSOR [ITP_EXPRESSION]
+			l_variable: ITP_VARIABLE
+			l_operands: SPECIAL [INTEGER]
+		do
+			if
+				interpreter.configuration.is_precondition_checking_enabled and then
+				a_request.feature_id > 0 and then
+				relevant_predicate_with_operand_table.has (a_request.feature_id)
+			then
+				Result := [a_request.feature_id, a_request.operand_indexes]
+			else
+				Result := Void
+			end
+		end
 
 invariant
 	system_not_void: system /= Void

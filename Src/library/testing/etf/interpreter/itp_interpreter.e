@@ -65,6 +65,10 @@ feature {NONE} -- Initialization
 			create query_values.make
 			create query_status.make
 
+			create primitive_types.make (10)
+			primitive_types.put (1, "INTEGER_32")
+			primitive_types.put (2, "BOOLEAN")
+
 				-- Create log file.
 			create log_file.make_open_append (l_log_filename)
 			if not log_file.is_open_write then
@@ -151,6 +155,7 @@ feature {NONE} -- Handlers
 			l_value: detachable ANY
 			l_store: like store
 			l_type: STRING
+			l_generating_type: STRING
 		do
 			if attached {STRING} last_request as l_obj_index then
 				log_message ("report_type_request start%N")
@@ -160,7 +165,7 @@ feature {NONE} -- Handlers
 					l_value := l_store.variable_value (l_index)
 					if l_value = Void then
 						create l_type.make (4)
-						l_type.append (none_type_name)
+						l_generating_type := none_type_name
 					else
 						create l_type.make (64)
 
@@ -171,9 +176,12 @@ feature {NONE} -- Handlers
 							-- In this case, we don't want a failure here, we want a failure when we actually
 							-- try to use `l_value'.
 						b := {ISE_RUNTIME}.check_assert (False)
-						l_type.append (l_value.generating_type)
+						l_generating_type := l_value.generating_type
 						b := {ISE_RUNTIME}.check_assert (b)
 					end
+					l_type.append (l_generating_type)
+					l_type.append_character ('%N')
+					l_type.append (value_of_object (l_value, l_generating_type))
 					print_line_and_flush (l_type)
 				else
 					report_error ("Variable `v_" + l_index.out + "' not defined.")
@@ -185,7 +193,7 @@ feature {NONE} -- Handlers
 
 				-- Send response to the proxy.
 			refresh_last_response_flag
-			last_response := [0, output_buffer, error_buffer]
+			last_response := [0, Void, output_buffer, error_buffer]
 			send_response_to_socket
 		end
 
@@ -205,6 +213,7 @@ feature {NONE} -- Handlers
 			last_request_is_execute_request: last_request_type = execute_request_flag
 		local
 			l_bcode: STRING
+			l_predicate_results: TUPLE [INTEGER, detachable like evaluated_predicate_results]
 		do
 			if attached {TUPLE [l_byte_code: STRING; l_data: detachable ANY]} last_request as l_last_request then
 				l_bcode := l_last_request.l_byte_code
@@ -222,6 +231,15 @@ feature {NONE} -- Handlers
 						-- Run the feature with newly injected byte-code.
 					execute_protected
 					log_message ("report_execute_request end%N")
+
+						-- Evaluat relevant predicates.
+					if is_last_protected_execution_successfull and then is_predicate_evaluation_enabled then
+						if attached {TUPLE [feature_id: INTEGER; operands: SPECIAL [INTEGER]]} l_last_request.l_data as l_feature_data then
+							l_predicate_results :=  [l_feature_data.feature_id, evaluated_predicate_results (l_feature_data.feature_id, l_feature_data.operands)]
+						else
+							l_predicate_results := Void
+						end
+					end
 				end
 			else
 				report_error (invalid_request_format_error)
@@ -229,7 +247,7 @@ feature {NONE} -- Handlers
 
 				-- Send response to the proxy.
 			refresh_last_response_flag
-			last_response := [invariant_violating_object_index, output_buffer, error_buffer]
+			last_response := [invariant_violating_object_index, l_predicate_results, output_buffer, error_buffer]
 			send_response_to_socket
 		end
 
@@ -692,11 +710,12 @@ feature{NONE} -- Object state checking
 			l_retried: BOOLEAN
 			l_bcode: STRING
 			l_index: INTEGER
+			l_ind_str: STRING
 		do
 			if not l_retried then
 				output_buffer.wipe_out
 				error_buffer.wipe_out
-				if attached {TUPLE [l_byte_code: STRING; l_object_index: STRING]} last_request as l_request then
+				if attached {TUPLE [l_byte_code: STRING; l_object_ind: ANY]} last_request as l_request then
 						-- Load byte-code.
 					l_bcode := l_request.l_byte_code
 					if l_bcode.count = 0 then
@@ -706,7 +725,8 @@ feature{NONE} -- Object state checking
 							-- if so, we don't need to retrieve any state, instead,
 							-- an exception will be rasied, and an error message is sent back
 							-- to the interpreter.
-						l_index := l_request.l_object_index.to_integer
+						l_ind_str ?= l_request.l_object_ind
+						l_index := l_ind_str.to_integer
 						o := variable_at_index (l_index)
 						if o = Void then
 							refresh_last_response_flag
@@ -866,11 +886,11 @@ feature{NONE} -- Object state checking
 		rescue
 			failed := True
 			report_trace
-			if exception = Class_invariant then
-					-- A class invariant cannot be recovered from since we
-					-- don't know how many and what objects are now invalid
-				should_quit := True
-			end
+--			if exception = Class_invariant then
+--					-- A class invariant cannot be recovered from since we
+--					-- don't know how many and what objects are now invalid
+--				should_quit := True
+--			end
 			retry
 		end
 
@@ -920,26 +940,27 @@ feature -- Precondition satisfaction
 			l_agent: FUNCTION [ANY, TUPLE, TUPLE]
 		do
 			l_agent := precondition_table.item (a_feature)
-			Result := safe_satisfied_objects (l_agent, arguement_tuple_from_indexes (a_args))
+			Result := safe_satisfied_objects (l_agent, arguement_tuple_from_indexes (a_args, a_args.lower, a_args.upper))
 		end
 
-	arguement_tuple_from_indexes (a_indexes: ARRAY [INTEGER]): TUPLE is
+	arguement_tuple_from_indexes (a_indexes: ARRAY [INTEGER]; a_lower: INTEGER; a_upper: INTEGER): TUPLE is
 			-- Tuple containing objects with `a_indexes'
 		require
 			a_indexes_attached: a_indexes /= Void
 		local
 			l_count: INTEGER
-			l_args: ARRAYED_LIST [detachable ANY]
+			l_args: like argument_tuple_cache
 			i: INTEGER
 			l_arg_tuple: TUPLE
 		do
 				-- Load arguments from object pool.
-			l_count := a_indexes.count
-			create l_args.make (l_count)
+			l_count := a_upper - a_lower + 1
+			l_args := argument_tuple_cache
+			l_args.wipe_out
 			from
-				i := 1
+				i := a_lower
 			until
-				i > l_count
+				i > a_upper
 			loop
 				l_args.extend (variable_at_index (a_indexes.item (i)))
 				i := i + 1
@@ -994,17 +1015,19 @@ feature -- Predicate evaluation
 		deferred
 		end
 
-	evaluated_predicate_result (a_predicate_id: INTEGER; a_arguments: ARRAY [INTEGER]): NATURAL_8 is
+	evaluated_predicate_result (a_predicate_id: INTEGER; a_arguments: ARRAY [INTEGER]; a_lower: INTEGER; a_upper: INTEGER): NATURAL_8 is
 			-- Evaluated result of predicate with id `a_predicate_id' on objects with index `a_arguments'.
+			-- `a_lower' and `a_upper' indicates that only the part between [`a_lower', `a_upper'] of `a_arguments' is to be used
+			-- as arguments during predicate evaluation.
 			-- The result can be of one of the following values:
-			-- 0 The evaluation succeeded
-			-- 1 The evaluation failed
-			-- 2 There was an exception during the evaluation.
+			-- 0 There was an exception during the evaluation.
+			-- 1 The evaluation succeeded
+			-- 2 The evaluation failed
 		local
 			l_args: TUPLE
 			l_predicate: FUNCTION [ANY, TUPLE, BOOLEAN]
 		do
-			l_args := arguement_tuple_from_indexes (a_arguments)
+			l_args := arguement_tuple_from_indexes (a_arguments, a_lower, a_upper)
 			l_predicate := predicate_table.item (a_predicate_id)
 			Result := safe_predicate_evaluation_result (l_predicate, l_args)
 		ensure
@@ -1014,9 +1037,9 @@ feature -- Predicate evaluation
 	safe_predicate_evaluation_result (a_predicate: FUNCTION [ANY, TUPLE, BOOLEAN]; a_arguments: TUPLE): NATURAL_8 is
 			-- Evaluated result of `a_predicate' on `a_arguments'.
 			-- The result can be of one of the following values:
-			-- 0 The evaluation succeeded
-			-- 1 The evaluation failed
-			-- 2 There was an exception during the evaluation.
+			-- 0 There was an exception during the evaluation.
+			-- 1 The evaluation succeeded
+			-- 2 The evaluation failed
 		require
 			a_predicate_attached: a_predicate /= Void
 			a_arguments_attached: a_arguments /= Void
@@ -1027,12 +1050,12 @@ feature -- Predicate evaluation
 			if not l_retried then
 				l_result := a_predicate.item (a_arguments)
 				if l_result then
-					Result := 0
-				else
 					Result := 1
+				else
+					Result := 2
 				end
 			else
-				Result := 2
+				Result := 0
 			end
 		rescue
 			l_retried := True
@@ -1086,7 +1109,7 @@ feature -- Predicate evaluation
 					end
 					j := 0
 					if l_arity = 0 then
-						l_pred_response.put (evaluated_predicate_result (l_pred_id, l_args), j)
+						l_pred_response.put (evaluated_predicate_result (l_pred_id, l_args, l_args.lower, l_args.upper), j)
 					else
 						from
 							i := 0
@@ -1096,7 +1119,7 @@ feature -- Predicate evaluation
 						loop
 							l_args.put (l_objects.item (i), l_arg_index)
 							if l_arg_index = l_arity then
-								l_pred_response.put (evaluated_predicate_result (l_pred_id, l_args), j)
+								l_pred_response.put (evaluated_predicate_result (l_pred_id, l_args, l_args.lower, l_args.upper), j)
 								l_arg_index := 1
 								j := j + 1
 							else
@@ -1119,6 +1142,96 @@ feature -- Predicate evaluation
 				send_response_to_socket
 			end
 		end
+
+	relevant_predicate_table: HASH_TABLE [ARRAY [TUPLE [predicate_id: INTEGER; operand_index: SPECIAL [INTEGER]]], INTEGER]
+			-- Table of relevant predicates for feature
+			-- Key is the feature id, value is a list of predicates with its predicate id and operand index for that feature.
+			-- The array as items of the table are 1-based.
+
+	is_predicate_evaluation_enabled: BOOLEAN
+			-- Should predicates in `relevant_predicate_table' be evaluated
+			-- after execution of a feature?
+
+	evaluated_predicate_results (a_feature_id: INTEGER; a_operands: SPECIAL [INTEGER]): ARRAY [NATURAL_8] is
+			-- Evaluate relevant predicates from `relevant_predicat_table' for
+			-- feature with `a_feature_id' on operands `a_operands'.
+			-- Result is a list of responses for each predicate in `l_predicates', the order of the result
+			-- corresponds to the predicate order in `l_predicates'.
+			-- 0 means don't know (may because an exception occurred during evaluation)
+			-- 1 means the predicate evaluated to True,
+			-- 2 means the predicate evaluated to False.
+		require
+			a_feature_id_positive: a_feature_id > 0
+			a_feature_id_exists: relevant_predicate_table.has (a_feature_id)
+			a_operands_attached: a_operands /= Void
+		local
+			i, j: INTEGER
+			l_arg_count: INTEGER
+			l_upper: INTEGER
+			l_count: INTEGER
+			l_predicate_result: NATURAL_8
+			l_predicates: ARRAY [TUPLE [predicate_id: INTEGER; operand_index: SPECIAL [INTEGER]]]
+			l_pred_data: TUPLE [predicate_id: INTEGER; operand_index: SPECIAL [INTEGER]]
+			l_arguments: like argument_cache
+			l_arg_positions: SPECIAL [INTEGER]
+			l_checking: BOOLEAN
+		do
+			l_predicates := relevant_predicate_table.item (a_feature_id)
+			create Result.make (1, l_predicates.count)
+			l_arguments := argument_cache
+			l_checking := {ISE_RUNTIME}.check_assert (False)
+			from
+				i := 1
+				l_count := l_predicates.upper
+			until
+				i > l_count
+			loop
+				l_pred_data := l_predicates.item (i)
+				l_arg_positions := l_pred_data.operand_index
+				l_upper := l_arg_positions.count
+				from
+					j := 0
+					l_arg_count := l_arg_positions.count
+				until
+					j = l_arg_count
+				loop
+					l_arguments.put (a_operands.item (l_arg_positions.item (j)), j + 1)
+					j := j + 1
+				end
+
+				l_predicate_result := evaluated_predicate_result (l_pred_data.predicate_id, l_arguments, 1, l_upper)
+				Result.put (l_predicate_result, i)
+				i := i + 1
+			end
+			l_checking := {ISE_RUNTIME}.check_assert (l_checking)
+		ensure
+			result_attached: Result /= Void
+			result_valid: Result.lower = 1 and then Result.count = relevant_predicate_table.item (a_feature_id).count
+		end
+
+	argument_cache: ARRAY [INTEGER]
+			-- Cache for arguments used in predicate evaluation
+
+	argument_tuple_cache: ARRAYED_LIST [detachable ANY]
+			-- Cache for arguments used in predicate evaluation.
+
+	value_of_object (a_object: ANY; a_type: STRING): STRING is
+			-- Value of `a_object', which is of type `a_type'
+		require
+			a_type_attached: a_type /= Void
+		do
+			if primitive_types.has (a_type) then
+				Result := a_object.out
+			else
+				Result := "__REF__"
+			end
+		ensure
+			result_attached: Result /= Void
+			not_result_is_empty: not Result.is_empty
+		end
+
+	primitive_types: HASH_TABLE [INTEGER, STRING]
+			-- Names for primitive types
 
 invariant
 	log_file_open_write: log_file.is_open_write

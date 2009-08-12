@@ -31,7 +31,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_system: like system; an_interpreter: like interpreter; a_queue: like queue; a_error_handler: like error_handler; a_feature_table: like feature_table)
+	make (a_system: like system; an_interpreter: like interpreter; a_queue: like queue; a_error_handler: like error_handler; a_feature_table: like feature_table; a_feat: like feature_)
 			-- Create new feature caller.
 		require
 			a_system_not_void: a_system /= Void
@@ -46,6 +46,7 @@ feature {NONE} -- Initialization
 			steps_completed := True
 			feature_table := a_feature_table
 			any_class := system.any_class.compiled_representation
+			feature_ := a_feat
 		ensure
 			system_set: system = a_system
 			interpreter_set: interpreter = an_interpreter
@@ -54,6 +55,7 @@ feature {NONE} -- Initialization
 			steps_completed: steps_completed
 			feature_table_set: feature_table = a_feature_table
 			any_class_set: any_class = system.any_class.compiled_representation
+			feature_set: feature_ = a_feat
 		end
 
 feature -- Status
@@ -103,6 +105,9 @@ feature -- Access
 
 	arguments: DS_LIST [ITP_EXPRESSION]
 			-- List of expressions used as arguments to the feature call
+
+	feature_: AUT_FEATURE_OF_TYPE
+			-- Feature to be called
 
 feature -- Change
 
@@ -295,9 +300,9 @@ feature {NONE} -- Steps
 					interpreter.set_precondition_evaluator (precondition_evaluator)
 					if feature_to_call.type /= void_type then
 						receiver := interpreter.variable_table.new_variable
-						interpreter.invoke_and_assign_feature (receiver, type, feature_to_call, target, list)
+						interpreter.invoke_and_assign_feature (receiver, type, feature_to_call, target, list, feature_)
 					else
-						interpreter.invoke_feature (type, feature_to_call, target, list)
+						interpreter.invoke_feature (type, feature_to_call, target, list, feature_)
 					end
 					queue.mark (create {AUT_FEATURE_OF_TYPE}.make (feature_to_call, interpreter.variable_table.variable_type (target)))
 					if not interpreter.last_response.is_bad and not interpreter.last_response.is_error then

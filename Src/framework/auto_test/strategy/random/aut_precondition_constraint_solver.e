@@ -15,7 +15,7 @@ create
 
 feature -- Initialization
 
-	make, initialize (a_feature: like feature_; a_solvable_preconditions: like linear_solvable_preconditions; a_operands: like operand_candidate; a_interpreter: like interpreter; a_tried_context: like tried_context) is
+	make, initialize (a_feature: like feature_; a_solvable_preconditions: like linear_solvable_preconditions; a_operands: like operand_candidate; a_interpreter: like interpreter; a_tried_context: like tried_context; a_bound_operands: like bound_operands) is
 			-- Initialize.
 		require
 			a_feature_attached: a_feature /= Void
@@ -29,6 +29,7 @@ feature -- Initialization
 			operand_candidate := a_operands
 			interpreter := a_interpreter
 			tried_context := a_tried_context
+			bound_operands := a_bound_operands
 		end
 
 feature -- Access
@@ -53,6 +54,10 @@ feature -- Access
 			-- Context where linear constraint solving has been tried on
 			-- The items in this set is a string representation of all the values of the
 			-- constraining queries of `feature_'
+
+	bound_operands: HASH_TABLE [ITP_VARIABLE, INTEGER]
+			-- List of variables that are already bound in `operand_candidate'
+			-- [Variable, its 0-based operand index]
 
 feature -- Status report
 

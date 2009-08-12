@@ -89,7 +89,30 @@ feature -- Basic operations
 			stream.indent
 			stream.put_line ("do")
 			stream.indent
-			stream.put_line ("Result := " + predicate_text (a_predicate))
+
+			if not a_predicate.targets.is_empty then
+
+				stream.put_string ("if ")
+				from
+					a_predicate.targets.start
+				until
+					a_predicate.targets.after
+				loop
+					stream.put_string (argument_name (a_predicate.targets.item_for_iteration))
+					stream.put_string (" /= Void ")
+					if not a_predicate.targets.is_last then
+						stream.put_string ("and ")
+					end
+					a_predicate.targets.forth
+				end
+				stream.put_line ("then")
+				stream.indent
+				stream.put_line ("Result := " + predicate_text (a_predicate))
+				stream.dedent
+				stream.put_line ("end")
+			else
+				stream.put_line ("Result := " + predicate_text (a_predicate))
+			end
 			stream.dedent
 			stream.put_line ("end")
 			stream.dedent
@@ -103,14 +126,26 @@ feature -- Basic operations
 			l_predicates: like predicates
 			l_cursor: DS_HASH_SET_CURSOR [AUT_PREDICATE]
 			i: INTEGER
+			l_feat_cursor: DS_HASH_TABLE_CURSOR [ARRAY [TUPLE [predicate_id: INTEGER_32; operand_indexes: SPECIAL [INTEGER_32]]], INTEGER_32]
+			j, k, l_count: INTEGER
+			l_pred_array: ARRAY [TUPLE [predicate_id: INTEGER_32; operand_indexes: SPECIAL [INTEGER_32]]]
+			l_operands: SPECIAL [INTEGER_32]
 		do
 			stream.indent
 			stream.put_line ("initialize_predicates is")
 			stream.indent
+			if configuration.is_precondition_checking_enabled then
+				stream.put_line ("local")
+				stream.indent
+				stream.put_line ("l_array: ARRAY [TUPLE [predicate_id: INTEGER; operand_indexes: SPECIAL [INTEGER]]]")
+				stream.put_line ("l_ops: SPECIAL [INTEGER]")
+				stream.dedent
+			end
 			stream.put_line ("do")
 			if configuration.is_precondition_checking_enabled then
 				stream.indent
 				l_predicates := predicates
+				stream.put_line ("is_predicate_evaluation_enabled := True")
 				stream.put_line ("create predicate_table.make (" + l_predicates.count.out + ")")
 				stream.put_line ("create predicate_arity.make (" + l_predicates.count.out + ")")
 				from
@@ -131,6 +166,45 @@ feature -- Basic operations
 				loop
 					stream.put_line ("argument_arrays.put (create {ARRAY [INTEGER]}.make (1, " + i.out + "), " + i.out + ")")
 					i := i + 1
+				end
+
+				stream.put_line ("create argument_tuple_cache.make (20)")
+				stream.put_line ("create argument_cache.make (1, 20)")
+				stream.put_line ("create relevant_predicate_table.make (200)")
+				from
+					l_feat_cursor := relevant_predicate_with_operand_table.new_cursor
+					l_feat_cursor.start
+				until
+					l_feat_cursor.after
+				loop
+					l_pred_array := l_feat_cursor.item
+					if not l_pred_array.is_empty then
+						stream.put_line ("%T-- For feature with ID: " + l_feat_cursor.key.out)
+						stream.put_line ("create l_array.make (1, " + l_pred_array.count.out + ")")
+						stream.put_line ("relevant_predicate_table.force (l_array, " + l_feat_cursor.key.out + ")")
+						from
+							j := 1
+							l_count := l_pred_array.count
+						until
+							j > l_count
+						loop
+							l_operands := l_pred_array.item (j).operand_indexes
+							stream.put_line ("create l_ops.make (" + l_operands.count.out  + ")")
+							stream.put_line ("l_array.put ([" + l_pred_array.item (j).predicate_id.out + ", l_ops], " + j.out + ")")
+							from
+								k := 0
+							until
+								k = l_operands.count
+							loop
+								stream.put_line ("l_ops.put (" + l_operands.item (k).out + ", " +  k.out + ")")
+								k := k + 1
+							end
+							j := j + 1
+							stream.put_line ("")
+						end
+						stream.put_line ("")
+					end
+					l_feat_cursor.forth
 				end
 				stream.dedent
 			end

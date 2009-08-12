@@ -111,7 +111,7 @@ feature {NONE} -- Initialization
 			injected_feature_pattern_id := l_itp_class.feature_named (feature_name_for_byte_code_injection).real_pattern_id (l_itp_class.types.first)
 
 				-- Setup request printers.
-			create socket_data_printer.make (system, variable_table)
+			create socket_data_printer.make (system, variable_table, Current)
 			create log_stream.make_empty
 
 				-- We have two printers here because one printer will print byte-code into an IPC socket,
@@ -427,7 +427,7 @@ feature -- Execution
 			retry
 		end
 
-	create_object (a_receiver: ITP_VARIABLE; a_type: TYPE_A; a_procedure: FEATURE_I; an_argument_list: DS_LINEAR [ITP_EXPRESSION])
+	create_object (a_receiver: ITP_VARIABLE; a_type: TYPE_A; a_procedure: FEATURE_I; an_argument_list: DS_LINEAR [ITP_EXPRESSION]; a_feature: detachable AUT_FEATURE_OF_TYPE)
 			-- Create new object of type `a_type' using creation
 			-- procedure `a_feature' and the arguments `an_argument_list'.
 			-- Store the created object in variable `a_receiver'.
@@ -452,6 +452,8 @@ feature -- Execution
 				create {DS_LINKED_LIST [ITP_EXPRESSION]} l_arg_list.make
 			end
 			create l_request.make (system, a_receiver, a_type, a_procedure, l_arg_list)
+			l_request.set_feature_id (a_feature.id)
+			last_operands := l_request.operand_indexes
 
 			log_test_case_index (l_request)
 			if is_state_recording_enabled then
@@ -518,7 +520,7 @@ feature -- Execution
 			last_request_not_void: last_request /= Void
 		end
 
-	invoke_feature (a_type: TYPE_A; a_feature: FEATURE_I; a_target: ITP_VARIABLE; an_argument_list: DS_LINEAR [ITP_EXPRESSION])
+	invoke_feature (a_type: TYPE_A; a_feature: FEATURE_I; a_target: ITP_VARIABLE; an_argument_list: DS_LINEAR [ITP_EXPRESSION]; aut_feature: detachable AUT_FEATURE_OF_TYPE)
 			-- Invoke feature `a_feature' from `a_type' with arguments `an_argument_list'.
 		require
 			is_running: is_launched
@@ -549,7 +551,9 @@ feature -- Execution
 				-- in the replay mode, there will be a problem, either because some feature is not found,
 				-- or the type of argument are not correct.
 			create l_invoke_request.make (system, l_feature.feature_name, a_target, an_argument_list)
+			l_invoke_request.set_feature_id (a_feature.id)
 			l_invoke_request.set_target_type (l_target_type)
+			last_operands := l_invoke_request.operand_indexes
 			log_test_case_index (l_invoke_request)
 
 			if is_state_recording_enabled then
@@ -618,7 +622,7 @@ feature -- Execution
 			last_request_not_void: last_request /= Void
 		end
 
-	invoke_and_assign_feature (a_receiver: ITP_VARIABLE; a_type: TYPE_A; a_query: FEATURE_I; a_target: ITP_VARIABLE; an_argument_list: DS_LINEAR [ITP_EXPRESSION])
+	invoke_and_assign_feature (a_receiver: ITP_VARIABLE; a_type: TYPE_A; a_query: FEATURE_I; a_target: ITP_VARIABLE; an_argument_list: DS_LINEAR [ITP_EXPRESSION]; a_feature: detachable AUT_FEATURE_OF_TYPE)
 			-- Invoke query `a_query' from `a_type' with arguments `an_argument_list'.
 			-- Store result in variable `a_receiver'.
 		require
@@ -641,7 +645,9 @@ feature -- Execution
 		do
 --			log_time_stamp ("exec")
 			create l_invoke_request.make_assign (system, a_receiver, a_query.feature_name, a_target, an_argument_list)
+			l_invoke_request.set_feature_id (a_feature.id)
 			l_invoke_request.set_target_type (a_type)
+			last_operands := l_invoke_request.operand_indexes
 			log_test_case_index (l_invoke_request)
 
 			if is_state_recording_enabled then
@@ -764,6 +770,10 @@ feature -- Execution
 			is_ready: is_ready
 		local
 			normal_response: AUT_NORMAL_RESPONSE
+			l_lines: LIST [STRING]
+			l_type_str: STRING
+			l_value_str: STRING
+			l_type: TYPE_A
 		do
 			create {AUT_TYPE_REQUEST} last_request.make (system, a_variable)
 			last_request.process (request_printer)
@@ -776,12 +786,20 @@ feature -- Execution
 --				is_ready := True
 				if not last_response.is_error then
 					normal_response ?= last_response
+					l_lines := normal_response.text.split ('%N')
+					l_type_str := l_lines.first
+					l_value_str := l_lines.i_th (2)
 					check
 						normal_response_not_void: normal_response /= Void
 						no_exception: normal_response.exception = Void
-						valid_type: base_type (normal_response.text) /= Void
+						valid_type: base_type (l_type_str) /= Void
 					end
-					variable_table.define_variable (a_variable, base_type (normal_response.text))
+					l_type := base_type (l_type_str)
+					variable_table.define_variable (a_variable, l_type)
+
+					if configuration.is_precondition_checking_enabled and then configuration.is_linear_constraint_solving_enabled then
+						constant_pool.put_with_value_and_type (l_value_str, l_type, a_variable)
+					end
 
 						-- Ilinca, "number of faults law" experiment
 --					last_request.process (failure_request_printer)
@@ -1208,7 +1226,7 @@ feature -- Socket IPC
 			-- Retrieve response from the interpreter,
 			-- store it in `last_raw_response'.
 		local
-			l_data: TUPLE [invariant_violating_object_index: INTEGER; output: STRING; error: STRING]
+			l_data: TUPLE [invariant_violating_object_index: INTEGER; predicate_evaluation: detachable TUPLE [feat_id: INTEGER; results: detachable ARRAY [NATURAL_8]]; output: STRING; error: STRING]
 			l_retried: BOOLEAN
 			l_socket: like socket
 			l_response_flag: NATURAL_32
@@ -1235,6 +1253,9 @@ feature -- Socket IPC
 --						variable_table.mark_invalid_object (l_data.invariant_violating_object_index)
 						mark_invalid_object (l_data.invariant_violating_object_index)
 					end
+
+						-- Update predicate evaluations in predicate pool.
+					update_predicates_in_pool (l_data.predicate_evaluation)
 				else
 					last_raw_response := Void
 				end
@@ -1915,54 +1936,54 @@ feature -- Predicate evaluation
 		do
 			l_related_objects := relevant_objects (a_target, a_arguments, a_result)
 			calculate_feature_invalid_test_case_rate (a_feature, l_related_objects)
-			if
-				configuration.is_precondition_checking_enabled and then
-				is_running and then
---				not (last_response.is_bad or last_response.is_error) and then
---				not (last_response.is_class_invariant_violation_on_entry or last_response.is_class_invariant_violation_on_exit)
-				last_response.is_normal
-			then
-				if attached {AUT_NORMAL_RESPONSE} last_response as l_normal_response and then l_normal_response.exception = Void then
-					create l_request_data.make
-					if relevant_predicates_of_feature.has (a_feature) then
-						l_predicate_table := relevant_predicates_of_feature.item (a_feature)
-						from
-							l_cursor := l_predicate_table.new_cursor
-							l_cursor.start
-						until
-							l_cursor.after
-						loop
-							l_predicate := l_cursor.key
-							l_arranger := l_cursor.item
-							l_arity := l_predicate.arity
-							create l_arguments.make (l_arranger.count * l_arity)
-							from
-								i := 0
-								l_arranger_cursor := l_arranger.new_cursor
-								l_arranger_cursor.start
-							until
-								l_arranger_cursor.after
-							loop
-								from
-									l_args := l_arranger_cursor.item
-									j := 1
-								until
-									j > l_arity
-								loop
-									l_arguments.put (l_related_objects.item (l_args.item (j).position).index, i)
-									i := i + 1
-									j := j + 1
-								end
-								l_arranger_cursor.forth
-							end
-							l_request_data.extend ([l_predicate.id, l_arguments])
-							l_cursor.forth
-						end
-						evaluate_predicates (l_request_data)
-						update_predicate_pool (last_request)
-					end
-				end
-			end
+--			if
+--				configuration.is_precondition_checking_enabled and then
+--				is_running and then
+----				not (last_response.is_bad or last_response.is_error) and then
+----				not (last_response.is_class_;invariant_violation_on_entry or last_response.is_class_invariant_violation_on_exit)
+--				last_response.is_normal
+--			then
+--				if attached {AUT_NORMAL_RESPONSE} last_response as l_normal_response and then l_normal_response.exception = Void then
+--					create l_request_data.make
+--					if relevant_predicates_of_feature.has (a_feature) then
+--						l_predicate_table := relevant_predicates_of_feature.item (a_feature)
+--						from
+--							l_cursor := l_predicate_table.new_cursor
+--							l_cursor.start
+--						until
+--							l_cursor.after
+--						loop
+--							l_predicate := l_cursor.key
+--							l_arranger := l_cursor.item
+--							l_arity := l_predicate.arity
+--							create l_arguments.make (l_arranger.count * l_arity)
+--							from
+--								i := 0
+--								l_arranger_cursor := l_arranger.new_cursor
+--								l_arranger_cursor.start
+--							until
+--								l_arranger_cursor.after
+--							loop
+--								from
+--									l_args := l_arranger_cursor.item
+--									j := 1
+--								until
+--									j > l_arity
+--								loop
+--									l_arguments.put (l_related_objects.item (l_args.item (j).position).index, i)
+--									i := i + 1
+--									j := j + 1
+--								end
+--								l_arranger_cursor.forth
+--							end
+--							l_request_data.extend ([l_predicate.id, l_arguments])
+--							l_cursor.forth
+--						end
+--						evaluate_predicates (l_request_data)
+--						update_predicate_pool (last_request)
+--					end
+--				end
+--			end
 		end
 
 	relevant_objects (a_target: ITP_VARIABLE; a_arguments: DS_LINEAR [ITP_EXPRESSION]; a_result: detachable ITP_VARIABLE): ARRAY [ITP_VARIABLE] is
@@ -2297,6 +2318,66 @@ feature -- Predicate evaluation
 		ensure
 			precondition_evaluator_set: precondition_evaluator = a_evaluator
 		end
+
+	update_predicates_in_pool (a_results: detachable TUPLE [feature_id: INTEGER; results: detachable ARRAY [NATURAL_8]]) is
+			-- Update `predicate_pool' with `a_results'.
+		local
+			l_predicates: detachable ARRAY [TUPLE [predicate_id: INTEGER; operand_indexes: SPECIAL [INTEGER]]]
+			l_results: ARRAY [NATURAL_8]
+			i, j: INTEGER
+			l_count: INTEGER
+			l_predicate: AUT_PREDICATE
+			l_operands: LINKED_LIST [INTEGER]
+			l_data: TUPLE [predicate_id: INTEGER; operand_indexes: SPECIAL [INTEGER]]
+			l_ind_count: INTEGER
+			l_operand_indexes: SPECIAL [INTEGER]
+			l_last_operands: like last_operands
+		do
+			if
+				a_results /= Void and then
+				a_results.results /= Void and then
+				configuration.is_precondition_checking_enabled
+			then
+				l_results := a_results.results
+				l_predicates := relevant_predicate_with_operand_table.item (a_results.feature_id)
+				if l_predicates /= Void then
+					check
+						l_predicates.count = l_results.count
+						l_predicates.lower = 1
+						l_results.lower = 1
+					end
+
+						-- Update predicate valuations.
+					create l_operands.make
+					l_last_operands := last_operands
+					from
+						i := 1
+						l_count := l_predicates.count
+					until
+						i > l_count
+					loop
+						l_data := l_predicates.item (i)
+						l_predicate := predicate_table.item (l_data.predicate_id)
+						from
+							l_operand_indexes := l_data.operand_indexes
+							j := 0
+							l_ind_count := l_operand_indexes.count
+						until
+							j = l_ind_count
+						loop
+							l_operands.extend (last_operands.item (l_operand_indexes.item (j)))
+							j := j + 1
+						end
+						update_predicate (l_predicate, l_operands, (l_results.item (i) = 1))
+						i := i + 1
+						l_operands.wipe_out
+					end
+				end
+			end
+		end
+
+	last_operands: SPECIAL [INTEGER]
+			-- Operands used in last test case
 
 feature -- Object State Exploration
 

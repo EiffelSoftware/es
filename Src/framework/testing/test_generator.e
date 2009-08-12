@@ -861,15 +861,83 @@ feature -- Precondition satisfaction
 					-- Get the list of all features under test.
 				class_types_under_test.append_last (configuration.types_under_test)
 				features_under_test.append_last (testable_features_from_types (class_types_under_test, system))
+				setup_feature_id_table
 
 					-- Find out all preconditions.
 				find_precondition_predicates
 
 					-- Find out relevant predicates for every feature in `features_under_test'.
 				find_relevant_predicates
+				build_relevant_predicate_with_operand_table
 
 					-- Setup predicate pool.	
 				predicate_pool.setup_predicates (predicates)
+			end
+		end
+
+	setup_feature_id_table is
+			-- Setup `feature_id_table'.
+		local
+			l_cursor: DS_HASH_SET_CURSOR [AUT_FEATURE_OF_TYPE]
+			l_id: INTEGER
+		do
+			from
+				l_cursor := features_under_test.new_cursor
+				l_id := 1
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				feature_id_table.force_last (l_id, l_cursor.item.full_name)
+				l_id := l_id + 1
+				l_cursor.forth
+			end
+		end
+
+	build_relevant_predicate_with_operand_table is
+			-- Build `relevant_predicate_with_operand_table'.
+		local
+			l_feat_cursor: DS_HASH_TABLE_CURSOR [DS_HASH_TABLE [DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]], AUT_PREDICATE], AUT_FEATURE_OF_TYPE]
+			l_pred_cursor: DS_HASH_TABLE_CURSOR [DS_LINKED_LIST [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]], AUT_PREDICATE]
+			l_predicates: DS_LINKED_LIST [TUPLE [predicate_id: INTEGER; operand_indexes: SPECIAL [INTEGER]]]
+			l_index_cursor: DS_LINKED_LIST_CURSOR [ARRAY [AUT_FEATURE_SIGNATURE_TYPE]]
+			l_indexes: SPECIAL [INTEGER]
+		do
+			from
+				l_feat_cursor := relevant_predicates_of_feature.new_cursor
+				l_feat_cursor.start
+			until
+				l_feat_cursor.after
+			loop
+				create l_predicates.make
+				from
+					l_pred_cursor := l_feat_cursor.item.new_cursor
+					l_pred_cursor.start
+				until
+					l_pred_cursor.after
+				loop
+					from
+						l_index_cursor := l_pred_cursor.item.new_cursor
+						l_index_cursor.start
+					until
+						l_index_cursor.after
+					loop
+						create l_indexes.make (l_index_cursor.item.count)
+						l_index_cursor.item.do_all_with_index (
+							agent (a_pos: AUT_FEATURE_SIGNATURE_TYPE; a_index: INTEGER; a_ops: SPECIAL [INTEGER])
+								do
+									a_ops.put (a_pos.position, a_index - 1)
+								end (?, ?, l_indexes))
+
+						l_index_cursor.forth
+					end
+					l_predicates.force_last ([l_pred_cursor.key.id, l_indexes])
+					l_pred_cursor.forth
+				end
+				if not l_predicates.is_empty then
+					relevant_predicate_with_operand_table.force_last (l_predicates.to_array, l_feat_cursor.key.id)
+				end
+				l_feat_cursor.forth
 			end
 		end
 

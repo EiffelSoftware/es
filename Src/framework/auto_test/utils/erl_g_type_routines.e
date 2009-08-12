@@ -169,8 +169,12 @@ feature {NONE} -- Parsing class types
 			-- The result is resolved in `a_context_class'.
 		require
 			a_name_not_void: a_name /= Void
+		local
+			l_name: STRING
 		do
-			Result := base_type_with_context (a_name, interpreter_root_class)
+			l_name := a_name.twin
+			l_name.replace_substring_all ("%N", "")
+			Result := base_type_with_context (l_name, interpreter_root_class)
 		end
 
 feature{NONE} -- Implementation
@@ -207,7 +211,7 @@ feature{NONE} -- Implementation
 				until
 					i > count
 				loop
-					Result.extend (a_feature.arguments.i_th (i).instantiation_in (a_context, a_context.associated_class.class_id).actual_type)
+					Result.extend (a_feature.arguments.i_th (i).actual_type.instantiation_in (a_context, a_context.associated_class.class_id).deep_actual_type)
 					i := i + 1
 				end
 			end

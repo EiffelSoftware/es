@@ -18,6 +18,8 @@ inherit
 
 	DEBUG_OUTPUT
 
+	AUT_SHARED_PREDICATE_CONTEXT
+
 create
 
 	make,
@@ -117,6 +119,32 @@ feature -- Setting
 		ensure
 			is_creator_set: is_creator = b
 		end
+
+feature -- Precondition satisfaction
+
+	id: INTEGER is
+			-- Identifier for precondition satisfaction
+		do
+			feature_id_table.search (full_name)
+			if feature_id_table.found then
+				Result := feature_id_table.found_item
+			end
+		end
+
+	full_name: STRING is
+			-- Full name of Current in form of "CLASS_NAME.feature_name'
+		do
+			if full_name_cache = Void then
+				create full_name_cache.make (64)
+				full_name_cache.append (type.associated_class.name_in_upper)
+				full_name_cache.append_character ('.')
+				full_name_cache.append (feature_name)
+			end
+			Result := full_name_cache
+		end
+
+	full_name_cache: detachable like full_name
+			-- Cache for `full_name'
 
 invariant
 

@@ -7,6 +7,9 @@ note
 class
 	AUT_CONSTANT_POOL
 
+inherit
+	REFACTORING_HELPER
+
 create
 	make
 
@@ -16,6 +19,7 @@ feature{NONE} -- Initialization
 			-- Initialize Current.
 		do
 			create integer_32_values.make (1000)
+			create integer_32_variables.make (1000)
 			create variable_retriever_table.make (20)
 			variable_retriever_table.set_key_equality_tester (create {KL_STRING_EQUALITY_TESTER_A [STRING]})
 			variable_retriever_table.force_last (agent variable_index_of_integer_32_value, "INTEGER_32")
@@ -29,6 +33,19 @@ feature -- Access
 		do
 			if attached {FUNCTION [ANY, TUPLE [ITP_CONSTANT], detachable ITP_VARIABLE]} variable_retriever_table.item (a_constant.type_name) as l_retriever then
 				Result := l_retriever.item ([a_constant])
+			end
+		end
+
+	value (a_variable: ITP_VARIABLE): detachable ITP_CONSTANT is
+			-- Constant from `a_variable'
+		local
+			l_tbl: like integer_32_variables
+		do
+			fixme ("Support variables of other types too. 2009.8.12 Jason")
+			l_tbl := integer_32_variables
+			l_tbl.search (a_variable.index)
+			if l_tbl.found then
+				create Result.make (l_tbl.found_item)
 			end
 		end
 
@@ -52,17 +69,36 @@ feature -- Basic operations
 		do
 			if attached {INTEGER_32} a_constant.value as l_integer_32 then
 				integer_32_values.force_last (a_variable.index, l_integer_32)
+				integer_32_variables.force_last (l_integer_32, a_variable.index)
 			end
 		ensure
 --			variable_put: has (a_constant) and then (variable (a_constant) /= Void and then variable (a_constant).index = a_variable.index)
+		end
+
+	put_with_value_and_type (a_value: STRING; a_type: TYPE_A; a_variable: ITP_VARIABLE) is
+			-- Put `a_variable' with value `a_value', whose type is `a_type' into Current pool.
+		require
+			a_value_attached: a_value /= Void
+			a_type_attacheed: a_type /= Void
+			a_variable_attached: a_variable /= Void
+		local
+			l_int: INTEGER
+		do
+			if a_type.is_integer and then a_value.is_integer then
+				l_int := a_value.to_integer
+				integer_32_values.force_last (a_variable.index, l_int)
+				integer_32_variables.force_last (l_int, a_variable.index)
+			end
 		end
 
 	wipe_out is
 			-- Wipe all values.
 		do
 			integer_32_values.wipe_out
+			integer_32_variables.wipe_out
 		ensure
 			integer_32_values_wiped_out: integer_32_values.is_empty
+			integer_32_variables_wiped_out: integer_32_variables.is_empty
 		end
 
 feature{NONE} -- Implementation
@@ -70,6 +106,10 @@ feature{NONE} -- Implementation
 	integer_32_values: DS_HASH_TABLE [INTEGER, INTEGER]
 			-- Tables for {INTEGER_32} variables
 			-- [Variable index, integer value]
+
+	integer_32_variables: DS_HASH_TABLE [INTEGER, INTEGER]
+			-- Tables for {INTEGER_32} variables
+			-- [Integer value, variable index]
 
 	variable_retriever_table: DS_HASH_TABLE [FUNCTION [ANY, TUPLE [ITP_CONSTANT], detachable ITP_VARIABLE], STRING]
 			-- Table for constant value retrievers indexed by type names
