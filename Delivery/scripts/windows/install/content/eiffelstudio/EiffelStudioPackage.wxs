@@ -40,18 +40,26 @@
 			</Component>
 			<!-- Registry settings for .NET consumer -->
 			<Component Id="Comp.studio_consumer" Guid="21889690-D448-4CD6-AA7C-9F914815CD33" Win64="$(var.IsWin64)">
-				<RegistryKey Id="Reg.clsid" Root="HKCR" Key="CLSID\{E1FFE1AC-C5BD-492B-924A-8DBC9D2112F5}" Action="createAndRemoveOnUninstall">
+				<RegistryKey Id="Reg.CCManager" Root="HKCR" Key="EiffelSoftware.MetadataConsumer.Interop.COM_CACHE_MANAGER" Action="createAndRemoveOnUninstall">
+					<RegistryValue Id="RegVal.CCManager" Value="EiffelSoftware.MetadataConsumer.Interop.COM_CACHE_MANAGER" Type="string">
+					</RegistryValue>
+				</RegistryKey>
+				<RegistryKey Id="Reg.CCManager.clsid" Root="HKCR" Key="EiffelSoftware.MetadataConsumer.Interop.COM_CACHE_MANAGER\CLSID" Action="createAndRemoveOnUninstall">
+					<RegistryValue Id="RegVal.CCManager.clsid" Value="{E1FFE1AC-C88F-4CD5-BBCB-1B1B82308654}" Type="string">
+					</RegistryValue>
+				</RegistryKey>
+				<RegistryKey Id="Reg.clsid" Root="HKCR" Key="CLSID\{E1FFE1AC-C88F-4CD5-BBCB-1B1B82308654}" Action="createAndRemoveOnUninstall">
 					<RegistryValue Id="RegVal.clsid.default" Value="EiffelSoftware.MetadataConsumer.Interop.COM_CACHE_MANAGER" Type="string"/>
 					<RegistryKey Id="Reg.clsid.1" Key="Implemented Categories\{62C8FE65-4EBB-45e7-B440-6E39B2CDBF29}" Action="createAndRemoveOnUninstall" />
 					<RegistryKey Id="Reg.clsid.2" Key="InprocServer32" Action="createAndRemoveOnUninstall" >
 						<RegistryValue Id="RegVal.clsid.inproc.1" Value="mscoree.dll" Type="string"/>
 						<RegistryValue Id="RegVal.clsid.inproc.2" Name="ThreadingModel" Value="Both" Type="string"/>
 						<RegistryValue Id="RegVal.clsid.inproc.3" Name="Class" Value="EiffelSoftware.MetadataConsumer.Interop.COM_CACHE_MANAGER" Type="string"/>
-						<RegistryValue Id="RegVal.clsid.inproc.4" Name="Assembly" Value="EiffelSoftware.MetadataConsumer, Version=6.0.6.5856, Culture=neutral, PublicKeyToken=def26f296efef469" Type="string"/>
+						<RegistryValue Id="RegVal.clsid.inproc.4" Name="Assembly" Value="EiffelSoftware.MetadataConsumer, Version=6.4.7.7751, Culture=neutral, PublicKeyToken=def26f296efef469" Type="string"/>
 						<RegistryValue Id="RegVal.clsid.inproc.5" Name="RuntimeVersion" Value="v2.0.50727" Type="string"/>
-						<RegistryKey Id="Reg.clsid.3" Key="6.0.6.5856" Action="createAndRemoveOnUninstall" >
+						<RegistryKey Id="Reg.clsid.3" Key="6.4.7.7751" Action="createAndRemoveOnUninstall" >
 							<RegistryValue Id="RegVal.clsid.inproc.version.1" Name="Class" Value="EiffelSoftware.MetadataConsumer.Interop.COM_CACHE_MANAGER" Type="string"/>
-							<RegistryValue Id="RegVal.clsid.inproc.version.2" Name="Assembly" Value="EiffelSoftware.MetadataConsumer, Version=6.0.6.5856, Culture=neutral, PublicKeyToken=def26f296efef469" Type="string"/>
+							<RegistryValue Id="RegVal.clsid.inproc.version.2" Name="Assembly" Value="EiffelSoftware.MetadataConsumer, Version=6.4.7.7751, Culture=neutral, PublicKeyToken=def26f296efef469" Type="string"/>
 							<RegistryValue Id="RegVal.clsid.inproc.version.3" Name="RuntimeVersion" Value="v2.0.50727" Type="string"/>
 						</RegistryKey>
 					</RegistryKey>
@@ -81,6 +89,7 @@
 			<?endif?>
 			<Directory Id="Dir.Core.examples" Name="examples"/>
 			<Directory Id="Dir.Core.library" Name="library"/>
+			<Directory Id="Dir.Core.experimental" Name="experimental"/>
 		</DirectoryRef>
 
 		<!-- PROGIDS -->
@@ -136,7 +145,12 @@
 							Description="EiffelStudio development environment" Show="normal"
 							Target="[INSTALLDIR]studio\spec\$(var.IsePlatform)\bin\estudio.exe"
 							/>
-						<Shortcut Id="estudio.exe1" Directory="DesktopFolder" Name="$(var.Product) $(var.ProductVersion) ($(var.Platform))"
+						<Shortcut Id="estudio.exe1" Directory="EiffelStudio" Name="$(var.Product) $(var.ProductVersion) (Experimental mode)"
+							Description="EiffelStudio development environment using experimental facilities of EiffelStudio 6.4" Show="normal"
+							Target="[INSTALLDIR]studio\spec\$(var.IsePlatform)\bin\estudio.exe"
+							Arguments="-experiment"
+							/>
+						<Shortcut Id="estudio.exe2" Directory="DesktopFolder" Name="$(var.Product) $(var.ProductVersion) ($(var.Platform))"
 							Description="EiffelStudio development environment" Show="normal"
 							Target="[INSTALLDIR]studio\spec\$(var.IsePlatform)\bin\estudio.exe"
 							/>
@@ -224,6 +238,10 @@
 				<ComponentGroupRef Id="Core.library"/>
 			</Feature>
 
+			<Feature Id="Experimental_feature" Title="Experimental" TypicalDefault="install" Level="1" Display="hidden">
+				<ComponentGroupRef Id="Core.experimental"/>
+			</Feature>
+
 			<Feature Id="gdiplus_feature" Title="GDI+" TypicalDefault="install" Level="1" Display="hidden">
 				<Condition Level="0"><![CDATA[GDIPLUSNEEDED = "0"]]></Condition>
 				<ComponentGroupRef Id="gdiplus"/>
@@ -231,7 +249,6 @@
 
 			<?ifndef x64?>
 			<Feature Id="gcc_feature" Title="gcc" TypicalDefault="install" Display="hidden" Level="1" >
-				<Condition Level="0"><![CDATA[C_CONFIG_NAME <> "mingw"]]></Condition>
 				<ComponentGroupRef Id="gcc"/>
 			</Feature>
 			<?endif?>

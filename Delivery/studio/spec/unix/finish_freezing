@@ -39,8 +39,8 @@ if [ $# -gt 0 ]; then
 fi
 
 if [ "$nologo" = "" ]; then
-	echo "Eiffel C/C++ Compilation Tool - Version 6.0"
-	echo "Copyright Eiffel Software 1985-2007. All Rights Reserved"
+	echo "Eiffel C/C++ Compilation Tool - Version 6.4"
+	echo "Copyright Eiffel Software 1985-2009. All Rights Reserved"
 	echo
 fi
 

@@ -29,7 +29,6 @@
 	<PREF NAME="debugger.max_slice" HIDDEN="true" DESCRIPTION="Largest number of items displayed in list data."><INTEGER>50</INTEGER></PREF>
 	<PREF NAME="debugger.min_slice" HIDDEN="true" DESCRIPTION="Smallest number of items displayed in list data."><INTEGER>0</INTEGER></PREF>
 	<PREF NAME="debugger.number_of_watch_tools" HIDDEN="true" DESCRIPTION="Default number of watch tools."><INTEGER>1</INTEGER></PREF>
-	<PREF NAME="debugger.project_toolbar_layout" HIDDEN="true" DESCRIPTION="Project toolbar items and layout information."><LIST>System_tool__visible;Melt_project__visible;Open_help_tool__visible;System_info__visible;Force_debug_mode__visible;Separator;Proof__visible;Separator;Enable_bkpt__visible;Disable_bkpt__visible;Clear_bkpt__visible;Bkpt_info__visible;Separator;Ignore_breakpoints_cmd__hidden;Exec_debug__visible;Exec_restart_debug__hidden;Exec_stop__hidden;Exec_quit__hidden;Separator;Exec_step__visible;Exec_into__visible;Exec_out__visible;Exec_no_stop__hidden;Assertion_checking_handler__hidden;Run_final__hidden;Freeze_project__hidden;Finalize_project__hidden;Override_scan__hidden;Discover_melt__hidden</LIST></PREF>
 	<PREF NAME="debugger.proportion" HIDDEN="true"  DESCRIPTION="Proportion of the local/arguments part of the `Objects' tab in the Debugging tool."><INTEGER>0.5</INTEGER></PREF>
 	<PREF NAME="debugger.right_debug_layout" HIDDEN="true" DESCRIPTION="Items/tools shown on editor side when in debug mode."><LIST>Search;closed;0;0;0;0;Editor;minimized;0;0;0;0;Context;visible;0;0;0;171;Debugging;visible;0;0;0;218</LIST></PREF>
 	<PREF NAME="debugger.select_call_stack_level_on_double_click" DESCRIPTION="Select call stack entry on double click?"><BOOLEAN>False</BOOLEAN></PREF>
@@ -131,7 +130,15 @@
 	<PREF NAME="tools.class_browser.class_flat_client_sorting_order" DESCRIPTION="Sorting order of flat clients of class." HIDDEN="True"><STRING>1:1</STRING></PREF>
 
 	<PREF NAME="tools.error_list.expand_errors" DESCRIPTION="Specifies if errors in the Error List tool should be expanded automatically, to show the verbose error information."><BOOLEAN>False</BOOLEAN></PREF>	
-
+        <PREF NAME="tools.testing_tool.execution.processes" DESCRIPTION="Specifies the number of tests being executed simultaneously."><INTEGER>4</INTEGER></PREF>
+	<PREF NAME="tools.testing_tool.new_tests.prepare_routine" DESCRIPTION="Should new manual tests redefine the preparation routine?"><BOOLEAN>False</BOOLEAN></PREF>
+	<PREF NAME="tools.testing_tool.new_tests.clean_routine" DESCRIPTION="Should new manual tests redefine the clean routine?"><BOOLEAN>False</BOOLEAN></PREF>
+	<PREF NAME="tools.testing_tool.autotest.duration" DESCRIPTION="Number of minutes AutoTest executes generated tests."><INTEGER>3</INTEGER></PREF>
+	<PREF NAME="tools.testing_tool.autotest.proxy_timeout" DESCRIPTION="Number of seconds until an automatically tested routine must return before being aborted."><INTEGER>2</INTEGER></PREF>
+	<PREF NAME="tools.testing_tool.autotest.random_seed" DESCRIPTION="Seed used by AutoTest to generate random input (if zero current time is used)."><INTEGER>0</INTEGER></PREF>
+	<PREF NAME="tools.testing_tool.autotest.use_ddmin" DESCRIPTION="Should ddmin algorithm be used for minimizing found failures?"><BOOLEAN>False</BOOLEAN></PREF>
+	<PREF NAME="tools.testing_tool.autotest.use_slicing" DESCRIPTION="Should slicing be used for minimizing found failures?"><BOOLEAN>True</BOOLEAN></PREF>
+	<PREF NAME="tools.testing_tool.autotest.html_statistics" DESCRIPTION="Should AutoTest generate HTML statistics?"><BOOLEAN>True</BOOLEAN></PREF>
 	<PREF NAME="interface.dialogs.confirm_always_compile_before_executing" DESCRIPTION="Display confirmation dialog on execution."><BOOLEAN>True</BOOLEAN></PREF>
 	<PREF NAME="interface.dialogs.confirm_apply_debugger_profiles" DESCRIPTION="Display confirmation dialog when applying debugger profiles."><BOOLEAN>True</BOOLEAN></PREF>
 	<PREF NAME="interface.dialogs.confirm_on_exit" DESCRIPTION="Display confirmation dialog on exit."><BOOLEAN>True</BOOLEAN></PREF>
@@ -207,19 +214,9 @@
 	<PREF NAME="interface.development_window.maximum_history_size" DESCRIPTION="Maximum number of items displayed in the history combo boxes."><INTEGER>20</INTEGER></PREF>
 	<PREF NAME="interface.development_window.progress_bar_color" DESCRIPTION="Color for progress bar."><COLOR>0;0;128</COLOR></PREF>
 	<PREF NAME="interface.development_window.remember_completion_list_size" DESCRIPTION="Should size of completion list be remembered between completions in the editor?"><BOOLEAN>True</BOOLEAN></PREF>
-	<PREF NAME="interface.development_window.refactoring_toolbar_layout" HIDDEN="true" DESCRIPTION="Items shown in refactoring toolbar."><LIST>RF_pull__visible;RF_rename__visible;Separator;RF_undo__visible;RF_redo__visible</LIST></PREF>
-	<PREF NAME="interface.development_window.general_toolbar_layout" HIDDEN="true" DESCRIPTION="Items shown in general toolbar."><LIST>New_tab__visible;New_window__hidden;New_editor__hidden;New_context_window__hidden;Open_file__hidden;New_class__hidden;New_feature__hidden;Open_shell__visible;Save_file__visible;Save_all_file__visible;Separator;Undo__visible;Redo__visible;Separator;Editor_cut__visible;Editor_copy__visible;Editor_paste__visible;Separator;ES_GROUP_TOOL__hidden;ES_FEATURES_TOOL__hidden;ES_SEARCH_TOOL__visible;Separator;Send_to_context__visible;New_cluster__hidden;Remove_class_cluster__hidden;Toggle_stone__hidden;Raise_all__hidden;Minimize_all__hidden;Print__hidden;ES_OUTPUT_TOOL__hidden;ES_DIAGRAM_TOOL__hidden;ES_CLASS_TOOL__hidden;ES_FEATURE_RELATION_TOOL__hidden;ES_DEPENDENCY_TOOL__hidden;ES_METRICS_TOOL__hidden;ES_CONSOLE_TOOL__hidden;ES_C_OUTPUT_TOOL__hidden;ES_ERROR_LIST_TOOL__hidden;ES_FAVORITES_TOOL__hidden;ES_WINDOWS_TOOL__hidden;ES_PROPERTIES_TOOL__hidden;ES_DEBUGGER_BREAKPOINTS_TOOL__hidden;ES_SEARCH_REPORT__hidden;ES_INFORMATION_TOOL__hidden</LIST></PREF>
 	<PREF NAME="interface.development_window.unified_stone" DESCRIPTION="Link the context tool with other components by default?"><BOOLEAN>False</BOOLEAN></PREF>
 	<PREF NAME="interface.development_window.link_tools" DESCRIPTION="Link tools? True means that a tool propagates stone to other tools if possible."><BOOLEAN>False</BOOLEAN></PREF>
 	<PREF NAME="interface.development_window.use_animated_icons" DESCRIPTION="Use animated icons in the status bar?"><BOOLEAN>True</BOOLEAN></PREF>
-	<PREF NAME="interface.development_window.width" DESCRIPTION="Width of development window." HIDDEN="true"><INTEGER>950</INTEGER></PREF>
-	<PREF NAME="interface.development_window.height" DESCRIPTION="Height of development window." HIDDEN="true"><INTEGER>650</INTEGER></PREF>
-	<PREF NAME="interface.development_window.x_position" DESCRIPTION="Screen x position of development window." HIDDEN="true"><INTEGER>50</INTEGER></PREF>
-	<PREF NAME="interface.development_window.y_position" DESCRIPTION="Screen y position of development window." HIDDEN="true"><INTEGER>50</INTEGER></PREF>
-	<PREF NAME="interface.development_window.maximized_width" DESCRIPTION="Width of development window when maximized." HIDDEN="true"><INTEGER>950</INTEGER></PREF>
-	<PREF NAME="interface.development_window.maximized_height" DESCRIPTION="Height of development window when maximized." HIDDEN="true"><INTEGER>650</INTEGER></PREF>
-	<PREF NAME="interface.development_window.maximized_x_position" DESCRIPTION="Screen x position of development window when maximized." HIDDEN="true"><INTEGER>50</INTEGER></PREF>
-	<PREF NAME="interface.development_window.maximized_y_position" DESCRIPTION="Screen y position of development window when maximized." HIDDEN="true"><INTEGER>50</INTEGER></PREF>
 	<PREF NAME="interface.development_window.is_force_debug_mode" DESCRIPTION="Last time when closing development window if it was forcing debug mode." HIDDEN="true"><BOOLEAN>False</BOOLEAN></PREF>
 	<PREF NAME="interface.development_window.completion_list_height" DESCRIPTION="Height of completion list.  Used if 'remember_completion_list_size' is set to True." HIDDEN="true"><INTEGER>320</INTEGER></PREF>
 	<PREF NAME="interface.development_window.completion_list_width" DESCRIPTION="Width of completion list.  Used if 'remember_completion_list_size' is set to True." HIDDEN="true"><INTEGER>240</INTEGER></PREF>
@@ -245,6 +242,7 @@
 	<PREF NAME="editor.eiffel.show_completion_signature" DESCRIPTION="Does completion list show feature signatures?"><BOOLEAN>True</BOOLEAN></PREF>
 	<PREF NAME="editor.eiffel.show_completion_type" DESCRIPTION="Does completion list show query return type?"><BOOLEAN>True</BOOLEAN></PREF>
 	<PREF NAME="editor.eiffel.show_completion_disambiguated_name" DESCRIPTION="Does completion list show disambiguated name?"><BOOLEAN>False</BOOLEAN></PREF>
+	<PREF NAME="editor.eiffel.show_completion_tooltip" DESCRIPTION="Does completion list show an item's description as a tooltip?"><BOOLEAN>True</BOOLEAN></PREF>
 	<PREF NAME="editor.eiffel.show_obsolete_items" DESCRIPTION="Does completion list show obsolete items?"><BOOLEAN>False</BOOLEAN></PREF>
 	<PREF NAME="editor.eiffel.syntax_complete_enabled" DESCRIPTION="Is completion of keywords enabled? The completion of keywords can be changed in Editor->Eiffel->Autocomplete."><BOOLEAN>True</BOOLEAN></PREF>
 	<PREF NAME="editor.eiffel.text_mode_is_windows" DESCRIPTION="Format to use when saving class text. True means using Windows text format, False means using Unix text format."><BOOLEAN>True</BOOLEAN></PREF>
@@ -345,6 +343,13 @@
 	<PREF NAME="editor.eiffel.autocomplete.feature_structure_keywords.local.custom_local_return" DESCRIPTION="Customized autocomplete (Return after keyword was typed)"><STRING>%N$indent$%T$cursor$</STRING></PREF>
 	<PREF NAME="editor.eiffel.autocomplete.feature_structure_keywords.local.custom_local_space_later" DESCRIPTION="Customized autocomplete (Space, other cases)"><STRING> $cursor$</STRING></PREF>
 	<PREF NAME="editor.eiffel.autocomplete.feature_structure_keywords.local.custom_local_return_later" DESCRIPTION="Customized autocomplete (Return, other cases)"><STRING>%N$indent$%T$cursor$</STRING></PREF>
+
+	<PREF NAME="editor.eiffel.autocomplete.feature_structure_keywords.attribute.autocomplete_attribute" DESCRIPTION="Autocomplete attribute?"><BOOLEAN>True</BOOLEAN></PREF>
+	<PREF NAME="editor.eiffel.autocomplete.feature_structure_keywords.attribute.use_default_attribute" DESCRIPTION="Use default autocomplete?"><BOOLEAN>True</BOOLEAN></PREF>
+	<PREF NAME="editor.eiffel.autocomplete.feature_structure_keywords.attribute.custom_attribute_space" DESCRIPTION="Customized autocomplete (Space after keyword was typed)"><STRING> $cursor$ end</STRING></PREF>
+	<PREF NAME="editor.eiffel.autocomplete.feature_structure_keywords.attribute.custom_attribute_return" DESCRIPTION="Customized autocomplete (Return after keyword was typed)"><STRING>%N$indent$%T$cursor$%N$indent$end</STRING></PREF>
+	<PREF NAME="editor.eiffel.autocomplete.feature_structure_keywords.attribute.custom_attribute_space_later" DESCRIPTION="Customized autocomplete (Space, other cases)"><STRING> $cursor$</STRING></PREF>
+	<PREF NAME="editor.eiffel.autocomplete.feature_structure_keywords.attribute.custom_attribute_return_later" DESCRIPTION="Customized autocomplete (Return, other cases)"><STRING>%N$indent$%T$cursor$</STRING></PREF>
 
 	<PREF NAME="editor.eiffel.autocomplete.feature_structure_keywords.do.autocomplete_do" DESCRIPTION="Autocomplete do?"><BOOLEAN>True</BOOLEAN></PREF>
 	<PREF NAME="editor.eiffel.autocomplete.feature_structure_keywords.do.use_default_do" DESCRIPTION="Use default autocomplete?"><BOOLEAN>True</BOOLEAN></PREF>
@@ -653,7 +658,8 @@
 	<PREF NAME="shortcuts.code_completion.toggle_show_signature" DESCRIPTION="Show/hide signature in completion list."><SHORTCUT>F3</SHORTCUT></PREF>
 	<PREF NAME="shortcuts.code_completion.toggle_show_disambiguated_name" DESCRIPTION="Show/hide disambiguated name in completion list."><SHORTCUT>F4</SHORTCUT></PREF>
 	<PREF NAME="shortcuts.code_completion.toggle_show_obsolete_items" DESCRIPTION="Show/hide obsolete features in completion list."><SHORTCUT>F5</SHORTCUT></PREF>
-	<PREF NAME="shortcuts.code_completion.toggle_remember_size" DESCRIPTION="Remember/forget size in completion list."><SHORTCUT>F6</SHORTCUT></PREF>
+	<PREF NAME="shortcuts.code_completion.toggle_show_tooltip" DESCRIPTION="Show/hide completion list tooltips."><SHORTCUT>F6</SHORTCUT></PREF>
+	<PREF NAME="shortcuts.code_completion.toggle_remember_size" DESCRIPTION="Remember/forget size in completion list."><SHORTCUT>F7</SHORTCUT></PREF>
 	<PREF NAME="shortcuts.code_completion.autocomplete" DESCRIPTION="Trigger feature completion."><SHORTCUT Ctrl="True">Space</SHORTCUT></PREF>
 	<PREF NAME="shortcuts.code_completion.class_autocomplete" DESCRIPTION="Trigger class completion"><SHORTCUT Ctrl="True" Shift="True">Space</SHORTCUT></PREF>
 	

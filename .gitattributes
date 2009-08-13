@@ -135,6 +135,7 @@ Delivery/scripts/unix/compile_eweasel -text
 Delivery/scripts/unix/make_debian_package -text
 Delivery/scripts/unix/make_rpm_package -text
 Delivery/scripts/unix/make_svr_package -text
+Delivery/scripts/unix/make_tools -text
 Delivery/scripts/unix/packaging/debian/compat -text
 Delivery/scripts/unix/packaging/debian/rules -text
 Delivery/scripts/unix/packaging/description -text
@@ -142,6 +143,7 @@ Delivery/scripts/unix/packaging/desktop -text
 Delivery/scripts/unix/packaging/license -text
 Delivery/scripts/unix/packaging/logo.png -text
 Delivery/scripts/windows/install/Admin.txt -text
+Delivery/scripts/windows/install/content/eiffelstudio/studio_experimental.wxs -text
 Delivery/scripts/windows/install/images/Thumbs.db -text
 Delivery/scripts/windows/install/images/app.ico -text
 Delivery/scripts/windows/install/images/eiffelenvision/backdrop.bmp -text
@@ -182,14 +184,17 @@ Delivery/studio/bitmaps/png/bm_wizard_blue.png -text
 Delivery/studio/bitmaps/png/bm_wizard_profiler_icon.png -text
 Delivery/studio/bitmaps/png/bm_wizard_testing_icon.png -text
 Delivery/studio/bitmaps/png/cursors.png -text
+Delivery/studio/bitmaps/png/estudio.png -text
 Delivery/studio/bitmaps/png/logo.png -text
 Delivery/studio/bitmaps/png/splash.png -text
 Delivery/studio/bitmaps/png/splash_shadow.png -text
-Delivery/studio/config/windows/bcb/appl.ico -text
 Delivery/studio/config/windows/msc/appl.ico -text
 Delivery/studio/eifinit/libraries.cfg -text
 Delivery/studio/eifinit/precompile.cfg -text
 Delivery/studio/help/defaults/eiffel_unit_test_tcf_template.txt -text
+Delivery/studio/help/errors/VRVA -text
+Delivery/studio/help/errors/short/VRVA1 -text
+Delivery/studio/help/errors/short/VRVA2 -text
 Delivery/studio/lang/mo_files/de_DE.mo -text
 Delivery/studio/lang/mo_files/en_US.mo -text
 Delivery/studio/lang/mo_files/fr_FR.mo -text
@@ -360,6 +365,11 @@ Delivery/studio/tools/testing/auto_test/misc/html/test_case_set_untested.html -t
 Delivery/studio/tools/testing/auto_test/misc/html/ua.js -text
 Delivery/studio/tools/testing/icons.ini -text
 Delivery/studio/tools/testing/icons.png -text
+Delivery/studio/tools/twitter_feed/bird.png -text
+Delivery/studio/tools/twitter_feed/icons.ini -text
+Delivery/studio/tools/twitter_feed/icons.png -text
+Delivery/studio/tools/twitter_feed/logo.png -text
+Delivery/studio/tools/twitter_feed/spacer.png -text
 Delivery/studio/wizards/new_projects/dotnet/pixmaps/Eiffel_tower.png -text
 Delivery/studio/wizards/new_projects/dotnet/pixmaps/eiffel_wizard.png -text
 Delivery/studio/wizards/new_projects/dotnet/pixmaps/eiffel_wizard_icon.png -text
