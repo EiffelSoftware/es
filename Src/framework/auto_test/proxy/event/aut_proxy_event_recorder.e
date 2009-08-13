@@ -186,15 +186,17 @@ feature {NONE} -- Implementation
 		local
 			l_last_response: AUT_RESPONSE
 			l_response_stream: KL_STRING_INPUT_STREAM
+			l_text: STRING
 		do
 			if a_request.response = Void then
 				if attached last_response as l_response then
 					l_last_response := l_response
 					if l_last_response.is_normal then
 						if not l_last_response.is_exception then
+							l_text := l_last_response.text.split ('%N').first
 							variable_table.define_variable (
 								a_request.variable,
-								base_type (l_last_response.text))
+								base_type (l_text))
 						end
 					end
 				else

@@ -125,7 +125,7 @@ feature {AUT_REQUEST} -- Processing
 				-- 1: target which willl be created.
 				-- 2~`l_argument_count'+1: arguments
 
-			l_locals.extend (a_request.target_type)
+			l_locals.extend (a_request.target_type.deep_actual_type)
 			if a_request.has_argument then
 				l_arguments := feature_argument_types (l_feature, a_request.target_type)
 				l_locals.append (l_arguments)
@@ -192,6 +192,7 @@ feature {AUT_REQUEST} -- Processing
 				-- 2~`l_argument_count'+1: arguments
 				-- `l_argument_count' + 2: receiver (if `l_feature' is a query)
 			l_target_type ?= expression_type_visitor.type (a_request.target)
+			l_target_type := l_target_type.deep_actual_type
 			l_locals.extend (l_target_type)
 
 			if a_request.has_argument then
@@ -199,7 +200,7 @@ feature {AUT_REQUEST} -- Processing
 				l_locals.append (l_arguments)
 			end
 
-			l_receiver_type := l_feature.type.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id)
+			l_receiver_type := l_feature.type.actual_type.instantiation_in (l_target_type, l_target_type.associated_class.class_id).deep_actual_type
 --			l_receiver_type := l_feature.type.actual_type.instantiation_in (l_target_type, l_feature.written_in)
 			if a_request.is_feature_query then
 				l_locals.extend (l_receiver_type)
